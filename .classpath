@@ -2,16 +2,11 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="Source"/>
-	<classpathentry excluding="mesquite/align2/RestEnzymesList/|mesquite/align2/ColorAllMatchToSelected/|mesquite/align2/CBMSAAlign/|mesquite/cartographer/ConvertCoordinates/|mesquite/cartographer/GeneralPerspective/|mesquite/align2/ManageRestEnzymes/|mesquite/align2/StopMatch/|mesquite/align2/CBMSAAlign/|mesquite/align2/ColorMatchRestEnz/|mesquite/align2/ColorAllMatchToSelected/|mesquite/align2/RestEnzSearch/|mesquite/align2/RestEnzymesList/|mesquite/align2/ManageRestEnzymes/|mesquite/align2/StopMatch/|mesquite/collab/|mesquite/align2/RNAStemMatch/" kind="src" path="SourceB"/>
-	<classpathentry excluding="mesquite/geiger/lib/|mesquite/geiger/|mesquite/david/GreatCircleDist/" kind="src" path="SourceC"/>
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
-	<classpathentry kind="lib" path="pal.zip"/>
-	<classpathentry kind="lib" path="JSci.zip"/>
-	<classpathentry kind="lib" path="Jama-1.0.1.zip"/>
+	<classpathentry exported="true" kind="lib" path="pal.zip"/>
+	<classpathentry exported="true" kind="lib" path="JSci.zip"/>
+	<classpathentry exported="true" kind="lib" path="Jama-1.0.1.zip"/>
 	<classpathentry kind="lib" path="MRJToolkitStubs.zip"/>
 	<classpathentry kind="lib" path="AppleJavaExtensions.jar"/>
-	<classpathentry kind="lib" path="cipres_framework.jar"/>
-	<classpathentry kind="lib" path="jacorb.jar"/>
-	<classpathentry kind="lib" path="jdom.jar"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>
