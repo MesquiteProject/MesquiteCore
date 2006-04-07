@@ -9,131 +9,82 @@ tolweb = david, katja, learning, dmandel
 
 [/]
 @committers = rw
-@class = r
-@cipres = r
-@tolweb = r
-@wasabi = r
 
 [/branches]
 @committers = rw
 
-[/trunk/mesquite/]
+[/mesquite/]
 @committers = rw
 @class = r
 @cipres = r
 @wasabi = r
 
-[/trunk/mesquite/SourceC/mesquite/cipres]
-@committers = rw
-@cipres = rw
-@wasabi = r
-* = 
-
-
-[/trunk/mesquite/cipres_framework.jar]
-@committers = rw
-@cipres = rw
-@wasabi = r
-* = 
-
-[/trunk/mesquite/jacorb.jar]
-@committers = rw
-@cipres = rw
-@wasabi = r
-* = 
-
-[/trunk/mesquite/SourceC/mesquite/geiger]
-@maddisons = rw
-dmandel = rw
-* = 
-
-[/trunk/mesquite/SourceC/mesquite/treecomp]
-@maddisons = rw
-dmandel = rw
-* = 
-
-[/trunk/mesquite/Mesquite_Folder]
-@committers = rw
-* = r
-
-[/trunk/mesquite/Source/mesquite/align]
+[/mesquite/Source/mesquite/align]
 @committers = rw
 wheeler = rw
 @class = r
 @cipres = r
 
-[/trunk/mesquite/SourceB/mesquite/align2]
-@committers = rw
-wheeler = rw
-@class = r
-@cipres = r
-
-[/trunk/mesquite/SourceB/mesquite/cartographer]
-@committers = rw
-@class = r
-@cipres = r
-
-[/trunk/mesquite/SourceB/mesquite/examples]
-@committers = rw
-@class = r
-@cipres = r
-@wasabi = r
-
-[/trunk/mesquite/SourceB/mesquite/mb]
-@committers = rw
-@class = r
-@cipres = r
-
-[/trunk/mesquite/SourceC/mesquite/arizona]
-@committers = rw
-@class = r
-
-[/trunk/mesquite/SourceC/mesquite/david]
-@maddisons = rw
-dmandel = rw
-* =
-
-[/trunk/mesquite/SourceC/mesquite/wayne]
-@maddisons = rw
-dmandel = rw
-* =
-
-
-[/trunk/mesquite/SourceB/mesquite/chromaseq]
-@committers = rw
-@class = r
-@cipres = r
-@wasabi = r
-* =
-
-[/trunk/mesquite/SourceB/mesquite/collab]
+[/mesquite/Notes]
 @committers = rw
 * =
 
-[/trunk/mesquite/SourceB/mesquite/dmanager]
-@committers = rw
-* =
-
-[/trunk/mesquite/Notes]
-@committers = rw
-* =
-
-[/trunk/mesquite/Notes/svnaccess]
+[/mesquite/Notes/svnaccess]
 @administrators = rw
 * =
 
+[/cipres/]
+@committers = rw
+@cipres = rw
+@wasabi = r
 
-[/trunk/mesquite/SourceC/mesquite/schmidt]
-* =
-david = rw
-schmidt = rw
+[/vancouver/]
+@maddisons = rw
 dmandel = rw
 
-[/trunk/mesquite/SourceC/mesquite/oliver]
-* =
-david = rw
-oliver = rw
+[/treesetvis/]
+@maddisons = rw
 dmandel = rw
+
+
+[/mesquite_next_release/]
+@committers = rw
+wheeler = rw
+@cipres = r
+
+[/mesquite_experimental/]
+@committers = rw
+
+[/cartographer/]
+@committers = rw
+
+[/arizona/]
+@committers = rw
+
+[/arizona/oliver/]
+@committers = rw
+oliver=rw
+
+[/arizona/schmidt/]
+@committers = rw
+schmidt=rw
+
+[/vancouver/]
+@maddisons = rw
+dmandel = rw
+
+[/chromaseq/]
+@committers = rw
+@class = r
+@cipres = r
+@wasabi = r
+
+[/collab/]
+@committers = rw
+
+[/pdap/]
+@committers = rw
+
 
 [/trunk/tolweb]
 @tolweb = rw
