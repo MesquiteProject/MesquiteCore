@@ -18,6 +18,7 @@ tolweb = david, katja, learning, dmandel
 @class = r
 @cipres = r
 @wasabi = r
+wheeler = r
 
 [/mesquite/Source/mesquite/align]
 @committers = rw
@@ -38,25 +39,13 @@ wheeler = rw
 @cipres = rw
 @wasabi = r
 
-[/vancouver/]
-@maddisons = rw
-dmandel = rw
-
-[/treesetvis/]
-@maddisons = rw
-dmandel = rw
-
-
 [/mesquite_next_release/]
 @committers = rw
+wheeler = r
+
+[/mesquite_next_release/Source/mesquite/align2]
+@committers = rw
 wheeler = rw
-@cipres = r
-
-[/mesquite_experimental/]
-@committers = rw
-
-[/cartographer/]
-@committers = rw
 
 [/arizona/]
 @committers = rw
@@ -69,9 +58,8 @@ oliver=rw
 @committers = rw
 schmidt=rw
 
-[/vancouver/]
-@maddisons = rw
-dmandel = rw
+[/cartographer/]
+@committers = rw
 
 [/chromaseq/]
 @committers = rw
@@ -82,8 +70,20 @@ dmandel = rw
 [/collab/]
 @committers = rw
 
+[/mesquite_experimental/]
+@committers = rw
+
 [/pdap/]
 @committers = rw
+
+[/treesetvis/]
+@maddisons = rw
+dmandel = rw
+
+[/vancouver/]
+@maddisons = rw
+dmandel = rw
+
 
 
 [/trunk/tolweb]
