@@ -67,6 +67,8 @@ schmidt=rw
 
 [/cartographer]
 @committers = rw
+schmidt = r
+oliver = r
 * =
 
 [/chromaseq]
