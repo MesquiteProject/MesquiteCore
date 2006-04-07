@@ -22,16 +22,16 @@ tolweb = david, katja, learning, dmandel
 wheeler = r
 
 
-[/mesquite/Source/mesquite/align]
+[/mesquite/trunk/Mesquite Project/Source/mesquite/align]
 @committers = rw
 wheeler = rw
 * =
 
-[/mesquite/Notes]
+[/mesquite/trunk/Mesquite Project/Notes]
 @committers = rw
 * =
 
-[/mesquite/Notes/svnaccess]
+[/mesquite/trunk/Mesquite Project/Notes/svnaccess]
 @administrators = rw
 * =
 
@@ -46,7 +46,7 @@ wheeler = rw
 wheeler = r
 * =
 
-[/mesquite_next_release/Source/mesquite/align2]
+[/mesquite_next_release/trunk/Mesquite Next Release/Source/mesquite/align2]
 @committers = rw
 wheeler = rw
 * =
@@ -55,11 +55,11 @@ wheeler = rw
 @committers = rw
 * =
 
-[/arizona/oliver/]
+[/arizona/trunk/Arizona/Source/mesquite/oliver/]
 @committers = rw
 oliver=rw
 
-[/arizona/schmidt/]
+[/arizona/trunk/Arizona/Source/mesquite/schmidt/]
 @committers = rw
 schmidt=rw
 
