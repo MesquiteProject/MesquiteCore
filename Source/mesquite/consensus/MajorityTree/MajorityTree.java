@@ -5,7 +5,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.TreeVector;
-import mesquite.treecomp.TreeSetVisualizationV2.TreeSetViz;
+//import mesquite.treecomp.TreeSetVisualizationV2.TreeSetViz;
 
 import java.util.*;
 
