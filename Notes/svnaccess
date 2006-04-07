@@ -20,7 +20,7 @@ tolweb = david, katja, learning, dmandel
 @cipres = r
 @wasabi = r
 wheeler = r
-
+* = 
 
 [/mesquite/trunk/Mesquite Project/Source/mesquite/align]
 @committers = rw
@@ -58,10 +58,12 @@ wheeler = rw
 [/arizona/trunk/Arizona/Source/mesquite/oliver/]
 @committers = rw
 oliver=rw
+* = 
 
 [/arizona/trunk/Arizona/Source/mesquite/schmidt/]
 @committers = rw
 schmidt=rw
+* = 
 
 [/cartographer/]
 @committers = rw
