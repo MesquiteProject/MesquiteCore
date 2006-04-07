@@ -2,7 +2,6 @@
 maddisons = david, wayne
 administrators = david, wayne, dmandel
 committers = david, wayne, dmandel, midford
-class = haselkorn, morales, oliver, salcedo, schmidt, swenson, wheeler
 cipres = swofford, lewis, leibowitz, borchers, vos, holder
 wasabi = fkauff
 tolweb = david, katja, learning, dmandel
@@ -16,10 +15,11 @@ tolweb = david, katja, learning, dmandel
 
 [/mesquite]
 @committers = rw
-@class = r
 @cipres = r
 @wasabi = r
 wheeler = r
+oliver = r
+schmidt = r
 * = 
 
 [/mesquite/trunk/Mesquite Project/Source/mesquite/align]
@@ -73,9 +73,10 @@ oliver = r
 
 [/chromaseq]
 @committers = rw
-@class = r
 @cipres = r
 @wasabi = r
+oliver = r
+schmidt = r
 * =
 
 [/collab]
