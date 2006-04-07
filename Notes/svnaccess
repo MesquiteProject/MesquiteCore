@@ -7,10 +7,6 @@ cipres = swofford, lewis, leibowitz, borchers, vos, holder
 wasabi = fkauff
 tolweb = david, katja, learning, dmandel
 
-[/]
-@committers = rw
-* = r
-
 [/branches]
 @committers = rw
 
