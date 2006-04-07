@@ -1,0 +1,238 @@
+#NEXUS
+[written Sat Jan 10 23:09:59 PST 2004 by Mesquite  version 1.0+ (build e76)]
+
+BEGIN TAXA;
+	TITLE species;
+	DIMENSIONS NTAX=16;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  measurements;
+	DIMENSIONS NCHAR=5;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 length,
+		2 width,
+		3 speed,
+		4 temperature,
+		5 personality ; 
+	MATRIX
+	Aus            9.367 5.022 2.763 38.57 1.723
+	Fubonidia      8.793 3.244 4.664 38.81 0.296
+	Ibbinidibe     8.576 6.245 2.528 38.5 -1.0239
+	Snorolopa      11.54 8.718 5.862 40.54 -2.039
+	Quidnubia      9.977 6.082 5.984 38.32 0.7256
+	Suinon         9.381 5.468 4.398 38.48 1.213
+	Zorabynyx      8.162 5.782 4.894 39.69 0.8212
+	Huichoros      8.676 4.86 4.186 39.61 0.5508
+	Jotinupa       9.356 6.75 4.649 38.01 0.795
+	Abnyora        8.107 5.989 2.975 40.13 -1.686
+	Syphorchus     9.692 7.227 5.747 39.52 -0.8719
+	Lissaminopus   8.902 6.05 4.337 37.5 -0.9571
+	Chaelodonter   9.055 6.575 4.896 40.48 -0.293
+	Chloroxyxops   10.11 4.199 3.327 38.94 -0.1349
+	Mincinia       10.2 3.975 4.623 37.1 -0.4575
+	Phoronibium    7.604 5.438 2.809 37.69 -2.129
+
+;
+
+END;
+
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'When a character is selected in a List of Characters window or in a Character Matrix Editor, it is not selected only in that window.  Rather, the character becomes selected throughout Mesquite.  Thus, if you select a character in the List window above by touching on a row number, it gets selected in the Character Matrix editor and the Scattergram chart as well.  Likewise, if you select a character in either the Character Matrix editor or the chart, the character is selected in the other two as well.  (You can select characters in the chart by using the arrow tool and clicking and dragging a box around the points to be selected.)^n^nThis feature allows you to do the following, for example:^n-- use the Character Wand tool in the List window to select those characters with mean value greater than 5.0, then go to the Character Matrix editor or the chart, select Copy from the Edit menu, and thus put into the clipboard a selected subset of the matrix or chart.^n^n-- select characters falling in one region of a scattergram and see where they fall in a second scattergram ';
+
+
+
+END;
+
+BEGIN LABELS;
+	CHARGROUPLABEL Morphology COLOR = (RGB 0.458823551 0.13725490 1.0) ;
+	CHARGROUPLABEL Physiology_&_Behavior COLOR = (RGB 0.749019649 1.0 0.031372553) ;
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  Squared:  1 -  5;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  5;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 911995890865637530;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 4132708679229515777;
+			tell It;
+				setSelected  2;
+			endTell;
+			checksum 0 487214761;
+			showCharacters 0 #mesquite.lists.CharacterList.CharacterList;
+			tell It;
+				setData 0;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.CharListInclusion.CharListInclusion;
+					newAssistant  #mesquite.lists.CharacterStats.CharacterStats;
+					newAssistant  #mesquite.parsimony.CharListParsModels.CharListParsModels;
+					newAssistant  #mesquite.lists.CharNumForList.CharNumForList;
+				tell It;
+					suppress;
+					setValueTask  #mesquite.cont.MeanValue.MeanValue;
+					tell It;
+						setItem 0;
+					endTell;
+					desuppress;
+				endTell;
+					getTable;
+					tell It;
+						columnWidth 1 102;
+						columnWidth 3 130;
+					endTell;
+					setSize 619 185;
+					setLocation 458 38;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+						setTool mesquite.lists.CharacterList.CharacterListWindow.wand;
+					endTell;
+					setActive;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #4132708679229515777 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 448 222;
+					setLocation 6 22;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+					setColumnWidth 66;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.charts.CharsScattergram.CharsScattergram;
+		tell It;
+			getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+			tell It;
+				setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+				tell It;
+					setDataSet #4132708679229515777;
+				endTell;
+			endTell;
+			setTaxa #911995890865637530;
+			axesDifferent;
+			setValuesX  #mesquite.trees.NumForCharOnTree.NumForCharOnTree;
+			tell It;
+				setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
+				tell It;
+					setTreeSimulator  #mesquite.trees.EqualRatesMarkovSp.EqualRatesMarkovSp;
+					tell It;
+						setTime 100.0;
+					endTell;
+					setSeed 984005063645;
+				endTell;
+				setTreeNumber 0;
+				getEmployee #mesquite.parsimony.ParsCharSteps.ParsCharSteps;
+				tell It;
+					setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
+					getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
+					tell It;
+						toggleWeight on;
+					endTell;
+				endTell;
+			endTell;
+			setValuesY  #mesquite.cont.MeanValue.MeanValue;
+			tell It;
+				setItem 0;
+			endTell;
+			getCharter #mesquite.charts.ItemsBiplot.ItemsBiplot;
+			tell It;
+				getWindow;
+				tell It;
+					setX 1;
+					setY 1;
+					setSize 521 318;
+					setLocation 11 308;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				enableCalculations;
+				getEmployee #mesquite.charts.Scattergram.Scattergram;
+				tell It;
+					markerSize 10;
+					toggleJoin off;
+					toggleShowDots on;
+					movingWindowSize 1;
+					sumByBlocks off;
+				endTell;
+			endTell;
+			setChartVisible;
+			doCounts;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '16-charSources.nex';
+			setPrevFileName '14-partitions.nex';
+			getWindow;
+			tell It;
+					setSize 414 376;
+					setLocation 542 309;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'When a character is selected in a List of Characters window or in a Character Matrix Editor, it is not selected only in that window.  Rather, the character becomes selected throughout Mesquite.  Thus, if you select a character in the List window above by touching on a row number, it gets selected in the Character Matrix editor and the Scattergram chart as well.  Likewise, if you select a character in either the Character Matrix editor or the chart, the character is selected in the other two as well.  (You can select characters in the chart by using the arrow tool and clicking and dragging a box around the points to be selected.)  When this file opens, the character "width" is selected.^n^nThis feature allows you to do the following, for example:^n-- use the Character Wand tool in the List window to select those characters with mean value greater than 5.0 (you''ll need to choose "Greater Than" in the wand''s popup menu, available on the tool''s button), then go to the Character Matrix editor or the chart, select Copy from the Edit menu, and thus put into the clipboard a selected subset of the matrix or chart.^n^n-- select characters falling in one region of a scattergram and see where they fall in a second scattergram ';
+				setTitle Selecting_characters;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

@@ -1,0 +1,291 @@
+#NEXUS
+[written Sun Sep 21 12:47:29 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11
+
+	Fubonidia   11
+
+	Ibbinidibe  11
+
+	Snorolopa   1(0,1)
+
+	Quidnubia   00
+
+	Suinon      00
+
+	Zorabynyx   00
+
+	Huichoros   00
+
+	Jotinupa    00
+
+
+;
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Measurements;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 Growth_rate,
+		2 Q_index ; 
+	MATRIX
+	Aus          3.386483113203565 0.22275735218545334
+	Fubonidia    0.9597444210869673 0.7238288647096488
+	Ibbinidibe   0.47313918478048966 0.5532366339375796
+	Snorolopa    1.7895302029430193 2.6011148989978747
+	Quidnubia    2.457244946267127 2.0876469753892044
+	Suinon       0.8340376426612434 -0.6995203993072017
+	Zorabynyx    1.194800658526412 1.2182074121461475
+	Huichoros    1.794841197250114 0.14619510866889623
+	Jotinupa     1.8506946108999534 0.6447107189708169
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+	TREE Taxonomy = (((1:3.1,5:1.0,4:2.0)Snorolopini:0.478265,(7:1.0,6:1.923075,2:2.0)Fubonidiini:1.0)Fubonidiinae:1.0,(9:1.0,8:1.0,3:2.0)Jotinupinae:2.369235)Fubonidiidae:1.0;
+
+END;
+
+
+BEGIN TREES;
+	Title More_trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE Alphabetical_ladder = ((((((((1,2),8),3),9),5),4),6),7);
+
+END;
+
+
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =                                unord PolyTcount =                                MINSTEPS;
+	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = Structure_&_Color)  =  'Mk1 (est.)':  1 -  2;
+ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  2;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 4129971366;
+			setID 1 2821694224149906583;
+			checksum 1 4236368331;
+		endTell;
+		newAssistant  #mesquite.charts.TreeValuesChart.TreeValuesChart;
+		tell It;
+			suspendCalculations;
+			setTaxa #8476784597994698209;
+			setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
+			tell It;
+				setTreeBlock 1;
+				toggleUseWeights off;
+			endTell;
+			setCalculator  #mesquite.parsimony.Treelength.Treelength;
+			tell It;
+				getEmployee #mesquite.parsimony.TreelengthForMatrix.TreelengthForMatrix;
+				tell It;
+					getEmployee #mesquite.parsimony.ParsCharSteps.ParsCharSteps;
+					tell It;
+						setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
+						getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
+						tell It;
+							toggleWeight off;
+						endTell;
+					endTell;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
+				tell It;
+					setCharacterSource #mesquite.charMatrices.StoredMatrices.StoredMatrices;
+					tell It;
+						setDataSet #2821694224149906583;
+					endTell;
+				endTell;
+			endTell;
+			getCharter #mesquite.charts.ItemValuesChart.ItemValuesChart;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 476 332;
+					setLocation 5 13;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					itemsByValues;
+					setChartType  #mesquite.charts.Histogram.Histogram;
+				tell It;
+					showAverageToggle on;
+					showRawToggle off;
+					setNumberIntervals 20;
+					setIntervalSize 1.0;
+					setMovingWindowSize 5.0 1.0;
+					setMode 0;
+				endTell;
+					toggleColorItems off;
+					setNumberItems 6;
+				endTell;
+				enableCalculations;
+			endTell;
+			setChartVisible;
+			doCounts;
+			resumeCalculations;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.charts.TreeValuesChart.TreeValuesChart;
+		tell It;
+			suspendCalculations;
+			setTaxa #8476784597994698209;
+			setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
+			tell It;
+				setTreeSimulator  #mesquite.trees.EqualRatesMarkovSp.EqualRatesMarkovSp;
+				tell It;
+					setTime 100.0;
+				endTell;
+				setSeed 983501043822;
+			endTell;
+			setCalculator  #mesquite.parsimony.Treelength.Treelength;
+			tell It;
+				getEmployee #mesquite.parsimony.TreelengthForMatrix.TreelengthForMatrix;
+				tell It;
+					getEmployee #mesquite.parsimony.ParsCharSteps.ParsCharSteps;
+					tell It;
+						setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
+						getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
+						tell It;
+							toggleWeight off;
+						endTell;
+					endTell;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
+				tell It;
+					setCharacterSource #mesquite.charMatrices.StoredMatrices.StoredMatrices;
+					tell It;
+						setDataSet #2821694224149906583;
+					endTell;
+				endTell;
+			endTell;
+			getCharter #mesquite.charts.ItemValuesChart.ItemValuesChart;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 424 331;
+					setLocation 497 13;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					itemsByValues;
+					setChartType  #mesquite.charts.Histogram.Histogram;
+				tell It;
+					showAverageToggle on;
+					showRawToggle off;
+					setNumberIntervals 50;
+					setIntervalSize 1.0;
+					setMovingWindowSize 5.0 1.0;
+					setMode 4;
+				endTell;
+					toggleColorItems off;
+					setNumberItems 1000;
+				endTell;
+				enableCalculations;
+			endTell;
+			setChartVisible;
+			doCounts;
+			resumeCalculations;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '13-instability.nex';
+			setPrevFileName '11-treeSources.nex';
+			getWindow;
+			tell It;
+					setSize 644 204;
+					setLocation 9 465;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'This file shows that alternative sources of trees can be used in various contexts, including charts.  Shown above are two simple histograms showing the numbers of trees with different treelengths (parsimony scores, using a continuous-valued data matrix).  Above left is a window with Stored Trees as the source of trees; above right is a window with Simulated Trees, using a uniform speciation model, as a source of trees.  ^n^nTreelength is not the only statistic that can be so charted over trees from various sources; any statistic concerning trees that is available through a module can be charted in this way.^n^n';
+				setTitle Tree_sources;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

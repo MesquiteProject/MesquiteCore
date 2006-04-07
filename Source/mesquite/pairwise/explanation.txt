@@ -1,0 +1,1 @@
+Pairwise Comparisons for Character CorrelationFinds phylogenetically independent pairs of taxa and compares traits in two characters to explore character correlation (see W. Maddison 2000, Journal of Theoretical Biology, 202: 195-204)

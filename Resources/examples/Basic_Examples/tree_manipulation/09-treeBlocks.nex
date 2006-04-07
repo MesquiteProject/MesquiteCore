@@ -1,0 +1,221 @@
+#NEXUS
+[written Sun Sep 21 12:46:55 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11
+
+	Fubonidia   11
+
+	Ibbinidibe  11
+
+	Snorolopa   1(0,1)
+
+	Quidnubia   00
+
+	Suinon      00
+
+	Zorabynyx   00
+
+	Huichoros   00
+
+	Jotinupa    00
+
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+	TREE Taxonomy = (((1:3.1,5:1.0,4:2.0)Snorolopini:0.478265,(7:1.0,6:1.923075,2:2.0)Fubonidiini:1.0)Fubonidiinae:1.0,(9:1.0,8:1.0,3:2.0)Jotinupinae:2.369235)Fubonidiidae:1.0;
+
+END;
+
+
+BEGIN TREES;
+	Title More_trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE Alphabetical_ladder = ((((((((1,2),8),3),9),5),4),6),7);
+
+END;
+
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
+	TYPESET * UNTITLED   =  unord:  1 -  2;
+TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.trees.ManageTrees.ManageTrees;
+		tell It;
+			showTreeBlocks  #mesquite.lists.TreeblockList.TreeblockList;
+			tell It;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.TreeblocksListNumber.TreeblocksListNumber;
+					newAssistant  #mesquite.lists.TreeblocksListTaxa.TreeblocksListTaxa;
+					setSize 428 136;
+					setLocation 6 398;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 4129971366;
+		endTell;
+		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
+		tell It;
+			makeTreeWindow #8476784597994698209  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
+			tell It;
+				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
+				tell It;
+					setTreeBlock 1;
+					toggleUseWeights off;
+				endTell;
+				setAssignedID 1284.967851092611.9112317805264017777;
+				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				tell It;
+					suppress;
+					setTreeDrawer  #mesquite.trees.DiagonalDrawTree.DiagonalDrawTree;
+					tell It;
+						setEdgeWidth 12;
+						orientUp;
+						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						tell It;
+							stretchToggle off;
+							branchLengthsToggle off;
+							toggleScale on;
+							toggleCenter off;
+							toggleEven off;
+							namesAngle ?;
+						endTell;
+					endTell;
+					setBackground White;
+					setBranchColor Black;
+					desuppress;
+					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
+					tell It;
+						setColor Black;
+						toggleColorPartition on;
+						toggleNodeLabels on;
+						toggleShowNames on;
+					endTell;
+				endTell;
+				getTreeWindow;
+				tell It;
+					setSize 410 257;
+					setLocation 7 5;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTreeNumber 1;
+					toggleSizeToFit on;
+					toggleTextOnTree off;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
+				tell It;
+					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Dark Gray;
+					removeColor on;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '10-externalTrees.nex';
+			setPrevFileName '08-listOfTrees.nex';
+			getWindow;
+			tell It;
+					setSize 502 550;
+					setLocation 442 31;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'In this file a second tree block has been created, and so now there are two places in which trees can be stored.  The two tree blocks are listed in the Tree blocks list window shown above.  To create a new tree block in which to store trees, choose New Empty Block of Trees... from the Taxa&Trees menu.  You''ll be asked to give it a name.^n^nIf you have more than one tree block in the file and you ask to store a tree in the Tree Window using the Store Tree... menu item, you will be asked first in which tree block you''d like to store the tree.  Here, a tree named "Alphabetical ladder" has been stored in the second tree block.^n^nNow that you have more than one tree block in the file, there appear menu items to choose among them in various contexts in which stored trees are used.  For instance, the tree window above is currently using stored trees (as opposed to simulated trees, for instance).  If you go to the Tree menu of the Tree Window, you''ll see a Tree Block submenu that allows you to choose what tree block is being used by the Tree window.  This Tree Block submenu will appear only if stored trees are being shown by the Tree window.^n^nNOTE 1: if you''ve edited the tree in the tree window, the tree shown may be a temporary tree, as would be indicated the bar beneath the tree having a black diamond in front of the description.  If such a tree is in the tree window, and you switch to another tree block, you may be confused as to why the tree doesn''t change to one in the other tree block.  The reason is that Mesquite leaves your recently edited tree showing in case you still want to store it or work with it.  However, if you hit the blue button or the blue scroll arrows in the tool palette, the temporary tree will go away and you will be shown trees stored in the recently requested tree block.^n^nNOTE 2: the temporary trees shown in the tree window if you''ve recently edited the tree are not saved in a tree block in the file when you save the file to disk unless you explicitly store the tree there beforehand.  However, these temporary trees are stored in the file, so that when you save and later reopen the file the tree window will appear with the same temporary tree.  The temporary tree is stored in a special place in the data file that only Mesquite currently knows how to read, and so the temporary tree will not be accessible to other NEXUS-reading programs like MacClade and PAUP.';
+				setTitle Tree_blocks;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

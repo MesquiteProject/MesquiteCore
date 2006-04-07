@@ -1,0 +1,33 @@
+#NEXUS
+[written Sat Aug 13 20:25:17 PDT 2005 by Mesquite  version 1.06beta (build g86) at Pellenes.local/10.0.1.2]
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '12-fileFormats.nex';
+			setPrevFileName '10-scripting.nex';
+			getWindow;
+			tell It;
+					setSize 495 439;
+					setLocation 316 22;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'When you create a new file using the New menu item in the  File menu, Mesquite offers the chance to create a new block of taxa to go in the file.  It does this under the assumption that analyses will probably depend on a block of taxa being available.  This particular file doesn''t have any blocks of taxa, because its purpose is only to give you this message!^n^nYou can also create a new block of taxa after you already have a file open.  Mesquite allows more than one block of taxa to exist in a data file (for instance, one block for species, another for their contained gene sequences).^n^nTo create a new block of taxa, go to the Taxa&Trees menu.  (Terminal taxa are the leaves of the tree.)  Choose New Block of Taxa; a dialog box will appear in which you can enter the name of the block and the number of taxa.  Once you have the taxa made, a Taxa List window will appear.  You can edit the names of the taxa there.';
+				setTitle New_Files;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

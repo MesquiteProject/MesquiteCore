@@ -1,0 +1,1 @@
+Introduction to JAMAThis package contains no substantive modules.  It has a single module that serves to introduce to the user the JAMA package of matrix manipulation routines.  If this package is deactivated, the JAMA package is NOT deactivated.

@@ -1,0 +1,10 @@
+#MESQUITEINIT BATCHFILE 1
+ name = GammaInvar_Model_Test
+ explanation = 'This template produces a batch file to request PAUP to quickly find a tree using neighbor joining.  It asks PAUP to calculate the likelihood value for the tree, estimating any parameters specified in the snippet''s lset command, and then write the results to a score file.  '
+ start1 = '#NEXUS^nbegin paup;^n	log file=''<name>.log'';^n	set autoclose nowarnreset tcompress torder=right;^n	dset distance=hky85;^n	lset basefreq=empirical nst=1 pinvar=estimate rates=gamma shape=estimate ncat=4;'
+ repeat1 = '	execute ''<name><number>.nex'';^n	nj;^n 	lscore 1/scorefile=''<name>Score.scr'' append;^n'
+ end1 = '	log stop;^nend;'
+ batchFileName1 = PaupCommands.nex
+ start2 = 'MesquiteInstructions^nnumVariables = 2^nnumFiles = 1^nfile1 = ''itemsPerRecord=8 v1=7 v2=8''^nrecordLabel = ''Replicates''^nlabel1 = ''proportion invariable''^nlabel2 = ''gamma shape''^n'
+ batchFileName2 = MesquiteInstructions
+ matrixExportFormat =  NEXUS_file

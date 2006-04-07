@@ -1,0 +1,117 @@
+#NEXUS
+[written Sun Sep 21 19:12:51 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Species;
+	DIMENSIONS NTAX=3;
+	TAXLABELS
+		speciesA speciesB speciesC 
+	;
+
+END;
+
+
+
+BEGIN TAXA;
+	TITLE Genes;
+	DIMENSIONS NTAX=5;
+	TAXLABELS
+		geneA1 geneA2 geneB geneC1 geneC2 
+	;
+
+END;
+
+
+BEGIN TaxaAssociation;
+TITLE how_genes_fit_into_species;
+TAXA Species ,  Genes;
+ASSOCIATES 
+
+	speciesA /  geneA1 geneA2 , 
+	speciesB /  geneB , 
+	speciesC /  geneC1 geneC2
+
+;
+
+END;
+
+
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'This file was created as follows.  First, I chose "New" from the File menu.  I indicated the file name in the file dialog box.  Then, when the dialog box came up asking me about a set of taxa, I entered the name ("Species"), and how many taxa (3).  In the taxa list window (e.g., at left), I renamed the taxa (species A, B, C). Next, I made the second set of taxa (e.g., "Genes") by selecting the "New block of taxa" menu item in the Taxa&Trees menu.^n^nNext, I began to indicate how the one set of taxa fits into the other set of taxa.  To do this, I created an "Association" block in the data file (there isn''t a fancy editor for this yet, just a crude one).  I did this by selecting "New Association" in the Taxa&Trees menu.  I was asked to identify the two sets of taxa to be associated, and presented with a simple text editor in a dialog box. ^n^nI then finished writing the "ASSOCIATES" command.  To see an example, go to the Association block window and select "Show example ASSOCIATION block" from the Taxa&Trees menu.  For instance, with these data a possible ASSOCIATES command would be:^n^nASSOCIATES ^n	speciesA /  geneA1 geneA2 , ^n	speciesB /  geneB, ^n	speciesC /  geneC1 geneC2 , ^n;^n^nI entered this.  Then, I closed the Association block window.  This caused the block to be processed.  ^n^nIf you want to see the Association block editor, choose Edit Association from the  Taxa&Trees menu.^n^nTo see the next step in analyzing gene trees within species trees, hit the button in the "Go To File" window.';
+
+
+
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 2038936534183152982;
+			setID 1 2451688679550742169;
+			showTaxa #2038936534183152982 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #2038936534183152982;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 201 199;
+					setLocation 9 22;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+			showTaxa #2451688679550742169 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #2451688679550742169;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 201 204;
+					setLocation 9 239;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '03-associationsHow3.nex';
+			setPrevFileName '02-associationsHow2.nex';
+			getWindow;
+			tell It;
+					setSize 541 492;
+					setLocation 242 31;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'The second method to analyze gene copies within species or populations is to manage TaxaAssociation blocks by hand. ^n^nThis was the method I used to create this file.  First, I chose "New" from the File menu.  I indicated the file name in the file dialog box.  Then, when the dialog box came up asking me about a set of taxa, I entered the name ("Species"), and how many taxa (3).  In the taxa list window (e.g., at left), I renamed the taxa (species A, B, C). Next, I made the second set of taxa (e.g., "Genes") by selecting the "New set of taxa" menu item in the Taxa&Trees menu.^n^nNext, I began to indicate how the one set of taxa fits into the other set of taxa.  To do this, I created an "TaxaAssociation" block in the data file (there isn''t a fancy editor for this yet, just a crude one).  I did this by selecting "New Association" in the Taxa&Trees menu.  I was asked to identify the two sets of taxa to be associated (usually it''s easier to choose species first), and presented with a simple text editor in a dialog box. ^n^nThis text editor starts off with an example TaxaAssociation block, which is complete but incorrect in that all of the genes are placed under the first species.  I edit this text following the model, placing each gene with its correct species.  Each row in the ASSOCIATES command needs to end in a comma except for the last.  For instance, with these data a possible ASSOCIATES command would be:^n^nASSOCIATES ^n	speciesA /  geneA1 geneA2 , ^n	speciesB /  geneB, ^n	speciesC /  geneC1 geneC2 ^n;^n^nI entered this.  Then, I closed the Association block window.  This caused the block to be processed.  ^n^nIf you want to see the Association block editor, choose Edit Association from the  Taxa&Trees menu.^n^nTo see the next step in analyzing gene trees within species trees, hit the button "Next".';
+				setTitle 'Method 2: Association blocks';
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

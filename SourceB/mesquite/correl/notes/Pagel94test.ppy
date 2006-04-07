@@ -1,0 +1,29 @@
+#Translated to Pagel format for Discrete from project with home file Pagel94test.nex
+# Block of taxa: Hominoidea
+# First Character: Single/Multi male of data matrix SS/oestrous
+# Second Character: oestrous swellings of data matrix SS/oestrous
+# Tree: Pagel Test Tree+
+t1,10,29.0,0,0
+t2,9,12.0,1,1
+t3,9,5.0,1,1
+t4,11,20.0,0,0
+t5,12,22.0,1,0
+t6,13,3.0,0,0
+t7,13,2.0,0,0
+t8,15,69.0,0,0
+9,10,15.0
+10,11,11.0
+11,12,10.0
+12,14,18.0
+13,14,28.0
+14,15,1.0
+
+
+#Table of equivalencies of nodes with Mesquite's node numbering system
+# node 9 = Mesquite node 8
+# node 10 = Mesquite node 6
+# node 11 = Mesquite node 5
+# node 12 = Mesquite node 4
+# node 13 = Mesquite node 13
+# node 14 = Mesquite node 3
+# node 15 = Mesquite node 2

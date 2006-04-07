@@ -1,0 +1,128 @@
+#NEXUS
+[written Sat Aug 13 21:49:25 PDT 2005 by Mesquite  version 1.06beta (build g86) at Pellenes.local/10.0.1.2]
+
+BEGIN TAXA;
+	TITLE species;
+	DIMENSIONS NTAX=3;
+	TAXLABELS
+		A B C 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Little_data_matrix;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = CONTINUOUS ITEMS = (mean variance ) ;
+	MATRIX
+	A   (0.0 1.1)
+	B   (1.0 2.2)
+	C   (2.0 3.3)
+
+;
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  Squared:  1;
+TYPESET Current_Parsimony_Models   =  Linear:  1;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  Brownian_default:  1;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 4833122407699725302;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 6095372519071501230;
+			checksum 0 3701101314;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #6095372519071501230 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					getTable;
+					tell It;
+						rowNamesWidth 201;
+					endTell;
+					setSize 492 235;
+					setLocation 25 22;
+					setFont SanSerif;
+					setFontSize 14;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleSeparateLines off;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					setColumnWidth 66;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '14-partitions.nex';
+			setPrevFileName '12-continuous.nex';
+			getWindow;
+			tell It;
+					setSize 323 312;
+					setLocation 560 22;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'Continuous matrices in Mesquite are allowed to be three dimensional; that is, the matrix can be taxon X character X item, where the items might be mean, variance, sample size (for example).  If there is more than one item, each cell in the matrix would show more than one number.  ^n^nThis little file shows cells with two items each, a mean and a variance.  (The names of the items are shown toward the lower left of the data window).^n^nTo add, remove or rename items from the entire matrix, use the menu items under the Utilities submenu in the Matrix menu.^n^n(*Warning*: support for multiple items is minimal at present, and most modules just use the first item in their calculations.)';
+				setTitle Items;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

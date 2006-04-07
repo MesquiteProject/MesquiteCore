@@ -1,0 +1,204 @@
+#NEXUS
+[written Sun Sep 21 12:26:51 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS NCHAR=3;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11?
+
+	Fubonidia   11?
+
+	Ibbinidibe  11?
+
+	Snorolopa   1(0,1)?
+
+	Quidnubia   00?
+
+	Suinon      00?
+
+	Zorabynyx   00?
+
+	Huichoros   00?
+
+	Jotinupa    00?
+
+
+;
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Behavior;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2";
+	CHARSTATELABELS 
+		1 attitude /  friendly hostile dangerous ; 
+	MATRIX
+	Aus         0
+
+	Fubonidia   0
+
+	Ibbinidibe  0
+
+	Snorolopa   1
+
+	Quidnubia   2
+
+	Suinon      2
+
+	Zorabynyx   1
+
+	Huichoros   0
+
+	Jotinupa    0
+
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+
+END;
+
+
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  3;
+TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  3;
+TYPESET * UNTITLED  (CHARACTERS = Behavior)  =  unord:  1;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = Structure_&_Color)  =  'Mk1 (est.)':  1 -  3;
+ProbModelSet * UNTITLED  (CHARACTERS = Behavior)  =  'Mk1 (est.)':  1;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 689268197;
+			setID 1 7262648673951950406;
+			checksum 1 1391987657;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #974864624972105434 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 427 268;
+					setLocation 12 26;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 52;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+			endTell;
+			showDataWindow #7262648673951950406 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 434 261;
+					setLocation 10 394;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '10-names.nex';
+			setPrevFileName '08-addDelete.nex';
+			getWindow;
+			tell It;
+					setSize 465 630;
+					setLocation 449 26;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'Mesquite allows copying and pasting of character data in an editor window like those to the right.  ^n^nIf you select all or a portion of the data matrix, and choose Copy from the Edit menu, then the data will be copied to the clipboard.  There are two ways to copy: a simple Copy that puts into the clipboard the underlying character state codes so that they can be pasted elsewhere in matrices, and a Copy Literal that copies the text in the table more exactly, for instance with character state names.  You can then paste the clipboard into other programs like text editors.^n^nThe data in the clipboard is represented as a table of tab-delimited text.^n^nWhen part or all of a matrix is copied into the clipboard, you can paste it into a Character Matrix editor.  How this is done varies depending on what is in the clipboard, and whether any part of the matrix into which you are pasting is selected.  The possibilities are:^n^n-- if the contents of the clipboard represent the same number of rows and columns as the area of the matrix currently selected, the clipboard is pasted into those cells.  Note: the clipboard and area pasted don''t have to have the same number of columns in each row (i.e., they don''t need to be rectangular).  That is, the clipboard can have two cells from one row, and three cells from the next row.^n^n-- if the clipboard represents a different number of rows and columns as the selected area of the matrix, but each row in the clipboard has the same number of columns (i.e. the clipboard''s contents are rectangular), then Mesquite gives a warning and asks if you want to attempt to select a portion of the shape being pasted.  This may help you find the correct size of the selection to use, after which you can attempt again to paste.^n^n-- if the clipboard represents a different number of rows and columns as the selected area, and if the clipboard isn''t rectangular, Mesquite will warn you that you can''t paste.^n^nTry copying the character from the matrix below, then selecting the third (blank) character in the matrix above, and pasting.  You will notice that the underlying coded data are pasted, but not the character state names.^n^nTry copying (via Copy or Copy Literal) from Mesquite and pasting into other programs.  You should be able to copy a tab-delimited table and paste it into a Mesquite data editor, but you''ll have to be careful about the number of columns and rows.';
+				setTitle Copy_&_Paste;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

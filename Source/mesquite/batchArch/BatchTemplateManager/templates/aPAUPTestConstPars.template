@@ -1,0 +1,10 @@
+#MESQUITEINIT BATCHFILE 1
+ name = 'PAUPConstraintTestParsimony'
+ explanation = 'This template produces a batch file to request PAUP to find the most parsimonious trees that match a constraint, and the most parsimonious ones unconstrained, for each matrix.  It asks PAUP to write the results to a score file.  '
+ start1 = '#NEXUS^nbegin paup;^n	log file=''<name>.log'';^n	set autoclose nowarnreset tcompress torder=right;^n	defaults hs <snippet>search options</snippet>;'
+ repeat1 = '	execute ''<name><number>.nex'';^n	set criterion=parsimony;^n	constraint theConstraint= <tree>;^n	hs enforce noconverse constraint=theConstraint;^n 	pscore 1/scorefile=''<name>Score.scr'' append;^n	hs noenforce;^n	pscore 1/scorefile=''<name>Score.scr'' append;'
+ end1 = '	log stop;^nend;'
+ batchFileName1 = PaupCommands.nex
+ start2 = 'MesquiteInstructions^nnumVariables = 2^nnumFiles = 1^nfile1 = ''itemsPerRecord=8 v1=4 v2=8''^nrecordLabel = ''Replicates''^nformula = ''v1-v2''^nlabel1 = ''Constrained treelength''^nlabel2 = ''Unconstrained treelength'''
+ batchFileName2 = MesquiteInstructions
+ matrixExportFormat =  NEXUS_file

@@ -1,0 +1,1 @@
+Genesis Package for Stochastic Models of Molecular EvolutionProvides simulations and will provide likelihood calculations for stochastic models (e.g., HKY85, GTR) of molecular sequence evolution.

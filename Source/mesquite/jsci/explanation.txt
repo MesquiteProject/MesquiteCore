@@ -1,0 +1,1 @@
+JSCI Package for matrix and statistical routinesIncorporates the JSci package by Hale & van Kooten.  Required by some other packages, such as the Genesis package for molecular evolution.

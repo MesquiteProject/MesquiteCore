@@ -1,0 +1,1 @@
+Introduction to PALThis package contains no substantive modules.  It has a single module that serves to introduce to the user the PAL package (Drummond & Strimmer) of molecular phylogenetic & population genetic routines.  If this package is deactivated, the PAL package is NOT deactivated.

@@ -1,0 +1,1 @@
+Tree Search PackageProvides a slow but generalized search engine for optimal trees.  Uses a simple heuristic search (addition sequence plus NNI or SPR rearrangments) to find trees optimal according to whatever criteria can be supplied by other modules.

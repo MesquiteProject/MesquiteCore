@@ -1,0 +1,1 @@
+Charting PackageOne of the core Mesquite packages.  Provides basic charting facilities (histograms, scatter plots) and some particular charts (histograms and scattergrams for trees, characters, taxa and other objects).

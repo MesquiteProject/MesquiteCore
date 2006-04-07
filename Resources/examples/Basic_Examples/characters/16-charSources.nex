@@ -1,0 +1,207 @@
+#NEXUS
+[written Sun Sep 21 12:28:22 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE species;
+	DIMENSIONS NTAX=16;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  measurements;
+	DIMENSIONS NCHAR=5;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 length,
+		2 width,
+		3 speed,
+		4 temperature,
+		5 personality ; 
+	MATRIX
+	Aus            9.367 5.022 2.763 40.57 1.723
+	Fubonidia      8.793 3.244 4.664 38.81 0.296
+	Ibbinidibe     8.576 6.245 2.528 38.5 -1.0239
+	Snorolopa      11.54 8.718 5.862 37.54 -2.039
+	Quidnubia      9.977 6.082 5.984 38.32 0.7256
+	Suinon         9.381 5.468 4.398 39.48 1.213
+	Zorabynyx      8.162 5.782 4.894 39.69 0.8212
+	Huichoros      8.676 4.86 4.186 39.61 0.5508
+	Jotinupa       9.356 6.75 4.649 39.01 0.795
+	Abnyora        8.107 5.989 2.975 38.13 -0.0686
+	Syphorchus     9.692 7.227 5.747 39.52 -0.8719
+	Lissaminopus   8.902 6.05 4.337 37.5 -0.9571
+	Chaelodonter   9.055 6.575 4.896 40.48 1.1
+	Chloroxyxops   10.11 4.199 3.327 38.94 -0.1349
+	Mincinia       10.2 3.975 4.623 37.1 -0.4575
+	Phoronibium    7.604 5.438 2.809 37.09 -2.129
+
+;
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  More_measurements;
+	DIMENSIONS NCHAR=3;
+	FORMAT DATATYPE = CONTINUOUS;
+	MATRIX
+	Aus            -0.44835771207670727 -0.3797290583888003 -0.8473437479546313
+	Fubonidia      1.8787474634121184 -1.6628411407927441 1.3305339069030753
+	Ibbinidibe     0.5960784267767305 -0.19626241735628674 2.120545092056362
+	Snorolopa      0.6376501422042263 -1.3339999769107858 -0.7374513502737137
+	Quidnubia      -0.7856631590858153 -0.2438980692080539 -0.06469390647661954
+	Suinon         -0.7979581461440539 1.8093435335289423 0.23749305816291386
+	Zorabynyx      1.958420391026524 -1.960140523438535 -0.41812351593109226
+	Huichoros      -0.04134351636816476 0.4570514137757342 -0.27091355283989355
+	Jotinupa       -0.6470454958089034 -0.6365393791704902 -0.7122495953512764
+	Abnyora        -0.5793819331826592 -0.23794091386454264 -0.47671347515466217
+	Syphorchus     0.38070937183553694 1.1168852079263176 0.4306475583795559
+	Lissaminopus   0.3341728298684051 -0.5380897066110796 0.11696665016772648
+	Chaelodonter   -0.8883060603845221 -1.6923548317466945 1.6261366769333483
+	Chloroxyxops   0.4241922926500759 -0.28244180611184677 0.3612897707209503
+	Mincinia       1.5009366517968572 0.21515106608395454 1.855329533875133
+	Phoronibium    0.28270802572170994 -0.908159396181896 -1.6021543652220862
+
+;
+
+END;
+
+BEGIN LABELS;
+	CHARGROUPLABEL Morphology COLOR = (RGB 0.458823551 0.13725490 1.0) ;
+	CHARGROUPLABEL Physiology_&_Behavior COLOR = (RGB 0.749019649 1.0 0.031372553) ;
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED  (CHARACTERS = measurements)  =  Squared:  1 -  5;
+TYPESET * UNTITLED  (CHARACTERS = More_measurements)  =  Squared:  1 -  3;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = measurements)  =  Brownian_default:  1 -  5;
+ProbModelSet * UNTITLED  (CHARACTERS = More_measurements)  =  Brownian_default:  1 -  3;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 911995890865637530;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 4132708679229515777;
+			checksum 0 1628742248;
+			setID 1 7825336589848395740;
+			checksum 1 2246663599;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #4132708679229515777 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 442 351;
+					setLocation 6 11;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					setColumnWidth 66;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.charts.TaxaScattergram.TaxaScattergram;
+		tell It;
+			setTaxonSource  #mesquite.minimal.StoredTaxa.StoredTaxa;
+			tell It;
+				setTaxa #911995890865637530;
+			endTell;
+			setTaxa #911995890865637530;
+			axesSame;
+			setValues  #mesquite.cont.ContinuousStatesT.ContinuousStatesT;
+			tell It;
+				getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+				tell It;
+					setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+					tell It;
+						setDataSet #4132708679229515777;
+					endTell;
+				endTell;
+				setCharacter 5;
+				setItem 0;
+			endTell;
+			showNamesToggle on;
+			getCharter #mesquite.charts.ItemsBiplot.ItemsBiplot;
+			tell It;
+				getWindow;
+				tell It;
+					setX 4;
+					setY 5;
+					setSize 436 433;
+					setLocation 480 11;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				enableCalculations;
+				getEmployee #mesquite.charts.Scattergram.Scattergram;
+				tell It;
+					markerSize 10;
+					toggleJoin off;
+					toggleShowDots on;
+					movingWindowSize 1;
+					sumByBlocks off;
+				endTell;
+			endTell;
+			setChartVisible;
+			doCounts;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '17-charSources.nex';
+			setPrevFileName '15-selecting.nex';
+			getWindow;
+			tell It;
+					setSize 458 260;
+					setLocation 7 440;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'The previous examples focused on character matrices that are stored in the file.  When you save the file to disk, these matrices will be saved in the file.  These "stored matrices" are indicated in List of Character Matrices (available in the Characters menu) and in the Projects & Files window.^n^nStored matrices and their contained characters are used for calculations throughout Mesquite.  At right for example is a plot of the value in character 5 in a taxon versus the value of character 4, where characters 5 and 4 are taken from the data matrix shown above.^n';
+				setTitle Stored_matrices;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

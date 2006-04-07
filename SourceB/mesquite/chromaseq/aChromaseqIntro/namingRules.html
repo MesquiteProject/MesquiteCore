@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd"><html><!-- InstanceBegin template="/Templates/standard.dwt" codeOutsideHTMLIsLocked="false" --><head><meta http-equiv="Content-Type" content="text/html; charset="><!-- InstanceBeginEditable name="doctitle" -->
+<title>Chromatogram File Names</title>
+<!-- InstanceEndEditable --><link rel="stylesheet" href="styles/mesquitePackage.css" type="text/css"><!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 12px;
+}
+-->
+</style>
+<!-- InstanceEndEditable --></head><body><div id="masthead">  <div id="banner"><img src="splash.gif" width="164" height="64"></div>  <div id="mainTitle"><font id="packageName"><b>Chromaseq</b></font><BR><font id="version">Test Version 0.9<br>30 October 2005</font><BR>         David R. Maddison and Wayne P. Maddison</div>  <div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Chromatogram File Naming Rules <!-- InstanceEndEditable --></div> </div><div><!-- end masthead --><div id="content"><!-- InstanceBeginEditable name="content" -->
+  <p>The file names of chromatograms are key in that they must contain both a sample code as well as a primer name. The names must follow the sample basic structure.</p>
+  <p>For example, in the following files, the sample code is the text that immediately follows the string of characters &quot;DNA&quot;, up until the first underscore (&quot;_&quot;) is encountered. The first two files are from sample 0446, the next two from 0678, and the last two from 0446. </p>
+  <p class="style1">F12_F12DNA0446-_wg578F_273063.ab1<br>
+    F12_F12DNA0446-_wgABR_273159.ab1<br>
+    51_DNA0678_WG2_27469.CRO<br>
+    50_DNA0678_WG1_27468.CRO<br>
+    A11_A11DNA0446_D3_340852.ab1<br>
+    A11_A11DNA0446_D1_340756.ab1</p>
+  <p>(The first two files have an extra hyphen added accidentally to the end of the sample code; you can ask such extra characters to be stripped from the code.) </p>
+  <p>The primers follow the sample codes in these names, and are preceded by and followed by underscores. Thus, six primers are represented, wg578F, wgABR, wg2, wg1, D3, and D1.</p>
+  <p>To define a rule that specifies how the file names are structured, you will use the following dialog box: </p>
+  <p align="center"><img src="images/nameRuleEditing.jpg" alt="Name Rules Dialog Box" width="255" height="299"></p>
+  <p>The naming rule shown in the above dialog will work on the sequences mentioned above.</p>
+  <p>If you wish some characters to be automatically removed from the sample code, then enter these characters in the &quot;Characters to be removed from sample code&quot; box.  In the above example, hyphens are to be removed.</p>
+  <p>In some cases, the sample code name consists of two parts, a main sample code, and a suffix. For example, the following files are chromatograms from four clones (p, q, t, and u) of sample 1794. </p>
+  <p class="style1">
+  	C03_C03CL1794.p_B1490_287986.ab1<br>
+  	C03_C03CL1794.p_Pat_288082.ab1<br>
+  	C04_C04CL1794.q_B1490_287994.ab1<br>
+  	C04_C04CL1794.q_Pat_288090.ab1<br>
+  	C05_C05CL1794.t_B1490_288002.ab1<br>
+  	C05_C05CL1794.t_Pat_288098.ab1<br>
+  	C06_C06CL1794.u_B1490_288010.ab1<br>
+  	C06_C06CL1794.u_Pat_288106.ab1</p>
+  <p>The sample code thus consists of two parts , &quot;1794&quot;, and the suffix p, q, t, or u. The string before the sample code suffix is &quot;.&quot;. If Mesquite encounters in the sample code a string that matches that designated in &quot;string before sample code suffix&quot;, then it will split the sample code name in two, and consider the main sample code to be the first part. </p>
+  <p>If you have asked to have the sample code translated into full sample names, then Mesquite will use just the part before the suffix (if there is one) as the code to look up in the sample names file, but it will append the suffix on to the end of the full sample name. For example, for these two files:</p>
+  <p><span class="style1">C05_C05CL1794.t_B1490_288002.ab1<br>
+C05_C05CL1794.t_Pat_288098.ab1<br>
+  </span></p>
+  <p>the sequence produced will be a COI sequence (primers Pat and B1490), named &quot;Bemb integrum IL 1490 t&quot;, as &quot;Bemb integrum IL 1490&quot; is the sample name listed in the sample names file. </p>
+  <p>Some of the entries can be blanks. For example, in the following file names, the sample code is at the very start of the file name, and thus the string before sample code would be blank: </p>
+  <p class="style1">d124#050302-12261.ab1<br>
+    d096#041117-12261.ab1<br>
+    d124#050302-13398.ab1<br>
+    d096#041117-13398.ab1 </p>
+  <p>The string after the sample code is &quot;#&quot;, the string before the primer name is &quot;-&quot;, and the string after the primer name is &quot;.&quot;. </p>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+<!-- InstanceEndEditable --></div><!--end content --><div id="navBar">  <div id="sectionLinks">    <ul>      <li><a href="index.html">Home</a></li>      <li><a href="overview.html">Overview</a></li>      <li><a href="quickstart.html">Quickstart</a></li>	  <li><a href="phredphrap.html">Phred / Phrap with Chromaseq</a></li>	  <ul id="subUL">	  	<li><a href="installingPP.html">Installing Phred &amp; Phrap </a></li>  		<li><a href="primers.html">Primer File</a></li>  		<li><a href="sampleCode.html">Sample Codes &amp; Names File</a></li>  		<li><a href="runningPP.html">Running Phred/Phrap</a></li>	  	<li><a href="namingRules.html">Chromatogram File Naming Rules </a></li>		<li><a href="quality.html">Quality Scores</a></li>		<li><a href="postPhrap.html">Post-Phrap Options</a></li>	  </ul>      <li><a href="viewer.html">Chromatogram Viewer</a></li>  		<ul id="subUL">	  		<li><a href="navigation.html">Navigation</a></li>  			<li><a href="display.html">Display Options</a></li>  			<li><a href="callingBases.html">Calling Bases</a></li>		</ul>      <li><a href="otherPrograms.html">Sequencher &amp; Others </a></li>      <li><a href="acknowledgements.html">Acknowledgements</a></li>      <li><a href="citation.html">Citation</a></li>      <li><a href="faq.html">FAQs</a></li>      <li><a href="future.html">Future Directions</a></li>      <li style="margin-top: 20px;"><a href="download.html">Download</a></li>      <li><a href="sourceCode.html">Source Code</a></li>    </ul>	<p>&nbsp;</p>	<ul><li> <a href="http://mesquiteproject.org"  style="border: 0px;"><img src="images/mesquiteIcon.gif" alt="Mesquite Home" width="32" height="32"> Mesquite Home</a> </li>    </ul>  </div></div></div><div id="navBarExtension">&nbsp;</div><!--end navbar --><div id="siteInfo"> Copyright &copy; 2005 <a href="http://david.bembidion.org">David R. Maddison</a> and <a href="http://salticidae.org/wpm/home.html">Wayne P. Maddison</a> </div><br></body><!-- InstanceEnd --></html>

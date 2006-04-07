@@ -1,0 +1,119 @@
+#NEXUS
+[written Sun Sep 21 19:26:42 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Boxes;
+	DIMENSIONS NTAX=4;
+	TAXLABELS
+		Box_1 Box_2 Box_3 Box_4 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Landmark_positions;
+	DIMENSIONS NCHAR=4;
+	FORMAT DATATYPE = CONTINUOUS ITEMS = (x y ) ;
+	MATRIX
+	Box_1   (0.0 0.0) (0.0 1.0) (1.0 0.0) (1.0 1.0)
+	Box_2   (0.0 0.0) (0.0 1.0) (1.0 0.0) (1.0 1.0)
+	Box_3   (0.0 0.0) (0.0 1.0) (1.0 0.0) (0.8 0.8)
+	Box_4   (0.0 0.0) (0.0 1.0) (1.0 0.0) (1.0 1.0)
+
+;
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  Squared:  1 -  4;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  4;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 5420325524222062819;
+			showTaxa #5420325524222062819 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #5420325524222062819;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 307 185;
+					setLocation 20 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 4430408865877702767;
+			checksum 0 2803930463;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #4430408865877702767 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 538 290;
+					setLocation 350 4;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					setColumnWidth 72;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '20-landmarks.nex';
+			setPrevFileName '18-landmarks.nex';
+			getWindow;
+			tell It;
+					setSize 545 222;
+					setLocation 336 413;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'Here we''ve edited the matrix to place a series of (x,y) points in each cell.  Note that Box 1, 2 and 4 are simple boxes of landmarks; Box 3 has its corner punched in (0.8, 0.8 instead of 1.0, 1.0).  The format is "(x y)".^n^nRhetenor does not yet have analyses to adjust and scale points into alignment like Procrustes analyses, and so you''ll have to do that first, and enter the adjusted landmarks.^n';
+				setTitle 'Landmarks cont''d.';
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

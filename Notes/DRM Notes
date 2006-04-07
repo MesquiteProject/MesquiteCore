@@ -1,0 +1,80 @@
+David to do
+
+1.07 to fix:
+
+- condense names
+
+- Align 
+
+- get consensus trees in Mesquite
+
+- Distance
+
+******************************
+notes from Wayne:  
+--should we try to move taxon symbols menu items in Tree menu to Drawing menu? 
+--transparency not yet working with taxon names in matrix
+	transparency problems in matrix
+
+=======
+	
+Histogram
+	- make sure cumulative code fits for disabling/enabling
+	- bug with end point
+	
+Live charts with double buffering of drawing
+
+tolweb.org as CIPRes service (Danny)
+
+database connectivity in general
+
+view of live data matrix
+
+adding concentrated changes
+
+=======
+Chromaseq
+
+
+NECESSARY
+	18S example sequence panels don't line up
+	option to check for double peaks in read touched, and move these to matrix sequence
+	
+	fading of base letters for each read as an option
+	deselect if touched
+	dealing with selection outside the bounds of the matrix
+	
+	accumulating sequences into project
+	
+	store preferences
+	
+
+- ability to edit sequences OUTSIDE THE BOUNDS of sequence in the matrix.  
+	E.g., if you want to "untrim" the sequences and add 30 base calls to the start.
+- associated with this would be a "Move To Matrix" command that would let one move 
+	the calls made in a particular read to be the ones made in the matrix.  
+	This is needed because of the excess trimming of single-read regions made by Phred Phrap.
+
+LATER
+show codon positions
+select to end with keystroke
+magnify tool
+smoothing of peaks
+
+nice views for printing.
+amplification bar for each sequence
+
+
+
+
+=======
+
+Cartographer
+
+	- web tool doesn't work on symbols
+	- add map path and other details (including projection type) to XML file
+
+post version 1:
+	- coloring of list cells
+
+

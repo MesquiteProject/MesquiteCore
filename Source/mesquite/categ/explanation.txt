@@ -1,0 +1,1 @@
+Categorical character packageOne of the core Mesquite packages.  A package of fundamental modules and libraries for categorical character data.  These define key elements of categorical data and manage categorical data matrices.

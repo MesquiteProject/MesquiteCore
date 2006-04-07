@@ -1,0 +1,1 @@
+Taxa Associations PackageManages and does some basic calculations and graphics for associations between blocks of taxa (e.g., genes sequenced as one set of taxa; their containing species or populations as a second set of taxa).  Required for many of the Coalescence calculations.

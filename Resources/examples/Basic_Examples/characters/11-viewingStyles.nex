@@ -1,0 +1,317 @@
+#NEXUS
+[written Fri Apr 23 12:38:25 PDT 2004 by Mesquite  version 1.01+ (build e97)]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11
+
+	Fubonidia   11
+
+	Ibbinidibe  11
+
+	Snorolopa   1(0,1)
+
+	Quidnubia   00
+
+	Suinon      00
+
+	Zorabynyx   00
+
+	Huichoros   00
+
+	Jotinupa    00
+
+
+;
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  16epq_sequence;
+	DIMENSIONS NCHAR=19;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	Aus         AACATCTGGGAACCGTGCG
+
+	Fubonidia   C?CG--TGAGACCCGTCCG
+
+	Ibbinidibe  AAGATACGGGTACCGTCCG
+
+	Snorolopa   AACATACGGGAAGCGTCCG
+
+	Quidnubia   AAGGTACGGGAACCGTCCG
+
+	Suinon      AAAGTACGGGACCCGTGCG
+
+	Zorabynyx   AACGTACGGGAACCGTGCG
+
+	Huichoros   AAAGCACGGGAACCGTGCG
+
+	Jotinupa    AACGCACGAGAACCGTGCG
+
+
+;
+
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Measurements;
+	DIMENSIONS NCHAR=4;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 toe_length,
+		2 slime_index,
+		3 puncture_density,
+		4 sneakiness ; 
+	MATRIX
+	Aus          0.1217 2.298 0.0 1.0
+	Fubonidia    0.111 1.9 1.0 1.0
+	Ibbinidibe   0.102 4.2 2.0 0.35
+	Snorolopa    0.112 3.7 3.0 0.0
+	Quidnubia    0.137 1.3 4.0 0.87
+	Suinon       0.145 2.9 5.0 0.05
+	Zorabynyx    0.139 2.7 6.0 0.2
+	Huichoros    0.108 3.5 7.0 0.0
+	Jotinupa     0.156 2.298 8.0 0.0
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+
+END;
+
+
+BEGIN NOTES;
+	INTEGER   CHARACTERS = Structure_&_Color TAXON= 4 CHARACTER = 1 NAME = color INTEGER = 7;
+	TEXT   CHARACTERS = Structure_&_Color TAXON= 3 CHARACTER = 2 TEXT = 'At least, it looks red to me';
+
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =                 unord PolyTcount =                 MINSTEPS;
+	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
+TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = Structure_&_Color)  =  'Mk1 (est.)':  1 -  2;
+ProbModelSet * UNTITLED  (CHARACTERS = 16epq_sequence)  =  'Mk1 (est.)':  1 -  19;
+ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 4129971366;
+			setID 1 7634018259203763187;
+			checksum 1 1838322636;
+			setID 2 3243446279249302787;
+			checksum 2 2830407910;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #974864624972105434 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 533 265;
+					setLocation 468 9;
+					setFont Serif;
+					setFontSize 18;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.ColorByFootnote.ColorByFootnote;
+					colorText  #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Yellow;
+					removeColor off;
+				endTell;
+					setBackground Dark_Gray;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
+				getEmployee #mesquite.ornamental.CellPictures.CellPictures;
+				tell It;
+					toggleSeparate off;
+					toggleAA off;
+				endTell;
+			endTell;
+			showDataWindow #7634018259203763187 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 440 257;
+					setLocation 6 8;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
+				getEmployee #mesquite.molec.ColorByNumber.ColorByNumber;
+				tell It;
+					setNumberTask  #mesquite.molec.GCAsNumber.GCAsNumber;
+					setWindowWidth 1;
+				endTell;
+				getEmployee #mesquite.ornamental.CellPictures.CellPictures;
+				tell It;
+					toggleSeparate off;
+					toggleAA off;
+				endTell;
+			endTell;
+			showDataWindow #3243446279249302787 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 467 288;
+					setLocation 12 356;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.ornamental.CellPictures.CellPictures;
+				tell It;
+					toggleSeparate off;
+					toggleAA off;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '11a-annotations.nex';
+			setPrevFileName '10-names.nex';
+			getWindow;
+			tell It;
+					setSize 479 313;
+					setLocation 493 359;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'The Character Matrix editor has various options for display.  These example show:^n^n-- Cells can be colored in various ways using the Color Cells submenu of the Matrix menu.  For instance, they can be colored according to the character state, as shown in the sequence and continuous valued matrices at left, or they can be colored green if a footnote is present as shown in the categorical matrix above. Colors can be assigned to cells manually using the paintbrush tool; these will be displayed if "Assigned Color" is selected in the Color Cells submenu.  Also, the default background color of cells can be changed.  The matrix above has dark gray as its default background color.^n^n-- Text in cells can also be colored using the Color Text submenu of the Matrix menu.  For instance, they text in the matrix above uses color assigned by the paintbrush tool.  Yellow is assigned as the color to character 1 in Snorolopa.^n^n-- Columns with individually sized widths (This can be achieved by moving the arrow cursor between the character numbers in the column headings in the Character Matrix Editors.  When the cursor changes to a bar with two arrows, click and drag.)^n^n-- Fonts and font sizes can be adjusted. (This can be done via the Font and Font Size submenus in the Edit menu.)^n';
+				setTitle Editor_options;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

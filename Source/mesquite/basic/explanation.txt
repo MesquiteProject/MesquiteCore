@@ -1,0 +1,1 @@
+Basic Modules for MesquiteOne of the core Mesquite packages.  A diverse collection of modules that most calculations will need.  Included are modules to manage character data and other critical parts of data files and basic calculations modules for trees

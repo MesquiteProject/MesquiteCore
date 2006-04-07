@@ -1,0 +1,214 @@
+#NEXUS
+[written Sun Sep 21 19:15:26 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE populations;
+	DIMENSIONS NTAX=3;
+	TAXLABELS
+		Africa Eurasia chimpanzee 
+	;
+
+END;
+
+
+
+BEGIN TAXA;
+	TITLE genes_sampled;
+	DIMENSIONS NTAX=25;
+	TAXLABELS
+		A1 A2 A3 A4 A5 A6 A7 A8 A9 A10 E1 E2 E3 E4 E5 E6 E7 E8 E9 E10 C1 C2 C3 C4 C5 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  population_source;
+	LINK TAXA = genes_sampled;
+	DIMENSIONS NCHAR=3;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 root_?, 2 rooted_in_E, 3 rooted_in_A ; 
+	MATRIX
+	A1   000
+
+	A2   000
+
+	A3   000
+
+	A4   000
+
+	A5   000
+
+	A6   000
+
+	A7   000
+
+	A8   000
+
+	A9   000
+
+	A10  000
+
+	E1   111
+
+	E2   111
+
+	E3   111
+
+	E4   111
+
+	E5   111
+
+	E6   111
+
+	E7   111
+
+	E8   111
+
+	E9   111
+
+	E10  111
+
+	C1   ?10
+
+	C2   ?10
+
+	C3   ?10
+
+	C4   ?10
+
+	C5   ?10
+
+
+;
+
+END;
+
+BEGIN TaxaAssociation;
+TITLE genes_in_populations;
+TAXA populations ,  genes_sampled;
+ASSOCIATES 
+
+	Africa /  A1 A2 A3 A4 A5 A6 A7 A8 A9 A10 , 
+	Eurasia /  E1 E2 E3 E4 E5 E6 E7 E8 E9 E10 , 
+	chimpanzee /  C1 C2 C3 C4 C5
+
+;
+
+END;
+
+
+BEGIN TREES;
+	Title Population_trees;
+	LINK Taxa = populations;
+	TRANSLATE
+		1 Africa,
+		2 Eurasia,
+		3 chimpanzee;
+	TREE bottleneck_0.5 = (3:40000.0[%width = 0.1 ],((1:30000.0[%width = 1.0 ],((2:15000.0[%width = 1.0 ]):5000.0[%width = 0.5 ]):10000.0[%width = 1.0 ]):1000.0[%width = 1.0 ]):9000.0[%width = 0.01 ]):10000.0[%width = 0.1 ];
+	TREE bottleneck_0.1 = (3:40000.0[%width = 0.1 ],((1:30000.0[%width = 1.0 ],((2:15000.0[%width = 1.0 ]):5000.0[%width = 0.1 ]):10000.0[%width = 1.0 ]):1000.0[%width = 1.0 ]):9000.0[%width = 0.01 ]):10000.0[%width = 0.1 ];
+	TREE bottleneck_0.01 = (3:40000.0[%width = 0.1 ],((1:30000.0[%width = 1.0 ],((2:15000.0[%width = 1.0 ]):5000.0[%width = 0.01 ]):10000.0[%width = 1.0 ]):1000.0[%width = 1.0 ]):9000.0[%width = 0.01 ]):10000.0[%width = 0.1 ];
+
+END;
+
+
+BEGIN LABELS;
+TAXAGROUPLABEL Africa COLOR = (RGB 1.0 0.70196078 0.12941176) ;
+TAXAGROUPLABEL Eurasia COLOR = (RGB 0.058823551 1.0 0.603921555) ;
+TAXAGROUPLABEL Chimp COLOR = (RGB 0.50980392 0.13725490 1.0) ;
+
+
+END;
+
+BEGIN SETS;
+TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Africa :  1 -  10, Eurasia :  11 -  20, Chimp :  21 -  25;
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  unord:  1 -  3;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  3;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 703462755303490792;
+			setID 1 2887061083080516111;
+			showTaxa #703462755303490792 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #703462755303490792;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 336 163;
+					setLocation 31 5;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+			showTaxa #2887061083080516111 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #2887061083080516111;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 355 616;
+					setLocation 387 8;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 7325247286052868622;
+			checksum 0 1674843106;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '02-outOfAfrica.nex';
+			setPrevFileName '../11-geneInSpecies2.nex';
+			getWindow;
+			tell It;
+					setSize 355 348;
+					setLocation 21 289;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'This example shows how large population size can confuse estimations of ancestral localities in a gene tree.  For instance, consider the rooting of a human gene tree in Africa as evidence for the "Out of Africa" hypothesis.  An alternative interpretation is that Africa had a persistently larger population size than Eurasia.^n^nIn this ficticious data file there are three populations, Africa and Eurasia for humans and a third population, chimps.  A second block of taxa represents sampled genes, labeled A1-A10 (for African samples), E1-E10 (for Eurasian samples), and C1-C5 (for chimp samples).  The gene samples are placed in colored partitions to make it easier to see how they fall in the simulations.';
+				setTitle Out_of_Africa;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

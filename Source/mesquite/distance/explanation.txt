@@ -1,0 +1,1 @@
+Distance Analysis PackageDefines basic elements of taxon-to-taxon distance calculations.  Calculates distances from character data, and provides some simple clustering methods (e.g., UPGMA).

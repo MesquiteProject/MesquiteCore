@@ -1,0 +1,137 @@
+#NEXUS
+[written Fri Apr 23 12:40:30 PDT 2004 by Mesquite  version 1.01+ (build e97)]
+
+BEGIN TAXA;
+	TITLE species;
+	DIMENSIONS NTAX=16;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  measurements;
+	DIMENSIONS NCHAR=5;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 length,
+		2 width,
+		3 speed,
+		4 temperature,
+		5 personality ; 
+	MATRIX
+	Aus            9.367 5.022 2.763 38.57 1.723
+	Fubonidia      8.793 3.244 4.664 38.81 0.296
+	Ibbinidibe     8.576 6.245 2.528 38.5 -1.0239
+	Snorolopa      11.54 8.718 5.862 40.54 -2.039
+	Quidnubia      9.977 6.082 5.984 38.32 0.7256
+	Suinon         9.381 5.468 4.398 38.48 1.213
+	Zorabynyx      8.162 5.782 4.894 39.69 0.8212
+	Huichoros      8.676 4.86 4.186 39.61 0.5508
+	Jotinupa       9.356 6.75 4.649 38.01 0.795
+	Abnyora        8.107 5.989 2.975 40.13 -1.686
+	Syphorchus     9.692 7.227 5.747 39.52 -0.8719
+	Lissaminopus   8.902 6.05 4.337 37.5 -0.9571
+	Chaelodonter   9.055 6.575 4.896 40.48 -0.293
+	Chloroxyxops   10.11 4.199 3.327 38.94 -0.1349
+	Mincinia       10.2 3.975 4.623 37.1 -0.4575
+	Phoronibium    7.604 5.438 2.809 37.69 -2.129
+
+;
+
+END;
+
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'Continuous data can be edited using a spreadsheet as at left.  To edit a cell, touch on it with the I-beam cursor and edit it.  If several cells (or a character, or a taxon) are selected, then you can use the items in the "Alter/Transform" submenu of the "Data" menu to alter or transform the data in those cells.  These items may or may not include:^n^nFill:  This fills the selected cells with a string typed by the user.^n^nRandom Fill (Gaussian): this fills the selected cells with random states selected from a Normal distribution.^n^nAdd Noise (Gaussian): this adds a normally-distributed value (mean 0, variance as chosen) to each of the selected cells. ^n^nLog Transform: Transforms the selected cells to contain the natural logarithm of their original values.^n^nAdd value, Multiply by value:  These multiply the selected cells by,  or add to them, a constant. ^n^n^n';
+
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  Squared:  1 -  5;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  5;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 911995890865637530;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 4132708679229515777;
+			checksum 0 487214761;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #4132708679229515777 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 470 429;
+					setLocation 11 22;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+					setColumnWidth 66;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.ornamental.CellPictures.CellPictures;
+				tell It;
+					toggleSeparate off;
+					toggleAA off;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '13-continuousItems.nex';
+			setPrevFileName '11a-annotations.nex';
+			getWindow;
+			tell It;
+					setSize 439 484;
+					setLocation 489 23;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'Continuous data can be edited using a spreadsheet as at left.  To edit a cell, touch on it with the I-beam tool and edit it.  If several cells (or a character, or a taxon) are selected, then you can use the items in the "Alter/Transform" submenu of the Matrix menu to alter or transform the data in those cells.  These items may or may not include:^n^nFill:  This fills the selected cells with a string typed by the user.^n^nRandom Fill (Gaussian): this fills the selected cells with random states selected from a Normal distribution.^n^nAdd Noise (Gaussian): this adds a normally-distributed value (mean 0, variance as chosen) to each of the selected cells. ^n^nLog Transform: Transforms the selected cells to contain the natural logarithm of their original values.^n^nAdd value, Multiply by value:  These multiply the selected cells by,  or add to them, a constant. ^n^n^n';
+				setTitle Continuous_data;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

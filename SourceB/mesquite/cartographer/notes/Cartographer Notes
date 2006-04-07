@@ -1,0 +1,30 @@
+
+Cartographer Notes
+
+=======
+		
+	- mark as non-prerelease
+	- documentation
+	- collect maps, make calibration files, notes	
+	
+
+post 1.0:
+	spot size confusion/standard taxon spots
+	zoom away so see small version of map
+	- remove taxon tool?
+	
+
+Cartographer 2.0
+	- add Bipolar Oblique Conic Conformal
+	- General perspective
+	- legend for symbols
+	
+	- change locationreconstructor so that it uses long lats
+	- read in locality as annotation
+	- BlueMarble
+	- grid start and end points
+	- hide dots on otherside of world
+	- symbols and color from associated taxon block
+	- better grid lines
+
+

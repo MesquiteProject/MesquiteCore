@@ -1,0 +1,333 @@
+#NEXUS
+[written Fri May 28 22:20:08 PDT 2004 by Mesquite  version 1.02+ (build g9)]
+
+BEGIN TAXA;
+	TITLE flies;
+	DIMENSIONS NTAX=48;
+	TAXLABELS
+		nig1 nig2 nig3 nig4 nig5 nig6 nig7 nig8 nig9 nig10 nig11 nig12 met1 met2 met3 met4 met5 met6 met7 met8 met9 met10 met11 met12 moj1 moj2 moj3 moj4 moj5 moj6 moj7 moj8 moj9 moj10 moj11 moj12 pac1 pac2 pac3 pac4 pac5 pac6 pac7 pac8 pac9 pac10 pac11 pac12 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  wings;
+	DIMENSIONS NCHAR=4;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 V1,
+		2 V2,
+		3 ACV,
+		4 PCV ; 
+	MATRIX
+	nig1    1.784 1.994 0.1007 0.2488
+	nig2    1.662 1.946 0.0882 0.2503
+	nig3    1.92 2.244 0.0678 0.2707
+	nig4    1.838 2.107 0.0678 0.2653
+	nig5    1.843 2.111 0.0784 0.2791
+	nig6    1.953 2.194 0.0671 0.2696
+	nig7    1.782 2.03 0.0795 0.2678
+	nig8    1.792 2.137 0.0852 0.2694
+	nig9    1.889 2.203 0.0746 0.2575
+	nig10   1.836 2.092 0.0925 0.2592
+	nig11   1.877 2.13 0.0941 0.2696
+	nig12   1.826 2.133 0.0741 0.2751
+	met1    1.451 1.659 0.0805 0.2425
+	met2    1.672 1.949 0.0754 0.2687
+	met3    1.67 1.943 0.0745 0.2862
+	met4    1.783 2.037 0.1074 0.2612
+	met5    1.734 2.048 0.0814 0.2503
+	met6    1.624 1.858 0.0736 0.2555
+	met7    1.697 1.939 0.0871 0.2728
+	met8    1.695 1.979 0.0923 0.2748
+	met9    1.552 1.835 0.0674 0.2417
+	met10   1.7 1.994 0.0875 0.2781
+	met11   1.723 1.945 0.0808 0.2705
+	met12   1.688 1.987 0.0875 0.2847
+	moj1    1.19 1.298 0.0667 0.1871
+	moj2    1.209 1.336 0.06 0.1962
+	moj3    1.255 1.387 0.0806 0.2011
+	moj4    1.224 1.351 0.0666 0.1847
+	moj5    1.196 1.318 0.0596 0.176
+	moj6    1.188 1.345 0.074 0.1991
+	moj7    1.187 1.314 0.0696 0.1745
+	moj8    1.235 1.371 0.06 0.1877
+	moj9    1.153 1.29 0.0471 0.1688
+	moj10   1.208 1.352 0.0731 0.1818
+	moj11   1.177 1.29 0.0679 0.1777
+	moj12   1.226 1.363 0.06 0.1909
+	pac1    1.343 1.479 0.0821 0.1719
+	pac2    1.429 1.56 0.0731 0.2052
+	pac3    1.391 1.537 0.0731 0.2192
+	pac4    1.496 1.673 0.093 0.2283
+	pac5    1.347 1.514 0.0795 0.1978
+	pac6    1.311 1.449 0.062 0.1795
+	pac7    1.424 1.62 0.0682 0.21
+	pac8    1.411 1.596 0.0787 0.2128
+	pac9    1.338 1.502 0.0653 0.2077
+	pac10   1.449 1.618 0.0745 0.231
+	pac11   1.447 1.603 0.0787 0.2346
+	pac12   1.465 1.621 0.0765 0.214
+
+;
+
+END;
+
+BEGIN LABELS;
+TAXAGROUPLABEL nig COLOR = (RGB 1.0 0.031372553 0.258823551) ;
+TAXAGROUPLABEL met COLOR = (RGB 0.258823551 1.0 0.086274549) ;
+TAXAGROUPLABEL moj COLOR = (RGB 1.0 0.62745098 0.058823551) ;
+TAXAGROUPLABEL pac COLOR = (RGB 0.02745098 0.584313751 1.0) ;
+
+
+END;
+
+BEGIN SETS;
+TAXPARTITION * UNTITLED  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
+TAXPARTITION species  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  Squared:  1 -  4;
+
+END;
+
+BEGIN TREES;
+	Title stored_trees;
+	LINK Taxa = flies;
+	TRANSLATE
+		1 nig1,
+		2 nig2,
+		3 nig3,
+		4 nig4,
+		5 nig5,
+		6 nig6,
+		7 nig7,
+		8 nig8,
+		9 nig9,
+		10 nig10,
+		11 nig11,
+		12 nig12,
+		13 met1,
+		14 met2,
+		15 met3,
+		16 met4,
+		17 met5,
+		18 met6,
+		19 met7,
+		20 met8,
+		21 met9,
+		22 met10,
+		23 met11,
+		24 met12,
+		25 moj1,
+		26 moj2,
+		27 moj3,
+		28 moj4,
+		29 moj5,
+		30 moj6,
+		31 moj7,
+		32 moj8,
+		33 moj9,
+		34 moj10,
+		35 moj11,
+		36 moj12,
+		37 pac1,
+		38 pac2,
+		39 pac3,
+		40 pac4,
+		41 pac5,
+		42 pac6,
+		43 pac7,
+		44 pac8,
+		45 pac9,
+		46 pac10,
+		47 pac11,
+		48 pac12;
+	TREE colored = (((1[%color = 5 ],(2[%color = 5 ],(3[%color = 5 ],(4[%color = 5 ],(5[%color = 5 ],(6[%color = 5 ],(7[%color = 5 ],(8[%color = 5 ],(9[%color = 5 ],(10[%color = 5 ],(11[%color = 5 ],12[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ],(13[%color = 8 ],(14[%color = 8 ],(15[%color = 8 ],(16[%color = 8 ],(17[%color = 8 ],(18[%color = 8 ],(19[%color = 8 ],(20[%color = 8 ],(21[%color = 8 ],(22[%color = 8 ],(23[%color = 8 ],24[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ]),((25[%color = 10 ],(26[%color = 10 ],(27[%color = 10 ],(28[%color = 10 ],(29[%color = 10 ],(30[%color = 10 ],(31[%color = 10 ],(32[%color = 10 ],(33[%color = 10 ],(34[%color = 10 ],(35[%color = 10 ],36[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ],(37[%color = 11 ],(38[%color = 11 ],(39[%color = 11 ],(40[%color = 11 ],(42[%color = 11 ],(41[%color = 11 ],(43[%color = 11 ],(44[%color = 11 ],(45[%color = 11 ],(46[%color = 11 ],(47[%color = 11 ],48[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ]));
+
+END;
+
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  4;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 5510618219447170949;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 3229888185240561153;
+			checksum 0 578547273;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #3229888185240561153 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 312 465;
+					setLocation 12 4;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					endTell;
+					setActive;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+					toggleConstrainCW on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.ornamental.CellPictures.CellPictures;
+				tell It;
+					toggleSeparate off;
+					toggleAA off;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.charts.TaxaScattergram.TaxaScattergram;
+		tell It;
+			setTaxonSource  #mesquite.minimal.StoredTaxa.StoredTaxa;
+			tell It;
+				setTaxa #5510618219447170949;
+			endTell;
+			setTaxa #5510618219447170949;
+			axesSame;
+			setValues  #mesquite.cont.ContinuousStatesT.ContinuousStatesT;
+			tell It;
+				getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+				tell It;
+					setCharacterSource #mesquite.rhetenor.CharFromOrdinations.CharFromOrdinations;
+					tell It;
+						getCharacterSource #mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
+						tell It;
+							setCharacterSource #mesquite.charMatrices.StoredMatrices.StoredMatrices;
+							tell It;
+								setDataSet #3229888185240561153;
+							endTell;
+						endTell;
+						setOrdinator #mesquite.rhetenor.CanonicalVariates.CanonicalVariates;
+						setItem 0;
+						hireAssistant  #mesquite.rhetenor.ShowCharLoadings.ShowCharLoadings;
+						tell It;
+							getCharter #mesquite.charts.ItemValuesChart.ItemValuesChart;
+							tell It;
+								getWindow;
+								tell It;
+									setSize 383 284;
+									setLocation 13 10;
+									setFont SanSerif;
+									setFontSize 10;
+									onInfoBar;
+									setExplanationSize 20;
+									setAnnotationSize 20;
+									getToolPalette;
+									tell It;
+									endTell;
+									valuesByItems;
+									setChartType  #mesquite.charts.Histogram.Histogram;
+								tell It;
+									showAverageToggle on;
+									showRawToggle off;
+									setNumberIntervals 20;
+									setIntervalSize 1.0;
+									setMovingWindowSize 5.0 1.0;
+									setMode 0;
+								endTell;
+									toggleColorItems off;
+									setNumberItems 4;
+								endTell;
+								enableCalculations;
+							endTell;
+							setChartVisible;
+							doCounts;
+							showWindow;
+						endTell;
+					endTell;
+				endTell;
+				setCharacter 2;
+				setItem 0;
+			endTell;
+			showNamesToggle on;
+			getCharter #mesquite.charts.ItemsBiplot.ItemsBiplot;
+			tell It;
+				getWindow;
+				tell It;
+					setX 1;
+					setY 2;
+					setSize 492 443;
+					setLocation 420 7;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				enableCalculations;
+				getEmployee #mesquite.charts.Scattergram.Scattergram;
+				tell It;
+					markerSize 10;
+					toggleJoin off;
+					toggleShowDots on;
+					movingWindowSize 1;
+					sumByBlocks off;
+				endTell;
+			endTell;
+			setChartVisible;
+			doCounts;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '04-anoles.nex';
+			setPrevFileName '02-wingsPCA.nex';
+			getWindow;
+			tell It;
+					setSize 487 137;
+					setLocation 16 560;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'In the scatter plot at right, a Canonical Variates Analysis is shown, which uses the partition into the four species as the a priori grouping.  The plot above shows the character loadings on each of the canonical variates.  Note that character 1 loads most highly on the first variate.';
+				setTitle Canonical_Variates;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

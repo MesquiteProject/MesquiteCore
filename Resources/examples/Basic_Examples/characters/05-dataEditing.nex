@@ -1,0 +1,171 @@
+#NEXUS
+[written Sat Aug 13 21:47:20 PDT 2005 by Mesquite  version 1.06beta (build g86) at Pellenes.local/10.0.1.2]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS  NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11
+
+	Fubonidia   11
+
+	Ibbinidibe  11
+
+	Snorolopa   1(0,1)
+
+	Quidnubia   00
+
+	Suinon      00
+
+	Zorabynyx   00
+
+	Huichoros   00
+
+	Jotinupa    00
+
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+
+END;
+
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
+	TYPESET * UNTITLED   =  unord:  1 -  2;
+TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 4129971366;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #974864624972105434 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 420 280;
+					setLocation 9 32;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 40;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleSeparateLines off;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '06-fill.nex';
+			setPrevFileName '04-characterLists.nex';
+			getWindow;
+			tell It;
+					setSize 393 356;
+					setLocation 440 38;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'Let''s look at a character matrix editor in more detail.  The editor shows taxa as rows, and characters as columns (currently, matrices can''t be transposed).^n^nAt left in the editor window is a tool palette.  The first tool, the arrow, allows you to select rows, columns, or cells of matrix.  By holding down the Shift key you can accumulate a larger selection.  Selecting is useful for copying and pasting, and using tools like the paint bucket, or menu items like those in the Alter/Transform submenu of the Matrix menu.^n^nThe second tool is the Edit tool (the I-Beam), by which you can edit character states in cells, and the names of taxa and characters.  You can also double click on a cell with the arrow cursor to go automatically into edit mode.^n^nCharacters can be reordered by selecting the character (touch on its number above its name) with the arrow tool and dragging the characters to a new place in the sequence.  Characters can be sorted in different orders using the Sort Characters tool.  Touch on a row with the sort tool to sort according to the values in that row.^n^n';
+				setTitle Matrix_Editor;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

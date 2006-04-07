@@ -1,0 +1,1 @@
+Continuous Character PackageOne of the core Mesquite packages.  A package of fundamental modules and libraries for continuous-valued character data.  These define key elements of continuous data and manage continuous data matrices.  Also provides the 2-dimensional Plot Tree routine for drawing trees.

@@ -1,0 +1,39 @@
+#NEXUS
+[written Sun Sep 21 19:16:41 PDT 2003 by Mesquite  version 1.0 (build e57)]
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'Example files for coalescence calculations^n^nThe files linked to this one illustrate some of the coalescence calculations that can be done by the package of coalescence modules of the Mesquite system.  To learn more about this package, use the Coalescence Package menu item of the Help menu, or touch on the banner in the Mesquite Startup window. (It should take you to your web browser, perhaps after asking you to locate the browser.)^n^nTo go from one file to another, hit the "Go" button in the green window.';
+
+
+
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '01-modelTree.nex';
+			getWindow;
+			tell It;
+					setSize 533 305;
+					setLocation 311 26;
+					setFont SanSerif;
+					setFontSize 14;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'Example files for character simulations and hypothesis testing.^n^nTo go from one file to another, hit the "Next" button.';
+				setTitle Character_Simulations;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+				addWebLink Manual  'mesquite:docs/mesquite/AncestralStates/AncestralStates.html';
+				addFileLink Return_to_main_Introduction  '../Introduction.nex';
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

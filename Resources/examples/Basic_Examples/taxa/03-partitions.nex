@@ -1,0 +1,165 @@
+#NEXUS
+[written Sat Aug 13 21:45:07 PDT 2005 by Mesquite  version 1.06beta (build g86) at Pellenes.local/10.0.1.2]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS  NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11
+
+	Fubonidia   11
+
+	Ibbinidibe  11
+
+	Snorolopa   1(0,1)
+
+	Quidnubia   00
+
+	Suinon      00
+
+	Zorabynyx   00
+
+	Huichoros   00
+
+	Jotinupa    00
+
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+
+END;
+
+
+BEGIN NOTES;
+
+	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
+
+	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+
+END;
+
+BEGIN LABELS;
+TAXAGROUPLABEL Fubonidiines COLOR = (RGB 0.031372553 0.41568627 1.0) ;
+TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.84313725 0.33725490) ;
+
+
+END;
+
+BEGIN SETS;
+TAXPARTITION * UNTITLED  =  Fubonidiines :  1 -  3 5, Jotinupiines :  4 6 -  9;
+
+END;
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
+	TYPESET * UNTITLED   =  unord:  1 -  2;
+TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 4129971366;
+		endTell;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			showTaxa #8476784597994698209 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #8476784597994698209;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 377 334;
+					setLocation 14 29;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '04-partitions.nex';
+			setPrevFileName '02-addingDeleting.nex';
+			getWindow;
+			tell It;
+					setSize 393 274;
+					setLocation 407 33;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'The first item in the List menu of a List window is the Show Column submenu, which allows you to add columns of information to the list.  In the window at upper left, the Group column is shown.  You can delete existing columns by selecting them (touch on the bar just above the name of the column) and choosing Hide Selected Columns from the List menu.^n^nGroups and taxa partitions are useful in various contexts.  A taxa partition assigns each taxon to a group; in this case the two groups are "Fubonidiines" and "Jotinupiines".  To do this, first create the groups.  You can create a group by touching on the column heading "Group".  A drop down menu will appear.  Select "New Group..." and enter the group name and choose a color.  You can change the name or assign a new color to the group by choosing Edit Group (from the drop down menu).  Then, you can assign a taxon to the group by selecting the taxon''s row in the list window and choose the group designation from the Set Group submenu in the drop down menu.';
+				setTitle 'Taxa Groups (Partitions)';
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

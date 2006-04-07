@@ -1,0 +1,36 @@
+#NEXUS
+[written Sun Mar 07 17:23:31 PST 2004 by Mesquite  version 1.01+ (build e89)]
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			getWindow;
+			tell It;
+					setSize 449 345;
+					setLocation 323 22;
+					setFont SanSerif;
+					setFontSize 14;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'Here are links to example files that serve as a guided tour to using Mesquite and the analyses it can perform. ^n^n';
+				setTitle Mesquite_Examples;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+				addFileLink Basic_Examples  'Basic_Examples/introduction.nex';
+				addFileLink Reconstructing_Ancestral_States  'Ancestral_States/01-DataMatrix.nex';
+				addFileLink Molecular_Examples  'Molecular/00-introduction.nex';
+				addFileLink 'Coalescence/Population genetics'  'Coalescence/00-introduction.nex';
+				addFileLink Character_Simulations  'Character_Simulations/00-introduction.nex';
+				addFileLink Multivariate_Continuous_Analyses  'Multivariate_Continuous/00-introduction.nex';
+				addFileLink Pairwise_Comparisons  'Pairwise_Comparison/00-introduction.nex';
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

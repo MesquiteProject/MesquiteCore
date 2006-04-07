@@ -1,0 +1,96 @@
+Format Specification for TaxaAssociation block of NEXUS file
+W. Maddison January 2003
+
+BEGIN TaxaAssociation;
+[TITLE <name of this association, a token>; [optional but recommended]]
+TAXA <name of first taxa block, a token> ,  <name of second taxa block, a token>;
+ASSOCIATES 
+	<nt1> /  <nt2> [<nt2> ...] , 
+	<nt1> /  <nt2> [<nt2> ...] , 
+	.
+	.
+	.
+	<nt1> /  <nt2> [<nt2> ...] 
+
+;
+
+[ASSOCIATES ... ; may be repeated]
+
+END;
+
+
+where nt1 means name of a taxon in first block, nt2 means name of a taxon in first block (these would not, of course, all be the same).  The two taxa blocks and their contained taxa must already be defined.
+
+Items may be repeated and there may be more than one ASSOCIATES command.  Thus, the following 4 blocks are equivalent, indicating genes a1 and a2 are within species A, b1 and b2 within species B, and c1 and c2 within species C.
+
+=============================================
+BEGIN TaxaAssociation;
+TITLE species_Containing_Genes;
+TAXA species,  genes;
+ASSOCIATES 
+	A /  a1 a2, 
+	B /  b1 b2, 
+	C /  c1 c2
+;
+END;
+
+=========
+BEGIN TaxaAssociation;
+TITLE species_Containing_Genes;
+TAXA species,  genes;
+ASSOCIATES 
+	A /  a1, 
+	A /  a2
+;
+ASSOCIATES 
+	B /  b1 b2, 
+	C /  c1 c2
+;
+END;
+
+=========
+BEGIN TaxaAssociation;
+TITLE genes_In_Species;
+TAXA genes ,  species;
+ASSOCIATES 
+	a1 /  A , 
+	a2 /  A , 
+	b1 /  B ,
+	b2 /  B , 
+	c1 /  C , 
+	c2 /  C
+;
+END;
+=========
+BEGIN TaxaAssociation;
+TITLE genes_In_Species;
+TAXA genes ,  species;
+ASSOCIATES 
+	a1 a2 /  A , 
+	b1 b2 /  B , 
+	c1 c2 /  C
+;
+END;
+=============================================
+
+
+Currently Mesquite reads and writes TaxaAssociation blocks in which a contained taxon is in more than one containing taxon (e.g. same haplotype in two populations) but its calculations cannot yet handle this situation.
+
+
+Questions:
+Do we allow a command which indicates the contained/containing polarity? e.g.
+   CONTAINED genes;
+One could imagine commands more for labelling, e.g.:
+   RELATIONSHIP host, parasite; [where order is that of blocks in TAXA command]
+
+Do we allow more than two taxa blocks to be associated simultaneously? e.g.
+
+BEGIN TaxaAssociation;
+TAXA genes ,  species, areas;
+ASSOCIATES 
+	a1 a2 /  A / Africa, 
+	b1 b2 /  B / Africa, 
+	c1 c2 /  C / South_America
+;
+END;
+

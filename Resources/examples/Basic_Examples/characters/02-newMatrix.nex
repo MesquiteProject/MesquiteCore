@@ -1,0 +1,68 @@
+#NEXUS
+[written Sun Sep 21 12:25:15 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+
+END;
+
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '03-newMatrix.nex';
+			setPrevFileName '01-characters.nex';
+			getWindow;
+			tell It;
+					setSize 418 272;
+					setLocation 316 22;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'This file has no character matrices.  To make a new, blank character matrix, go to the Characters menu and choose New Empty Matrix...  You will be presented with a dialog box allowing you to:^n^n-- set the name of the matrix (in Mesquite it''s a good idea to give informative names to your matrices, since you can have several in a single file)^n^n-- indicate how many characters the matrix is to start out with^n^n-- what type of matrix it will be.^n^nWhat types of matrices are available depends on the modules installed in Mesquite.  You will probably see at least three choices: Categorical (e.g., data with states 0, 1, 2, etc.), DNA (states A, C, G, T) and Continuous (states 0.231, -5.987, and so on).  Categorical data matrices can handle states from 0-55.  You can enter the states as single symbols (0-9, A-Z, a-z) or as numbers (0 through 55).^n';
+				setTitle Making_matrices;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

@@ -1,0 +1,1 @@
+Ancestral States PackageOne of the core Mesquite packages.  Coordinates reconstruction and display of ancestral states of characters on phylogenetic trees.  Includes "Trace Character History".  To function, requires other packages such as the parsimony or likelihood packages to perform the reconstruction.

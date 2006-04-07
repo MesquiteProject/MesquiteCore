@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html><!-- #BeginTemplate "/Templates/standard.dwt" --><!-- DW6 -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=">
+<!-- #BeginEditable "doctitle" -->   <title>Getting Started with Mesquite Cartographer</title><!-- #EndEditable -->
+<link rel="stylesheet" href="styles/mesquitePackage.css" type="text/css">
+<!-- #BeginEditable "head" --><!-- #EndEditable -->
+</head>
+
+
+<body>
+<div id="masthead">
+  <div id="banner"><img src="splash.gif" width="164" height="64"></div>
+  <div id="mainTitle"><font id="packageName"><b>Cartographer</b></font><BR>
+  <font id="version">1.0Beta (build b08)<br>
+  5 April 2006 </font><BR>
+         David R. Maddison and Wayne P. Maddison</div>
+  <div id="subtitle"><!-- #BeginEditable "subtitle" --><font size="5" face="Georgia, Times New Roman, Times, serif"><em>Getting			          Started</em></font><!-- #EndEditable --></div>
+ 
+</div>
+<div>
+<!-- end masthead -->
+<div id="content"><!-- #BeginEditable "content" -->                      <H3><A name=installation></A>Installation</H3><P>To install the Cartographer package, the "cartographer" directory must be  installed in the "mesquite" directory within the "Mesquite Folder" that contains  your copy of Mesquite.  Cartographer requires version 1.06 or later of Mesquite.</P><h3>Choosing a base map</h3><P>The first step is to <a href="sources.html">choose a base map</a> you wish  to use as the background image of your distribution map. Find a base map that  you can  use as you need (that is,  the copyright permissions for the base map will allow you to reproduce it as  you wish), and that is of a known <a href="projections.html">projection</a>.  Obviously, you need the base map in a digital form to use it in Cartographer.  Make sure as  well that the base map is of high-enough resolution for its final use. Save  the digital version of the file on disk.</P><h3>Creating a file with data</h3><P>In addition to choosing a base map, you will need to create a new data file  in Mesquite, with a character matrix, of Geographic Data type. This will automatically  create  a  matrix with  two characters,  the  first latitude, the second latitude. <a href="data.html">Enter</a> at least  some of your latitude-longitude data. The longitude/latitude data must be in  decimal degrees (e.g., 34.1287), and should use the convention that latitudes  in the  northern hemisphere are positive, in the southern hemisphere negative, and  longitudes in the western hemisphere are negative, in the eastern hemisphere  positive. Thus, the latitude and longitude of one point in North America is  (43.000, -81.254). It will be easiest if the data file is  saved in the  same directory as  is the map image file.</P><h3>Taxa versus specimens</h3><P>In Cartographer, the elements that are plotted on the map for  which geographic data are specified are called &quot;taxa&quot;, as the   objects in Mesquite whose characteristics are examined are called taxa. This  reflects Mesquite's heritage as a phylogenetics program. (If Mesquite had been  written initially as a mapping program, then the entities to be plotted would  probably have been called &quot;specimens&quot; or &quot;localities&quot;.)</P><P>If you wish to make    a map in which the localities of individual specimens are      plotted,      then each taxon in Mesquite corresponds to a specimen or group of specimens      from one locality. If your matrix contains data for multiple localities  within one species, then each of these localities will be represented by a  different &quot;taxon&quot; in      your matrix. You can specify which species each &quot;taxon&quot; belongs      to by specifying a Taxon Group for that taxon, as outlined on the <a href="symbols">Taxon      Symbols &amp; Groups</a> Page.</P><H3>Deciding the form of the distribution map: a tree or just taxa? </H3><P>Once you have your base map image as well as at least a few localities entered  into your geographic matrix in Mesquite, you then need to decide which type  of distribution map you wish to have Cartographer create. In particular, will  you ever with to plot a tree that connects the taxa, as shown in the image  below, at left? If so, then you will wish to plot the taxa in a tree window.  If you only want to make distribution or dot map without a tree, then there  are advantages to avoid the tree window and instead plot the taxa in a taxa  window - this provides a more natural interface for standard distribution maps.</P><table width="100%" border="0" cellspacing="0" cellpadding="0">  <tr>    <td><div align="center"><img src="images/plotTree.jpg" width="306" height="250"></div></td>    <td><div align="center"><img src="images/plotTaxa.jpg" width="305" height="250"></div></td>  </tr>  <tr>    <td><div align="center">Plotting <font face="Trebuchet MS">a tree</font> on        a map</div></td>    <td><div align="center">Plotting <font face="Trebuchet MS">taxa</font> on        a map</div></td>  </tr></table><P></P><H3>Opening a window with a map</H3><P>The steps you need to take to open a window showing a map with taxa plotted  depends upon whether you want to plot a tree or not. </P><H4>Plotting a tree on a map:</H4><ul>    <li>Choose New Tree Window from the Taxa &amp; Trees menu.</li>    <li>In the dialog box that appears, choose the source of the tree. The tree      window will then appear.</li>    <li>With the tree window frontmost, choose &quot;Plot Tree&quot; from the      Tree Form submenu of the Drawing menu.</li>    <li>In the dialog box that appears, choose &quot;Plot on Map&quot;.</li>    <li>In the dialog box that then appears, tell Mesquite      the projection of the map (e.g., Lambert Azimuthal Equal-Area).</li>    <li>In the dialog box that then appears, tell Mesquite the source of the       latitude and longitude  data (presumably  Stored Characters).</li>    <li>You will then be asked for the file containing the base map image (likely      a JPG or GIF). You can exchange the map for another one later by using      Choose Base Map  under the Plot menu.</li>  </ul><P>The base map will appear, but it will be uncalibrated, and so your taxa and  nodes will not be plotted correctly. At this point you will need to <a href="calibration.html">calibrate  the map</a>.</P><H4>Plotting taxa (without a tree) on a map:</H4><ul>    <li>Choose New Taxa Window from the Taxa &amp; Trees menu.</li>    <li>If a dialog box appears in which one of the choices is &quot;Plot on Map&quot;, choose it (at least in standard Mesquite 1.06, you will not be asked	this question, as Plot on Map is the only available option, but later versions may add new features which will necessitate this choice).</li>    <li>In the dialog box that then appears, tell Mesquite      the projection of the map (e.g., Lambert Azimuthal Equal-Area).</li>    <li>In the dialog box that then appears, tell Mesquite the source of the       latitude and longitude  data (presumably  Stored Characters).</li>    <li>You will then be asked for the file containing the base map image (likely      a JPG or GIF). You can exchange the base map for another one later by using      Choose Base Map  under the Plot menu.</li>  </ul><P>The base map will appear, but it will be uncalibrated, and so your taxa and  nodes will not be plotted correctly. At this point you will need to <a href="calibration.html">calibrate  the map</a>.</P><h3>Calibrating the projection</h3><P>At this point you will need to calibrate the projection. This is fully detailed  on the <a href="calibration.html">Calibration</a> page, but in short this involves:</P><P>  <ul>    <li>touching the Calibration Tool on at least three spots of known latitude      and longitude and setting their values</li>    <li>setting the parameters of the projection using the Projection Parameters      dialog box (Plot menu), OR asking Cartographer to estimate the parameter      values for you using the Optimize Parameters command (Plot menu).</li>  </ul></P><P>OR</P><P>  <ul>    <li>loading in the parameters and calibration points from a previously saved      parameters and calibration file (the maps that are distributed with Cartographer      have associated paramCalib.xml files that contain this information)</li>    </ul></P><h3>Fixing up the display</h3><P>There are many options that you can use to adjust the display of the map;  see the pages on <a href="symbols.html">Taxon Symbols</a> and <a href="display.html">Display  Options</a> for details.</P><P>One will commonly want to</P><P>  <ul>    <li>turn off showing of taxon names (Drawing&gt;Names&gt;Show Taxon Names).</li>    <li>turn off standard taxon spots (Drawing&gt;Show Standard Taxon Spots if in      a taxa window, Drawing&gt;Show Terminal Nodes if in a tree window).</li>    <li>turn on showing of taxon symbols based upon the group of the taxon (Taxa&gt;Show      Taxon Group Symbols).</li>    <li>turn off showing of calibration points (Plot&gt;Calibration Points&gt;Show      Calibration Points).</li>  </ul></P><P>&nbsp;</P><!-- #EndEditable --></div>
+<!--end content -->
+<div id="navBar">
+  <div id="sectionLinks">
+    <ul>		
+		<li><a href="index.html">Introduction</a></li>
+		<li><a href="gettingStarted.html">Getting Started</a></li>
+		<li><a href="sources.html">Sources of Maps</a></li>
+		<li><a href="projections.html">Projections</a></li>
+		<li><a href="calibration.html">Calibration</a></li>
+		<li><a href="data.html">Adding Data</a></li>
+		<li><a href="ancestral.html">Ancestral Locations</a></li>
+		<li><a href="symbols.html">Taxon Symbols</a></li>
+		<li><a href="tools.html">Tools</a></li>
+		<li><a href="display.html">Display Options</a></li>
+		<li><a href="files.html">Graphics Files</a></li>
+		<li><a href="citation.html">Citation</a></li>
+		<li><a href="acknowledgements.html">Acknowledgements</a></li> 
+		<li>&nbsp;</li>
+		<li><a href="download.html">Download</a></li>
+		<li><a href="sourceCode.html">Source Code</a></li>    
+		</ul>
+	<p>&nbsp;</p>
+	<ul><li> <a href="http://mesquiteproject.org"  style="border: 0px;"><img src="images/mesquiteIcon.gif" alt="Mesquite Home" width="32" height="32"> Mesquite Home</a> </li>
+    </ul>
+  </div>
+</div>
+</div>
+<div id="navBarExtension">&nbsp;</div>
+<!--end navbar -->
+<div id="siteInfo"> Copyright &copy; 2006 <a href="http://david.bembidion.org">David R. Maddison</a> and <a href="http://salticidae.org/wpm/home.html">Wayne P. Maddison</a> </div>
+<br>
+</body>
+<!-- #EndTemplate --></html>

@@ -1,0 +1,119 @@
+#NEXUS
+[written Sun Sep 21 19:26:23 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Boxes;
+	DIMENSIONS NTAX=4;
+	TAXLABELS
+		Box_1 Box_2 Box_3 Box_4 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Landmark_positions;
+	DIMENSIONS NCHAR=4;
+	FORMAT DATATYPE = CONTINUOUS ITEMS = (x y ) ;
+	MATRIX
+	Box_1   (? ?) (? ?) (? ?) (? ?)
+	Box_2   (? ?) (? ?) (? ?) (? ?)
+	Box_3   (? ?) (? ?) (? ?) (? ?)
+	Box_4   (? ?) (? ?) (? ?) (? ?)
+
+;
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  Squared:  1 -  4;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  4;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 5420325524222062819;
+			showTaxa #5420325524222062819 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #5420325524222062819;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 294 195;
+					setLocation 16 23;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 4430408865877702767;
+			checksum 0 3957422510;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #4430408865877702767 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 538 290;
+					setLocation 347 24;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					setColumnWidth 72;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '19-landmarks.nex';
+			setPrevFileName '17-landmarks.nex';
+			getWindow;
+			tell It;
+					setSize 510 252;
+					setLocation 331 420;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'This file shows how to enter and use landmark data in Mesquite. ^n^nWe''ve made a new file with four taxa.  Next, "New Empty Matrix..." from the Characters menu was chosen.  The type of the matrix chosen was Continuous, and the number of characters is the number of landmarks (each landmark is represented by a character).^n^nContinuous matrices can be three dimensional (characters x taxa x items), where the third dimension (items) represents a series of values in each cell of the editor.  In this case we''re going to want to enter two items, one for the x position of the landmark, the other for the y position.^n^nFirst, we renamed the first item to "x" using the "Rename Item" menu item in the Utilities submenu of the Matrix menu of the Character Matrix editor window.^n^nNext, we added a new item using the "Add Item" menu item in the Utilities submenu of the Matrix menu of the Character Matrix editor window.  We named it "y".^n';
+				setTitle 'Landmarks how-to';
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

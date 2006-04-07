@@ -1,0 +1,148 @@
+#NEXUS
+[written Sun Sep 21 19:11:40 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE gene_copies;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		g1 g2 g3 g4 g5 g6 g7 g8 g9 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  16epq_sequence;
+	DIMENSIONS NCHAR=19;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	g1  AACATCTGGGAACCGTGCG
+
+	g2  C?CGTCTGAGACCCGTCCG
+
+	g3  AAGATACGGGTACCGTCCG
+
+	g4  AACATACGGGAAGCGTCCG
+
+	g5  AAGGTACGGGAACCGTCCG
+
+	g6  AAAGTACGGGACCCGTGCG
+
+	g7  AACGTACGGGAACCGTGCG
+
+	g8  AAAGCACGGGAACCGTGCG
+
+	g9  AACGCACGAGAACCGTGCG
+
+
+;
+
+
+END;
+
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'This file contains a small set of taxa representing gene copies within a population.  The chart shows the depth to the last coalescence in a sample of 100 gene trees simulated by coalescence.  ^n^nTo change the number of trees sampled, go to the chart window and select "Number of Trees" from the Chart menu.  The effective population size (haploid) is 1000; change this by choosing "Set Ne" from the Chart window..^n^nTo duplicate this file: Select "New" from the file menu.  Once the file is established, choose "Tree Values" from the Charts menu.  Indicate "Tree Depth" as the value, then "Simulate Trees" as the tree source, "Coalescent trees" as the simulator.  Then, choose "Fixed Number of Groups" under "Grouping on X" and set number to 50.^n';
+
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  unord:  1 -  19;
+TYPESET Current_Parsimony_Models   =  unord:  1 -  19;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  19;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 2914423799126459326;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 5851865005210875165;
+			checksum 0 1947097330;
+		endTell;
+		newAssistant  #mesquite.charts.TreeValuesChart.TreeValuesChart;
+		tell It;
+			suspendCalculations;
+			setTaxa #2914423799126459326;
+			setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
+			tell It;
+				setTreeSimulator  #mesquite.coalesce.CoalescentTrees.CoalescentTrees;
+				tell It;
+					getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+					tell It;
+						setEffective 1000;
+						toggleExponential on;
+					endTell;
+				endTell;
+				setSeed 983242234061;
+			endTell;
+			setCalculator  #mesquite.coalesce.TreeDepth.TreeDepth;
+			getCharter #mesquite.charts.ItemValuesChart.ItemValuesChart;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 401 406;
+					setLocation 486 9;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					itemsByValues;
+					setChartType  #mesquite.charts.Histogram.Histogram;
+				tell It;
+					showAverageToggle on;
+					showRawToggle off;
+					setNumberIntervals 50;
+					setIntervalSize 1.0;
+					setMovingWindowSize 5.0 1.0;
+					setMode 4;
+				endTell;
+					toggleColorItems off;
+					setNumberItems 100;
+				endTell;
+				enableCalculations;
+			endTell;
+			setChartVisible;
+			doCounts;
+			resumeCalculations;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '04-associations.nex';
+			setPrevFileName '02-coalescence2.nex';
+			getWindow;
+			tell It;
+					setSize 443 330;
+					setLocation 29 29;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'This file contains a small set of taxa representing gene copies within a population.  The chart shows the depth to the last coalescence in a sample of 100 gene trees simulated by coalescence.  ^n^nTo change the number of trees sampled, go to the chart window and select "Number of Trees" from the Chart menu.  The effective population size (haploid) is 1000; change this by choosing "Set Ne" from the Coalescent Simulation submenu of the Histogram menu of the Chart window.^n^nTo duplicate this file: Select "New" from the file menu.  Once the file is established, choose Analysis>New Histogram for>Tree Values.  In the dialog box that appears, check Show Secondary Choices, then select Tree Depth as the value, then "Simulate Trees" as the tree source, "Coalescent trees" as the simulator, and set the effective population size to 1000.  Once the histogram appears, choose "Fixed Number of Groups" in the "Grouping on X" submenu from the Histogram menu, and set number to 50.^n';
+				setTitle Gene_tree_depths;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

@@ -1,0 +1,38 @@
+#NEXUS
+[written Sun Sep 21 19:18:03 PDT 2003 by Mesquite  version 1.0 (build e57)]
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'Example files for the Rhetenor morphometrics package by Eric Dyreson and Wayne Maddison^n^nThe files linked to this one illustrate some of the calculations available in the Rhetenor package of modules for morphometrics analyses.  The morphometrics components in the Mesquite system are still in their infancy, and could be much enhanced by efforts of other programmers (this is an invitation).^n^nTo learn more about the current state of Rhetenor, select "Rhetenor package" from the Help menu (it should take you to a web page).^n^nTo go from one file to another, hit the "Go" button in the green window.';
+
+
+
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '01-wingsPlot.nex';
+			getWindow;
+			tell It;
+					setSize 426 339;
+					setLocation 325 22;
+					setFont SanSerif;
+					setFontSize 12;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'Example files for the Rhetenor morphometrics package by Eric Dyreson and Wayne Maddison^n^nThe files linked to this one illustrate some of the calculations available in the Rhetenor package of modules for morphometrics analyses.  The morphometrics components in the Mesquite system are still in their infancy, and could be much enhanced by efforts of other programmers (this is an invitation).^n^nTo learn more about the current state of Rhetenor, select "Rhetenor package" from the Help menu (it should take you to a web page).^n^nTo go from one file to another, hit the "Next" button above.';
+				setTitle Rhetenor_examples;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+				addFileLink Return_to_main_Introduction  '../Introduction.nex';
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

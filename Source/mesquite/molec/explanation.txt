@@ -1,0 +1,1 @@
+Miscellanous Molecular UtilitiesA collection of various utilities for use with molecular data.  Some calculate statistics about characters (percent gaps, GC bias, and so on); others manipulate sequences.

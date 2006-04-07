@@ -1,0 +1,159 @@
+#NEXUS
+[written Sun Sep 21 19:11:33 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE gene_copies;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		g1 g2 g3 g4 g5 g6 g7 g8 g9 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  16epq_sequence;
+	DIMENSIONS NCHAR=19;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	g1  AACATCTGGGAACCGTGCG
+
+	g2  C?CGTCTGAGACCCGTCCG
+
+	g3  AAGATACGGGTACCGTCCG
+
+	g4  AACATACGGGAAGCGTCCG
+
+	g5  AAGGTACGGGAACCGTCCG
+
+	g6  AAAGTACGGGACCCGTGCG
+
+	g7  AACGTACGGGAACCGTGCG
+
+	g8  AAAGCACGGGAACCGTGCG
+
+	g9  AACGCACGAGAACCGTGCG
+
+
+;
+
+
+END;
+
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'At left is a "Multi Tree Window" to show a series of gene trees simulated by coalescence within a population.  You can scroll down to see other such simulated trees.  Note that the root tends to be between 1000 and 2000 generations deep.^n^nThe effective population size is 1000 (haploid), and can be changed using the "Set Ne.." menu item in the Multi-Tree menu of the Trees window.';
+
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  unord:  1 -  19;
+TYPESET Current_Parsimony_Models   =  unord:  1 -  19;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  19;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 4451700786596653131;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 4972659033594616137;
+			checksum 0 1947097330;
+		endTell;
+		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
+		tell It;
+			setTaxa #4451700786596653131;
+			setNumColumns 4;
+			setNumRows 4;
+			setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
+			tell It;
+				setTreeSimulator  #mesquite.coalesce.CoalescentTrees.CoalescentTrees;
+				tell It;
+					getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+					tell It;
+						setEffective 1000;
+						toggleExponential on;
+					endTell;
+				endTell;
+				setSeed 983242335996;
+			endTell;
+			makeWindow;
+			setNamesVisible on;
+			getWindow;
+			tell It;
+				setSize 599 601;
+				setLocation 13 22;
+				setFont SanSerif;
+				setFontSize 10;
+				onInfoBar;
+				setExplanationSize 0;
+				setAnnotationSize 0;
+				setActive;
+			endTell;
+			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+			tell It;
+				suppress;
+				setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
+				tell It;
+					setEdgeWidth 3;
+					orientUp;
+					getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+					tell It;
+						stretchToggle off;
+						branchLengthsToggle on;
+						toggleScale on;
+						toggleCenter on;
+						toggleEven on;
+						setFixedScaling 2500.0;
+						namesAngle ?;
+					endTell;
+				endTell;
+				setBackground White;
+				setBranchColor Black;
+				desuppress;
+				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
+				tell It;
+					setFont SanSerif;
+					setFontSize 10;
+					setColor Black;
+					toggleColorPartition on;
+					toggleNodeLabels on;
+					toggleShowNames on;
+				endTell;
+			endTell;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '03-coalescenceDepth.nex';
+			setPrevFileName '01-coalescence.nex';
+			getWindow;
+			tell It;
+					setSize 338 282;
+					setLocation 619 25;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'At left is a "Multi Tree Window" to show a series of gene trees simulated by coalescence within a population.  You can scroll down to see other such simulated trees.  Note that the root tends to be between 1000 and 2000 generations deep.^n^nThe effective population size is 1000 (haploid), and can be changed using the "Set Ne.." menu item in the Coalescent SImulation submenu of the Multi-Tree menu of the Trees window.';
+				setTitle Gene_trees;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

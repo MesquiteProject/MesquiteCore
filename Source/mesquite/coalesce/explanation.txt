@@ -1,0 +1,1 @@
+Coalescence PackageCalculations for coalescence models in population genetics.  Modules simulate gene trees within a single population or within the branches of a population/species tree.  The fit of gene trees into species trees is assessed and reconstructed.  Utility modules allow trees to be edited to specify branch widths and insert unbranched nodes.

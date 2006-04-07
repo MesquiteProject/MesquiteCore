@@ -1,0 +1,40 @@
+Features for 1.07
+
+Align:  (first release)
+	Ã ClustalAlign
+	Ã simple block mover
+	Ã shift other to match selected
+	
+	? PairwiseAligner from Travis
+	? Shift to Minimize Stops
+
+	TODO:
+	- add features to "shift other" so that they match MacClade's
+	- manual
+
+Distance:  (first real release)	
+	Ã basic distance calculation code
+	± GreatCircleDistance
+	Ã TaxonPairs
+
+	TODO:
+	- manual
+
+Molec:
+	Ã GeneticCode
+	Ã derivatives of genetic code (num stop codons, Color by AA, etc.)
+	- add email to BLAST utilities
+	- Reverse Complement working for linked matrices
+	- add remaining genetic codes
+
+Charts:
+	Ã cumulative mode
+	Ã draw as line/dots
+	
+- build ANT script for release packaging (Danny)
+
+- Formally announce Eclipse/SVN and open read access to SVN?
+===========
+
+Vital bugs:
+	- write PAUP blocks in more reasonable place

@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html><!-- #BeginTemplate "/Templates/standard.dwt" --><!-- DW6 -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=">
+<!-- #BeginEditable "doctitle" -->
+   
+   <title>Mesquite Cartographer Projections</title>
+
+<!-- #EndEditable -->
+<link rel="stylesheet" href="styles/mesquitePackage.css" type="text/css">
+<!-- #BeginEditable "head" --><!-- #EndEditable -->
+</head>
+
+
+<body>
+<div id="masthead">
+  <div id="banner"><img src="splash.gif" width="164" height="64"></div>
+  <div id="mainTitle"><font id="packageName"><b>Cartographer</b></font><BR>
+  <font id="version">1.0Beta (build b08)<br>
+  5 April 2006 </font><BR>
+         David R. Maddison and Wayne P. Maddison</div>
+  <div id="subtitle"><!-- #BeginEditable "subtitle" --><font size="5" face="Georgia, Times New Roman, Times, serif"><em>Projections</em></font><!-- #EndEditable --></div>
+ 
+</div>
+<div>
+<!-- end masthead -->
+<div id="content"><!-- #BeginEditable "content" -->
+            <P>In order to display the three-dimensional surface of the Earth's
+              spheroid on a two-dimensional map, the points on the surface of
+              the globe need to be <em>projected</em> onto the map:</P>
+            <P align="center"><img src="images/projectionImage.jpg" width="396" height="400"></P>
+            <P> This inevitably leads to some distortions in
+                the
+                image, and many
+                different sorts
+                of projections  have been invented that differ in how well and
+                in what way they correctly capture Earth's features.  For more
+              information about projections, see <a href="#references">Snyder (1987)</a>, <a href="#references">Weisstein</a>, and <a href="#references">Furuti.</a></P>
+            <P>The projections currently supported by Cartographer are as follows:</P>
+            <UL>
+      <li><a href="#albers">Albers Equal-Area Conic</a></li>
+      <li><a href="#lambertAzimuthal">Lambert Azimuthal Equal-Area</a></li>
+      <li><a href="#lambertConformal">Lambert Conformal Conic</a></li>
+      <li><a href="#mercator">Mercator</a></li>
+      <li><a href="#orthographic">Orthographic</a></li>
+      <li><a href="#equirectangular">Equirectangular</a></li>
+      <li><a href="#transverseMercator">Transverse Mercator</a></li>
+</UL>
+
+<p> More projections will be added in the future.</p>
+<p>Before using a map, you will need to know what projection  was used to produce
+  it. It's not always easy to determine the projection that is used for a map:
+  some sources
+  of maps will specify the projection, others won't. </p>
+<p>In addition, each of these projections have parameters that specify details
+    of the view. For
+    example,
+    the Lambert
+    Azimuthal
+    Equal
+    Area
+    projection
+    has two
+    parameters,
+    the standard latitude and the standard longitude. Cartographer requires that
+  these  parameters be specified, as well as some calibration points on the map
+  with known latitudes and longitudes be specified. Mesquite can estimate the
+  parameter
+  values if you don't know them, but you will need to enter calibration points;
+  more details are provided on the page about <a href="calibration.html">Calibrating
+  a map and setting its parameters</a>.</p>
+<h3><a name="albers"></a>Albers Equal-Area Conic Projection</h3>
+<P>The Albers Equal-Area Conic Projection is used for large areas, as in this
+  image of the United States of America:</P>
+<P align="center"><img src="images/albersConic.jpg" width="380" height="300"><br>
+  <em><font size="-1">Courtesy <a href="http://photojournal.jpl.nasa.gov/catalog/?IDNumber=PIA04361">NASA/JPL-Caltech</a></font></em></P>
+<P>This projection requires four parameters (two standard latitudes, an origin
+  latitude, and an origin longitude).</P>
+<h3><a name="lambertAzimuthal"></a>Lambert Azimuthal Equal-Area Projection</h3>
+<P align="left">In addition to its use for the Pacific Ocean and polar regions,
+  the Lambert Azimuthal Equal-Area Projection is used for a commonly used base
+  map of North America:</P>
+<P align="center"><img src="images/lambertAzimuthal.gif" width="416" height="400"></P>
+<P align="left">This projection requires two parameters (a standard latitude
+  and a standard longitude).</P>
+<h3><a name="lambertConformal"></a>Lambert Conformal Conic Projection</h3>
+<P>Many of the maps produced by the CIA (available at the <a href="http://www.lib.utexas.edu/maps/">Perry-Casta&ntilde;eda
+    Library Map Collection</a>) are Lambert Conformal Conic projections, including
+    the following one of Australia:</P>
+<P align="center"><img src="images/lambertConic.jpg" width="390" height="300"></P>
+<P>This projection requires four parameters (two standard latitudes, an origin
+  latitude, and an origin longitude). </P>
+<h3><a name="mercator"></a>Mercator Projection</h3>
+<P>This classic projection is still in use for many maps, such as this one of
+  South America:</P>
+<P align="center"><img src="images/mercator.jpg" width="256" height="380"><br>
+  <em><font size="-1">Courtesy <a href="http://photojournal.jpl.nasa.gov/catalog/?IDNumber=PIA04361">NASA/JPL-Caltech</a></font></em></P>
+<P align="left">This projection does not require any projection parameters, only calibration points.</P>
+<h3><a name="orthographic"></a>Orthographic Projection</h3>
+<P>The Orthographic Projection is often used for images of the entire Earth:</P>
+<P align="center"><img src="images/Orthographic.gif" width="309" height="300"><br>
+  <em><font size="-1">Base map from <a href="projections.html#references">Snyder, 1987</a></font></em></P>
+<P>This projection requires two parameters (a standard
+  latitude and a standard longitude).</P>
+<h3><a name="equirectangular" id="equirectangular"></a>Equirectangular Projection</h3>
+<P>This is the simple projection in which each degree of longitude
+  occupies the same distance at the equator as at the poles (and thus the map
+  is extremely distorted at the poles). It is also known as the Rectangular
+  or Equidistant Cylindrical Projection, as well as many other names.</P>
+<P align="center"><img src="images/equirectangular.gif" width="266" height="275"></P>
+<P>This projection requires
+      no extra parameters that are not provided by the
+      calibration
+      points.</P>
+<h3><a name="transverseMercator"></a>Transverse Mercator Projection</h3>
+<P>The projection used for most United States topographical maps is the Transverse
+  Mercator Projection:</P>
+<P align="center"><img src="images/transverseMercator.gif" width="280" height="300"><br>
+    <em><font size="-1">Base map from <a href="projections.html#references">Snyder, 1987</a></font></em></P>
+<P align="left">This projection requires two parameters (an origin latitude
+  and an origin longitude).</P>
+<h3><a name="references"></a>References</h3>
+<P><br>
+  Furuti, Carlos A. Cartographical Map Projections. <a href="http://www.progonos.com/furuti/MapProj/Normal/TOC/cartTOC.html">http://www.progonos.com/furuti/MapProj/Normal/TOC/cartTOC.html</a></P>
+<P>Snyder, J.&nbsp;P. 1987. Map Projections--A Working Manual. U.&nbsp;S. Geological
+    Survey Professional Paper 1395. Washington, DC: U.&nbsp;S. Government Printing
+    Office. (Available online at <a href="http://pubs.er.usgs.gov/pubs/pp/pp1395">http://pubs.er.usgs.gov/pubs/pp/pp1395</a>.)</P>
+<P><br>
+  Eric W. Weisstein. &quot;Map Projection.&quot; From MathWorld--A Wolfram Web
+  Resource. <a href="http://mathworld.wolfram.com/MapProjection.html">http://mathworld.wolfram.com/MapProjection.html</a> </P>
+<P></P>
+            <!-- #EndEditable --></div>
+<!--end content -->
+<div id="navBar">
+  <div id="sectionLinks">
+    <ul>		
+		<li><a href="index.html">Introduction</a></li>
+		<li><a href="gettingStarted.html">Getting Started</a></li>
+		<li><a href="sources.html">Sources of Maps</a></li>
+		<li><a href="projections.html">Projections</a></li>
+		<li><a href="calibration.html">Calibration</a></li>
+		<li><a href="data.html">Adding Data</a></li>
+		<li><a href="ancestral.html">Ancestral Locations</a></li>
+		<li><a href="symbols.html">Taxon Symbols</a></li>
+		<li><a href="tools.html">Tools</a></li>
+		<li><a href="display.html">Display Options</a></li>
+		<li><a href="files.html">Graphics Files</a></li>
+		<li><a href="citation.html">Citation</a></li>
+		<li><a href="acknowledgements.html">Acknowledgements</a></li> 
+		<li>&nbsp;</li>
+		<li><a href="download.html">Download</a></li>
+		<li><a href="sourceCode.html">Source Code</a></li>    
+		</ul>
+	<p>&nbsp;</p>
+	<ul><li> <a href="http://mesquiteproject.org"  style="border: 0px;"><img src="images/mesquiteIcon.gif" alt="Mesquite Home" width="32" height="32"> Mesquite Home</a> </li>
+    </ul>
+  </div>
+</div>
+</div>
+<div id="navBarExtension">&nbsp;</div>
+<!--end navbar -->
+<div id="siteInfo"> Copyright &copy; 2006 <a href="http://david.bembidion.org">David R. Maddison</a> and <a href="http://salticidae.org/wpm/home.html">Wayne P. Maddison</a> </div>
+<br>
+</body>
+<!-- #EndTemplate --></html>

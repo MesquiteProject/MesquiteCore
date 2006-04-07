@@ -1,0 +1,126 @@
+#NEXUS
+[written Sun Sep 21 12:40:04 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE species;
+	DIMENSIONS NTAX=16;
+	TAXLABELS
+		A B C D E F G H I J K L M N O P 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  measurements;
+	DIMENSIONS NCHAR=5;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 length,
+		2 width,
+		3 speed,
+		4 temperature,
+		5 personality ; 
+	MATRIX
+	A   9.367 5.022 2.763 38.57 1.723
+	B   8.793 3.244 4.664 38.81 0.296
+	C   8.576 6.245 2.528 38.5 -1.0239
+	D   11.54 8.718 5.862 40.54 -2.039
+	E   9.977 6.082 5.984 38.32 0.7256
+	F   9.381 5.468 4.398 38.48 1.213
+	G   8.162 5.782 4.894 39.69 0.8212
+	H   8.676 4.86 4.186 39.61 0.5508
+	I   9.356 6.75 4.649 38.01 0.795
+	J   8.107 5.989 2.975 40.13 -1.686
+	K   9.692 7.227 5.747 39.52 -0.8719
+	L   8.902 6.05 4.337 37.5 -0.9571
+	M   9.055 6.575 4.896 40.48 -0.293
+	N   10.11 4.199 3.327 38.94 -0.1349
+	O   10.2 3.975 4.623 37.1 -0.4575
+	P   7.604 5.438 2.809 37.69 -2.129
+
+;
+
+END;
+
+BEGIN NOTES;
+	TEXT  FILE TEXT = 'Mesquite can handle continuous data as well as categorical.  In the spreadsheet at left are 5 characters for 16 taxa.^n^nMore details about editing data matrices, including continuous-valued, in the introductory examples for characters.  In particular look at the file linked by the blue window.^n^nIn the following examples, some analyses of continuous valued data are shown.  The reader should keep in mind that other packages of modules with many more analyses have been under development, including Rhetenor by Dyreson and Maddison, which does basic multivariate analyses and geometric morphometrics.';
+
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  Squared:  1 -  5;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  5;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 156393696224404377;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 8888556603099012391;
+			checksum 0 487214761;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #8888556603099012391 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 459 423;
+					setLocation 7 22;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+					setColumnWidth 66;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '03-trace.nex';
+			setPrevFileName '../introduction.nex';
+			getWindow;
+			tell It;
+					setSize 397 396;
+					setLocation 479 26;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'Mesquite can handle continuous data as well as categorical.  In the spreadsheet at left are 5 characters for 16 taxa.^n^nMore details about editing data matrices, including continuous-valued, are in the introductory examples for characters.  ^n^nIn the following examples, some analyses of continuous valued data are shown.  The reader should keep in mind that other packages of modules with many more analyses have been under development, including Rhetenor by Dyreson and Maddison, which does basic multivariate analyses and geometric morphometrics.';
+				setTitle Continuous_data;
+				toggleFileNames off;
+				setPrevButtonName Return;
+				setNextButtonName Next;
+				addFileLink Editing_matrices  '../characters/12-continuous.nex';
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

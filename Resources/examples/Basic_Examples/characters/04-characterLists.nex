@@ -1,0 +1,261 @@
+#NEXUS
+[written Sun Sep 21 12:25:42 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11
+
+	Fubonidia   11
+
+	Ibbinidibe  11
+
+	Snorolopa   1(0,1)
+
+	Quidnubia   00
+
+	Suinon      00
+
+	Zorabynyx   00
+
+	Huichoros   00
+
+	Jotinupa    00
+
+
+;
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  16epq_sequence;
+	DIMENSIONS NCHAR=19;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	Aus         AACATCTGGGAACCGTGCG
+
+	Fubonidia   C?CG--TGAGACCCGTCCG
+
+	Ibbinidibe  AAGATACGGGTACCGTCCG
+
+	Snorolopa   AACATACGGGAAGCGTCCG
+
+	Quidnubia   AAGGTACGGGAACCGTCCG
+
+	Suinon      AAAGTACGGGACCCGTGCG
+
+	Zorabynyx   AACGTACGGGAACCGTGCG
+
+	Huichoros   AAAGCACGGGAACCGTGCG
+
+	Jotinupa    AACGCACGAGAACCGTGCG
+
+
+;
+
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Measurements;
+	DIMENSIONS NCHAR=4;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 toe_length,
+		2 slime_index,
+		3 puncture_density,
+		4 sneakiness ; 
+	MATRIX
+	Aus          0.1217 2.298 0.0 1.0
+	Fubonidia    0.111 1.9 1.0 1.0
+	Ibbinidibe   0.102 4.2 2.0 0.35
+	Snorolopa    0.112 3.7 3.0 0.0
+	Quidnubia    0.137 1.3 4.0 0.87
+	Suinon       0.145 2.9 5.0 0.05
+	Zorabynyx    0.139 2.7 6.0 0.2
+	Huichoros    0.108 3.5 7.0 0.0
+	Jotinupa     0.156 2.298 8.0 0.0
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+
+END;
+
+
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =                    unord PolyTcount =                    MINSTEPS;
+	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
+TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
+
+	EXSET * UNTITLED  (CHARACTERS = 16epq_sequence) = ;
+EXSET * UNTITLED  (CHARACTERS = Measurements) =  2;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = Structure_&_Color)  =  'Mk1 (est.)':  1 -  2;
+ProbModelSet * UNTITLED  (CHARACTERS = 16epq_sequence)  =  'Mk1 (est.)':  1 -  19;
+ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 4129971366;
+			setID 1 7634018259203763187;
+			checksum 1 1838322636;
+			setID 2 3243446279249302787;
+			checksum 2 2830407910;
+			showDatasList  #mesquite.lists.DatasetList.DatasetList;
+			tell It;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.DatasetsListTaxa.DatasetsListTaxa;
+					newAssistant  #mesquite.lists.DatasetsListNumChars.DatasetsListNumChars;
+					setSize 370 148;
+					setLocation 487 12;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+			showCharacters 0 #mesquite.lists.CharacterList.CharacterList;
+			tell It;
+				setData 0;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.CharListInclusion.CharListInclusion;
+					newAssistant  #mesquite.lists.CharacterStats.CharacterStats;
+					newAssistant  #mesquite.parsimony.CharListParsModels.CharListParsModels;
+					setSize 447 98;
+					setLocation 12 233;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+				endTell;
+				showWindow;
+			endTell;
+			showCharacters 2 #mesquite.lists.CharacterList.CharacterList;
+			tell It;
+				setData 2;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.CharListInclusion.CharListInclusion;
+					newAssistant  #mesquite.lists.CharacterStats.CharacterStats;
+					newAssistant  #mesquite.parsimony.CharListParsModels.CharListParsModels;
+					setSize 452 148;
+					setLocation 7 439;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+			showCharacters 1 #mesquite.lists.CharacterList.CharacterList;
+			tell It;
+				setData 1;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.CharListInclusion.CharListInclusion;
+					newAssistant  #mesquite.lists.CharacterStats.CharacterStats;
+					newAssistant  #mesquite.parsimony.CharListParsModels.CharListParsModels;
+					setSize 441 124;
+					setLocation 12 9;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '05-dataEditing.nex';
+			setPrevFileName '03-newMatrix.nex';
+			getWindow;
+			tell It;
+					setSize 455 370;
+					setLocation 472 275;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+				setExplanation 'The characters of a data matrix can be manipulated in Character Matrix Editors as in previous examples, or in Character List windows as here.  ^n^nEach of the windows at left summarizes information about each of the characters in a matrix.  There may be one or more columns.  In these examples, there are three columns: one indicating whether the character is currently included, a second showing the number of states or range of states, and a third indicating the assumption used for parsimony calculations.  ^n^nAdditional columns can be added using the Add Column submenu in the List menu of the windows.  You can ask to have the current character weights, probability models, etc., shown.^n^nCharacters can be reordered by selecting the character (touch on its number to the left of its name) and dragging the characters to a new place in the sequence.  Characters can be sorted in different orders using the Sort tool.  Touch on a column with the sort tool to sort according to the values in that column.^n^nThese list windows allow you to do calculations and set options.  For instance, if you select a row in the lower left list (for the data matrix "Measurements", you can then touch on the column headings which have inverted triangles.  Menus will drop down that allow you to set inclusion of the selected characters, or manipulate parsimony models, and so on.^n^nAbove is a list window summarizing the data matrices currently stored in the project.';
+				setTitle Character_Lists;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+

@@ -1,0 +1,1 @@
+CharID	MorphologyID1	MorphologyID2	MorphologyID3RFS102ad3fa0e39	SV87		RFS102ad3fa0c38	SV247		RFS102ad3fa0e310	SV251		RFS102ad3fa0e311	SV251		

@@ -1,0 +1,1 @@
+Stochastic Character Evolution PackageProvides basic services for managing and studying stochastic models of character evolution.  Character evolution can be simulated on a tree.  Except for the Brownian motion model for continuous data, this package does NOT contain specifics of models, which reside in other packages (e.g.,  Genesis Package).

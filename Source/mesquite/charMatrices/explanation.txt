@@ -1,0 +1,1 @@
+Character Matrix Editing PackageOne of the core Mesquite packages.  Provides the spreadsheet editors for character matrices, including the standard editing tools.

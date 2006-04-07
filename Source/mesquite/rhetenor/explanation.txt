@@ -1,0 +1,1 @@
+Rhetenor Package for MorphometricsPerforms some basic multivariate analyses such as ordinations (Principal Components Analysis and others), as well as some geometric morphometrics (reconstructing of ancestral form from landmark data).  Also plots a tree in a 3 dimensional character space.

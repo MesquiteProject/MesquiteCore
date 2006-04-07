@@ -1,0 +1,18 @@
+Align ToDo
+
+	Ã move ClustalAlign files so that they are in Mesquite_Support_Files		
+	- allow reincorporation to deal with only some sequences selected
+	Ã ShiftOtherToMatch should have the flexibility MacClade currently does
+	- AlignScoreForTaxon lets one choose sequence to match
+	
+	- test code
+
+	Basic Pairwise Aligner:
+		- have it deal properly with ambiguity codes
+		- deal with terminal gaps with lower cost
+		- give it access to a cost matrix
+		- GUI for costs
+		- preferences
+		
+
+		

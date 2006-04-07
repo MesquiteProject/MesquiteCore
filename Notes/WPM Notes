@@ -1,0 +1,167 @@
+Wayne's to do
+
+To do in 1.07:
+zMargLikeCateg: root mode choices!; root priors
+
+••• live matrix viewer
+1) Even if a selection is made in the matrix, the passed argument taxaToAlign is null, firsSite is 0, and lastSite is the length of the matrix ( i.e. it doesn't recognize the selection).
+
+2) The " int st = 0; " line in the complicated alignSequences function is misplaced, causing the code to try to write to an element out of the array bounds:
+
+instead of :
+int st = 0;
+for (int ic = firstSite; ic<=lastSite; ic++){
+	for (int it = 0; it<data.getNumTaxa(); it++){
+
+it should be:
+for (int ic = firstSite; ic<=lastSite; ic++){
+	int st = 0;
+	for (int it = 0; it<data.getNumTaxa(); it++){
+
+TSV
+incremental color
+incremental tree adding
+===============
+CHROMASEQ & align
+√√√ adding sequences to end causes terminal bits to disappear (ingi's bug)
+√√√ chromaseq doesn't edit in java 1.3
+listner in SequenceInMatrix to refesh sequences
+unique stored id's for linked matrices
+√√√ checksum on alignment
+√√√ first contig gets taxon name; second gets contig 2
+••• on windows if no phred phrap or not working then just puts periods forever
+•••• colors not same as standard ACGT colors in chromatogram window
+••••align push beyond matrix end with MoveBlocks tool:  Categorical matrix with incorrect record of number of characters. getNumChar() = 1547 matrixShort.length 1548 nAdd = 4 nDel = 0 nMove = 0 name 16SND1 (from Phred/Phrap) file File "lapsiinesHisponines16S copy 1.nex" in directory "/
+Data Window Coordinator > showDataWindow "0"
+java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
+	at java.util.Vector.elementAt(Vector.java:431)
+	at mesquite.chromaseq.ViewChromatograms.ViewChromatograms.getWindow(ViewChromatograms.java:41)
+	at mesquite.chromaseq.ViewChromatograms.ViewChromatograms.getTaxon(ViewChromatograms.java:44)
+	at mesquite.chromaseq.ViewChromatogramsCoord.ViewChromatogramsCoord.findViewer(ViewChromatogramsCoord.java:212)
+	at mesquite.chromaseq.ViewChromatogramsCoord.ViewChromatogramsCoord.showWindow(ViewChromatogramsCoord.java:137)
+	at mesquite.chromaseq.ViewChromatogramsCoord.ViewChromatogramsCoord.doCommand(ViewChromatogramsCoord.java:182)
+	at mesquite.lib.PendingCommand.go(PendingCommand.java:185)
+	at mesquite.lib.MainThread.run(MainThread.java:116)
+ALERT: (Mesquite): A command could not be completed because an exception or error occurred (i.e. a crash; class java.lang.ArrayIndexOutOfBoundsException). If you save any files, you might best use Save As... in case file saving doesn't work properly.
+Chromatograms: d051 Goleba sp. > closeWindow
+java.lang.NullPointerException
+	at mesquite.lib.ToolPalette.addTool(ToolPalette.java:299)
+	at mesquite.lib.MesquiteWindow.addTool(MesquiteWindow.java:861)
+	at mesquite.chromaseq.MoveReadToMatrix.MoveReadToMatrix.setWindow(MoveReadToMatrix.java:44)
+	at mesquite.chromaseq.ViewChromatograms.VChromWindow.showChromatogram(VChromWindow.java:760)
+	at mesquite.chromaseq.ViewChromatograms.ViewChromatograms.showContig(ViewChromatograms.java:128)
+	at mesquite.chromaseq.ViewChromatograms.ViewChromatograms.showContigs(ViewChromatograms.java:83)
+	at mesquite.chromaseq.ViewChromatogramsCoord.ViewChromatogramsCoord.showWindow(ViewChromatogramsCoord.java:160)
+	at mesquite.chromaseq.ViewChromatogramsCoord.ViewChromatogramsCoord.doCommand(ViewChromatogramsCoord.java:182)
+	at mesquite.lib.PendingCommand.go(PendingCommand.java:185)
+	at mesquite.lib.MainThread.run(MainThread.java:116)
+===============
+bugs to fix for 1.07
+••• manual: COMET
+√√√ printing trace char legend
+•••• permit missing ins quared reconstruct
+•••• sort taxa by extension
+•••• single tree block consensus tree
+•••• speed deleteRows in CharacterList
+•••• fix multiple menu bar refreshes and project refreshes
+••• stoch char mapping: legend should say stoch char
+•••• add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
+•••• maureen's printing pdf issue
+•••• kip's POY format issue
+√√√√ paste tree, save, tree source/tree window doesn't know updated number of trees
+√√√√ relax 10 char limit on phylip names
+•••• finish directions in MolecularData: swap acharacters; integrity check, e.g. 
+••• collab needs to be off-turnable
+••• check use of CategoricalStatTest etc. -- only or not?
+••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
+new•••• Reshuffle within TAxa (matrices, characters)
+new•••>>> tree source coordiantor; finite and non finite
+••• getcolorsequence recycle vector if possible
+••• David: the Define Configuration window in Mesquite doesn't have a scroll bar, and so you can only see the first few packages.
+••• high ascii file paths don't work (Laurin)
+•••• [*cut] at file writing long line breaks
+•••• when breaking long lines in NEXUS put []comment so that the lines can be redone
+CellPictures warning still appearing
+••• WINDOWS: Boris's copy paste matrix bug
+•••• WINDOWS: emailing tree doesn't work under Windows
+•••• WINDOWS: printing tree out of memory bug
+•••???not reproduced why are typesets getting writen into notes block???
+√√√ does pairwise comparison really stop if goes past limit?  set limit lower?
+√√√ if no exporters give blank dialog
+√√√√ Laurin: Label states incredibly slow (don't use panels?)
+√√√ coalesc contained; don't include taxa not contained in tree
+√√√ can't set branch width to ?
+√√√ grouping in histogram in mooers.nex is screwed up!!!
+√√√ not just pars steps as primary choice; also mk1 rate, bias, etc.
+√√√ values at nodes:  decorator or vLegend being set to null; MUST PROTECT
+√√√ characterIDs not for molecualr?
+√√√ no char change history for molecular
+√√√java.lang.NullPointerException at mesquite.lib.characters.CharacterData.getSnapshot(CharacterData.java:2031)
+√√√ can't tab through matrix in 1.4
+√√√ sort ColorEvents
+√√√ set selected characters
+√√√ phylip export sometimes writes names up to characters
+√√√ java.lang.NullPointerException at mesquite.treefarm.TerminalInstability.TerminalInstability.calculateNumbers(TerminalInstability.java:103)
+√√√ java.lang.NullPointerException at mesquite.lib.MesquiteWindow$MWWE.windowClosing(MesquiteWindow.java:2220)
+
+√√√ TRADESTATES continuous data matrix fixed
+√√√ trees directly shoudl have toggle for live or not
+
+FOR MANUAL
+√√√@@@ missing data permitted in conts pars and disc likelihood.  Inappl treated as missing
+√√√@@@ add simple button on window to bring all of project to fore
+√√√@@@ modules read from MesquiteSupportFiles
+√√√@@@ phylip treefile import/export
+√√√@@@ add COMET
+√√√@@@ control over interleaving
+√√√@@@Bar Chart
+√√√@@@ random number loops to get to nth tree or character: should they add a number to prevent a simple frameshift difference among reps?
+√√√@@@ Ask For Seeds in Defaults menu
+√√√@@@ FEATURE force recalcualtion in chart
+√√√ delete taxa; if some stored trees have no taxa then should be deleted!
+xxx TSV needs tree.equals() method
+√√√√ chart crashes with Trees Directly from File..(finite issue..)
+√√√ manytreesfromfile  1, 2, 1, 4 OFF
+√√√ change BETA to PRERELEASE
+√√√ command line no way to switch back from window to module
+√√√ command line loses focus after each output
+√√√ splash.htmls broken
+√√√ command line pref not remembered
+√√√ java.lang.NullPointerException
+        at mesquite.charMatrices.BasicDataWindowMaker.SequenceLedge.paint(BasicDataWindowMaker.java:3142)
+√√√ extensibleDialog list dial explanation still only 2 high
+√√√ fix colors on module hierarchies
+√√√ edit model slider window (asym mk) text area size too big under java 1.4
+
+new features for 1.07
+
+•••(1) allow grayscale for optimization of discrete characters with over 2 states (patterns would be best)
+•••(2) allow 'neutral' ambiguity optimization (and add ACCTRAN vs DELTRAN?)
+•••(3) treat inapplicables as such -avoid optimization on such branches/terminals
+••• pairwise comparisohns - -turn off labels; redo as number for tree&2characters
+
+==========
+release routine:
+changes dates & notice throughout
+check version number and released dates in manual.html, credits.html, mesquite.html
+check that no class files are old
+package source (with project files as appropriate)
+package executables (windows with read me)
+search for debugg.
+search for mail
+remove jars
+
+===========
+BIG CHANGES for 1.1
+CharacterData to CharacterMatrix
+Make interface to pass instead of CharacterData (like Tree); live matrix
+Get rid of CommandRecords
+headless
+pdfs
+CategoricalData onseparate fork
+CharacterSource non-obedient; have it hire obedient with controls for character
+TreeSourceCoord
+Make taxa fusions etc. easier
+preferences via snapshots
+
+ 

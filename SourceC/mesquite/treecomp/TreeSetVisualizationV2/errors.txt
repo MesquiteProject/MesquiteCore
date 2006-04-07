@@ -1,0 +1,47 @@
+java.lang.StackOverflowError
+MOVED FAILED
+Elapsed time is 0
+Elapsed time is 0
+Tree Set Visualization 2.1 > closeWindow
+java.util.NoSuchElementException
+        at java.util.HashMap$HashIterator.nextEntry(HashMap.java:785)
+        at java.util.HashMap$KeyIterator.next(HashMap.java:818)
+        at mesquite.treecomp.TreeSetVisualizationV2.TreeSetViz$1.windowClosing(TreeSetViz.java:111)
+        at java.awt.AWTEventMulticaster.windowClosing(AWTEventMulticaster.java:292)
+        at java.awt.Window.processWindowEvent(Window.java:1121)
+        at java.awt.Window.processEvent(Window.java:1079)
+        at java.awt.Component.dispatchEventImpl(Component.java:3615)
+        at java.awt.Container.dispatchEventImpl(Container.java:1627)
+        at java.awt.Window.dispatchEventImpl(Window.java:1606)
+        at java.awt.Component.dispatchEvent(Component.java:3477)
+        at java.awt.EventQueue.dispatchEvent(EventQueue.java:456)
+        at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:201)
+        at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:151)
+        at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:145)
+        at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:137)
+        at java.awt.EventDispatchThread.run(EventDispatchThread.java:100)
+
+
+
+paper.tre
+#######################################
+(Cancel) (OK)
+java.lang.StackOverflowError
+Tree Set Visualization 2.1 > closeWindow
+java.util.NoSuchElementException
+        at java.util.HashMap$HashIterator.nextEntry(HashMap.java:785)
+        at java.util.HashMap$KeyIterator.next(HashMap.java:818)
+        at mesquite.treecomp.TreeSetVisualizationV2.TreeSetViz$1.windowClosing(TreeSetViz.java:111)
+        at java.awt.AWTEventMulticaster.windowClosing(AWTEventMulticaster.java:292)
+        at java.awt.Window.processWindowEvent(Window.java:1121)
+        at java.awt.Window.processEvent(Window.java:1079)
+        at java.awt.Component.dispatchEventImpl(Component.java:3615)
+        at java.awt.Container.dispatchEventImpl(Container.java:1627)
+        at java.awt.Window.dispatchEventImpl(Window.java:1606)
+        at java.awt.Component.dispatchEvent(Component.java:3477)
+        at java.awt.EventQueue.dispatchEvent(EventQueue.java:456)
+        at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:201)
+        at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:151)
+        at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:145)
+        at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:137)
+        at java.awt.EventDispatchThread.run(EventDispatchThread.java:100)

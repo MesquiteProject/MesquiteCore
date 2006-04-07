@@ -1,0 +1,71 @@
+clustalw option list:-
+                -help 
+                -check 
+                -options 
+                -align 
+                -newtree=filename 
+                -usetree=filename 
+                -newtree1=filename 
+                -usetree1=filename 
+                -newtree2=filename 
+                -usetree2=filename 
+                -bootstrap 
+                -tree 
+                -quicktree 
+                -convert 
+                -interactive 
+                -batch 
+                -infile=filename 
+                -profile1=filename 
+                -profile2=filename 
+                -type=protein OR dna
+                -profile 
+                -sequences 
+                -matrix=filename 
+                -dnamatrix=filename 
+                -negative 
+                -noweights 
+                -gapopen=f 
+                -gapext=f 
+                -endgaps 
+                -nopgap 
+                -nohgap 
+                -novgap 
+                -hgapresidues=string 
+                -maxdiv=n 
+                -gapdist=n 
+                -pwmatrix=filename 
+                -pwdnamatrix=filename 
+                -pwgapopen=f 
+                -pwgapext=f 
+                -ktuple=n 
+                -window=n 
+                -pairgap=n 
+                -topdiags=n 
+                -score=percent OR absolute
+                -transweight=f 
+                -seed=n 
+                -kimura 
+                -tossgaps 
+                -bootlabels=node OR branch
+                -debug=n 
+                -output=gcg OR gde OR pir OR phylip OR nexus OR fasta
+                -outputtree=nj OR phylip OR dist OR nexus
+                -outfile=filename 
+                -outorder=input OR aligned
+                -case=lower OR upper
+                -seqnos=off OR on
+                -seqno_range=off OR on
+                -range=string 
+                -nosecstr1 
+                -nosecstr2 
+                -secstrout=structure OR mask OR both OR none
+                -helixgap=n 
+                -strandgap=n 
+                -loopgap=n 
+                -terminalgap=n 
+                -helixendin=n 
+                -helixendout=n 
+                -strandendin=n 
+                -strandendout=n 
+Peziza:~ david$ 

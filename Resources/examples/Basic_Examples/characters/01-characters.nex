@@ -1,0 +1,263 @@
+#NEXUS
+[written Sun Sep 21 12:25:04 PDT 2003 by Mesquite  version 1.0 (build e57)]
+
+BEGIN TAXA;
+	TITLE Fubonidians;
+	DIMENSIONS NTAX=9;
+	TAXLABELS
+		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Structure_&_Color;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+	MATRIX
+	Aus         11
+
+	Fubonidia   11
+
+	Ibbinidibe  11
+
+	Snorolopa   1(0,1)
+
+	Quidnubia   00
+
+	Suinon      00
+
+	Zorabynyx   00
+
+	Huichoros   00
+
+	Jotinupa    00
+
+
+;
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  16epq_sequence;
+	DIMENSIONS NCHAR=19;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	Aus         AACATCTGGGAACCGTGCG
+
+	Fubonidia   C?CG--TGAGACCCGTCCG
+
+	Ibbinidibe  AAGATACGGGTACCGTCCG
+
+	Snorolopa   AACATACGGGAAGCGTCCG
+
+	Quidnubia   AAGGTACGGGAACCGTCCG
+
+	Suinon      AAAGTACGGGACCCGTGCG
+
+	Zorabynyx   AACGTACGGGAACCGTGCG
+
+	Huichoros   AAAGCACGGGAACCGTGCG
+
+	Jotinupa    AACGCACGAGAACCGTGCG
+
+
+;
+
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Measurements;
+	DIMENSIONS NCHAR=4;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 toe_length,
+		2 slime_index,
+		3 puncture_density,
+		4 sneakiness ; 
+	MATRIX
+	Aus          0.1217 2.298 0.0 1.0
+	Fubonidia    0.111 1.9 1.0 1.0
+	Ibbinidibe   0.102 4.2 2.0 0.35
+	Snorolopa    0.112 3.7 3.0 0.0
+	Quidnubia    0.137 1.3 4.0 0.87
+	Suinon       0.145 2.9 5.0 0.05
+	Zorabynyx    0.139 2.7 6.0 0.2
+	Huichoros    0.108 3.5 7.0 0.0
+	Jotinupa     0.156 2.298 8.0 0.0
+
+;
+
+END;
+
+BEGIN TREES;
+	Title Basic_Trees;
+	LINK Taxa = Fubonidians;
+	TRANSLATE
+		1 Aus,
+		2 Fubonidia,
+		3 Ibbinidibe,
+		4 Snorolopa,
+		5 Quidnubia,
+		6 Suinon,
+		7 Zorabynyx,
+		8 Huichoros,
+		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
+	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
+	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
+	TREE Polytomous = ((1,5),(7,6,2),4,((9,8),3));
+	TREE Partial_tree = (((9,(1,2)),(8,7)),(3,5));
+
+END;
+
+
+
+BEGIN ASSUMPTIONS;
+OPTIONS DEFTYPE =              unord PolyTcount =              MINSTEPS;
+	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
+TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = Structure_&_Color)  =  'Mk1 (est.)':  1 -  2;
+ProbModelSet * UNTITLED  (CHARACTERS = 16epq_sequence)  =  'Mk1 (est.)':  1 -  19;
+ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 8476784597994698209;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 974864624972105434;
+			checksum 0 4129971366;
+			setID 1 7634018259203763187;
+			checksum 1 1838322636;
+			setID 2 3243446279249302787;
+			checksum 2 2830407910;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #974864624972105434 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 419 252;
+					setLocation 468 9;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+			endTell;
+			showDataWindow #7634018259203763187 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 440 257;
+					setLocation 6 8;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+				getEmployee #mesquite.molec.ColorByNumber.ColorByNumber;
+				tell It;
+					setNumberTask  #mesquite.molec.GCAsNumber.GCAsNumber;
+					setWindowWidth 1;
+				endTell;
+			endTell;
+			showDataWindow #3243446279249302787 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 465 203;
+					setLocation 12 356;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					getToolPalette;
+					tell It;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleShowStates on;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '02-newMatrix.nex';
+			setPrevFileName '../introduction.nex';
+			getWindow;
+			tell It;
+					setSize 403 211;
+					setLocation 486 344;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setActive;
+				setExplanation 'Mesquite supports data matrices of various kinds, including molecular sequences, categorical phenotypic data, and continuous-valued measurements.^n^nHere are three data matrices in a single file. (Mesquite allows more than one matrix per file).^n^nThe windows shown are Character Matrix Editors, which can be opened via the Characters menu.  ';
+				setTitle Character_Matrices;
+				toggleFileNames off;
+				setPrevButtonName Return;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+
