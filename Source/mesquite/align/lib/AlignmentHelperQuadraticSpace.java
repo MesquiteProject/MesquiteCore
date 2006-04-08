@@ -13,11 +13,12 @@ public class AlignmentHelperQuadraticSpace {
 	int[][] subs;
 	int gapOpen;
 	int gapExtend;
+	int alphabetLength;
 	boolean gapInsertionArray[];
 	
 	boolean isMinimize = true;
 	
-	public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend) {
+	public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
 		A = seq1;
 		B = seq2;
 		this.lengthA = lengthA;
@@ -25,6 +26,7 @@ public class AlignmentHelperQuadraticSpace {
 		this.subs = subs;
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
+		this.alphabetLength=alphabetLength;
 	}
 
 	public long[][] doAlignment (boolean returnAlignment, MesquiteNumber score, boolean keepGaps, int[] followsGapSize, int totalGapChars) {
@@ -61,7 +63,7 @@ public class AlignmentHelperQuadraticSpace {
 								Math.min ( D[i][j-1] + gapOpen + gapExtend ,
 												 V[i][j-1] + gapExtend));
 
-					D[i][j] = subs[A[i-1]][B[j-1]] +  Math.min(  H[i-1][j-1] , Math.min ( D[i-1][j-1] , V[i-1][j-1] ));
+					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength)  +  Math.min(  H[i-1][j-1] , Math.min ( D[i-1][j-1] , V[i-1][j-1] ));
 				} else { //maximize
 					H[i][j] = Math.max(  H[i-1][j] + gapExtend,  
 								Math.max( D[i-1][j] + gapOpenOnA + gapExtend,
@@ -71,7 +73,7 @@ public class AlignmentHelperQuadraticSpace {
 								Math.max ( D[i][j-1] + gapOpen + gapExtend ,
 												 V[i][j-1] + gapExtend));					
 	
-					D[i][j] = subs[A[i-1]][B[j-1]] +  Math.max(  H[i-1][j-1] , Math.max( D[i-1][j-1] , V[i-1][j-1] ));
+					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  H[i-1][j-1] , Math.max( D[i-1][j-1] , V[i-1][j-1] ));
 				}
 			}
 		}
@@ -141,7 +143,7 @@ public class AlignmentHelperQuadraticSpace {
 			} else { // from diagonal
 				backtrack[k][0] = CategoricalState.makeSet(A[i-1]);
 				backtrack[k][1] = CategoricalState.makeSet(B[j-1]);
-				myScore -= subs[A[i-1]][B[j-1]];
+				myScore -= AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) ;
 				i--;
 				j--;
 				k++;

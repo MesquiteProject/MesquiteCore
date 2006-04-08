@@ -15,7 +15,8 @@ import mesquite.lib.duties.*;
 public class AlignScoreForTaxon extends AlignScoreForTaxonGen {
 	/*.................................................................................................................*/
 	protected  void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates,  int it1, int it2, MesquiteNumber score, CommandRecord commandRec) {
-		pairwiseTask.alignSequences(observedStates,it1, it2,MesquiteInteger.unassigned,MesquiteInteger.unassigned,false,score,commandRec);
+		if (aligner!=null)
+			aligner.alignSequences(observedStates, it1, it2,MesquiteInteger.unassigned,MesquiteInteger.unassigned,false,score,commandRec);
    	 }
 	/*.................................................................................................................*/
 	 public String getName() {

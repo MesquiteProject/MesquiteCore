@@ -10,7 +10,7 @@ public class DNATaxaDistance extends MolecularTaxaDistance {
 		super(ownerModule,taxa,observedStates, estimateAmbiguityDifferences);
 	}
 		public int getMaxState(){
-			return DNAState.getMaxPossibleState();
+			return DNAState.getMaxPossibleStateStatic();
 		}
 		public CompatibilityTest getCompatibilityTest(){
 			return new DNAStateOnlyTest();

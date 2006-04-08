@@ -12,6 +12,7 @@ public class AlignmentHelperLinearSpace {
 	int[][] subs;
 	int gapOpen;
 	int gapExtend;
+	int alphabetLength;
 	boolean keepGaps = false;
 	int[] followsGapSize;	
 	boolean isMinimize = true;
@@ -33,29 +34,29 @@ public class AlignmentHelperLinearSpace {
 
 	public int bigNumber = MesquiteInteger.infinite/3; // can't use "infitine", because adding anything to it makes a negative number ... bad for minimization problems
 	
-	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend) {
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, false);
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, false);
 	}
 
-	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, boolean keepGaps, int[] followsGapSize) {
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean keepGaps, int[] followsGapSize) {
 		this.keepGaps = keepGaps;
 		this.followsGapSize = followsGapSize;
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, false);
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, false);
 	}
 
 	
-	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, boolean forwardArrayOnly) {
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, forwardArrayOnly);
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean forwardArrayOnly) {
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, forwardArrayOnly);
 	}
 
-	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, boolean forwardArrayOnly, boolean keepGaps, int[] followsGapSize) {
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean forwardArrayOnly, boolean keepGaps, int[] followsGapSize) {
 		this.keepGaps = keepGaps;
 		this.followsGapSize = followsGapSize;
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, forwardArrayOnly);
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, forwardArrayOnly);
 	}
 	
 	
-	private void initialize (int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, boolean forwardArrayOnly) {
+	private void initialize (int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean forwardArrayOnly) {
 		A = seq1;
 		B = seq2;
 
@@ -69,6 +70,8 @@ public class AlignmentHelperLinearSpace {
 		rH = new int[lengthA+1];
 		rD = new int[lengthA+1];
 		rV = new int[lengthA+1];
+		
+		this.alphabetLength = alphabetLength;
 
 	}
 
@@ -139,7 +142,7 @@ public class AlignmentHelperLinearSpace {
 								Math.min ( fD[i-1] + gapOpenOnA + gapExtend,
 												 fV[i-1] + gapOpenOnA + gapExtend));
 	
-					fD[i] = subs[A[i-1]][B[j-1]] +  Math.min(  tmp1H, Math.min ( tmp1D , tmp1V));
+					fD[i] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.min(  tmp1H, Math.min ( tmp1D , tmp1V));
 				} else { //maximize
 					fV[i] = Math.max(  fH[i] + gapOpen + gapExtend,  
 							Math.max ( fD[i] + gapOpen + gapExtend ,
@@ -149,7 +152,7 @@ public class AlignmentHelperLinearSpace {
 								Math.max( fD[i-1] + gapOpenOnA + gapExtend,
 												fV[i-1] + gapOpenOnA + gapExtend));
 					
-					fD[i] = subs[A[i-1]][B[j-1]] +  Math.max(  tmp1H , Math.max( tmp1D, tmp1V ));
+					fD[i] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  tmp1H , Math.max( tmp1D, tmp1V ));
 				}
 				tmp1H = tmp2H;
 				tmp1D = tmp2D;
@@ -221,7 +224,7 @@ public class AlignmentHelperLinearSpace {
 								Math.min ( rD[i+1] + gapOpenOnA + gapExtend,
 												 rV[i+1] + gapOpenOnA + gapExtend));
 	
-					rD[i] = subs[A[i]][B[j]] +  Math.min(  tmp1H, Math.min ( tmp1D , tmp1V));
+					rD[i] = AlignUtil.getCost(subs,A[i],B[j],alphabetLength) +  Math.min(  tmp1H, Math.min ( tmp1D , tmp1V));
 				} else { //maximize
 				
 					rV[i] = Math.max(  rH[i] + gapOpen + gapExtend,  
@@ -232,7 +235,7 @@ public class AlignmentHelperLinearSpace {
 							Math.max( rD[i+1] + gapOpenOnA + gapExtend,
 											rV[i+1] + gapOpenOnA + gapExtend));
 
-					rD[i] = subs[A[i]][B[j]] +  Math.max(  tmp1H , Math.max( tmp1D, tmp1V ));
+					rD[i] = AlignUtil.getCost(subs,A[i],B[j],alphabetLength)  +  Math.max(  tmp1H , Math.max( tmp1D, tmp1V ));
 				}
 				tmp1H = tmp2H;
 				tmp1D = tmp2D;

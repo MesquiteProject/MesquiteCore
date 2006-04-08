@@ -15,6 +15,8 @@ import mesquite.lib.duties.*;
 public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 	/*.................................................................................................................*/
 	protected  void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates, int it1, int it2, MesquiteNumber score, CommandRecord commandRec) {
+		if (aligner==null)
+			return;
 		int firstSite = 0;
 		int lastSite = data.getNumChars()-1;
 		int numChars = lastSite - firstSite+1;
@@ -27,14 +29,15 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 			extracted2[ic] = data.getState(ic, it2);
 		}
 		MesquiteNumber alignScore = new MesquiteNumber();
-		pairwiseTask.alignSequences(extracted1, extracted2, false, alignScore, commandRec);
+  		CategoricalState state = data.getNewState();
+		aligner.alignSequences(extracted1, extracted2, false, alignScore);
 
 		for (int ic = firstSite; ic<=lastSite; ic++){
 			//extracted1[lastSite-ic] = DNAData.complement(data.getState(ic, it1));
 			extracted2[lastSite-ic] = DNAData.complement(data.getState(ic, it2));
 		}
 		MesquiteNumber alignRCScore = new MesquiteNumber();
-		pairwiseTask.alignSequences(extracted1, extracted2, false, alignRCScore, commandRec);
+		aligner.alignSequences(extracted1, extracted2, false, alignRCScore);
 		alignScore.divideBy(alignRCScore);
 		score.setValue(alignScore);
 

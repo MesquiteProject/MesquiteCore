@@ -5,6 +5,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
 public abstract class CategDataMatcher extends DataMatcher {
+	
 
 	public double sequenceMatch(CharacterState[] csOriginalArray, int candidateTaxon, int candidateStartChar, MesquiteInteger candidateEndChar, CommandRecord commandRec) {
 		if (csOriginalArray==null || csOriginalArray.length<=0)

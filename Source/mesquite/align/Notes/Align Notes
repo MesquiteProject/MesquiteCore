@@ -1,18 +1,43 @@
 Align ToDo
 
-	Ã move ClustalAlign files so that they are in Mesquite_Support_Files		
-	- allow reincorporation to deal with only some sequences selected
-	Ã ShiftOtherToMatch should have the flexibility MacClade currently does
-	- AlignScoreForTaxon lets one choose sequence to match
+	- allow reincorporation in, e.g., ClustalAlign, to deal with only some sequences selected
+	- AlignScoreForTaxonGen lets one choose sequence to match
+	- add basic pairwise aligner tool as MacClade has
 	
 	- test code
 
-	Basic Pairwise Aligner:
-		- have it deal properly with ambiguity codes
+	Basic PairwiseAligner:
+		- have preprocess cost matrix for DNA data
 		- deal with terminal gaps with lower cost
-		- give it access to a cost matrix
+		- give it access to a user-supplied cost matrix
 		- GUI for costs
 		- preferences
 		
 
+======
+Travis: 
+	- pickCosts is no longer used to set the basic costs.  That is now done by getDefaultCosts in AlignUtil
+	
+	- I've changed the code so that it copes with amino acid data (it didn't before).  e.g., alphabetLength
+	is now passed along; the substitution matrix produced by getDefaultCosts is now
+	of a size appropriate to the data
+	
+	- Ambiguity codes are now dealt with.  This requires different storage in the int[] A and int[]B.
+	The values in these arrays NO LONGER correspond to the A=0, C=1, G=2, T=3.  Instead, the values
+	here are simply int representations of the lower 32 bits of the state set.  
+	e.g., the following state sets will have the following integer values:
+		A = 1
+		C = 2
+		G = 4
+		T = 8
+		A or G = 5
 		
+	This requires that when two values are compared, a method is now used to calculate the subsitution cost.  
+	This function is  AlignUtil.getCost(subs,a,b,alphabetLength), and it figures out the ambiguity cost.
+	We should make this faster for DNA data by having a pre-processed subs matrix that is
+	16x16, but I just haven't managed to do that yet.
+	
+	- I commented out your "score is" logging as it was taking too long!
+	
+	- some of the modules I wrote (e.g., AlignMatch)  now use PairwiseAligner rather than a module.
+	

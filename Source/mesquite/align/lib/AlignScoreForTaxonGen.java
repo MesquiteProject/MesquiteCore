@@ -16,16 +16,19 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	protected MatrixSourceCoord matrixSourceTask;
 	protected Taxa currentTaxa = null;
 	protected MCharactersDistribution observedStates =null;
-	 protected TwoSequenceAligner pairwiseTask;
+	protected PairwiseAligner aligner;
+	protected int alphabetLength;
+	 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
  		matrixSourceTask = (MatrixSourceCoord)hireEmployee(commandRec, MatrixSourceCoord.class, "Source of character matrix (for number of stops)"); 
  		if (matrixSourceTask==null)
  			return sorry(commandRec, getName() + " couldn't start because no source of character matrices was obtained.");
-		pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
+/*
+ 		pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
 		if (pairwiseTask == null)
 			return sorry(commandRec, getName() + " couldn't start because no pairwise aligner obtained.");
-		return true;
+*/		return true;
   	 }
   	 
 	/*.................................................................................................................*/
@@ -33,6 +36,14 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
  	public void employeeQuit(MesquiteModule employee) {
  		if (employee == matrixSourceTask)  // character source quit and none rehired automatically
  			iQuit();
+	}
+	/*.................................................................................................................*/
+	private void initAligner() {
+  		MesquiteInteger gapOpen = new MesquiteInteger();
+   		MesquiteInteger gapExtend = new MesquiteInteger();
+  		int subs[][] = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+   		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
+   		aligner.setUseLowMem(false);
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -64,6 +75,11 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 		
 		MesquiteNumber score = new MesquiteNumber();
 		
+
+		if (aligner==null) {
+			alphabetLength = ((CategoricalState)data.makeCharacterState()).getMaxPossibleState()+1;	  
+			initAligner();
+		}
 
 		getAlignmentScore(data, (MCategoricalDistribution)observedStates,0,it,score,commandRec);
 

@@ -1,10 +1,10 @@
 package mesquite.align.PairwiseAlignerBasicGaps;
 
-import mesquite.align.lib.PairwiseAligner;
-import mesquite.align.lib.TwoSequenceAlignerGaps;
+import mesquite.align.lib.*;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteNumber;
+import mesquite.categ.lib.*;
 
 public class PairwiseAlignerBasicGaps extends TwoSequenceAlignerGaps {
 	
@@ -24,12 +24,14 @@ public class PairwiseAlignerBasicGaps extends TwoSequenceAlignerGaps {
 	/**
 	 * Override method in superclass
 	 */
-	public long[][] alignSequences(long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score, CommandRecord commandRec) {
+	public long[][] alignSequences(long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score, CategoricalState state, CommandRecord commandRec) {
    		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
-   		int subs[][] = pickCosts(gapOpen, gapExtend);  
+ 		int alphabetLength = state.getMaxPossibleState()+1;
+  		int subs[][] = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
 
-   		PairwiseAligner pa = new PairwiseAligner(true,subs,gapOpen.getValue(), gapExtend.getValue());
+
+   		PairwiseAligner pa = new PairwiseAligner(true,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
 		return pa.alignSequences(A_withGaps,B_withGaps,returnAlignment, score);
 	}
 	

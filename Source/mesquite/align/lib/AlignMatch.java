@@ -19,68 +19,96 @@ import mesquite.align.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.categ.lib.*;
 
 /* TODO: save pairwiseTask to snapshot */
 /* ======================================================================== */
 public abstract class AlignMatch extends CategDataMatcher {
 	 boolean preferencesSet = false;
-	 TwoSequenceAligner pairwiseTask;
+	PairwiseAligner aligner;
 	long originalState, candidateState;
+	int alphabetLength;
 	int maxLengthDiff = 2;
 	MesquiteCommand ptC;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
-		pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
+/*		pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
 		if (pairwiseTask == null)
 			return sorry(commandRec, getName() + " couldn't start because no pairwise aligner obtained.");
 		ptC = makeCommand("setPairwiseTask",  this);
 		pairwiseTask.setHiringCommand(ptC);
-		addMenuItem("Allowed Length Differences...", makeCommand("setMaxLengthDiff", this));
+*/
+
+
+   		addMenuItem("Allowed Length Differences...", makeCommand("setMaxLengthDiff", this));
 		return true;
+	}
+	/*.................................................................................................................*/
+	private void initAligner() {
+  		MesquiteInteger gapOpen = new MesquiteInteger();
+   		MesquiteInteger gapExtend = new MesquiteInteger();
+  		alphabetLength = ((CategoricalState)state).getMaxPossibleState()+1;
+  		int subs[][] = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+   		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
+	}
+	/*.................................................................................................................*/
+	public void setTableAndData( MesquiteTable table, CharacterData data) {
+		super.setTableAndData(table,data);
+		if (state!=null)
+			initAligner();
 	}
 	/*.................................................................................................................*/
  	 public Snapshot getSnapshot(MesquiteFile file) {
   	 	Snapshot temp = new Snapshot();
 	 	temp.addLine("setMaxLengthDiff " + maxLengthDiff);
-	 	if (pairwiseTask!=null)
-	 		temp.addLine("setPairwiseTask ", pairwiseTask);  
+//	 	if (pairwiseTask!=null)
+//	 		temp.addLine("setPairwiseTask ", pairwiseTask);  
 	 	return temp;
  	 }
  
 	/*.................................................................................................................*/
    	/** Returns whether or not better matches have higher values or not.*/
 	public boolean getHigherIsBetter() {
-		if (pairwiseTask==null)
+		return false;
+		/*if (pairwiseTask==null)
 			return false;
 		return pairwiseTask.getHigherIsBetter();
+		*/
 	}   	
 	
 	/*.................................................................................................................*/
    	/** Returns the match of the two long arrays*/
 	public double sequenceMatch(long[] originalArray, long[] candidateArray, CommandRecord commandRec){
- 		if (candidateArray==null || pairwiseTask ==null || originalArray==null)
+ 		if (candidateArray==null || aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
   		MesquiteNumber score = new MesquiteNumber();
-   		pairwiseTask.alignSequences(originalArray,candidateArray,false,score,commandRec);
+  		CategoricalState state = ((CategoricalData)data).getNewState();
+  		aligner.alignSequences(originalArray,candidateArray,false, score);
+   		//pairwiseTask.alignSequences(originalArray,candidateArray,false,score,state, commandRec);
    		return score.getDoubleValue();
 	}
 
 	
 	public double getBestMatchValue(long[] originalArray,  CommandRecord commandRec){
-  		MesquiteNumber score = pairwiseTask.getScoreOfIdenticalSequences(originalArray, commandRec);
+		if (aligner ==null || originalArray==null)
+   			return MesquiteDouble.unassigned;
+  		MesquiteNumber score = aligner.getScoreOfIdenticalSequences(originalArray, commandRec);
    		return score.getDoubleValue();
 	}
 	
 	public double getApproximateWorstMatchValue(long[] originalArray, CommandRecord commandRec){
-		MesquiteNumber score = pairwiseTask.getVeryBadScore(originalArray, commandRec);
+		if (aligner ==null || originalArray==null)
+   			return MesquiteDouble.unassigned;
+ 		CategoricalState state = ((CategoricalData)data).getNewState();
+		MesquiteNumber score = aligner.getVeryBadScore(originalArray, alphabetLength, commandRec);
    		return score.getDoubleValue();
 	}
 
 		
 		/** Returns whether candidate stretch of matrix matches the data contained in the long array*/
    	public double sequenceMatch(long[] originalArray, int candidateTaxon, int candidateStartChar, MesquiteInteger candidateEndChar, CommandRecord commandRec){
-   		if (data==null || pairwiseTask ==null || originalArray==null)
+   		if (data==null || aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
   		
    		double numberOfMatches = 0.0;
@@ -91,14 +119,13 @@ public abstract class AlignMatch extends CategDataMatcher {
    		MesquiteNumber score = new MesquiteNumber();
    		double bestScore = MesquiteDouble.unassigned;
    		int bestLength = originalArray.length;
-//Debugg.println("/n||||||||||||");
    		for (int length = startLength; length<=endLength; length++) {
    	  		long[] candidateArray = ((CategoricalData)data).getLongArray(candidateStartChar,length,candidateTaxon, false);
    	  		candidateArray = getTransformedCandidateArray(candidateArray);
-   	  		pairwiseTask.alignSequences(originalArray,candidateArray,false,score,commandRec);
+   	  		aligner.alignSequences(originalArray,candidateArray,false,score);
    	  		double newScore = 1.0*score.getIntValue();
  //  	  	Debugg.println("  ic: " + candidateStartChar + ", length:  " + length + ", score: " + newScore);
-  	  		if ((pairwiseTask.getHigherIsBetter() && (newScore>bestScore)) || (!pairwiseTask.getHigherIsBetter() && (newScore<bestScore))) {
+  	  		if ((aligner.getHigherIsBetter() && (newScore>bestScore)) || (!aligner.getHigherIsBetter() && (newScore<bestScore))) {
    	  			bestScore = newScore;
    	  			bestLength = length;
    	  		}
@@ -116,7 +143,7 @@ public abstract class AlignMatch extends CategDataMatcher {
  		MesquiteInteger pos = new MesquiteInteger(0);
  		/*.................................................................................................................*/
  		public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
- 	   		 if (checker.compare(this.getClass(), "Sets the module that aligns sequence", "[name of module]", commandName, "setPairwiseTask")) {
+ /*	   		 if (checker.compare(this.getClass(), "Sets the module that aligns sequence", "[name of module]", commandName, "setPairwiseTask")) {
  	   			TwoSequenceAligner temp =  (TwoSequenceAligner)replaceCompatibleEmployee(commandRec, TwoSequenceAligner.class, arguments, pairwiseTask, null);
     			 if (temp!=null) {
     				 pairwiseTask = temp;
@@ -125,7 +152,9 @@ public abstract class AlignMatch extends CategDataMatcher {
      				 return pairwiseTask;
     			 }
     		 }
- 	   		 else if (checker.compare(this.getClass(), "Sets the maximum number of length differences between the two sequences", "[number]", commandName, "setMaxLengthDiff")) {
+ 	   		 else 
+ 	   		 */
+ 			if (checker.compare(this.getClass(), "Sets the maximum number of length differences between the two sequences", "[number]", commandName, "setMaxLengthDiff")) {
  				int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
  				if (!MesquiteInteger.isCombinable(newNum))
  					newNum = MesquiteInteger.queryInteger(containerOfModule(), "Set Allowed Length Differences", "Allowed Length Differences:", maxLengthDiff, 0, MesquiteInteger.infinite);

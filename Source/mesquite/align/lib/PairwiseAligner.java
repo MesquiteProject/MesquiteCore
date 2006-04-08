@@ -1,7 +1,8 @@
 package mesquite.align.lib;
 
-import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.*;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
@@ -28,6 +29,8 @@ public class PairwiseAligner  {
 	public int lengthA;
 	public int lengthB;
 	
+	private int alphabetLength=4;
+	
 	private int lastAWhenBAligned[]; //lowMem alignment only
 	private int shapeWhenBAligned[];//lowMem alignment only
 	private boolean gapInsertionArray[];//lowMem alignment only
@@ -38,10 +41,11 @@ public class PairwiseAligner  {
 	
 	public boolean seqsWereExchanged=false;
 	
-	public PairwiseAligner (boolean keepGaps, int[][] subs, int gapOpen, int gapExtend) {
+	public PairwiseAligner (boolean keepGaps, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
 		setSubsCostMatrix(subs);
 		setGapCosts(gapOpen, gapExtend);
 		setKeepGaps (keepGaps);
+		this.alphabetLength=alphabetLength;
 		gapCostsInitialized = subCostsInitialized = true;
 	}	
 	
@@ -62,37 +66,37 @@ public class PairwiseAligner  {
 		if ( returnAlignment) { 
 			if (useLowMem) {
 				//low memory (but slower, due to recursion) alignment
-				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend);
+				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
 				lastAWhenBAligned = new int[lengthB +1];
 				shapeWhenBAligned  = new int[lengthB +1];
 				int myScore = recursivelyFillArray(helper, 0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
 				
-				MesquiteTrunk.mesquiteTrunk.logln("score is " + myScore);
+//				Debugg.println("score is " + myScore);   //Travis:  generally we recommend using Debugg.println, as this is NOT intended to be present in released code, so it is easy to find
 				
 				return recoverAlignment(helper);
 			} else {
 //				 fast (but quadratic space) alignment
-				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend);
+				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
 				long ret[][] = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
-				MesquiteTrunk.mesquiteTrunk.logln("score is " + score);
+//				Debugg.println("score is " + score);
 				return ret;
 			}
 		} else { 
 			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.	
-			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, true);
+			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true);
 			helper.fillForward(0,lengthB,0,lengthA,helper.noGap);			
 			int myScore = Math.min(helper.fH[lengthA], Math.min (helper.fD[lengthA], helper.fV[lengthA])) ;
 			
 			if (score != null)
 				score.setValue( myScore );
 
-			MesquiteTrunk.mesquiteTrunk.logln("score is " + myScore);			
+//			Debugg.println("score is " + myScore);			
 			
 			return null;  // no alignment
 		}
 	}
 	
-
+	
 	public int preProcess (long[] A_withGaps, long[] B_withGaps) { //translates sequences to ints, strips gaps, and possibly swaps A and B.
 		int i;
 		int totalGapChars = 0;
@@ -108,11 +112,11 @@ public class PairwiseAligner  {
 		}
 		
 		//translate sequences to ints, and remove gaps
+		lengthA = 0;  //Travis:  where were these two initialized?
+		lengthB = 0;
 		for (i=0; i<A_withGaps.length; i++) {
 			if (!CategoricalState.isInapplicable(A_withGaps[i])) {
-				int state = (int)CategoricalState.getOnlyElement(A_withGaps[i]);
-				if (state >=0)  //Travis: added this to protect against ambiguity codes; ideally do this better
-					A[lengthA]= state;
+				A[lengthA]= MolecularState.getJustStateBitsAsInt(A_withGaps[i]);  //gets the lower 32 bits of the state set
 				lengthA++;
 			}	else if (keepGaps) {
 				followsGapSize[lengthA]++;
@@ -122,9 +126,7 @@ public class PairwiseAligner  {
 
 		for (i=0; i<B_withGaps.length; i++) { 
 			if (!CategoricalState.isInapplicable(B_withGaps[i])) {
-				int state = (int)CategoricalState.getOnlyElement(B_withGaps[i]);
-				if (state>=0)  //Travis: added this to protect against ambiguity codes; ideally do this better
-						B[lengthB]= state;
+				B[lengthB] = MolecularState.getJustStateBitsAsInt(B_withGaps[i]);  //gets the lower 32 bits of the state set
 				lengthB++;
 			}
 		}	
@@ -201,7 +203,7 @@ public class PairwiseAligner  {
 			} else {
 				int a = A[i];
 				int b = B[midRow];
-				int s = subs[a][b];
+				int s = AlignUtil.getCost(subs,a,b,alphabetLength);
 				diagonalColScore = Math.min(helper.fH[i], Math.min (helper.fD[i], helper.fV[i])) +
 										Math.min(helper.rH[i+1], Math.min (helper.rD[i+1], helper.rV[i+1])) +
 										s;
@@ -323,5 +325,77 @@ public class PairwiseAligner  {
 		return seq2return;
 	}
 	
+	/** This method returns true if better alignment scores are higher.  Override if needed. */
+	public boolean getHigherIsBetter() {
+		return false;
+	}   	
+
+	/** This method returns the score of two identical copies of the passed sequence.  Override if needed. */
+	public MesquiteNumber getScoreOfIdenticalSequences(long[] sequence, CommandRecord commandRec) {
+		return new MesquiteNumber(0.0);
+	}
+
+
+		/** This method returns the score of the worst possible match with the passed sequence.  Acceptable if result is approximate.  Override if needed. */
+	public MesquiteNumber getVeryBadScore(long[] sequence, int alphabetLength, CommandRecord commandRec) {
+		MesquiteNumber score = new MesquiteNumber();
+		long[]opposite = new long[sequence.length];
+		for (int i=0; i<sequence.length; i++) {
+			long rand = CategoricalState.emptySet();
+			boolean switched =false;
+			int first = (int)Math.random() * alphabetLength;  // pick random bit
+			if (first>alphabetLength-1)
+				first = alphabetLength-1;
+			if (first<0)
+				first = 0;
+			for (int e=first; e<alphabetLength; e++) {
+				if (!CategoricalState.isElement(sequence[i],e))  {
+					rand = CategoricalState.addToSet(rand,e);
+					switched = true;
+					break;
+				}
+			}
+			if (!switched)
+				for (int e=first; e>=0; e--) {
+					if (!CategoricalState.isElement(sequence[i],e))  {
+						rand = CategoricalState.addToSet(rand,e);
+						switched = true;
+						break;
+					}
+				}
+			if (!switched)
+				opposite[i]=sequence[i];
+			else
+				opposite[i] =rand;
+		}
+		alignSequences(sequence,opposite, false, score);
+		return score;
+	}
+
 	
+	public long[][] alignSequences(MCategoricalDistribution data, int taxon1, int taxon2, int firstSite, int lastSite, boolean returnAlignment, MesquiteNumber score, CommandRecord commandRec) {
+		if (lastSite - firstSite+1 <0 || !MesquiteInteger.isCombinable(firstSite) || !MesquiteInteger.isCombinable(lastSite)){
+			firstSite = 0;
+			lastSite = data.getNumChars()-1;
+		}
+		if (firstSite<0)
+			firstSite=0;
+		if (lastSite>data.getNumChars()-1 || lastSite<0)
+			lastSite = data.getNumChars()-1;
+		int numChars = lastSite - firstSite+1;
+		
+		long[] extracted1 = new long[numChars];
+		long[] extracted2 = new long[numChars];
+		
+
+		for (int ic = firstSite; ic<=lastSite; ic++){
+			extracted1[ic-firstSite] = data.getState(ic, taxon1);
+			extracted2[ic-firstSite] = data.getState(ic, taxon2);
+		}
+		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
+		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
+	
+		return aligned;
+	}
+
 }

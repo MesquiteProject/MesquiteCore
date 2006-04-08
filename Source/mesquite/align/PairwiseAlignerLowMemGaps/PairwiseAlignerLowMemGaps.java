@@ -1,8 +1,7 @@
 package mesquite.align.PairwiseAlignerLowMemGaps;
 
-import mesquite.align.lib.PairwiseAligner;
-import mesquite.align.lib.TwoSequenceAligner;
-import mesquite.categ.lib.CategoricalState;
+import mesquite.align.lib.*;
+import mesquite.categ.lib.*;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
@@ -29,13 +28,14 @@ public class PairwiseAlignerLowMemGaps extends TwoSequenceAligner {
    	}
 
 	
-	public long[][] alignSequences(long[] sequence1, long[] sequence2, boolean returnAlignment, MesquiteNumber score, CommandRecord commandRec) {
+	public long[][] alignSequences(long[] sequence1, long[] sequence2, boolean returnAlignment, MesquiteNumber score, CategoricalState state, CommandRecord commandRec) {
 
    		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
-   		int subs[][] = pickCosts(gapOpen, gapExtend);  
+ 		int alphabetLength = state.getMaxPossibleState()+1;
+  		int subs[][] = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
 
-   		PairwiseAligner pa = new PairwiseAligner(true,subs,gapOpen.getValue(), gapExtend.getValue());
+   		PairwiseAligner pa = new PairwiseAligner(true,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
 		pa.setUseLowMem(true);
 		return pa.alignSequences(sequence1,sequence2,returnAlignment, score);
 
