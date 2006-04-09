@@ -1679,9 +1679,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		for (int c=firstColumnVisible; c<numColumnsTotal; c++) {
 			sum+=columnWidths[c];
 			if (sum >= matrixWidth) {
-				numColumnsVisible= (c-firstColumnVisible);  //had been +1 but last column may not be entirely visible
 				break;
 			}
+			numColumnsVisible= (c-firstColumnVisible+1);  //had been +1 but last column may not be entirely visible
 		}
 		if (numColumnsVisible<1)
 			horizScroll.setBlockIncrement(1);
@@ -3797,6 +3797,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*...............................................................................................................*/
 	/** sets which column is the last visible.*/
 	public void setLastColumnVisible (int value, boolean repaintPlease) {
+		if (value == lastColumnVisible)
+			return;
+		if (value<getNumColumns() && value>=0)
+			lastColumnVisible = value;
 		int firstColumn = value-getNumColumnsVisible()+1;
 		if (firstColumn<0) firstColumn=0;
 		setFirstColumnVisible(firstColumn,repaintPlease);		
@@ -3873,6 +3877,29 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		mg.setXORMode(Color.white);
 		mg.drawLine(0,y, matrixWidth, y);
 		mg.dispose();
+	}
+	/*...............................................................................................................*/
+	public void deEmphasizeRow( int row){
+		Graphics mg = matrix.getGraphics();
+		if (mg==null || row <0)
+			return;
+		matrix.redrawRow(mg, row);
+	}
+	/*...............................................................................................................*/
+	public void emphasizeRow(int previousRow, int row, int rowNotToEmphasize, boolean emphasizeSelectedRows){
+		Graphics mg = matrix.getGraphics();
+		if (mg==null)
+			return;
+		if (previousRow!=row) {
+			if (row!=rowNotToEmphasize) {
+				int left = matrix.leftEdgeOfRow(row);
+				int top = matrix.startOfRow(row);
+				int right = matrix.rightEdgeOfRow(row);
+				GraphicsUtil.darkenRectangle(mg,left+1, top+1,right-left, matrix.endOfRow(row)-top);	
+			}
+			if (previousRow>-1)
+				matrix.redrawRow(mg, previousRow);
+		}
 	}
 }
 

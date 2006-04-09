@@ -45,7 +45,7 @@ public abstract class EditorPanel extends MesquitePanel {
 	public int startOfColumn(int column) {
 			if (column<tb.firstColumnVisible)
 				return -1;
-			else if (column>tb.firstColumnVisible + tb.numColumnsTotal || column>tb.numColumnsTotal)
+			else if (column>tb.firstColumnVisible + tb.numColumnsTotal || column>=tb.numColumnsTotal)
 				return -1;
 			else {
 				int lineX = 0;
@@ -56,6 +56,14 @@ public abstract class EditorPanel extends MesquitePanel {
 				}
 				return lineX;
 			}
+	}
+	public int endOfColumn(int column) {
+		if (column<tb.firstColumnVisible)
+			return -1;
+		else if (column>tb.firstColumnVisible + tb.numColumnsTotal || column>=tb.numColumnsTotal)
+			return -1;
+		else
+			return startOfColumn(column)+tb.columnWidths[column];
 	}
 	public int endOfLastColumn() {
 			int lastColumn = tb.getLastColumn();
@@ -79,6 +87,20 @@ public abstract class EditorPanel extends MesquitePanel {
 				return lineX;
 			}
 	}
+	public int leftEdgeOfRow(int row) {
+		return startOfColumn(tb.firstColumnVisible);
+	}
+	public int rightEdgeOfRow(int row) {
+		return endOfColumn(tb.getLastColumnVisible());
+	}
+	public int endOfRow(int row) {
+		if (row<tb.firstRowVisible)
+			return -1;
+		else if (row>tb.firstRowVisible + tb.numRowsTotal)
+			return -1;
+		else
+			return startOfRow(row)+tb.rowHeights[row];
+	}
 	public int endOfLastRow() {
 			int lastRow = tb.getLastRow();
 			if (lastRow<0)
@@ -86,6 +108,7 @@ public abstract class EditorPanel extends MesquitePanel {
 			else
 				return startOfRow(lastRow)+tb.rowHeights[lastRow];
 	}
+	
 	public abstract int findRegionInCellH(int x);
 	public abstract int findRegionInCellV(int y);
 	/*@@@...............................................................................................................*/

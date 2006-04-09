@@ -88,6 +88,18 @@ timer6.end();
 	public void redrawCell(Graphics g, int column, int row) {
 		redrawCellOffset(g, column, row, 0, 0);
 	}
+
+	public void redrawCellBlock(Graphics g, int columnStart, int columnEnd, int rowStart, int rowEnd) {
+		for (int i = columnStart; i<=columnEnd; i++)
+			for (int j=rowStart; j<rowEnd; j++)
+				redrawCellOffset(g, i, j, 0, 0);
+	}
+
+	public void redrawRow(Graphics g, int row) {
+		for (int i = table.getFirstColumnVisible(); i<=table.getLastColumnVisible(); i++)
+				redrawCellOffset(g, i, row, 0, 0);
+	}
+
 	
 	//draws cell appearing at column, row, but with contents for cell column+offsetColumn, row+offsetRow.  Used with non-zero offsets for quick draw during manual sequence alignment
 	public void redrawCellOffset(Graphics g, int column, int row, int offsetColumn, int offsetRow) {
