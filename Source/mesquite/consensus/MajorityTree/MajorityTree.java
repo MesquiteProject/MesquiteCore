@@ -54,8 +54,8 @@ public class MajorityTree extends Consenser
     /** List of nodes that belong to the Majority tree. */
     Vector majorityNodes;
 
-    /** List of selected trees. */
-    TreeVector list;
+    /** List of selected trees.  WPM april06: this was not used and so was deleted
+    TreeVector list;*/
 
     /** Mapping of leaves and their parents. */
     HashMap parentOfLeaf;
@@ -251,9 +251,9 @@ public class MajorityTree extends Consenser
      */
     public Tree consense( TreeVector list, CommandRecord commandRec)
     {
-	this.list = list;
+	//this.list = list;
 	numLeaves = list.getTaxa().getNumTaxa();
-	numTrees = list.size();
+	numTrees = list.getNumberOfTrees();
 
 	//System.out.println("Consense being called on tree");
 
@@ -296,7 +296,7 @@ public class MajorityTree extends Consenser
 	    rememberedPSWs.clear();
 	    table.clear();
 
-	    for ( int i = 0; i < list.size(); ++i ) {
+	    for ( int i = 0; i < list.getNumberOfTrees(); ++i ) {
 	    	commandRec.tick("Majority Rules Consensus: putting tree " + (i+1));
 		t = list.getTree(i);
 
@@ -317,7 +317,7 @@ public class MajorityTree extends Consenser
 
 	int firstNode = 0;
 
-	for ( int j = 0; j < list.size(); ++j ) {
+	for ( int j = 0; j < list.getNumberOfTrees(); ++j ) {
 	//   System.out.println("Consense: inside forloop");
 	   t = list.getTree(j);
 	    tempPSW = (MajPSWTree)rememberedPSWs.get(t);
@@ -343,7 +343,7 @@ public class MajorityTree extends Consenser
 	tempTree.setTaxonNumber( last, 0, true );
 	
 	//WPM: added this
-	storeScores(tempTree, tempTree.getRoot(),list.size());
+	storeScores(tempTree, tempTree.getRoot(),list.getNumberOfTrees());
 
 	//System.out.println("before reroot:" +tempTree.writeTree(0, true, true, true, true,":"));
 	tempTree.reroot(tempTree.nodeOfTaxonNumber(0), tempTree.getRoot(), true);

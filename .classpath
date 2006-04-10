@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="Source"/>
+	<classpathentry excluding="mesquite/treefarm/ConsensusTree/" kind="src" path="Source"/>
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry exported="true" kind="lib" path="pal.zip"/>
 	<classpathentry exported="true" kind="lib" path="JSci.zip"/>

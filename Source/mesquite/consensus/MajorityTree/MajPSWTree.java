@@ -109,11 +109,15 @@ public class MajPSWTree
 	    int l = t.firstDaughterOfNodeUR(a,v);
 	    int r = t.lastDaughterOfNodeUR(a,v);
 
+/**/
 	    parentHash1 = getParentHashCode( l, r, FIRST_FUNCTION );
 	    parentHash2 = getParentHashCode( l, r, SECOND_FUNCTION );
-
+/**/
+	    parentHash1 = getParentHashCodeWPM( a, v, FIRST_FUNCTION );
+	    parentHash2 = getParentHashCodeWPM(a, v, SECOND_FUNCTION );
+/**/
 	    internalH1[v] = parentHash1;
-	    internalH2[v] = parentHash2;
+	    internalH2[v] = parentHash2; 
 
 	    if (numOfChildren > 1) {
 		vw[index][0] = v;
@@ -166,6 +170,56 @@ public class MajPSWTree
      * Gets the hashcode of a parent node, this is trivial because during the traversal
      * we compute the hashcodes of the children before getting to the parent.
      *
+      *@param a  ancestor defining direction
+    *@param parent node  //VERSION MODIFIED BY WPM April 06
+     *@param function Specifies which hash function to use.
+     *@return The Hashcode for the parent
+     */
+    private int getParentHashCodeWPM(int a, int parent, int function)
+    {
+	int sumHash = 0, parentHash = 0;
+
+
+	switch( function ) {
+	case FIRST_FUNCTION:
+
+	    for( int d = t.firstDaughterOfNodeUR(a,parent); d > 0; d = t.nextSisterOfNodeUR(a,parent,d) ) {
+		    if ( t.nodeIsTerminal(d) ) {
+				if (h1[t.taxonNumberOfNode(d)] == -1)
+				    System.err.println("H1[d] is -1");
+				else
+				    sumHash += h1[ t.taxonNumberOfNode(d) ];
+		    } else {
+		    	sumHash += internalH1[d];
+		    }
+	    }
+System.out.println("wfd " + t.firstDaughterOfNodeUR(a,parent) + " hash " + sumHash);
+	    parentHash = sumHash % tableSize;
+	    break;
+
+	case SECOND_FUNCTION:
+	    for( int d = t.firstDaughterOfNodeUR(a,parent); d > 0; d = t.nextSisterOfNodeUR(a,parent,d) ) {
+
+		    if( t.nodeIsTerminal(d) ) {
+				if (h2[t.taxonNumberOfNode(d)] == -1)
+				    System.err.println("H2[d] is -1");
+				else
+					sumHash += h2[ t.taxonNumberOfNode(d) ];
+		    } else {
+		    	sumHash += internalH2[d];
+		    }
+	    }
+  System.out.println("wfd2 " + t.firstDaughterOfNodeUR(a,parent) + " hash " + sumHash);
+	    parentHash = sumHash % tableSize;
+	    break;
+	}
+	return parentHash;
+    }
+
+    /**
+     * Gets the hashcode of a parent node, this is trivial because during the traversal
+     * we compute the hashcodes of the children before getting to the parent.
+     *
      *@param left The left child
      *@param right The right child
      *@param function Specifies which hash function to use.
@@ -197,6 +251,7 @@ public class MajPSWTree
 		rightHash = internalH1[right];
 	    }
 
+ System.out.println("fd " + left + " hash " + (leftHash + rightHash));
 	    parentHash = (leftHash + rightHash) % tableSize;
 	    break;
 
@@ -220,6 +275,7 @@ public class MajPSWTree
 		rightHash = internalH2[right];
 	    }
 
+	    System.out.println("fd2 " + left + " hash " + (leftHash + rightHash));
 	    parentHash = (leftHash + rightHash) % tableSize;
 	    break;
 	}

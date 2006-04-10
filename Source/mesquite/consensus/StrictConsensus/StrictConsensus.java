@@ -76,7 +76,7 @@ public class StrictConsensus extends Consenser {
 		Tree tempTree;
 		PSWTree tempPSW;
 		boolean allTreesHaveTwoChildRoots = true;
-		for(int i = 0; i < list.size(); ++i) {
+		for(int i = 0; i < list.getNumberOfTrees(); ++i) {
 			tempTree = list.getTree(i);
 			commandRec.tick("Majority Rules Consensus: putting tree " + (i+1));
 			if (!rememberedPSWs.containsKey(tempTree)) {
@@ -93,7 +93,7 @@ public class StrictConsensus extends Consenser {
 
 		/* mark edges in the bipartition table for removal if they are not found in all other trees */
 		stack = new LrnwStack(tempPSW.getN() * 2);
-		for (int i = 1; i< list.size(); ++i) {
+		for (int i = 1; i< list.getNumberOfTrees(); ++i) {
 			tempTree = list.getTree(i);
 			tempPSW = (PSWTree) rememberedPSWs.get(tempTree);
 			commandRec.tick("Majority Rules Consensus: checking partitions in tree " + (i+1));
