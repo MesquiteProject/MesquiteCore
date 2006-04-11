@@ -104,13 +104,13 @@ public class AlignmentHelperQuadraticSpace {
 			if (i ==0) { 
 				while (j>0){
 					backtrack[k][0] = CategoricalState.inapplicable;
-					backtrack[k][1] = CategoricalState.makeSet(B[j-1]);
+					backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
 					j--;
 					k++;
 				}
 			} else if ( j == 0 ) {
 				while (i>0){
-					backtrack[k][0] = CategoricalState.makeSet(A[i-1]);
+					backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
 					backtrack[k][1] = CategoricalState.inapplicable;
 					i--;
 					k++;
@@ -121,7 +121,7 @@ public class AlignmentHelperQuadraticSpace {
 				if (keepGaps && i>0 && followsGapSize[i-1]>0)
 					gapOpenOnA = 0;
 				
-				backtrack[k][0] = CategoricalState.makeSet(A[i-1]);
+				backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
 				backtrack[k][1] = CategoricalState.inapplicable;
 				if (i>0 &&  H[i][j] == H[i-1][j] + gapExtend){
 					myScore -= gapExtend;
@@ -132,7 +132,7 @@ public class AlignmentHelperQuadraticSpace {
 				k++;
 			} else if (V[i][j] == myScore) { //an optimal path came from vertical
 				backtrack[k][0] = CategoricalState.inapplicable;
-				backtrack[k][1] = CategoricalState.makeSet(B[j-1]);
+				backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
 				if ( j>0 && V[i][j] == V[i][j-1] + gapExtend){
 					myScore -= gapExtend;
 				} else { //V[i][j]  == D[i-1][j] + gapOpen + gapExtend  or V[i][j] == H[i-1][j] + gapOpen + gapExtend
@@ -141,8 +141,8 @@ public class AlignmentHelperQuadraticSpace {
 				j--;
 				k++;
 			} else { // from diagonal
-				backtrack[k][0] = CategoricalState.makeSet(A[i-1]);
-				backtrack[k][1] = CategoricalState.makeSet(B[j-1]);
+				backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
+				backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
 				myScore -= AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) ;
 				i--;
 				j--;
