@@ -38,10 +38,16 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
  			iQuit();
 	}
 	/*.................................................................................................................*/
+ 	/** Override if one wishes to modify the alignment costs away from the default. */
+ 	 	public int[][] modifyAlignmentCosts(int[][] defaultSubs) {
+   		return defaultSubs;
+	}
+	/*.................................................................................................................*/
 	private void initAligner() {
   		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
-  		int subs[][] = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+  		int[][] subs = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+  		subs = modifyAlignmentCosts(subs);
    		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
    		aligner.setUseLowMem(false);
 	}
