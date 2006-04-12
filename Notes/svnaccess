@@ -53,6 +53,8 @@ wheeler = rw
 
 [/arizona]
 @committers = rw
+oliver=rw
+schmidt=rw
 * =
 
 [/arizona/trunk/Arizona/Source/mesquite/oliver]
