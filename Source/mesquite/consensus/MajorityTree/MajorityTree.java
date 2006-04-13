@@ -739,6 +739,7 @@ public class MajorityTree extends Consenser
     }
 
 
+	static Random r = new Random();
 
     /**
      * Used to select unique random hashCodes for each taxon.
@@ -746,7 +747,7 @@ public class MajorityTree extends Consenser
      */
     private void selectRandomHashes( int tableSize )
     {
-	Random r = new Random();
+	//Random r = new Random();
 	int rn = 0;
         int newTableSize = 10 * tableSize;
 

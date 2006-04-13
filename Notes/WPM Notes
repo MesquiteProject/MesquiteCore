@@ -57,15 +57,21 @@ java.lang.NullPointerException
 	at mesquite.lib.MainThread.run(MainThread.java:116)
 ===============
 bugs to fix for 1.07
+еее high ascii file paths don't work (Laurin)
+ееее speed deleteRows in CharacterList
+ееее add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
+newееее Reshuffle within TAxa (matrices, characters)
+
+├├├├ why lasrdisc & stochchar disagree?
+
 еее manual: COMET
 ├├├ printing trace char legend
-ееее permit missing ins quared reconstruct
+├├├├ permit missing ins quared reconstruct
 ееее sort taxa by extension
-ееее single tree block consensus tree
-ееее speed deleteRows in CharacterList
+├├├├ single tree block consensus tree
+├├├├ copy/paste block size mismatch fix doesn't work
 ееее fix multiple menu bar refreshes and project refreshes
 еее stoch char mapping: legend should say stoch char
-ееее add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
 ееее maureen's printing pdf issue
 ееее kip's POY format issue
 ├├├├ paste tree, save, tree source/tree window doesn't know updated number of trees
@@ -74,17 +80,15 @@ bugs to fix for 1.07
 еее collab needs to be off-turnable
 еее check use of CategoricalStatTest etc. -- only or not?
 еее changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
-newееее Reshuffle within TAxa (matrices, characters)
 newеее>>> tree source coordiantor; finite and non finite
 еее getcolorsequence recycle vector if possible
 еее David: the Define Configuration window in Mesquite doesn't have a scroll bar, and so you can only see the first few packages.
-еее high ascii file paths don't work (Laurin)
 ееее [*cut] at file writing long line breaks
 ееее when breaking long lines in NEXUS put []comment so that the lines can be redone
 CellPictures warning still appearing
 еее WINDOWS: Boris's copy paste matrix bug
 ееее WINDOWS: emailing tree doesn't work under Windows
-ееее WINDOWS: printing tree out of memory bug
+ееее WINDOWS: printing tree out of memory bug (kirkup)
 еее???not reproduced why are typesets getting writen into notes block???
 ├├├ does pairwise comparison really stop if goes past limit?  set limit lower?
 ├├├ if no exporters give blank dialog

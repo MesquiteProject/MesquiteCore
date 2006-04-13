@@ -667,18 +667,33 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				top = 0;
 			if (left<0 && top>=0)
 				left = 0;
-				
-			if (top >=0 && left >=0) {
-				deselectAll();
-				for (int row = 0; row<lines.length; row++)
-					for (int column = 0; column < lines[row]; column++){
-						selectCell(column + left, row + top);
-					}
+			if (lines.length == numRowsTotal + 1){ //whole columns had been selected; do likewise
+				for (int column = 0; column < lines[0]; column++)
+					selectColumn(column + left);
+				if (lines[0] == numColumnsTotal + 1) //whole rows had been selected; do likewise
+					for (int row = 0; row < lines.length; row++)
+						selectRow(row + top);
+
 			}
-			if (columnAssociable!=null && firstColumn>=0)
-				columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
-			if (rowAssociable!=null && firstRow>=0)
-				rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
+			else if (lines[0] == numColumnsTotal + 1){ //whole rows had been selected; do likewise
+				for (int row = 0; row < lines.length; row++){
+					selectRow(row + top);
+				}
+			}
+			else {
+					
+				if (top >=0 && left >=0) {
+					deselectAll();
+					for (int row = 0; row<lines.length; row++)
+						for (int column = 0; column < lines[row]; column++){
+							selectCell(column + left, row + top);
+						}
+				}
+				if (columnAssociable!=null && firstColumn>=0)
+					columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
+				if (rowAssociable!=null && firstRow>=0)
+					rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
+			}
 		}
 		else if (anyRowNameSelected()){
 				int first = rowNamesSelected[0].firstBitOn();
