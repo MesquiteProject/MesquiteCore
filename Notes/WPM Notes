@@ -58,12 +58,12 @@ java.lang.NullPointerException
 ===============
 bugs to fix for 1.07
 ••• high ascii file paths don't work (Laurin)
-•••• speed deleteRows in CharacterList
-•••• add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
+√√√ speed deleteRows in CharacterList
+√√√ add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
 new•••• Reshuffle within TAxa (matrices, characters)
 
 √√√√ why lasrdisc & stochchar disagree?
-
+•••• matrix simulator with site specific models
 ••• manual: COMET
 √√√ printing trace char legend
 √√√√ permit missing ins quared reconstruct
