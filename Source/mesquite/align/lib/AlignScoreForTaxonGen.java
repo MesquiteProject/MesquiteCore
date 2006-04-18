@@ -43,7 +43,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
    		return defaultSubs;
 	}
 	/*.................................................................................................................*/
-	private void initAligner() {
+	public void initAligner() {
   		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
   		int[][] subs = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
@@ -66,6 +66,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
    	}
 
 	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec){
+		Debugg.print("*");
 		if (result==null)
 			return;
 		result.setToUnassigned();

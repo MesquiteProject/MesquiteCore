@@ -45,11 +45,17 @@ public abstract class AlignMatch extends CategDataMatcher {
 		return true;
 	}
 	/*.................................................................................................................*/
-	private void initAligner() {
+ 	/** Override if one wishes to modify the alignment costs away from the default. */
+ 	 	public int[][] modifyAlignmentCosts(int[][] defaultSubs) {
+	 		return defaultSubs;
+	}
+	/*.................................................................................................................*/
+	protected void initAligner() {
   		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
   		alphabetLength = ((CategoricalState)state).getMaxPossibleState()+1;
-  		int subs[][] = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+  		int[][] subs = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+  		subs = modifyAlignmentCosts(subs);
    		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
 	}
 	/*.................................................................................................................*/

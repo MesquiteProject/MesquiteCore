@@ -43,14 +43,6 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 
    	 }
 	/*.................................................................................................................*/
- 	/** Override if one wishes to modify the alignment costs away from the default. */
- 	 	public int[][] modifyAlignmentCosts(int[][] defaultSubs) {
- 	 		int[][] subs = defaultSubs;
- 	 		subs[2][3] = 0;
-	 		subs[3][2] = 0;
-	 		return subs;
-	}
-	/*.................................................................................................................*/
 	 public String getName() {
 	return "RevComp Aligment Score To First";  
 	 }
