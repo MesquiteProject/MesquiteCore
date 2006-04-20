@@ -21,6 +21,36 @@ for (int ic = firstSite; ic<=lastSite; ic++){
 TSV
 incremental color
 incremental tree adding
+========
+mesquite.Mesquite
+mesquite.ancstates.UnambigChangesAtNodes.UnambigChangesAtNodes
+mesquite.charMatrices.ReshuffleMatrixByPart.ReshuffleMatrixByPart
+mesquite.charMatrices.ReshuffleWTaxaByPart.ReshuffleWTaxaByPart
+mesquite.charMatrices.ReshuffleWithinTaxa.ReshuffleWithinTaxa
+mesquite.distance.F81Distance.F81Distance
+mesquite.distance.JukesCantorDistance.JukesCantorDistance
+mesquite.distance.K2PDistance.K2PDistance
+mesquite.distance.PDistance.PDistance
+mesquite.distance.TransitionDistance.TransitionDistance
+mesquite.distance.TransversionDistance.TransversionDistance
+mesquite.genesis.SimDNAMatrixEmpirBased.SimDNAMatrixEmpirBased
+mesquite.molec.ReverseComplement.ReverseComplement
+mesquite.parsimony.ParsimonySquared.ParsimonySquared
+mesquite.stochchar.SimCharsOnTrees.SimCharsOnTrees
+mesquite.trees.BooleanTreeValue.BooleanTreeValue
+mesquite.trees.DefiniteTreeSource.DefiniteTreeSource
+mesquite.trees.NumForNodesWithChar.NumForNodesWithChar
+mesquite.trees.NumForNodesWithCharHist.NumForNodesWithCharHist
+mesquite.trees.NumForNodesWithMat.NumForNodesWithMat
+mesquite.trees.NumsForNodesBrLengths.NumsForNodesBrLengths
+mesquite.align.AlignSequences.AlignSequences
+mesquite.align.PairwiseAlignerBasic.PairwiseAlignerBasic
+mesquite.align.PairwiseAlignerBasicGaps.PairwiseAlignerBasicGaps
+mesquite.align.PairwiseAlignerLowMem.PairwiseAlignerLowMem
+mesquite.align.PairwiseAlignerLowMemGaps.PairwiseAlignerLowMemGaps
+mesquite.align.SimpleBlockMover.SimpleBlockMover
+mesquite.align.SimpleMatch.SimpleMatch
+mesquite.consensus.MajorityTree.MajorityTree
 ===============
 CHROMASEQ & align
 √√√ adding sequences to end causes terminal bits to disappear (ingi's bug)
@@ -58,6 +88,11 @@ java.lang.NullPointerException
 ===============
 bugs to fix for 1.07
 ••• high ascii file paths don't work (Laurin)
+••• WINDOWS: Boris's copy paste matrix bug
+•••• WINDOWS: emailing tree doesn't work under Windows
+•••• WINDOWS: printing tree out of memory bug (kirkup)
+•••• maureen's printing pdf issue
+•••• kip's POY format issue
 √√√ speed deleteRows in CharacterList
 √√√ add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
 new•••• Reshuffle within TAxa (matrices, characters)
@@ -72,8 +107,6 @@ new•••• Reshuffle within TAxa (matrices, characters)
 √√√√ copy/paste block size mismatch fix doesn't work
 •••• fix multiple menu bar refreshes and project refreshes
 ••• stoch char mapping: legend should say stoch char
-•••• maureen's printing pdf issue
-•••• kip's POY format issue
 √√√√ paste tree, save, tree source/tree window doesn't know updated number of trees
 √√√√ relax 10 char limit on phylip names
 •••• finish directions in MolecularData: swap acharacters; integrity check, e.g. 
@@ -86,9 +119,6 @@ new•••>>> tree source coordiantor; finite and non finite
 •••• [*cut] at file writing long line breaks
 •••• when breaking long lines in NEXUS put []comment so that the lines can be redone
 CellPictures warning still appearing
-••• WINDOWS: Boris's copy paste matrix bug
-•••• WINDOWS: emailing tree doesn't work under Windows
-•••• WINDOWS: printing tree out of memory bug (kirkup)
 •••???not reproduced why are typesets getting writen into notes block???
 √√√ does pairwise comparison really stop if goes past limit?  set limit lower?
 √√√ if no exporters give blank dialog
