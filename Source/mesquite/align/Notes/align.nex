@@ -1,0 +1,200 @@
+#NEXUS
+[written Thu Apr 20 15:53:37 MST 2006 by Mesquite  version 1.06+ (build h56) at david-maddisons-powerbook-g4-15.local/192.168.0.5 (David Maddison)]
+BEGIN AUTHORS;
+AUTHOR  NAME = David_Maddison CODE = bembidion LASTSAVER;
+END;
+
+
+BEGIN TAXA;
+	TITLE Untitled_Taxa_Block;
+	DIMENSIONS NTAX=5;
+	TAXLABELS
+		taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 
+	;
+	IDS bembidion10a77cd018680 bembidion10a77cd018681 bembidion10a77cd018682 bembidion10a77cd018683 bembidion10a77cd018684 ;
+	BLOCKID bembidion10a77cd01872;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Untitled_Character_Matrix;
+	DIMENSIONS  NCHAR=20;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	taxon_1  ACG{C,G}TT--GTTGAACCGGGG
+
+	taxon_2  ACGAGTT-------------
+
+	taxon_3  --------------------
+
+	taxon_4  --------------------
+
+	taxon_5  --------------------
+
+
+;
+
+
+	IDS bembidion10a77cd33602801 bembidion10a77cd33602802 bembidion10a77cd33602803 bembidion10a77cd33602804 bembidion10a77cd33602805 bembidion10a77cd33602806 bembidion10a77cd33602807 bembidion10a77cd33602808 bembidion10a77cd33602809 bembidion10a77cd33602810 bembidion10a77cd33602811 bembidion10a77cd33602812 bembidion10a77cd33602813 bembidion10a77cd33602814 bembidion10a77cd33602815 bembidion10a77cd33602816 bembidion10a77cd33602817 bembidion10a77cd33602818 bembidion10a77cd33602819 bembidion10a77cd33602820 ;
+	BLOCKID bembidion10ab981fc020;
+
+
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Untitled_Character_Matrix;
+	DIMENSIONS  NCHAR=7;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	taxon_1  C------
+
+	taxon_2  C------
+
+	taxon_3  -------
+
+	taxon_4  -------
+
+	taxon_5  -------
+
+
+;
+
+
+	IDS bembidion10a77d5a58420 bembidion10a77d5a58421 bembidion10a77d5a58422 bembidion10a77d5a58423 bembidion10a77d5a58424 bembidion10a77d5a58425 bembidion10a77d5a58426 ;
+	BLOCKID bembidion10ab981fc5b0;
+
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  universal:  1 -  20;
+CODESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  universal:  1 -  7;
+
+
+END;
+
+BEGIN CHARCHANGEHISTORY;
+LINK CHARACTERS = Untitled_Character_Matrix;
+LINK CHARACTERS = Untitled_Character_Matrix;
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  unord:  1 -  20;
+TYPESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  unord:  1 -  7;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  'Jukes-Cantor':  1 -  7;
+ProbModelSet * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  'Jukes-Cantor':  1 -  7;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 5103472236502170046 bembidion10a77cd01872;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 949177808083695603 bembidion10ab981fc020;
+			checksum 0 3823713139;
+			setID 1 3564779954115045874 bembidion10ab981fc5b0;
+			checksum 1 1310667400;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #949177808083695603 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 835 323;
+					setLocation 153 412;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+						setTool mesquite.align.AlignToDropped.AlignToDropped.alignToDropped;
+					endTell;
+					setActive;
+					setTool mesquite.align.AlignToDropped.AlignToDropped.alignToDropped;
+					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleSeparateLines off;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					setColumnWidth 16;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
+				getEmployee #mesquite.chromaseq.ColorQuality.ColorQuality;
+				tell It;
+					toggleAmbiguities on;
+					toggleMarks on;
+				endTell;
+				getEmployee #mesquite.collab.AnnotInfo.AnnotInfo;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.CellImages.CellImages;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.StateImages.StateImages;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.aaManageImageIndices.aaManageImageIndices;
+				tell It;
+					setLocal;
+					setPrevIndexBase 'http://mesquiteproject.org/mesquite/collab/indexedImages';
+					reset;
+				endTell;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.collab.ManageAuthors.ManageAuthors;
+		tell It;
+			addAuthorNameToMatrices;
+		endTell;
+		endTell;
+end;
+
+

@@ -3238,9 +3238,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			tempLastRow=0;
 		}
 		if (!lastColumn.isCombinable())
-			tempLastColumn = 0;
-		else if (tempLastColumn>= numColumnsTotal-1) // end of previous row
+			tempLastColumn = -1;
+		else if (tempLastColumn>= numColumnsTotal-1){ // end of previous row, need to go to start of next row
 			tempLastRow++;
+			tempLastColumn = -1;
+		}
 		else tempLastColumn ++;
 		if (tempLastRow>=numRowsTotal)
 			return false;
