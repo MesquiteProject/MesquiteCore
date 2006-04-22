@@ -3314,6 +3314,40 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 	}
 	/*...............................................................................................................*/
+	/** returns whether a single contiguous cell block in matrix is selected.  Returns first contiguous block selected in  matrix regardless if unique*/
+	public boolean singleCellBlockSelected(MesquiteInteger firstRow, MesquiteInteger lastRow, MesquiteInteger firstColumn, MesquiteInteger lastColumn){
+		int firstR = -1;
+		for (int row = 0; row<getNumRows(); row++) {		
+			firstColumn.setToUnassigned();
+			lastColumn.setToUnassigned();
+			if (singleContiguousBlockSelected(row,firstColumn, lastColumn)) { //we've found a row with a singleblock selected.
+				firstR = row;
+				break;
+			}
+		}
+		if (firstR<0) 
+			return false;
+		
+		boolean emptyRow=false;
+		int lastR = firstR;
+		for (int row = firstR; row<getNumRows(); row++) {		
+			MesquiteInteger firstCol =  new MesquiteInteger();
+			MesquiteInteger lastCol =  new MesquiteInteger();
+			if (singleContiguousBlockSelected(row,firstCol, lastCol)) { //we've found a row with a singleblock selected.
+				if (emptyRow) //we've encountered an empty row in between two rows with selections
+					return false;
+				if (firstCol.getValue()!=firstColumn.getValue() ||  lastCol.getValue()!=lastColumn.getValue())
+					return false;
+				lastR = row;
+			}
+			else
+				emptyRow =  true;
+		}
+		firstRow.setValue(firstR);
+		lastRow.setValue(lastR);
+		return true;
+	}
+	/*...............................................................................................................*/
 	public boolean onlySingleRowBlockSelected(MesquiteInteger row, MesquiteInteger firstColumn, MesquiteInteger lastColumn){
 		MesquiteInteger rowInternal = new MesquiteInteger();
 		MesquiteInteger firstColumnInternal = new MesquiteInteger();

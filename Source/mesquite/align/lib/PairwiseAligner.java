@@ -1,13 +1,12 @@
 package mesquite.align.lib;
 
 import mesquite.categ.lib.*;
-import mesquite.lib.CommandRecord;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteLong;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteNumber;
-import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.*;
 
+
+/*TODO:
+ *  need to be able to specify whether costs are to be applied for opening gaps on the left or right side of each sequence
+ */
 public class PairwiseAligner  {
 
 	boolean preferencesSet = false;
@@ -53,6 +52,27 @@ public class PairwiseAligner  {
 		// not much to do here ???
 	}
 
+	public long[][] stripEmptyBases(long[][] alignment, int minLength){
+		int numExtras = 0;
+		for (int i=alignment.length-1; i>=0; i--) {
+			if ((CategoricalState.isInapplicable(alignment[i][0]) || CategoricalState.isEmpty(alignment[i][0])) && (CategoricalState.isInapplicable(alignment[i][1])| CategoricalState.isEmpty(alignment[i][1])))
+				numExtras++;
+			else
+				break;
+		}
+		if (numExtras>0) {
+			long[][] ret = new long[alignment.length-numExtras][2];
+			for (int i=0; i<alignment.length-numExtras; i++) {
+				ret[i][0] = alignment[i][0];
+				ret[i][1] = alignment[i][1];
+			}
+			return ret;
+		}
+		return alignment;
+			
+	}
+	
+	
 	public long[][] alignSequences( long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score) {
 		
 		if (!gapCostsInitialized  || !subCostsInitialized) {
@@ -70,15 +90,19 @@ public class PairwiseAligner  {
 				lastAWhenBAligned = new int[lengthB +1];
 				shapeWhenBAligned  = new int[lengthB +1];
 				int myScore = recursivelyFillArray(helper, 0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
-				
+				long ret[][] = recoverAlignment(helper);
 //				Debugg.println("score is " + myScore);   //Travis:  generally we recommend using Debugg.println, as this is NOT intended to be present in released code, so it is easy to find
+				if (ret.length>lengthA && ret.length>lengthB)
+					return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
 				
-				return recoverAlignment(helper);
+				return ret;
 			} else {
 //				 fast (but quadratic space) alignment
 				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
 				long ret[][] = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
-//				Debugg.println("score is " + score);
+				//				Debugg.println("score is " + score);
+				if (ret.length>lengthA && ret.length>lengthB)
+					return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
 				return ret;
 			}
 		} else { 

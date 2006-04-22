@@ -111,10 +111,15 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
    	 }
 	/*.................................................................................................................*/
     	 public abstract String getScoreName() ;
+    /*.................................................................................................................*/
+       	 public boolean isSubstantive(){
+       	 	return true;
+       	 }
 	/*.................................................................................................................*/
     	 public boolean isPrerelease() {
-		return false;
+		return true;
    	 }
+    	 
  	public String getParameters() {
  		return getScoreName() + " of sequence in matrix from: " + matrixSourceTask.getParameters();
    	 }
