@@ -72,11 +72,11 @@ public class PairwiseAligner  {
 			
 	}
 	
-	
+	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the passed sequences.
+	 * If object has been told to retain gaps, gaps in A_withGaps will remain intact (new ones  may be added)*/
 	public long[][] alignSequences( long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score) {
 		
 		if (!gapCostsInitialized  || !subCostsInitialized) {
-			//announce an error?
 			score.setValue( -1 );
 			return null;
 		}
@@ -120,8 +120,9 @@ public class PairwiseAligner  {
 		}
 	}
 	
-	
-	public int preProcess (long[] A_withGaps, long[] B_withGaps) { //translates sequences to ints, strips gaps, and possibly swaps A and B.
+	/** private method used to convert seqs from mesquite long values to the correct indexes for the subs table
+	 * */
+	private int preProcess (long[] A_withGaps, long[] B_withGaps) { //translates sequences to ints, strips gaps, and possibly swaps A and B.
 		int i;
 		int totalGapChars = 0;
 		
@@ -173,6 +174,8 @@ public class PairwiseAligner  {
 		return totalGapChars;
 	}
 	
+	
+	/** If object wasn't called with gap cost arguments, this must be called or alignment will fail*/
 	public void setGapCosts(int gapOpen, int gapExtend){
 	    //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
 		this.gapOpen = gapOpen;
@@ -180,6 +183,7 @@ public class PairwiseAligner  {
 		gapCostsInitialized = true;
 	}
 
+	/** If object wasn't called with subs cost arguments, this must be called or alignment will fail*/
 	public void setSubsCostMatrix(/*int alphabetSize,*/ int[][] subs){
 		//this.alphabetSize = alphabetSize;
 		this.subs = subs;
@@ -201,7 +205,10 @@ public class PairwiseAligner  {
 	/* ************************************************* */
 	/* Everything below here is for lowMem alignment */
 	/* ************************************************* */
-	public int recursivelyFillArray(AlignmentHelperLinearSpace helper, int firstColumn, int lastColumn, int firstRow, int lastRow, int precedingShape, int succeedingShape) {
+	/** Private method which fills in portions of the full DP-table, then identifies for the middle row which column an optimal alignment must pass through
+	 * Fills shape array, which is used by recoverAlignment to find the actual alignment.  
+	 * */
+	private int recursivelyFillArray(AlignmentHelperLinearSpace helper, int firstColumn, int lastColumn, int firstRow, int lastRow, int precedingShape, int succeedingShape) {
 		
 		helper.fillArrays(firstRow, lastRow, firstColumn, lastColumn, precedingShape, succeedingShape );
 		
@@ -223,7 +230,7 @@ public class PairwiseAligner  {
 
 			// best of the ways of leaving the i,j cell of the full DP table with a diagonal edge
 			if (i == lastColumn) { 
-				diagonalColScore = verticalColScore + 1;
+				diagonalColScore = verticalColScore + 1; //TODO: this doesn't seem right. should it be "+subs[i][i+1]"?
 			} else {
 				int a = A[i];
 				int b = B[midRow];
@@ -267,8 +274,9 @@ public class PairwiseAligner  {
 		return bestColScore; // useful for the first level of recursion - returns the total alignment cost
 	}
 	
-	
-	public long[][] recoverAlignment (AlignmentHelperLinearSpace helper) {
+	/**  Private method: based on the shape array filled out by the recursive call above, determine the alignment 
+	 * */
+	private long[][] recoverAlignment (AlignmentHelperLinearSpace helper) {
 		int i=0,j, k=0;
 		
 		long[][] alignment = new long[lengthA + lengthB][2];
@@ -396,7 +404,8 @@ public class PairwiseAligner  {
 		return score;
 	}
 
-	
+	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the sequences identified by the "taxon" and "site" arguments.
+	 * If object has been told to retain gaps, gaps in taxon1 will remain intact (new ones  may be added)*/
 	public long[][] alignSequences(MCategoricalDistribution data, int taxon1, int taxon2, int firstSite, int lastSite, boolean returnAlignment, MesquiteNumber score, CommandRecord commandRec) {
 		if (lastSite - firstSite+1 <0 || !MesquiteInteger.isCombinable(firstSite) || !MesquiteInteger.isCombinable(lastSite)){
 			firstSite = 0;
