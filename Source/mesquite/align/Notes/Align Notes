@@ -1,6 +1,6 @@
 Align ToDo
 
-	- allow reincorporation in, e.g., ClustalAlign, to deal with only some sequences selected
+	Ã allow reincorporation in, e.g., ClustalAlign, to deal with only some sequences selected
 	- AlignScoreForTaxonGen lets one choose sequence to match
 	- add basic pairwise aligner tool as MacClade has
 	

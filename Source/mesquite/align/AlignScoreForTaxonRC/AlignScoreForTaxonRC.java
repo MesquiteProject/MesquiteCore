@@ -33,8 +33,7 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 		aligner.alignSequences(extracted1, extracted2, false, alignScore);
 
 		for (int ic = firstSite; ic<=lastSite; ic++){
-			//extracted1[lastSite-ic] = DNAData.complement(data.getState(ic, it1));
-			extracted2[lastSite-ic] = DNAData.complement(data.getState(ic, it2));
+			extracted1[lastSite-ic] = DNAData.complement(data.getState(ic, it1));
 		}
 		MesquiteNumber alignRCScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignRCScore);
@@ -44,11 +43,11 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
    	 }
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "RevComp Aligment Score To First";  
+	return "Align Score/RC Align Score To First";  
 	 }
 	/*.................................................................................................................*/
 	 public String getScoreName() {
-	return "Reverse Complement Aligment Score";  
+	return "Alignment Score / Reverse Complement Alignment Score";  
 	 }
   	 
 }

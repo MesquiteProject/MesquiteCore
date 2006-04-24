@@ -1,9 +1,9 @@
 #NEXUS
-[written Sun Apr 23 08:06:33 MST 2006 by Mesquite  version 1.06+ (build h56) at fc.traviswheeler.com/127.0.0.1]
+[written Sun Apr 23 16:46:44 MST 2006 by Mesquite  version 1.06+ (build h56) at david-maddisons-powerbook-g4-15.local/192.168.0.5 (David Maddison)]
 BEGIN AUTHORS;
-AUTHOR  NAME =  David_Maddison CODE =  bembidion LASTSAVER;
-
+AUTHOR  NAME = David_Maddison CODE = bembidion LASTSAVER;
 END;
+
 
 BEGIN TAXA;
 	TITLE Untitled_Taxa_Block;
@@ -19,24 +19,25 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Untitled_Character_Matrix;
-	DIMENSIONS  NCHAR=20;
+	DIMENSIONS  NCHAR=23;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
-	taxon_1  ACG{C,G}TT--GTTGAACCGGGG
+	taxon_1  ---ACG{C,G}TT--GTTGAACCGGGG
 
-	taxon_2  ACGAGTTGAA----------
+	taxon_2  ---ACGAGTTGAA----------
 
-	taxon_3  --------------------
+	taxon_3  ACGTT---GTACAAC--------
 
-	taxon_4  --------------------
+	taxon_4  ACGTTGGTACAAC----------
 
-	taxon_5  --------------------
+	taxon_5  -----------------------
 
 
 ;
 
 
-	IDS bembidion10a77cd33602801 bembidion10a77cd33602802 bembidion10a77cd33602803 bembidion10a77cd33602804 bembidion10a77cd33602805 bembidion10a77cd33602806 bembidion10a77cd33602807 bembidion10a77cd33602808 bembidion10a77cd33602809 bembidion10a77cd33602810 bembidion10a77cd33602811 bembidion10a77cd33602812 bembidion10a77cd33602813 bembidion10a77cd33602814 bembidion10a77cd33602815 bembidion10a77cd33602816 bembidion10a77cd33602817 bembidion10a77cd33602818 bembidion10a77cd33602819 bembidion10a77cd33602820 ;
+	IDS  _  _  _ bembidion10a77cd33602801 bembidion10a77cd33602802 bembidion10a77cd33602803 bembidion10a77cd33602804 bembidion10a77cd33602805 bembidion10a77cd33602806 bembidion10a77cd33602807 bembidion10a77cd33602808 bembidion10a77cd33602809 bembidion10a77cd33602810 bembidion10a77cd33602811 bembidion10a77cd33602812 bembidion10a77cd33602813 bembidion10a77cd33602814 bembidion10a77cd33602815 bembidion10a77cd33602816 bembidion10a77cd33602817 bembidion10a77cd33602818 bembidion10a77cd33602819 bembidion10a77cd33602820 ;
+	BLOCKID bembidion10ac924e44a0;
 
 
 END;
@@ -61,24 +62,25 @@ BEGIN CHARACTERS;
 
 
 	IDS bembidion10a77d5a58420 bembidion10a77d5a58421 bembidion10a77d5a58422 bembidion10a77d5a58423 bembidion10a77d5a58424 bembidion10a77d5a58425 bembidion10a77d5a58426 ;
+	BLOCKID bembidion10ac924e4a90;
 
 
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  universal:  1 -  20;
+CODESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  universal:  1 -  23;
 CODESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  universal:  1 -  7;
 
 
 END;
 
 BEGIN CHARCHANGEHISTORY;
-LINK CHARACTERS =  Untitled_Character_Matrix;
-LINK CHARACTERS =  Untitled_Character_Matrix;
-
+LINK CHARACTERS = Untitled_Character_Matrix;
+LINK CHARACTERS = Untitled_Character_Matrix;
 END;
+
 BEGIN ASSUMPTIONS;
-	TYPESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  unord:  1 -  20;
+	TYPESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  unord:  1 -  23;
 TYPESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  unord:  1 -  7;
 
 END;
@@ -98,9 +100,9 @@ Begin MESQUITE;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 949177808083695603;
-			checksum 0 3496177102;
-			setID 1 3564779954115045874;
+			setID 0 949177808083695603 bembidion10ac924e44a0;
+			checksum 0 3286705137;
+			setID 1 3564779954115045874 bembidion10ac924e4a90;
 			checksum 1 1310667400;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -120,10 +122,10 @@ Begin MESQUITE;
 					setFontIncExp 0;
 					getToolPalette;
 					tell It;
-						setTool mesquite.align.AlignToDropped.AlignToDropped.alignToDropped;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					endTell;
 					setActive;
-					setTool mesquite.align.AlignToDropped.AlignToDropped.alignToDropped;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
 					setBackground White;
 					toggleShowNames on;
@@ -159,7 +161,38 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
+				getEmployee #mesquite.chromaseq.ColorQuality.ColorQuality;
+				tell It;
+					toggleAmbiguities on;
+					toggleMarks on;
+				endTell;
+				getEmployee #mesquite.collab.AnnotInfo.AnnotInfo;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.CellImages.CellImages;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.StateImages.StateImages;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.aaManageImageIndices.aaManageImageIndices;
+				tell It;
+					setLocal;
+					setPrevIndexBase 'http://mesquiteproject.org/mesquite/collab/indexedImages';
+					reset;
+				endTell;
 			endTell;
+		endTell;
+		getEmployee  #mesquite.collab.ManageAuthors.ManageAuthors;
+		tell It;
+			addAuthorNameToMatrices;
 		endTell;
 		endTell;
 end;

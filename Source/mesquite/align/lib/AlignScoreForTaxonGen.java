@@ -18,12 +18,14 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	protected MCharactersDistribution observedStates =null;
 	protected PairwiseAligner aligner;
 	protected int alphabetLength;
-	 
+	protected MesquiteInteger comparisonTaxon = new MesquiteInteger(0);
+	MesquiteTimer timer;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
  		matrixSourceTask = (MatrixSourceCoord)hireEmployee(commandRec, MatrixSourceCoord.class, "Source of character matrix (for number of stops)"); 
  		if (matrixSourceTask==null)
  			return sorry(commandRec, getName() + " couldn't start because no source of character matrices was obtained.");
+ 		timer =  new MesquiteTimer();
 /*
  		pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
 		if (pairwiseTask == null)
@@ -49,7 +51,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
   		int[][] subs = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
   		subs = modifyAlignmentCosts(subs);
    		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
-   		aligner.setUseLowMem(false);
+   		aligner.setUseLowMem(true);
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -64,9 +66,9 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
    		matrixSourceTask.initialize(currentTaxa, commandRec);
    		
    	}
-
+   	
 	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec){
-		Debugg.print("*");
+		Debugg.println("* " + timer.timeSinceLast());
 		if (result==null)
 			return;
 		result.setToUnassigned();
@@ -88,7 +90,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 			initAligner();
 		}
 
-		getAlignmentScore(data, (MCategoricalDistribution)observedStates,0,it,score,commandRec);
+		getAlignmentScore(data, (MCategoricalDistribution)observedStates,comparisonTaxon.getValue(),it,score,commandRec);
 
 
 		if (result !=null)
