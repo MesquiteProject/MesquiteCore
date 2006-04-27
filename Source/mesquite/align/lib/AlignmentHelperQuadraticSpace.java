@@ -2,6 +2,7 @@ package mesquite.align.lib;
 
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.MesquiteNumber;
+import mesquite.lib.*;
 
 public class AlignmentHelperQuadraticSpace {
 
@@ -14,7 +15,7 @@ public class AlignmentHelperQuadraticSpace {
 	int gapOpen;
 	int gapExtend;
 	int alphabetLength;
-	boolean gapInsertionArray[];
+	int gapInsertionArray[];
 	
 	boolean isMinimize = true;
 	
@@ -53,7 +54,6 @@ public class AlignmentHelperQuadraticSpace {
 
 			for (j=1; j<=lengthB; j++) {
 //				look at three preceding values.				
-
 				
 				if (isMinimize) {
 					V[i][j] = Math.min(  V[i-1][j] + gapExtend,  
@@ -101,6 +101,7 @@ public class AlignmentHelperQuadraticSpace {
 		int k=0;
 		i = lengthA;
 		j = lengthB;
+		int a_cnt = 0; //count of letters from A used in path so far 
 		while (i>0 || j>0 ) {
 			if (i ==0) { 
 				while (j>0){
@@ -115,39 +116,46 @@ public class AlignmentHelperQuadraticSpace {
 					backtrack[k][1] = CategoricalState.inapplicable;
 					i--;
 					k++;
+					a_cnt++;
 				}				
-			} else if  ( V[i][j] == myScore) { //an optimal path came from horizontal
-
-				gapOpenOnA = gapOpen;
-				if (keepGaps && i>0 && followsGapSize[i-1]>0)
-					gapOpenOnA = 0;
-				
+			} else if  ( V[i][j] == myScore) { //an optimal path came from vertical (letter from A with gap in B)
+			
 				backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
 				backtrack[k][1] = CategoricalState.inapplicable;
 				if (i>0 &&  V[i][j] == V[i-1][j] + gapExtend){
 					myScore -= gapExtend;
 				} else { //V[i][j]  == D[i-1][j] + gapOpen + gapExtend  or V[i][j] == H[i-1][j] + gapOpen + gapExtend
-					myScore -= gapOpenOnA + gapExtend;
+					myScore -= gapOpen + gapExtend;
 				}
 				i--;
 				k++;
-			} else if (H[i][j] == myScore) { //an optimal path came from vertical
+				a_cnt++;
+			} else if (H[i][j] == myScore) { //an optimal path came from horizontal (letter from B with gap in A)
+				gapOpenOnA = gapOpen;
+				if (keepGaps && i>0 && followsGapSize[i]>0)
+					gapOpenOnA = 0;
+				
 				backtrack[k][0] = CategoricalState.inapplicable;
 				backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
 				if ( j>0 && H[i][j] == H[i][j-1] + gapExtend){
 					myScore -= gapExtend;
 				} else { //H[i][j]  == D[i-1][j] + gapOpen + gapExtend  or H[i][j] == V[i-1][j] + gapOpen + gapExtend
-					myScore -= gapOpen + gapExtend;
+						myScore -= gapOpenOnA + gapExtend;
 				}
 				j--;
 				k++;
-			} else { // from diagonal
+			} else if (D[i][j] == myScore) { // from diagonal
 				backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
 				backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
 				myScore -= AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) ;
 				i--;
 				j--;
 				k++;
+				a_cnt++;
+			} else { 
+				// error
+				Debugg.println ("Error in recovering alignment");
+				return null;
 			}
 		}
 		
@@ -173,27 +181,32 @@ public class AlignmentHelperQuadraticSpace {
 		} else {
 			//put the gaps back in
 			long gappedSeq2return[][] = new long[k+totalGapChars][2];
-			gapInsertionArray = new boolean[k+totalGapChars];
+			gapInsertionArray = new int[k+totalGapChars];
 			for(i=0; i<k+totalGapChars; i++) {
-				gapInsertionArray[i] =false;
+				gapInsertionArray[i] = 0;
 			}
 			
 			int usedGaps=0;
 			int recentGapRunLength=0;
 			j=0; // counts the number of letters in A seen so far
+			int retainedGapsSeen = 0;
 			for (i=0; i<k; i++) {
 				if(seq2return[i][0] == CategoricalState.inapplicable) {
 					recentGapRunLength++;
-					gapInsertionArray[i+usedGaps]=true;
+					gapInsertionArray[j+retainedGapsSeen] = Math.max(0, recentGapRunLength - followsGapSize[j] );
+					if (followsGapSize[j] > recentGapRunLength) { 	
+						retainedGapsSeen++;
+					}
 				} else {
 					for (int m=0 ; m < followsGapSize[j]-recentGapRunLength; m++){
 						gappedSeq2return[i+usedGaps][0] =  CategoricalState.inapplicable; 
 						gappedSeq2return[i+usedGaps][1] =  CategoricalState.inapplicable; 
 						usedGaps++;
+						retainedGapsSeen++;
 					}
 					j++;
 					recentGapRunLength=0;
-				}				
+				}
 				gappedSeq2return[i+usedGaps][0] = seq2return[i][0] ;
 				gappedSeq2return[i+usedGaps][1] = seq2return[i][1] ;									
 			}		
@@ -202,8 +215,8 @@ public class AlignmentHelperQuadraticSpace {
 		
 	}
 	
-	//for now, there's not a good way to get to this array; I'll add it when this interface gets worked out
-	public boolean[] getGapInsertionArray () {
+	
+	public int[] getGapInsertionArray () {
 		return gapInsertionArray;
 	}		
 }

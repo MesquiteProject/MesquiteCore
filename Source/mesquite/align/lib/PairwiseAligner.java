@@ -29,10 +29,10 @@ public class PairwiseAligner  {
 	public int lengthB;
 	
 	private int alphabetLength=4;
+	private int gapInsertionArray[];
 	
 	private int lastAWhenBAligned[]; //lowMem alignment only
 	private int shapeWhenBAligned[];//lowMem alignment only
-	private boolean gapInsertionArray[];//lowMem alignment only
 	
 	private boolean gapCostsInitialized = false;
 	private boolean subCostsInitialized = false;
@@ -100,6 +100,7 @@ public class PairwiseAligner  {
 //				 fast (but quadratic space) alignment
 				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
 				long ret[][] = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
+				gapInsertionArray = helper.getGapInsertionArray();
 				//				Debugg.println("score is " + score);
 				if (ret.length>lengthA && ret.length>lengthB)
 					return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
@@ -137,7 +138,7 @@ public class PairwiseAligner  {
 		}
 		
 		//translate sequences to ints, and remove gaps
-		lengthA = 0;  //Travis:  where were these two initialized?
+		lengthA = 0; 
 		lengthB = 0;
 		for (i=0; i<A_withGaps.length; i++) {
 			if (!CategoricalState.isInapplicable(A_withGaps[i])) {
@@ -201,6 +202,12 @@ public class PairwiseAligner  {
 	public void setIsMinimizationProblem (boolean isMin) {
 		isMinimize = isMin;
 	}
+	
+	/** returns an array where the ith position indicates the number of new gap positions inserted 
+	 * in front of the ith site of the fixed sequence. */
+	public int[] getGapInsertionArray() {
+		return gapInsertionArray;
+	}			
 	
 	/* ************************************************* */
 	/* Everything below here is for lowMem alignment */
@@ -327,9 +334,9 @@ public class PairwiseAligner  {
 
 		if (keepGaps) {
 			long finalSeq2return[][] = new long[k+totalGapChars][2];
-			gapInsertionArray = new boolean[k+totalGapChars];
+			gapInsertionArray = new int[k+totalGapChars];
 			for(i=0; i<k+totalGapChars; i++) {
-				gapInsertionArray[i] =false;
+				gapInsertionArray[i] =0;
 			}
 			
 			int usedGaps=0;
@@ -338,7 +345,7 @@ public class PairwiseAligner  {
 			for (i=0; i<k; i++) {
 				if(seq2return[i][0] == CategoricalState.inapplicable) {
 					recentGapRunLength++;
-					gapInsertionArray[i+usedGaps]=true;
+					gapInsertionArray[i+usedGaps]=1; //TODO: wrong
 				} else {
 					for (int m=0 ; m < followsGapSize[j]-recentGapRunLength; m++){
 						finalSeq2return[i+usedGaps][0] =  CategoricalState.inapplicable; 
