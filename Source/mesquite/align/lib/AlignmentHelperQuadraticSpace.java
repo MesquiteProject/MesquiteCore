@@ -37,43 +37,44 @@ public class AlignmentHelperQuadraticSpace {
 		int i,j;		
 		
 		for (i=1; i<=lengthA; i++) {
-			H[i][0] = D[i][0] = gapOpen + gapExtend*i;
-			V[i][0] = 2*gapOpen +  gapExtend*i;
+			V[i][0] = D[i][0] = gapOpen + gapExtend*i;
+			H[i][0] = 2*gapOpen +  gapExtend*i;
 		}
 		for (j=1; j<=lengthB; j++) {
-			D[0][j] = V[0][j] = gapOpen + gapExtend*j;
-			H[0][j] = 2*gapOpen +  gapExtend*j;
+			D[0][j] = H[0][j] = gapOpen + gapExtend*j;
+			V[0][j] = 2*gapOpen +  gapExtend*j;
 		}
 		
 		int gapOpenOnA;
 		for (i=1; i<=lengthA; i++) {
 			gapOpenOnA = gapOpen;
-			if (keepGaps && followsGapSize[i-1]>0)
+			if (keepGaps && followsGapSize[i]>0)
 				gapOpenOnA = 0;
 
 			for (j=1; j<=lengthB; j++) {
 //				look at three preceding values.				
 
-				if (isMinimize) {
-					H[i][j] = Math.min(  H[i-1][j] + gapExtend,  
-								Math.min ( D[i-1][j] + gapOpenOnA + gapExtend,
-												 V[i-1][j] + gapOpenOnA + gapExtend));
-	
-					V[i][j] = Math.min(  H[i][j-1] + gapOpen + gapExtend,  
-								Math.min ( D[i][j-1] + gapOpen + gapExtend ,
-												 V[i][j-1] + gapExtend));
-
-					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength)  +  Math.min(  H[i-1][j-1] , Math.min ( D[i-1][j-1] , V[i-1][j-1] ));
-				} else { //maximize
-					H[i][j] = Math.max(  H[i-1][j] + gapExtend,  
-								Math.max( D[i-1][j] + gapOpenOnA + gapExtend,
-												V[i-1][j] + gapOpenOnA + gapExtend));
 				
-					V[i][j] = Math.max(  H[i][j-1] + gapOpen + gapExtend,  
-								Math.max ( D[i][j-1] + gapOpen + gapExtend ,
-												 V[i][j-1] + gapExtend));					
+				if (isMinimize) {
+					V[i][j] = Math.min(  V[i-1][j] + gapExtend,  
+								Math.min ( D[i-1][j] + gapOpen + gapExtend,
+												 H[i-1][j] + gapOpen + gapExtend));
 	
-					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  H[i-1][j-1] , Math.max( D[i-1][j-1] , V[i-1][j-1] ));
+					H[i][j] = Math.min(  V[i][j-1] + gapOpenOnA + gapExtend,  
+								Math.min ( D[i][j-1] + gapOpenOnA + gapExtend ,
+												 H[i][j-1] + gapExtend));
+
+					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength)  +  Math.min(  V[i-1][j-1] , Math.min ( D[i-1][j-1] , H[i-1][j-1] ));
+				} else { //maximize
+					V[i][j] = Math.max(  V[i-1][j] + gapExtend,  
+								Math.max( D[i-1][j] + gapOpen + gapExtend,
+												H[i-1][j] + gapOpen + gapExtend));
+				
+					H[i][j] = Math.max(  V[i][j-1] + gapOpenOnA + gapExtend,  
+								Math.max ( D[i][j-1] + gapOpenOnA + gapExtend ,
+												 H[i][j-1] + gapExtend));					
+	
+					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  V[i-1][j-1] , Math.max( D[i-1][j-1] , H[i-1][j-1] ));
 				}
 			}
 		}
@@ -115,7 +116,7 @@ public class AlignmentHelperQuadraticSpace {
 					i--;
 					k++;
 				}				
-			} else if  ( H[i][j] == myScore) { //an optimal path came from horizontal
+			} else if  ( V[i][j] == myScore) { //an optimal path came from horizontal
 
 				gapOpenOnA = gapOpen;
 				if (keepGaps && i>0 && followsGapSize[i-1]>0)
@@ -123,19 +124,19 @@ public class AlignmentHelperQuadraticSpace {
 				
 				backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
 				backtrack[k][1] = CategoricalState.inapplicable;
-				if (i>0 &&  H[i][j] == H[i-1][j] + gapExtend){
+				if (i>0 &&  V[i][j] == V[i-1][j] + gapExtend){
 					myScore -= gapExtend;
-				} else { //H[i][j]  == D[i-1][j] + gapOpen + gapExtend  or H[i][j] == V[i-1][j] + gapOpen + gapExtend
+				} else { //V[i][j]  == D[i-1][j] + gapOpen + gapExtend  or V[i][j] == H[i-1][j] + gapOpen + gapExtend
 					myScore -= gapOpenOnA + gapExtend;
 				}
 				i--;
 				k++;
-			} else if (V[i][j] == myScore) { //an optimal path came from vertical
+			} else if (H[i][j] == myScore) { //an optimal path came from vertical
 				backtrack[k][0] = CategoricalState.inapplicable;
 				backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
-				if ( j>0 && V[i][j] == V[i][j-1] + gapExtend){
+				if ( j>0 && H[i][j] == H[i][j-1] + gapExtend){
 					myScore -= gapExtend;
-				} else { //V[i][j]  == D[i-1][j] + gapOpen + gapExtend  or V[i][j] == H[i-1][j] + gapOpen + gapExtend
+				} else { //H[i][j]  == D[i-1][j] + gapOpen + gapExtend  or H[i][j] == V[i-1][j] + gapOpen + gapExtend
 					myScore -= gapOpen + gapExtend;
 				}
 				j--;
