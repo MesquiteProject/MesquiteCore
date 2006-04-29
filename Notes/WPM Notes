@@ -92,14 +92,23 @@ bugs to fix for 1.07
 •••• WINDOWS: emailing tree doesn't work under Windows
 •••• WINDOWS: printing tree out of memory bug (kirkup)
 •••• maureen's printing pdf issue
+•••• WINDOWS: pchatela out of memory bug
 •••• kip's POY format issue
+
+•••• make early part of log go to file
+•••• Balls & Sticks square branches
+•••• count dup/ext
+••• change color in legends
+•••• log file should state versiojn of Mesquite
+
+•••• equilibrium root frequencies in MLE etc
+
 √√√ speed deleteRows in CharacterList
 √√√ add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
-new•••• Reshuffle within TAxa (matrices, characters)
 
 √√√√ why lasrdisc & stochchar disagree?
 •••• matrix simulator with site specific models
-••• manual: COMET
+••• manual: COMET; STRATIGRAPHICTOOLS
 √√√ printing trace char legend
 √√√√ permit missing ins quared reconstruct
 •••• sort taxa by extension
@@ -146,12 +155,15 @@ FOR MANUAL
 √√√@@@ add simple button on window to bring all of project to fore
 √√√@@@ modules read from MesquiteSupportFiles
 √√√@@@ phylip treefile import/export
-√√√@@@ add COMET
+√√√@@@ add COMET, stratig tools
 √√√@@@ control over interleaving
 √√√@@@Bar Chart
 √√√@@@ random number loops to get to nth tree or character: should they add a number to prevent a simple frameshift difference among reps?
 √√√@@@ Ask For Seeds in Defaults menu
 √√√@@@ FEATURE force recalcualtion in chart
+√√√@@@@ Reshuffle within TAxa (matrices, characters)
+√√√@@@@ no longer permits maxstate >1 in asymmMk
+
 √√√ delete taxa; if some stored trees have no taxa then should be deleted!
 xxx TSV needs tree.equals() method
 √√√√ chart crashes with Trees Directly from File..(finite issue..)
