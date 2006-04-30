@@ -88,13 +88,13 @@ java.lang.NullPointerException
 ===============
 bugs to fix for 1.07
 еее high ascii file paths don't work (Laurin)
-еее WINDOWS: Boris's copy paste matrix bug
-ееее WINDOWS: emailing tree doesn't work under Windows
-ееее WINDOWS: printing tree out of memory bug (kirkup)
+├├├├ WINDOWS: Boris's copy paste matrix bug
+├├├├ WINDOWS: emailing tree doesn't work under Windows
+├├├├ WINDOWS: printing tree out of memory bug (kirkup)
 ееее maureen's printing pdf issue
-ееее WINDOWS: pchatela out of memory bug
+├├├├ WINDOWS: pchatela out of memory bug
 ееее kip's POY format issue
-
+ееее pdf -- check to see if available and set pdfOutputavailalbe
 ееее make early part of log go to file
 ееее Balls & Sticks square branches
 ееее count dup/ext
