@@ -1,0 +1,1 @@
+Introduction to iTextThis package contains no substantive modules.  It has a single module that serves to introduce to the user the iText library for generating PDF.  If this package is deactivated, the iText package is NOT deactivated.
