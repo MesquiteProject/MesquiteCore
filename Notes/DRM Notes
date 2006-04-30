@@ -3,14 +3,13 @@ David to do
 1.07 to fix:
 
 - condense names
+- TableTool.worksAsArrowOnCornerPanel
 
 Shouldn't DataMatcher be moved into Characters???
 
 - Align 
 
 - get consensus trees in Mesquite
-
-- ZapGaps must work just over selected cells
 
 - Distance
 

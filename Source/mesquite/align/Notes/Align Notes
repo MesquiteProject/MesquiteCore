@@ -1,13 +1,15 @@
 Align ToDo
 
-	Ã allow reincorporation in, e.g., ClustalAlign, to deal with only some sequences selected
+	- fix AlignHelperQuadraticHelper for keepGaps
+	- proper dealing of polymorphisms and long-to-int
+	
 	- AlignScoreForTaxonGen lets one choose sequence to match
+	- manual in aAlignIntro
+
+
 	- add basic pairwise aligner tool as MacClade has
 	
 	- speed up getCost
-	- proper dealing of polymorphisms
-	- make sure it works with protein
-	
 	- test code
 
 	Basic PairwiseAligner:
