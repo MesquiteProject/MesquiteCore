@@ -341,7 +341,8 @@ public class RowNamesPanel extends EditorPanel  {
 					touchRow=possibleTouch;
 					//table.shimmerHorizontalOn(touchY);
 				}
-			}
+	
+				}
 			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
 				touchY=y;
 				lastY = y;
@@ -358,47 +359,6 @@ public class RowNamesPanel extends EditorPanel  {
 	   			table.repaintAll();
 	   		}
 	   	}
-   	 }
-	/*...............................................................................................................*/
-   	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
-		if (touchRow>=0 && tool != null)
-			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
-				if (!table.anyRowSelected()) {
-					
-					if (table.getUserAdjustRow()==MesquiteTable.RESIZE) {
-						/*table.shimmerVerticalOff(lastX);
-						int newRH = table.rowHeights[touchRow] + x-touchX;
-						if (newRH > 16) {
-							table.setRowHeight(touchRow, newRH);
-							table.rowHeightsAdjusted.setBit(touchRow);
-							table.repaintAll();
-						}*/
-					}
-					if (table.getUserMoveRow())
-						table.shimmerHorizontalOff(lastY);
-				}
-				/*@@@*/
-				else {
-					if (table.getUserMoveRow()) {
-						table.shimmerHorizontalOff(lastY);
-						int dropRow = findRowBeforeBetween(y);
-Debugg.println("dropRow: " +dropRow);
-						if (dropRow == -2)
-							dropRow = table.getNumRows();
-						if (dropRow != touchRow && !table.isRowSelected(dropRow)) //don't move dropped on row included in selection
-							table.selectedRowsDropped(dropRow);
-					}
-					else if (table.getUserAdjustRow()==MesquiteTable.RESIZE)
-						;//table.shimmerVerticalOff(lastX);
-				}
-			}
-			else if (((TableTool)tool).getWorksOnRowNames()) {
-				int dropRow = findRow(y);
-				int regionInCellH = findRegionInCellH(x);
-				 int regionInCellV =findRegionInCellV(y);
-				((TableTool)tool).cellDropped(-1,dropRow,regionInCellH,regionInCellV,modifiers);
-				}
-
    	 }
 	/*...............................................................................................................*/
    	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
@@ -422,6 +382,46 @@ Debugg.println("dropRow: " +dropRow);
 				((TableTool)tool).cellDrag(-1,dragRow,regionInCellH,regionInCellV,modifiers);
 			}
   	 }
+	/*...............................................................................................................*/
+   	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
+		if (touchRow>=0 && tool != null)
+			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
+				if (!table.anyRowSelected()) {
+					
+					if (table.getUserAdjustRow()==MesquiteTable.RESIZE) {
+						/*table.shimmerVerticalOff(lastX);
+						int newRH = table.rowHeights[touchRow] + x-touchX;
+						if (newRH > 16) {
+							table.setRowHeight(touchRow, newRH);
+							table.rowHeightsAdjusted.setBit(touchRow);
+							table.repaintAll();
+						}*/
+					}
+					if (table.getUserMoveRow())
+						table.shimmerHorizontalOff(lastY);
+				}
+				/*@@@*/
+				else {
+					if (table.getUserMoveRow()) {
+						table.shimmerHorizontalOff(lastY);
+						int dropRow = findRowBeforeBetween(y);
+						if (dropRow == -2)
+							dropRow = table.getNumRows();
+						if (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow)) //don't move dropped on row included in selection
+							table.selectedRowsDropped(dropRow);
+					}
+					else if (table.getUserAdjustRow()==MesquiteTable.RESIZE)
+						;//table.shimmerVerticalOff(lastX);
+				}
+			}
+			else if (((TableTool)tool).getWorksOnRowNames()) {
+				int dropRow = findRow(y);
+				int regionInCellH = findRegionInCellH(x);
+				 int regionInCellV =findRegionInCellV(y);
+				((TableTool)tool).cellDropped(-1,dropRow,regionInCellH,regionInCellV,modifiers);
+				}
+
+   	 }
    	 
 	/*...............................................................................................................*/
    	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
