@@ -376,28 +376,49 @@ public class PairwiseAligner  {
 
 
 		/** This method returns the score of the worst possible match with the passed sequence.  Acceptable if result is approximate.  Override if needed. */
-	public MesquiteNumber getVeryBadScore(long[] sequence, int alphabetLength, CommandRecord commandRec) {
+	public MesquiteNumber getVeryBadScore(long[] sequence, int oppositeLength, int alphabetLength, CommandRecord commandRec) {
 		MesquiteNumber score = new MesquiteNumber();
-		long[]opposite = new long[sequence.length];
-		for (int i=0; i<sequence.length; i++) {
-			long rand = CategoricalState.emptySet();
+		long[]opposite = new long[oppositeLength];
+		for (int i=0; i<sequence.length && i<oppositeLength; i++) {
+			long newSet = CategoricalState.emptySet();
 			boolean switched =false;
+			if (!switched) {
+				for (int e=0; e<alphabetLength; e++) {
+					if (CategoricalState.isElement(sequence[i],e))  {
+						int farElement = -1;
+						int maxSub = 0;
+						for (int j = 0; j<alphabetLength; j++) {
+							if (maxSub<subs[e][j]) {
+								maxSub=subs[e][j];
+								farElement = j;
+							}
+						}
+						if (farElement>=0 && !CategoricalState.isElement(sequence[i],farElement)) {
+							newSet = CategoricalState.addToSet(newSet,farElement);
+							switched = true;
+							break;
+						}
+					}
+				}
+			}
 			int first = (int)Math.random() * alphabetLength;  // pick random bit
-			if (first>alphabetLength-1)
-				first = alphabetLength-1;
-			if (first<0)
-				first = 0;
-			for (int e=first; e<alphabetLength; e++) {
-				if (!CategoricalState.isElement(sequence[i],e))  {
-					rand = CategoricalState.addToSet(rand,e);
-					switched = true;
-					break;
+			if (!switched) {
+				if (first>alphabetLength-1)
+					first = alphabetLength-1;
+				if (first<0)
+					first = 0;
+				for (int e=first; e<alphabetLength; e++) {
+					if (!CategoricalState.isElement(sequence[i],e))  {
+						newSet = CategoricalState.addToSet(newSet,e);
+						switched = true;
+						break;
+					}
 				}
 			}
 			if (!switched)
 				for (int e=first; e>=0; e--) {
 					if (!CategoricalState.isElement(sequence[i],e))  {
-						rand = CategoricalState.addToSet(rand,e);
+						newSet = CategoricalState.addToSet(newSet,e);
 						switched = true;
 						break;
 					}
@@ -405,7 +426,7 @@ public class PairwiseAligner  {
 			if (!switched)
 				opposite[i]=sequence[i];
 			else
-				opposite[i] =rand;
+				opposite[i] =newSet;
 		}
 		alignSequences(sequence,opposite, false, score);
 		return score;

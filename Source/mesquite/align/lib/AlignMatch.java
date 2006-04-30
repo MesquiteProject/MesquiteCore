@@ -31,6 +31,7 @@ public abstract class AlignMatch extends CategDataMatcher {
 	int alphabetLength;
 	int maxLengthDiff = 2;
 	MesquiteCommand ptC;
+	protected MesquiteSubmenuSpec mss;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
 /*		pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
@@ -41,7 +42,9 @@ public abstract class AlignMatch extends CategDataMatcher {
 */
 
 
-   		addMenuItem("Allowed Length Differences...", makeCommand("setMaxLengthDiff", this));
+		mss = addSubmenu(null, getName());//getFileCoordinator().
+//		addCheckMenuItemToSubmenu( null, mss,"Accept GU Match", makeCommand("acceptGUMatch",  this), acceptGUMatch);
+  		addItemToSubmenu(null, mss,"Allowed Length Differences...", makeCommand("setMaxLengthDiff", this));
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -77,11 +80,9 @@ public abstract class AlignMatch extends CategDataMatcher {
 	/*.................................................................................................................*/
    	/** Returns whether or not better matches have higher values or not.*/
 	public boolean getHigherIsBetter() {
-		return false;
-		/*if (pairwiseTask==null)
+		if (aligner==null)
 			return false;
-		return pairwiseTask.getHigherIsBetter();
-		*/
+		return aligner.getHigherIsBetter();
 	}   	
 	
 	/*.................................................................................................................*/
@@ -90,9 +91,8 @@ public abstract class AlignMatch extends CategDataMatcher {
  		if (candidateArray==null || aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
   		MesquiteNumber score = new MesquiteNumber();
-  		CategoricalState state = ((CategoricalData)data).getNewState();
+  		//CategoricalState state = ((CategoricalData)data).getNewState();
   		aligner.alignSequences(originalArray,candidateArray,false, score);
-   		//pairwiseTask.alignSequences(originalArray,candidateArray,false,score,state, commandRec);
    		return score.getDoubleValue();
 	}
 
@@ -107,9 +107,22 @@ public abstract class AlignMatch extends CategDataMatcher {
 	public double getApproximateWorstMatchValue(long[] originalArray, CommandRecord commandRec){
 		if (aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
- 		CategoricalState state = ((CategoricalData)data).getNewState();
-		MesquiteNumber score = aligner.getVeryBadScore(originalArray, alphabetLength, commandRec);
-   		return score.getDoubleValue();
+ 		//CategoricalState state = ((CategoricalData)data).getNewState();
+		MesquiteNumber score;
+		double worstScore = MesquiteDouble.unassigned;
+		int startLength = MesquiteInteger.maximum(1,originalArray.length-maxLengthDiff);
+   		int endLength = MesquiteInteger.minimum(data.getNumChars(),originalArray.length+maxLengthDiff);
+   		for (int length = startLength; length<=endLength; length++) {
+   	  		score = aligner.getVeryBadScore(originalArray, length, alphabetLength, commandRec);
+ //Debugg.println("worst score candidate: " + score.getDoubleValue());
+   	  		if (!MesquiteDouble.isCombinable(worstScore))
+   	  			worstScore = score.getDoubleValue();
+	  		if ((aligner.getHigherIsBetter() && (worstScore>score.getDoubleValue())) || (!aligner.getHigherIsBetter() && (worstScore<score.getDoubleValue()))) {
+	  			worstScore = score.getDoubleValue();
+	  		}
+  		}
+   		
+    		return worstScore;
 	}
 
 		
@@ -121,6 +134,8 @@ public abstract class AlignMatch extends CategDataMatcher {
    		double numberOfMatches = 0.0;
    		int basesCompared =0;
    		
+   		if (candidateStartChar==8)
+   			Debugg.println("8th");
    		int startLength = MesquiteInteger.maximum(1,originalArray.length-maxLengthDiff);
    		int endLength = MesquiteInteger.minimum(data.getNumChars(),originalArray.length+maxLengthDiff);
    		MesquiteNumber score = new MesquiteNumber();
@@ -150,18 +165,7 @@ public abstract class AlignMatch extends CategDataMatcher {
  		MesquiteInteger pos = new MesquiteInteger(0);
  		/*.................................................................................................................*/
  		public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
- /*	   		 if (checker.compare(this.getClass(), "Sets the module that aligns sequence", "[name of module]", commandName, "setPairwiseTask")) {
- 	   			TwoSequenceAligner temp =  (TwoSequenceAligner)replaceCompatibleEmployee(commandRec, TwoSequenceAligner.class, arguments, pairwiseTask, null);
-    			 if (temp!=null) {
-    				 pairwiseTask = temp;
-    				 pairwiseTask.setHiringCommand(ptC);
-    				 parametersChanged(null, commandRec);
-     				 return pairwiseTask;
-    			 }
-    		 }
- 	   		 else 
- 	   		 */
- 			if (checker.compare(this.getClass(), "Sets the maximum number of length differences between the two sequences", "[number]", commandName, "setMaxLengthDiff")) {
+  			if (checker.compare(this.getClass(), "Sets the maximum number of length differences between the two sequences", "[number]", commandName, "setMaxLengthDiff")) {
  				int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
  				if (!MesquiteInteger.isCombinable(newNum))
  					newNum = MesquiteInteger.queryInteger(containerOfModule(), "Set Allowed Length Differences", "Allowed Length Differences:", maxLengthDiff, 0, MesquiteInteger.infinite);
