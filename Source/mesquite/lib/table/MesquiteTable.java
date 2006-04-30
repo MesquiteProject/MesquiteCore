@@ -2685,7 +2685,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	int firstSelectedRow = 0;
 	/** Called if column is touched.  Can be overridden in subclasses to change response to touch.*/
 	/*...............................................................................................................*/
-	public void columnTouched(int column, int regionInCellH, int regionInCellV, int modifiers) {
+	public void columnTouched(boolean isArrowEquivalent, int column, int regionInCellH, int regionInCellV, int modifiers) {
 	//	int[] columnsToRedraw = new int[2];
 	//	columnsToRedraw[0] = column;
 	//	columnsToRedraw[1] = column;
@@ -2749,7 +2749,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 	/*...............................................................................................................*/
 	/** Called if row is touched. Can be overridden in subclasses to change response to touch.*/
-	public void rowTouched(int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
 		if (!rowsSelectable)
 			return;
 		if (!rowLegal(row))
@@ -3881,6 +3881,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*...............................................................................................................*/
 	public void shimmerVerticalOff(Panel panel, int x){
 	/** used for shimmering lines when columns adjusted */
+		if (!MesquiteInteger.isCombinable(x))
+			return;
 		Graphics mg = panel.getGraphics();
 		if (mg==null)
 			return;
@@ -3891,6 +3893,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*...............................................................................................................*/
 	public void shimmerVerticalOn(Panel panel, int x){
 	/** used for shimmering lines when columns adjusted */
+		if (!MesquiteInteger.isCombinable(x))
+			return;
 		Graphics mg = panel.getGraphics();
 		if (mg==null)
 			return;
@@ -3912,6 +3916,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*...............................................................................................................*/
 	public void shimmerHorizontalOff(int y){
 	/** used for shimmering lines when columns adjusted */
+		if (!MesquiteInteger.isCombinable(y))
+			return;
 		Graphics mg = matrix.getGraphics();
 		if (mg==null)
 			return;
@@ -3922,6 +3928,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*...............................................................................................................*/
 	public void shimmerHorizontalOn(int y){
 	/** used for shimmering lines when columns adjusted */
+		if (!MesquiteInteger.isCombinable(y))
+			return;
 		Graphics mg = matrix.getGraphics();
 		if (mg==null)
 			return;

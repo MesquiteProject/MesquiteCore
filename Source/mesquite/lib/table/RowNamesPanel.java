@@ -15,6 +15,7 @@ package mesquite.lib.table;
 import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
+
 import java.io.*;
 
 /* ======================================================================== */
@@ -45,7 +46,7 @@ public class RowNamesPanel extends EditorPanel  {
 		return -1; //if left of grabbers?
 	}
 	/*@@@...............................................................................................................*/
-	/** returns in which row y lies, -1 if above, -2 if below.*/
+	/** returns in which row y lies, -1 if above all rows, -2 if below all rows.*/
 	public int findRow(int y) {
 		if (y<=0)
 			return -1;
@@ -56,6 +57,29 @@ public class RowNamesPanel extends EditorPanel  {
 				return -1;
 			else if (ry>=y)
 				return row;
+		}
+
+		return -2;//past the last row
+	}
+	/*@@@...............................................................................................................*/
+	/** Returns  the row immediately after the boundary between rows nearest to the y value, -1 if above all rows, -2 if below all rows.*/
+	public int findRowBeforeBetween(int y) {
+		if (y<0)
+			return -1;
+		int ry = 0;
+		int rowCenterY = 0;
+		int lastRowCenterY = -1;
+		for (int row=table.firstRowVisible; (row<table.numRowsTotal); row++) {
+			ry += table.rowHeights[row];
+			rowCenterY = ry-table.rowHeights[row]/2;
+			if (row>= table.numRowsTotal) {
+				return -2;
+			}
+			else if (y>lastRowCenterY && y<= rowCenterY) {
+				return row-1;
+			} else if (rowCenterY>y)
+				return row;
+			lastRowCenterY = rowCenterY;
 		}
 
 		return -2;//past the last row
@@ -300,18 +324,25 @@ public class RowNamesPanel extends EditorPanel  {
 		int possibleTouch = findRow(y);
 		int regionInCellH = findRegionInCellH(x);
 		 int regionInCellV =findRegionInCellV(y);
+		 boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
 
 		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
-			if (tool != null && tool.isArrowTool() && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
+			if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 				touchY=y;
 				lastY = y;
 				touchRow=possibleTouch;
 				table.shimmerHorizontalOn(touchY);
 			}
-			else if ((table.showColumnGrabbers) && (x<table.getRowGrabberWidth())) {
-				table.rowTouched(possibleTouch,regionInCellH, regionInCellV,modifiers);
+			else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
+				table.rowTouched(isArrowEquivalent, possibleTouch,regionInCellH, regionInCellV,modifiers);
+				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
+					touchY=y;
+					lastY = MesquiteInteger.unassigned;;
+					touchRow=possibleTouch;
+					//table.shimmerHorizontalOn(touchY);
+				}
 			}
-			else if (((TableTool)tool).getWorksOnRowNames()) {
+			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
 				touchY=y;
 				lastY = y;
 				touchRow=possibleTouch;
@@ -319,7 +350,7 @@ public class RowNamesPanel extends EditorPanel  {
 			}
 		}
 		else if (possibleTouch==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.rowTouched(possibleTouch,regionInCellH, regionInCellV,modifiers);
+			table.rowTouched(isArrowEquivalent,possibleTouch,regionInCellH, regionInCellV,modifiers);
 		else if (tool != null && tool.isArrowTool()){
 	   		table.offAllEdits();
 	   		if (table.anythingSelected()) {
@@ -331,7 +362,7 @@ public class RowNamesPanel extends EditorPanel  {
 	/*...............................................................................................................*/
    	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		if (touchRow>=0 && tool != null)
-			if (tool.isArrowTool()) {
+			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (!table.anyRowSelected()) {
 					
 					if (table.getUserAdjustRow()==MesquiteTable.RESIZE) {
@@ -350,7 +381,8 @@ public class RowNamesPanel extends EditorPanel  {
 				else {
 					if (table.getUserMoveRow()) {
 						table.shimmerHorizontalOff(lastY);
-						int dropRow = findRow(y);
+						int dropRow = findRowBeforeBetween(y);
+Debugg.println("dropRow: " +dropRow);
 						if (dropRow == -2)
 							dropRow = table.getNumRows();
 						if (dropRow != touchRow && !table.isRowSelected(dropRow)) //don't move dropped on row included in selection
@@ -371,7 +403,7 @@ public class RowNamesPanel extends EditorPanel  {
 	/*...............................................................................................................*/
    	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		if (touchRow>=0 && tool != null)
-			if (tool.isArrowTool()) {
+			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (table.getUserAdjustColumn()==MesquiteTable.RESIZE) {
 					table.shimmerHorizontalOff(lastY);
 					table.shimmerHorizontalOn(y);
@@ -400,11 +432,11 @@ public class RowNamesPanel extends EditorPanel  {
 		table.mouseExitedCell(modifiers, -1, -1, row, -1, tool);
   	}
  	/*...............................................................................................................*/
-	public void setCurrentCursor(int modifiers, int row, MesquiteTool tool) {
+	public void setCurrentCursor(int modifiers, int x, int row, MesquiteTool tool) {
 		if (tool == null || !(tool instanceof TableTool))
 				setCursor(getDisabledCursor());
 		else if (row>=0 && row<table.numRowsTotal) {
-			if (tool.isArrowTool()) {
+			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				setCursor(table.getHandCursor());
 				if (!(table.getUserMoveRow() && table.isRowSelected(row) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.controlKeyDown(modifiers))) {
 					if (!(table.editingAnything() || table.singleTableCellSelected())) {
@@ -432,13 +464,13 @@ public class RowNamesPanel extends EditorPanel  {
 		if (table == null)
 			return;
 		int row = findRow(y);
-		setCurrentCursor(modifiers, row, tool);
+		setCurrentCursor(modifiers, x, row, tool);
 		table.mouseInCell(modifiers, -1, -1, row, -1, tool);
 	}
 	/*...............................................................................................................*/
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		int row = findRow(y);
-		setCurrentCursor(modifiers, row, tool);
+		setCurrentCursor(modifiers, x, row, tool);
 		table.mouseInCell(modifiers, -1, -1, row, -1, tool);
 	}
 	/*...............................................................................................................*/

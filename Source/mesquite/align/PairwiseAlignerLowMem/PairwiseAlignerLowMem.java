@@ -34,7 +34,8 @@ public class PairwiseAlignerLowMem extends TwoSequenceAligner {
    		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
  		int alphabetLength = state.getMaxPossibleState()+1;
-  		int subs[][] = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+ 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend);  
+  		int subs[][] = AlignUtil.getDefaultSubstitutionCosts(alphabetLength);  
 
    		PairwiseAligner pa = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
 		pa.setUseLowMem(true);

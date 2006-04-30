@@ -54,7 +54,8 @@ public abstract class AlignMatch extends CategDataMatcher {
   		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
   		alphabetLength = ((CategoricalState)state).getMaxPossibleState()+1;
-  		int[][] subs = AlignUtil.getDefaultCosts(gapOpen, gapExtend, alphabetLength);  
+ 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend);  
+  		int subs[][] = AlignUtil.getDefaultSubstitutionCosts(alphabetLength);  
   		subs = modifyAlignmentCosts(subs);
    		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
 	}

@@ -232,7 +232,7 @@ public class ListTable extends MesquiteTable {
 		window.setAnnotation("", null);
 		if (!window.interceptCellTouch(column, row, modifiers)){
 			if (window.getCurrentTool()== window.arrowTool)  {
-				rowTouched(row,regionInCellH, regionInCellV, modifiers);
+				rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
 			}
 			else
 				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
@@ -253,8 +253,8 @@ public class ListTable extends MesquiteTable {
 		else  */
 		   	((TableTool)window.getCurrentTool()).cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
 	}
-	public void rowTouched(int row, int regionInCellH, int regionInCellV, int modifiers) {
-		super.rowTouched( row, regionInCellH, regionInCellV, modifiers);
+	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
+		super.rowTouched(asArrow,  row, regionInCellH, regionInCellV, modifiers);
 		showAnnotationAndExplanation(row);
 	}
 	private void showAnnotationAndExplanation(int row){
