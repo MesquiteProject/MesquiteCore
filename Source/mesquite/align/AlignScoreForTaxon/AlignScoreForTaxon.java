@@ -20,7 +20,7 @@ public class AlignScoreForTaxon extends AlignScoreForTaxonGen {
    	 }
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Aligment Score To First";  
+	return "Aligment Score To Ref.";  
 	 }
 	/*.................................................................................................................*/
 	 public String getScoreName() {

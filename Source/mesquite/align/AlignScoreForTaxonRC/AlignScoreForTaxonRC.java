@@ -43,7 +43,7 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
    	 }
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Align Score/RC Align Score To First";  
+	return "Align Score/RC Align Score To Ref.";  
 	 }
 	/*.................................................................................................................*/
 	 public String getScoreName() {

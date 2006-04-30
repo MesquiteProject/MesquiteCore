@@ -3,8 +3,9 @@ Align ToDo
 	- fix AlignHelperQuadraticHelper for keepGaps
 	- proper dealing of polymorphisms and long-to-int
 	
-	- AlignScoreForTaxonGen lets one choose sequence to match
 	- manual in aAlignIntro
+
+
 
 
 	- add basic pairwise aligner tool as MacClade has
