@@ -521,6 +521,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*.................................................................................................................*/
  	protected void pasteIt(String s, CommandRecord commandRec){
 		int count = 0;
+	MesquiteFile.putFileContents("paste.txt", s, true);
 		MesquiteInteger pos = new MesquiteInteger(0);
 		if (columnNamesCopyPaste) {
 			for (int i = 0; i<numColumnsTotal; i++) {
@@ -534,6 +535,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				}
 			}
 		}
+		Debugg.println(" PASTING");
 		for (int j = 0; j<numRowsTotal; j++) {
 			if (rowNamesCopyPaste && (isRowNameSelected(j) || isRowSelected(j))) {
 				if (rowNamesEditable) {
@@ -547,6 +549,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				if (isCellSelected(i,j) || isRowSelected(j) || isColumnSelected(i)) {
 					if (cellsEditable) {
 						String t = getNextTabbedToken(s, pos);
+	if (t != null && t.length()>1) Debugg.println(" t=" + t);
 						if (t!=null)
 							returnedMatrixText(i,j,t, commandRec);
 					}
@@ -589,6 +592,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			allSelected = false;
 		if (!firstInLine && copyInsertTabs) 
 			s.append(StringUtil.lineEnding());
+	Debugg.println("copyInsertTabs " + copyInsertTabs + " literal " + literal);
 		for (int j = 0; j<numRowsTotal; j++) {
 			firstInLine = true;
 			if (rowNamesCopyPaste) {
@@ -616,6 +620,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						t = getMatrixTextForDisplay(i,j);
 					else 
 						t = getMatrixText(i,j);
+	if (t != null && t.length()>1) Debugg.println("COPY " + t);
 					if (t!=null)
 						s.append(t);
 				}
@@ -2835,19 +2840,19 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*...............................................................................................................*/
 	/** Returns text in corner of matrix.  
 	Should be overridden in subclasses if text returned is appropriate. */
-	public String getCornerText(){
+	public synchronized String getCornerText(){
 		return "";
 	}
 	/*...............................................................................................................*/
 	/** Returns text in cell of matrix, possibly adjusted to include asterisks for footnotes, etc..  
 	Should be overridden in subclasses if text returned is appropriate. */
-	public String getMatrixTextForDisplay(int column, int row){
+	public synchronized String getMatrixTextForDisplay(int column, int row){
 		return getMatrixText(column, row);
 	}
 	/*...............................................................................................................*/
 	/** Returns text in cell of matrix.  
 	Should be overridden in subclasses if text returned is appropriate. */
-	public String getMatrixText(int column, int row){
+	public synchronized String getMatrixText(int column, int row){
 		return "Column " + Integer.toString(column) + " Row " + Integer.toString(row);
 	}
 	/*...............................................................................................................*/
@@ -2865,13 +2870,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/*...............................................................................................................*/
 	/** Returns text in row name.  
 	Should be overridden in subclasses if text returned is appropriate. */
-	public String getRowNameText(int row){
+	public synchronized String getRowNameText(int row){
 		return "Row " + Integer.toString(row);
 	}
 	/*...............................................................................................................*/
 	/** Returns text in row name of matrix, possibly adjusted to include asterisks for footnotes, etc..  
 	Should be overridden in subclasses if text returned is appropriate. */
-	public String getRowNameTextForDisplay(int row){
+	public synchronized String getRowNameTextForDisplay(int row){
 		return getRowNameText(row);
 	}
 	/*...............................................................................................................*/
