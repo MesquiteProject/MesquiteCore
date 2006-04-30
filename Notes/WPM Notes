@@ -91,16 +91,16 @@ bugs to fix for 1.07
 √√√√ WINDOWS: Boris's copy paste matrix bug
 √√√√ WINDOWS: emailing tree doesn't work under Windows
 √√√√ WINDOWS: printing tree out of memory bug (kirkup)
+•••• PETER: pdf not showing characer legend
 •••• maureen's printing pdf issue
 √√√√ WINDOWS: pchatela out of memory bug
 •••• kip's POY format issue
-•••• pdf -- check to see if available and set pdfOutputavailalbe
-•••• make early part of log go to file
+√√√√ pdf -- check to see if available and set pdfOutputavailalbe
 •••• Balls & Sticks square branches
 •••• count dup/ext
 ••• change color in legends
-•••• log file should state versiojn of Mesquite
-
+√√√√ log file should state versiojn of Mesquite
+√√√√ bug fixed: copy bug on windows (stringbuffer synchronization)
 •••• equilibrium root frequencies in MLE etc
 
 √√√ speed deleteRows in CharacterList
@@ -163,6 +163,7 @@ FOR MANUAL
 √√√@@@ FEATURE force recalcualtion in chart
 √√√@@@@ Reshuffle within TAxa (matrices, characters)
 √√√@@@@ no longer permits maxstate >1 in asymmMk
+√√√@@@@ pdf printing
 
 √√√ delete taxa; if some stored trees have no taxa then should be deleted!
 xxx TSV needs tree.equals() method

@@ -155,9 +155,16 @@ public class NumForNodesWithChar extends NumbersForNodes {
 			return numAndCharTask.getName(); 
 	}
 	/*.................................................................................................................*/
-		public boolean isPrerelease(){
-   		return true;  
-   	}
+ 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE double,
+ 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+ 	 * If a NEGATIVE double,  thne the number refers to the local version of the package, e.g. a third party package*/
+    	public double getVersionOfFirstRelease(){
+    		return 1.07;  
+    	}
+    	/*.................................................................................................................*/
+    	public boolean isPrerelease(){
+    		return true;
+    	}
 	
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

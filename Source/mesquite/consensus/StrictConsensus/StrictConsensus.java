@@ -50,7 +50,18 @@ public class StrictConsensus extends Consenser {
 	public String getPackageName() { return "Tree Comparison Package"; }
 	public boolean getUserChoosable() { return true; } //WPM 06 set to true
 
-	public boolean isPrerelease() { return false; }
+	/*.................................................................................................................*/
+ 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE double,
+ 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+ 	 * If a NEGATIVE double,  thne the number refers to the local version of the package, e.g. a third party package*/
+    	public double getVersionOfFirstRelease(){
+    		return 1.07;  
+    	}
+    	/*.................................................................................................................*/
+    	public boolean isPrerelease(){
+    		return true;
+    	}
+
 	public boolean isSubstantive() { return true; }
 	public String getCitation() { return "\n" + getYearReleased() + ". " + getAuthors() + "\n"; }
 	public String getAuthors() { return "Jeff Klingner, The University of Texas at Austin, with Silvio Neris, City University of New York"; }
