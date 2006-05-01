@@ -21,36 +21,6 @@ for (int ic = firstSite; ic<=lastSite; ic++){
 TSV
 incremental color
 incremental tree adding
-========
-mesquite.Mesquite
-mesquite.ancstates.UnambigChangesAtNodes.UnambigChangesAtNodes
-mesquite.charMatrices.ReshuffleMatrixByPart.ReshuffleMatrixByPart
-mesquite.charMatrices.ReshuffleWTaxaByPart.ReshuffleWTaxaByPart
-mesquite.charMatrices.ReshuffleWithinTaxa.ReshuffleWithinTaxa
-mesquite.distance.F81Distance.F81Distance
-mesquite.distance.JukesCantorDistance.JukesCantorDistance
-mesquite.distance.K2PDistance.K2PDistance
-mesquite.distance.PDistance.PDistance
-mesquite.distance.TransitionDistance.TransitionDistance
-mesquite.distance.TransversionDistance.TransversionDistance
-mesquite.genesis.SimDNAMatrixEmpirBased.SimDNAMatrixEmpirBased
-mesquite.molec.ReverseComplement.ReverseComplement
-mesquite.parsimony.ParsimonySquared.ParsimonySquared
-mesquite.stochchar.SimCharsOnTrees.SimCharsOnTrees
-mesquite.trees.BooleanTreeValue.BooleanTreeValue
-mesquite.trees.DefiniteTreeSource.DefiniteTreeSource
-mesquite.trees.NumForNodesWithChar.NumForNodesWithChar
-mesquite.trees.NumForNodesWithCharHist.NumForNodesWithCharHist
-mesquite.trees.NumForNodesWithMat.NumForNodesWithMat
-mesquite.trees.NumsForNodesBrLengths.NumsForNodesBrLengths
-mesquite.align.AlignSequences.AlignSequences
-mesquite.align.PairwiseAlignerBasic.PairwiseAlignerBasic
-mesquite.align.PairwiseAlignerBasicGaps.PairwiseAlignerBasicGaps
-mesquite.align.PairwiseAlignerLowMem.PairwiseAlignerLowMem
-mesquite.align.PairwiseAlignerLowMemGaps.PairwiseAlignerLowMemGaps
-mesquite.align.SimpleBlockMover.SimpleBlockMover
-mesquite.align.SimpleMatch.SimpleMatch
-mesquite.consensus.MajorityTree.MajorityTree
 ===============
 CHROMASEQ & align
 ÃÃÃ adding sequences to end causes terminal bits to disappear (ingi's bug)
@@ -60,6 +30,7 @@ unique stored id's for linked matrices
 ÃÃÃ checksum on alignment
 ÃÃÃ first contig gets taxon name; second gets contig 2
 ¥¥¥ on windows if no phred phrap or not working then just puts periods forever
+¥¥¥¥ store voucher code with taxa
 ¥¥¥¥ colors not same as standard ACGT colors in chromatogram window
 ¥¥¥¥align push beyond matrix end with MoveBlocks tool:  Categorical matrix with incorrect record of number of characters. getNumChar() = 1547 matrixShort.length 1548 nAdd = 4 nDel = 0 nMove = 0 name 16SND1 (from Phred/Phrap) file File "lapsiinesHisponines16S copy 1.nex" in directory "/
 Data Window Coordinator > showDataWindow "0"
@@ -87,6 +58,8 @@ java.lang.NullPointerException
 	at mesquite.lib.MainThread.run(MainThread.java:116)
 ===============
 bugs to fix for 1.07
+answer michel
+junxia
 ¥¥¥ high ascii file paths don't work (Laurin)
 ¥¥¥¥ sort taxa by extension
 ¥¥¥¥ PETER: pdf not showing characer legend
@@ -205,11 +178,11 @@ CharacterData to CharacterMatrix
 Make interface to pass instead of CharacterData (like Tree); live matrix
 Get rid of CommandRecords
 headless
-pdfs
 CategoricalData onseparate fork
 CharacterSource non-obedient; have it hire obedient with controls for character
 TreeSourceCoord
 Make taxa fusions etc. easier
 preferences via snapshots
+random number via modules
 
  

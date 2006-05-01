@@ -36,7 +36,6 @@ public class NumForNodesWithChar extends NumbersForNodes {
 		if (numAndCharTask == null)
 			return sorry(commandRec, getName() + " couldn't start because no calculator (for " + getName() + ") was obtained");
 		//assume hired as NumbersForNodes; thus responsible for getting characters
-		//hire character source with two characters -- one or two separate sources?
 		characterSourceTask = (CharSourceCoordObed)hireCompatibleEmployee(commandRec, CharSourceCoordObed.class, numAndCharTask.getCompatibilityTest(), "Source of characters (for " + numAndCharTask.getName() + ")");
  		if (characterSourceTask == null)
  			return sorry(commandRec, getName() + " couldn't start because no source of characters was obtained.");
