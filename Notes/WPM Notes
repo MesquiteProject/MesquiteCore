@@ -59,7 +59,7 @@ java.lang.NullPointerException
 ===============
 bugs to fix for 1.07
 answer michel
-junxia
+•••• delete matrix from projects window, doesn't redo mnus
 ••• high ascii file paths don't work (Laurin)
 •••• sort taxa by extension
 •••• PETER: pdf not showing characer legend
@@ -73,6 +73,7 @@ junxia
 ••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
 new•••>>> tree source coordiantor; finite and non finite
 •••• kip's POY format issue
+•••• allow either dup or ext
 √√√√ autowidth row names on table; no autowidth char names for molecular data
 √√√√ WINDOWS: Boris's copy paste matrix bug
 √√√√ WINDOWS: emailing tree doesn't work under Windows

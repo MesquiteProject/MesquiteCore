@@ -102,6 +102,20 @@ public class ReshuffleWTaxaByPart extends RandomMatrixModifier {
 			   			}
 			   		}
 		   		}
+	   			int numCharInGroup = partition.getNumberInGroup(null);
+	   			
+		   		for (int i=0; i < (numCharInGroup-1); i++) {
+		   			int sh = rng.randomIntBetween(i, numCharInGroup-1);
+		   			if (sh != i){
+		   				int ic1 = getCharacterNumber(i, null, numChars, partition);
+		   				int ic2 = getCharacterNumber(sh, null, numChars, partition);
+		   				cs1 = modified.getCharacterState(cs1, ic1, it);
+		   				cs2 = modified.getCharacterState(cs2, ic2, it);
+		   				modified.setCharacterState(cs1, ic2, it);
+		   				modified.setCharacterState(cs2, ic1, it);
+		   		
+		   			}
+		   		}
 	 	 	}
  	 	
    	}
@@ -132,7 +146,7 @@ public class ReshuffleWTaxaByPart extends RandomMatrixModifier {
     	}
     	/*.................................................................................................................*/
     	public boolean isPrerelease(){
-    		return true;
+    		return false;
     	}
 
 	/*.................................................................................................................*/
