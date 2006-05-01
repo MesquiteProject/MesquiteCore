@@ -41,6 +41,13 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 		score.setValue(alignScore);
 
    	 }
+	   /*.................................................................................................................*/
+  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE double,
+  	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+  	 * If a NEGATIVE double,  thne the number refers to the local version of the package, e.g. a third party package*/
+     	public double getVersionOfFirstRelease(){
+     		return 1.07;  
+   }
 	/*.................................................................................................................*/
 	 public String getName() {
 	return "Align Score/RC Align Score To Ref.";  
@@ -48,6 +55,11 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 	/*.................................................................................................................*/
 	 public String getScoreName() {
 	return "Alignment Score / Reverse Complement Alignment Score";  
+	 }
+		/*.................................................................................................................*/
+	 public String getExplanation() {
+		 String s = super.getExplanation();  
+		 return s+ " The score for each taxon is the cost of aligning that taxon's sequence against the reference taxon using Mesquite's default pairwise aligner, divided by the score for aligning the reverse complement of the sequence against the reference.  Scores  greater than one mean that alignment is better if one of the sequences is reverse complemented .";
 	 }
 	  	/*.................................................................................................................*/
   	 public boolean isPrerelease(){
