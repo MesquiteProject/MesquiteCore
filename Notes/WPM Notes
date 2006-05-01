@@ -88,47 +88,45 @@ java.lang.NullPointerException
 ===============
 bugs to fix for 1.07
 ••• high ascii file paths don't work (Laurin)
+•••• sort taxa by extension
+•••• PETER: pdf not showing characer legend
+•••• maureen's printing pdf issue
+•••• equilibrium root frequencies in MLE etc
+•••• matrix simulator with site specific models
+••• manual: COMET; STRATIGRAPHICTOOLS
+••• stoch char mapping: legend should say stoch char
+•••• finish directions in MolecularData: swap acharacters; integrity check, e.g. 
+••• check use of CategoricalStatTest etc. -- only or not?
+••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
+new•••>>> tree source coordiantor; finite and non finite
+•••• kip's POY format issue
+√√√√ autowidth row names on table; no autowidth char names for molecular data
 √√√√ WINDOWS: Boris's copy paste matrix bug
 √√√√ WINDOWS: emailing tree doesn't work under Windows
 √√√√ WINDOWS: printing tree out of memory bug (kirkup)
-•••• PETER: pdf not showing characer legend
-•••• maureen's printing pdf issue
 √√√√ WINDOWS: pchatela out of memory bug
-•••• kip's POY format issue
 √√√√ pdf -- check to see if available and set pdfOutputavailalbe
-•••• Balls & Sticks square branches
-•••• count dup/ext
-••• change color in legends
 √√√√ log file should state versiojn of Mesquite
 √√√√ bug fixed: copy bug on windows (stringbuffer synchronization)
-•••• equilibrium root frequencies in MLE etc
 
 √√√ speed deleteRows in CharacterList
 √√√ add and rearrange should look at unique trees; after swapTask.rearrange(sTree, i); should check if tree alread in list
 
 √√√√ why lasrdisc & stochchar disagree?
-•••• matrix simulator with site specific models
-••• manual: COMET; STRATIGRAPHICTOOLS
 √√√ printing trace char legend
 √√√√ permit missing ins quared reconstruct
-•••• sort taxa by extension
 √√√√ single tree block consensus tree
 √√√√ copy/paste block size mismatch fix doesn't work
-•••• fix multiple menu bar refreshes and project refreshes
-••• stoch char mapping: legend should say stoch char
 √√√√ paste tree, save, tree source/tree window doesn't know updated number of trees
 √√√√ relax 10 char limit on phylip names
-•••• finish directions in MolecularData: swap acharacters; integrity check, e.g. 
-••• collab needs to be off-turnable
-••• check use of CategoricalStatTest etc. -- only or not?
-••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
-new•••>>> tree source coordiantor; finite and non finite
+√√√√ David: the Define Configuration window in Mesquite doesn't have a scroll bar, and so you can only see the first few packages.
+•••• fix multiple menu bar refreshes and project refreshes
 ••• getcolorsequence recycle vector if possible
-••• David: the Define Configuration window in Mesquite doesn't have a scroll bar, and so you can only see the first few packages.
 •••• [*cut] at file writing long line breaks
 •••• when breaking long lines in NEXUS put []comment so that the lines can be redone
-CellPictures warning still appearing
 •••???not reproduced why are typesets getting writen into notes block???
+••• collab needs to be off-turnable
+CellPictures warning still appearing
 √√√ does pairwise comparison really stop if goes past limit?  set limit lower?
 √√√ if no exporters give blank dialog
 √√√√ Laurin: Label states incredibly slow (don't use panels?)
@@ -151,6 +149,8 @@ CellPictures warning still appearing
 √√√ trees directly shoudl have toggle for live or not
 
 FOR MANUAL
+√√√√@@@@ count dup/ext
+√√√√@@@ change colors trace
 √√√@@@ missing data permitted in conts pars and disc likelihood.  Inappl treated as missing
 √√√@@@ add simple button on window to bring all of project to fore
 √√√@@@ modules read from MesquiteSupportFiles
@@ -164,6 +164,7 @@ FOR MANUAL
 √√√@@@@ Reshuffle within TAxa (matrices, characters)
 √√√@@@@ no longer permits maxstate >1 in asymmMk
 √√√@@@@ pdf printing
+√√√√@@@ Balls & Sticks square branches
 
 √√√ delete taxa; if some stored trees have no taxa then should be deleted!
 xxx TSV needs tree.equals() method

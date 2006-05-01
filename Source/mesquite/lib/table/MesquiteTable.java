@@ -1122,7 +1122,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	boolean constrainMaxAutoColumn = false;
-
 	public void setConstrainMaxAutoColumn(boolean c) {
 		constrainMaxAutoColumn = c;
 	}
@@ -1138,11 +1137,20 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public int getConstrainMaxAutoColumnNum() {
 		return contrainedMaxColumnNum;
 	}
+	boolean constrainMaxAutoRownames = false;
+	public void setConstrainMaxAutoRownames(boolean c) {
+		constrainMaxAutoRownames = c;
+	}
+
+	public boolean getConstrainMaxAutoRownames() {
+		return constrainMaxAutoRownames;
+	}
 
 	int contrainedMaxColumnNum = 3;
 
 	/* ................................................................................................................. */
 	public boolean autoSizeColumns(Graphics g) {
+
 		if (g == null || g.getFont() == null)
 			return false;
 		FontMetrics fm = g.getFontMetrics(g.getFont());
@@ -1164,7 +1172,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				max = lengthString;
 		}
 		int tableWIDTHpart = (getTableWidth() - getRowNamesWidth()) / (contrainedMaxColumnNum + 1);
-		if (constrainMaxAutoColumn && max > tableWIDTHpart) // v. 1.01 e 81
+		if (constrainMaxAutoRownames && max > tableWIDTHpart) // v. 1.01 e 81
 			max = tableWIDTHpart;
 		int newCW = max + 2 + MesquiteModule.textEdgeCompensationHeight;
 		int current = getRowNamesWidth();
@@ -1204,7 +1212,34 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 		return changed;
 	}
-
+	/* ................................................................................................................. */
+	public boolean autoSizeRowNames(Graphics g) {
+		if (g == null || g.getFont() == null)
+			return false;
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		int h = fm.getMaxAscent() + fm.getMaxDescent() + MesquiteModule.textEdgeCompensationHeight; // 2 + MesquiteString.riseOffset;
+		boolean changed = false;
+		int max = 100;
+		String s = "    ";
+		// row names
+		int lengthString = 0;
+		for (int it = 0; it < getNumRows(); it++) {
+			s = getRowNameTextForDisplay(it);
+			lengthString = fm.stringWidth(s);
+			if (lengthString > max)
+				max = lengthString;
+		}
+		int tableWIDTHpart = (getTableWidth() - getRowNamesWidth()) / (contrainedMaxColumnNum + 1);
+		if (constrainMaxAutoRownames && max > tableWIDTHpart) // v. 1.01 e 81
+			max = tableWIDTHpart;
+		int newCW = max + 2 + MesquiteModule.textEdgeCompensationHeight;
+		int current = getRowNamesWidth();
+		if (newCW != current && (Math.abs(newCW - current) > 1)) {
+			setRowNamesWidth(newCW);
+			changed = true;
+		}
+		return changed;
+	}
 	/* ................................................................................................................. */
 	private static final int NOMORE = 0;
 
@@ -1515,6 +1550,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (checkResetFont(g)) {
 			if (autosizeColumns)
 				autoSizeColumns(g);
+			else 
+				autoSizeRowNames(g);
 			repaintAll();
 		}
 		else if (autosizeColumns) {
