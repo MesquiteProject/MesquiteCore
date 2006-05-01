@@ -3,7 +3,7 @@ David to do
 1.07 to fix:
 
 - condense names
-- TableTool.worksAsArrowOnCornerPanel
+- double click taxon names with arrow tool doesn't switch to edit
 
 Shouldn't DataMatcher be moved into Characters???
 

@@ -134,8 +134,6 @@ public abstract class AlignMatch extends CategDataMatcher {
    		double numberOfMatches = 0.0;
    		int basesCompared =0;
    		
-   		if (candidateStartChar==8)
-   			Debugg.println("8th");
    		int startLength = MesquiteInteger.maximum(1,originalArray.length-maxLengthDiff);
    		int endLength = MesquiteInteger.minimum(data.getNumChars(),originalArray.length+maxLengthDiff);
    		MesquiteNumber score = new MesquiteNumber();
