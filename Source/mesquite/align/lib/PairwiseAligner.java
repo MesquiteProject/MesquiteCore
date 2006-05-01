@@ -11,7 +11,8 @@ public class PairwiseAligner  {
 
 	boolean preferencesSet = false;
 	boolean isMinimize = true;	
-	 int charThresholdForLowMemory = 1000;
+	int defaultCharThresholdForLowMemory = 3000;
+	int charThresholdForLowMemory = defaultCharThresholdForLowMemory;
 
     //first gap char costs gapOpen + gapExtend, and each additional character costs gapExtend 
 	private int gapOpen;
@@ -19,7 +20,7 @@ public class PairwiseAligner  {
 	//private int alphabetSize;
 	private int subs[][];
 	private boolean keepGaps = false;
-	private boolean useLowMem = false;
+//	private boolean useLowMem = false;
 	
 	public int totalGapChars = 0;
 		
@@ -53,9 +54,6 @@ public class PairwiseAligner  {
 		// not much to do here ???
 	}
 
-	public int getCharThresholdForLowMemory(){
-		return charThresholdForLowMemory;
-	}
 	public long[][] stripEmptyBases(long[][] alignment, int minLength){
 		int numExtras = 0;
 		for (int i=alignment.length-1; i>=0; i--) {
@@ -88,7 +86,7 @@ public class PairwiseAligner  {
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		
 		if ( returnAlignment) { 
-			if (useLowMem) {
+			if (A.length>getCharThresholdForLowMemory()||B.length>getCharThresholdForLowMemory()) {
 				//low memory (but slower, due to recursion) alignment
 				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
 				lastAWhenBAligned = new int[lengthB +1];
@@ -146,7 +144,7 @@ public class PairwiseAligner  {
 		lengthB = 0;
 		for (i=0; i<A_withGaps.length; i++) {
 			if (!CategoricalState.isInapplicable(A_withGaps[i])) {
-				A[lengthA]= MolecularState.getJustStateBitsAsInt(A_withGaps[i]);  //gets the lower 32 bits of the state set
+				A[lengthA]= MolecularState.compressToInt(A_withGaps[i]);  //gets the lower 32 bits of the state set
 				lengthA++;
 			}	else if (keepGaps) {
 				followsGapSize[lengthA]++;
@@ -156,7 +154,7 @@ public class PairwiseAligner  {
 
 		for (i=0; i<B_withGaps.length; i++) { 
 			if (!CategoricalState.isInapplicable(B_withGaps[i])) {
-				B[lengthB] = MolecularState.getJustStateBitsAsInt(B_withGaps[i]);  //gets the lower 32 bits of the state set
+				B[lengthB] = MolecularState.compressToInt(B_withGaps[i]);  //gets the lower 32 bits of the state set
 				lengthB++;
 			}
 		}	
@@ -200,8 +198,24 @@ public class PairwiseAligner  {
 	}
 	
 	public void setUseLowMem (boolean lowMem) {
-		this.useLowMem = lowMem;	
+		if (lowMem)
+			setCharThresholdForLowMemory(0);
+		else
+			setCharThresholdForLowMemory(Integer.MAX_VALUE);
+		//this.useLowMem = lowMem;	
 	}
+
+	public int getCharThresholdForLowMemory(){
+		return charThresholdForLowMemory;
+	}
+	public void setCharThresholdForLowMemory(int numChars){
+		 charThresholdForLowMemory = numChars;
+	}
+	
+	public void setCharThresholdForLowMemoryToDefault(){
+		 charThresholdForLowMemory = defaultCharThresholdForLowMemory;
+	}
+	
 
 	public void setIsMinimizationProblem (boolean isMin) {
 		isMinimize = isMin;
@@ -295,7 +309,7 @@ public class PairwiseAligner  {
 
 			//gap in B
 			while (i < lastAWhenBAligned[j]) {
-				alignment[k][0] = CategoricalState.makeSet(A[i]);
+				alignment[k][0] = CategoricalState.expandFromInt(A[i]);
 				alignment[k][1] = CategoricalState.inapplicable;
 				i++;
 				k++;					
@@ -303,18 +317,18 @@ public class PairwiseAligner  {
 
 			//now we're ready to burn off a letter from B, and possibly a letter from A if diagonal.
 			if (shapeWhenBAligned[j] == helper.noGap) {
-				alignment[k][0] = CategoricalState.makeSet(A[i]);
-				alignment[k][1] = CategoricalState.makeSet(B[j]);
+				alignment[k][0] = CategoricalState.expandFromInt(A[i]);
+				alignment[k][1] = CategoricalState.expandFromInt(B[j]);
 				i++;
 			} else {		// gapInA								
 				alignment[k][0] = CategoricalState.inapplicable;
-				alignment[k][1] = CategoricalState.makeSet(B[j]);
+				alignment[k][1] = CategoricalState.expandFromInt(B[j]);
 			}
 			k++;
 		}
 
 		while (i < lengthA) {
-			alignment[k][0] = CategoricalState.makeSet(A[i]);
+			alignment[k][0] = CategoricalState.expandFromInt(A[i]);
 			alignment[k][1] = CategoricalState.inapplicable;
 			i++;
 			k++;					

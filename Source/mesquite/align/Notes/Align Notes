@@ -1,14 +1,14 @@
 Align ToDo
 
-	- fix AlignHelperQuadraticHelper for keepGaps
-	- proper dealing of polymorphisms and long-to-int
+	- fix lowmemory AlignmentHelper for keepGaps
 	
 	- manual in aAlignIntro
 
 
 
 
-	- add basic pairwise aligner tool as MacClade has
+==============
+
 	
 	- speed up getCost
 	- test code
