@@ -49,6 +49,10 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 	 public String getScoreName() {
 	return "Alignment Score / Reverse Complement Alignment Score";  
 	 }
+	  	/*.................................................................................................................*/
+  	 public boolean isPrerelease(){
+  	 	return false;
+  	 }
   	 
 }
 

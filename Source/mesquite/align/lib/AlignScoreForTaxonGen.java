@@ -149,7 +149,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
 	public CompatibilityTest getCompatibilityTest(){
-		return new MolecularStateTest();
+		return new MolecularStateOnlyTest();
 	}
 	/*.................................................................................................................*/
    	 public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification, CommandRecord commandRec) {
@@ -162,10 +162,6 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
        	 public boolean isSubstantive(){
        	 	return true;
        	 }
-	/*.................................................................................................................*/
-    	 public boolean isPrerelease() {
-		return true;
-   	 }
     	 
  	public String getParameters() {
  		return getScoreName() + " of sequence in matrix from: " + matrixSourceTask.getParameters();

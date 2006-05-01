@@ -26,7 +26,12 @@ public class AlignScoreForTaxon extends AlignScoreForTaxonGen {
 	 public String getScoreName() {
 	return "Aligment Score";  
 	 }
-  	 
+  
+	 /*.................................................................................................................*/
+  	 public boolean isPrerelease(){
+  	 	return false;
+  	 }
+
 }
 
 
