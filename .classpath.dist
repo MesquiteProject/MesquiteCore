@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="Source"/>
+	<classpathentry kind="src" path="Resources"/>
+	<classpathentry kind="lib" path="pal.zip"/>
+	<classpathentry kind="lib" path="JSci.zip"/>
+	<classpathentry kind="lib" path="Jama-1.0.1.zip"/>
+	<classpathentry kind="lib" path="MRJToolkitStubs.zip"/>
+	<classpathentry kind="lib" path="AppleJavaExtensions.jar"/>
+	<classpathentry kind="output" path="Mesquite_Folder"/>
+</classpath>
