@@ -11,6 +11,7 @@ public class PairwiseAligner  {
 
 	boolean preferencesSet = false;
 	boolean isMinimize = true;	
+	 int charThresholdForLowMemory = 1000;
 
     //first gap char costs gapOpen + gapExtend, and each additional character costs gapExtend 
 	private int gapOpen;
@@ -52,6 +53,9 @@ public class PairwiseAligner  {
 		// not much to do here ???
 	}
 
+	public int getCharThresholdForLowMemory(){
+		return charThresholdForLowMemory;
+	}
 	public long[][] stripEmptyBases(long[][] alignment, int minLength){
 		int numExtras = 0;
 		for (int i=alignment.length-1; i>=0; i--) {
