@@ -343,6 +343,9 @@ public class RowNamesPanel extends EditorPanel  {
 				}
 	
 				}
+			else if (isArrowEquivalent) {
+				table.rowNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers,clickCount);
+			}
 			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
 				touchY=y;
 				lastY = y;
