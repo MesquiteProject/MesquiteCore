@@ -63,19 +63,15 @@ answer michel
 ••• scroll bar on small matrices/tables won't go page left
 •••• setListableFilter -- why does it zap whole distance submenu?
 ••• high ascii file paths don't work (Laurin)
-•••• sort taxa by extension
 •••• PETER: pdf not showing characer legend
 •••• maureen's printing pdf issue
 •••• equilibrium root frequencies in MLE etc
 •••• matrix simulator with site specific models
-••• manual: COMET; STRATIGRAPHICTOOLS
-••• stoch char mapping: legend should say stoch char
 •••• finish directions in MolecularData: swap acharacters; integrity check, e.g. 
 ••• check use of CategoricalStatTest etc. -- only or not?
 ••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
-new•••>>> tree source coordiantor; finite and non finite
+•••new  mrBayes fused export
 •••• kip's POY format issue
-•••• allow either dup or ext
 √√√√ autowidth row names on table; no autowidth char names for molecular data
 √√√√ WINDOWS: Boris's copy paste matrix bug
 √√√√ WINDOWS: emailing tree doesn't work under Windows
@@ -84,6 +80,7 @@ new•••>>> tree source coordiantor; finite and non finite
 √√√√ pdf -- check to see if available and set pdfOutputavailalbe
 √√√√ log file should state versiojn of Mesquite
 √√√√ bug fixed: copy bug on windows (stringbuffer synchronization)
+on hold: •••• sort taxa by extension
 
 ••• LASRDISC bugs:: asym: if one param is set, other is ?, treats as if both ?
 
