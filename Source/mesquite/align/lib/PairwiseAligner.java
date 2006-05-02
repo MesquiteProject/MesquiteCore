@@ -11,7 +11,7 @@ public class PairwiseAligner  {
 
 	boolean preferencesSet = false;
 	boolean isMinimize = true;	
-	int defaultCharThresholdForLowMemory = 3000000;
+	int defaultCharThresholdForLowMemory = 5000000;
 	int charThresholdForLowMemory = defaultCharThresholdForLowMemory;
 
     //first gap char costs gapOpen + gapExtend, and each additional character costs gapExtend 
@@ -86,6 +86,7 @@ public class PairwiseAligner  {
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		
 		if ( returnAlignment) { 
+Debugg.println("length: " + (A.length*B.length));
 			if (A.length*B.length>getCharThresholdForLowMemory()) {
 				//low memory (but slower, due to recursion) alignment
 				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
