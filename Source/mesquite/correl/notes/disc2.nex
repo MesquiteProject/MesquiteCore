@@ -1,0 +1,317 @@
+#NEXUS
+[written Mon Apr 03 18:29:58 PDT 2006 by Mesquite  version 1.06+ (build h54) at Pellenes-4.local/127.0.0.1]
+
+BEGIN TAXA;
+	TITLE Taxa_from_Pagel_format_file;
+	DIMENSIONS NTAX=18;
+	TAXLABELS
+		n1 n2 n3 n4 n5 n6 n7 n8 n9 an1 an2 an3 an4 an5 an6 an7 an8 an9 
+	;
+	IDS 010a6279978b31 010a6279978b32 010a6279978f33 010a6279979934 010a6279979935 010a6279979a36 010a6279979a37 010a6279979a38 010a6279979a39 010a6279979a40 010a6279979a41 010a627997a742 010a627997a743 010a627997b144 010a627997b145 010a627997b146 010a627997b247 010a627997b248 ;
+	BLOCKID 010a6279976b2;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Untitled_Character_Matrix;
+	DIMENSIONS  NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	MATRIX
+	n1   00
+	n2   11
+	n3   11
+	n4   00
+	n5   00
+	n6   00
+	n7   00
+	n8   00
+	n9   11
+	an1  00
+	an2  11
+	an3  11
+	an4  00
+	an5  00
+	an6  00
+	an7  00
+	an8  00
+	an9  11
+
+;
+	IDS 010a6279978b2 010a6279978b3 ;
+	BLOCKID 010a6279976b0;
+
+
+END;
+BEGIN TREES;
+	Title Trees_imported_from_Pagel_file;
+	LINK Taxa = Taxa_from_Pagel_format_file;
+	TRANSLATE
+		1 n1,
+		2 n2,
+		3 n3,
+		4 n4,
+		5 n5,
+		6 n6,
+		7 n7,
+		8 n8,
+		9 n9,
+		10 an1,
+		11 an2,
+		12 an3,
+		13 an4,
+		14 an5,
+		15 an6,
+		16 an7,
+		17 an8,
+		18 an9;
+	TREE Imported_tree = ((((5:22.0,(4:20.0,(1:29.0,(2:29.0,3:25.0):15.0):11.0):10.0):18.0,(6:3.0,7:2.0):28.0):10.0,(8:2.0,9:22.0):56.0):1.0,(((14:1.0,(13:1.0,(10:1.0,(11:1.0,12:1.0):1.0):1.0):1.0):1.0,(15:1.0,16:1.0):1.0):1.0,(17:1.0,18:1.0):1.0):1.0):1.0;
+
+END;
+
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  unord:  1 -  2;
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 6027805953763960218 010a6279976b2;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 4828998278273231534 010a6279976b0;
+			checksum 0 2969446841;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #4828998278273231534 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 420 280;
+					setLocation 60 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					endTell;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
+					toggleShowNames on;
+					toggleTight off;
+					toggleShowChanges on;
+					toggleSeparateLines off;
+					toggleShowStates on;
+					toggleAutoWithCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
+				endTell;
+				showWindow;
+				getWindow;
+				tell It;
+					forceAutosize;
+				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
+				getEmployee #mesquite.collab.AnnotInfo.AnnotInfo;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.CellImages.CellImages;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.StateImages.StateImages;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.collab.aaManageImageIndices.aaManageImageIndices;
+				tell It;
+					setLocal;
+					setPrevIndexBase 'http://mesquiteproject.org/mesquite/collab/indexedImages';
+					reset;
+				endTell;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
+		tell It;
+			makeTreeWindow #6027805953763960218  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
+			tell It;
+				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
+				tell It;
+					setTreeBlock 1;
+					toggleUseWeights off;
+				endTell;
+				setAssignedID 1012.1144113437034.7140769181719514904;
+				getTreeWindow;
+				tell It;
+					setSize 834 473;
+					setLocation 200 60;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				tell It;
+					suppress;
+					setTreeDrawer  #mesquite.trees.BallsNSticks.BallsNSticks;
+					tell It;
+						setSpotDiameter 22;
+						setEdgeWidth 2;
+						orientUp;
+						toggleCosmic off;
+						toggleArc on;
+						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						tell It;
+							stretchToggle off;
+							branchLengthsToggle on;
+							toggleScale on;
+							toggleCenter off;
+							toggleEven off;
+							namesAngle ?;
+						endTell;
+					endTell;
+					setBackground White;
+					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
+					desuppress;
+					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
+					tell It;
+						setColor Black;
+						toggleColorPartition on;
+						toggleShadePartition off;
+						toggleNodeLabels on;
+						toggleShowNames on;
+					endTell;
+				endTell;
+					setTreeNumber 1;
+					useSuggestedSize on;
+					toggleTextOnTree off;
+					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
+				tell It;
+					suspend ;
+					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
+					tell It;
+						toggleLabels off;
+					endTell;
+					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
+					tell It;
+						getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+						tell It;
+							setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+							tell It;
+								setDataSet #4828998278273231534;
+							endTell;
+						endTell;
+						setMethod  #mesquite.stochchar.MargProbAncStates.MargProbAncStates;
+						tell It;
+							setModelSource  #mesquite.stochchar.StoredProbModel.StoredProbModel;
+							tell It;
+								setModel 1   'Mk1 (est.)';
+							endTell;
+							getEmployee #mesquite.stochchar.zMargLikeCateg.zMargLikeCateg;
+							tell It;
+								setReportMode Proportional_Likelihoods;
+								setRootMode Sum_Likelihoods;
+								setDecision 2.0;
+								setUnderflowCheckFreq 2;
+							endTell;
+						endTell;
+					endTell;
+					setCharacter 1;
+					setMapping 1;
+					toggleShowLegend on;
+					toggleGray off;
+					toggleWeights on;
+					setInitialOffsetX -168;
+					setInitialOffsetY -390;
+					setLegendWidth 142;
+					setLegendHeight 160;
+					resume ;
+				endTell;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
+				tell It;
+					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
+				endTell;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.cartographer.TaxonGroupSymbols.TaxonGroupSymbols;
+				tell It;
+					showSymbols off;
+					combineColors off;
+					setColors on;
+				endTell;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.collab.ManageAuthors.ManageAuthors;
+		tell It;
+			addAuthorNameToMatrices;
+		endTell;
+		endTell;
+end;
+
+

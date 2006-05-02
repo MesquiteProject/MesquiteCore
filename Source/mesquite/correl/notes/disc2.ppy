@@ -1,0 +1,41 @@
+#data file for primates
+
+#data structure is:
+#node,ancestor,branch length,trait 1,trait 2
+
+n1,n11,29,0,0
+n2,n10,29,1,1
+n3,n10,25,1,1
+n4,n12,20,0,0
+n5,n13,22,0,0
+n6,n14,3,0,0
+n7,n14,2,0,0
+n8,n16,2,0,0
+n9,n16,22,1,1
+n10,n11,15
+n11,n12,11
+n12,n13,10
+n13,n15,18
+n14,n15,28
+n15,n17,10
+n16,n17,56
+an1,an11,1,0,0
+an2,an10,1,1,1
+an3,an10,1,1,1
+an4,an12,1,0,0
+an5,an13,1,0,0
+an6,an14,1,0,0
+an7,an14,1,0,0
+an8,an16,1,0,0
+an9,an16,1,1,1
+an10,an11,1
+an11,an12,1
+an12,an13,1
+an13,an15,1
+an14,an15,1
+an15,an17,1
+an16,an17,1
+n17,n18,1
+an17,n18,1
+
+
