@@ -15,4 +15,11 @@ public class DNATaxaDistance extends MolecularTaxaDistance {
 		public CompatibilityTest getCompatibilityTest(){
 			return new DNAStateOnlyTest();
 		}
+		/** used for debugging; turn this on and at least some of the distance calculators will stream their results to the log.  */
+		public void logDistancesIfDesired(String name){
+			if (false) {
+				MesquiteTrunk.mesquiteTrunk.logln("\n\n\n||||||||||||||  " + name);
+				distancesToLog();
+			}
+		}
 	}

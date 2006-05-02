@@ -192,6 +192,18 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 		public double[][] getMatrix(){
 			return distances;
 		}
+		public void distancesToLog(){
+				for (int taxon1=0; taxon1<getNumTaxa(); taxon1++) {
+					for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+						if (taxon1<taxon2)
+							if (MesquiteDouble.isInfinite(distances[taxon1][taxon2]))
+								MesquiteTrunk.mesquiteTrunk.logln("" + (taxon1+1) + "-"+ (taxon2+1) + ": INFINITE");
+							else
+								MesquiteTrunk.mesquiteTrunk.logln("" + (taxon1+1) + "-"+ (taxon2+1) + ": " + distances[taxon1][taxon2]);
+					}					
+					MesquiteTrunk.mesquiteTrunk.logln("");
+				}
+		}
 		public boolean isSymmetrical(){
 			return true;
 		}

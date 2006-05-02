@@ -1,7 +1,10 @@
 Mesquite.distance notes
 -----------------------------
 
+Distances To Log
+
+post 1.07:
 Taxon Pairs chart:
-	what should selection of points do?
+	build TaxonPairs universal selection system, TaxonPair[] attached to TaxaBlock, etc.
 	
 	
