@@ -22,6 +22,15 @@ public abstract class DNATaxaDistFromMatrixFreq extends DNATaxaDistFromMatrix {
 	 	snapshot.addLine("toggleBaseFreqEntireMatrix  " + baseFreqEntireMatrix.toOffOnString());
 	 	return snapshot;
 	 }
+		/*.................................................................................................................*/
+		public String getParameters(){
+			String s = super.getParameters();
+			if (getBaseFreqEntireMatrix())
+				s+= " Base frequencies estimated over entire matrix.";
+			else
+				s+= " Base frequencies estimated over each pair of sequences separately.";
+			return s;
+		}
 	 /*.................................................................................................................*/
 	 public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
 	 	if (checker.compare(this.getClass(), "Sets whether the base frequency values used in distance calculations are based upon the entire matrix (if on) or just the pair of sequences being compared (if off).", "[on; off]", commandName, "toggleBaseFreqEntireMatrix")) {
