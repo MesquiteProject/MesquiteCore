@@ -1269,6 +1269,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				if (!acceptableResults(next, estParams)) {
 					MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
 					reportUnacceptableValues(next, estParams,backupEst);
+					if (b == null)
+						b = DoubleArray.clone(estParams);	//only do this to get b set to something...
 				}
 				else if (next<best) {
 					best = next;
