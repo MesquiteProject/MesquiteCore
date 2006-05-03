@@ -1,0 +1,8 @@
+Notes for mesquite.charts
+----------------------------------
+
+- rewrite entire charting undercode into separate components:
+	- generation and storage of data (one, two, three... values per item)
+	- modules for display of charts that would allow much more flexibility in presentation
+	
+-color by codon positions
