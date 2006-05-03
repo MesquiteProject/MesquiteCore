@@ -11,7 +11,7 @@
 		<property name="src.dir" location="${srcpath}" />
 		<property name="mesquitesrccontainingdir" location="${dist.dir}/Source" />
 		<property name="mesquitesrc" location="${mesquitesrccontainingdir}/mesquiteSource" />
-                <property name="rsrcs" value="Resources"/> 
+		<property name="rsrcs" value="Resources"/> 
 		<property name="rsrcs.dir" location="${rsrcs}" />
 		<property name="linuxbin.tgz" location="mesquite.tgz" />
 		<property name="dmgbin" location="mesquite.dmg" />
@@ -25,6 +25,8 @@
 		<property name="workspaceproject.dir" location="${workspacedist.dir}/MesquiteProject/" />
 		<property name="workspacesrc.dir" location="${workspaceproject.dir}/Source"/>
 		<property name="workspacedistclasspath" location=".classpath.dist"/>
+		
+		<property name="installer.dir" location="${basedir}/../mesquiteinstaller"/>     
 
 		<!-- assorted mac folders and files that need to be excluded for linux builds -->
 		<property name="osxdirpath" value="**/Mesquite OSX.app/" />
@@ -91,7 +93,7 @@
 		</javac>
 	</target>
 
-	<target depends="compile" name="packagedistlinuxmac">
+	<target depends="compile" name="packagedist">
 		<description>Copies the appropriate files and creates distribution .tgz and .sit</description>
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
@@ -105,11 +107,19 @@
 				<exclude name="**/*.java" />
 				<exclude name="**/Notes/" />
 			</fileset>
-			<filterset refid="mesquitetokens.filterset" />
+			<!--
+				<filterset refid="mesquitetokens.filterset" />							
+			-->
 		</copy>
+		<!--
+		<copy todir="${mesquitefolder.dir}">
+		</copy> -->
 		<!-- package up the linux dist before we copy the mac stuff -->
 		<tar basedir="${release.dir}" destfile="${linuxbin.tgz}" compression="gzip" />
 
+        <ant dir="${installer.dir}" target="makensis" inheritAll="true"/>
+        	
+		
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<include name="${osxdirpath}" />
@@ -120,7 +130,7 @@
 		</copy>
 
 		<!-- create .dmg -->
-		<exec executable="hdiutil" failonerror="false">
+		<exec executable="hdiutil" failonerror="false" os="Mac OS X">
 			<arg value="create" />
 			<arg value="-srcfolder" />
 			<arg value="${release.dir}" />
@@ -129,11 +139,10 @@
 			<arg value="${dmgbin}" />
 		</exec>
 
-		<!--
-		<exec executable="stuff" failonerror="false" >
+		<!-- -->
+		<exec executable="stuff" failonerror="false" os="Mac OS X">
 			<arg line="-q -n='${sitbin}' -f=sit5 '${mesquitefolder.dir}'"/>
 		</exec>
-		-->
 	</target>
 
 	<target depends="init" name="packagesrc">
@@ -192,7 +201,7 @@
 		<tar destfile="${linuxsrc}" compression="gzip" basedir="${workspacedist.dir}" />
 	</target>
 
-	<target depends="packagedistlinuxmac,packagesrc" name="deployfiles">
+	<target depends="packagedist,packagesrc" name="deployfiles">
 		<description>Sends all of the generated files up to the server</description>
 		<scp file="${linuxbin.tgz}" todir="${bininstalldir}" />
 		<scp file="${sitbin}" todir="${bininstalldir}" />
