@@ -1,9 +1,9 @@
 #NEXUS
-[written Sun Apr 23 16:46:44 MST 2006 by Mesquite  version 1.06+ (build h56) at david-maddisons-powerbook-g4-15.local/192.168.0.5 (David Maddison)]
+[written Tue May 02 21:58:45 MST 2006 by Mesquite  version 1.06+ (build h57) at em/192.168.1.110]
 BEGIN AUTHORS;
-AUTHOR  NAME = David_Maddison CODE = bembidion LASTSAVER;
-END;
+AUTHOR  NAME =  David_Maddison CODE =  bembidion LASTSAVER;
 
+END;
 
 BEGIN TAXA;
 	TITLE Untitled_Taxa_Block;
@@ -37,7 +37,6 @@ BEGIN CHARACTERS;
 
 
 	IDS  _  _  _ bembidion10a77cd33602801 bembidion10a77cd33602802 bembidion10a77cd33602803 bembidion10a77cd33602804 bembidion10a77cd33602805 bembidion10a77cd33602806 bembidion10a77cd33602807 bembidion10a77cd33602808 bembidion10a77cd33602809 bembidion10a77cd33602810 bembidion10a77cd33602811 bembidion10a77cd33602812 bembidion10a77cd33602813 bembidion10a77cd33602814 bembidion10a77cd33602815 bembidion10a77cd33602816 bembidion10a77cd33602817 bembidion10a77cd33602818 bembidion10a77cd33602819 bembidion10a77cd33602820 ;
-	BLOCKID bembidion10ac924e44a0;
 
 
 END;
@@ -62,7 +61,6 @@ BEGIN CHARACTERS;
 
 
 	IDS bembidion10a77d5a58420 bembidion10a77d5a58421 bembidion10a77d5a58422 bembidion10a77d5a58423 bembidion10a77d5a58424 bembidion10a77d5a58425 bembidion10a77d5a58426 ;
-	BLOCKID bembidion10ac924e4a90;
 
 
 END;
@@ -75,10 +73,10 @@ CODESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  universal:  1 -
 END;
 
 BEGIN CHARCHANGEHISTORY;
-LINK CHARACTERS = Untitled_Character_Matrix;
-LINK CHARACTERS = Untitled_Character_Matrix;
-END;
+LINK CHARACTERS =  Untitled_Character_Matrix;
+LINK CHARACTERS =  Untitled_Character_Matrix;
 
+END;
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  unord:  1 -  23;
 TYPESET * UNTITLED  (CHARACTERS = Untitled_Character_Matrix)  =  unord:  1 -  7;
@@ -100,9 +98,9 @@ Begin MESQUITE;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 949177808083695603 bembidion10ac924e44a0;
+			setID 0 949177808083695603;
 			checksum 0 3286705137;
-			setID 1 3564779954115045874 bembidion10ac924e4a90;
+			setID 1 3564779954115045874;
 			checksum 1 1310667400;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -122,10 +120,10 @@ Begin MESQUITE;
 					setFontIncExp 0;
 					getToolPalette;
 					tell It;
-						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+						setTool mesquite.align.AlignToDropped.AlignToDropped.alignToDropped;
 					endTell;
 					setActive;
-					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					setTool mesquite.align.AlignToDropped.AlignToDropped.alignToDropped;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
 					setBackground White;
 					toggleShowNames on;
@@ -133,7 +131,7 @@ Begin MESQUITE;
 					toggleShowChanges on;
 					toggleSeparateLines off;
 					toggleShowStates on;
-					toggleAutoWithCharNames on;
+					toggleAutoWCharNames off;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
 					setColumnWidth 16;
@@ -161,38 +159,11 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
-				getEmployee #mesquite.chromaseq.ColorQuality.ColorQuality;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
 				tell It;
-					toggleAmbiguities on;
-					toggleMarks on;
-				endTell;
-				getEmployee #mesquite.collab.AnnotInfo.AnnotInfo;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.collab.CellImages.CellImages;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.collab.StateImages.StateImages;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.collab.aaManageImageIndices.aaManageImageIndices;
-				tell It;
-					setLocal;
-					setPrevIndexBase 'http://mesquiteproject.org/mesquite/collab/indexedImages';
-					reset;
+					gapCosts 8 3;
 				endTell;
 			endTell;
-		endTell;
-		getEmployee  #mesquite.collab.ManageAuthors.ManageAuthors;
-		tell It;
-			addAuthorNameToMatrices;
 		endTell;
 		endTell;
 end;

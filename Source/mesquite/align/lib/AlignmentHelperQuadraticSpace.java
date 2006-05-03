@@ -4,9 +4,9 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.*;
 
-public class AlignmentHelperQuadraticSpace {
-
-	int[] A;
+public class AlignmentHelperQuadraticSpace extends AlignmentHelper {	
+	
+/*	int[] A;
 	int[] B;
 	int lengthA;
 	int lengthB;
@@ -18,7 +18,7 @@ public class AlignmentHelperQuadraticSpace {
 	int gapInsertionArray[];
 	
 	boolean isMinimize = true;
-	
+*/	
 	public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
 		A = seq1;
 		B = seq2;
@@ -31,6 +31,8 @@ public class AlignmentHelperQuadraticSpace {
 	}
 
 	public long[][] doAlignment (boolean returnAlignment, MesquiteNumber score, boolean keepGaps, int[] followsGapSize, int totalGapChars) {
+		//Height = lengthA, Width = lengthB
+		
 		int H[][] = new int[lengthA+1][lengthB+1];
 		int D[][] = new int[lengthA+1][lengthB+1];
 		int V[][] = new int[lengthA+1][lengthB+1];
@@ -176,7 +178,14 @@ public class AlignmentHelperQuadraticSpace {
 		      right--;
 		}
 		
-		if (!keepGaps) {
+		
+		if (keepGaps) {
+			return ReInsertGaps(k, followsGapSize, totalGapChars, false, seq2return) ;
+		} else {
+			return seq2return;
+		}
+		
+/*		if (!keepGaps) {
 			return seq2return;
 		} else {
 			//put the gaps back in
@@ -212,12 +221,14 @@ public class AlignmentHelperQuadraticSpace {
 			}		
 			return gappedSeq2return;
 		}
-		
+*/		
 	}
 	
 	
-	public int[] getGapInsertionArray () {
+/*	public int[] getGapInsertionArray () {
 		return gapInsertionArray;
 	}		
+*/
+	
 }
 
