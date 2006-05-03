@@ -72,6 +72,7 @@ answer michel
 ••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
 •••new  mrBayes fused export
 •••• kip's POY format issue
+••• taxa assoc: delete assoc taxa, list not updated; list needs indications of those included
 √√√√ autowidth row names on table; no autowidth char names for molecular data
 √√√√ WINDOWS: Boris's copy paste matrix bug
 √√√√ WINDOWS: emailing tree doesn't work under Windows
@@ -126,6 +127,7 @@ CellPictures warning still appearing
 
 FOR MANUAL
 √√√√@@@@ count dup/ext
+√√√√@@@ new assocaition editing
 √√√√@@@ change colors trace
 √√√@@@ missing data permitted in conts pars and disc likelihood.  Inappl treated as missing
 √√√@@@ add simple button on window to bring all of project to fore
