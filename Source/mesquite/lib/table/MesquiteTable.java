@@ -1925,7 +1925,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			numColumnsVisible = (c - firstColumnVisible + 1); // had been +1 but last column may not be entirely visible
 		}
-		if (numColumnsVisible < 1)
+		if (numColumnsVisible < 2)
 			horizScroll.setBlockIncrement(1);
 		else
 			horizScroll.setBlockIncrement(numColumnsVisible - 1);
@@ -1946,7 +1946,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				break;
 			}
 		}
-		if (numRowsVisible < 1)
+		if (numRowsVisible < 2)
 			vertScroll.setBlockIncrement(1);
 		else
 			vertScroll.setBlockIncrement(numRowsVisible - 1);
