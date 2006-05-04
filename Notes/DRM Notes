@@ -1,9 +1,21 @@
 David to do
 
 1.07 to fix:
+mesquite.genesis.SimDNAMatrixEmpirBased.SimDNAMatrixEmpirBased
+mesquite.trees.NumForNodesWithChar.NumForNodesWithChar
+mesquite.trees.NumForNodesWithCharHist.NumForNodesWithCharHist
+mesquite.trees.NumForNodesWithMat.NumForNodesWithMat
+mesquite.trees.NumsForNodesBrLengths.NumsForNodesBrLengths
+mesquite.align.AlignToDropped.AlignToDropped
 
-- condense names
-- double click taxon names with arrow tool doesn't switch to edit
+look at CondenseTaxonNames
+
+
+
+
+
+
+- change CellColorer so that setActiveColors returns a boolean as to whether it is successful or not
 
 Shouldn't DataMatcher be moved into Characters???
 

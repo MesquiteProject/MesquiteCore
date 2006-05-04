@@ -6,11 +6,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
-/* TODO: 
- *   have it so the reference sequence can be chosen
- *   report pairwise alignment parameters
- *   snapshot, etc.
- */
+
 
 public class AlignScoreForTaxon extends AlignScoreForTaxonGen {
 	/*.................................................................................................................*/

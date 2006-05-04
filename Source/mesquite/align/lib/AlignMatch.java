@@ -22,7 +22,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.categ.lib.*;
 
-/* TODO: save pairwiseTask to snapshot */
+
 /* ======================================================================== */
 public abstract class AlignMatch extends CategDataMatcher {
 	 boolean preferencesSet = false;
@@ -34,16 +34,8 @@ public abstract class AlignMatch extends CategDataMatcher {
 	protected MesquiteSubmenuSpec mss;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
-/*		pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
-		if (pairwiseTask == null)
-			return sorry(commandRec, getName() + " couldn't start because no pairwise aligner obtained.");
-		ptC = makeCommand("setPairwiseTask",  this);
-		pairwiseTask.setHiringCommand(ptC);
-*/
-
 
 		mss = addSubmenu(null, getName());//getFileCoordinator().
-//		addCheckMenuItemToSubmenu( null, mss,"Accept GU Match", makeCommand("acceptGUMatch",  this), acceptGUMatch);
   		addItemToSubmenu(null, mss,"Allowed Length Differences...", makeCommand("setMaxLengthDiff", this));
 		return true;
 	}
@@ -72,8 +64,6 @@ public abstract class AlignMatch extends CategDataMatcher {
  	 public Snapshot getSnapshot(MesquiteFile file) {
   	 	Snapshot temp = new Snapshot();
 	 	temp.addLine("setMaxLengthDiff " + maxLengthDiff);
-//	 	if (pairwiseTask!=null)
-//	 		temp.addLine("setPairwiseTask ", pairwiseTask);  
 	 	return temp;
  	 }
  
