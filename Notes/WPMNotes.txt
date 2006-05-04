@@ -59,20 +59,20 @@ java.lang.NullPointerException
 ===============
 bugs to fix for 1.07
 answer michel
-•••• delete matrix from projects window, doesn't redo mnus
-••• scroll bar on small matrices/tables won't go page left
-•••• setListableFilter -- why does it zap whole distance submenu?
+•••• disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
+••• check use of CategoricalStatTest etc. -- only or not?
 ••• high ascii file paths don't work (Laurin)
-•••• PETER: pdf not showing characer legend
+•••• search for todo in Cartographer
 •••• maureen's printing pdf issue
 •••• equilibrium root frequencies in MLE etc
 •••• matrix simulator with site specific models
-•••• finish directions in MolecularData: swap acharacters; integrity check, e.g. 
-••• check use of CategoricalStatTest etc. -- only or not?
 ••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
-•••new  mrBayes fused export
-•••• kip's POY format issue
 ••• taxa assoc: delete assoc taxa, list not updated; list needs indications of those included
+•••• SOURCE: itext into Resources?
+√√√ kip's POY format issue
+√√√ delete matrix from projects window, doesn't redo mnus
+√√√ scroll bar on small matrices/tables won't go page left
+√√√√ setListableFilter -- why does it zap whole distance submenu?
 √√√√ autowidth row names on table; no autowidth char names for molecular data
 √√√√ WINDOWS: Boris's copy paste matrix bug
 √√√√ WINDOWS: emailing tree doesn't work under Windows
@@ -97,12 +97,15 @@ on hold: •••• sort taxa by extension
 √√√√ paste tree, save, tree source/tree window doesn't know updated number of trees
 √√√√ relax 10 char limit on phylip names
 √√√√ David: the Define Configuration window in Mesquite doesn't have a scroll bar, and so you can only see the first few packages.
+
+low priority
 •••• fix multiple menu bar refreshes and project refreshes
 ••• getcolorsequence recycle vector if possible
 •••• [*cut] at file writing long line breaks
 •••• when breaking long lines in NEXUS put []comment so that the lines can be redone
 •••???not reproduced why are typesets getting writen into notes block???
 ••• collab needs to be off-turnable
+•••• PETER: pdf not showing characer legend
 CellPictures warning still appearing
 √√√ does pairwise comparison really stop if goes past limit?  set limit lower?
 √√√ if no exporters give blank dialog
@@ -144,6 +147,7 @@ FOR MANUAL
 √√√@@@@ no longer permits maxstate >1 in asymmMk
 √√√@@@@ pdf printing
 √√√√@@@ Balls & Sticks square branches
+√√√@@@  mrBayes fused export
 
 √√√ delete taxa; if some stored trees have no taxa then should be deleted!
 xxx TSV needs tree.equals() method
