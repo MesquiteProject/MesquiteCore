@@ -8,18 +8,19 @@ mesquite.trees.NumForNodesWithMat.NumForNodesWithMat
 mesquite.trees.NumsForNodesBrLengths.NumsForNodesBrLengths
 mesquite.align.AlignToDropped.AlignToDropped
 
-look at CondenseTaxonNames
 
 
 
 
+=====================
+1.11:
+	- undo in editor!
+	- work on SimDNAMatrixEmpirBased
+	- change CellColorer so that setActiveColors returns a boolean as 
+		to whether it is successful or not
 
-
-- change CellColorer so that setActiveColors returns a boolean as to whether it is successful or not
-
-Shouldn't DataMatcher be moved into Characters???
-
-- Align 
+1.2:
+	-rework charting code completely
 
 - get consensus trees in Mesquite
 
@@ -86,7 +87,6 @@ amplification bar for each sequence
 
 Cartographer
 
-	- web tool doesn't work on symbols
 	- add map path and other details (including projection type) to XML file
 
 post version 1:
