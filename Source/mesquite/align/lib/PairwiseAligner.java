@@ -79,11 +79,13 @@ public class PairwiseAligner  {
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		
 		if ( returnAlignment) { 
-			Debugg.println("length: " + (A.length*B.length));
+			Debugg.println("DP table size: " + (A.length*B.length));
 			if ((A.length*B.length)>getCharThresholdForLowMemory()) {
 				//low memory (but slower, due to recursion) alignment
-				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
-				int myScore = helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
+				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, keepGaps, followsGapSize);
+				
+				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
+		
 				long ret[][] = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
 				gapInsertionArray = helper.getGapInsertionArray();
 //							Debugg.println("score is " + myScore);   
@@ -103,7 +105,7 @@ public class PairwiseAligner  {
 			}
 		} else { 
 			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.	
-			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true);
+			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true, keepGaps, followsGapSize);
 			helper.fillForward(0,lengthB,0,lengthA,helper.noGap);			
 			int myScore = Math.min(helper.fH[lengthA], Math.min (helper.fD[lengthA], helper.fV[lengthA])) ;
 			
@@ -144,7 +146,8 @@ public class PairwiseAligner  {
 				totalGapChars++;	
 			}
 		}
-
+		//followsGapSize[lengthA] = 0; //the final entry in this array is spurious ... it says the character after the last character in the string follows a bunhc of gap characters; not meaningful. 
+		
 		for (i=0; i<B_withGaps.length; i++) { 
 			if (!CategoricalState.isInapplicable(B_withGaps[i])) {
 				B[lengthB] = MolecularState.compressToInt(B_withGaps[i]);  //gets the lower 32 bits of the state set

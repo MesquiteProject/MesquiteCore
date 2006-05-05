@@ -88,8 +88,8 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		this.lengthA = lengthA;
 		this.lengthB = lengthB;
 		
-		lastB_BeforeNextA = new int[lengthB +1];
-		shapeLeavingPosInA  = new int[lengthB +1];
+		lastB_BeforeNextA = new int[lengthA +1];
+		shapeLeavingPosInA  = new int[lengthA +1];
 	}
 
 	public void fillArrays (int firstRow, int lastRow, int firstColumn, int lastColumn, int precedingShape, int succeedingShape) {
@@ -101,8 +101,8 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	
 	public void fillForward(int firstRow, int lastRow, int firstColumn, int lastColumn, int shape) {
 		
-		int lengthA = lastRow - firstRow +1;
-		int lengthB = lastColumn - firstColumn +1;
+		int lengthA = lastRow - firstRow + 1;
+		int lengthB = lastColumn - firstColumn + 1;
 		int i,j;
 		
 		fH[firstColumn] = fV[firstColumn] = gapOpen;
@@ -185,7 +185,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		rH[lastColumn] = rV[lastColumn] = gapOpen;
 		rD[lastColumn] = 0;
 		
-		if (shape == gapInA) {
+		if (shape == gapInA || (keepGaps && followsGapSize[lastRow]>0)) {
 			rH[lastColumn] = 0;
 		} else if ( shape == gapInB) {
 			rV[lastColumn] = 0;
@@ -215,7 +215,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			}
 */
 			gapOpenOnA = gapOpen; 
-			if (keepGaps && followsGapSize[i+1]>0) // followsGapSize[i] means reversePrecedsGapSize[i-1]
+			if (keepGaps && followsGapSize[i]>0) // followsGapSize[i] means reversePrecedsGapSize[i-1]
 				gapOpenOnA = 0;
 			
 			for (j=lastColumn-1; j>=firstColumn; j--) { // for each column
@@ -284,8 +284,8 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 					//why not leave with a diagonal? because "leaving" means "going to the first row of the reverse table" ... 
 				    //  and there isn't a column called "lastColumn+1" to go to in the reverse table  
 			} else {
-				int a = A[i];
-				int b = B[midRow];
+				int a = A[midRow];
+				int b = B[i];
 				int s = AlignUtil.getCost(subs,a,b,alphabetLength);
 				diagonalColScore = Math.min(fH[i], Math.min (fD[i], fV[i])) +
 										Math.min(rH[i+1], Math.min (rD[i+1], rV[i+1])) +
@@ -313,11 +313,11 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				
 		//	Recurse to find the full list of cells through which the alignment passes.
 		if ( firstRow != midRow){
-			recursivelyFillArray(firstColumn, bestCol, firstRow, midRow, precedingShape, bestColShape);
+			recursivelyFillArray(firstRow, midRow, firstColumn, bestCol, precedingShape, bestColShape);
 		}
 		if (midRow+1 != lastRow){
 			int col_shift = (bestColShape == noGap) ? /*diagonal*/ 1 : /*vertical*/ 0;
-			recursivelyFillArray(bestCol+col_shift, lastColumn, midRow+1, lastRow, bestColShape, succeedingShape); 
+			recursivelyFillArray(midRow+1, lastRow, bestCol+col_shift, lastColumn, bestColShape, succeedingShape); 
 		}
 		
 		return bestColScore; // useful for the first level of recursion - returns the total alignment cost
@@ -334,15 +334,15 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			//gap in A
 			while ( j < lastB_BeforeNextA[i] ) {
 				alignment[k][0] = CategoricalState.inapplicable;
-				alignment[k][1] = CategoricalState.makeSet(B[j]);
+				alignment[k][1] = CategoricalState.makeSetFromLowerBits(B[j]);
 				j++;
 				k++;					
 			}
 
 			//now we're ready to burn off a letter from B, and possibly a letter from A if diagonal.
-			alignment[k][0] = CategoricalState.makeSet(A[i]);
-			if (shapeLeavingPosInA[j] == noGap) {
-				alignment[k][1] = CategoricalState.makeSet(B[j]);
+			alignment[k][0] = CategoricalState.makeSetFromLowerBits(A[i]);
+			if (shapeLeavingPosInA[i] == noGap) {
+				alignment[k][1] = CategoricalState.makeSetFromLowerBits(B[j]);
 				j++;
 			} else {		// gap In B								
 				alignment[k][1] = CategoricalState.inapplicable;
@@ -352,7 +352,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 
 		while (j < lengthB) { //gap in A at the end 
 			alignment[k][0] = CategoricalState.inapplicable;
-			alignment[k][1] = CategoricalState.makeSet(B[j]);
+			alignment[k][1] = CategoricalState.makeSetFromLowerBits(B[j]);
 			j++;
 			k++;					
 		}		
