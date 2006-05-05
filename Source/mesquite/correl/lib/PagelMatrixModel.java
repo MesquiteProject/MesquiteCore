@@ -55,6 +55,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private boolean[] paramUnassigned;
     private double[][] probMatrix, rateMatrix, eigenVectors, inverseEigenVectors;
     private double[] eigenValues, imagEigenValues;
+    private boolean negativeProbabilities = false;
+    private double negativeProbValue = 0.0;
     //private MesquiteInteger pos = new MesquiteInteger(0);
     private boolean recalcProbsNeeded = true;
     private boolean needToPrepareMatrices = true;
@@ -96,6 +98,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	int rootMode = SUM; //what if anything is done with prior probabilities of states at subroot?  
 
 	Random rng = new Random(System.currentTimeMillis());
+	
+	ProgressIndicator prog = null;
 	
 	/**
 	 * This returns the number of characters implied by the behavior code.  It's static so it
@@ -285,8 +289,9 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private double[] prepareQList(double[] values){
     		if (qList == null)
     			qList = new double[qMapping.length];
-		for (int i=0;i<qMapping.length;i++)
-			qList[i] = params[qMapping[i]];
+		for (int i=0;i<qMapping.length;i++) {
+			qList[i] = values[qMapping[i]];
+		}
 		return qList;
     }
     
@@ -313,7 +318,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
                     eigenValues = new double[assumedMaxState+1];
                 DoubleArray.deassignArray(eigenValues);
                 Double2DArray.deassignArray(eigenVectors);
-                //Debugg.println("Eigenvalues is " + eigenValues + ", length is " + eigenValues.length);
             }
             else  {
                 EigenAnalysis e = new EigenAnalysis(rateMatrix, true, false, true);
@@ -475,7 +479,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	
 	public double transitionProbability (int beginState[], int endState[], Tree tree, int node){
 		if ((beginState.length != numChars) || (endState.length != numChars)){
-			Debugg.printStackTrace("Array for beginState or endState don't match models stated number of characters");
+			MesquiteMessage.warnProgrammer("Array for beginState or endState don't match models stated number of characters");
 			return 0;
 		}
 		boolean inStateFlag = true;
@@ -484,11 +488,11 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			inStateFlag &= inStates(endState[i],i);
 		}
 		if (!inStateFlag){
-			Debugg.printStackTrace("An character state of either beginState or endState is not valid");
+			MesquiteMessage.warnProgrammer("An character state of either beginState or endState is not valid");
 			return 0;
 		}
 		if (tree== null){
-			Debugg.printStackTrace("No tree specified");
+			MesquiteMessage.warnProgrammer("No tree specified");
 			return 0;
 		}
 		if (needToPrepareMatrices)
@@ -498,7 +502,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			recalcProbabilities(branchLength);
 		if (probMatrix == null)
 			return 0;
-		// the following only works for two binary characters -- needs to be extended
+		//TODO the following only works for two binary characters -- needs to be extended
 		return probMatrix[recodeStatePair(beginState[0],beginState[1])][recodeStatePair(endState[0],endState[1])];
 	}
 	
@@ -514,7 +518,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	 */
 	public double transitionProbability (int beginState1,int endState1,int beginState2,int endState2,Tree tree, int node){
 		if (!inStates(beginState1,0) || !inStates(endState1,0) || !inStates(beginState2,1) || !inStates(endState2,1)){
-			Debugg.println("Bailed out of transitionProbability " + beginState1 + " " + endState1 + " " + beginState2 + " " + endState2);
+			MesquiteMessage.warnProgrammer("Bailed out of transitionProbability " + beginState1 + " " + endState1 + " " + beginState2 + " " + endState2);
 			return 0;
 		}
 		else {
@@ -527,7 +531,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				recalcProbabilities(branchLength);
 			if (probMatrix ==null)
 				return 0;
-			return probMatrix[recodeStatePair(beginState1,beginState2)][recodeStatePair(endState1,endState2)];
+			return  probMatrix[recodeStatePair(beginState1,beginState2)][recodeStatePair(endState1,endState2)];
 		}
 	}
 	
@@ -542,7 +546,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		previousBranchLength = branchLength;
 		if (eigenValues == null)
 			return;
-		//Debugg.println("Sanity check: eigenValues are " + DoubleArray.toString(eigenValues) + "bl is " + branchLength);
 		int evl = eigenValues.length;
 		double[][] tent  =  new double[evl][evl];
 		for (int i=0; i< evl; i++)
@@ -552,30 +555,36 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				else
 					tent[i][j] = 0;
 			}
-			//Debugg.println("Sanity check: tent is " + Double2DArray.toString(tent));
-			//Debugg.println("EigenVectors are " + Double2DArray.toString(eigenVectors));
-			//Debugg.println("inverseEigenVectors are " + Double2DArray.toString(inverseEigenVectors));
 			
 		double[][] p = Double2DArray.multiply(eigenVectors, tent);
 		probMatrix = Double2DArray.multiply(p, inverseEigenVectors);
 
 		probMatrix = Double2DArray.squnch(probMatrix);
         	probMatrix = Double2DArray.transpose(probMatrix);
-        	//boolean bogus = false;
-        	//for (int i=0; i<probMatrix.length;i++)
-        	//	for (int j=0;j<probMatrix[0].length;j++)
-        	//		if (probMatrix[i][j]<= 0)
-        	//			bogus = true;
-        	//if (bogus){
-        		//Debugg.println("Bad values in recalcProbabilities");
-        	//	Debugg.println("rate matrix is " + Double2DArray.toString(rateMatrix));
-        	//	Debugg.println("eigenValues are                       " + DoubleArray.toString(eigenValues));
-        	//	Debugg.println("imaginary portions of eigenvalues are " + DoubleArray.toString(imagEigenValues));
-        	//	//Debugg.println("tent is " + Double2DArray.toString(tent));
-        	//	Debugg.println("EigenVectors are " + Double2DArray.toString(eigenVectors));
-        	//	Debugg.println("inverseEigenVectors are " + Double2DArray.toString(inverseEigenVectors));
-        	//	Debugg.println("result is " + Double2DArray.toString(probMatrix));
+        	boolean negativeRoundOff = false;
+        	for (int i=0; i<probMatrix.length;i++)
+        		for (int j=0;j<probMatrix[0].length;j++)
+        			if (probMatrix[i][j]<= 0)
+        				if (Math.abs(probMatrix[i][j])<1E-15) {
+        					negativeRoundOff = true;
+        					probMatrix[i][j] = 0;    //fix the problem; rows must add to one, so no relative size issue
+        				}
+        				else{
+        					negativeProbabilities= true;
+        					negativeProbValue = probMatrix[i][j];
+        				}
+        	//if ()  {
+        	//	MesquiteMessage.warnProgrammer("Negative value in recalcProbabilities: " + bogusValue);
+        	    //Debugg.println("rate matrix is " + Double2DArray.toString(rateMatrix));
+        		//Debugg.println("eigenValues are                       " + DoubleArray.toString(eigenValues));
+           	//	Debugg.println("imaginary portions of eigenvalues are " + DoubleArray.toString(imagEigenValues));
+        		//Debugg.println("tent is " + Double2DArray.toString(tent));
+        		//Debugg.println("EigenVectors are " + Double2DArray.toString(eigenVectors));
+        		//Debugg.println("inverseEigenVectors are " + Double2DArray.toString(inverseEigenVectors));
+        		//Debugg.println("result is " + Double2DArray.toString(probMatrix));
         	//}
+        	//if (negativeRoundOff)
+        //		Debugg.println("Small negative roundoff errors set to zero");
         	
         	//Debugg.println("Trying alternate exp");
         //	double[][] altProbMatrix = altMatrixExp(rateMatrix, eigenValues,imagEigenValues,branchLength);
@@ -594,250 +603,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		return result;
 	}
 	
-	int eigenValueStatus = UNEQUALTRIPLE;
-	public final static int UNEQUALTRIPLE = 0;
-	public final static int COMPLEXPAIR = 1;
-	public final static int EQUALPAIR  = 2;
-	public final static int EQUALTRIPLE = 3;
-	
-	public final static double equalTol = 0.001;
-	
-	double[][] altMatrixExp(double[][] baseArray,double[] eigenValues,double[] imagEigenValues,double t){
-		Matrix C = new Matrix(baseArray);
-		//Debugg.println("C is: ");
-		
-		// find the zero eigenvalue; it may only be approximately 0, but it will be the
-		// largest, since the others all have negative real parts
-		double largest = -1E99;  
-		int largestIndex = -1;
-		int evl = eigenValues.length;
-		for (int i=0;i<evl;i++)
-			if (eigenValues[i] > largest) {
-				largest = eigenValues[i];
-				largestIndex = i;
-			}
-		// check for a conjugate pair
-		int imag1 = -1;
-		int imag2 = -1;
-		int realgroup1 = -1;
-		int realgroup2 = -1;
-		int realgroup3 = -1;
-		for(int i=0;i<evl;i++){
-			if (imagEigenValues[i] != 0)
-				if (imag1 == -1)
-					imag1 = i;
-				else imag2 = i;
-		}
-		if (imag1 > -1){
-			eigenValueStatus = COMPLEXPAIR;
-			for(int i= 0; i<evl;i++)
-				if (i != imag1 && i != imag2 && i != largestIndex)
-					realgroup1 = i;   // hold lone negative real;
-		}
-		else {  // no conjugate pairs, check for multiple == reals
-			for(int i=0;i<evl-1;i++)
-				for(int j=i+1;j<evl;j++){
-					//System.out.println("Test: " + Math.abs(eigenValues[i]-eigenValues[j]));
-					if(Math.abs((eigenValues[i]-eigenValues[j])/eigenValues[i]) < equalTol){  // found a pair
-						realgroup1=i;
-						realgroup2=j;
-						break;
-					}
-				}
-				if (realgroup2 == -1)
-					eigenValueStatus = UNEQUALTRIPLE;
-				else {  //find realgroup3
-					for(int i=0;i<evl;i++){
-						if (i != largestIndex && i != realgroup1 && i != realgroup2)
-							realgroup3 = i;
-					}
-					if (Math.abs((eigenValues[realgroup1]-eigenValues[realgroup3])/eigenValues[realgroup1])<equalTol)
-						eigenValueStatus = EQUALTRIPLE;
-					else 
-						eigenValueStatus = EQUALPAIR;
-				}	
-		}
-
-		Matrix x = null;
-		Matrix identity = Matrix.identity(evl,evl);
-		Matrix p1 = Matrix.identity(evl,evl);  // clone from identity?
-		Matrix p2 = null;
-		Matrix p3 = null;
-		Matrix p4 = null;
-		double[] workingValues = new double[evl];
-		workingValues[0] = 0;      // assert that the max eigenvalue is identically zero!
-		switch (eigenValueStatus) {
-			case UNEQUALTRIPLE: {
-				Debugg.println("Calculating unequal triple");
-				int nexteigenslot=1;
-				workingValues[0] = 0;
-				for (int i=0;i<evl;i++){
-					if(i!=largestIndex)
-						workingValues[nexteigenslot++] = eigenValues[i];
-				}	
-				Debugg.print("Workingvalues of C are: " + DoubleArray.toString(workingValues));
-				double z = workingValues[0];
-				double k = workingValues[1];
-				double m = workingValues[2];
-
-				p2 = (C.minus(identity.times(z))).times(p1);              
-				p3 = (C.minus(identity.times(k))).times(p2);
-				p4 = (C.minus(identity.times(m))).times(p3);
-				x = p1.times(r1(t,workingValues));
-				x.plusEquals(p2.times(realR2(t,workingValues)));
-				x.plusEquals(p3.times(realR3(t,workingValues)));
-				x.plusEquals(p4.times(realR4(t,workingValues)));	
-				break;
-			}
-			case COMPLEXPAIR: {
-				double[] workingIValues = new double[evl];
-				for(int i=0;i<evl;i++)
-					workingIValues[i] = 0;
-				workingValues[1] = eigenValues[imag1];
-				workingIValues[1] = imagEigenValues[imag1];
-				workingValues[2] = eigenValues[imag2];
-				workingIValues[2] = imagEigenValues[imag2];
-				workingValues[3] = eigenValues[realgroup1];
-
-				Debugg.println("Calculating complex pair");
-				//System.out.print("Workingvalues of C are: [");
-				//for (int i=0;i<workingValues.length;i++)
-					//System.out.print(workingValues[i] +" ");
-
-				double z = workingValues[0];
-				double k = workingValues[1];
-				p2 = (C.minus(identity.times(z))).times(p1);
-				p3 = (C.minus(identity.times(k))).times(p2);
-				p4 = (C.minus(identity.times(k))).times(p3);
-				x = p1.times(r1(t,workingValues));
-				x.plusEquals(p2.times(complexPairR2(t,workingValues,workingIValues)));
-				x.plusEquals(p3.times(complexPairR3(t,workingValues,workingIValues)));
-				x.plusEquals(p4.times(complexPairR4(t,workingValues,workingIValues)));			
-				break;
-			}
-			case EQUALPAIR: {
-				workingValues[0] = 0;
-				workingValues[1] = eigenValues[realgroup1];
-				workingValues[2] = eigenValues[realgroup1];   // if they're close, force them equal
-				workingValues[3] = eigenValues[realgroup3];
-				
-				Debugg.println("Calculating equal pair");
-				Debugg.println("Working values are: " + DoubleArray.toString(workingValues));
-		
-				double z = workingValues[0];
-				double k = workingValues[1];
-				p2 = (C.minus(identity.times(z))).times(p1);
-				p3 = (C.minus(identity.times(k))).times(p2);
-				p4 = (C.minus(identity.times(k))).times(p3);
-				
-				x = p1.times(r1(t,workingValues));
-				
-				x.plusEquals(p2.times(realR2(t,workingValues)));
-				x.plusEquals(p3.times(realPairR3(t,workingValues)));
-				x.plusEquals(p4.times(realPairR4(t,workingValues)));	
-
-				break;
-			}
-			case EQUALTRIPLE: {
-				workingValues[0] = 0;
-				workingValues[1] = eigenValues[realgroup1];
-				workingValues[2] = eigenValues[realgroup2];
-				workingValues[3] = eigenValues[realgroup3];
-				Debugg.println("Calculating equal triple");
-				//System.out.print("Workingvalues of C are: [");
-				//for (int i=0;i<workingValues.length;i++)
-					//System.out.print(workingValues[i] +" ");
-				double z = workingValues[0];
-				double k = workingValues[1];
-				p2 = (C.minus(p1.times(z))).times(p1);
-				p3 = (C.minus(p1.times(k))).times(p2);
-				p4 = (C.minus(p1.times(k))).times(p3);
-				
-				x = p1.times(r1(t,workingValues));
-				x.plusEquals(p2.times(realR2(t,workingValues)));
-				x.plusEquals(p3.times(realPairR3(t,workingValues)));
-				x.plusEquals(p4.times(realTripleR4(t,workingValues)));			
-				break;
-			}
-		}
-		return x.getArray();
-	}
-	
-	// support functions for Putzer exponentiation
-	double r1(double t,double[] realEigenValues){
-		//double z = realEigenValues[0];
-		//return Math.exp(t*z);
-		return 1;
-	}
-
-	double realR2(double t, double[] realEigenValues){
-		double k = realEigenValues[1];
-		return (Math.exp(k*t) - 1)/(k);
-	}
-	
-	double complexPairR2(double t, double[] realEigenValues, double[] imagEigenValues){
-		double ka = realEigenValues[1];
-		double kb = imagEigenValues[1];
-		return -((ka*(1 - Math.exp(ka*t)*Math.cos(kb*t)))/(ka*ka + kb*kb)) + 
-		  (Math.exp(ka*t)*kb*Math.sin(kb*t))/(ka*ka + kb*kb);
-	}
-	
-	
-	
-	double realR3(double t, double[] realEigenValues){
-		//double z = realEigenValues[0];
-		double k = realEigenValues[1];
-		double m = realEigenValues[2];
-		return (Math.exp(m*t)*k - k - Math.exp(k*t)*m + m)/((-k + m)*(k)*(m)); 
-	}
-	
-	double complexPairR3(double t, double[] realEigenValues, double[] imagEigenValues){
-		double ka = realEigenValues[1];
-		double kb = imagEigenValues[1];
-		return (2*kb - 2*Math.exp(ka*t)*kb*Math.cos(kb*t) + 2*Math.exp(ka*t)*ka*Math.sin(kb*t))/ 
-		  (2*ka*ka*kb + 2*kb*kb*kb);
-	}
-	
-	double realPairR3(double t, double[] values){
-		double k = values[1];
-		//(1 - E^(k*t) + E^(k*t)*k*t)/k^2
-		return (1 - Math.exp(k*t) + Math.exp(k*t)*k*t)/(k*k);
-	}
-	
-	double realR4(double t, double[] realEigenValues){
-		double k = realEigenValues[1];
-		double m = realEigenValues[2];
-		double n = realEigenValues[3];
-		return (-(Math.exp(n*t)*k*k*m) + k*k*m + 
-		          Math.exp(n*t)*k*m*m - k*m*m + Math.exp(m*t)*k*k*n - 
-		          k*k*n - Math.exp(k*t)*m*m*n + m*m*n - 
-		          Math.exp(m*t)*k*n*n + k*n*n + Math.exp(k*t)*m*n*n - 
-		          m*n*n)/((-k + m)*(-k + n)*(-m + n)*(k)*(m)*(n));
-	}
-
-	double complexPairR4(double t, double[] realEigenValues, double[] imagEigenValues){
-		double ka = realEigenValues[1];
-		double kb = imagEigenValues[1];
-		double n = realEigenValues[3];
-		return (-2*ka*ka*kb + 2*Math.exp(n*t)*ka*ka*kb - 2*kb*kb*kb + 2*Math.exp(n*t)*kb*kb*kb + 
-			    4*ka*kb*n - 2*kb*n*n - 4*Math.exp(ka*t)*ka*kb*n*Math.cos(kb*t) + 
-			    2*Math.exp(ka*t)*kb*n*n*Math.cos(kb*t) + 
-			    2*Math.exp(ka*t)*ka*ka*n*Math.sin(kb*t) - 
-			    2*Math.exp(ka*t)*kb*kb*n*Math.sin(kb*t) - 2*Math.exp(ka*t)*ka*n*n*Math.sin(kb*t))/
-			    (2*kb*(ka*ka + kb*kb)*n*(ka*ka + kb*kb - 2*ka*n + n*n));
-	}
-	
-	double realPairR4(double t, double [] values){
-		double k = values[1];
-		double n = values[3];
-		return (-k*k + Math.exp(n*t)*k*k + 2*k*n - 2*Math.exp(k*t)*k*n - 
-			       n*n + Math.exp(k*t)*n*n + Math.exp(k*t)*k*k*n*t - Math.exp(k*t)*k*n*n*t)/(k*k*n*(n-k)*(n-k));
-	}
-	double realTripleR4(double t, double[] values){
-		// TODO finish me
-		double k = values[1];
-		return (-2 + 2*Math.exp(k*t) - 2*Math.exp(k*t)*k*t +  Math.exp(k*t)*k*k*t*t)/(2*k*k*k);
-	}
 
 	double limit = 10000;
 	int beginningAllowed = 6;
@@ -848,17 +613,17 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
      */
 	public double evaluate(double[] values, Object obj) {
 		if (values.length >= 4) {
-			//CommandRecord cr = b.getCommandRecord();
+			if (prog != null)
+				if (prog.isAborted())
+					throw new StuckSearchException();
 			double height = workingTree.tallestPathAboveNode(workingTree.getRoot()); // to stop the optimization from wandering if very high rates
-			if (!sanityChecks(values,limit, height))
+			if (!sanityChecks(values,limit, height)){
 				return MesquiteDouble.veryLargeNumber;
+			}
+        		negativeProbabilities = false;
 			params = DoubleArray.clone(values);
-			//Debugg.println("Calling prepareMatrices");
 			prepareMatrices();
 			double result =  -this.logLikelihoodCalc(workingTree);
-			//if (cr !=null)
-			//	cr.tick("Estimating asymm model:  params " + param0 + " " + param1 + " -logL " + result); 
-			//Debugg.println("Evaluate returned "+ result + "from parameters: " + DoubleArray.toString(values));
 			return result;
 		}
 		else
@@ -871,7 +636,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	public double logLikelihoodCalc(Tree tree){
 		if (zeroHit)
 			return -0.001*(++estCount);  // to shortcircuit the optimizer wandering around zero with very high rates
-		//model.setCharacterDistribution(observedStates);
 		double likelihood = 0.0;
 		double comp;
 		int root = tree.getRoot();
@@ -879,11 +643,9 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			initProbs2(tree.getNumNodeSpaces(), observedStates1.getMaxState()+1,observedStates2.getMaxState()+1); 
 			estCount++;
 			downPass2(root,tree);
-			//Debugg.println("Checking downProbs2 " + Double2DArray.toString(downProbs2[root]));
 			for (int i = 0; i<=maxState[0]; i++)
 				for (int j = 0; j<=maxState[1];j++) {
 					savedRootEstimates[j][i] = downProbs2[root][j][i];
-					//Debugg.println("Estimates at root from [" + i + ", " + j +"]" + Math.log(tmp));
 					if (savedRootEstimates[j][i] < 0){      // problem, probably due to bad matrix operation
 						likelihood = 0;
 						return(-1*MesquiteDouble.veryLargeNumber);
@@ -891,10 +653,9 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					else
 						likelihood += savedRootEstimates[j][i];
 				}
-			//Debugg.println("Sum is " + likelihood);
 		}
-		else 
-			Debugg.println("Subroot prior and subroot empirical not yet supported");
+		//else 
+		//	Debugg.println("Subroot prior and subroot empirical not yet supported");
 		//}
 		//else if (rootMode == SUBROOT_PRIOR){
 		//	if (tree.getRooted())
@@ -911,22 +672,23 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		//	}
 		//}
 		comp = underflowCompDown[root];
-		//Debugg.println("Likelihood is " + likelihood + " and comp is " + comp);
 		double logLike = Math.log(likelihood) - comp;
-		//if (Double.isNaN(logLike)){
-		//	Debugg.println("logLikelihoodCalc returned Nan from :" + DoubleArray.toString(params));
-		//	Debugg.println("Raw likelihood was" + likelihood + " underflow comp was " + comp);
-		//}
-
-	//	if (logLike> -0.00001) {
-	//		zeroHit = true;
-	//	}
+		if (Double.isNaN(logLike)){
+			// These just get too verbose
+			//MesquiteMessage.warnProgrammer("logLikelihoodCalc returned Nan from :" + DoubleArray.toString(params));
+			//if (negativeProbabilities){
+			//	MesquiteMessage.warnProgrammer("Negative transition probabilities were calculated (e.g., " + negativeProbValue + ")");
+			//}
+			return(-1*MesquiteDouble.veryLargeNumber);
+		}
+		if (logLike> -0.00001) {
+			zeroHit = true;
+		}
 		return (logLike);
 	}
  		
  	private void initProbs2(int nodes, int numStates1, int numStates2) {
  		if (numStates1 != numStates2) {
- 			//Debugg.println("Warning - different numbers of states in the two characters in Pagel94");
  			if (numStates1 >= numStates2)
  				this.numStates = numStates1;
  			else
@@ -964,8 +726,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				for (int l=0;l<numStates;l++)
 					prob += transitionProbability(k,i,l,j,tree,d)*ProbsD[i][j];
 		}
-		//if (prob <0)
-		//	Debugg.println("In prob from section final prob is " + prob + " at node " + d + " for i="+ i + " and for j=" + j);
 		return prob;
 	}
 	
@@ -985,8 +745,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				for (int j=0;j<probs[0].length;j++)
 					probs[i][j] /= q;
 		}
-		//if (Double.isNaN(Math.log(q)))
-		//	Debugg.println("Caught Nan in checkUnderFlow, orginal value was " + q);
 		return -Math.log(q);
 	}
 
@@ -1020,8 +778,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						prob *= probFromSection(tree,d,i,j,downProbs2[d],true);
 					}
 					downProbs2[node][i][j] = prob;
-					//if (prob <0)
-					//	Debugg.println("Found negative prob in downPass2; prob = " + prob +" node =" + node + "i,j = " + i + ", " + j);
 			}
 			if (++underflowCheck % underflowCheckFrequency == 0){
 				underflowCompDown[node] += checkUnderflow(downProbs2[node]);
@@ -1075,8 +831,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     static final boolean scaleRescale = true;  
  
     public void estimateParameters(Tree originalTree, CategoricalDistribution observedStates1, CategoricalDistribution observedStates2, CommandRecord commandRec) {
-    		this.observedStates1 = observedStates1;
-    		this.observedStates2 = observedStates2;
+        this.observedStates1 = observedStates1;
+        this.observedStates2 = observedStates2;
     		// Special treatment for constant states just isn't working out here
     		if (observedStates1.getMaxState()>= 1)
     			maxState[0] = observedStates1.getMaxState();
@@ -1109,6 +865,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		// **** estParams is the matrix of trial values
 		double [] b = null;
 		double next;
+		try {
 		switch (modelType) {
 			case MODEL8PARAM:{  // first try two versions of a 6-parameter model
 				PagelMatrixModel model6_1 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEY);
@@ -1116,7 +873,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				double estParams[] = new double[8];
 				// first a model with changes in Y contingent on changes in X
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEY){
-					//Debugg.println("Getting start point from MODEL6PARAMCONTINGENTCHANGEY");
 				    model6_1.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
 					model6_1.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
 					double[] m6_1Params = model6_1.getParams();
@@ -1137,7 +893,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				}
 				allowedEdgeHits = beginningAllowed;
 				double [] backupEst = (double [])estParams.clone();
-				//Debugg.println("Input to optimizer for 8 parameter model is " + DoubleArray.toString(estParams));
 				next = opt.optimize(estParams, null); // try optimizing from the contingentchangeY best parameters
 				if (!acceptableResults(next, estParams)) {
 					MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -1151,14 +906,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						for (int i=0; i< estParams.length; i++)
 							b[i] = estParams[i];
 				}
-				//Debugg.println("best is now " + best + " b is now " + DoubleArray.toString(b) );
 				// now the other 6-parameter model (changes in X contingent on Y)
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEX){
 				    model6_2.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
-					//Debugg.println("Getting start point from MODEL6PARAMCONTINGENTCHANGEY");
-					//Debugg.println("Started at " + System.currentTimeMillis());
 					model6_2.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
-					//Debugg.println("6PContingentX Finished at " + System.currentTimeMillis());
 					double[] m6_2Params = model6_2.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m6_2Params[i];
@@ -1176,7 +927,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					estParams[7]=parametersFromSimplerModel[5];
 				}
 				allowedEdgeHits = beginningAllowed;
-				//Debugg.println("Input to optimizer for 8 parameter model is " + DoubleArray.toString(estParams));
 				backupEst = (double [])estParams.clone();
 				next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
 				if (!acceptableResults(next, estParams)) {
@@ -1193,15 +943,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				}
 				//PETER: added these tick notifications to keep user informed of progress of search
 				if (commandRec != null) commandRec.tick("8 parameter model preliminary -ln likelihood: " + MesquiteDouble.toString(best));
-				//Debugg.println("best is now " + best + " b is now " + DoubleArray.toString(b) );
 				if (eightParameterExtraSearch.getValue() > 0) {
-					//Debugg.println("Trying random linear combinations of parameters from 6p models");
-					//Debugg.println("Model 1 params are " + DoubleArray.toString(model6_1.getParams()));
-					//Debugg.println("Model 2 params are " + DoubleArray.toString(model6_2.getParams()));
 					double [] m6_1Params = model6_1.getParams();
 					double [] m6_2Params = model6_2.getParams();
 					for (int i = 0; i< eightParameterExtraSearch.getValue();i++){
-					//Debugg.println("Combination " + i);
 						for(int j=0;j<4;j++)
 							estParams[j]=Math.abs(m6_1Params[j] + (2*rng.nextDouble()-1)*(m6_2Params[j]+m6_1Params[j]));
 						estParams[4]=(1+0.2*rng.nextGaussian())*m6_1Params[4];
@@ -1209,13 +954,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						estParams[6]=(1+0.2*rng.nextGaussian())*m6_1Params[5];
 						estParams[7]=(1+0.2*rng.nextGaussian())*m6_2Params[5];
 						allowedEdgeHits = beginningAllowed;
-						//Debugg.println("Input to optimizer for 8 parameter model is " + DoubleArray.toString(estParams));
 						backupEst = (double [])estParams.clone();
 						next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
-						//Debugg.println("Score is " + next);
-						//Debugg.println(" " +next);
 						if (!acceptableResults(next, estParams)) {
-							MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
+							MesquiteMessage.warnProgrammer("Warning: NaN encountered in PagelMatrixModel optimization");
 							reportUnacceptableValues(next, estParams,backupEst);
 						}
 						else if (next<best) {
@@ -1226,7 +968,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 								for (int m=0; m< estParams.length; m++)
 									b[m] = estParams[m];
 						}
-						//Debugg.println("best is now " + best); // + " b is now " + DoubleArray.toString(b) );
 						if (commandRec != null) commandRec.tick("8 parameter model -ln likelihood after " + (i+1) + " searches: " + MesquiteDouble.toString(best));
 				}
 				}
@@ -1236,7 +977,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			case MODEL6PARAMCONTINGENTCHANGEY: {
 				double[] estParams = new double[6];
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL4PARAM) {
-					//Debugg.println("Getting start point from MODEL4PARAM");
 					PagelMatrixModel model4 = new PagelMatrixModel("",CategoricalState.class,MODEL4PARAM);
 					model4.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
 					double [] m4Params = model4.getParams();
@@ -1269,8 +1009,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				if (!acceptableResults(next, estParams)) {
 					MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
 					reportUnacceptableValues(next, estParams,backupEst);
-					if (b == null)
-						b = DoubleArray.clone(estParams);	//only do this to get b set to something...
+					//if (b == null)
+					//	b = DoubleArray.clone(estParams);	//only do this to get b set to something...
 				}
 				else if (next<best) {
 					best = next;
@@ -1280,7 +1020,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						for (int i=0; i< estParams.length; i++)
 							b[i] = estParams[i];
 				}
-				//Debugg.println("best is now " + best + " b is now " + DoubleArray.toString(b) );
 				break;
 			}
 			case MODEL4PARAM: {  // for now, just use flip/flop, though we might try getting estimates from MODEL2PARAM in the future
@@ -1294,7 +1033,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				double [] backupEst = (double [])estParams.clone();
 		 		next = opt.optimize(estParams, null); //bundle);
 		 		if (!acceptableResults(next, estParams)) {
-		 			MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
+		 			MesquiteMessage.warnProgrammer("Warning: NaN encountered in PagelMatrixModel optimization");
 					reportUnacceptableValues(next, estParams,backupEst);
 		 		}
 		 		else if (next<best) {
@@ -1350,10 +1089,14 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			}
 			case MODEL2PARAM: {  // NO-OP FOR NOW, the model exists, the framework for using it doesn't
 			 	MkModel model2 = new MkModel("asymm helper", CategoricalState.class); //used to provide preliminary guess at rate
-				Debugg.println("The 2 parameter model isn't currently supported here");
+				MesquiteMessage.warnUser("The 2 parameter model isn't currently supported here");
 				break;
 			}
 		} // end switch (??)
+		}
+		catch (StuckSearchException e){
+			return;
+		}
 		params = DoubleArray.clone(b);
 		if (scaleRescale && height != 0){ //UNDO the scaling of the tree
 			rescaleAllParameters(invHeight);
@@ -1505,7 +1248,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		for(int i=0;i<bsa.length;i++)
 			bsa[i] = CategoricalState.minimum(bState[i].getValue());
 		int []r = evolveState(bsa, tree, node); //todo: issue error if beginning is polymorphic?  choose randomly among beginning?
-		Debugg.println("Evolving from " + IntegerArray.toString(bsa) + " to " + IntegerArray.toString(r));
 		for(int i=0;i<r.length;i++)
 			eState[i].setValue(CategoricalState.makeSet(r[i]));
 	}
@@ -1684,7 +1426,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
                 	    	   localParams[2]=z;
                 	    	   localParams[3]=w;
                 	    	   //surface[j][k]=evaluate(localParams,null);
-                	    	   Debugg.println(x +"\t" +y +"\t" + z + "\t" + w + "\t" + evaluate(localParams,null));
                 	    }
                 }
             }
@@ -1692,10 +1433,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 //            localParams[2*i+1] = savedParams[2*i+1];
         }
         if (outputBounds == null) {
-            Debugg.println("No double[][] array supplied to receive output bounds or array too small");
+            MesquiteMessage.warnProgrammer("No double[][] array supplied to receive output bounds or array too small");
         }
         if (outputBounds.length != 2) {
-            Debugg.println("Array supplied to receive output bounds too small");
+            MesquiteMessage.warnProgrammer("Array supplied to receive output bounds too small");
         }
         //THIS DOESN:T work at present
         //arbitrarily choose the midpoints
@@ -1762,6 +1503,15 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		maxState[1] = observedStates2.getMaxState();
 		allStates[0] = CategoricalState.span(0,maxState[0]);
 		allStates[1] = CategoricalState.span(0,maxState[1]);
+    }
+    
+    // end debugging methods
+    
+    public void setProgress(ProgressIndicator p){
+    		prog = p;
+    }
+    
+    public class StuckSearchException extends RuntimeException{
     }
 
 

@@ -155,9 +155,9 @@ public class Pagel94 extends Pagel94Calculator {
         if (!(charStates1 instanceof CategoricalDistribution ||
              charStates2 instanceof CategoricalDistribution)) {
             if (!(charStates1 instanceof CategoricalDistribution))
-                Debugg.println("Quitting because the first character is not Categorical");
+                MesquiteMessage.warnProgrammer("Quitting because the first character is not Categorical");
             else
-                Debugg.println("Quitting because the second character is not Categorical");
+                MesquiteMessage.warnProgrammer("Quitting because the second character is not Categorical");
             iQuit();
         }
         observedStates1 = (CategoricalDistribution)charStates1;
@@ -165,9 +165,9 @@ public class Pagel94 extends Pagel94Calculator {
         if (observedStates1.getMaxState() > 1 ||
             observedStates2.getMaxState() > 1) {
             if (observedStates1.getMaxState() > 1)
-                Debugg.println("Quitting because the first character doesn't seem to be binary -- getMaxState() returned " + observedStates1.getMaxState());
+                MesquiteMessage.warnProgrammer("Quitting because the first character doesn't seem to be binary -- getMaxState() returned " + observedStates1.getMaxState());
             else
-                Debugg.println("Quitting because the second character doesn't seem to be binary -- getMaxState() returned " + observedStates2.getMaxState());
+                MesquiteMessage.warnProgrammer("Quitting because the second character doesn't seem to be binary -- getMaxState() returned " + observedStates2.getMaxState());
             iQuit();
         }
         if (model8 == null){
@@ -212,25 +212,21 @@ public class Pagel94 extends Pagel94Calculator {
     			model4 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);
     			model8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);
         }
+        
         MesquiteInteger numIt = model8.getExtraSearch();
         numIt.setValue(numIterations);
         logln("Pagel 94 analysis: Calculating likelihood for 4 parameter model");
        
-        //model4.showSurface(tree,observedStates1,observedStates2,10);
-        //Debugg.println("Estimating model4; start time is " + System.currentTimeMillis()); 
         model4.estimateParameters(tree,observedStates1,observedStates2,commandRec);
-        //Debugg.println("Final params are " + DoubleArray.toString(model4.getParams()));
         result4 = model4.evaluate(model4.getParams(),null);
 
-       logln("Pagel 94 analysis: Calculating likelihood for 8 parameter model (" + numIterations + " iterations)");
-       //Debugg.println("Model4 -loglikelihood is " + result4.getValue());
+        logln("Pagel 94 analysis: Calculating likelihood for 8 parameter model (" + numIterations + " iterations)");
         model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
         model8.estimateParameters(tree,observedStates1,observedStates2,commandRec);
-        //Debugg.println("Final params are " + DoubleArray.toString(model8.getParams()));
         result8 = model8.evaluate(model8.getParams(),null);
 
-       double score = result4-result8;
-       if (logger!= null){ logger.log("\n\nFor four parameter model : \n");
+        double score = result4-result8;
+        if (logger!= null){ logger.log("\n\nFor four parameter model : \n");
 	        logger.log(model4.getParameters());
 	        logger.log("\n\nLikelihood is " + result4);
 	        logger.log("\n\n\nFor eight parameter model : \n");
@@ -257,70 +253,71 @@ public class Pagel94 extends Pagel94Calculator {
 	        boolean hasAborted = false;
 	        progress = new ProgressIndicator(getProject(),"Running simulations", "Running", simCount, true);
 	        progress.start();
-	        for (int simNumber = 0;(simNumber<simCount)&&!hasAborted;simNumber++){
-	            progress.setCurrentValue(simNumber+1);  // so user sees 1-based count
-	            progress.setText("Running simulation " + (simNumber+1) + " of " + simCount, false);
-	            SimData[0] = new CategoricalAdjustable(observedStates1.getTaxa(),observedStates1.getNumNodes());
-	            SimData[1] = new CategoricalAdjustable(observedStates2.getTaxa(),observedStates2.getNumNodes());
-	            evolvingStates[0] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
-	            evolvingStates[1] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
-	            getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed, commandRec);
-	            if (!eitherCharacterConstant(tree,SimData[0],SimData[1])) {
-	            	   if (progress.isAborted()){
-                        hasAborted = true;
-	            	   }
-	            	   if (!hasAborted){
-	            		   model4.estimateParameters(tree,SimData[0],SimData[1],commandRec);
-	            		   independentScore = model4.evaluate(model4.getParams(),null);
-	            	   }
-	            	   if (progress.isAborted()){
-	            		   hasAborted = true;
-	            	   }
-	            	   if (!hasAborted){
-	            		   model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
-	            		   //Debugg.println("; Analyzing 8p model");
-	            		   model8.estimateParameters(tree,SimData[0],SimData[1],commandRec);
-	            		   dependentScore= model8.evaluate(model8.getParams(),null);
-	            		   //Debugg.println("Scores (indep,dep): " + independentScore + ", " + dependentScore);           	 
-	            		   diffs[simNumber] = independentScore-dependentScore;
-	            	   }
-	            	   if (progress.isAborted()){
-	            		   hasAborted = true;
-	            	   }
+	        try {
+	            for (int simNumber = 0;(simNumber<simCount)&&!hasAborted;simNumber++){
+	            	    progress.setCurrentValue(simNumber+1);  // so user sees 1-based count
+	            	    progress.setText("Running simulation " + (simNumber+1) + " of " + simCount, false);
+	            	    model4.setProgress(progress);
+	            	    model8.setProgress(progress);
+	            	    SimData[0] = new CategoricalAdjustable(observedStates1.getTaxa(),observedStates1.getNumNodes());
+	            	    SimData[1] = new CategoricalAdjustable(observedStates2.getTaxa(),observedStates2.getNumNodes());
+	            	    evolvingStates[0] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
+	            	    evolvingStates[1] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
+	            	    getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed, commandRec);
+	            	    if (!eitherCharacterConstant(tree,SimData[0],SimData[1])) {
+	            	        if (progress.isAborted()){
+	            	            hasAborted = true;
+	            	        }
+	            	        if (!hasAborted){
+	            		        model4.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            		        independentScore = model4.evaluate(model4.getParams(),null);
+	            	        }
+	            	        if (progress.isAborted()){
+	            	        	    hasAborted = true;
+	            	        }
+	            	        if (!hasAborted){
+	            	        	    model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
+	            	        	    model8.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            	        	    dependentScore= model8.evaluate(model8.getParams(),null);
+	            	        	    diffs[simNumber] = independentScore-dependentScore;
+	            	        }
+	            	        if (progress.isAborted()){
+	            	        		hasAborted = true;
+	            	        }
+	            	    }
+	            	    else if(resimulateConstantCharacters.getValue()){
+	            	    	    while(eitherCharacterConstant(tree,SimData[0],SimData[1])){
+	            	    	        logln("Resimulating Characters");
+	            	    	    		SimData[0] = new CategoricalAdjustable(observedStates1.getTaxa(),observedStates1.getNumNodes());
+	            	    	    		SimData[1] = new CategoricalAdjustable(observedStates2.getTaxa(),observedStates2.getNumNodes());
+	            	    	    		evolvingStates[0] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
+	            	    	    		evolvingStates[1] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
+	            	    	    		getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed, commandRec);
+	            	    	    		hasAborted = progress.isAborted();
+	            	    	    }
+	            	    	    if (!hasAborted){
+	            		        model4.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            		        independentScore = model4.evaluate(model4.getParams(),null);
+	            		        hasAborted = progress.isAborted();
+	            	    	    }
+	            	    	    if (!hasAborted){
+	            	    	        model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
+	            	    	        model8.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            	    	        hasAborted = progress.isAborted();
+	            	    	    }
+	            	    	    if (!hasAborted){
+	            		        dependentScore= model8.evaluate(model8.getParams(),null);
+	            		        logln("Scores (indep,dep): " + independentScore + ", " + dependentScore);           	 
+	            		        diffs[simNumber] = independentScore-dependentScore;
+	            		        hasAborted = progress.isAborted();
+	            	    	    }
+	            	    }
+	            	    else diffs[simNumber] = 0;   //if character is constant the 4-parameter and 8-parameter models ought to be =
 	            }
-	            else if(resimulateConstantCharacters.getValue()){
-	                while(eitherCharacterConstant(tree,SimData[0],SimData[1])){
-	                	   Debugg.println("Resimulating Characters");
-	                    SimData[0] = new CategoricalAdjustable(observedStates1.getTaxa(),observedStates1.getNumNodes());
-	                    SimData[1] = new CategoricalAdjustable(observedStates2.getTaxa(),observedStates2.getNumNodes());
-	                    evolvingStates[0] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
-	                    evolvingStates[1] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
-	                    getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed, commandRec);
-	                }
-	            	   if (progress.isAborted()){
-	            		   hasAborted = true;
-	            	   }
-	            	   if (!hasAborted){
-	            		   model4.estimateParameters(tree,SimData[0],SimData[1],commandRec);
-	            		   independentScore = model4.evaluate(model4.getParams(),null);
-	            	   }
-	            	   if (progress.isAborted()){
-	            		   hasAborted = true;
-	            	   }
-	            	   if (!hasAborted){
-	            		   model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
-	            		   //Debugg.println("; Analyzing 8p model");
-	            		   model8.estimateParameters(tree,SimData[0],SimData[1],commandRec);
-	            		   dependentScore= model8.evaluate(model8.getParams(),null);
-	            		   Debugg.println("Scores (indep,dep): " + independentScore + ", " + dependentScore);           	 
-	            		   diffs[simNumber] = independentScore-dependentScore;
-	            	   }
-	            	   if (progress.isAborted()){
-	            		   hasAborted = true;
-	            	   }
-	            }
-	            else diffs[simNumber] = 0;   //if character is constant the 4-parameter and 8-parameter models ought to be =
-	         }
+	        }
+	        catch(PagelMatrixModel.StuckSearchException e){
+	        		hasAborted = true;
+	        }
 	         progress.goAway();
 	         DoubleArray.sort(diffs);
 	         int position;
@@ -331,7 +328,7 @@ public class Pagel94 extends Pagel94Calculator {
 	        	 	int completedDiffs = countAssigned(diffs);
 	        	 	if (completedDiffs>0){
 	        	 		pvalue = 1-(1.0*position)/(1.0*completedDiffs);
-	        	 		logger.log("\nP-values from " + completedDiffs +"simulations is " + pvalue + "\n");
+	        	 		logger.log("\np-value from " + completedDiffs +" simulations is " + pvalue + "\n");
 	        	 	}
 	        	 	else{
 	        	 		pvalue = MesquiteDouble.unassigned;
@@ -340,7 +337,7 @@ public class Pagel94 extends Pagel94Calculator {
 	         }
 	         else {
 	        	 	pvalue = 1-(1.0*position)/(1.0*simCount);
-	        	 	logger.log ("\nP-value from simulations is " + pvalue + "\n");
+	        	 	logger.log ("\np-value from simulations is " + pvalue + "\n");
 	         }
   	         if (result != null)
 	     	    result.setValue(pvalue);
@@ -411,11 +408,7 @@ public class Pagel94 extends Pagel94Calculator {
    		long[] rootstate = model.getRootStates(tree,rootPriors);
    		for (int c=0;c<rootstate.length;c++)
    			evolvingStates[c].setState(tree.getRoot(), rootstate[c]);  //starting rootCategoricalState.makeSet(0)); //
-   		//Debugg.println("States at root[0] are " + evolvingStates[0].states[tree.getRoot()]);
-   		//Debugg.println("States at root[1] are " + evolvingStates[1].states[tree.getRoot()]);
    		evolve(tree, (CategoricalAdjustable[])statesAtTips, model, tree.getRoot());
-   		//Debugg.println("Final States are " + LongArray.toString(evolvingStates[0].states));
-   		//Debugg.println("Final States are " + LongArray.toString(evolvingStates[1].states));
   		if (seed!=null)
    			seed.setValue(model.getSeed());
   		return statesAtTips;

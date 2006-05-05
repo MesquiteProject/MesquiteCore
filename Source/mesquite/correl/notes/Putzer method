@@ -1,0 +1,231 @@
+// This file contains the code for Putzer's method - almost, but not quite working.  This should be
+// pasted back into PagelMatrixModel and finished at some point.
+
+	int eigenValueStatus = UNEQUALTRIPLE;
+	public final static int UNEQUALTRIPLE = 0;
+	public final static int COMPLEXPAIR = 1;
+	public final static int EQUALPAIR  = 2;
+	public final static int EQUALTRIPLE = 3;
+	
+	public final static double equalTol = 0.001;
+	
+	double[][] altMatrixExp(double[][] baseArray,double[] eigenValues,double[] imagEigenValues,double t){
+		Matrix C = new Matrix(baseArray);
+		// find the zero eigenvalue; it may only be approximately 0, but it will be the
+		// largest, since the others all have negative real parts
+		double largest = -1E99;  
+		int largestIndex = -1;
+		int evl = eigenValues.length;
+		for (int i=0;i<evl;i++)
+			if (eigenValues[i] > largest) {
+				largest = eigenValues[i];
+				largestIndex = i;
+			}
+		// check for a conjugate pair
+		int imag1 = -1;
+		int imag2 = -1;
+		int realgroup1 = -1;
+		int realgroup2 = -1;
+		int realgroup3 = -1;
+		for(int i=0;i<evl;i++){
+			if (imagEigenValues[i] != 0)
+				if (imag1 == -1)
+					imag1 = i;
+				else imag2 = i;
+		}
+		if (imag1 > -1){
+			eigenValueStatus = COMPLEXPAIR;
+			for(int i= 0; i<evl;i++)
+				if (i != imag1 && i != imag2 && i != largestIndex)
+					realgroup1 = i;   // hold lone negative real;
+		}
+		else {  // no conjugate pairs, check for multiple == reals
+			for(int i=0;i<evl-1;i++)
+				for(int j=i+1;j<evl;j++){
+					//System.out.println("Test: " + Math.abs(eigenValues[i]-eigenValues[j]));
+					if(Math.abs((eigenValues[i]-eigenValues[j])/eigenValues[i]) < equalTol){  // found a pair
+						realgroup1=i;
+						realgroup2=j;
+						break;
+					}
+				}
+				if (realgroup2 == -1)
+					eigenValueStatus = UNEQUALTRIPLE;
+				else {  //find realgroup3
+					for(int i=0;i<evl;i++){
+						if (i != largestIndex && i != realgroup1 && i != realgroup2)
+							realgroup3 = i;
+					}
+					if (Math.abs((eigenValues[realgroup1]-eigenValues[realgroup3])/eigenValues[realgroup1])<equalTol)
+						eigenValueStatus = EQUALTRIPLE;
+					else 
+						eigenValueStatus = EQUALPAIR;
+				}	
+		}
+
+		Matrix x = null;
+		Matrix identity = Matrix.identity(evl,evl);
+		Matrix p1 = Matrix.identity(evl,evl);  // clone from identity?
+		Matrix p2 = null;
+		Matrix p3 = null;
+		Matrix p4 = null;
+		double[] workingValues = new double[evl];
+		workingValues[0] = 0;      // assert that the max eigenvalue is identically zero!
+		switch (eigenValueStatus) {
+			case UNEQUALTRIPLE: {
+				int nexteigenslot=1;
+				workingValues[0] = 0;
+				for (int i=0;i<evl;i++){
+					if(i!=largestIndex)
+						workingValues[nexteigenslot++] = eigenValues[i];
+				}	
+				double z = workingValues[0];
+				double k = workingValues[1];
+				double m = workingValues[2];
+
+				p2 = (C.minus(identity.times(z))).times(p1);              
+				p3 = (C.minus(identity.times(k))).times(p2);
+				p4 = (C.minus(identity.times(m))).times(p3);
+				x = p1.times(r1(t,workingValues));
+				x.plusEquals(p2.times(realR2(t,workingValues)));
+				x.plusEquals(p3.times(realR3(t,workingValues)));
+				x.plusEquals(p4.times(realR4(t,workingValues)));	
+				break;
+			}
+			case COMPLEXPAIR: {
+				double[] workingIValues = new double[evl];
+				for(int i=0;i<evl;i++)
+					workingIValues[i] = 0;
+				workingValues[1] = eigenValues[imag1];
+				workingIValues[1] = imagEigenValues[imag1];
+				workingValues[2] = eigenValues[imag2];
+				workingIValues[2] = imagEigenValues[imag2];
+				workingValues[3] = eigenValues[realgroup1];
+
+				double z = workingValues[0];
+				double k = workingValues[1];
+				p2 = (C.minus(identity.times(z))).times(p1);
+				p3 = (C.minus(identity.times(k))).times(p2);
+				p4 = (C.minus(identity.times(k))).times(p3);
+				x = p1.times(r1(t,workingValues));
+				x.plusEquals(p2.times(complexPairR2(t,workingValues,workingIValues)));
+				x.plusEquals(p3.times(complexPairR3(t,workingValues,workingIValues)));
+				x.plusEquals(p4.times(complexPairR4(t,workingValues,workingIValues)));			
+				break;
+			}
+			case EQUALPAIR: {
+				workingValues[0] = 0;
+				workingValues[1] = eigenValues[realgroup1];
+				workingValues[2] = eigenValues[realgroup1];   // if they're close, force them equal
+				workingValues[3] = eigenValues[realgroup3];
+				
+				double z = workingValues[0];
+				double k = workingValues[1];
+				p2 = (C.minus(identity.times(z))).times(p1);
+				p3 = (C.minus(identity.times(k))).times(p2);
+				p4 = (C.minus(identity.times(k))).times(p3);
+				
+				x = p1.times(r1(t,workingValues));
+				
+				x.plusEquals(p2.times(realR2(t,workingValues)));
+				x.plusEquals(p3.times(realPairR3(t,workingValues)));
+				x.plusEquals(p4.times(realPairR4(t,workingValues)));	
+
+				break;
+			}
+			case EQUALTRIPLE: {
+				workingValues[0] = 0;
+				workingValues[1] = eigenValues[realgroup1];
+				workingValues[2] = eigenValues[realgroup2];
+				workingValues[3] = eigenValues[realgroup3];
+				double z = workingValues[0];
+				double k = workingValues[1];
+				p2 = (C.minus(p1.times(z))).times(p1);
+				p3 = (C.minus(p1.times(k))).times(p2);
+				p4 = (C.minus(p1.times(k))).times(p3);
+				
+				x = p1.times(r1(t,workingValues));
+				x.plusEquals(p2.times(realR2(t,workingValues)));
+				x.plusEquals(p3.times(realPairR3(t,workingValues)));
+				x.plusEquals(p4.times(realTripleR4(t,workingValues)));			
+				break;
+			}
+		}
+		return x.getArray();
+	}
+	
+	// support functions for Putzer exponentiation
+	double r1(double t,double[] realEigenValues){
+		//double z = realEigenValues[0];
+		//return Math.exp(t*z);
+		return 1;
+	}
+
+	double realR2(double t, double[] realEigenValues){
+		double k = realEigenValues[1];
+		return (Math.exp(k*t) - 1)/(k);
+	}
+	
+	double complexPairR2(double t, double[] realEigenValues, double[] imagEigenValues){
+		double ka = realEigenValues[1];
+		double kb = imagEigenValues[1];
+		return -((ka*(1 - Math.exp(ka*t)*Math.cos(kb*t)))/(ka*ka + kb*kb)) + 
+		  (Math.exp(ka*t)*kb*Math.sin(kb*t))/(ka*ka + kb*kb);
+	}
+	
+	
+	
+	double realR3(double t, double[] realEigenValues){
+		//double z = realEigenValues[0];
+		double k = realEigenValues[1];
+		double m = realEigenValues[2];
+		return (Math.exp(m*t)*k - k - Math.exp(k*t)*m + m)/((-k + m)*(k)*(m)); 
+	}
+	
+	double complexPairR3(double t, double[] realEigenValues, double[] imagEigenValues){
+		double ka = realEigenValues[1];
+		double kb = imagEigenValues[1];
+		return (2*kb - 2*Math.exp(ka*t)*kb*Math.cos(kb*t) + 2*Math.exp(ka*t)*ka*Math.sin(kb*t))/ 
+		  (2*ka*ka*kb + 2*kb*kb*kb);
+	}
+	
+	double realPairR3(double t, double[] values){
+		double k = values[1];
+		//(1 - E^(k*t) + E^(k*t)*k*t)/k^2
+		return (1 - Math.exp(k*t) + Math.exp(k*t)*k*t)/(k*k);
+	}
+	
+	double realR4(double t, double[] realEigenValues){
+		double k = realEigenValues[1];
+		double m = realEigenValues[2];
+		double n = realEigenValues[3];
+		return (-(Math.exp(n*t)*k*k*m) + k*k*m + 
+		          Math.exp(n*t)*k*m*m - k*m*m + Math.exp(m*t)*k*k*n - 
+		          k*k*n - Math.exp(k*t)*m*m*n + m*m*n - 
+		          Math.exp(m*t)*k*n*n + k*n*n + Math.exp(k*t)*m*n*n - 
+		          m*n*n)/((-k + m)*(-k + n)*(-m + n)*(k)*(m)*(n));
+	}
+
+	double complexPairR4(double t, double[] realEigenValues, double[] imagEigenValues){
+		double ka = realEigenValues[1];
+		double kb = imagEigenValues[1];
+		double n = realEigenValues[3];
+		return (-2*ka*ka*kb + 2*Math.exp(n*t)*ka*ka*kb - 2*kb*kb*kb + 2*Math.exp(n*t)*kb*kb*kb + 
+			    4*ka*kb*n - 2*kb*n*n - 4*Math.exp(ka*t)*ka*kb*n*Math.cos(kb*t) + 
+			    2*Math.exp(ka*t)*kb*n*n*Math.cos(kb*t) + 
+			    2*Math.exp(ka*t)*ka*ka*n*Math.sin(kb*t) - 
+			    2*Math.exp(ka*t)*kb*kb*n*Math.sin(kb*t) - 2*Math.exp(ka*t)*ka*n*n*Math.sin(kb*t))/
+			    (2*kb*(ka*ka + kb*kb)*n*(ka*ka + kb*kb - 2*ka*n + n*n));
+	}
+	
+	double realPairR4(double t, double [] values){
+		double k = values[1];
+		double n = values[3];
+		return (-k*k + Math.exp(n*t)*k*k + 2*k*n - 2*Math.exp(k*t)*k*n - 
+			       n*n + Math.exp(k*t)*n*n + Math.exp(k*t)*k*k*n*t - Math.exp(k*t)*k*n*n*t)/(k*k*n*(n-k)*(n-k));
+	}
+	double realTripleR4(double t, double[] values){
+		// TODO finish me
+		double k = values[1];
+		return (-2 + 2*Math.exp(k*t) - 2*Math.exp(k*t)*k*t +  Math.exp(k*t)*k*k*t*t)/(2*k*k*k);
+	}
