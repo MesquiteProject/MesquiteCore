@@ -13,7 +13,7 @@ public class DNATaxaDistance extends MolecularTaxaDistance {
 			return DNAState.getMaxPossibleStateStatic();
 		}
 		public CompatibilityTest getCompatibilityTest(){
-			return new DNAStateOnlyTest();
+			return new RequiresAnyDNAData();
 		}
 		/** used for debugging; turn this on and at least some of the distance calculators will stream their results to the log.  */
 		public void logDistancesIfDesired(String name){

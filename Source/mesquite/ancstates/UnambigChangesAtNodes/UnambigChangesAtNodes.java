@@ -17,7 +17,7 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 		return CategoricalState.class;
 	}
 	public CompatibilityTest getCompatibilityTest(){
-		return new CategoricalStateTest();
+		return new RequiresAnyCategoricalData();
 	}
 
 	MesquiteTree tempTree;

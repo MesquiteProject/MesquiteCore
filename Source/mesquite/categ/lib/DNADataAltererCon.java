@@ -11,7 +11,7 @@ public abstract class DNADataAltererCon extends DataAltererCon {
  	/*.................................................................................................................*/
  	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
  	public CompatibilityTest getCompatibilityTest(){
- 		return new DNAStateOnlyTest();
+ 		return new RequiresAnyDNAData();
  	}
 
 }

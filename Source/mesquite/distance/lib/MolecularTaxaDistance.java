@@ -208,6 +208,6 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 			return true;
 		}
 		public CompatibilityTest getCompatibilityTest(){
-			return new MolecularStateOnlyTest();
+			return new RequiresAnyMolecularData();
 		}
 	}

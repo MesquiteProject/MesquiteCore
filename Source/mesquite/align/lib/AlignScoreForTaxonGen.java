@@ -149,7 +149,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
 	public CompatibilityTest getCompatibilityTest(){
-		return new MolecularStateOnlyTest();
+		return new RequiresAnyMolecularData();
 	}
 	/*.................................................................................................................*/
    	 public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification, CommandRecord commandRec) {

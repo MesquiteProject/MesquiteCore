@@ -68,7 +68,7 @@ public abstract class CategDataMatcher extends DataMatcher {
 	public abstract double sequenceMatch(long[] originalArray, int candidateTaxon, int candidateStartChar, MesquiteInteger candidateEndChar, CommandRecord commandRec);
 
 	public CompatibilityTest getCompatibilityTest() {
-		return new CategoricalStateTest();
+		return new RequiresAnyCategoricalData();
 	}
 
 }
