@@ -64,7 +64,7 @@ bugs to fix for 1.07
 ├├├├ Why SCM with same place on branches????
 ееее Nina Amenta SVN
 еее check use of CategoricalStatTest etc. -- only or not?
-ееее disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
+ееее disable directionality in MolecularData: swap acharacters; integrity check, e.g.
 еее high ascii file paths don't work (Laurin)
 ееее search for todo in Cartographer
 ееее maureen's printing pdf issue
