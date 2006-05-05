@@ -404,7 +404,7 @@ public class CFFFontSubset extends CFFFont {
 			return 0;
 		// else calc according to the count
 		else if (nSubrs < 1240)
-			return 107;
+			return 110;
 		else if (nSubrs < 33900)
 			return 1131;
 		else
