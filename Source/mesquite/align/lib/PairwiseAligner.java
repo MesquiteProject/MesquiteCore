@@ -12,6 +12,7 @@ public class PairwiseAligner  {
 	boolean preferencesSet = false;
 	boolean isMinimize = true;	
 	int defaultCharThresholdForLowMemory = 5000000;
+																 
 	int charThresholdForLowMemory = defaultCharThresholdForLowMemory;
 
     //first gap char costs gapOpen + gapExtend, and each additional character costs gapExtend 
@@ -80,29 +81,42 @@ public class PairwiseAligner  {
 		
 		if ( returnAlignment) { 
 			Debugg.println("DP table size: " + (A.length*B.length));
+		
+	/*		Runtime rt = Runtime.getRuntime();
+			rt.gc();
+			long maxMem =  rt.maxMemory();
+			long totalMem =  rt.totalMemory();
+			long freeMem = rt.freeMemory(); 			
+			Debugg.println("Free memory before alignment = " + maxMem + " - " + totalMem + " + " + freeMem + " = " + (maxMem-totalMem+freeMem));
+*/			
+			long ret[][];
 			if ((A.length*B.length)>getCharThresholdForLowMemory()) {
 				//low memory (but slower, due to recursion) alignment
 				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, keepGaps, followsGapSize);
 				
 				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
 		
-				long ret[][] = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
-				gapInsertionArray = helper.getGapInsertionArray();
-//							Debugg.println("score is " + myScore);   
-				if (ret.length>lengthA && ret.length>lengthB)
-					return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
-				
-				return ret;
+				ret = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
+				gapInsertionArray = helper.getGapInsertionArray();   
+				//freeMem = rt.freeMemory();
+
 			} else {
 //				 fast (but quadratic space) alignment
 				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
-				long ret[][] = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
+				ret = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
 				gapInsertionArray = helper.getGapInsertionArray();
-				//				Debugg.println("score is " + score);
-				if (ret.length>lengthA && ret.length>lengthB)
-					return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
-				return ret;
+//				freeMem = rt.freeMemory();
+				
 			}
+			
+//			Debugg.println("score is " + myScore);
+//			Debugg.println("Free memory after alignment = " + maxMem + " - " + totalMem + " + " + freeMem + " = " + (maxMem-totalMem+freeMem));
+
+			if (ret.length>lengthA && ret.length>lengthB)
+				return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
+			
+			return ret;
+
 		} else { 
 			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.	
 			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true, keepGaps, followsGapSize);
@@ -201,9 +215,11 @@ public class PairwiseAligner  {
 		//this.useLowMem = lowMem;	
 	}
 
-	public int getCharThresholdForLowMemory(){
-		return charThresholdForLowMemory;
+	public long getCharThresholdForLowMemory(){
+		//return charThresholdForLowMemory;
+		return getMaxAvailableMemory()/20; // 20 is a large enough constant factor to ensure that there's enough space for the DP table (10 is probably enough, but 20 is more conservative).	
 	}
+
 	public void setCharThresholdForLowMemory(int numChars){
 		 charThresholdForLowMemory = numChars;
 	}
@@ -211,6 +227,28 @@ public class PairwiseAligner  {
 	public void setCharThresholdForLowMemoryToDefault(){
 		 charThresholdForLowMemory = defaultCharThresholdForLowMemory;
 	}
+	
+	private long getMaxAvailableMemory () {
+		Runtime rt = Runtime.getRuntime();
+		rt.gc();
+		long maxMem =  rt.maxMemory();
+		long totalMem =  rt.totalMemory();
+		long freeMem = rt.freeMemory(); 			
+		long maxAvailMem = maxMem - totalMem + freeMem;
+		Debugg.println("Free memory : " + maxMem + " - " + totalMem + " + " + freeMem + " = " + maxAvailMem);
+		return maxAvailMem; 
+	
+		/* What's being done here? 
+		 * 
+		 *    maxMem =  the most the VM will possibly take              |--------------------------------------------------------|
+		 *    totalMem = the amount of mem currently used by VM   |-------------------------------|
+		 *    freeMem = the amount (of total) that is currently free                        |--------------|
+		 *    maxAvailMem = the most memory available                                      |--------------.-------------------------|
+		 *                                                                                                         {freeMem} + {maxMem-totalMem}
+		 */
+		
+	}
+	
 	
 	public void setIsMinimizationProblem (boolean isMin) {
 		isMinimize = isMin;
