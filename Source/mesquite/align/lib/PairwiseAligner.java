@@ -217,7 +217,7 @@ public class PairwiseAligner  {
 
 	public long getCharThresholdForLowMemory(){
 		//return charThresholdForLowMemory;
-		return getMaxAvailableMemory()/20; // 20 is a large enough constant factor to ensure that there's enough space for the DP table (10 is probably enough, but 20 is more conservative).	
+		return MesquiteTrunk.getMaxAvailableMemory()/20; // 20 is a large enough constant factor to ensure that there's enough space for the DP table (10 is probably enough, but 20 is more conservative).	
 	}
 
 	public void setCharThresholdForLowMemory(int numChars){
@@ -227,28 +227,7 @@ public class PairwiseAligner  {
 	public void setCharThresholdForLowMemoryToDefault(){
 		 charThresholdForLowMemory = defaultCharThresholdForLowMemory;
 	}
-	
-	private long getMaxAvailableMemory () {
-		Runtime rt = Runtime.getRuntime();
-		rt.gc();
-		long maxMem =  rt.maxMemory();
-		long totalMem =  rt.totalMemory();
-		long freeMem = rt.freeMemory(); 			
-		long maxAvailMem = maxMem - totalMem + freeMem;
-		Debugg.println("Free memory : " + maxMem + " - " + totalMem + " + " + freeMem + " = " + maxAvailMem);
-		return maxAvailMem; 
-	
-		/* What's being done here? 
-		 * 
-		 *    maxMem =  the most the VM will possibly take              |--------------------------------------------------------|
-		 *    totalMem = the amount of mem currently used by VM   |-------------------------------|
-		 *    freeMem = the amount (of total) that is currently free                        |--------------|
-		 *    maxAvailMem = the most memory available                                      |--------------.-------------------------|
-		 *                                                                                                         {freeMem} + {maxMem-totalMem}
-		 */
 		
-	}
-	
 	
 	public void setIsMinimizationProblem (boolean isMin) {
 		isMinimize = isMin;
