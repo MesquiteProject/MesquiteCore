@@ -4375,22 +4375,40 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (mg == null || row < 0)
 			return;
 		matrix.redrawRow(mg, row);
+		mg.dispose();
 	}
 
 	/* ............................................................................................................... */
 	public void emphasizeRow(int previousRow, int row, int rowNotToEmphasize, boolean emphasizeSelectedRows) {
-		Graphics mg = matrix.getGraphics();
-		if (mg == null)
-			return;
 		if (previousRow != row) {
+			Graphics mg = matrix.getGraphics();
+			if (mg == null)
+				return;
 			if (row != rowNotToEmphasize) {
 				int left = matrix.leftEdgeOfRow(row);
 				int top = matrix.startOfRow(row);
 				int right = matrix.rightEdgeOfRow(row);
 				GraphicsUtil.bluenRectangle(mg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
 			}
-			if (previousRow > -1)
+			Graphics rg = rowNames.getGraphics();
+			if (rg == null) {
+				mg.dispose();
+				return;
+			}
+			if (previousRow != row) {
+				if (row != rowNotToEmphasize) {
+					int left = 0;
+					int top = matrix.startOfRow(row);
+					int right = getWidth();
+					GraphicsUtil.bluenRectangle(rg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
+				}
+			}
+			if (previousRow > -1) {
 				matrix.redrawRow(mg, previousRow);
+				rowNames.redrawName(rg, previousRow);
+			}
+			rg.dispose();
+			mg.dispose();
 		}
 	}
 }
