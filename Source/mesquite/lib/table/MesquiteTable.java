@@ -4339,28 +4339,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	public void shimmerVerticalOff(Panel panel, int x) {
-		/** used for shimmering lines when columns adjusted */
-		if (!MesquiteInteger.isCombinable(x))
-			return;
-		Graphics mg = panel.getGraphics();
-		if (mg == null)
-			return;
-		mg.setXORMode(Color.white);
-		mg.drawLine(x, 0, x, matrixHeight);
-		mg.dispose();
+		GraphicsUtil.shimmerVerticalOn(null,panel,0,matrixHeight,x);
 	}
 
 	/* ............................................................................................................... */
 	public void shimmerVerticalOn(Panel panel, int x) {
-		/** used for shimmering lines when columns adjusted */
-		if (!MesquiteInteger.isCombinable(x))
-			return;
-		Graphics mg = panel.getGraphics();
-		if (mg == null)
-			return;
-		mg.setXORMode(Color.white);
-		mg.drawLine(x, 0, x, matrixHeight);
-		mg.dispose();
+		GraphicsUtil.shimmerVerticalOn(null,panel,0,matrixHeight,x);
 	}
 
 	/* ............................................................................................................... */
@@ -4377,28 +4361,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	public void shimmerHorizontalOff(int y) {
-		/** used for shimmering lines when columns adjusted */
-		if (!MesquiteInteger.isCombinable(y))
-			return;
-		Graphics mg = matrix.getGraphics();
-		if (mg == null)
-			return;
-		mg.setXORMode(Color.white);
-		mg.drawLine(0, y, matrixWidth, y);
-		mg.dispose();
+		GraphicsUtil.shimmerHorizontalOn(null,matrix,0,matrixWidth,y);
 	}
 
 	/* ............................................................................................................... */
 	public void shimmerHorizontalOn(int y) {
-		/** used for shimmering lines when columns adjusted */
-		if (!MesquiteInteger.isCombinable(y))
-			return;
-		Graphics mg = matrix.getGraphics();
-		if (mg == null)
-			return;
-		mg.setXORMode(Color.white);
-		mg.drawLine(0, y, matrixWidth, y);
-		mg.dispose();
+		GraphicsUtil.shimmerHorizontalOn(null,matrix,0,matrixWidth,y);
 	}
 
 	/* ............................................................................................................... */
@@ -4419,7 +4387,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				int left = matrix.leftEdgeOfRow(row);
 				int top = matrix.startOfRow(row);
 				int right = matrix.rightEdgeOfRow(row);
-				GraphicsUtil.darkenRectangle(mg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
+				GraphicsUtil.bluenRectangle(mg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
 			}
 			if (previousRow > -1)
 				matrix.redrawRow(mg, previousRow);
