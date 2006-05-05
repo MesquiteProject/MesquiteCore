@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.table;
 
 import java.awt.*;
@@ -23,12 +23,12 @@ import java.io.*;
 public class RowNamesPanel extends EditorPanel  {
 	MesquiteTable table;
 	public int width,  height;
-	
+
 	public RowNamesPanel (MesquiteTable table , int w, int h) {
 		super(table);
 		this.table=table;
 		//setBackground(ColorDistribution.medium[table.colorScheme]);
-			setBackground(Color.white);
+		setBackground(Color.white);
 		setTableUnitSize(w, h);
 	}
 	public void setTableUnitSize (int w, int h) {
@@ -139,9 +139,9 @@ public class RowNamesPanel extends EditorPanel  {
 		}
 	}
 	public void redrawName(Graphics g, int row) {
-		
+
 		int top = table.getFirstRowVisible();
-		
+
 		if (row<top) //TODO: should also fail to draw if to big
 			return;  
 		if (row == returningRow){
@@ -154,12 +154,12 @@ public class RowNamesPanel extends EditorPanel  {
 
 		Shape clip = g.getClip();
 		g.setClip(0,topSide,columnWidth(-1), rowHeight(row));
-		
+
 		prepareCell(g, 1,topSide+1,columnWidth(-1), rowHeight(row)-2, table.focusRow == row,  table.isRowNameSelected(row) || table.isRowSelected(row), table.getCellDimmed(-1, row), table.isRowNameEditable(row));
 
 		g.setClip(0,0, getBounds().width, getBounds().height);
-		
-		
+
+
 		if (table.frameRowNames) {
 			Color cg = g.getColor();
 			g.setColor(Color.gray);
@@ -200,7 +200,7 @@ public class RowNamesPanel extends EditorPanel  {
 			int offset = 0;
 			if (table.showRowGrabbers)
 				offset = table.getRowGrabberWidth();
-			
+
 			dropDownTriangle.translate(1 + offset,topSide + 1);
 			g.setColor(Color.white);
 			g.drawPolygon(dropDownTriangle);
@@ -217,53 +217,53 @@ public class RowNamesPanel extends EditorPanel  {
 		super.repaint();
 	}
 	public void paint(Graphics g) {
-	   	if (MesquiteWindow.checkDoomed(this))
-	   		return;
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		try {
-		table.checkResetFont(g);
-		
-		int lineY = 0;
-		int oldLineY=lineY;
-		int resetWidth = getBounds().width;
-		int resetHeight = getBounds().height;
-		width = resetWidth;//this is here to test if width/height should be reset here
-		height = resetHeight;
-		Shape clip = g.getClip();
-		
-		for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<height); r++) {
-			redrawName(g, r);
-		}
-			
-		g.setClip(0,0, getBounds().width, getBounds().height);
-		if (false && getEditing()) {
-			TextField edit = getEditField();
-			if (edit!= null)
-				edit.repaint();
-		}
-		if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
-			g.setColor(ColorDistribution.medium[table.colorScheme]);
-			g.fillRect(0, endOfLastRow()+1, getBounds().width, getBounds().height);
-		}
-		g.setColor(Color.black);
-		if (table.frameRowNames)
-			g.drawRect(0, 0, width, height-1);
-		g.drawLine(width-1, 0, width-1, height);
-		g.setClip(clip);
+			table.checkResetFont(g);
+
+			int lineY = 0;
+			int oldLineY=lineY;
+			int resetWidth = getBounds().width;
+			int resetHeight = getBounds().height;
+			width = resetWidth;//this is here to test if width/height should be reset here
+			height = resetHeight;
+			Shape clip = g.getClip();
+
+			for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<height); r++) {
+				redrawName(g, r);
+			}
+
+			g.setClip(0,0, getBounds().width, getBounds().height);
+			if (false && getEditing()) {
+				TextField edit = getEditField();
+				if (edit!= null)
+					edit.repaint();
+			}
+			if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
+				g.setColor(ColorDistribution.medium[table.colorScheme]);
+				g.fillRect(0, endOfLastRow()+1, getBounds().width, getBounds().height);
+			}
+			g.setColor(Color.black);
+			if (table.frameRowNames)
+				g.drawRect(0, 0, width, height-1);
+			g.drawLine(width-1, 0, width-1, height);
+			g.setClip(clip);
 		}
 		catch (Throwable e){
-				MesquiteMessage.warnProgrammer("Exception or Error in drawing table (RNP); details in Mesquite log file");
-				PrintWriter pw = MesquiteFile.getLogWriter();
-				if (pw!=null)
-					e.printStackTrace(pw);
+			MesquiteMessage.warnProgrammer("Exception or Error in drawing table (RNP); details in Mesquite log file");
+			PrintWriter pw = MesquiteFile.getLogWriter();
+			if (pw!=null)
+				e.printStackTrace(pw);
 		}
 		MesquiteWindow.uncheckDoomed(this);
-		
+
 	}
 	public void print(Graphics g) {
 		int lineY = 0;
 		int oldLineY=lineY;
 		Shape clip = g.getClip();
-		
+
 		g.setClip(0,0, getBounds().width, getBounds().height);
 		for (int r=0; (r<table.numRowsTotal); r++) {
 			lineY += table.rowHeights[r];
@@ -278,7 +278,7 @@ public class RowNamesPanel extends EditorPanel  {
 		g.setClip(0,0, width, table.getTotalRowHeight());
 		g.setColor(Color.black);
 		g.drawLine(width-1, 0, width-1, table.getTotalRowHeight());
-		
+
 		g.setClip(clip);
 	}
 	public void OLDprint(Graphics g) {
@@ -296,7 +296,7 @@ public class RowNamesPanel extends EditorPanel  {
 				g.setColor(Color.gray);
 				g.drawLine(0, lineY, width, lineY);
 			}
-			*/
+			 */
 			g.setColor(Color.black);
 			g.setClip(0,oldLineY, width,table.rowHeights[r]);
 			table.drawRowNameCell(g, 0,oldLineY, width,table.rowHeights[r], r);
@@ -308,13 +308,14 @@ public class RowNamesPanel extends EditorPanel  {
 		g.setClip(0,0, getBounds().width, getBounds().height);
 		g.setColor(Color.black);
 		g.drawLine(width-1, 0, width-1, height);
-		
+
 		g.setClip(clip);
 	}
 	/*...............................................................................................................*/
 	int touchY = -1;
 	int lastY=-1;
 	int touchRow;
+	int previousRowDragged = -1;
 	/*...............................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		if (!(tool instanceof TableTool))
@@ -323,8 +324,8 @@ public class RowNamesPanel extends EditorPanel  {
 		touchRow=-1;
 		int possibleTouch = findRow(y);
 		int regionInCellH = findRegionInCellH(x);
-		 int regionInCellV =findRegionInCellV(y);
-		 boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
+		int regionInCellV =findRegionInCellV(y);
+		boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
 
 		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
 			if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
@@ -341,8 +342,8 @@ public class RowNamesPanel extends EditorPanel  {
 					touchRow=possibleTouch;
 					//table.shimmerHorizontalOn(touchY);
 				}
-	
-				}
+
+			}
 			else if (isArrowEquivalent) {
 				table.rowNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers,clickCount);
 			}
@@ -356,15 +357,15 @@ public class RowNamesPanel extends EditorPanel  {
 		else if (possibleTouch==-2 && ((TableTool)tool).getWorksBeyondLastRow())
 			table.rowTouched(isArrowEquivalent,possibleTouch,regionInCellH, regionInCellV,modifiers);
 		else if (tool != null && tool.isArrowTool()){
-	   		table.offAllEdits();
-	   		if (table.anythingSelected()) {
-	   			table.deselectAllNotify();
-	   			table.repaintAll();
-	   		}
-	   	}
-   	 }
+			table.offAllEdits();
+			if (table.anythingSelected()) {
+				table.deselectAllNotify();
+				table.repaintAll();
+			}
+		}
+	}
 	/*...............................................................................................................*/
-   	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
+	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		if (touchRow>=0 && tool != null)
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (table.getUserAdjustColumn()==MesquiteTable.RESIZE) {
@@ -381,16 +382,20 @@ public class RowNamesPanel extends EditorPanel  {
 			else if (((TableTool)tool).getWorksOnRowNames()) {
 				int dragRow = findRow(y);
 				int regionInCellH = findRegionInCellH(x);
-				 int regionInCellV =findRegionInCellV(y);
+				int regionInCellV =findRegionInCellV(y);
 				((TableTool)tool).cellDrag(-1,dragRow,regionInCellH,regionInCellV,modifiers);
+				if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
+					table.emphasizeRow(previousRowDragged,dragRow, touchRow, false);
+					previousRowDragged = dragRow;
+				}
 			}
-  	 }
+	}
 	/*...............................................................................................................*/
-   	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
+	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		if (touchRow>=0 && tool != null)
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (!table.anyRowSelected()) {
-					
+
 					if (table.getUserAdjustRow()==MesquiteTable.RESIZE) {
 						/*table.shimmerVerticalOff(lastX);
 						int newRH = table.rowHeights[touchRow] + x-touchX;
@@ -420,24 +425,24 @@ public class RowNamesPanel extends EditorPanel  {
 			else if (((TableTool)tool).getWorksOnRowNames()) {
 				int dropRow = findRow(y);
 				int regionInCellH = findRegionInCellH(x);
-				 int regionInCellV =findRegionInCellV(y);
+				int regionInCellV =findRegionInCellV(y);
 				((TableTool)tool).cellDropped(-1,dropRow,regionInCellH,regionInCellV,modifiers);
-				}
+			}
 
-   	 }
-   	 
+	}
+
 	/*...............................................................................................................*/
-   	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
+	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		if (!(table.editingAnything() || table.singleTableCellSelected()) && tool != null && tool.isArrowTool())
-				setWindowAnnotation("", null);
+			setWindowAnnotation("", null);
 		setCursor(Cursor.getDefaultCursor());
 		int row = findRow(y);
 		table.mouseExitedCell(modifiers, -1, -1, row, -1, tool);
-  	}
- 	/*...............................................................................................................*/
+	}
+	/*...............................................................................................................*/
 	public void setCurrentCursor(int modifiers, int x, int row, MesquiteTool tool) {
 		if (tool == null || !(tool instanceof TableTool))
-				setCursor(getDisabledCursor());
+			setCursor(getDisabledCursor());
 		else if (row>=0 && row<table.numRowsTotal) {
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				setCursor(table.getHandCursor());
@@ -448,7 +453,7 @@ public class RowNamesPanel extends EditorPanel  {
 							setWindowAnnotation(s, "Footnote above refers to " + table.getRowNameText(row));
 						else
 							setWindowAnnotation("", null);
-						
+
 					}
 				}
 			}
@@ -462,7 +467,7 @@ public class RowNamesPanel extends EditorPanel  {
 		else
 			setCursor(getDisabledCursor());
 	}
- 	/*...............................................................................................................*/
+	/*...............................................................................................................*/
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		if (table == null)
 			return;

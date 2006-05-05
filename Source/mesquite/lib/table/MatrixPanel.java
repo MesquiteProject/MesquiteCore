@@ -514,6 +514,7 @@ timer6.end();
    		int regionInCellH = findRegionInCellH(x);
    		int regionInCellV =  findRegionInCellV(y);
    		
+
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			table.cellDrag(column, row, regionInCellH,  regionInCellV,modifiers);
 			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
