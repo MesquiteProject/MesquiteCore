@@ -58,17 +58,22 @@ java.lang.NullPointerException
 	at mesquite.lib.MainThread.run(MainThread.java:116)
 ===============
 bugs to fix for 1.07
-answer michel
-•••• disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
+√√√√ Move Archived to Current taxon namnes
+√√√√ Protein editor default color
+√√√√ Remove Gaps-Only Characters;  Remove Empty Characters
+√√√√ Why SCM with same place on branches????
+•••• Nina Amenta SVN
 ••• check use of CategoricalStatTest etc. -- only or not?
+•••• disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
 ••• high ascii file paths don't work (Laurin)
 •••• search for todo in Cartographer
 •••• maureen's printing pdf issue
 •••• equilibrium root frequencies in MLE etc
 •••• matrix simulator with site specific models
 ••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
-••• taxa assoc: delete assoc taxa, list not updated; list needs indications of those included
 •••• SOURCE: itext into Resources?
+•••• Edit MrBayes block bits???
+√√√ taxa assoc: delete assoc taxa, list not updated; list needs indications of those included
 √√√ kip's POY format issue
 √√√ delete matrix from projects window, doesn't redo mnus
 √√√ scroll bar on small matrices/tables won't go page left
