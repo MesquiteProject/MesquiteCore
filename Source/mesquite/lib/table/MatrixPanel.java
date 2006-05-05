@@ -407,34 +407,6 @@ timer6.end();
 			super.leftArrowPressed(e);
 	}
 	
-	boolean mouseDownInField = true;
-	/*...............................................................................................................*/
-	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
-		if (!(tool instanceof TableTool))
-			return;
-		int column = findColumn(x);
-		int row = findRow(y);
-   		
-   		mouseDownInField = false;
-   		
-   		int regionInCellH = findRegionInCellH(x);
-   		int regionInCellV = findRegionInCellV(y);
-   		
-   		//((TableTool)tool).getWorksOnColumnNames();
-   		
-		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
-			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
-   			mouseDownInField = true;
-		}
-		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
-			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
-		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
-		else 
-			setWindowAnnotation("", null);
-		
-		
-   	 }
 	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
 	public int findColumn(int x) {
@@ -503,6 +475,38 @@ timer6.end();
 		}
 		return 50;
 	}
+	int previousRowDragged = -1;
+	int firstRowTouched = -1;
+	boolean mouseDownInField = true;
+	/*...............................................................................................................*/
+	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		if (!(tool instanceof TableTool))
+			return;
+		int column = findColumn(x);
+		int row = findRow(y);
+		firstRowTouched = row;
+		
+   		
+   		mouseDownInField = false;
+   		
+   		int regionInCellH = findRegionInCellH(x);
+   		int regionInCellV = findRegionInCellV(y);
+   		
+   		//((TableTool)tool).getWorksOnColumnNames();
+   		
+		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
+   			mouseDownInField = true;
+		}
+		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
+			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
+		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
+			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
+		else 
+			setWindowAnnotation("", null);
+		
+		
+   	 }
 	/*_________________________________________________*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		int column = findColumn(x);
@@ -512,6 +516,11 @@ timer6.end();
    		
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			table.cellDrag(column, row, regionInCellH,  regionInCellV,modifiers);
+			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
+				table.emphasizeRow(previousRowDragged,row, firstRowTouched, false);
+				previousRowDragged = row;
+			}
+
 		}
 	}
 	/*_________________________________________________*/
@@ -523,6 +532,10 @@ timer6.end();
    		int regionInCellH = findRegionInCellH(x);
    		int regionInCellV =  findRegionInCellV(y);
    		
+		if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
+			table.deEmphasizeRow(previousRowDragged);
+		}
+  		
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)
 			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())

@@ -4371,11 +4371,18 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	public void deEmphasizeRow(int row) {
+		if (row<0)
+			return;
 		Graphics mg = matrix.getGraphics();
-		if (mg == null || row < 0)
+		if (mg == null)
 			return;
 		matrix.redrawRow(mg, row);
 		mg.dispose();
+		Graphics rg = rowNames.getGraphics();
+		if (rg == null)
+			return;
+		rowNames.redrawName(rg, row);
+		rg.dispose();
 	}
 
 	/* ............................................................................................................... */
@@ -4384,25 +4391,22 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			Graphics mg = matrix.getGraphics();
 			if (mg == null)
 				return;
-			if (row != rowNotToEmphasize) {
-				int left = matrix.leftEdgeOfRow(row);
-				int top = matrix.startOfRow(row);
-				int right = matrix.rightEdgeOfRow(row);
-				GraphicsUtil.bluenRectangle(mg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
-			}
 			Graphics rg = rowNames.getGraphics();
 			if (rg == null) {
 				mg.dispose();
 				return;
 			}
-			if (previousRow != row) {
-				if (row != rowNotToEmphasize) {
-					int left = 0;
-					int top = matrix.startOfRow(row);
-					int right = getWidth();
-					GraphicsUtil.bluenRectangle(rg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
-				}
+			if (row != rowNotToEmphasize && (emphasizeSelectedRows || !isRowSelected(row))) {
+				int left = matrix.leftEdgeOfRow(row);
+				int top = matrix.startOfRow(row);
+				int right = matrix.rightEdgeOfRow(row);
+				GraphicsUtil.bluenRectangle(mg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
+				left = 0;
+				top = matrix.startOfRow(row);
+				right = getWidth();
+				GraphicsUtil.bluenRectangle(rg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
 			}
+			
 			if (previousRow > -1) {
 				matrix.redrawRow(mg, previousRow);
 				rowNames.redrawName(rg, previousRow);
