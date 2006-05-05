@@ -135,6 +135,9 @@ public abstract class MultipleProbCategCharModel extends MultipleProbabilityMode
 			return (1.0/(maxState[c]+1));  // flat prior
 		
 	}
+	public boolean priorAlwaysFlat(){
+		return true;
+	}
 	
 	/* ---------------------------------------------*/
 	public boolean inStates(int state,int c) { //todo: these should be part of standard categ models
