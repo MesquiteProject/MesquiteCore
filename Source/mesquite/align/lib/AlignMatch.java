@@ -104,7 +104,7 @@ public abstract class AlignMatch extends CategDataMatcher {
    		int endLength = MesquiteInteger.minimum(data.getNumChars(),originalArray.length+maxLengthDiff);
    		for (int length = startLength; length<=endLength; length++) {
    	  		score = aligner.getVeryBadScore(originalArray, length, alphabetLength, commandRec);
- //Debugg.println("worst score candidate: " + score.getDoubleValue());
+
    	  		if (!MesquiteDouble.isCombinable(worstScore))
    	  			worstScore = score.getDoubleValue();
 	  		if ((aligner.getHigherIsBetter() && (worstScore>score.getDoubleValue())) || (!aligner.getHigherIsBetter() && (worstScore<score.getDoubleValue()))) {
@@ -134,8 +134,7 @@ public abstract class AlignMatch extends CategDataMatcher {
    	  		candidateArray = getTransformedCandidateArray(candidateArray);
    	  		aligner.alignSequences(originalArray,candidateArray,false,score);
    	  		double newScore = 1.0*score.getIntValue();
- //  	  	Debugg.println("  ic: " + candidateStartChar + ", length:  " + length + ", score: " + newScore);
-  	  		if ((aligner.getHigherIsBetter() && (newScore>bestScore)) || (!aligner.getHigherIsBetter() && (newScore<bestScore))) {
+   	  		if ((aligner.getHigherIsBetter() && (newScore>bestScore)) || (!aligner.getHigherIsBetter() && (newScore<bestScore))) {
    	  			bestScore = newScore;
    	  			bestLength = length;
    	  		}

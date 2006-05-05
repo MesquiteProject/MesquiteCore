@@ -81,7 +81,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 			}
 		}
 		
-		//Debugg.println ("Final scores are: H=" + H[i-1][j-1] + ", D=" + D[i-1][j-1] + ", V=" + V[i-1][j-1]);
+		//System.out.println ("Final scores are: H=" + H[i-1][j-1] + ", D=" + D[i-1][j-1] + ", V=" + V[i-1][j-1]);
 		i--;
 		j--;
 		int myScore ;
@@ -156,7 +156,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 				a_cnt++;
 			} else { 
 				// error
-				Debugg.println ("Error in recovering alignment");
+				MesquiteMessage.println ("Error in recovering alignment");
 				return null;
 			}
 		}
