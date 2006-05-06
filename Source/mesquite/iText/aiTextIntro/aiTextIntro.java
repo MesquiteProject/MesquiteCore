@@ -28,14 +28,14 @@ public class aiTextIntro extends PackageIntro {
   	 public Class getDutyClass(){
   	 	return aiTextIntro.class;
   	 }
-	/*.................................................................................................................*/
-    	 public String getExplanation() {
-		return "Serves as an introduction to the iText library used in Mesquite.";
-   	 }
+ 	/*.................................................................................................................*/
+ 	public String getExplanation() {
+ 		return "iText is a package for save PDF files within Mesquite.";
+ 	}
    
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "iText Introduction";
+		return "iText";
    	 }
 	/*.................................................................................................................*/
 	/** Returns the name of the package of modules (e.g., "Basic Mesquite Package", "Rhetenor")*/

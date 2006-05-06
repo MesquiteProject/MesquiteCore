@@ -95,13 +95,13 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 			if (i ==0) { 
 				while (j>0){
 					backtrack[k][0] = CategoricalState.inapplicable;
-					backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
+					backtrack[k][1] = CategoricalState.expandFromInt(B[j-1]);
 					j--;
 					k++;
 				}
 			} else if ( j == 0 ) {
 				while (i>0){
-					backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
+					backtrack[k][0] = CategoricalState.expandFromInt(A[i-1]);
 					backtrack[k][1] = CategoricalState.inapplicable;
 					i--;
 					k++;
@@ -109,7 +109,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 				}				
 			} else if  ( V[i][j] == myScore) { //an optimal path came from vertical (letter from A with gap in B)
 			
-				backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
+				backtrack[k][0] = CategoricalState.expandFromInt(A[i-1]);
 				backtrack[k][1] = CategoricalState.inapplicable;
 				if (i>0 &&  V[i][j] == V[i-1][j] + gapExtend){
 					myScore -= gapExtend;
@@ -125,7 +125,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 					gapOpenOnA = 0;
 				
 				backtrack[k][0] = CategoricalState.inapplicable;
-				backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
+				backtrack[k][1] = CategoricalState.expandFromInt(B[j-1]);
 				if ( j>0 && H[i][j] == H[i][j-1] + gapExtend){
 					myScore -= gapExtend;
 				} else { //H[i][j]  == D[i-1][j] + gapOpen + gapExtend  or H[i][j] == V[i-1][j] + gapOpen + gapExtend
@@ -134,8 +134,8 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 				j--;
 				k++;
 			} else if (D[i][j] == myScore) { // from diagonal
-				backtrack[k][0] = CategoricalState.makeSetFromLowerBits(A[i-1]);
-				backtrack[k][1] = CategoricalState.makeSetFromLowerBits(B[j-1]);
+				backtrack[k][0] = CategoricalState.expandFromInt(A[i-1]);
+				backtrack[k][1] = CategoricalState.expandFromInt(B[j-1]);
 				myScore -= AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) ;
 				i--;
 				j--;

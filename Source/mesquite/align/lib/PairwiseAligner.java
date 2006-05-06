@@ -65,7 +65,7 @@ public class PairwiseAligner  {
 			return ret;
 		}
 		return alignment;
-			
+
 	}
 	
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the passed sequences.
@@ -80,7 +80,6 @@ public class PairwiseAligner  {
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		
 		if ( returnAlignment) { 
-			Debugg.println("DP table size: " + (A.length*B.length));
 		
 			long ret[][];
 			if ((A.length*B.length)>getCharThresholdForLowMemory()) {
@@ -99,6 +98,13 @@ public class PairwiseAligner  {
 				gapInsertionArray = helper.getGapInsertionArray();
 			}
 		
+			for (int i=0; i<ret.length; i++) {
+				if (ret[i][0]==0L)
+					ret[i][0] = CategoricalState.inapplicable;
+				if (ret[i][1] ==0L)
+					ret[i][1] = CategoricalState.inapplicable;
+			}
+			
 			if (ret.length>lengthA && ret.length>lengthB)
 				return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
 			
@@ -113,7 +119,6 @@ public class PairwiseAligner  {
 			if (score != null)
 				score.setValue( myScore );
 
-//			Debugg.println("score is " + myScore);			
 			
 			return null;  // no alignment
 		}

@@ -318,15 +318,15 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			//gap in A
 			while ( j < lastB_BeforeNextA[i] ) {
 				alignment[k][0] = CategoricalState.inapplicable;
-				alignment[k][1] = CategoricalState.makeSetFromLowerBits(B[j]);
+				alignment[k][1] = CategoricalState.expandFromInt(B[j]);
 				j++;
 				k++;					
 			}
 
 			//now we're ready to burn off a letter from B, and possibly a letter from A if diagonal.
-			alignment[k][0] = CategoricalState.makeSetFromLowerBits(A[i]);
+			alignment[k][0] = CategoricalState.expandFromInt(A[i]);
 			if (shapeLeavingPosInA[i] == noGap) {
-				alignment[k][1] = CategoricalState.makeSetFromLowerBits(B[j]);
+				alignment[k][1] = CategoricalState.expandFromInt(B[j]);
 				j++;
 			} else {		// gap In B								
 				alignment[k][1] = CategoricalState.inapplicable;
@@ -336,7 +336,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 
 		while (j < lengthB) { //gap in A at the end 
 			alignment[k][0] = CategoricalState.inapplicable;
-			alignment[k][1] = CategoricalState.makeSetFromLowerBits(B[j]);
+			alignment[k][1] = CategoricalState.expandFromInt(B[j]);
 			j++;
 			k++;					
 		}		

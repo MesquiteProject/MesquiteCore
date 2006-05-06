@@ -20,6 +20,9 @@ public class ReverseComplement extends DNADataAltererCon {
 		return "Reverse Complement";
 	}
 
+	 public String getExplanation() {
+ 		 return "Reverses the DNA sequence and complements the bases.";
+	}
 	public boolean requestPrimaryChoice() {
 		return true;
 	}
