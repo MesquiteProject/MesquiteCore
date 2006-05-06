@@ -58,29 +58,28 @@ java.lang.NullPointerException
 	at mesquite.lib.MainThread.run(MainThread.java:116)
 ===============
 bugs to fix for 1.07
+•••• disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
+•••• tree legend fails because first calc fails; menu item remains but legend won't show
 √√√√ Move Archived to Current taxon namnes
 √√√√ Protein editor default color
 √√√√ Remove Gaps-Only Characters;  Remove Empty Characters
 √√√√ Why SCM with same place on branches????
 •••• Nina Amenta SVN
-••• check use of CategoricalStatTest etc. -- only or not?
-•••• delete matrix from projects window, doesn't redo mnus
-••• protein translater
+√√√ delete matrix from projects window, doesn't redo mnus
 •••• PAUP blocks in reasonable places
-••• scroll bar on small matrices/tables won't go page left
-•••• setListableFilter -- why does it zap whole distance submenu?
-•••• disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
-••• NBRF import fuse
+√√√ scroll bar on small matrices/tables won't go page left
+√√√√ setListableFilter -- why does it zap whole distance submenu?
+√√√√ NBRF import fuse
 ••• high ascii file paths don't work (Laurin)
-•••• search for todo in Cartographer
+√√√√ search for todo in Cartographer
 •••• maureen's printing pdf issue
-•••• equilibrium root frequencies in MLE etc
-•••• matrix simulator with site specific models
-••• changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
+√√√√ equilibrium root frequencies in MLE etc
+√√√√ changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
 √√√new  mrBayes fused export
-•••• kip's POY format issue
-•••• SOURCE: itext into Resources?
+√√√√ kip's POY format issue
+√√√√ SOURCE: itext into Resources?
 •••• Edit MrBayes block bits???
+√√√√ check use of CategoricalStatTest etc. -- only or not?
 √√√ taxa assoc: delete assoc taxa, list not updated; list needs indications of those included
 √√√ kip's POY format issue
 √√√ delete matrix from projects window, doesn't redo mnus
@@ -142,6 +141,9 @@ CellPictures warning still appearing
 √√√ trees directly shoudl have toggle for live or not
 
 FOR MANUAL
+√√√√ protein translater
+√√√√ merge taxa
+
 √√√@@@ modules read from MesquiteSupportFiles & classpaths.xml
 √√√@@@ add simple button on window to bring all of project to fore
 √√√@@@ manual: add COMET, stratig tools
