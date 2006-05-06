@@ -2689,41 +2689,61 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
+	int getNearZone(int rowColSize) {
+		if (rowColSize<=2)
+			return 0;
+		else if (rowColSize<=4)
+			return 1;
+		return 2;
+	}
+	/* ............................................................................................................... */
 	/** returns true if x is near the boundary of a column */
 	public boolean nearColumnBoundary(int x) {
-		return (findOffsetInColumn(x) < 4);
-	}
-
-	/* @@@............................................................................................................... */
-	/** returns offset from right margin of column in which x lies, -1 if none. */
-	public int findOffsetInColumn(int x) {
-		int cx = 0;
+		int columnBoundary = 0;
+		int nearZoneOnRight;
+		int nearZoneOnLeft;
 		// int lastEdge=0;
-		for (int column = firstColumnVisible; (column < numColumnsTotal) && (cx < x); column++) {
-			cx += columnWidths[column];
-			if (cx >= x)
-				return cx - x;
-			// lastEdge=cx;
+		for (int column = firstColumnVisible; (column < numColumnsTotal) && (columnBoundary < x); column++) {
+			if (column==firstColumnVisible)
+				nearZoneOnLeft = 0;
+			else
+				nearZoneOnLeft = getNearZone(columnWidths[column]);
+			if (column==lastColumnVisible)
+				nearZoneOnRight = 0;
+			else
+				nearZoneOnRight = getNearZone(columnWidths[column]);
+			
+			columnBoundary += columnWidths[column];
+			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight)
+				return true;
 		}
-		return -1;
+		return false;
+
 	}
 
 	/* ............................................................................................................... */
 	/** returns true if y is near the boundary of a row */
 	public boolean nearRowBoundary(int y) {
-		return (findOffsetInRow(y) < 4);
-	}
-
-	/* @@@............................................................................................................... */
-	/** returns offset from bottom margin of row in which y lies, -1 if none. */
-	public int findOffsetInRow(int y) {
-		int cy = 0;
-		for (int row = firstRowVisible; (row < numRowsTotal) && (cy < y); row++) {
-			cy += rowHeights[row];
-			if (cy >= y)
-				return cy - y;
+		int rowBoundary = 0;
+		int nearZoneOnBottom;
+		int nearZoneOnTop;
+		// int lastEdge=0;
+		for (int row = firstRowVisible; (row < numRowsTotal); row++) {
+			if (row==firstRowVisible)
+				nearZoneOnTop = 0;
+			else
+				nearZoneOnTop = getNearZone(rowHeights[row]);
+			if (row==lastRowVisible)
+				nearZoneOnBottom = 0;
+			else
+				nearZoneOnBottom = getNearZone(rowHeights[row]);
+			
+			rowBoundary += rowHeights[row];
+			if (y>rowBoundary-nearZoneOnTop  && y<rowBoundary+nearZoneOnBottom)
+				return true;
 		}
-		return -1;
+		return false;
+
 	}
 
 	/* ............................................................................................................... */
