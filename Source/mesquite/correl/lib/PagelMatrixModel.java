@@ -99,7 +99,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 
 	Random rng = new Random(System.currentTimeMillis());
 	
-	ProgressIndicator prog = null;
+	ProgressIndicator prog = null;  //when this is non-null, check for abort condition
 	
 	/**
 	 * This returns the number of characters implied by the behavior code.  It's static so it
@@ -116,22 +116,20 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	 * @param behavior The behavior (number of parameters, constraints, etc.) the model will implement
 	 */
     public PagelMatrixModel(String name, Class dataClass, int behavior) {
-    		super(name,dataClass,charsFromBehavior(behavior)); 
-    	 	this.modelType = behavior;
+        super(name,dataClass,charsFromBehavior(behavior)); 
+        this.modelType = behavior;
         this.params=null;              // model's parameters
-    	    qConstrained=null;         // true if a parameter is somehow constrained
-    	    qBound=null;               // parameter bound to another parameter (-1 = not bound)
-    	    qConstant=null;            // parameter is set to this value; 
-    	    this.setConstraints(modelType);
+        qConstrained=null;         // true if a parameter is somehow constrained
+        qBound=null;               // parameter bound to another parameter (-1 = not bound)
+        qConstant=null;            // parameter is set to this value; 
+        this.setConstraints(modelType);
         needToPrepareMatrices = true;
         recalcProbsNeeded = true;
         minChecker = new MesquiteNumber(MesquiteDouble.unassigned);        
-        
-        //prepareMatrices();
         if (modelType == MODEL4PARAM)
-        	optimizationMode = FLIP_FLOP;
+            optimizationMode = FLIP_FLOP;
         else
-        	optimizationMode = BASE_ON_SIMPLER;
+            optimizationMode = BASE_ON_SIMPLER;
     }
     
     
@@ -287,7 +285,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
      * parameters in the model.
      */
     private double[] prepareQList(double[] values){
-    		if (qList == null)
+    		if (qList == null || (qList.length < qMapping.length))
     			qList = new double[qMapping.length];
 		for (int i=0;i<qMapping.length;i++) {
 			qList[i] = values[qMapping[i]];
@@ -449,32 +447,19 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		return 3-(2*i+j); 
 	}
 	
+	private int[] pair0 = {1,1};
+	private int[] pair1 = {1,0};
+	private int[] pair2 = {0,1};
+	private int[] pair3 = {0,0};
+	
 	private int[] statePairFromCode(int code){
-		int[] result = new int[2];
 		switch (code){
-			case 0:{
-				result[0]=1;
-				result[1]=1;
-				break;
-			}
-			case 1:{
-				result[0]=1;
-				result[1]=0;
-				break;
-			}
-			case 2:{
-				result[0]=0;
-				result[1]=1;
-				break;
-			}
-			case 3:
-			default:{
-				result[0]=0;
-				result[1]=0;
-				break;
-			}
+			case 0: return pair0;
+			case 1: return pair1;
+			case 2: return pair2;
+			case 3: return pair3;
 		}
-		return result;
+		return null;
 	}
 	
 	public double transitionProbability (int beginState[], int endState[], Tree tree, int node){
@@ -516,14 +501,12 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	 * @param node where we are in the tree
 	 * @return double indicating transition probability from begin1,begin2 => end1,end2
 	 */
-	public double transitionProbability (int beginState1,int endState1,int beginState2,int endState2,Tree tree, int node){
+	private double transitionProbability (int beginState1,int endState1,int beginState2,int endState2,Tree tree, int node){
 		if (!inStates(beginState1,0) || !inStates(endState1,0) || !inStates(beginState2,1) || !inStates(endState2,1)){
 			MesquiteMessage.warnProgrammer("Bailed out of transitionProbability " + beginState1 + " " + endState1 + " " + beginState2 + " " + endState2);
 			return 0;
 		}
-		else {
-			if (tree==null)
-				return 0;
+		else {   // tree has already been checked 
 			if (needToPrepareMatrices)
 				prepareMatrices();
 			double branchLength = tree.getBranchLength(node,1.0);
@@ -558,7 +541,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			
 		double[][] p = Double2DArray.multiply(eigenVectors, tent);
 		probMatrix = Double2DArray.multiply(p, inverseEigenVectors);
-
 		probMatrix = Double2DArray.squnch(probMatrix);
         	probMatrix = Double2DArray.transpose(probMatrix);
         	boolean negativeRoundOff = false;
@@ -636,6 +618,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	public double logLikelihoodCalc(Tree tree){
 		if (zeroHit)
 			return -0.001*(++estCount);  // to shortcircuit the optimizer wandering around zero with very high rates
+		if (tree == null) {
+			MesquiteMessage.warnProgrammer("Tree passed to logLikelihoodCalc is null");
+			return(-1*MesquiteDouble.veryLargeNumber);
+		}
 		double likelihood = 0.0;
 		double comp;
 		int root = tree.getRoot();
@@ -713,19 +699,13 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
  	}
  		
 	// overloading for 2 characters
-	private double probFromSection(Tree tree, int d, int i, int j, double[][] ProbsD, boolean downwards){
+ 	// This (private) version only goes down from the terminals
+	private double probFromSection(Tree tree, int d, int i, int j, double[][] ProbsD){
 		double prob=0;
-		if(downwards){
-			for (int k=0;k<numStates;k++)
-				for (int l=0;l<numStates;l++){
-					prob += ProbsD[k][l]*transitionProbability(i,k,j,l,tree,d);
-				}
-		}
-		else {
-			for (int k=0;k<numStates;k++)
-				for (int l=0;l<numStates;l++)
-					prob += transitionProbability(k,i,l,j,tree,d)*ProbsD[i][j];
-		}
+		for (int k=0;k<numStates;k++)
+			for (int l=0;l<numStates;l++){
+				prob += ProbsD[k][l]*transitionProbability(i,k,j,l,tree,d);
+			}
 		return prob;
 	}
 	
@@ -734,15 +714,17 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	// overloading for 2 characters
 	private double checkUnderflow(double[][] probs){
 		minChecker.setValue(MesquiteDouble.unassigned);
-		for (int i=0;i<probs.length;i++)
-			for (int j=0;j<probs[0].length;j++)
+		int probsDim1 = probs.length;
+		int probsDim2 = probs[0].length;
+		for (int i=0;i<probsDim1;i++)
+			for (int j=0;j<probsDim2;j++)
 				minChecker.setMeIfIAmMoreThan(probs[i][j]);
 		double q = minChecker.getDoubleValue();
 		if (q == 0)
 			return 0;
 		else {
-			for (int i=0;i<probs.length;i++)
-				for (int j=0;j<probs[0].length;j++)
+			for (int i=0;i<probsDim1;i++)
+				for (int j=0;j<probsDim2;j++)
 					probs[i][j] /= q;
 		}
 		return -Math.log(q);
@@ -775,7 +757,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				for (int j=0;j<numStates;j++){
 					double prob = 1.0;
 					for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d=tree.nextSisterOfNode(d)){
-						prob *= probFromSection(tree,d,i,j,downProbs2[d],true);
+						prob *= probFromSection(tree,d,i,j,downProbs2[d]);
 					}
 					downProbs2[node][i][j] = prob;
 			}
@@ -797,10 +779,9 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		}
 		return true;
 	}
-	
 
 	/**
-	 * This is really a stub
+	 * This is really a stub that exists because there is no class for multivariate evaluators
 	 * 
 	 */
 	public double evaluate(MesquiteDouble param, Object obj) {
@@ -865,14 +846,16 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		Optimizer opt = new Optimizer(this);
 		double best = Double.MAX_VALUE;
 		// **** estParams is the matrix of trial values
+		double estParams[];
+		// estjust saves the starting values for error reporting
+		double backupEst[] = null;
 		double [] b = null;
 		double next;
-		try {
 		switch (modelType) {
 			case MODEL8PARAM:{  // first try two versions of a 6-parameter model
 				PagelMatrixModel model6_1 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEY);
 				PagelMatrixModel model6_2 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEX);
-				double estParams[] = new double[8];
+				estParams = new double[8];
 				// first a model with changes in Y contingent on changes in X
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEY){
 				    model6_1.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
@@ -894,7 +877,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					estParams[7]=parametersFromSimplerModel[2];
 				}
 				allowedEdgeHits = beginningAllowed;
-				double [] backupEst = (double [])estParams.clone();
+				//backupEst = (double [])estParams.clone();
 				next = opt.optimize(estParams, null); // try optimizing from the contingentchangeY best parameters
 				if (!acceptableResults(next, estParams)) {
 					MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -929,7 +912,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					estParams[7]=parametersFromSimplerModel[5];
 				}
 				allowedEdgeHits = beginningAllowed;
-				backupEst = (double [])estParams.clone();
+				//backupEst = (double [])estParams.clone();
 				next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
 				if (!acceptableResults(next, estParams)) {
 					MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -956,7 +939,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						estParams[6]=(1+0.2*rng.nextGaussian())*m6_1Params[5];
 						estParams[7]=(1+0.2*rng.nextGaussian())*m6_2Params[5];
 						allowedEdgeHits = beginningAllowed;
-						backupEst = (double [])estParams.clone();
+						//backupEst = (double [])estParams.clone();
 						next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
 						if (!acceptableResults(next, estParams)) {
 							MesquiteMessage.warnProgrammer("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -977,14 +960,14 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			}
 			case MODEL6PARAMCONTINGENTCHANGEX:
 			case MODEL6PARAMCONTINGENTCHANGEY: {
-				double[] estParams = new double[6];
+				estParams = new double[6];
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL4PARAM) {
 					PagelMatrixModel model4 = new PagelMatrixModel("",CategoricalState.class,MODEL4PARAM);
 					model4.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
 					double [] m4Params = model4.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m4Params[i];
-					if (modelType == MODEL6PARAMCONTINGENTCHANGEX){  //this really needs to be checked
+					if (modelType == MODEL6PARAMCONTINGENTCHANGEX){  
 						estParams[4]=m4Params[2];
 						estParams[5]=m4Params[3];
 					}
@@ -996,7 +979,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				else { // TODO need to get the parameters from the previous model
 					for(int i=0;i<4;i++)
 						estParams[i]=parametersFromSimplerModel[i];
-					if (modelType == MODEL6PARAMCONTINGENTCHANGEX){  //this really needs to be checked
+					if (modelType == MODEL6PARAMCONTINGENTCHANGEX){  
 						estParams[4]=parametersFromSimplerModel[2];
 						estParams[5]=parametersFromSimplerModel[3];
 					}
@@ -1006,7 +989,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					}
 				}
 				allowedEdgeHits = beginningAllowed;
-				double [] backupEst = (double [])estParams.clone();
+				//backupEst = (double [])estParams.clone();
 				next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
 				if (!acceptableResults(next, estParams)) {
 					MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -1025,14 +1008,14 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				break;
 			}
 			case MODEL4PARAM: {  // for now, just use flip/flop, though we might try getting estimates from MODEL2PARAM in the future
-				double[] estParams = new double[4];
+				estParams = new double[4];
 				estParams[2] = FLIP_FLOP_HIGH;
 				estParams[3] = FLIP_FLOP_HIGH;
 				estParams[0] = FLIP_FLOP_HIGH;
 				estParams[1] = FLIP_FLOP_HIGH;
 				if (b == null)
 					b = DoubleArray.clone(estParams);	
-				double [] backupEst = (double [])estParams.clone();
+				//backupEst = (double [])estParams.clone();
 		 		next = opt.optimize(estParams, null); //bundle);
 		 		if (!acceptableResults(next, estParams)) {
 		 			MesquiteMessage.warnProgrammer("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -1052,7 +1035,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				estParams[3] = FLIP_FLOP_HIGH;
 			 	params = DoubleArray.clone(estParams);
 				allowedEdgeHits = beginningAllowed;
-				backupEst = (double [])estParams.clone();
+				//backupEst = (double [])estParams.clone();
 		 		next = opt.optimize(estParams, null); //bundle);
 		 		if (!acceptableResults(next, estParams)) {
 		 			MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -1072,7 +1055,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				estParams[3] = FLIP_FLOP_LOW;
 			 	params = DoubleArray.clone(estParams);
 				allowedEdgeHits = beginningAllowed;
-				backupEst = (double [])estParams.clone();
+				//backupEst = (double [])estParams.clone();
 		 		next = opt.optimize(estParams, null); //bundle);
 		 		if (!acceptableResults(next, estParams)) {
 		 			MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
@@ -1095,10 +1078,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				break;
 			}
 		} // end switch (??)
-		}
-		catch (StuckSearchException e){
-			return;
-		}
 		params = DoubleArray.clone(b);
 		if (scaleRescale && height != 0){ //UNDO the scaling of the tree
 			rescaleAllParameters(invHeight);

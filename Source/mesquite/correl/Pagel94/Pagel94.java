@@ -318,11 +318,13 @@ public class Pagel94 extends Pagel94Calculator {
 	        catch(PagelMatrixModel.StuckSearchException e){
 	        		hasAborted = true;
 	        }
-	         progress.goAway();
-	         DoubleArray.sort(diffs);
-	         int position;
-	         for (position = 0;position<simCount;position++)
-	             if (score<diffs[position])
+	        progress.goAway();
+     	    model4.setProgress(null);
+     	    model8.setProgress(null);
+	        DoubleArray.sort(diffs);
+	        int position;
+	        for (position = 0;position<simCount;position++)
+	            if (score<diffs[position])
 	            	 	break;
 	         if (hasAborted){
 	        	 	int completedDiffs = countAssigned(diffs);
