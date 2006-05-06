@@ -24,6 +24,7 @@ tolweb = david, katja, learning, dmandel
 wheeler = r
 oliver = r
 schmidt = r
+amenta = r
 * = 
 
 [/mesquite/trunk/Mesquite Project/Source/mesquite/align]
@@ -100,6 +101,7 @@ schmidt = r
 [/treesetvis]
 @maddisons = rw
 dmandel = rw
+amenta = rw
 * =
 
 [/vancouver]
