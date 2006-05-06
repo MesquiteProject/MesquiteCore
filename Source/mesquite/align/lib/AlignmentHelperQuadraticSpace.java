@@ -144,6 +144,12 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 			} else { 
 				// error
 				MesquiteMessage.println ("Error in recovering alignment");
+				MesquiteMessage.println ("   myScore: " + myScore);
+				MesquiteMessage.println ("   i = " + i + ", j = " + j);
+				MesquiteMessage.println ("   D[i][j]: " + D[i][j]);
+				MesquiteMessage.println ("   V[i][j]: " + V[i][j]);
+				MesquiteMessage.println ("   H[i][j]: " + H[i][j]);
+				MesquiteMessage.println ("   D[i][j]: " + D[i][j]);
 				return null;
 			}
 		}

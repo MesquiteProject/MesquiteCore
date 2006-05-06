@@ -1,10 +1,6 @@
 David to do
 
 1.1 to fix:
-mesquite.trees.NumForNodesWithChar.NumForNodesWithChar
-mesquite.trees.NumForNodesWithCharHist.NumForNodesWithCharHist
-mesquite.trees.NumForNodesWithMat.NumForNodesWithMat
-mesquite.trees.NumsForNodesBrLengths.NumsForNodesBrLengths
 
 mesquite.align.AlignToDropped.AlignToDropped
 	Remove logging/Debugg.println
@@ -19,6 +15,7 @@ mesquite.align.AlignToDropped.AlignToDropped
 	- work on SimDNAMatrixEmpirBased
 	- change CellColorer so that setActiveColors returns a boolean as 
 		to whether it is successful or not
+	- association list is not List based
 
 1.2:
 	-rework charting code completely

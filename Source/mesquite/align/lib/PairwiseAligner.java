@@ -98,6 +98,8 @@ public class PairwiseAligner  {
 				gapInsertionArray = helper.getGapInsertionArray();
 			}
 		
+			if (ret==null)
+				return null;
 			for (int i=0; i<ret.length; i++) {
 				if (ret[i][0]==0L)
 					ret[i][0] = CategoricalState.inapplicable;
