@@ -43,6 +43,7 @@
 		<property name="srcinstalldir" value="${hostprefix}/home/dmandel/mesquitesrc/" />
 		<!-- The path to Mesquite_Folder on the server -->
 		<property name="mesquitefolderinstalldir" value="/home/dmandel/Mesquite_Folder/" />
+		<property name="aligndir" value="/home/dmandel/Mesquite_Folder/align/"/>
 
 		<property name="pal" value="pal.zip"/>
 		<property name="jsci" value="JSci.zip"/>
@@ -50,6 +51,7 @@
 		<property name="mrj" value="MRJToolkitStubs.zip"/>
 		<property name="applejava" value="AppleJavaExtensions.jar"/>
 		<property name="iText" value="iText.jar"/>
+		<property name="sftpjar" value="maverick-ant.jar"/>
 		<property name="jars.dir" location="jars"/>
 		<path id="compile.classpath" >
 			<fileset dir="${jars.dir}">
@@ -117,6 +119,8 @@
 		<copy todir="${mesquitefolder.dir}/jars">
 			<fileset dir="${jars.dir}">
 				<include name="**/*"/>
+				<exclude name="**/jsch-0.1.28.jar"/>
+				<exclude name="**/${sftpjar}"/>				
 			</fileset>
 		</copy>
 		<!-- package up the linux dist before we copy the mac stuff -->
@@ -207,19 +211,26 @@
 	</target>
 
 	<target depends="packagedist,packagesrc" name="deployfiles">
-		<description>Sends all of the generated files up to the server</description>
+		<description>Sends all of the generated files up to the server</description>		
 		<scp file="${linuxbin.tgz}" todir="${bininstalldir}" />
+		<!--		
 		<scp file="${sitbin}" todir="${bininstalldir}" />
 		<scp file="${dmgbin}" todir="${bininstalldir}" />
 		<scp file="${macsrc}" todir="${srcinstalldir}" />
 		<scp file="${windowssrc}" todir="${srcinstalldir}" />
 		<scp file="${linuxsrc}" todir="${srcinstalldir}" />
-		<taskdef name="ssh" classname="com.sshtools.ant.Ssh" classpath="maverick-ant.jar" />
+		-->
+		<taskdef name="ssh" classname="com.sshtools.ant.Ssh" classpath="${jars.dir}/${sftpjar}" />
 		<ssh host="${host}" username="${username}" password="${password}">
 			<exec cmd="rm -rf ${mesquitefolderinstalldir}" />
 			<exec cmd="mkdir ${mesquitefolderinstalldir}" />
 			<sftp action="put" remotedir="${mesquitefolderinstalldir}">
 				<fileset dir="${mesquitefolder.dir}" />
+			</sftp>
+			<sftp action="put" remotedir="${aligndir}">
+				<fileset dir="${src.dir}/mesquite/align/aAlignIntro/">
+					<include name="**/*"/>
+				</fileset>
 			</sftp>
 		</ssh>
 	</target>
