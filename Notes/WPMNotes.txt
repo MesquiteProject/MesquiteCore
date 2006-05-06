@@ -64,13 +64,21 @@ bugs to fix for 1.07
 รรรร Why SCM with same place on branches????
 ฅฅฅฅ Nina Amenta SVN
 ฅฅฅ check use of CategoricalStatTest etc. -- only or not?
-ฅฅฅฅ disable directionality in MolecularData: swap acharacters; integrity check, e.g.
+ฅฅฅฅ delete matrix from projects window, doesn't redo mnus
+ฅฅฅ protein translater
+ฅฅฅฅ PAUP blocks in reasonable places
+ฅฅฅ scroll bar on small matrices/tables won't go page left
+ฅฅฅฅ setListableFilter -- why does it zap whole distance submenu?
+ฅฅฅฅ disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
+ฅฅฅ NBRF import fuse
 ฅฅฅ high ascii file paths don't work (Laurin)
 ฅฅฅฅ search for todo in Cartographer
 ฅฅฅฅ maureen's printing pdf issue
 ฅฅฅฅ equilibrium root frequencies in MLE etc
 ฅฅฅฅ matrix simulator with site specific models
 ฅฅฅ changing taxon assoc in contained trees, display contained tree sometimes goes silent (doesn't change)
+รรรnew  mrBayes fused export
+ฅฅฅฅ kip's POY format issue
 ฅฅฅฅ SOURCE: itext into Resources?
 ฅฅฅฅ Edit MrBayes block bits???
 รรร taxa assoc: delete assoc taxa, list not updated; list needs indications of those included
@@ -134,20 +142,20 @@ CellPictures warning still appearing
 รรร trees directly shoudl have toggle for live or not
 
 FOR MANUAL
+รรร@@@ modules read from MesquiteSupportFiles & classpaths.xml
+รรร@@@ add simple button on window to bring all of project to fore
+รรร@@@ manual: add COMET, stratig tools
+รรร@@@ acknowledge CIPRES
+รรร@@@ Ask For Seeds in Defaults menu
+รรร@@@ FEATURE force recalcualtion in chart
+รรร@@@Bar Chart
+รรร@@@ control over interleaving
 รรรร@@@@ count dup/ext
 รรรร@@@ new assocaition editing
 รรรร@@@ change colors trace
 รรร@@@ missing data permitted in conts pars and disc likelihood.  Inappl treated as missing
-รรร@@@ add simple button on window to bring all of project to fore
-รรร@@@ modules read from MesquiteSupportFiles & classpaths.xml
 รรร@@@ phylip treefile import/export
-รรร@@@ manual: add COMET, stratig tools
-รรร@@@ acknowledge CIPRES
-รรร@@@ control over interleaving
-รรร@@@Bar Chart
 รรร@@@ random number loops to get to nth tree or character: should they add a number to prevent a simple frameshift difference among reps?
-รรร@@@ Ask For Seeds in Defaults menu
-รรร@@@ FEATURE force recalcualtion in chart
 รรร@@@@ Reshuffle within TAxa (matrices, characters)
 รรร@@@@ no longer permits maxstate >1 in asymmMk
 รรร@@@@ pdf printing
