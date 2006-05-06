@@ -312,6 +312,8 @@ public class RowNamesPanel extends EditorPanel  {
 				table.shimmerHorizontalOn(touchY);
 			}
 			else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
+				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
+					possibleTouch = table.findRowBeforeBetween(y);
 				table.rowTouched(isArrowEquivalent, possibleTouch,regionInCellH, regionInCellV,modifiers);
 				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchY=y;
