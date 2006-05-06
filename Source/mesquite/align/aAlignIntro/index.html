@@ -24,8 +24,8 @@
 <div id="masthead">
   <div id="banner"><img src="splash.gif" width="164" height="64"></div>
   <div id="mainTitle"><font id="packageName"><b>Align</b></font><font id="version"><br>
-    Version 1.0 Beta <br>
-    1 May 2006 </font><BR>
+    Version 1.0 <br>
+    6 May 2006 </font><BR>
   David R. Maddison, Travis J. Wheeler, and Wayne P. Maddison </div>
   <div id="subtitle"><!-- InstanceBeginEditable name="subtitle" --><!-- InstanceEndEditable --></div>
  
@@ -35,14 +35,34 @@
 <div id="content"><!-- InstanceBeginEditable name="content" -->
   <h2><font face="Trebuchet MS">Align: a Mesquite
     package for aligning sequence data </font></h2>
-  <p>The Align package provides some basic tools involving alignment of sequence data. </p>
-  <!-- InstanceEndEditable --></div>
+  <p>The Align package provides some basic tools involving alignment of sequence data. The Align package contains:</p>
+  <ul>
+    <li>Tools for <a href="manualAlignment.html">manual alignment</a>
+        <ul>
+          <li>a Move Blocks tool</li>
+          <li>a Push Sequence tool</li>
+          <li>commands to remove gaps <em>en masse</em> </li>
+        </ul>
+    </li>
+    <li>Tools for <a href="automated.html">automated alignment </a>
+        <ul>
+          <li>a Pairwise Aligner tool</li>
+          <li>the ability to send a block of the matrix to ClustalW to align </li>
+        </ul>
+    </li>
+    <li>Various <a href="statistics.html">statistics</a> about taxa based about alignments
+      <ul>
+          <li>the alignment score of a taxon against a reference taxon</li>
+        <li>the ratio of the alignment score of a taxon and its reverse complement against a reference taxon; this allows one to quickly detect sequences that are reverse complements of others.</li>
+      </ul>
+    </li>
+  </ul>
+<!-- InstanceEndEditable --></div>
 <!--end content -->
 <div id="navBar">
   <div id="sectionLinks">
     <ul>
       <li><a href="index.html">Home</a></li>
-      <li><a href="overview.html">Overview</a></li>
       <li><a href="manualAlignment.html">Manual Alignment</a></li>
       <li><a href="automated.html">Automated Alignment</a></li>
       <li><a href="statistics.html">Statistics</a></li>
@@ -52,6 +72,8 @@
       <li><a href="acknowledgements.html">Acknowledgements</a></li>
       <li style="margin-top: 20px;"></li>
       <li><a href="sourceCode.html">Source Code</a></li>
+      <li style="margin-top: 20px;"></li>
+	  <li><a href="file:///Liocosmius/Users/david/Documents/Mesquite_Workspace/Mesquite%20Project/Source/mesquite/docs/mesquite/manual.html">Mesquite Manual</a></li>
     </ul>
 	<p>&nbsp;</p>
 	<ul><li> <a href="http://mesquiteproject.org"  style="border: 0px;"><img src="images/mesquiteIcon.gif" alt="Mesquite Home" width="32" height="32"> Mesquite Home</a> </li>
