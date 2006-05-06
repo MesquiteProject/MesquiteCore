@@ -6,8 +6,8 @@ import mesquite.lib.characters.*;
 
 public class DNATaxaDistance extends MolecularTaxaDistance {
 		
-	public DNATaxaDistance(MesquiteModule ownerModule, Taxa taxa, MCharactersDistribution observedStates, boolean estimateAmbiguityDifferences){
-		super(ownerModule,taxa,observedStates, estimateAmbiguityDifferences);
+	public DNATaxaDistance(MesquiteModule ownerModule, Taxa taxa, MCharactersDistribution observedStates, boolean estimateAmbiguityDifferences, boolean countDifferencesIfGapInPair){
+		super(ownerModule,taxa,observedStates, estimateAmbiguityDifferences,countDifferencesIfGapInPair);
 	}
 		public int getMaxState(){
 			return DNAState.getMaxPossibleStateStatic();
@@ -17,7 +17,7 @@ public class DNATaxaDistance extends MolecularTaxaDistance {
 		}
 		/** used for debugging; turn this on and at least some of the distance calculators will stream their results to the log.  */
 		public void logDistancesIfDesired(String name){
-			if (false) {
+			if (true) {
 				MesquiteTrunk.mesquiteTrunk.logln("\n\n\n||||||||||||||  " + name);
 				distancesToLog();
 			}

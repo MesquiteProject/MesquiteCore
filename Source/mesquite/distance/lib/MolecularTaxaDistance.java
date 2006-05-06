@@ -11,12 +11,14 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 		int maxNumStates;
 		CategoricalData data; 
     	boolean estimateAmbiguityDifferences = true;
+    	boolean countDifferencesIfGapInPair = true;
 		
-		public MolecularTaxaDistance(MesquiteModule ownerModule, Taxa taxa, MCharactersDistribution observedStates, boolean estimateAmbiguityDifferences){
+		public MolecularTaxaDistance(MesquiteModule ownerModule, Taxa taxa, MCharactersDistribution observedStates, boolean estimateAmbiguityDifferences, boolean countDifferencesIfGapInPair){
 			super(taxa);
 			if (observedStates==null)
 				return;
 			this.estimateAmbiguityDifferences = estimateAmbiguityDifferences;
+			this.countDifferencesIfGapInPair = countDifferencesIfGapInPair;
 			data = (CategoricalData)observedStates.getParentData();
 			
 			if (data !=null)
@@ -90,11 +92,13 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 					int twoState = CategoricalState.getOnlyElement(two);
 					boolean oneIsMissingInapplicable = CategoricalState.isInapplicable(oneAllBits) || CategoricalState.isUnassigned(oneAllBits);
 					boolean twoIsMissingInapplicable = CategoricalState.isInapplicable(twoAllBits) || CategoricalState.isUnassigned(twoAllBits);
-//Debugg.println("" + taxon1 + " " + taxon2 + ", " + oneState + "  " + twoState);
 					if (oneState>=0 && oneState<numStates && twoState>=0 && twoState<numStates){  // they have single states
 						fxy[oneState][twoState] ++;
 					}
-					else if (oneIsMissingInapplicable &&  twoIsMissingInapplicable) {
+					else if (oneIsMissingInapplicable &&  twoIsMissingInapplicable) {  // both are missing or inapplicable, skip site
+						count--;
+					}
+					else if (!countDifferencesIfGapInPair && (CategoricalState.isInapplicable(oneAllBits) ||  CategoricalState.isInapplicable(twoAllBits))) { // one is inapplicable and we are not counting these sites, skip site
 						count--; //count--;
 					}
 					else if (!oneIsMissingInapplicable &&  !twoIsMissingInapplicable && CategoricalState.statesShared(one,two)) {  // states overlap   
@@ -110,8 +114,7 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 							one = DNAState.fullSet();
 						if (twoIsMissingInapplicable) 
 							two = DNAState.fullSet();
-							//TODO: deal with polymorphism
-//if (taxon1!=taxon2) Debugg.println("");
+																							//TODO: deal with polymorphism
 						if (estimateAmbiguityDifferences) {// at least one of them has multiple states or is empty
 							double sum = 0.0;
 							double combinationCount = 0.0;
@@ -126,7 +129,8 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 										}
 									}
 							}
-							if (sum>0) {
+							
+							if (sum>0) {   // applicable patterns occur at least once in the unambiguous
 								for (int i=0; i<numStates; i++) {
 									if (CategoricalState.isElement(one,i))
 										for (int j=0; j<numStates; j++) {
@@ -136,8 +140,10 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 											}
 										}
 								}
+							
 							}
-							else if (oneIsMissingInapplicable) {  // first one is missing/inapplicable
+							else   //at this point we could bail if estimateAmbiguityDifferences, which PAUP seems to do, and not count this site.  However, instead we will estimate the values in another way
+								if (oneIsMissingInapplicable) {  // first one is missing/inapplicable
 								int card = CategoricalState.cardinality(two);
 								for (int i=0; i<numStates; i++) {
 									if (CategoricalState.isElement(two,i))
