@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.table;
 
 import java.awt.*;
@@ -23,7 +23,7 @@ import java.io.*;
 public class MatrixPanel extends EditorPanel {
 	MesquiteTable table;
 	public int width,  height;
-	
+
 	public MatrixPanel (MesquiteTable table , int w, int h) {
 		super(table);
 		this.table=table;
@@ -37,8 +37,8 @@ public class MatrixPanel extends EditorPanel {
 		this.width=w;
 		this.height=h;
 	}
-	
-	
+
+
 	/*...............................................................................................................*/
 	public String getText(int column, int row){
 		return table.getMatrixText(column, row);
@@ -58,7 +58,7 @@ public class MatrixPanel extends EditorPanel {
 		}
 	}
 	/*...............................................................................................................*/
-/*MesquiteTimer timer1 = new MesquiteTimer();
+	/*MesquiteTimer timer1 = new MesquiteTimer();
 MesquiteTimer timer2 = new MesquiteTimer();
 MesquiteTimer timer3 = new MesquiteTimer();
 MesquiteTimer timer4 = new MesquiteTimer();
@@ -84,7 +84,7 @@ timer6.start(); //270
 
 timer6.end();
 .println("timers 1 " + timer1.getAccumulatedTime() + " timer2 " + timer2.getAccumulatedTime()  + " timer3 " + timer3.getAccumulatedTime() + " timer4 " + timer4.getAccumulatedTime() + " timer5 " + timer5.getAccumulatedTime() + " timer6 " + timer6.getAccumulatedTime());
-*/
+	 */
 	public void redrawCell(Graphics g, int column, int row) {
 		redrawCellOffset(g, column, row, 0, 0);
 	}
@@ -96,11 +96,19 @@ timer6.end();
 	}
 
 	public void redrawRow(Graphics g, int row) {
-		for (int i = table.getFirstColumnVisible(); i<=table.getLastColumnVisible(); i++)
-				redrawCellOffset(g, i, row, 0, 0);
+		int lineX = 0;
+		int top = table.getTopOfRow(row);
+		for (int i = table.getFirstColumnVisible(); i<=table.getLastColumnVisible(); i++) {
+			lineX += table.columnWidths[i];
+			redrawCellOffset(g, i, row, 0, 0);
+			g.setColor(Color.gray);
+
+			g.drawLine(lineX,top, lineX, top+rowHeight(row));//matrixHeight + columnNamesRowHeight
+			g.drawLine(lineX,top+rowHeight(row), lineX+columnWidth(i), top+rowHeight(row));//matrixHeight + columnNamesRowHeight
+		}
 	}
 
-	
+
 	//draws cell appearing at column, row, but with contents for cell column+offsetColumn, row+offsetRow.  Used with non-zero offsets for quick draw during manual sequence alignment
 	public void redrawCellOffset(Graphics g, int column, int row, int offsetColumn, int offsetRow) {
 		redrawCells++;
@@ -130,7 +138,7 @@ timer6.end();
 				prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, false, true, true);
 			else {
 				boolean selected = table.isCellSelected(column+offsetColumn, row+offsetRow) || table.isRowSelected(row+offsetRow)|| table.isColumnSelected(column+offsetColumn);
-				
+
 				if (!table.useString(column,row)) {
 					table.drawMatrixCell(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow, selected);
 				}
@@ -143,7 +151,7 @@ timer6.end();
 		}
 		else {
 			boolean selected = table.isCellSelected(column, row) || table.isRowSelected(row)|| table.isColumnSelected(column);
-			
+
 			if (!table.useString(column,row)) {
 				table.drawMatrixCell(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row, selected);
 			}
@@ -154,7 +162,7 @@ timer6.end();
 			}
 		}
 
-		
+
 		if (table.getDropDown(column, row)) {
 			dropDownTriangle.translate(leftSide+1,topSide + 1);
 			g.setColor(Color.white);
@@ -179,7 +187,7 @@ timer6.end();
 	public void blankCell(int column, int row, Graphics g) {
 		int left = table.getFirstColumnVisible();
 		int top = table.getFirstRowVisible();
-		
+
 		if (column<left || row<top)  
 			return;  
 		int leftSide = startOfColumn(column);
@@ -190,12 +198,12 @@ timer6.end();
 			return;
 		Shape clip = g.getClip();
 		g.setClip(leftSide,topSide,table.columnWidths[column], table.rowHeights[row]);
-		
+
 		prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, table.isCellSelected(column, row) || table.isRowSelected(row)|| table.isColumnSelected(column), false, table.isCellEditable(column, row));
-		
+
 		g.setClip(clip);
 	}
-	
+
 	/*...............................................................................................................*/
 	public void textReturned(int column, int row, String text, CommandRecord commandRec){
 		table.returnedMatrixText(column, row, text,commandRec);
@@ -224,13 +232,13 @@ timer6.end();
 		g.setColor(Color.black);
 		lineY = 0;
 		int oldLineY=lineY;
-			
+
 		int numCells = 0;//еее
-		
+
 		Shape clip = g.getClip();
 		for (int r=0; (r<table.numRowsTotal); r++) {
 			lineY += table.rowHeights[r];
-			
+
 			lineX = 0;
 			int oldLineX=lineX;
 			for (int c=0; (c<table.numColumnsTotal); c++) {
@@ -264,133 +272,133 @@ timer6.end();
 		checkEditFieldLocation();
 		super.repaint();
 	}
-	
+
 	/*...............................................................................................................*/
 	public void paint(Graphics g) {
-	   	if (MesquiteWindow.checkDoomed(this))
-	   		return;
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		try {
-		paints++;
-		
-		int lineY;
-		int lineX;
-		width = getBounds().width;//this is here to test if width/height should be reset here
-		height = getBounds().height;
-		if (table.useQuickMode()){
-			g.setColor(Color.white);
-			g.fillRect(0,0,width, height);
-		}
-		
-		if (table.frameMatrixCells) {
-			int columnHeight = 0;
-			for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (columnHeight<height); r++) {
-				columnHeight += table.rowHeights[r];
-			}
-			if  (columnHeight>height)
-				columnHeight=height;
+			paints++;
 
-			g.setColor(Color.gray);
-			lineX = 0;
-			for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<width); c++) {
-				lineX += table.columnWidths[c];
-				g.drawLine(lineX, 0, lineX, columnHeight);//matrixHeight + columnNamesRowHeight
+			int lineY;
+			int lineX;
+			width = getBounds().width;//this is here to test if width/height should be reset here
+			height = getBounds().height;
+			if (table.useQuickMode()){
+				g.setColor(Color.white);
+				g.fillRect(0,0,width, height);
 			}
-			int rowLength;
-			if  (lineX>width)
-				rowLength=width;
-			else
-				rowLength = lineX;
 
-			lineY = 0;
-			for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<height); r++) {
-				lineY += table.rowHeights[r];
-				g.drawLine(0, lineY, rowLength, lineY);//rowNamesWidth+matrixWidth
-			}
-		}
-		g.setColor(Color.black);
-		lineY = 0;
-		int oldLineY=lineY;
-		int resetWidth = getBounds().width;
-		int resetHeight = getBounds().height;
-			
-		int numCells = 0;//еее
-		FontMetrics fm = g.getFontMetrics(g.getFont());
-		Shape clip = g.getClip();
-		for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<resetHeight); r++) {
-			lineY += table.rowHeights[r];
-			
-			lineX = 0;
-			int oldLineX=lineX;
-			for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<resetWidth); c++) {
-				numCells++;
-				lineX += table.columnWidths[c];
-				if (c!= returningColumn || r != returningRow){ //don't draw if text about to be returned to cell, and will soon be redrawn anyway
-					if (!table.useQuickMode())
-						g.setClip(oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r]);
-					boolean selected = table.isCellSelected(c, r) || table.isRowSelected(r)|| table.isColumnSelected(c);
-					if (!table.useString(c,r)) {
-						table.drawMatrixCell(g, oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r], c, r, selected);
-					}
-					else {
-						String supplied = table.getMatrixTextForDisplay(c,r);
-						Color color = null;
-						if (selected) {
-							if (!MesquiteWindow.Java2Davailable)
-								color = Color.black;
-							else
-								color = Color.white;
-						}
-						else if (fillColor!=null)
-							color = fillColor;
-						else if (table.isCellEditable(c, r)){
-							if (!table.useQuickMode())
-								color = Color.white;
-						}
-						else
-							color = ColorDistribution.uneditable;
-						if (color !=null){
-							g.setColor(color);
-							g.fillRect(oldLineX+1,oldLineY+1,table.columnWidths[c]-1, table.rowHeights[r]-1);
-						}
-						if (selected)
-							GraphicsUtil.fillTransparentSelectionRectangle(g,oldLineX+1,oldLineY+1,table.columnWidths[c]-1, table.rowHeights[r]-1);
-						Color textColor;
-						if (selected)
-							textColor = Color.white;
-						else if (table.getCellDimmed(c,r))
-							textColor = Color.gray;
-						else
-							textColor = Color.black;
-						g.setColor(textColor);
-						table.drawMatrixCellString(g, fm, oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r], c, r, supplied);
-					}
+			if (table.frameMatrixCells) {
+				int columnHeight = 0;
+				for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (columnHeight<height); r++) {
+					columnHeight += table.rowHeights[r];
 				}
-				oldLineX = lineX;
-			}
-			oldLineY=lineY;
-		}
-		if ((endOfLastColumn()>=0) && (endOfLastColumn()<table.matrixWidth)) {
-			g.setClip(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
-			g.setColor(ColorDistribution.medium[table.colorScheme]);
-			g.fillRect(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
-		}
-		if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
-			g.setClip(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
-			g.setColor(ColorDistribution.medium[table.colorScheme]);
-			g.fillRect(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
-		}
-		g.setClip(clip);
-		g.setColor(Color.black);
+				if  (columnHeight>height)
+					columnHeight=height;
 
-		g.drawRect(0, 0, resetWidth-1, resetHeight-1);
+				g.setColor(Color.gray);
+				lineX = 0;
+				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<width); c++) {
+					lineX += table.columnWidths[c];
+					g.drawLine(lineX, 0, lineX, columnHeight);//matrixHeight + columnNamesRowHeight
+				}
+				int rowLength;
+				if  (lineX>width)
+					rowLength=width;
+				else
+					rowLength = lineX;
+
+				lineY = 0;
+				for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<height); r++) {
+					lineY += table.rowHeights[r];
+					g.drawLine(0, lineY, rowLength, lineY);//rowNamesWidth+matrixWidth
+				}
+			}
+			g.setColor(Color.black);
+			lineY = 0;
+			int oldLineY=lineY;
+			int resetWidth = getBounds().width;
+			int resetHeight = getBounds().height;
+
+			int numCells = 0;//еее
+			FontMetrics fm = g.getFontMetrics(g.getFont());
+			Shape clip = g.getClip();
+			for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<resetHeight); r++) {
+				lineY += table.rowHeights[r];
+
+				lineX = 0;
+				int oldLineX=lineX;
+				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<resetWidth); c++) {
+					numCells++;
+					lineX += table.columnWidths[c];
+					if (c!= returningColumn || r != returningRow){ //don't draw if text about to be returned to cell, and will soon be redrawn anyway
+						if (!table.useQuickMode())
+							g.setClip(oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r]);
+						boolean selected = table.isCellSelected(c, r) || table.isRowSelected(r)|| table.isColumnSelected(c);
+						if (!table.useString(c,r)) {
+							table.drawMatrixCell(g, oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r], c, r, selected);
+						}
+						else {
+							String supplied = table.getMatrixTextForDisplay(c,r);
+							Color color = null;
+							if (selected) {
+								if (!MesquiteWindow.Java2Davailable)
+									color = Color.black;
+								else
+									color = Color.white;
+							}
+							else if (fillColor!=null)
+								color = fillColor;
+							else if (table.isCellEditable(c, r)){
+								if (!table.useQuickMode())
+									color = Color.white;
+							}
+							else
+								color = ColorDistribution.uneditable;
+							if (color !=null){
+								g.setColor(color);
+								g.fillRect(oldLineX+1,oldLineY+1,table.columnWidths[c]-1, table.rowHeights[r]-1);
+							}
+							if (selected)
+								GraphicsUtil.fillTransparentSelectionRectangle(g,oldLineX+1,oldLineY+1,table.columnWidths[c]-1, table.rowHeights[r]-1);
+							Color textColor;
+							if (selected)
+								textColor = Color.white;
+							else if (table.getCellDimmed(c,r))
+								textColor = Color.gray;
+							else
+								textColor = Color.black;
+							g.setColor(textColor);
+							table.drawMatrixCellString(g, fm, oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r], c, r, supplied);
+						}
+					}
+					oldLineX = lineX;
+				}
+				oldLineY=lineY;
+			}
+			if ((endOfLastColumn()>=0) && (endOfLastColumn()<table.matrixWidth)) {
+				g.setClip(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
+				g.setColor(ColorDistribution.medium[table.colorScheme]);
+				g.fillRect(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
+			}
+			if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
+				g.setClip(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
+				g.setColor(ColorDistribution.medium[table.colorScheme]);
+				g.fillRect(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
+			}
+			g.setClip(clip);
+			g.setColor(Color.black);
+
+			g.drawRect(0, 0, resetWidth-1, resetHeight-1);
 		}
 		catch (Throwable e){
-				MesquiteMessage.warnProgrammer("Exception or Error in drawing table (Matrix Panel); details in Mesquite log file");
-				PrintWriter pw = MesquiteFile.getLogWriter();
-				if (pw!=null)
-					e.printStackTrace(pw);
+			MesquiteMessage.warnProgrammer("Exception or Error in drawing table (Matrix Panel); details in Mesquite log file");
+			PrintWriter pw = MesquiteFile.getLogWriter();
+			if (pw!=null)
+				e.printStackTrace(pw);
 		}
-		
+
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	public void upArrowPressed(KeyEvent e){ //
@@ -399,14 +407,14 @@ timer6.end();
 		else
 			super.upArrowPressed(e);
 	}
-	
+
 	public void leftArrowPressed(KeyEvent e){
 		if ((getEditingAllSelected()) && (editField.getColumn() == 0) && table.isRowNameEditable(editField.getRow()))
 			table.editRowNameCell(editField.getRow());
 		else
 			super.leftArrowPressed(e);
 	}
-	
+
 	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
 	public int findColumn(int x) {
@@ -485,18 +493,21 @@ timer6.end();
 		int column = findColumn(x);
 		int row = findRow(y);
 		firstRowTouched = row;
-		
-   		
-   		mouseDownInField = false;
-   		
-   		int regionInCellH = findRegionInCellH(x);
-   		int regionInCellV = findRegionInCellV(y);
-   		
-   		//((TableTool)tool).getWorksOnColumnNames();
-   		
+
+
+		mouseDownInField = false;
+
+		int regionInCellH = findRegionInCellH(x);
+		int regionInCellV = findRegionInCellV(y);
+
+		//((TableTool)tool).getWorksOnColumnNames();
+
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
-   			mouseDownInField = true;
+			mouseDownInField = true;
+//			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
+//				table.emphasizeRow(-1,row, -1, false, Color.red);
+//			}
 		}
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
@@ -504,21 +515,21 @@ timer6.end();
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
 		else 
 			setWindowAnnotation("", null);
-		
-		
-   	 }
+
+
+	}
 	/*_________________________________________________*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		int column = findColumn(x);
 		int row = findRow(y);
-   		int regionInCellH = findRegionInCellH(x);
-   		int regionInCellV =  findRegionInCellV(y);
-   		
+		int regionInCellH = findRegionInCellH(x);
+		int regionInCellV =  findRegionInCellV(y);
+
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			table.cellDrag(column, row, regionInCellH,  regionInCellV,modifiers);
 			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
-				table.emphasizeRow(previousRowDragged,row, firstRowTouched, false);
+				table.emphasizeRow(previousRowDragged,row, firstRowTouched, false, Color.blue);
 				previousRowDragged = row;
 			}
 
@@ -530,13 +541,14 @@ timer6.end();
 			return;
 		int column = findColumn(x);
 		int row = findRow(y);
-   		int regionInCellH = findRegionInCellH(x);
-   		int regionInCellV =  findRegionInCellV(y);
-   		
+		int regionInCellH = findRegionInCellH(x);
+		int regionInCellV =  findRegionInCellV(y);
+
 		if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
-			table.deEmphasizeRow(previousRowDragged);
+			table.redrawFullRow(previousRowDragged);
+			table.redrawFullRow(firstRowTouched);
 		}
-  		
+
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)
 			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
@@ -544,27 +556,27 @@ timer6.end();
 		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
 			table.cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
 		else if (!mouseDownInField && ((TableTool)tool).getDeselectIfOutsideOfCells()) {
-	   		table.offAllEdits();
-	   		if (table.anythingSelected()) {
-	   			table.deselectAllNotify();
-	   			table.repaintAll();
-	   		}
+			table.offAllEdits();
+			if (table.anythingSelected()) {
+				table.deselectAllNotify();
+				table.repaintAll();
+			}
 		}
-   		mouseDownInField = false;
+		mouseDownInField = false;
 	}
-   	/*...............................................................................................................*/
-   	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
+	/*...............................................................................................................*/
+	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		if (!table.editingAnything() && !table.singleTableCellSelected()) 
-				setWindowAnnotation("", null);
+			setWindowAnnotation("", null);
 		setCursor(Cursor.getDefaultCursor());
 		int column = findColumn(x);
 		int row = findRow(y);
 		table.mouseExitedCell(modifiers, column, -1, row, -1, tool);
-  	}
+	}
 	/*...............................................................................................................*/
 	public void setCurrentCursor(int modifiers, int column, int row, MesquiteTool tool) {
 		if (tool == null || !(tool instanceof TableTool))
-				setCursor(getDisabledCursor());
+			setCursor(getDisabledCursor());
 		else if (!((TableTool)tool).getWorksOnMatrixPanel()) {
 			setCursor(getDisabledCursor());
 		}
@@ -573,13 +585,13 @@ timer6.end();
 		else 
 			setCursor(tool.getCursor());
 	}
-  	/*...............................................................................................................*/
-   	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
+	/*...............................................................................................................*/
+	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		int column = findColumn(x);
 		int row = findRow(y);
 		setCurrentCursor(modifiers, column, row, tool);
 		table.mouseInCell(modifiers, column,-1, row, -1,tool);
-  	}
+	}
 	/*...............................................................................................................*/
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		int column = findColumn(x);

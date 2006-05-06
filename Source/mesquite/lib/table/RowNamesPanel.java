@@ -385,7 +385,7 @@ public class RowNamesPanel extends EditorPanel  {
 				int regionInCellV =findRegionInCellV(y);
 				((TableTool)tool).cellDrag(-1,dragRow,regionInCellH,regionInCellV,modifiers);
 				if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
-					table.emphasizeRow(previousRowDragged,dragRow, touchRow, false);
+					table.emphasizeRow(previousRowDragged,dragRow, touchRow, false, Color.blue);
 					previousRowDragged = dragRow;
 				}
 			}

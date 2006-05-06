@@ -4368,9 +4368,18 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void shimmerHorizontalOn(int y) {
 		GraphicsUtil.shimmerHorizontalOn(null,matrix,0,matrixWidth,y);
 	}
-
 	/* ............................................................................................................... */
-	public void deEmphasizeRow(int row) {
+	public void deselectAndRedrawAllSelectedRows() {
+		for (int it=0; it<getNumRows(); it++) {
+			if (isRowSelected(it)) {
+				deselectRow(it);
+				if (it>=firstRowVisible && it<lastRowVisible)
+					redrawFullRow(it);
+			}
+		}
+	}
+	/* ............................................................................................................... */
+	public void redrawFullRow(int row) {
 		if (row<0)
 			return;
 		Graphics mg = matrix.getGraphics();
@@ -4386,7 +4395,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	public void emphasizeRow(int previousRow, int row, int rowNotToEmphasize, boolean emphasizeSelectedRows) {
+	public void emphasizeRow(int previousRow, int row, int rowNotToEmphasize, boolean emphasizeSelectedRows, Color color) {
 		if (previousRow != row) {
 			Graphics mg = matrix.getGraphics();
 			if (mg == null)
@@ -4400,11 +4409,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				int left = matrix.leftEdgeOfRow(row);
 				int top = matrix.startOfRow(row);
 				int right = matrix.rightEdgeOfRow(row);
-				GraphicsUtil.bluenRectangle(mg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
+				GraphicsUtil.shadeRectangle(mg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top, color);
 				left = 0;
 				top = matrix.startOfRow(row);
 				right = getWidth();
-				GraphicsUtil.bluenRectangle(rg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top);
+				GraphicsUtil.shadeRectangle(rg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top, color);
 			}
 			
 			if (previousRow > -1) {
