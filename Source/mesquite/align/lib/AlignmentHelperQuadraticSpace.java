@@ -6,19 +6,6 @@ import mesquite.lib.*;
 
 public class AlignmentHelperQuadraticSpace extends AlignmentHelper {	
 	
-/*	int[] A;
-	int[] B;
-	int lengthA;
-	int lengthB;
-	
-	int[][] subs;
-	int gapOpen;
-	int gapExtend;
-	int alphabetLength;
-	int gapInsertionArray[];
-	
-	boolean isMinimize = true;
-*/	
 	public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
 		A = seq1;
 		B = seq2;
@@ -51,7 +38,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		int gapOpenOnA;
 		for (i=1; i<=lengthA; i++) {
 			gapOpenOnA = gapOpen;
-			if (keepGaps && followsGapSize[i]>0)
+			if (keepGaps && i<lengthA && followsGapSize[i]>0)
 				gapOpenOnA = 0;
 
 			for (j=1; j<=lengthB; j++) {
@@ -185,50 +172,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 			return seq2return;
 		}
 		
-/*		if (!keepGaps) {
-			return seq2return;
-		} else {
-			//put the gaps back in
-			long gappedSeq2return[][] = new long[k+totalGapChars][2];
-			gapInsertionArray = new int[k+totalGapChars];
-			for(i=0; i<k+totalGapChars; i++) {
-				gapInsertionArray[i] = 0;
-			}
-			
-			int usedGaps=0;
-			int recentGapRunLength=0;
-			j=0; // counts the number of letters in A seen so far
-			int retainedGapsSeen = 0;
-			for (i=0; i<k; i++) {
-				if(seq2return[i][0] == CategoricalState.inapplicable) {
-					recentGapRunLength++;
-					gapInsertionArray[j+retainedGapsSeen] = Math.max(0, recentGapRunLength - followsGapSize[j] );
-					if (followsGapSize[j] > recentGapRunLength) { 	
-						retainedGapsSeen++;
-					}
-				} else {
-					for (int m=0 ; m < followsGapSize[j]-recentGapRunLength; m++){
-						gappedSeq2return[i+usedGaps][0] =  CategoricalState.inapplicable; 
-						gappedSeq2return[i+usedGaps][1] =  CategoricalState.inapplicable; 
-						usedGaps++;
-						retainedGapsSeen++;
-					}
-					j++;
-					recentGapRunLength=0;
-				}
-				gappedSeq2return[i+usedGaps][0] = seq2return[i][0] ;
-				gappedSeq2return[i+usedGaps][1] = seq2return[i][1] ;									
-			}		
-			return gappedSeq2return;
-		}
-*/		
 	}
-	
-	
-/*	public int[] getGapInsertionArray () {
-		return gapInsertionArray;
-	}		
-*/
 	
 }
 

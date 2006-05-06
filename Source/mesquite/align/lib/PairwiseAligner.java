@@ -82,13 +82,6 @@ public class PairwiseAligner  {
 		if ( returnAlignment) { 
 			Debugg.println("DP table size: " + (A.length*B.length));
 		
-	/*		Runtime rt = Runtime.getRuntime();
-			rt.gc();
-			long maxMem =  rt.maxMemory();
-			long totalMem =  rt.totalMemory();
-			long freeMem = rt.freeMemory(); 			
-			Debugg.println("Free memory before alignment = " + maxMem + " - " + totalMem + " + " + freeMem + " = " + (maxMem-totalMem+freeMem));
-*/			
 			long ret[][];
 			if ((A.length*B.length)>getCharThresholdForLowMemory()) {
 				//low memory (but slower, due to recursion) alignment
@@ -98,20 +91,14 @@ public class PairwiseAligner  {
 		
 				ret = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
 				gapInsertionArray = helper.getGapInsertionArray();   
-				//freeMem = rt.freeMemory();
 
 			} else {
 //				 fast (but quadratic space) alignment
 				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
 				ret = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
 				gapInsertionArray = helper.getGapInsertionArray();
-//				freeMem = rt.freeMemory();
-				
 			}
-			
-//			Debugg.println("score is " + myScore);
-//			Debugg.println("Free memory after alignment = " + maxMem + " - " + totalMem + " + " + freeMem + " = " + (maxMem-totalMem+freeMem));
-
+		
 			if (ret.length>lengthA && ret.length>lengthB)
 				return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
 			
@@ -217,7 +204,8 @@ public class PairwiseAligner  {
 
 	public long getCharThresholdForLowMemory(){
 		//return charThresholdForLowMemory;
-		return MesquiteTrunk.getMaxAvailableMemory()/20; // 20 is a large enough constant factor to ensure that there's enough space for the DP table (10 is probably enough, but 20 is more conservative).	
+		long charsFitInMemWithQuadraticDPTable = MesquiteTrunk.getMaxAvailableMemory()/10; //rough approximation
+		return charsFitInMemWithQuadraticDPTable/2; // conservative - if it should only use up half of available memory, use quadratic space algorithm (faster); else use linear space	
 	}
 
 	public void setCharThresholdForLowMemory(int numChars){

@@ -17,22 +17,6 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	
 	public int bigNumber = MesquiteInteger.infinite/3; // can't use "infinite", because adding anything to it makes a negative number ... bad for minimization problems
 	
-	
-	
-/*	int[] A;
-	int[] B;		
-	
-	int[][] subs;
-	int gapOpen;
-	int gapExtend;
-	int alphabetLength;
-	boolean keepGaps = false;
-	int[] followsGapSize;	
-	boolean isMinimize = true;
-	
-	int lengthA, lengthB;
-	
-*/	
 	/* forward arrays*/
 	public int fH[];
 	public int fD[];
@@ -139,7 +123,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 */				
 
 			gapOpenOnA = gapOpen;
-			if (keepGaps && followsGapSize[i]>0)
+			if (keepGaps && i<lengthA && followsGapSize[i]>0)
 				gapOpenOnA = 0;
 			
 			for (j=firstColumn+1; j<=lastColumn; j++) { // for each column
@@ -374,43 +358,12 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		
 
 		if (keepGaps) {
-			
 			return ReInsertGaps(k, followsGapSize, totalGapChars, seqsWereExchanged, seq2return) ;
 			
-/*			long finalSeq2return[][] = new long[k+totalGapChars][2];
-			gapInsertionArray = new int[k+totalGapChars];
-			for(i=0; i<k+totalGapChars; i++) {
-				gapInsertionArray[i] =0;
-			}
-			
-			int usedGaps=0;
-			int recentGapRunLength=0;
-			j=0; // counts the number of letters in A seen so far
-			for (i=0; i<k; i++) {
-				if(seq2return[i][0] == CategoricalState.inapplicable) {
-					recentGapRunLength++;
-					gapInsertionArray[i+usedGaps]=1; //TODO: wrong
-				} else {
-					for (int m=0 ; m < followsGapSize[j]-recentGapRunLength; m++){
-						finalSeq2return[i+usedGaps][0] =  CategoricalState.inapplicable; 
-						finalSeq2return[i+usedGaps][1] =  CategoricalState.inapplicable; 
-						usedGaps++;
-					}
-					j++;
-					recentGapRunLength=0;
-				}				
-				finalSeq2return[i+usedGaps][0] = seq2return[i][0] ;
-				finalSeq2return[i+usedGaps][1] = seq2return[i][1] ;									
-			}		
-			return finalSeq2return;
-*/
 		}  else {
 			return seq2return;
 		}
 	}
 	
-/*	public int[] getGapInsertionArray () {
-		return gapInsertionArray;
-	}			*/
 }
 
