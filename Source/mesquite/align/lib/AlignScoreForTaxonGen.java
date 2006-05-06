@@ -75,7 +75,6 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
    	}
    	
 	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec){
-//		Debugg.println("* " + timer.timeSinceLast());
 		if (result==null)
 			return;
 		result.setToUnassigned();

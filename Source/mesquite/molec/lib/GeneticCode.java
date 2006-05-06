@@ -214,7 +214,6 @@ public abstract class GeneticCode implements Listable {
 			for (int j = 0; j<=3; j++) {
 				for (int k = 0; k<=3; k++) {
 					int state = getCode(reorderBase(i),reorderBase(j),reorderBase(k));
-//Debugg.println("" + state);
 					sb.append(ProteinData.getAASymbol(state));
 				}
 			}

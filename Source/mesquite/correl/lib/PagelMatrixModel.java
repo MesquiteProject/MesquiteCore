@@ -172,11 +172,11 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	}
     
     private void reportUnacceptableValues(double like, double p[],double start[]){
-    		//Debugg.println("Likelihood is " + like);
+    		//MesquiteMessage.println("Likelihood is " + like);
     		//for (int i=0;i<p.length;i++)
-    		//	Debugg.print("p [" + i + "] = " + p[i] + "; ");
+    		//	MesquiteMessage.print("p [" + i + "] = " + p[i] + "; ");
     		//if (start != null)
-    		//	Debugg.println("\n Started from " + DoubleArray.toString(start));
+    		//	MesquiteMessage.println("\n Started from " + DoubleArray.toString(start));
     }
     
     private void checkQArrays(int model){
@@ -426,7 +426,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					}
 				} // else
 			}//j
-	   		// Debugg.println("Checking rate matrix: " +Double2DArray.toStringRC(rateMatrix));
+	   		// MesquiteMessage.println("Checking rate matrix: " +Double2DArray.toStringRC(rateMatrix));
 		return changed;
     }
     
@@ -575,22 +575,22 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
         				}
         	//if ()  {
         	//	MesquiteMessage.warnProgrammer("Negative value in recalcProbabilities: " + bogusValue);
-        	    //Debugg.println("rate matrix is " + Double2DArray.toString(rateMatrix));
-        		//Debugg.println("eigenValues are                       " + DoubleArray.toString(eigenValues));
-           	//	Debugg.println("imaginary portions of eigenvalues are " + DoubleArray.toString(imagEigenValues));
-        		//Debugg.println("tent is " + Double2DArray.toString(tent));
-        		//Debugg.println("EigenVectors are " + Double2DArray.toString(eigenVectors));
-        		//Debugg.println("inverseEigenVectors are " + Double2DArray.toString(inverseEigenVectors));
-        		//Debugg.println("result is " + Double2DArray.toString(probMatrix));
+        	    //MesquiteMessage.println("rate matrix is " + Double2DArray.toString(rateMatrix));
+        		//MesquiteMessage.println("eigenValues are                       " + DoubleArray.toString(eigenValues));
+           	//	MesquiteMessage.println("imaginary portions of eigenvalues are " + DoubleArray.toString(imagEigenValues));
+        		//MesquiteMessage.println("tent is " + Double2DArray.toString(tent));
+        		//MesquiteMessage.println("EigenVectors are " + Double2DArray.toString(eigenVectors));
+        		//MesquiteMessage.println("inverseEigenVectors are " + Double2DArray.toString(inverseEigenVectors));
+        		//MesquiteMessage.println("result is " + Double2DArray.toString(probMatrix));
         	//}
         	//if (negativeRoundOff)
-        //		Debugg.println("Small negative roundoff errors set to zero");
+        //		MesquiteMessage.println("Small negative roundoff errors set to zero");
         	
-        	//Debugg.println("Trying alternate exp");
+        	//MesquiteMessage.println("Trying alternate exp");
         //	double[][] altProbMatrix = altMatrixExp(rateMatrix, eigenValues,imagEigenValues,branchLength);
         	
-        	//Debugg.println("Original calculation: " + Double2DArray.toString(probMatrix));
-        	//Debugg.println("Alternate calculation: " + Double2DArray.toString(altProbMatrix));
+        	//MesquiteMessage.println("Original calculation: " + Double2DArray.toString(probMatrix));
+        	//MesquiteMessage.println("Alternate calculation: " + Double2DArray.toString(altProbMatrix));
         	//probMatrix = altProbMatrix;
         	recalcProbsNeeded = false;
 	}
@@ -655,7 +655,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				}
 		}
 		//else 
-		//	Debugg.println("Subroot prior and subroot empirical not yet supported");
+		//	MesquiteMessage.println("Subroot prior and subroot empirical not yet supported");
 		//}
 		//else if (rootMode == SUBROOT_PRIOR){
 		//	if (tree.getRooted())

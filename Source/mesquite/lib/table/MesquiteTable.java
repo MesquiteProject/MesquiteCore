@@ -2694,7 +2694,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return 0;
 		else if (rowColSize<=4)
 			return 1;
-		return 2;
+		else if (rowColSize<=10)
+			return 2;
+		return 3;
 	}
 	/* ............................................................................................................... */
 	/** returns true if x is near the boundary of a column */

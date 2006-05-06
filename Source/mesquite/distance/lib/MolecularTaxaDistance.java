@@ -78,7 +78,7 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 			int count = 0;
 			int countTotal = 0;
 			double sumDiffs =0;
-//Debugg.println("\n||||||||||||||");
+
 					
 			for (int ic=0; ic< catStates.getNumChars(); ic++) {
 				if (incl == null || incl.isSelected(ic)){
@@ -168,12 +168,12 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 										}
 								}
 							}
-//			Debugg.println("sum of ambig counts: " + count2);
+
 						}	
 					}
 				}
 			}
-//if (taxon1!=taxon2) Debugg.println("");
+
 			double sumF = 0.0;
 			double nonDiagonals = 0.0;
 			for (int i=0; i<numStates;i++)
@@ -182,7 +182,7 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 			for (int i=0; i<numStates;i++)
 				nonDiagonals -= fxy[i][i];
 			nonDiagonals /= sumF;
-//Debugg.println("\n" + taxon1 + "-" + taxon2 + ", nonDiagonals: " + nonDiagonals + ", sumF: " + sumF + ", count: " + count);
+
 			//nonDiagonals = nonDiagonals*1.0*count/countTotal;
 			nonDiagonals += 1.0;
 			nonDiagonals = Math.abs(nonDiagonals);
