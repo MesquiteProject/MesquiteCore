@@ -503,6 +503,10 @@ timer6.end();
 		//((TableTool)tool).getWorksOnColumnNames();
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+			if (((TableTool)tool).getIsBetweenRowColumnTool()) {
+				column = table.findColumnBeforeBetween(x);
+				row = table.findColumnBeforeBetween(y);
+			}
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
 			mouseDownInField = true;
 //			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
@@ -549,8 +553,11 @@ timer6.end();
 			table.redrawFullRow(firstRowTouched);
 		}
 
-		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)
+		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+			if (((TableTool)tool).getIsBetweenRowColumnTool())
+				column = table.findColumnBeforeBetween(x);
 			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);
+		}
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
 			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);
 		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())

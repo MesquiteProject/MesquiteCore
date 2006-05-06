@@ -62,29 +62,6 @@ public class RowNamesPanel extends EditorPanel  {
 		return -2;//past the last row
 	}
 	/*@@@...............................................................................................................*/
-	/** Returns  the row immediately after the boundary between rows nearest to the y value, -1 if above all rows, -2 if below all rows.*/
-	public int findRowBeforeBetween(int y) {
-		if (y<0)
-			return -1;
-		int ry = 0;
-		int rowCenterY = 0;
-		int lastRowCenterY = -1;
-		for (int row=table.firstRowVisible; (row<table.numRowsTotal); row++) {
-			ry += table.rowHeights[row];
-			rowCenterY = ry-table.rowHeights[row]/2;
-			if (row>= table.numRowsTotal) {
-				return -2;
-			}
-			else if (y>lastRowCenterY && y<= rowCenterY) {
-				return row-1;
-			} else if (rowCenterY>y)
-				return row;
-			lastRowCenterY = rowCenterY;
-		}
-
-		return -2;//past the last row
-	}
-	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
 	public int findRegionInCellH(int x) {
 		if (x<=0)
@@ -348,6 +325,8 @@ public class RowNamesPanel extends EditorPanel  {
 				table.rowNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers,clickCount);
 			}
 			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
+				if (((TableTool)tool).getIsBetweenRowColumnTool())
+					possibleTouch = table.findRowBeforeBetween(y);
 				touchY=y;
 				lastY = y;
 				touchRow=possibleTouch;
@@ -412,7 +391,7 @@ public class RowNamesPanel extends EditorPanel  {
 				else {
 					if (table.getUserMoveRow()) {
 						table.shimmerHorizontalOff(lastY);
-						int dropRow = findRowBeforeBetween(y);
+						int dropRow = table.findRowBeforeBetween(y);
 						if (dropRow == -2)
 							dropRow = table.getNumRows();
 						if (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow)) //don't move dropped on row included in selection

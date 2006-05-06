@@ -4368,7 +4368,51 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void shimmerHorizontalOn(int y) {
 		GraphicsUtil.shimmerHorizontalOn(null,matrix,0,matrixWidth,y);
 	}
-	/* ............................................................................................................... */
+	/*@@@...............................................................................................................*/
+	/** Returns  the column immediately after the boundary between rows nearest to the y value, -1 if to the left of all columns, -2 if after all columns.*/
+	public int findColumnBeforeBetween(int x) {
+		if (x<=0)
+			return -1;
+		int cx = 0;
+		int columnCenterX = 0;
+		int lastColumnCenterX=-1;
+		for (int column=firstColumnVisible; (column<numColumnsTotal); column++) {
+			cx += columnWidths[column];
+			columnCenterX = cx - columnWidths[column]/2;
+			if (column>= numColumnsTotal)
+				return -1;
+			else if (x>lastColumnCenterX && x<= columnCenterX) {
+				return column-1;
+			} else if (columnCenterX>x)
+				return column;
+			lastColumnCenterX = columnCenterX;
+		}
+		return -2;//past the last column
+	}
+	/*@@@...............................................................................................................*/
+	/** Returns  the row immediately after the boundary between rows nearest to the y value, -1 if above all rows, -2 if below all rows.*/
+	public int findRowBeforeBetween(int y) {
+		if (y<0)
+			return -1;
+		int ry = 0;
+		int rowCenterY = 0;
+		int lastRowCenterY = -1;
+		for (int row=firstRowVisible; (row<numRowsTotal); row++) {
+			ry += rowHeights[row];
+			rowCenterY = ry-rowHeights[row]/2;
+			if (row>= numRowsTotal) {
+				return -2;
+			}
+			else if (y>lastRowCenterY && y<= rowCenterY) {
+				return row-1;
+			} else if (rowCenterY>y)
+				return row;
+			lastRowCenterY = rowCenterY;
+		}
+
+		return -2;//past the last row
+	}
+/* ............................................................................................................... */
 	public void deselectAndRedrawAllSelectedRows() {
 		for (int it=0; it<getNumRows(); it++) {
 			if (isRowSelected(it)) {
