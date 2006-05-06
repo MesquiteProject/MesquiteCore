@@ -831,6 +831,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     static final boolean scaleRescale = true;  
  
     public void estimateParameters(Tree originalTree, CategoricalDistribution observedStates1, CategoricalDistribution observedStates2, CommandRecord commandRec) {
+ //   	if (observedStates1==null || observedStates2==null)
+ //   		return;
         this.observedStates1 = observedStates1;
         this.observedStates2 = observedStates2;
     		// Special treatment for constant states just isn't working out here
