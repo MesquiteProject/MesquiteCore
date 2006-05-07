@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Aug 13 21:50:04 PDT 2005 by Mesquite  version 1.06beta (build g86) at Pellenes.local/10.0.1.2]
+[written Sat May 06 21:22:03 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE species;
@@ -42,7 +42,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN NOTES;
 
 	TEXT  FILE TEXT = 'Just as with taxa, characters can be partitioned into assigned groups.  Thus, in this example, the first two characters are placed in the group "Morphology", while the second two characters are placed in the group "Physiology & Behavior".  Partitioning is useful for display (e.g., in these examples colors are associated with the groups).  In the future it will become more important as various modules perform analyses that compare results from characters belonging in different partitions. ^n^nTo make a character partition, go to the List of Characters window (available in the Characters menu).  Use the Add Column submenu in the List menu to select Current Partition.  This will add a Partition column to the list.  Next, create the groups.  You can create a group by touching on the column heading "Partition".  A drop down menu will appear.  Select "New Group..." and enter the group name.  You can assign a color to the group by choosing Edit Group Color (from the drop down menu) and selecting a color.  Then, you can assign a character to the group by selecting the character''s row in the list window and choose the group designation from the Set Group submenu in the drop down menu.';
@@ -101,7 +100,7 @@ Begin MESQUITE;
 						columnWidth 3 150;
 					endTell;
 					setSize 619 185;
-					setLocation 482 15;
+					setLocation 482 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
@@ -127,7 +126,7 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 448 222;
-					setLocation 6 11;
+					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
@@ -146,7 +145,7 @@ Begin MESQUITE;
 					toggleShowChanges on;
 					toggleSeparateLines off;
 					toggleShowStates on;
-					toggleAutoWithCharNames on;
+					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
 					setColumnWidth 66;
@@ -262,4 +261,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

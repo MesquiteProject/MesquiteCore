@@ -1,5 +1,16 @@
 #NEXUS
-[written Sun Sep 21 19:12:44 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:56:09 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+
+BEGIN TAXA;
+	TITLE Species;
+	DIMENSIONS NTAX=3;
+	TAXLABELS
+		speciesA speciesB speciesC 
+	;
+
+END;
+
+
 
 BEGIN TAXA;
 	TITLE Genes;
@@ -11,70 +22,88 @@ BEGIN TAXA;
 END;
 
 
-
-BEGIN TAXA;
-	TITLE Associates;
-	DIMENSIONS NTAX=1;
-	TAXLABELS
-		associate_1 
-	;
-
-END;
-
-
-BEGIN NOTES;
-	TEXT  FILE TEXT = 'This file was created as follows.  First, I chose "New" from the File menu.  I indicated the file name in the file dialog box.  Then, when the dialog box came up asking me about a set of taxa, I entered the name ("Species"), and how many taxa (3).  In the taxa list window (e.g., at left), I renamed the taxa (species A, B, C). Next, I made the second set of taxa (e.g., "Genes") by selecting the "New block of taxa" menu item in the Taxa&Trees menu.^n^nNext, I began to indicate how the one set of taxa fits into the other set of taxa.  To do this, I created an "Association" block in the data file (there isn''t a fancy editor for this yet, just a crude one).  I did this by selecting "New Association" in the Taxa&Trees menu.  I was asked to identify the two sets of taxa to be associated, and presented with a simple text editor in a dialog box. ^n^nI then finished writing the "ASSOCIATES" command.  To see an example, go to the Association block window and select "Show example ASSOCIATION block" from the Taxa&Trees menu.  For instance, with these data a possible ASSOCIATES command would be:^n^nASSOCIATES ^n	speciesA /  geneA1 geneA2 , ^n	speciesB /  geneB, ^n	speciesC /  geneC1 geneC2 , ^n;^n^nI entered this.  Then, I closed the Association block window.  This caused the block to be processed.  ^n^nIf you want to see the Association block editor, choose Edit Association from the  Taxa&Trees menu.^n^nTo see the next step in analyzing gene trees within species trees, hit the button in the "Go To File" window.';
-
-
-
-END;
-
 BEGIN TaxaAssociation;
-TITLE Untitled_Association;
-TAXA Genes ,  Associates;
+TITLE how_genes_fit_into_species;
+TAXA Species ,  Genes;
 ASSOCIATES 
 
-	geneA1 /  associate_1
+	speciesA /  geneA1 geneA2 , 
+	speciesB /  geneB , 
+	speciesC /  geneC1 geneC2
 
 ;
 
 END;
 
 
+BEGIN NOTES;
+
+	TEXT  FILE TEXT = 'This file was created as follows.  First, I chose "New" from the File menu.  I indicated the file name in the file dialog box.  Then, when the dialog box came up asking me about a set of taxa, I entered the name ("Species"), and how many taxa (3).  In the taxa list window (e.g., at left), I renamed the taxa (species A, B, C). Next, I made the second set of taxa (e.g., "Genes") by selecting the "New block of taxa" menu item in the Taxa&Trees menu.^n^nNext, I began to indicate how the one set of taxa fits into the other set of taxa.  To do this, I created an "Association" block in the data file (there isn''t a fancy editor for this yet, just a crude one).  I did this by selecting "New Association" in the Taxa&Trees menu.  I was asked to identify the two sets of taxa to be associated, and presented with a simple text editor in a dialog box. ^n^nI then finished writing the "ASSOCIATES" command.  To see an example, go to the Association block window and select "Show example ASSOCIATION block" from the Taxa&Trees menu.  For instance, with these data a possible ASSOCIATES command would be:^n^nASSOCIATES ^n	speciesA /  geneA1 geneA2 , ^n	speciesB /  geneB, ^n	speciesC /  geneC1 geneC2 , ^n;^n^nI entered this.  Then, I closed the Association block window.  This caused the block to be processed.  ^n^nIf you want to see the Association block editor, choose Edit Association from the  Taxa&Trees menu.^n^nTo see the next step in analyzing gene trees within species trees, hit the button in the "Go To File" window.';
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 2038936534183152982;
+			setID 1 2451688679550742169;
+		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 2451688679550742169;
-			setID 1 8641035009514093857;
-			showTaxa #2451688679550742169 #mesquite.lists.TaxonList.TaxonList;
+			showTaxa #2038936534183152982 #mesquite.lists.TaxonList.TaxonList;
 			tell It;
-				setTaxa #2451688679550742169;
+				setTaxa #2038936534183152982;
 				getWindow;
 				tell It;
+					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					newAssistant  #mesquite.assoc.TaxonListAssoc.TaxonListAssoc;
-				tell It;
-					getEmployee #mesquite.assoc.StoredAssociations.StoredAssociations;
-					tell It;
-						setCurrentAssociation 0;
-					endTell;
-				endTell;
-					setSize 435 258;
-					setLocation 10 46;
+					setSize 201 199;
+					setLocation 9 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+			endTell;
+			showTaxa #2451688679550742169 #mesquite.lists.TaxonList.TaxonList;
+			tell It;
+				setTaxa #2451688679550742169;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
+					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					setSize 201 204;
+					setLocation 9 239;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -83,15 +112,18 @@ Begin MESQUITE;
 			setPrevFileName '01-associationsHow1.nex';
 			getWindow;
 			tell It;
-					setSize 541 486;
-					setLocation 456 45;
+					setSize 550 295;
+					setLocation 242 31;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
-				setExplanation 'To analyze gene histories within species or population histories, you need to prepare a file having two blocks of taxa, one representing gene copies, the other representing species or populations.  Then, you have to specify which gene copies are associated with which species or populations.^n^nThere are two ways to do this: (1) create the two taxa blocks then create a TaxaAssociation block to indicate how the genes are distributed among the species or populations, or (2) create the taxa block for the genes then use a macro and a special facility in the List of Taxa window.  ^n^nThe following files will outline the first method, which is flexible but perhaps complex.  The second method is more restricted but is perhaps easier if you are starting out with a file of gene sequences.  The method is as follows.^n^nFirst, if you do not yet have a file representing the gene copies, choose "New" from the File menu to create a new file.  Indicate you want to create a block of taxa; these will be your gene copies.  Name the block (e.g., "Genes"), and indicate how many gene copies you have.  In the taxa list window (e.g., at left), rename the genes as needed.^n^nNow, choose the macro "Set Up Associated Taxa Block" from the Macros submenu of the Window menu.  A new column titled "Associates" will appear in the List of Taxa window.  These are your species or populations.  The first species is automatically called "associate 1".  You can change its name later; in the meantime let''s assign the genes to species.^n^nIn this List of Taxa window, select any other genes that belong to "associate 1", touch on the heading "Associates" and choose Set Associate from the drop down menu, and indicate you want to attach "associate 1" to those genes.  ^n^nThen select the genes that belong to a second species, and choose Create New Associated Taxon, and indicate the name of the second species.  Repeat this until all genes have been assigned to species. ^n^nYou can later adjust assignments using the menu items in the menu that drops down from the Associates column heading.^n^nWhat remains is merely to rename the first species.  In the Taxa&Trees menu, select List of Taxa for the Associates taxa block.  Select the first name and change it from "associate 1" to whatever is the real name of the species.  (You could have done this earlier.)';
-				setTitle 'Method 1: adding associates';
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'To indicate what genes belong to what species, you need to define a correspondence between taxa in the two taxa blocks (genes and species).^n^nI created this file as follows.  First, I chose "New" from the File menu.  I indicated the file name in the file dialog box.  Then, when the dialog box came up asking me about a set of taxa, I entered the name ("Species"), and how many taxa (3).  In the taxa list window (e.g., at left), I renamed the taxa (species A, B, C). Next, I made the second set of taxa (e.g., "Genes") by selecting the "New set of taxa" menu item in the Taxa&Trees menu.^n^nNext, I began to indicate how the one set of taxa fits into the other set of taxa.  To do this, I created an "TaxaAssociation" block in the data file.  I did this by selecting "New Association" in the Taxa&Trees menu.  I was asked to identify the two sets of taxa to be associated (usually it''s easier to choose species first), and presented with the List of Taxa window for Species.  ^n^nThe next example file shows how to edit the Taxa Association.';
+				setTitle Building_a_Taxa_Association;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
@@ -100,4 +132,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

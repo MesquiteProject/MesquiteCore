@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:10:15 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:25:13 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Untitled;
@@ -15,7 +15,7 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 3143466173537330668;
 		endTell;
@@ -30,6 +30,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'Here are various Mesquite example files to introduce you to using Mesquite.  To navigate from one to another, use the buttons below.  ^nIf you''re new to Mesquite and want to learn what it can or might do, hit the "Show page" button in the blue-green panel.';
 				setTitle Introduction_to_Mesquite;
@@ -50,4 +52,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

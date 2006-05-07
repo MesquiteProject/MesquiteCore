@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:42:59 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:23:17 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,34 +13,24 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS NCHAR=2;
@@ -62,7 +52,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -87,7 +76,7 @@ END;
 
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =              unord PolyTcount =              MINSTEPS;
+OPTIONS DEFTYPE =               unord PolyTcount =               MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -99,15 +88,21 @@ BEGIN MESQUITECHARMODELS;
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  2;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -124,7 +119,22 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 556.983378650668.3313559907369500737;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 476 354;
+					setLocation 6 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.trees.BallsNSticks.BallsNSticks;
@@ -132,6 +142,7 @@ Begin MESQUITE;
 						setSpotDiameter 24;
 						setEdgeWidth 4;
 						orientRight;
+						useDiagonal;
 						toggleCosmic on;
 						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
@@ -145,6 +156,8 @@ Begin MESQUITE;
 					endTell;
 					setBackground White;
 					setBranchColor Blue;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -152,24 +165,13 @@ Begin MESQUITE;
 						setFontSize 14;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 476 354;
-					setLocation 6 7;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
-					setActive;
 					setTreeNumber 1;
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 				endTell;
@@ -177,6 +179,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -198,6 +204,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'Printing of trees and saving of graphics files is not yet complete.  To print or save a tree graphic, choose Print Tree from the File menu of the Tree window.  If the tree is shown in the Tree Window in Size To Window mode, then the tree will be resized to fit on the printed page.  If the Size To Window mode is turned off, the tree will be kept at its size according to the screen appearance, and it will be printed over more than one page if needed.^n^nTo save a graphics file, you need to save a postscript file and edit it either with a postscript editor (e.g., Adobe Illustrator) or save as a pdf file (e.g., using Adobe Acrobat).  You may be able to do this (depending on your operating system), by selecting Print Tree and indicating  that you want to send the output to a file instead of to the printer.';
 				setTitle Printing;
 				toggleFileNames off;
@@ -208,4 +216,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

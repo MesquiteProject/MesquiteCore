@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:03:46 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:48:13 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE taxa;
@@ -13,34 +13,23 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  characters;
-	DIMENSIONS NCHAR=1;
+	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	MATRIX
 	A  0
-
 	B  0
-
 	C  1
-
 	D  1
-
 	E  1
-
 	F  0
-
 	G  0
-
 	H  0
-
 	I  0
-
 	J  0
-
 
 ;
 
 END;
-
 BEGIN TREES;
 	Title trees;
 	LINK Taxa = taxa;
@@ -72,15 +61,21 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 3096529116964699576;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 5088788982642008211;
 			checksum 0 69473247;
@@ -95,7 +90,23 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 550.1054705101351.7296501086209055721;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 552 369;
+					setLocation 344 27;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
+					endTell;
+					setActive;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.trees.BallsNSticks.BallsNSticks;
@@ -103,6 +114,7 @@ Begin MESQUITE;
 						setSpotDiameter 22;
 						setEdgeWidth 2;
 						orientUp;
+						useDiagonal;
 						toggleCosmic off;
 						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
@@ -116,32 +128,22 @@ Begin MESQUITE;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setFontSize 18;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 552 369;
-					setLocation 344 27;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 30;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
-					endTell;
-					setActive;
 					setTreeNumber 1;
 					setTree '(((((1:7.75,(2:6.75,((5:1.5,3:3.0):1.5,4:3.25,6:3.75):3.0):1.0):1.0,7:8.75):1.0,10:9.75):1.0,9:10.75):1.0,8:11.75):1.0;';
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 					newAssistant  #mesquite.ancstates.TraceCharOverTrees.TraceCharOverTrees;
@@ -162,7 +164,7 @@ Begin MESQUITE;
 							getEmployee #mesquite.stochchar.zMargLikeCateg.zMargLikeCateg;
 							tell It;
 								setReportMode Proportional_Likelihoods;
-								setRootMode Sum_Likelihoods;
+								setRootMode Use_Root_State_Frequencies_as_Prior;
 								setDecision 2.0;
 								setUnderflowCheckFreq 2;
 							endTell;
@@ -184,7 +186,7 @@ Begin MESQUITE;
 					setInitialOffsetX -162;
 					setInitialOffsetY -182;
 					setLegendWidth 142;
-					setLegendHeight 158;
+					setLegendHeight 161;
 					desuppress ;
 				endTell;
 				endTell;
@@ -192,6 +194,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -213,6 +219,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'At left are four trees with likelihood reconstructions of a character shown.  Above is the Trace Character Over Trees facility, summarizing these reconstructions.  ^n^nNote that the most recent common ancestor (MRCA) of E and C is shown as black in the Trace Over Trees image, because in each of the trees at left it is reconstructed with strong likelihood preference for state 1.  Hold the cursor over this node in the tree above; note the legend indicates that the node is present in 4 of 4 trees, and all show state 1. In contrast, the MRCA of ECDF is shown gray, because there are no uniquely best states in any trees.  Holding the cursor over this node gives the message "Node present in 3 of 4 trees", because the node is absent in tree 4 (the clade ECDF does not exist in the tree).^n^nOn tree 2 it would seem that state 0 is much preferred at the MRCA of ECDF.  Why is that state not shown on that node in the Trace Over Trees above?  Go to the next example for explanation.';
 				setTitle 'Trace over trees: likelihood';
 				toggleFileNames off;
@@ -257,14 +265,16 @@ Begin MESQUITE;
 						getEmployee #mesquite.stochchar.zMargLikeCateg.zMargLikeCateg;
 						tell It;
 							setReportMode Proportional_Likelihoods;
-							setRootMode Sum_Likelihoods;
+							setRootMode Use_Root_State_Frequencies_as_Prior;
 							setDecision 2.0;
 							setUnderflowCheckFreq 2;
 						endTell;
 					endTell;
 				endTell;
 				setCharacter 1;
+				setMapping 1;
 				toggleShowLegend off;
+				toggleGray off;
 				toggleWeights on;
 				resume ;
 			endTell;
@@ -275,6 +285,8 @@ Begin MESQUITE;
 				onInfoBar;
 				setExplanationSize 0;
 				setAnnotationSize 0;
+				setFontIncAnnot 0;
+				setFontIncExp 0;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 			tell It;
@@ -284,6 +296,7 @@ Begin MESQUITE;
 					setSpotDiameter 18;
 					setEdgeWidth 2;
 					orientUp;
+					useDiagonal;
 					toggleCosmic off;
 					getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 					tell It;
@@ -297,11 +310,14 @@ Begin MESQUITE;
 				endTell;
 				setBackground White;
 				setBranchColor Black;
+				showNodeNumbers off;
+				labelBranchLengths off;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
 					setColor Black;
 					toggleColorPartition on;
+					toggleShadePartition off;
 					toggleNodeLabels on;
 					toggleShowNames on;
 				endTell;
@@ -310,4 +326,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

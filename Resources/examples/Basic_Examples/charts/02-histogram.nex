@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:49:03 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:26:11 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,34 +13,24 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS NCHAR=4;
@@ -64,7 +54,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -88,11 +77,13 @@ END;
 
 
 BEGIN NOTES;
+
 	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	TEXT   CHARACTERS = Structure_&_Color TAXON= 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+	CHARACTERS = Structure_&_Color TAXA = Fubonidians;
+	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
-
+	CHARACTERS = Measurements TAXA = Fubonidians;
 
 END;
 
@@ -109,7 +100,7 @@ TAXPARTITION * UNTITLED  =  Fubonidiines :  1 -  3 5, Jotinupiines :  4 6 -  9;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
+OPTIONS DEFTYPE =                                unord PolyTcount =                                MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -121,15 +112,21 @@ BEGIN MESQUITECHARMODELS;
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -178,6 +175,8 @@ Begin MESQUITE;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -185,6 +184,8 @@ Begin MESQUITE;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
 					showAverageToggle on;
+					setCumulativeMode 0;
+					showAsBarChartToggle on;
 					showRawToggle off;
 					setNumberIntervals 20;
 					setIntervalSize 1.0;
@@ -214,9 +215,11 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
-				setExplanation 'The histogram shown is controlled by Histogram menu.  In this menu will be various items, depending on the chart shown, but included are:^n^n-- an Orientation submenu, in which you choose whether the histogram shows the items (e.g., trees) on the X axis in sequence versus their calculated values on the Y axis, or the values calculated on the Y axis versus the number of items with each value on the Y axis.^n^n-- a Grouping on X submenu, in which you choose whether the chart divides the X axis into groups and sums the Y values for each group. ^n^n';
-				setTitle Histograms;
+				setExplanation 'The histogram shown is controlled by Chart menu.  In this menu will be various items, depending on the chart shown, but included are:^n^n-- an Orientation submenu, in which you choose whether the histogram shows the items (e.g., trees) on the X axis in sequence versus their calculated values on the Y axis, or the values calculated on the Y axis versus the number of items with each value on the Y axis.^n^n-- a Grouping on X submenu, in which you choose whether the chart divides the X axis into groups and sums the Y values for each group. ^n^n';
+				setTitle Bar_&_Line_charts;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
@@ -225,4 +228,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

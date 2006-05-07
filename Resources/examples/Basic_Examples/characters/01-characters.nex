@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:25:04 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:21:00 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,37 +13,27 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  16epq_sequence;
-	DIMENSIONS NCHAR=19;
+	DIMENSIONS  NCHAR=19;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
 	Aus         AACATCTGGGAACCGTGCG
@@ -66,6 +56,7 @@ BEGIN CHARACTERS;
 
 
 ;
+
 
 
 END;
@@ -93,7 +84,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -116,9 +106,8 @@ BEGIN TREES;
 END;
 
 
-
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =              unord PolyTcount =              MINSTEPS;
+OPTIONS DEFTYPE =               unord PolyTcount =               MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
@@ -132,15 +121,22 @@ ProbModelSet * UNTITLED  (CHARACTERS = 16epq_sequence)  =  'Mk1 (est.)':  1 -  1
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+CODESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  universal:  1 -  19;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -156,25 +152,55 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 419 252;
-					setLocation 468 9;
+					setLocation 468 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
 				endTell;
 			endTell;
 			showDataWindow #7634018259203763187 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -182,31 +208,64 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 440 257;
-					setLocation 6 8;
+					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames off;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
 				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
 				getEmployee #mesquite.molec.ColorByNumber.ColorByNumber;
 				tell It;
 					setNumberTask  #mesquite.molec.GCAsNumber.GCAsNumber;
 					setWindowWidth 1;
+				endTell;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
+				tell It;
+					gapCosts 8 3;
 				endTell;
 			endTell;
 			showDataWindow #3243446279249302787 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -220,19 +279,41 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -249,6 +330,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'Mesquite supports data matrices of various kinds, including molecular sequences, categorical phenotypic data, and continuous-valued measurements.^n^nHere are three data matrices in a single file. (Mesquite allows more than one matrix per file).^n^nThe windows shown are Character Matrix Editors, which can be opened via the Characters menu.  ';
 				setTitle Character_Matrices;
@@ -260,4 +343,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

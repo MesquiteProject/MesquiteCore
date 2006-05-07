@@ -1,86 +1,71 @@
 #NEXUS
-[written Sat May 06 21:22:36 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Sat May 06 17:44:30 PDT 2006 by Mesquite  version 1.06+ (build h58) at Yepoella/169.254.123.46]
 
 BEGIN TAXA;
-	TITLE species;
-	DIMENSIONS NTAX=16;
+	TITLE Taxa_from_Pagel_format_file;
+	DIMENSIONS NTAX=9;
 	TAXLABELS
-		taxon_0 taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 
+		Homo_sapiens Pan_troglodytes Pan_paniscus Gorilla_gorilla Pongo_pygmaeus Hylobates_syndactylus Hylobates_sp. Colobus_guereza Colobus_badius 
 	;
+	IDS 010a627b503f49 010a627b503f50 010a627b503f51 010a627b503f52 010a627b503f53 010a627b504054 010a627b504055 010a627b504056 010a627fb2ef57 ;
+	BLOCKID 010a627b503c3;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  measurements;
-	DIMENSIONS NCHAR=5;
-	FORMAT DATATYPE = CONTINUOUS;
-CHARSTATELABELS 
-		1 length,
-		2 width,
-		3 speed,
-		4 temperature,
-		5 personality ; 
+	TITLE  Untitled_Character_Matrix;
+	DIMENSIONS  NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 advertisement /  absent present, 2 mating_system /  one_male 'multi-male' ; 
 	MATRIX
-	taxon_0    9.367 5.022 2.763 38.57 1.723
-	taxon_1    8.793 3.244 4.664 38.81 0.296
-	taxon_2    8.576 6.245 2.528 38.5 -0.0239
-	taxon_3    11.54 8.718 5.862 40.54 -2.039
-	taxon_4    9.977 6.082 5.984 38.32 0.7256
-	taxon_5    9.381 5.468 4.398 38.48 1.213
-	taxon_6    8.162 5.782 4.894 39.69 0.8212
-	taxon_7    8.676 4.86 4.186 39.61 0.5508
-	taxon_8    9.356 6.75 4.649 38.01 0.795
-	taxon_9    8.107 5.989 2.975 40.13 -1.686
-	taxon_10   9.692 7.227 5.747 39.52 -0.8719
-	taxon_11   8.902 6.05 4.337 37.5 -0.9571
-	taxon_12   9.055 6.575 4.896 40.48 -0.293
-	taxon_13   10.11 4.199 3.327 38.94 -0.1349
-	taxon_14   10.2 3.975 4.623 37.1 -0.4575
-	taxon_15   7.604 5.438 2.809 37.69 -2.129
+	Homo_sapiens           00
+	Pan_troglodytes        11
+	Pan_paniscus           11
+	Gorilla_gorilla        00
+	Pongo_pygmaeus         10
+	Hylobates_syndactylus  00
+	Hylobates_sp.          00
+	Colobus_guereza        00
+	Colobus_badius         11
 
 ;
+	IDS 010a627b503f4 010a627b503f5 ;
+
 
 END;
 BEGIN TREES;
-	Title stored_trees;
-	LINK Taxa = species;
+	Title Trees_imported_from_Pagel_file;
+	LINK Taxa = Taxa_from_Pagel_format_file;
 	TRANSLATE
-		1 taxon_0,
-		2 taxon_1,
-		3 taxon_2,
-		4 taxon_3,
-		5 taxon_4,
-		6 taxon_5,
-		7 taxon_6,
-		8 taxon_7,
-		9 taxon_8,
-		10 taxon_9,
-		11 taxon_10,
-		12 taxon_11,
-		13 taxon_12,
-		14 taxon_13,
-		15 taxon_14,
-		16 taxon_15;
-	TREE Phylogeny = (((1:23.83,(11:8.833,(((7:2.0,12:1.778):1.857,15:1.857):3.2,(6:9.0,((8:4.0,14:3.5):4.0,(16:2.8,5:1.636):3.25):3.0):8.0):1.6):1.7):1.538,3:8.571):1.857,(13:16.0,(((4:4.0,10:2.25):2.0,9:2.143):2.2,2:4.333):2.5):5.5):2.0;
+		1 Homo_sapiens,
+		2 Pan_troglodytes,
+		3 Pan_paniscus,
+		4 Gorilla_gorilla,
+		5 Pongo_pygmaeus,
+		6 Hylobates_syndactylus,
+		7 Hylobates_sp.,
+		8 Colobus_guereza,
+		9 Colobus_badius;
+	TREE page_16_example = ((8:2.0,9:2.0):56.0,((5:22.0,(4:20.0,(1:29.0,(2:9.0,3:5.0):15.0):11.0):10.0):18.0,(6:3.0,7:2.0):28.0):10.0):1.0;
 
 END;
 
 
-BEGIN NOTES;
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
 
-	TEXT  FILE TEXT = 'To study correlation among characters, a Mirror Tree window can help in initial explorations.  The mirror tree window shows a tree reflected on left and right sides, to allow two character reconstructions to be compared.  The mirror tree window shows the characters length and width on left and right.  Scroll through other characters.^n^nThe tree in the mirror tree window is borrowed from the Tree Window at left.  If you edit the tree at left, the tree in the mirror tree window changes.^n';
 
 END;
 
 BEGIN ASSUMPTIONS;
-	TYPESET * UNTITLED   =  Squared:  1 -  5;
-TYPESET Current_Parsimony_Models   =  Squared:  1 -  5;
+	TYPESET * UNTITLED   =  unord:  1 -  2;
 
 END;
 
 BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  5;
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
 Begin MESQUITE;
@@ -89,36 +74,37 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 38907207727035647;
+			setID 0 878585605735200005 010a627b503c3;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 4082975111581186249;
-			checksum 0 3542125815;
+			setID 0 7359026449824636807;
+			checksum 0 1601284411;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
-			makeTreeWindow #38907207727035647  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
+			makeTreeWindow #878585605735200005  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
 					toggleUseWeights off;
 				endTell;
-				setAssignedID 301.967563409238.7947967923754259967;
+				setAssignedID 1199.1144113549683.1862327035904205997;
 				getTreeWindow;
 				tell It;
-					setSize 465 363;
-					setLocation 8 22;
+					setSize 633 567;
+					setLocation 527 31;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
-					setExplanationSize 20;
+					setExplanationSize 30;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					getToolPalette;
 					tell It;
+						setTool mesquite.trees.BranchLengthsAdjust.AdjustToolExtra.adjustor;
 					endTell;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
@@ -129,13 +115,13 @@ Begin MESQUITE;
 						tell It;
 							stretchToggle off;
 							branchLengthsToggle on;
-							toggleScale on;
+							toggleScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
 						endTell;
-						setEdgeWidth 8;
-						orientUp;
+						setEdgeWidth 6;
+						orientRight;
 						toggleCorners off;
 					endTell;
 					setBackground White;
@@ -145,8 +131,7 @@ Begin MESQUITE;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
-						setFont SanSerif;
-						setFontSize 10;
+						setFontSize 14;
 						setColor Black;
 						toggleColorPartition on;
 						toggleShadePartition off;
@@ -155,23 +140,41 @@ Begin MESQUITE;
 					endTell;
 				endTell;
 					setTreeNumber 1;
-					useSuggestedSize off;
-					toggleSizeToFit on;
+					useSuggestedSize on;
 					toggleTextOnTree off;
+					newWindowAssistant  #mesquite.correl.Pagel94Viewer.Pagel94Viewer;
+				tell It;
+					getCharSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+					tell It;
+						setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+						tell It;
+							setDataSet #7359026449824636807;
+						endTell;
+					endTell;
+					getPagel94  #mesquite.correl.Pagel94.Pagel94;
+					tell It;
+						setSeed 1144122254599;
+						setSimCount 100;
+						togglePresentPValue off;
+						setNumIterations 2;
+					endTell;
+					setX -1;
+					setY 0;
+					doCounts;
+				endTell;
 					newWindowAssistant  #mesquite.trees.MirrorTreeWindowMaker.MirrorTreeWindowMaker;
 				tell It;
 					getWindow;
 					tell It;
-						setSize 500 400;
-						setLocation 490 22;
+						setSize 508 441;
+						setLocation 4 24;
 						setFont SanSerif;
 						setFontSize 10;
 						onInfoBar;
-						setExplanationSize 0;
+						setExplanationSize 30;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setActive;
 						newAssistantLeft #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 					tell It;
 						suspend ;
@@ -185,27 +188,19 @@ Begin MESQUITE;
 							tell It;
 								setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
 								tell It;
-									setDataSet #4082975111581186249;
+									setDataSet #7359026449824636807;
 								endTell;
 							endTell;
 							setMethod  #mesquite.parsimony.ParsAncestralStates.ParsAncestralStates;
 							tell It;
 								setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
-								getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
-								tell It;
-									toggleWeight on;
-								endTell;
 							endTell;
 						endTell;
 						setCharacter 1;
 						setMapping 1;
-						toggleShowLegend on;
+						toggleShowLegend off;
 						toggleGray off;
 						toggleWeights on;
-						setInitialOffsetX 20;
-						setInitialOffsetY -305;
-						setLegendWidth 142;
-						setLegendHeight 305;
 						resume ;
 					endTell;
 						newAssistantRight #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
@@ -221,46 +216,39 @@ Begin MESQUITE;
 							tell It;
 								setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
 								tell It;
-									setDataSet #4082975111581186249;
+									setDataSet #7359026449824636807;
 								endTell;
 							endTell;
 							setMethod  #mesquite.parsimony.ParsAncestralStates.ParsAncestralStates;
 							tell It;
 								setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
-								getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
-								tell It;
-									toggleWeight on;
-								endTell;
 							endTell;
 						endTell;
 						setCharacter 2;
 						setMapping 1;
-						toggleShowLegend on;
+						toggleShowLegend off;
 						toggleGray off;
 						toggleWeights on;
-						setInitialOffsetX -162;
-						setInitialOffsetY -305;
-						setLegendWidth 142;
-						setLegendHeight 305;
 						resume ;
 					endTell;
 					endTell;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 					tell It;
 						suppress;
-						setTreeDrawer  #mesquite.trees.DiagonalDrawTree.DiagonalDrawTree;
+						setTreeDrawer  #mesquite.trees.SquareTree.SquareTree;
 						tell It;
 							setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 							tell It;
 								stretchToggle off;
 								branchLengthsToggle off;
-								toggleScale on;
-								toggleCenter off;
-								toggleEven off;
+								toggleScale off;
+								toggleCenter on;
+								toggleEven on;
 								namesAngle ?;
 							endTell;
-							setEdgeWidth 12;
+							setEdgeWidth 10;
 							orientLeft;
+							toggleCorners off;
 						endTell;
 						setBackground White;
 						setBranchColor Black;
@@ -269,8 +257,7 @@ Begin MESQUITE;
 						desuppress;
 						getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 						tell It;
-							setFont SanSerif;
-							setFontSize 10;
+							setFontSize 12;
 							setColor Black;
 							toggleColorPartition on;
 							toggleShadePartition off;
@@ -279,6 +266,12 @@ Begin MESQUITE;
 						endTell;
 					endTell;
 					showWindow;
+					getEmployee #mesquite.cartographer.TaxonGroupSymbols.TaxonGroupSymbols;
+					tell It;
+						showSymbols off;
+						combineColors off;
+						setColors on;
+					endTell;
 				endTell;
 				endTell;
 				showWindow;
@@ -295,16 +288,20 @@ Begin MESQUITE;
 					setColor Red;
 					removeColor off;
 				endTell;
+				getEmployee #mesquite.cartographer.TaxonGroupSymbols.TaxonGroupSymbols;
+				tell It;
+					showSymbols off;
+					combineColors off;
+					setColors on;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
-			setNextFileName '08-plotTree.nex';
-			setPrevFileName '06-sim.nex';
 			getWindow;
 			tell It;
-					setSize 492 221;
-					setLocation 15 474;
+					setSize 454 211;
+					setLocation 3 547;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
@@ -312,9 +309,10 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'To study correlation among characters, a Mirror Tree window can help in initial explorations.  The mirror tree window shows a tree reflected on left and right sides, to allow two character reconstructions to be compared.  The mirror tree window shows the characters length and width on left and right.  Scroll through other characters.^n^nThe tree in the mirror tree window is borrowed from the Tree Window at left.  If you edit the tree at left, the tree in the mirror tree window changes.^n';
-				setTitle Mirror_tree;
-				toggleFileNames off;
+					setActive;
+				setExplanation 'This is an example from Pagel''s Discrete manual.  Two characters appear to be associated as shown in the Mirror tree window above.  At right is the analysis.  To estimate the significance value, select Present P value in the Pagel94 menu of the tree window at right.';
+				setTitle Pagel_94_Analysis;
+				toggleFileNames on;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
 			endTell;

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:47:08 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:24:13 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 BEGIN TREES;
 	Title SomeRandomTrees;
 	LINK Taxa = Fubonidians;
@@ -25,5 +25,6 @@ BEGIN TREES;
 	TREE 'Tree # 10 simulated by Uniform speciation (Yule)' = ((1:37.520065,(5:4.39122,8:4.39122):33.128843):62.479936,((2:10.357478,(7:2.810265,9:2.810265):7.547215):67.668655,(3:76.997715,(4:31.954895,6:31.954895):45.042822):1.028423):21.973864);
 
 END;
+
 
 

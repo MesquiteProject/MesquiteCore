@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:20:17 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 22:01:36 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Anolis;
@@ -57,151 +57,88 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  island;
-	DIMENSIONS NCHAR=1;
+	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3";
 	CHARSTATELABELS 
 		1 Island /  Puerto_Rico Jamaica Cuba Hispaniola ; 
 	MATRIX
 	ahli           2
-
 	aliniger       3
-
 	alutaceus      2
-
 	angusticeps    2
-
 	bahorucoensis  3
-
 	barahonae      3
-
 	brevirostris   3
-
 	coelestinus    3
-
 	cristatellus   0
-
 	cuvieri        0
-
 	distichus      3
-
 	equestris      2
-
 	garmani        1
-
 	grahami        1
-
 	insolitus      3
-
 	krugi          0
-
 	lineatopus     1
-
 	loysiana       2
-
 	luteogularis   2
-
 	marcanoi       3
-
 	occultus       0
-
 	olssoni        3
-
 	ophiolepis     2
-
 	paternus       2
-
 	porcatus       2
-
 	sagrei         2
-
 	strahmi        3
-
 	stratulus      0
-
 	valencienni    1
-
 	vanidicus      2
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Ecomorph;
-	DIMENSIONS NCHAR=1;
+	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3 4 5 6";
 	CHARSTATELABELS 
 		1 Ecomorph /  doesnt_exist 'trunk-ground' 'trunk-crown' trunk 'grass-bush' 'crown-giant' twig ; 
 	MATRIX
 	ahli           1
-
 	aliniger       2
-
 	alutaceus      4
-
 	angusticeps    6
-
 	bahorucoensis  4
-
 	barahonae      5
-
 	brevirostris   3
-
 	coelestinus    2
-
 	cristatellus   1
-
 	cuvieri        5
-
 	distichus      3
-
 	equestris      5
-
 	garmani        5
-
 	grahami        2
-
 	insolitus      6
-
 	krugi          4
-
 	lineatopus     1
-
 	loysiana       3
-
 	luteogularis   5
-
 	marcanoi       1
-
 	occultus       6
-
 	olssoni        4
-
 	ophiolepis     4
-
 	paternus       6
-
 	porcatus       ?
-
 	sagrei         1
-
 	strahmi        1
-
 	stratulus      2
-
 	valencienni    6
-
 	vanidicus      4
-
 
 ;
 
 END;
-
 BEGIN TREES;
 	Title Phylogeny;
 	LINK Taxa = Anolis;
@@ -254,15 +191,22 @@ ProbModelSet * UNTITLED  (CHARACTERS = island)  =  'Mk1 (est.)':  1;
 ProbModelSet * UNTITLED  (CHARACTERS = Ecomorph)  =  'Mk1 (est.)':  1;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = island)  =  universal:  1;
+CODESET * UNTITLED  (CHARACTERS = Ecomorph)  =  universal:  1;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 7359766042395362478;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 3439750308037465817;
 			checksum 0 737652128;
@@ -281,14 +225,27 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 849.965158753516.5670471821649633161;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 393 458;
+					setLocation 3 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+						setTool mesquite.trees.SelectBranches.SelectToolExtra.SelectClade;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.trees.DiagonalDrawTree.DiagonalDrawTree;
 					tell It;
-						setEdgeWidth 6;
-						orientRight;
-						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
 							stretchToggle off;
 							branchLengthsToggle off;
@@ -297,33 +254,26 @@ Begin MESQUITE;
 							toggleEven off;
 							namesAngle ?;
 						endTell;
+						setEdgeWidth 6;
+						orientRight;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 393 458;
-					setLocation 3 4;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-						setTool mesquite.trees.SelectBranches.SelectToolExtra.SelectClade;
-					endTell;
 					setTreeNumber 1;
 					setTree '(21,((19<selected = on >,12<selected = on >)<selected = on >,(((8,2),5),((22,15),((10,6),((((7,11),((9,28),16)),((27,20),((3<selected = on >,30<selected = on >)<selected = on >,(18<selected = on >,(25<selected = on >,(24<selected = on >,4<selected = on >)<selected = on >)<selected = on >)<selected = on >)<selected = on >)),((1<selected = on >,(26<selected = on >,23<selected = on >)<selected = on >)<selected = on >,(29,(17,(13,14))))))))));';
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
@@ -352,12 +302,14 @@ Begin MESQUITE;
 						endTell;
 					endTell;
 					setCharacter 1;
+					setMapping 1;
 					toggleShowLegend on;
+					toggleGray off;
 					toggleWeights on;
 					setInitialOffsetX 3;
 					setInitialOffsetY -195;
 					setLegendWidth 116;
-					setLegendHeight 190;
+					setLegendHeight 193;
 					resume ;
 				endTell;
 					newWindowAssistant  #mesquite.trees.DependentTreeWindow.DependentTreeWindow;
@@ -393,7 +345,7 @@ Begin MESQUITE;
 									tell It;
 										setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
 										tell It;
-											setDefaultModel 13;
+											setDefaultModel 21;
 										endTell;
 										getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 										tell It;
@@ -413,16 +365,21 @@ Begin MESQUITE;
 								show;
 							endTell;
 							setSpotDiameter 10;
+							toggleShowTerminals on;
 							toggleShowInternals on;
+							toggleShowTree on;
 							toggleFog off;
 						endTell;
 						setBackground White;
 						setBranchColor Black;
+						showNodeNumbers off;
+						labelBranchLengths off;
 						desuppress;
 						getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 						tell It;
 							setColor Black;
 							toggleColorPartition on;
+							toggleShadePartition off;
 							toggleNodeLabels on;
 							toggleShowNames on;
 						endTell;
@@ -436,6 +393,8 @@ Begin MESQUITE;
 						onInfoBar;
 						setExplanationSize 0;
 						setAnnotationSize 0;
+						setFontIncAnnot 0;
+						setFontIncExp 0;
 						getToolPalette;
 						tell It;
 							setTool mesquite.trees.DependentTreeWindow.DepTreeWindow.arrow;
@@ -467,12 +426,14 @@ Begin MESQUITE;
 							endTell;
 						endTell;
 						setCharacter 1;
+						setMapping 1;
 						toggleShowLegend on;
+						toggleGray off;
 						toggleWeights on;
 						setInitialOffsetX -169;
 						setInitialOffsetY -463;
 						setLegendWidth 142;
-						setLegendHeight 222;
+						setLegendHeight 225;
 						resume ;
 					endTell;
 					endTell;
@@ -483,6 +444,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -504,6 +469,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'The tree is now plotted in a 3-dimensional space of principal components.  You can rotate the view using the green bars, and change the magnification using the red bar.  The larger spots are closer to you.  Enjoy your flight through morphospace.^n^nNote that the species from Cuba are highlighted.  If you turn on "Use Fog" in the Drawing menu, and de-select the Cuban species in the tree window above, the more distant the point in the third dimension, the more it will be dimmed.';
 				setTitle 3D_plot;
 				toggleFileNames off;
@@ -514,4 +481,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

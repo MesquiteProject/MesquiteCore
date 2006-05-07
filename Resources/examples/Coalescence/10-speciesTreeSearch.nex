@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:14:57 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:59:42 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Species;
@@ -87,9 +87,8 @@ END;
 
 
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = 'In this file is a stored gene tree.  Imagine that one sought to infer a species tree using the gene tree.  The species tree shown above containing the gene tree has a lot of discordance with the gene tree, indicated by the high cost (18) of "extra lineages" (also called "deep coalescences" by Maddison 1997).  You can try moving branches of the species tree to try find one that is more concordant with the gene tree.^n^nMesquite has a general concept of "a number for a tree".  Examples could be the treelength, the number of steps in a character, the likelihood of the tree, its symmetry, and so on.  Each of these is a number that applies to the tree.  For any given number for a tree, one might seek that tree which maximizes or minimizes it (e.g., minimizing treelength in a standard parsimony search).  The Tree Search modules allow one to search for a tree optimizing any such number for a tree available.  Here, we''d like to search for a species tree minimizing deep coalescences.  ^n^nTo do that, go to the Taxa&Trees menu and select "Heuristic" under "Tree Search" under the "Make Trees Block from" submenu.  Indicate you want to search for trees of "Species", and to use the criterion "Deep coalescences (species)", and use "Stored Trees" as the source of the contained trees (to use the stored gene tree).  The tree search modules currently do a simple addition sequence followed by branch rearrangements, and are much much much much slower than PAUP (for instance).  But, after humming for a while, they should indicate that the trees are ready.  When they are ready, you can go to the Tree menu of the tree window, and select the new tree block from the Tree Block submenu.  You''ll see a species tree with which the gene tree is much more concordant (a cost of only 4).^n';
-
-
 
 END;
 
@@ -97,7 +96,7 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 3724502825702124430;
 			setID 1 2577575139471600534;
@@ -113,7 +112,21 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 686.979143280190.3783168923320340251;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 614 408;
+					setLocation 15 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.assoc.ContainedAssociates.ContainedAssociates;
@@ -153,6 +166,8 @@ Begin MESQUITE;
 					endTell;
 					setBackground White;
 					setBranchColor Blue;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -160,24 +175,14 @@ Begin MESQUITE;
 						setFontSize 10;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 614 408;
-					setLocation 15 5;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
 					setTreeNumber 1;
 					setTree '((((9:0.2,4:0.6):0.3,3:0.5):0.6,((6:0.2,5:0.5):0.4,1:0.6):0.4):0.3,((8:0.4,7:0.5):0.4,2:0.5):0.3);';
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 				endTell;
@@ -185,6 +190,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -206,6 +215,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'In this file is a stored gene tree.  Imagine that one sought to infer a species tree using the gene tree.  The species tree shown above containing the gene tree has a lot of discordance with the gene tree, indicated by the high cost (18) of "extra lineages" (also called "deep coalescences" by Maddison 1997).  You can try moving branches of the species tree to try find one that is more concordant with the gene tree.^n^nMesquite has a general concept of "a number for a tree".  Examples could be the treelength, the number of steps in a character, the likelihood of the tree, its symmetry, and so on.  Each of these is a number that applies to the tree.  For any given number for a tree, one might seek that tree which maximizes or minimizes it (e.g., minimizing treelength in a standard parsimony search).  The Tree Search modules allow one to search for a tree optimizing any such number for a tree available.  Here, we''d like to search for a species tree minimizing deep coalescences.  ^n^nTo do that, go to the Taxa&Trees menu and select "Heuristic (Add and Rearrange)" from the "Tree Search" submenu from the "Make New Trees Block from" submenu.  Indicate you want to search for trees of "Species", and to use the criterion "Deep coalescences (species)", available if you check the Show Secondary Choices option, and use "Stored Trees" as the source of the contained trees (to use the stored gene tree).  The tree search modules currently do a simple addition sequence followed by branch rearrangements, and are much much much much slower than PAUP (for instance).  But, after humming for a while, they should indicate that the trees are ready.  When they are ready, you can go to the Tree menu of the tree window, and select the new tree block from the Tree Block submenu.  Hit the blue button at the top left of the tree window to go to Tree # 1, that found in the search.  You''ll see a species tree with which the gene tree is much more concordant (a cost of only 4).^n';
 				setTitle Best_species_tree;
@@ -217,4 +228,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:15:26 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:59:53 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE populations;
@@ -25,66 +25,40 @@ END;
 BEGIN CHARACTERS;
 	TITLE  population_source;
 	LINK TAXA = genes_sampled;
-	DIMENSIONS NCHAR=3;
+	DIMENSIONS  NCHAR=3;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 root_?, 2 rooted_in_E, 3 rooted_in_A ; 
 	MATRIX
 	A1   000
-
 	A2   000
-
 	A3   000
-
 	A4   000
-
 	A5   000
-
 	A6   000
-
 	A7   000
-
 	A8   000
-
 	A9   000
-
 	A10  000
-
 	E1   111
-
 	E2   111
-
 	E3   111
-
 	E4   111
-
 	E5   111
-
 	E6   111
-
 	E7   111
-
 	E8   111
-
 	E9   111
-
 	E10  111
-
 	C1   ?10
-
 	C2   ?10
-
 	C3   ?10
-
 	C4   ?10
-
 	C5   ?10
-
 
 ;
 
 END;
-
 BEGIN TaxaAssociation;
 TITLE genes_in_populations;
 TAXA populations ,  genes_sampled;
@@ -135,57 +109,80 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  3;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  3;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 703462755303490792;
 			setID 1 2887061083080516111;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 7325247286052868622;
+			checksum 0 1674843106;
+		endTell;
+		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
 			showTaxa #703462755303490792 #mesquite.lists.TaxonList.TaxonList;
 			tell It;
 				setTaxa #703462755303490792;
 				getWindow;
 				tell It;
+					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
 					setSize 336 163;
-					setLocation 31 5;
+					setLocation 31 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 			endTell;
 			showTaxa #2887061083080516111 #mesquite.lists.TaxonList.TaxonList;
 			tell It;
 				setTaxa #2887061083080516111;
 				getWindow;
 				tell It;
+					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
 					setSize 355 616;
-					setLocation 387 8;
+					setLocation 387 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 			endTell;
-		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
-		tell It;
-			setID 0 7325247286052868622;
-			checksum 0 1674843106;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
@@ -200,6 +197,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'This example shows how large population size can confuse estimations of ancestral localities in a gene tree.  For instance, consider the rooting of a human gene tree in Africa as evidence for the "Out of Africa" hypothesis.  An alternative interpretation is that Africa had a persistently larger population size than Eurasia.^n^nIn this ficticious data file there are three populations, Africa and Eurasia for humans and a third population, chimps.  A second block of taxa represents sampled genes, labeled A1-A10 (for African samples), E1-E10 (for Eurasian samples), and C1-C5 (for chimp samples).  The gene samples are placed in colored partitions to make it easier to see how they fall in the simulations.';
 				setTitle Out_of_Africa;
@@ -211,4 +210,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

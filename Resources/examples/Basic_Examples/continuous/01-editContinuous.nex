@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:40:04 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:22:19 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE species;
@@ -42,11 +42,9 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = 'Mesquite can handle continuous data as well as categorical.  In the spreadsheet at left are 5 characters for 16 taxa.^n^nMore details about editing data matrices, including continuous-valued, in the introductory examples for characters.  In particular look at the file linked by the blue window.^n^nIn the following examples, some analyses of continuous valued data are shown.  The reader should keep in mind that other packages of modules with many more analyses have been under development, including Rhetenor by Dyreson and Maddison, which does basic multivariate analyses and geometric morphometrics.';
-
-
 
 END;
 
@@ -63,11 +61,11 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 156393696224404377;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 8888556603099012391;
 			checksum 0 487214761;
@@ -85,17 +83,39 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
 					setColumnWidth 66;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -111,6 +131,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'Mesquite can handle continuous data as well as categorical.  In the spreadsheet at left are 5 characters for 16 taxa.^n^nMore details about editing data matrices, including continuous-valued, are in the introductory examples for characters.  ^n^nIn the following examples, some analyses of continuous valued data are shown.  The reader should keep in mind that other packages of modules with many more analyses have been under development, including Rhetenor by Dyreson and Maddison, which does basic multivariate analyses and geometric morphometrics.';
 				setTitle Continuous_data;
@@ -123,4 +145,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

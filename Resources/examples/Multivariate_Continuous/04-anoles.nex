@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:19:04 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 22:01:22 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Anolis;
@@ -57,151 +57,88 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  island;
-	DIMENSIONS NCHAR=1;
+	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3";
 	CHARSTATELABELS 
 		1 Island /  Puerto_Rico Jamaica Cuba Hispaniola ; 
 	MATRIX
 	ahli           2
-
 	aliniger       3
-
 	alutaceus      2
-
 	angusticeps    2
-
 	bahorucoensis  3
-
 	barahonae      3
-
 	brevirostris   3
-
 	coelestinus    3
-
 	cristatellus   0
-
 	cuvieri        0
-
 	distichus      3
-
 	equestris      2
-
 	garmani        1
-
 	grahami        1
-
 	insolitus      3
-
 	krugi          0
-
 	lineatopus     1
-
 	loysiana       2
-
 	luteogularis   2
-
 	marcanoi       3
-
 	occultus       0
-
 	olssoni        3
-
 	ophiolepis     2
-
 	paternus       2
-
 	porcatus       2
-
 	sagrei         2
-
 	strahmi        3
-
 	stratulus      0
-
 	valencienni    1
-
 	vanidicus      2
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Ecomorph;
-	DIMENSIONS NCHAR=1;
+	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3 4 5 6";
 	CHARSTATELABELS 
 		1 Ecomorph /  doesnt_exist 'trunk-ground' 'trunk-crown' trunk 'grass-bush' 'crown-giant' twig ; 
 	MATRIX
 	ahli           1
-
 	aliniger       2
-
 	alutaceus      4
-
 	angusticeps    6
-
 	bahorucoensis  4
-
 	barahonae      5
-
 	brevirostris   3
-
 	coelestinus    2
-
 	cristatellus   1
-
 	cuvieri        5
-
 	distichus      3
-
 	equestris      5
-
 	garmani        5
-
 	grahami        2
-
 	insolitus      6
-
 	krugi          4
-
 	lineatopus     1
-
 	loysiana       3
-
 	luteogularis   5
-
 	marcanoi       1
-
 	occultus       6
-
 	olssoni        4
-
 	ophiolepis     4
-
 	paternus       6
-
 	porcatus       ?
-
 	sagrei         1
-
 	strahmi        1
-
 	stratulus      2
-
 	valencienni    6
-
 	vanidicus      4
-
 
 ;
 
 END;
-
 BEGIN TREES;
 	Title Phylogeny;
 	LINK Taxa = Anolis;
@@ -254,15 +191,22 @@ ProbModelSet * UNTITLED  (CHARACTERS = island)  =  'Mk1 (est.)':  1;
 ProbModelSet * UNTITLED  (CHARACTERS = Ecomorph)  =  'Mk1 (est.)':  1;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = island)  =  universal:  1;
+CODESET * UNTITLED  (CHARACTERS = Ecomorph)  =  universal:  1;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8853494381083195946;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 5443567030079148118;
 			checksum 0 737652128;
@@ -278,25 +222,47 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 369 389;
-					setLocation 4 7;
+					setLocation 4 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
 				endTell;
 			endTell;
 			showDataWindow #2904659670370408267 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -310,20 +276,50 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
 				endTell;
 			endTell;
 			showDataWindow #7285741872021222516 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -331,25 +327,55 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 309 395;
-					setLocation 388 7;
+					setLocation 388 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
 				endTell;
 			endTell;
 		endTell;
@@ -366,6 +392,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'This file and the next several shows data and phylogenies from the work of Jonathan Losos and colleagues (Losos et al., Science, 1998 and Losos & de Queiroz, Biol. J. Linn. Soc., 1997) on Anolis lizards of the caribbean that looks at convergence in ecomorphs.  ^n^nThere are three matrices shown here, one on body measurements of the lizards, one categorizing the lizards by "ecomorph", and the final categorizing the lizards by the island from which they come.  In the following files analyses of the data will be shown in the light of a phylogeny of the species.^n^n(Thanks to Jonathan Losos for supplying the data)';
 				setTitle Anole_example;
 				toggleFileNames off;
@@ -376,4 +404,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

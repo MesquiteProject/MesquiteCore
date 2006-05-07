@@ -1,0 +1,288 @@
+#NEXUS
+[written Sat May 06 21:44:43 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+
+BEGIN TAXA;
+	TITLE Untitled_Taxa_Block;
+	DIMENSIONS NTAX=30;
+	TAXLABELS
+		A B C D E F G H I J K L M N O P Q R S T U V W X Y Z AA BB CC DD 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Matrix_#1_simulated_by_Evolve_Categorical_Characters;
+	DIMENSIONS  NCHAR=100;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	MATRIX
+	A   1000100111110110010011101010100100001010000001110011101010101110000110010101101011100100011011111010
+	B   0001001011100000011101000100111100011011111011111001001011001111101011010110100001101101011100111000
+	C   0100001001101100111001111110000001111100110010111000100011011110011110011101101111100001011011010100
+	D   0000001111101100110000111010000100101110110000100011110000000110011111111111000110100000010111110010
+	E   0100000111000110111110101010000101110110110010010011101111001011000000100111001001110011111011010100
+	F   0000000101100100011111111011111100111101101110100001111111000100011110010111001011110101111101101000
+	G   0101101101111100110111011011001101011000000110010011101010000111010011001010101101000001011010100000
+	H   0101101010100100011011100011010100110100110111110001010010101111110110111101000011111001000101100000
+	I   0101101111110100111001100011110101111000110101110001100000000111010101011111001101100001011000010000
+	J   0100001111000101111000000010001111011100000101101001100110010111100110111111110101110001010011110010
+	K   0001001011100001100011011011010100100110111000110101100010101100001111110111111010100010011110111100
+	L   0101011100000100110010011010111011111010110010011111101011011001110101000011001101101000011001100111
+	M   0110101111100100111111001010011110101100010000111001010010101000111001111111011111100101011011110010
+	N   0100000101001111000101011010010101111110110010011001101010010010011111111111101011110010111011110010
+	O   1110001100101001110011100010110100000110101100111010110000010111010101010011010011000100011111111010
+	P   1111001111101101000110011111111100000111111110100101111111000101011011000111000000111100001001100101
+	Q   0101001111100100110111111011100100111111111000110011110111010011011110111100101011100000010011101100
+	R   0110011101100011101100011011110011001010010110100000100110110001110110111111100001110110011101110010
+	S   0001001001001100111011101010011011010101110010111001101111011111001101000110111111001001011001000101
+	T   0001001111111101101111011110110111011010110100100001110010001101010101011011110101000011011000110010
+	U   1111100011110110010011001010110100001010110001110001101000000111101101111101100010100100011011111011
+	V   0001001010111000010110111011000101101111111010100001110111100011010110011101010011110100011011101000
+	W   0101101010000100011111101010010100110000110011110101010010111111111111110010100111111000000111100010
+	X   1100100111110110110011101110100101001010000001110011001010101110001100000101100111010100011111001010
+	Y   0110011101000101101100011011110011101110110110100101010110110011111100111111100011110010011011110010
+	Z   0110001011100100011110001110111110101100110100011101000010101000110001111111010111100101011110110010
+	AA  0101001100000100110010010010111001111000110110011010001111011011110101000111000001101000011001100110
+	BB  0001001011100100011101000100111110011011111011111001001011001111101011010110100001101101011100111000
+	CC  1100100110110110110011101011100100001010000001110011001010101110001000000101100011110100011111101010
+	DD  1000100111110110010011101010100100001010001001110011101010101110000110010101101011100100011011111010
+
+;
+
+END;
+BEGIN MESQUITECHARMODELS;
+	CharModel 'Mk1-simulated' (Mk1) = 
+		 rate 0.1 maxState 1;
+	CharModel 'AsymmMk-simulated' (AsymmMk) = 
+		 rate 0.1 bias 1.0 equilibAsPrior;
+	CharModel reconstruct (AsymmMk) = 
+		 forward 0.08279683 backward 1.13258E-7 equilibAsPrior;
+
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  100;
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  unord:  1 -  100;
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  100;
+
+
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 4409151645800273408;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 6717564632715537289;
+			checksum 0 631240850;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharModels.ManageCharModels;
+		tell It;
+			getEmployee #mesquite.stochchar.AsymmModelCurator.AsymmModelCurator;
+			tell It;
+				editModel 'AsymmMk-simulated' #mesquite.minimal.WindowBabysitter.WindowBabysitter;
+				tell It;
+					getWindow;
+					tell It;
+						setSize 260 200;
+						setLocation 438 529;
+						setFont SanSerif;
+						setFontSize 10;
+						offInfoBar;
+						setExplanationSize 0;
+						setAnnotationSize 0;
+						setFontIncAnnot 0;
+						setFontIncExp 0;
+					endTell;
+					showWindow;
+				endTell;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
+		tell It;
+			makeTreeWindow #4409151645800273408  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
+			tell It;
+				setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
+				tell It;
+					setTreeSimulator  #mesquite.trees.EqualRatesMarkovSp.EqualRatesMarkovSp;
+					tell It;
+						setTime 10.0;
+					endTell;
+					setSeed 1063722105846;
+				endTell;
+				setAssignedID 1608.1063722049484.8324690498246735778;
+				getTreeWindow;
+				tell It;
+					setSize 550 411;
+					setLocation 438 24;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				tell It;
+					suppress;
+					setTreeDrawer  #mesquite.trees.SquareTree.SquareTree;
+					tell It;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						tell It;
+							stretchToggle off;
+							branchLengthsToggle on;
+							toggleScale on;
+							toggleCenter on;
+							toggleEven on;
+							namesAngle ?;
+						endTell;
+						setEdgeWidth 6;
+						orientRight;
+						toggleCorners off;
+					endTell;
+					setBackground White;
+					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
+					desuppress;
+					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
+					tell It;
+						setColor Black;
+						toggleColorPartition on;
+						toggleShadePartition off;
+						toggleNodeLabels on;
+						toggleShowNames on;
+					endTell;
+				endTell;
+					setTreeNumber 1;
+					useSuggestedSize off;
+					toggleSizeToFit on;
+					toggleTextOnTree off;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
+				tell It;
+					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
+				endTell;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.charts.CharacterValuesChart.CharacterValuesChart;
+		tell It;
+			setTaxa #4409151645800273408;
+			setCalculator  #mesquite.trees.NumForCharCurrentTree.NumForCharCurrentTree;
+			tell It;
+				setNumberTask  #mesquite.stochchar.GainLossRates.GainLossRates;
+				tell It;
+					setReportMode Bias;
+					getEmployee #mesquite.stochchar.zMargLikeCateg.zMargLikeCateg;
+					tell It;
+						setDecision 2.0;
+						setUnderflowCheckFreq 2;
+					endTell;
+				endTell;
+				getEmployee #mesquite.trees.TreeOfContext.TreeOfContext;
+				tell It;
+					setContextID 1608.1063722049484.8324690498246735778;
+				endTell;
+			endTell;
+			getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+			tell It;
+				setCharacterSource #mesquite.stochchar.SimulatedCharacters.SimulatedCharacters;
+				tell It;
+					setSeed 1064193252724;
+					setCharacterSimulator  #mesquite.stochchar.EvolveCategChars.EvolveCategChars;
+					tell It;
+						setModelByName 'AsymmMk-simulated';
+					endTell;
+					getTreeSource  #mesquite.trees.TreeOfContext.TreeOfContext;
+					tell It;
+						setContextID 1608.1063722049484.8324690498246735778;
+					endTell;
+				endTell;
+			endTell;
+			getCharter #mesquite.charts.ItemValuesChart.ItemValuesChart;
+			tell It;
+				getWindow;
+				tell It;
+					setSize 388 327;
+					setLocation 2 26;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					itemsByValues;
+					setChartType  #mesquite.charts.Histogram.Histogram;
+				tell It;
+					showAverageToggle on;
+					setCumulativeMode 0;
+					showAsBarChartToggle on;
+					showRawToggle off;
+					setNumberIntervals 20;
+					setIntervalSize 1.0;
+					setMovingWindowSize 5.0 1.0;
+					setMode 4;
+				endTell;
+					toggleColorItems on;
+					setNumberItems 5;
+				endTell;
+				enableCalculations;
+			endTell;
+			setChartVisible;
+			doCounts;
+			showWindow;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '16b-BranchLengths.nex';
+			setPrevFileName '15b1-estimatingParameters.nex';
+			getWindow;
+			tell It;
+					setSize 426 218;
+					setLocation 4 453;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'Here a different model of character evolution is used in the simulation, one in which the rate of forward change (0 to 1) may be different from the rate of backward change (1 to 0).  Their ratio is the bias shown in the model editing window at right.  The chart shows the bias estimated from characters simulated on the tree shown.^n^nThe chart is shown with only 5 replicate simulations because the calculations take a while.  If you want, select Number of Characters in the Histogram menu and increase the number.  If you increase it to 100 you''ll notice that the average bias is outrageously high because of a few outlier characters, but the median should stay close to the bias used in the simulation.';
+				setTitle Estimating_parameters;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+
+

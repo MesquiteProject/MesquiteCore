@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:26:11 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:21:32 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,34 +13,24 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -64,7 +54,7 @@ END;
 
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
+OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -74,15 +64,21 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -100,21 +96,51 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 52;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 						setTool mesquite.charMatrices.DataPainter.DataPainter.fill;
 					endTell;
 					setActive;
 					setTool mesquite.charMatrices.DataPainter.DataPainter.fill;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
 				endTell;
 			endTell;
 		endTell;
@@ -131,6 +157,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'The tool currently selected is the Fill tool (the paint bucket).  It changes the character state in cells that you touch.^n^nBefore you can fill states using the paint bucket, you need to fill the tool with a state.  You can do this either by touching on the button in the palette and holding down the mouse until a popup menu appears, or you can simply select the paint bucket and attempt to touch on the cell you want to change (a dialog box will appear requesting the states to be used).  You can also fill the paint bucket using the eyedropper tool -- if you touch the eyedropper on a cell, it remembers the character state for use by the paintbucket.^n^nThe paintbucket will alter the states in just the cells that you touch if the cells touched are not selected.  However, if there are several cells already selected, and you touch the paintbucket on one of the cells selected, then all of the selected cells will be filled with the state contained in the paintbucket.';
 				setTitle Fill_Tool;
 				toggleFileNames off;
@@ -141,4 +169,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

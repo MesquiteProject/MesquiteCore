@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Feb 24 18:19:05 PST 2004 by Mesquite  version 1.01+ (build e85)]
+[written Sat May 06 21:59:56 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE populations;
@@ -25,66 +25,40 @@ END;
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "02-outOfAfrica.nex"';
 	LINK TAXA = genes_sampled;
-	DIMENSIONS NCHAR=3;
+	DIMENSIONS  NCHAR=3;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 root_?, 2 rooted_in_E, 3 rooted_in_A ; 
 	MATRIX
 	A1   000
-
 	A2   000
-
 	A3   000
-
 	A4   000
-
 	A5   000
-
 	A6   000
-
 	A7   000
-
 	A8   000
-
 	A9   000
-
 	A10  000
-
 	E1   111
-
 	E2   111
-
 	E3   111
-
 	E4   111
-
 	E5   111
-
 	E6   111
-
 	E7   111
-
 	E8   111
-
 	E9   111
-
 	E10  111
-
 	C1   ?10
-
 	C2   ?10
-
 	C3   ?10
-
 	C4   ?10
-
 	C5   ?10
-
 
 ;
 
 END;
-
 BEGIN TaxaAssociation;
 TITLE genes_in_populations;
 TAXA populations ,  genes_sampled;
@@ -135,16 +109,22 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  3;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  3;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 703462755303490792;
 			setID 1 2887061083080516111;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 7325247286052868622;
 			checksum 0 1674843106;
@@ -160,7 +140,21 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 401.982328606974.8040224577453098533;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 483 351;
+					setLocation 511 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.assoc.ContainedAssociates.ContainedAssociates;
@@ -190,10 +184,13 @@ Begin MESQUITE;
 									setContextID 401.982328606974.8040224577453098533;
 								endTell;
 								forgetAssociation ;
-								getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+								getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 								tell It;
-									setEffective 100000;
-									toggleExponential on;
+									getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+									tell It;
+										setEffective 100000;
+										toggleExponential on;
+									endTell;
 								endTell;
 							endTell;
 							setSeed 983165680400;
@@ -227,19 +224,8 @@ Begin MESQUITE;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 483 351;
-					setLocation 511 9;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
 					setTreeNumber 1;
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 				endTell;
@@ -247,6 +233,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -273,10 +263,13 @@ Begin MESQUITE;
 						setContextID 401.982328606974.8040224577453098533;
 					endTell;
 					forgetAssociation ;
-					getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+					getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 					tell It;
-						setEffective 100000;
-						toggleExponential on;
+						getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+						tell It;
+							setEffective 100000;
+							toggleExponential on;
+						endTell;
 					endTell;
 				endTell;
 				setSeed 983166394560;
@@ -292,6 +285,8 @@ Begin MESQUITE;
 				onInfoBar;
 				setExplanationSize 0;
 				setAnnotationSize 0;
+				setFontIncAnnot 0;
+				setFontIncExp 0;
 				setActive;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
@@ -299,9 +294,7 @@ Begin MESQUITE;
 				suppress;
 				setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
 				tell It;
-					setEdgeWidth 3;
-					orientRight;
-					getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+					setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 					tell It;
 						stretchToggle off;
 						branchLengthsToggle on;
@@ -311,6 +304,8 @@ Begin MESQUITE;
 						setFixedScaling 40000.0;
 						namesAngle ?;
 					endTell;
+					setEdgeWidth 3;
+					orientRight;
 				endTell;
 				setBackground White;
 				setBranchColor Black;
@@ -341,6 +336,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'In the Tree window above, the population tree shows two sister populations for Africa and Eurasia; neither is ancestral to the other.  Note the bottleneck in Eurasia.  At left are gene trees simulated by coalescence within the population tree.  Note that there is some mixing, but not much, between African and Eurasian gene clades.^n^nIn the file are stored several alternative population trees, differing by the strength of the bottleneck.  To see the effect of alternatives, scroll using the blue arrows under "Tree #" above the tool palette of the tree window above.  Trees 2 and 3 have stronger bottlenecks.  Note that when you go to tree 3, the simulated gene trees at left are more cleanly separated between Africa and Eurasia.';
 				setTitle Simulated_gene_trees;
 				toggleFileNames off;
@@ -351,4 +348,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

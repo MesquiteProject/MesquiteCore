@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:49:36 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:26:19 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,34 +13,24 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS NCHAR=4;
@@ -64,7 +54,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -86,16 +75,18 @@ END;
 
 
 BEGIN NOTES;
+
 	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	TEXT   CHARACTERS = Structure_&_Color TAXON= 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+	CHARACTERS = Structure_&_Color TAXA = Fubonidians;
+	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
-
+	CHARACTERS = Measurements TAXA = Fubonidians;
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                             unord PolyTcount =                             MINSTEPS;
+OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -107,15 +98,21 @@ BEGIN MESQUITECHARMODELS;
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -132,14 +129,26 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 272.984361350464.1689918410706365797;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 408 265;
+					setLocation 8 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
 					tell It;
-						setEdgeWidth 6;
-						orientUp;
-						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
 							stretchToggle off;
 							branchLengthsToggle on;
@@ -148,31 +157,25 @@ Begin MESQUITE;
 							toggleEven on;
 							namesAngle ?;
 						endTell;
+						setEdgeWidth 6;
+						orientUp;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 408 265;
-					setLocation 8 10;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
 					setTreeNumber 1;
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 				endTell;
@@ -180,6 +183,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -195,14 +202,26 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 272.984361350464.1689918410706365799;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 414 262;
+					setLocation 259 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
 					tell It;
-						setEdgeWidth 6;
-						orientUp;
-						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
 							stretchToggle off;
 							branchLengthsToggle on;
@@ -211,31 +230,25 @@ Begin MESQUITE;
 							toggleEven on;
 							namesAngle ?;
 						endTell;
+						setEdgeWidth 6;
+						orientUp;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 414 262;
-					setLocation 259 13;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
 					setTreeNumber 2;
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 				endTell;
@@ -243,6 +256,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -258,14 +275,26 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 272.984361350464.1689918410706365798;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 438 258;
+					setLocation 439 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
 					tell It;
-						setEdgeWidth 6;
-						orientUp;
-						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
 							stretchToggle off;
 							branchLengthsToggle on;
@@ -274,31 +303,25 @@ Begin MESQUITE;
 							toggleEven on;
 							namesAngle ?;
 						endTell;
+						setEdgeWidth 6;
+						orientUp;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 438 258;
-					setLocation 439 13;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
 					setTreeNumber 3;
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 				endTell;
@@ -306,6 +329,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -339,7 +366,7 @@ Begin MESQUITE;
 				tell It;
 					setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
 					tell It;
-						setDefaultModel 13;
+						setDefaultModel 21;
 					endTell;
 					getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 					tell It;
@@ -357,7 +384,7 @@ Begin MESQUITE;
 				tell It;
 					setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
 					tell It;
-						setDefaultModel 13;
+						setDefaultModel 21;
 					endTell;
 					getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 					tell It;
@@ -376,7 +403,7 @@ Begin MESQUITE;
 				tell It;
 					setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
 					tell It;
-						setDefaultModel 13;
+						setDefaultModel 21;
 					endTell;
 					getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 					tell It;
@@ -399,6 +426,8 @@ Begin MESQUITE;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -431,6 +460,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'The scattergram may give you the option of coloring the spots to represent a third dimension, via the "Color by third value" menu item in the Colors menu of the scattergram (this menu is not always available).  ^n^nAt left is a scattegram for 100 continuous-valued characters simulated by Brownian motion on the tree shown in the leftmost tree window.  Note that there are three tree windows.  The X axis of the scattegram shows the squared length of the character from a parsimony reconstruction on this same tree in the first (leftmost) tree window; the Y axis shows the squared length measured on the tree in the second tree window; the color shows the squared length measured on the tree in the third tree window.  Note that even though the trees are different (especially the first tree from the other two), the squared lengths are well-correlated.  The chart is still linked to the three tree windows, so if you alter the tree in a window, the axis tied to it will be recalculated.';
 				setTitle Colored_scattergrams;
@@ -442,4 +473,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

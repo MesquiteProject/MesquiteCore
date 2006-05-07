@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:11:18 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:48:43 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE gene_copies;
@@ -13,7 +13,7 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  16epq_sequence;
-	DIMENSIONS NCHAR=19;
+	DIMENSIONS  NCHAR=19;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
 	g1  AACATCTGGGAACCGTGCG
@@ -38,12 +38,12 @@ BEGIN CHARACTERS;
 ;
 
 
+
 END;
 
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = 'This file shows a tree window with gene trees simulated by coalescence within a population.  Scroll through trees to see other simulated gene trees.   The organisms simulated are haploids. The effective population size is by default 10000.  To change this, choose Set Ne from the Tree menu.^n^nTo go to next example file: click the button in the "Go To File" window.^n^nTo duplicate this file: Select "New" from the File menu, and indicate the name of the set of taxa (genes) and the number of taxa (gene copies).  In the list window that will be shown, you may rename the taxa.  Then, select the set of taxa from the "Tree Window" submenu of the Taxa&Trees menu to show a tree window.  Initially, default trees will be shown.  Go to the Tree menu of the tree window, and select "Coalescent trees" from "Simulated Trees" submenu of the the "Tree source" submenu of the "Tree" menu.^n^nTo make it pretty, choose "Curvogram" from the "Tree form" submenu of the Tree menu, then choose "Show Branch Lengths" from the Tree menu.  To make it so all trees are displayed on the same scale, choose Fixed Scaling and indicate a number about 2-4  times the effective population size. ^n';
-
-
 
 END;
 
@@ -57,15 +57,21 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  19;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  19;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 1469954533384391314;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 4636206365576148138;
 			checksum 0 1947097330;
@@ -87,14 +93,27 @@ Begin MESQUITE;
 					setSeed 983242417684;
 				endTell;
 				setAssignedID 302.971276427933.7117688824995678366;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 459 409;
+					setLocation 10 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
 					tell It;
-						setEdgeWidth 4;
-						orientUp;
-						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
 							stretchToggle off;
 							branchLengthsToggle on;
@@ -104,9 +123,13 @@ Begin MESQUITE;
 							setFixedScaling 30000.0;
 							namesAngle ?;
 						endTell;
+						setEdgeWidth 4;
+						orientUp;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -114,24 +137,13 @@ Begin MESQUITE;
 						setFontSize 10;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 459 409;
-					setLocation 10 8;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
-					setActive;
 					setTreeNumber 1;
+					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
 				endTell;
@@ -139,6 +151,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -159,6 +175,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'This file shows a tree window with gene trees simulated by coalescence within a population.  Scroll through trees to see other simulated gene trees.   The organisms simulated are haploids. The effective population size is by default 10000.  To change this, choose Set Ne from the Coalescent Simulation submenu of the Tree menu.^n^nTo duplicate this file: Select "New" from the File menu, and indicate the name of the set of taxa (genes) and the number of taxa (gene copies).  In the list window that will be shown, you may rename the taxa.  Then, select the set of taxa from the "Tree Window" submenu of the Taxa&Trees menu to show a tree window.  Initially, default trees will be shown.  Go to the Tree menu of the tree window, and select "Coalescent trees" from "Simulated Trees" submenu of the the "Tree Source" submenu of the "Tree" menu.^n^nTo make it pretty, choose "Curvogram" from the "Tree Form" submenu of the Drawing menu, then choose "Branches Proportional to Lengths" from the Drawing menu.  To make it so all trees are displayed on the same scale, choose Fixed Scaling and indicate a number about 2-4  times the effective population size. ^n';
 				setTitle Simulated_gene_trees;
 				toggleFileNames off;
@@ -169,4 +187,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:47:29 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:24:50 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,34 +13,24 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS NCHAR=2;
@@ -62,7 +52,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -104,9 +93,8 @@ BEGIN TREES;
 END;
 
 
-
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                                unord PolyTcount =                                MINSTEPS;
+OPTIONS DEFTYPE =                                 unord PolyTcount =                                 MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -118,15 +106,21 @@ BEGIN MESQUITECHARMODELS;
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  2;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -168,12 +162,14 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 476 332;
-					setLocation 5 13;
+					setLocation 5 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -181,6 +177,8 @@ Begin MESQUITE;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
 					showAverageToggle on;
+					setCumulativeMode 0;
+					showAsBarChartToggle on;
 					showRawToggle off;
 					setNumberIntervals 20;
 					setIntervalSize 1.0;
@@ -235,12 +233,14 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 424 331;
-					setLocation 497 13;
+					setLocation 497 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -249,6 +249,8 @@ Begin MESQUITE;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
 					showAverageToggle on;
+					setCumulativeMode 0;
+					showAsBarChartToggle on;
 					showRawToggle off;
 					setNumberIntervals 50;
 					setIntervalSize 1.0;
@@ -278,6 +280,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'This file shows that alternative sources of trees can be used in various contexts, including charts.  Shown above are two simple histograms showing the numbers of trees with different treelengths (parsimony scores, using a continuous-valued data matrix).  Above left is a window with Stored Trees as the source of trees; above right is a window with Simulated Trees, using a uniform speciation model, as a source of trees.  ^n^nTreelength is not the only statistic that can be so charted over trees from various sources; any statistic concerning trees that is available through a module can be charted in this way.^n^n';
 				setTitle Tree_sources;
 				toggleFileNames off;
@@ -288,4 +292,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

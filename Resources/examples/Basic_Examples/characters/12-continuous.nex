@@ -1,5 +1,5 @@
 #NEXUS
-[written Fri Apr 23 12:40:30 PDT 2004 by Mesquite  version 1.01+ (build e97)]
+[written Sat May 06 21:21:57 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE species;
@@ -42,11 +42,9 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = 'Continuous data can be edited using a spreadsheet as at left.  To edit a cell, touch on it with the I-beam cursor and edit it.  If several cells (or a character, or a taxon) are selected, then you can use the items in the "Alter/Transform" submenu of the "Data" menu to alter or transform the data in those cells.  These items may or may not include:^n^nFill:  This fills the selected cells with a string typed by the user.^n^nRandom Fill (Gaussian): this fills the selected cells with random states selected from a Normal distribution.^n^nAdd Noise (Gaussian): this adds a normally-distributed value (mean 0, variance as chosen) to each of the selected cells. ^n^nLog Transform: Transforms the selected cells to contain the natural logarithm of their original values.^n^nAdd value, Multiply by value:  These multiply the selected cells by,  or add to them, a constant. ^n^n^n';
-
-
 
 END;
 
@@ -63,11 +61,11 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 911995890865637530;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 4132708679229515777;
 			checksum 0 487214761;
@@ -85,28 +83,38 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
-					toggleAutoWithCharNames on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
 					setColumnWidth 66;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
 					removeColor off;
-				endTell;
-				getEmployee #mesquite.ornamental.CellPictures.CellPictures;
-				tell It;
-					toggleSeparate off;
-					toggleAA off;
 				endTell;
 			endTell;
 		endTell;
@@ -123,6 +131,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'Continuous data can be edited using a spreadsheet as at left.  To edit a cell, touch on it with the I-beam tool and edit it.  If several cells (or a character, or a taxon) are selected, then you can use the items in the "Alter/Transform" submenu of the Matrix menu to alter or transform the data in those cells.  These items may or may not include:^n^nFill:  This fills the selected cells with a string typed by the user.^n^nRandom Fill (Gaussian): this fills the selected cells with random states selected from a Normal distribution.^n^nAdd Noise (Gaussian): this adds a normally-distributed value (mean 0, variance as chosen) to each of the selected cells. ^n^nLog Transform: Transforms the selected cells to contain the natural logarithm of their original values.^n^nAdd value, Multiply by value:  These multiply the selected cells by,  or add to them, a constant. ^n^n^n';
 				setTitle Continuous_data;
@@ -134,4 +144,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

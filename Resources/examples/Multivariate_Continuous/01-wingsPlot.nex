@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:18:18 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 22:01:00 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE flies;
@@ -73,7 +73,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title stored_trees;
 	LINK Taxa = flies;
@@ -152,9 +151,8 @@ BEGIN ASSUMPTIONS;
 END;
 
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = 'This file shows data of Eric Dyreson for wing characteristics measured for specimens of four species of Drosophila.  The taxa are individual specimens, and they are grouped (by color) into four species.  (The grouping is done by a taxa partition, which can be done via the List of Taxa window).^n^nAbove right is a plot of character 2 versus character 1, which are obviously highly correlated because of their correlation with size.  This plot is phylogeny-free.';
-
-
 
 END;
 
@@ -166,11 +164,11 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 208212565903807533;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 124634251740354766;
 			checksum 0 578547273;
@@ -182,26 +180,47 @@ Begin MESQUITE;
 				getWindow;
 				tell It;
 					setSize 390 464;
-					setLocation 6 4;
+					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -233,12 +252,14 @@ Begin MESQUITE;
 					setX 1;
 					setY 2;
 					setSize 493 450;
-					setLocation 420 7;
+					setLocation 420 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -271,6 +292,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'This file shows data of Eric Dyreson for wing characteristics measured for specimens of four species of Drosophila.  The taxa are individual specimens, and they are grouped (by color) into four species.  (The grouping is done by a taxa partition, which can be done via the List of Taxa window).^n^nAbove right is a plot of character 2 versus character 1, which are obviously highly correlated because of their correlation with size.  This plot is phylogeny-free.';
 				setTitle Raw_data;
 				toggleFileNames off;
@@ -281,4 +304,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:44:44 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:23:33 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,34 +13,24 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS NCHAR=2;
@@ -62,7 +52,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -86,9 +75,8 @@ BEGIN TREES;
 END;
 
 
-
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
+OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -100,15 +88,21 @@ BEGIN MESQUITECHARMODELS;
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  2;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -133,12 +127,14 @@ Begin MESQUITE;
 			getWindow;
 			tell It;
 				setSize 851 481;
-				setLocation 2 4;
+				setLocation 2 22;
 				setFont SanSerif;
 				setFontSize 10;
 				onInfoBar;
 				setExplanationSize 0;
 				setAnnotationSize 0;
+				setFontIncAnnot 0;
+				setFontIncExp 0;
 				setActive;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
@@ -146,9 +142,7 @@ Begin MESQUITE;
 				suppress;
 				setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
 				tell It;
-					setEdgeWidth 4;
-					orientRight;
-					getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+					setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 					tell It;
 						stretchToggle off;
 						branchLengthsToggle off;
@@ -157,14 +151,19 @@ Begin MESQUITE;
 						toggleEven on;
 						namesAngle ?;
 					endTell;
+					setEdgeWidth 4;
+					orientRight;
 				endTell;
 				setBackground White;
 				setBranchColor Blue;
+				showNodeNumbers off;
+				labelBranchLengths off;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
 					setColor Black;
 					toggleColorPartition on;
+					toggleShadePartition off;
 					toggleNodeLabels on;
 					toggleShowNames on;
 				endTell;
@@ -184,6 +183,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'This shows another tree-viewing window, the Multi-Tree Window.  It is available under the Taxa&Trees menu.  It shows a series of trees from a single source.  In this case, it is showing trees simulated by a random process of speciation.  You could also show trees stored in a file.^n^nYou can change the number of columns and rows of trees displayed by selecting Number of Rows or Number of Columns from the Multi-Tree menu.  You can scroll through the trees using the scroll-bar on the window''s right hand side.';
 				setTitle 'Multi-tree window';
 				toggleFileNames off;
@@ -194,4 +195,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

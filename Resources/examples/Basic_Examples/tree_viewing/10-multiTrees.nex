@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:44:57 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:23:36 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,34 +13,24 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS NCHAR=2;
@@ -62,7 +52,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -87,7 +76,7 @@ END;
 
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
+OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -99,15 +88,21 @@ BEGIN MESQUITECHARMODELS;
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  2;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -135,7 +130,7 @@ Begin MESQUITE;
 				getLegendsVector;
 				tell It;
 				distributeCommands;
-					setBounds 175 159 89 37;
+					setBounds 175 159 89 39;
 					setOffsetX 61;
 					setOffsetY -44;
 				endDistributeCommands;
@@ -184,17 +179,21 @@ Begin MESQUITE;
 					endTell;
 				endTell;
 				setCharacter 1;
+				setMapping 1;
 				toggleShowLegend off;
+				toggleGray off;
 				toggleWeights on;
 				resume ;
 			endTell;
 				setSize 842 472;
-				setLocation 2 4;
+				setLocation 2 22;
 				setFont SanSerif;
 				setFontSize 10;
 				onInfoBar;
 				setExplanationSize 0;
 				setAnnotationSize 0;
+				setFontIncAnnot 0;
+				setFontIncExp 0;
 				setActive;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
@@ -202,9 +201,7 @@ Begin MESQUITE;
 				suppress;
 				setTreeDrawer  #mesquite.trees.DiagonalDrawTree.DiagonalDrawTree;
 				tell It;
-					setEdgeWidth 12;
-					orientUp;
-					getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+					setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 					tell It;
 						stretchToggle on;
 						branchLengthsToggle off;
@@ -213,14 +210,19 @@ Begin MESQUITE;
 						toggleEven off;
 						namesAngle ?;
 					endTell;
+					setEdgeWidth 12;
+					orientUp;
 				endTell;
 				setBackground White;
 				setBranchColor Black;
+				showNodeNumbers off;
+				labelBranchLengths off;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
 					setColor Black;
 					toggleColorPartition on;
+					toggleShadePartition off;
 					toggleNodeLabels on;
 					toggleShowNames on;
 				endTell;
@@ -240,6 +242,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'This shows that analyses can be shown for each of the trees in the Multi-Tree Window.  A continuous-valued character is traced, and treelength is calculated for each of the trees.  These trees are stored in the file.^n';
 				setTitle 'Multi-tree analysis';
 				toggleFileNames off;
@@ -250,4 +254,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

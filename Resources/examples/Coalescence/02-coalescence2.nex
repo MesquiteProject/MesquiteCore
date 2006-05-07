@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:11:33 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Sat May 06 21:48:45 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
 
 BEGIN TAXA;
 	TITLE gene_copies;
@@ -13,7 +13,7 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  16epq_sequence;
-	DIMENSIONS NCHAR=19;
+	DIMENSIONS  NCHAR=19;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
 	g1  AACATCTGGGAACCGTGCG
@@ -38,12 +38,12 @@ BEGIN CHARACTERS;
 ;
 
 
+
 END;
 
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = 'At left is a "Multi Tree Window" to show a series of gene trees simulated by coalescence within a population.  You can scroll down to see other such simulated trees.  Note that the root tends to be between 1000 and 2000 generations deep.^n^nThe effective population size is 1000 (haploid), and can be changed using the "Set Ne.." menu item in the Multi-Tree menu of the Trees window.';
-
-
 
 END;
 
@@ -57,15 +57,21 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  19;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  19;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 4451700786596653131;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 4972659033594616137;
 			checksum 0 1947097330;
@@ -98,6 +104,8 @@ Begin MESQUITE;
 				onInfoBar;
 				setExplanationSize 0;
 				setAnnotationSize 0;
+				setFontIncAnnot 0;
+				setFontIncExp 0;
 				setActive;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
@@ -105,9 +113,7 @@ Begin MESQUITE;
 				suppress;
 				setTreeDrawer  #mesquite.trees.ArcTree.ArcTree;
 				tell It;
-					setEdgeWidth 3;
-					orientUp;
-					getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+					setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 					tell It;
 						stretchToggle off;
 						branchLengthsToggle on;
@@ -117,9 +123,13 @@ Begin MESQUITE;
 						setFixedScaling 2500.0;
 						namesAngle ?;
 					endTell;
+					setEdgeWidth 3;
+					orientUp;
 				endTell;
 				setBackground White;
 				setBranchColor Black;
+				showNodeNumbers off;
+				labelBranchLengths off;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
@@ -127,6 +137,7 @@ Begin MESQUITE;
 					setFontSize 10;
 					setColor Black;
 					toggleColorPartition on;
+					toggleShadePartition off;
 					toggleNodeLabels on;
 					toggleShowNames on;
 				endTell;
@@ -146,6 +157,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'At left is a "Multi Tree Window" to show a series of gene trees simulated by coalescence within a population.  You can scroll down to see other such simulated trees.  Note that the root tends to be between 1000 and 2000 generations deep.^n^nThe effective population size is 1000 (haploid), and can be changed using the "Set Ne.." menu item in the Coalescent SImulation submenu of the Multi-Tree menu of the Trees window.';
 				setTitle Gene_trees;
 				toggleFileNames off;
@@ -156,4 +169,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 
