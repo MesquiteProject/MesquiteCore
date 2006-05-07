@@ -15,6 +15,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.correl.Pagel94;
 
+import java.awt.Checkbox;
+import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -51,9 +53,9 @@ public class Pagel94 extends Pagel94Calculator {
     private PagelMatrixModel model4;
     private PagelMatrixModel model8;
     
-    private int simCount = 0;
+    private int simCount = 100;
     private MesquiteBoolean presentPValue;
-    private Logger logger;
+    private CLogger logger;
     private MesquiteBoolean resimulateConstantCharacters;
     private int numIterations = 10;
     
@@ -70,14 +72,33 @@ public class Pagel94 extends Pagel94Calculator {
 		addMenuItem("Set Seed (Pagel 94)...", makeCommand("setSeed", this));
 	   addMenuItem("Set Simulation Replicates...", makeCommand("setSimCount", this));
 		if (!commandRec.scripting()){
-			int newNum = MesquiteInteger.queryInteger(containerOfModule(), "Likelihood Iterations (Pagel 94)", "Intensity of likelihood search for 8 parameter model for Pagel 94 (Number of extra iterations):", numIterations, 0, MesquiteInteger.infinite);
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Pagel 94 parameters",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+
+			IntegerField iterationsField = dialog.addIntegerField("Extra Iterations (intensity of likelihood search)", numIterations, 5, 0, MesquiteInteger.infinite);
+			Checkbox pValueBox = dialog.addCheckBox("Present p-value", presentPValue.getValue());
+			IntegerField simField = dialog.addIntegerField("Number of simulations to estimate p-value", simCount, 5, 0, MesquiteInteger.infinite);
+
+			dialog.completeAndShowDialog(true);
+			dialog.dispose();
+			if (buttonPressed.getValue()==0)  {
+				simCount = simField.getValue();
+				numIterations = iterationsField.getValue();
+				presentPValue.setValue(pValueBox.getState());
+				
+			}
+			else
+				return false;
+			
+		/*	int newNum = MesquiteInteger.queryInteger(containerOfModule(), "Likelihood Iterations (Pagel 94)", "Intensity of likelihood search for 8 parameter model for Pagel 94 (Number of extra iterations):", numIterations, 0, MesquiteInteger.infinite);
+			//MesquiteInteger.queryTwoIntegers(Frame parent, String title, String label1, String label2, MesquiteBoolean answer, MesquiteInteger num1, MesquiteInteger num2,int min1,int max1,int min2, int max2, String helpString) {
 			if (MesquiteInteger.isCombinable(newNum))
-					numIterations = newNum;
+					numIterations = newNum;*/
 		}
 		return true;
    }
    
-   public void setLogger(Logger logger){
+   public void setLogger(CLogger logger){
 	   this.logger = logger;
    }
  	/*.................................................................................................................*/
@@ -132,14 +153,15 @@ public class Pagel94 extends Pagel94Calculator {
     	 		presentPValue.toggleValue(parser.getFirstToken(arguments));
     	 		
 			if (commandRec != null && !commandRec.scripting()) {
-			if (!MesquiteInteger.isCombinable(getSimCount())){
-					int sCount = MesquiteInteger.queryInteger(containerOfModule(),"Number of simulations", "Number of simulations to estimate p-value for Pagel 94 analysis", 100,0,10000,true);
+
+				if (presentPValue.getValue()){
+					int sCount = MesquiteInteger.queryInteger(containerOfModule(),"Number of simulations", "Number of simulations to estimate p-value for Pagel 94 analysis", getSimCount(),0,10000,true);
 		    	 		if (MesquiteInteger.isCombinable(sCount))
 		    	 			setSimCount(sCount);
 		    	 		else
-		    	 			return null;
+		    	 			presentPValue.setValue(false);
+						parametersChanged(null, commandRec);
 				}
-				parametersChanged(null, commandRec);
 			}
     	 	}
 //        else if (checker.compare(this.getClass(),"(Currently) saves surface plot of 2 parameters as text file","",commandName,"showSurface")){
@@ -226,14 +248,14 @@ public class Pagel94 extends Pagel94Calculator {
         result8 = model8.evaluate(model8.getParams(),null);
 
         double score = result4-result8;
-        if (logger!= null){ logger.log("\n\nFor four parameter model : \n");
-	        logger.log(model4.getParameters());
-	        logger.log("\n\nLikelihood is " + result4);
-	        logger.log("\n\n\nFor eight parameter model : \n");
-	        logger.log(model8.getParameters());
-	        logger.log("\n\nLikelihood is " + result8);
+        if (logger!= null){ logger.cwrite("\n\nFor four parameter model : \n");
+	        logger.cwrite(model4.getParameters());
+	        logger.cwrite("\n\nLikelihood is " + result4);
+	        logger.cwrite("\n\n\nFor eight parameter model : \n");
+	        logger.cwrite(model8.getParameters());
+	        logger.cwrite("\n\nLikelihood is " + result8);
 	        
-	        logger.log("\n\nDifference is " + score);
+	        logger.cwrite("\n\nDifference is " + score);
        }
        
        if (presentPValue.getValue() && simCount>0){
@@ -330,23 +352,23 @@ public class Pagel94 extends Pagel94Calculator {
 	        	 	int completedDiffs = countAssigned(diffs);
 	        	 	if (completedDiffs>0){
 	        	 		pvalue = 1-(1.0*position)/(1.0*completedDiffs);
-	        	 		logger.log("\np-value from " + completedDiffs +" simulations is " + pvalue + "\n");
+	        	 		logger.cwrite("\np-value from " + completedDiffs +" simulations is " + pvalue + "\n");
 	        	 	}
 	        	 	else{
 	        	 		pvalue = MesquiteDouble.unassigned;
-	        	 		logger.log("\nNo simulations completed");
+	        	 		logger.cwrite("\nNo simulations completed");
 	        	 	}
 	         }
 	         else {
 	        	 	pvalue = 1-(1.0*position)/(1.0*simCount);
-	        	 	logger.log ("\np-value from simulations is " + pvalue + "\n");
+	        	 	logger.cwrite ("\np-value from " + simCount + " simulations is " + pvalue + "\n");
 	         }
   	         if (result != null)
 	     	    result.setValue(pvalue);
 	         if (result.isUnassigned())
 	            resultString.setValue("No pvalue was calculated, see MesquiteLog for details");
 	        else
-	            resultString.setValue("p-value = " + result.getDoubleValue());
+	            resultString.setValue("p-value = " + result.getDoubleValue() + " (from " + simCount + " simulations)" );
      }
        else {
 	         if (result != null)

@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 public abstract class Pagel94Calculator extends NumberFor2CharAndTree {
     
     
-   public abstract void setLogger(Logger logger);
+   public abstract void setLogger(CLogger logger);
    
    
 }
