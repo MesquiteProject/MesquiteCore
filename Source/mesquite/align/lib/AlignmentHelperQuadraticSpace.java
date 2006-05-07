@@ -38,7 +38,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		int gapOpenOnA;
 		for (i=1; i<=lengthA; i++) {
 			gapOpenOnA = gapOpen;
-			if (keepGaps && i<lengthA && followsGapSize[i]>0)
+			if (keepGaps && i<followsGapSize.length && followsGapSize[i]>0)
 				gapOpenOnA = 0;
 
 			for (j=1; j<=lengthB; j++) {
@@ -111,7 +111,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 			
 				backtrack[k][0] = CategoricalState.expandFromInt(A[i-1]);
 				backtrack[k][1] = CategoricalState.inapplicable;
-				if (i>0 &&  V[i][j] == V[i-1][j] + gapExtend){
+				if ( V[i][j] == V[i-1][j] + gapExtend){
 					myScore -= gapExtend;
 				} else { //V[i][j]  == D[i-1][j] + gapOpen + gapExtend  or V[i][j] == H[i-1][j] + gapOpen + gapExtend
 					myScore -= gapOpen + gapExtend;
@@ -121,12 +121,12 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 				a_cnt++;
 			} else if (H[i][j] == myScore) { //an optimal path came from horizontal (letter from B with gap in A)
 				gapOpenOnA = gapOpen;
-				if (keepGaps && i>0 && followsGapSize[i]>0)
+				if (keepGaps && i<followsGapSize.length && followsGapSize[i]>0)
 					gapOpenOnA = 0;
 				
 				backtrack[k][0] = CategoricalState.inapplicable;
 				backtrack[k][1] = CategoricalState.expandFromInt(B[j-1]);
-				if ( j>0 && H[i][j] == H[i][j-1] + gapExtend){
+				if ( H[i][j] == H[i][j-1] + gapExtend){
 					myScore -= gapExtend;
 				} else { //H[i][j]  == D[i-1][j] + gapOpen + gapExtend  or H[i][j] == V[i-1][j] + gapOpen + gapExtend
 						myScore -= gapOpenOnA + gapExtend;

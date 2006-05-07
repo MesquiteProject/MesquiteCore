@@ -191,8 +191,7 @@ public class PairwiseAligner  {
 	}
 
 	/** If object wasn't called with subs cost arguments, this must be called or alignment will fail*/
-	public void setSubsCostMatrix(/*int alphabetSize,*/ int[][] subs){
-		//this.alphabetSize = alphabetSize;
+	public void setSubsCostMatrix(int[][] subs){
 		this.subs = subs;
 		subCostsInitialized = true;
 	}

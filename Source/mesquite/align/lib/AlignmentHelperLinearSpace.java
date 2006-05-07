@@ -123,7 +123,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 */				
 
 			gapOpenOnA = gapOpen;
-			if (keepGaps && i<lengthA && followsGapSize[i]>0)
+			if (keepGaps &&  i<followsGapSize.length && followsGapSize[i]>0)
 				gapOpenOnA = 0;
 			
 			for (j=firstColumn+1; j<=lastColumn; j++) { // for each column
@@ -169,7 +169,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		rH[lastColumn] = rV[lastColumn] = gapOpen;
 		rD[lastColumn] = 0;
 		
-		if (shape == gapInA || (keepGaps && followsGapSize[lastRow]>0)) {
+		if (shape == gapInA || (keepGaps &&  lastRow<followsGapSize.length && followsGapSize[lastRow]>0)) {
 			rH[lastColumn] = 0;
 		} else if ( shape == gapInB) {
 			rV[lastColumn] = 0;
@@ -192,14 +192,9 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			
 			rD[lastColumn] = rH[lastColumn] = bigNumber;
 			rV[lastColumn] +=  gapExtend ;			
-/*			if (shape == gapInA) {
-				rV[lastColumn] = gapExtend*(lastRow - j);
-			} else { //gapInB or noGap
-				rV[lastColumn] = gapOpen + gapExtend*(lastRow - j );
-			}
-*/
+
 			gapOpenOnA = gapOpen; 
-			if (keepGaps && followsGapSize[i]>0) // followsGapSize[i] means reversePrecedsGapSize[i-1]
+			if (keepGaps &&  i<followsGapSize.length && followsGapSize[i]>0) // followsGapSize[i] means reversePrecedsGapSize[i-1]
 				gapOpenOnA = 0;
 			
 			for (j=lastColumn-1; j>=firstColumn; j--) { // for each column
