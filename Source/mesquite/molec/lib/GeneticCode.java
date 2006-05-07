@@ -24,6 +24,7 @@ public abstract class GeneticCode implements Listable {
 	protected static int G=2;
 	protected static int T=3;
 	protected static int U=3;
+	public static final int CUSTOM_CODE=-1;
 	
 	protected int[][][] code = new int[4][4][4];
 	
@@ -48,6 +49,20 @@ public abstract class GeneticCode implements Listable {
 		return code[c1][c2][c3];
 	}
 
+	/*.................................................................................................................*/
+  	/** Returns true if the GeneticCode objects are the same */
+ 		public boolean equals (GeneticCode otherGeneticCode) {
+ 	 		if (getNCBITranslationTableNumber() == CUSTOM_CODE ||  otherGeneticCode.getNCBITranslationTableNumber() == CUSTOM_CODE) {
+ 	 			for (int c1=0; c1<4; c1++) 
+ 	 				for (int c2=0; c2<4; c2++) 
+ 	 					for (int c3=0; c3<4; c3++)
+ 	 						if (getCode(c1,c2,c3) != otherGeneticCode.getCode(c1,c2,c3)) 
+ 	 							return false;
+	 			return true;
+ 	 		}
+ 	 		else
+ 	 			return (getNCBITranslationTableNumber() == otherGeneticCode.getNCBITranslationTableNumber());
+		}
 	/*.................................................................................................................*/
   	/** Returns the maximum amino acid int value in the matrix */
  		public int getMaxAA () {

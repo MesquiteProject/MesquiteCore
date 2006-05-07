@@ -3,6 +3,8 @@ David to do
 1.1 to fix:
 
 	- make  it clear in manual that clustalw must be the terminal version
+	- variable genetic codes: better check for codon
+	- inserting new characters; genetic code assigned is surrounding one
 
 
 
@@ -18,9 +20,12 @@ David to do
 		to whether it is successful or not
 	- association list is not List based-
 	- remaining genetic codes
+	- new CommandRecord system for development
 
 1.2:
 	-rework charting code completely
+	- removal of CommandRecord
+	- convert to XML preferences
 
 - get consensus trees in Mesquite
 
