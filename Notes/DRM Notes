@@ -3,7 +3,6 @@ David to do
 1.1 to fix:
 
 	- make  it clear in manual that clustalw must be the terminal version
-	- variable genetic codes: better check for codon
 	- inserting new characters; genetic code assigned is surrounding one
 
 
