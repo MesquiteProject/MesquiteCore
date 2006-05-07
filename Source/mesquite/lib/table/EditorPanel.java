@@ -358,7 +358,7 @@ public abstract class EditorPanel extends MesquitePanel {
 			top = tb.getColumnGrabberWidth();
 		Rectangle current = editField.getBounds();
 		
-		if (current.width != w || (current.height < rowHeight(editRow)+1 || current.height > rowHeight(editRow)+2)){ //1.06 permit to be one off (strange behaviour in java 1.4)
+		if (current.width != w || (current.height < rowHeight(editRow)+1 || current.height > rowHeight(editRow)+2)){ //1. 06 permit to be one off (strange behaviour in java 1.4)
 			editField.setBounds(left, top, w, rowHeight(editRow)+1);
 			return false;
 		}

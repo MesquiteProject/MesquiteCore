@@ -112,7 +112,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	/*.................................................................................................................*/
 	public boolean queryReferenceTaxon() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Reference Taxon",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Reference Taxon",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		
 		int maxNum = MesquiteInteger.unassigned;
 		if (currentTaxa!=null)

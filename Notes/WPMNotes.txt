@@ -58,8 +58,8 @@ java.lang.NullPointerException
 	at mesquite.lib.MainThread.run(MainThread.java:116)
 ===============
 bugs to fix for 1.07
-ฅฅฅฅ disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
-ฅฅฅฅ tree legend fails because first calc fails; menu item remains but legend won't show
+รรรร disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
+รรร tree legend fails because first calc fails; menu item remains but legend won't show
 รรรร Move Archived to Current taxon namnes
 รรรร Protein editor default color
 รรรร Remove Gaps-Only Characters;  Remove Empty Characters

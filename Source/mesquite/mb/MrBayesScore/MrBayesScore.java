@@ -15,7 +15,11 @@ public class MrBayesScore extends NumberForTree {
         return true;
     }
 
- 
+	/*.................................................................................................................*/
+  	 public boolean isPrerelease(){
+  	 	return false;
+  	 }
+
     /* ................................................................................................................. */
       public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
         if (result == null || tree == null)
