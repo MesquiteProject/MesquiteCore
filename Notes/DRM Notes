@@ -11,6 +11,7 @@ mesquite.align.AlignToDropped.AlignToDropped
 
 =====================
 1.11:
+	- drag and drop (e.g., for DNA sequences)
 	- align: progress indicator for align to dropped
 	- undo in editor!
 	- work on SimDNAMatrixEmpirBased
