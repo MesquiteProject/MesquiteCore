@@ -70,14 +70,16 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	double[] underflowCompDown;  // ln of compensation for underflow
 	//double[] empirical;       // may be implemented sometime
 	//double[][] empirical2;
-	double[] parametersFromSimplerModel = null;  //holds values from 4 parameter model as starting values for 8 p. model
+	double[] parametersFromSimplerModel = null;  //holds values from 4 parameter model as starting values for 6 p. model
+	PagelMatrixModel intermediate1 = null;       //holds 6 parameter models called from 8 parameter model
+	PagelMatrixModel intermediate2 = null;
 	int simplerModelType;
     	private int numStates;
 	long underflowCheckFrequency = 2; //how often to check that not about to underflow; 1 checks every time
 	long underflowCheck = 1;
 	MesquiteNumber minChecker;
 
-	private MesquiteInteger eightParameterExtraSearch = new MesquiteInteger(10);
+	private MesquiteInteger eightParameterExtraSearch = new MesquiteInteger(5);
 	
     private double previousBranchLength = MesquiteDouble.unassigned;
     private boolean unassigned = true;
@@ -492,7 +494,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	}
 	
 	/**
-	 * This is the version for two characters
+	 * This is the private version called from probFromSection, so no checking should be required
 	 * @param beginState1 specifies the beginning state of the first character
 	 * @param endState1 specifies the ending state of the first character
 	 * @param beginState2 specifies the beginning state of the second character
@@ -502,20 +504,14 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	 * @return double indicating transition probability from begin1,begin2 => end1,end2
 	 */
 	private double transitionProbability (int beginState1,int endState1,int beginState2,int endState2,Tree tree, int node){
-		if (!inStates(beginState1,0) || !inStates(endState1,0) || !inStates(beginState2,1) || !inStates(endState2,1)){
-			MesquiteMessage.warnProgrammer("Bailed out of transitionProbability " + beginState1 + " " + endState1 + " " + beginState2 + " " + endState2);
+		if (needToPrepareMatrices)
+			prepareMatrices();
+		double branchLength = tree.getBranchLength(node,1.0);
+		if (recalcProbsNeeded || previousBranchLength != branchLength)
+			recalcProbabilities(branchLength);
+		if (probMatrix ==null)
 			return 0;
-		}
-		else {   // tree has already been checked 
-			if (needToPrepareMatrices)
-				prepareMatrices();
-			double branchLength = tree.getBranchLength(node,1.0);
-			if (recalcProbsNeeded || previousBranchLength != branchLength)
-				recalcProbabilities(branchLength);
-			if (probMatrix ==null)
-				return 0;
-			return  probMatrix[recodeStatePair(beginState1,beginState2)][recodeStatePair(endState1,endState2)];
-		}
+		return  probMatrix[recodeStatePair(beginState1,beginState2)][recodeStatePair(endState1,endState2)];
 	}
 	
 	
@@ -853,14 +849,19 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		double next;
 		switch (modelType) {
 			case MODEL8PARAM:{  // first try two versions of a 6-parameter model
-				PagelMatrixModel model6_1 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEY);
-				PagelMatrixModel model6_2 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEX);
+				// no need to reallocate the two 6-p models everytime
+				if (intermediate1 == null)
+					intermediate1 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEY);
+				if (intermediate2 == null)
+					intermediate2 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEX);
+				PagelMatrixModel model6_cy = intermediate1;
+				PagelMatrixModel model6_cx = intermediate2;
 				estParams = new double[8];
 				// first a model with changes in Y contingent on changes in X
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEY){
-				    model6_1.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
-					model6_1.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
-					double[] m6_1Params = model6_1.getParams();
+				    model6_cy.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
+					model6_cy.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
+					double[] m6_1Params = model6_cy.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m6_1Params[i];
 					estParams[4]=m6_1Params[4];
@@ -893,9 +894,9 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				}
 				// now the other 6-parameter model (changes in X contingent on Y)
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEX){
-				    model6_2.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
-					model6_2.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
-					double[] m6_2Params = model6_2.getParams();
+				    model6_cx.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
+					model6_cx.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
+					double[] m6_2Params = model6_cx.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m6_2Params[i];
 					estParams[4]=m6_2Params[1];
@@ -929,15 +930,15 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				//PETER: added these tick notifications to keep user informed of progress of search
 				if (commandRec != null) commandRec.tick("8 parameter model preliminary -ln likelihood: " + MesquiteDouble.toString(best));
 				if (eightParameterExtraSearch.getValue() > 0) {
-					double [] m6_1Params = model6_1.getParams();
-					double [] m6_2Params = model6_2.getParams();
+					double [] m6_cy_Params = model6_cy.getParams();
+					double [] m6_cx_Params = model6_cx.getParams();
 					for (int i = 0; i< eightParameterExtraSearch.getValue();i++){
 						for(int j=0;j<4;j++)
-							estParams[j]=Math.abs(m6_1Params[j] + (2*rng.nextDouble()-1)*(m6_2Params[j]+m6_1Params[j]));
-						estParams[4]=(1+0.2*rng.nextGaussian())*m6_1Params[4];
-						estParams[5]=(1+0.2*rng.nextGaussian())*m6_2Params[4];
-						estParams[6]=(1+0.2*rng.nextGaussian())*m6_1Params[5];
-						estParams[7]=(1+0.2*rng.nextGaussian())*m6_2Params[5];
+							estParams[j]=Math.abs((m6_cy_Params[j]+m6_cx_Params[j])/2 + (20.0*rng.nextGaussian())*(m6_cx_Params[j]-m6_cy_Params[j]));
+						estParams[4]=Math.abs(1+20.0*rng.nextGaussian())*m6_cy_Params[4];
+						estParams[5]=Math.abs(1+20.0*rng.nextGaussian())*m6_cx_Params[4];
+						estParams[6]=Math.abs(1+20.0*rng.nextGaussian())*m6_cy_Params[5];
+						estParams[7]=Math.abs(1+20.0*rng.nextGaussian())*m6_cx_Params[5];
 						allowedEdgeHits = beginningAllowed;
 						//backupEst = (double [])estParams.clone();
 						next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
