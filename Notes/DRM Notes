@@ -11,11 +11,13 @@ mesquite.align.AlignToDropped.AlignToDropped
 
 =====================
 1.11:
+	- align: progress indicator for align to dropped
 	- undo in editor!
 	- work on SimDNAMatrixEmpirBased
 	- change CellColorer so that setActiveColors returns a boolean as 
 		to whether it is successful or not
-	- association list is not List based
+	- association list is not List based-
+	- remaining genetic codes
 
 1.2:
 	-rework charting code completely
