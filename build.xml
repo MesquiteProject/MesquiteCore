@@ -54,6 +54,9 @@
 		<property name="sftpjar" value="maverick-ant.jar"/>
 		<property name="scpjar" value="jsch-0.1.28.jar"/>
 		<property name="jars.dir" location="jars"/>
+		
+		<property file="${os.name}.properties"/>
+		
 		<path id="compile.classpath" >
 			<fileset dir="${jars.dir}">
 				<include name="*.jar"/>
@@ -97,6 +100,10 @@
 			<classpath refid="compile.classpath" />
 		</javac>
 	</target>
+	
+	<target name="callwindowsinstaller"  if="windows">
+        <ant dir="${installer.dir}" target="makensis" inheritAll="true" />
+	</target>
 
 	<target depends="compile" name="packagedist">
 		<description>Copies the appropriate files and creates distribution .tgz and .sit</description>
@@ -139,10 +146,9 @@
 			</fileset>
 		</copy>
 		<!-- package up the linux dist before we copy the mac stuff -->
-		<tar basedir="${release.dir}" destfile="${linuxbin.tgz}" compression="gzip" />
-
-        <ant dir="${installer.dir}" target="makensis" inheritAll="true"/>
-        	
+		<tar basedir="${release.dir}" destfile="${linuxbin.tgz}" compression="gzip" />	
+		
+		<antcall target="callwindowsinstaller"/>
 		
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
@@ -162,10 +168,11 @@
 			<arg value="HFS+" />
 			<arg value="${dmgbin}" />
 		</exec>
-
-		<exec executable="stuff" failonerror="false" os="Mac OS X">
+		<!--
+		<exec executable="stuff" failifexecutionfails="false" failonerror="false" os="Mac OS X">
 			<arg line="-q -n='${sitbin}' -f=sit5 '${mesquitefolder.dir}'"/>
 		</exec>
+		-->
 	</target>
 
 	<target depends="init" name="packagesrc">
