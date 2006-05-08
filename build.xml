@@ -20,9 +20,10 @@
 		<property name="windowssrc" location="${dist.dir}/mesquiteSource.zip" />
 		<property name="macsrc" location="${dist.dir}/mesquiteSource.sit" />
 
-		<property name="workspacecontaining.dir" location="/home/dmandel/mesquiteworkspacedist"/>
+		<property name="workspacecontaining.dir" location="${dist.dir}/mesquiteworkspacedist"/>
 		<property name="workspacedist.dir" location="${workspacecontaining.dir}/MesquiteWorkspace/" />
 		<property name="workspaceproject.dir" location="${workspacedist.dir}/MesquiteProject/" />
+		<property name="workspacejars.dir" location="${workspaceproject.dir}/jars"/>
 		<property name="workspacesrc.dir" location="${workspaceproject.dir}/Source"/>
 		<property name="workspacedistclasspath" location=".classpath.dist"/>
 		
@@ -52,6 +53,7 @@
 		<property name="applejava" value="AppleJavaExtensions.jar"/>
 		<property name="iText" value="iText.jar"/>
 		<property name="sftpjar" value="maverick-ant.jar"/>
+		<property name="scpjar" value="jsch-0.1.28.jar"/>
 		<property name="jars.dir" location="jars"/>
 		<path id="compile.classpath" >
 			<fileset dir="${jars.dir}">
@@ -122,9 +124,12 @@
 			<fileset dir="${srcpath}">
 				<include name="**/a*Intro/*.html"/>
 			</fileset>
-			<filterset>
-				<filter token="MesquiteManualURL" value="../../../docs/mesquite/manual.html"/>
+			<filterset begintoken="${openBracket}" endtoken="${closeBracket}">
+				<filter token="protectedURL" value="${openBracket}"/>
 			</filterset>			
+			<filterset begintoken="${openBracket}/" endtoken="${closeBracket}">
+				<filter token="protectedURL" value="${closeBracket}"/>
+			</filterset>						
 		</copy>
 		<echo message="just checked html"/>
 		<copy todir="${mesquitefolder.dir}/jars">
@@ -165,7 +170,7 @@
 		</exec>
 	</target>
 
-	<target depends="init" name="packagesrc">
+	<target depends="init,clean" name="packagesrc">
 		<description>packages up the source distributions</description>
 		<!--
 		<mkdir dir="${dist.dir}" />
@@ -184,21 +189,25 @@
 		</zip>
 		<tar destfile="${linuxsrc}" compression="gzip" basedir="${mesquitesrccontainingdir}" />
 		-->
+		<mkdir dir="${dist.dir}"/>		
 		<mkdir dir="${workspacecontaining.dir}"/>
 		<mkdir dir="${workspacedist.dir}"/>
 		<mkdir dir="${workspaceproject.dir}"/>
+		<mkdir dir="${workspacejars.dir}"/>
 		<mkdir dir="${workspacesrc.dir}"/>
 		<copy todir="${workspaceproject.dir}">
 			<fileset dir=".">
-				<include name="${jama}"/>
-				<include name="${jsci}"/>
-				<include name="${applejava}"/>
-				<include name="${mrj}"/>
-                <include name="${pal}"/>
 				<include name=".project"/>
 				<include name=".settings/"/>
 				<include name="${mesquitefoldername}"/>
 				<include name="${rsrcs}"/>
+			</fileset>
+		</copy>
+		<copy todir="${workspacejars.dir}">
+			<fileset dir="${jars.dir}">
+				<include name="*"/>
+				<exclude name="${sftpjar}"/>
+				<exclude name="${scpjar}"/>
 			</fileset>
 		</copy>
 		<copy todir="${workspaceproject.dir}/${rsrcs}">
@@ -223,12 +232,12 @@
 
 	<target depends="packagedist,packagesrc" name="deployfiles">
 		<description>Sends all of the generated files up to the server</description>		
-		<scp file="${linuxbin.tgz}" todir="${bininstalldir}" trust="true"/>
-		<scp file="${sitbin}" todir="${bininstalldir}" />
-		<scp file="${dmgbin}" todir="${bininstalldir}" />
-		<scp file="${macsrc}" todir="${srcinstalldir}" trust="true"/>
-		<scp file="${windowssrc}" todir="${srcinstalldir}" trust="true"/>
-		<scp file="${linuxsrc}" todir="${srcinstalldir}" trust="true"/>
+		<scp file="${linuxbin.tgz}" todir="${bininstalldir}" trust="true" failonerror="false"/>
+		<scp file="${sitbin}" todir="${bininstalldir}" trust="true" failonerror="false"/>
+		<scp file="${dmgbin}" todir="${bininstalldir}" trust="true" failonerror="false"/>
+		<scp file="${macsrc}" todir="${srcinstalldir}" trust="true" failonerror="false"/>
+		<scp file="${windowssrc}" todir="${srcinstalldir}" trust="true" failonerror="false"/>
+		<scp file="${linuxsrc}" todir="${srcinstalldir}" trust="true" failonerror="false"/>
 		<taskdef name="ssh" classname="com.sshtools.ant.Ssh" classpath="${jars.dir}/${sftpjar}" />
 		<ssh host="${host}" username="${username}" password="${password}">
 			<exec cmd="rm -rf ${mesquitefolderinstalldir}" />
