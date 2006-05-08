@@ -44,7 +44,6 @@
 		<property name="srcinstalldir" value="${hostprefix}/home/dmandel/mesquitesrc/" />
 		<!-- The path to Mesquite_Folder on the server -->
 		<property name="mesquitefolderinstalldir" value="/home/dmandel/Mesquite_Folder/" />
-		<property name="aligndir" value="/home/dmandel/Mesquite_Folder/align/"/>
 
 		<property name="pal" value="pal.zip"/>
 		<property name="jsci" value="JSci.zip"/>
@@ -164,31 +163,14 @@
 			<arg value="${dmgbin}" />
 		</exec>
 
-		<!-- -->
 		<exec executable="stuff" failonerror="false" os="Mac OS X">
 			<arg line="-q -n='${sitbin}' -f=sit5 '${mesquitefolder.dir}'"/>
 		</exec>
 	</target>
 
-	<target depends="init,clean" name="packagesrc">
+	<target depends="init" name="packagesrc">
 		<description>packages up the source distributions</description>
-		<!--
-		<mkdir dir="${dist.dir}" />
-		<mkdir dir="${mesquitesrc}" />
-		<copy todir="${mesquitesrc}">
-			<fileset dir="${src.dir}">
-				<include name="**/*.java" />
-			</fileset>
-			<filterset refid="mesquitetokens.filterset" />
-		</copy>
-		<exec executable="stuff" failonerror="false">
-			<arg line="-q -n='${macsrc}' -f=sit5 '${mesquitesrc}'"/>
-		</exec>
-		<zip destfile="${windowssrc}">
-			<fileset dir="${mesquitesrccontainingdir}" />
-		</zip>
-		<tar destfile="${linuxsrc}" compression="gzip" basedir="${mesquitesrccontainingdir}" />
-		-->
+
 		<mkdir dir="${dist.dir}"/>		
 		<mkdir dir="${workspacecontaining.dir}"/>
 		<mkdir dir="${workspacedist.dir}"/>
