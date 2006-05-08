@@ -39,11 +39,11 @@
 		<property file="serverinfo.properties" />
 		<property name="hostprefix" value="${username}:${password}@${host}:" />
 		<!-- The directory where the binary distributions are stored -->
-		<property name="bininstalldir" value="${hostprefix}/home/dmandel/mesquitebin/" />
+		<property name="bininstalldir" value="${hostprefix}/mesquite_install_folder/" />
 		<!-- The directory where the source distributions are stored -->
-		<property name="srcinstalldir" value="${hostprefix}/home/dmandel/mesquitesrc/" />
+		<property name="srcinstalldir" value="${hostprefix}/mesquite_source_folder/" />
 		<!-- The path to Mesquite_Folder on the server -->
-		<property name="mesquitefolderinstalldir" value="/home/dmandel/Mesquite_Folder/" />
+		<property name="mesquitefolderinstalldir" value="/Mesquite_Folder/" />
 
 		<property name="pal" value="pal.zip"/>
 		<property name="jsci" value="JSci.zip"/>
