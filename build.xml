@@ -69,7 +69,7 @@
 		<filterset id="mesquitetokens.filterset">
 			<filter token="MESQUITE_RELEASE_VERSION" value="${mesquite.version}" />
 			<!-- is this needed, or is the release date always the year? -->
-			<filter token="MESQUITE_RELEASE_DATE" value="${DSTAMP}" />
+			<filter token="MESQUITE_RELEASE_DATE" value="${TODAY}" />
 			<filter token="MESQUITE_RELEASE_YEAR" value="${year}" />
 		</filterset>
 	</target>
