@@ -58,6 +58,16 @@ java.lang.NullPointerException
 	at mesquite.lib.MainThread.run(MainThread.java:116)
 ===============
 bugs to fix for 1.07
+ееее INCLUDE TAXA & MATRICWES only works for Taxa/Char blocks
+ееее clustal align default costs?
+├├├├ include taxa & matrices leaves remnant in script???
+ееее toggle for coloring list
+ееее condense taxonnames not functioning; doesn't remove (. space etc.
+ееее Matrices via assocaites (cf. fused export) -- converts associate matrix (via merging) into matrix for this taxa. Thus can use Save Multiple Matrices to save all associated
+ееее Save all stored matrices (disperse)
+ееее example files
+ееее multiple file import
+ееее schluter root states
 ├├├├ disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
 ├├├ tree legend fails because first calc fails; menu item remains but legend won't show
 ├├├├ Move Archived to Current taxon namnes

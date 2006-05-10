@@ -2624,7 +2624,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected) {
 		// g.drawString(Integer.toString(row + column), x+2, y+h-2);
 	}
-
+	//to be overridden to change color; works only for MatrixPanel, and only when useString & overriding permit it
+	public Color getBackgroundColor(int column, int row, boolean selected){
+		return null;
+	}
 	/* ............................................................................................................... */
 	/**
 	 * ееее HAVE THIS BY COLUMNS; ALSO HAVE COLUMN NAMES AND ROW NAMES JUSTIFYABLE

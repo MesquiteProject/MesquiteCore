@@ -246,7 +246,10 @@ timer6.end();
 				lineX += table.columnWidths[c];
 				g.setClip(oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r]);
 				String supplied = table.getMatrixTextForDisplay(c,r);
-				if (fillColor!=null)
+				Color bc = table.getBackgroundColor(c, r, false);
+				if (bc != null)
+					g.setColor(bc);
+				else if (fillColor!=null)
 					g.setColor(fillColor);
 				else if (table.isCellEditable(c, r))
 					g.setColor(Color.white);
@@ -272,7 +275,7 @@ timer6.end();
 		checkEditFieldLocation();
 		super.repaint();
 	}
-
+	
 	/*...............................................................................................................*/
 	public void paint(Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
@@ -341,8 +344,9 @@ timer6.end();
 						}
 						else {
 							String supplied = table.getMatrixTextForDisplay(c,r);
-							Color color = null;
-							if (selected) {
+							Color color = table.getBackgroundColor(c, r, selected);
+							if (color == null){
+								if (selected) {
 								if (!MesquiteWindow.Java2Davailable)
 									color = Color.black;
 								else
@@ -356,6 +360,7 @@ timer6.end();
 							}
 							else
 								color = ColorDistribution.uneditable;
+							}
 							if (color !=null){
 								g.setColor(color);
 								g.fillRect(oldLineX+1,oldLineY+1,table.columnWidths[c]-1, table.rowHeights[r]-1);
