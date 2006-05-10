@@ -61,8 +61,9 @@ bugs to fix for 1.07
 •••• INCLUDE TAXA & MATRICWES only works for Taxa/Char blocks
 •••• clustal align default costs?
 √√√√ include taxa & matrices leaves remnant in script???
-•••• toggle for coloring list
-•••• condense taxonnames not functioning; doesn't remove (. space etc.
+√√√√MANUAL toggle for coloring list
+√√√√MANUAL Columns menu
+√√√√ condense taxonnames not functioning; doesn't remove (. space etc.
 •••• Matrices via assocaites (cf. fused export) -- converts associate matrix (via merging) into matrix for this taxa. Thus can use Save Multiple Matrices to save all associated
 •••• Save all stored matrices (disperse)
 •••• example files
@@ -76,7 +77,7 @@ bugs to fix for 1.07
 √√√√ Why SCM with same place on branches????
 •••• Nina Amenta SVN
 √√√ delete matrix from projects window, doesn't redo mnus
-•••• PAUP blocks in reasonable places
+√√√√ PAUP blocks in reasonable places
 √√√ scroll bar on small matrices/tables won't go page left
 √√√√ setListableFilter -- why does it zap whole distance submenu?
 √√√√ NBRF import fuse
