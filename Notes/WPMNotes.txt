@@ -63,6 +63,7 @@ bugs to fix for 1.07
 √√√√ include taxa & matrices leaves remnant in script???
 √√√√MANUAL toggle for coloring list
 √√√√MANUAL Columns menu
+√√√MANUAL high ascii file paths don't work (Laurin)
 √√√√ condense taxonnames not functioning; doesn't remove (. space etc.
 •••• Matrices via assocaites (cf. fused export) -- converts associate matrix (via merging) into matrix for this taxa. Thus can use Save Multiple Matrices to save all associated
 •••• Save all stored matrices (disperse)
@@ -81,7 +82,6 @@ bugs to fix for 1.07
 √√√ scroll bar on small matrices/tables won't go page left
 √√√√ setListableFilter -- why does it zap whole distance submenu?
 √√√√ NBRF import fuse
-••• high ascii file paths don't work (Laurin)
 √√√√ search for todo in Cartographer
 •••• maureen's printing pdf issue
 √√√√ equilibrium root frequencies in MLE etc
