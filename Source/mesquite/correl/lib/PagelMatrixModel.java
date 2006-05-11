@@ -54,7 +54,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private double [] params;
     private boolean[] paramUnassigned;
     private double[][] probMatrix, rateMatrix, eigenVectors, inverseEigenVectors;
-    private double[] eigenValues, imagEigenValues;
+    private double[] eigenValues;  //, imagEigenValues;  //may use imagEigenValues with Putzer's method
     private boolean negativeProbabilities = false;
     private double negativeProbValue = 0.0;
     //private MesquiteInteger pos = new MesquiteInteger(0);
@@ -82,7 +82,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	private MesquiteInteger eightParameterExtraSearch = new MesquiteInteger(5);
 	
     private double previousBranchLength = MesquiteDouble.unassigned;
-    private boolean unassigned = true;
+    //private boolean unassigned = true;
  	public static final int SIMPLER_AND_FLIP_FLOP = 2;  //conservative and slow
  	public static final int BASE_ON_SIMPLER= 0; 
  	public static final int FLIP_FLOP = 1;
@@ -301,7 +301,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private void prepareMatrices(){
         needToPrepareMatrices = false;
         boolean changed = false;
-        unassigned = false;
+       // unassigned = false;
         if (modelType < MODEL3CHARACTERINDEPENDENT){
 			if (rateMatrix == null || rateMatrix.length !=4) {
 				rateMatrix = new double[4][4];
@@ -311,23 +311,23 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
         }
         if (changed) {
             recalcProbsNeeded = true;
-            if (unassigned) {
-                if (eigenVectors == null)
-                    eigenVectors = new double[assumedMaxState+1][assumedMaxState+1];
-                if (eigenValues == null)
-                    eigenValues = new double[assumedMaxState+1];
-                DoubleArray.deassignArray(eigenValues);
-                Double2DArray.deassignArray(eigenVectors);
-            }
-            else  {
+         //   if (unassigned) {
+         //       if (eigenVectors == null)
+         //           eigenVectors = new double[assumedMaxState+1][assumedMaxState+1];
+         //       if (eigenValues == null)
+         //           eigenValues = new double[assumedMaxState+1];
+         //       DoubleArray.deassignArray(eigenValues);
+         //       Double2DArray.deassignArray(eigenVectors);
+         //   }
+         //   else  {
                 EigenAnalysis e = new EigenAnalysis(rateMatrix, true, false, true);
                 eigenValues = e.getEigenvalues();
-                imagEigenValues = e.getImagEigenValues();
+                //imagEigenValues = e.getImagEigenValues();
                 eigenVectors = e.getEigenvectors();
                 Matrix m = new Matrix(eigenVectors);
                 Matrix r = m.inverse();
                 inverseEigenVectors = r.getArrayCopy();
-            }
+          //  }
         }
     }
         
@@ -421,8 +421,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					if (rateMatrix[i][j]!= r) {
 						rateMatrix[i][j] = r;
 						changed = true;
-						if (!MesquiteDouble.isCombinable(r))
-							unassigned = true;
+					//	if (!MesquiteDouble.isCombinable(r))
+					//		unassigned = true;
 					}
 				} // else
 			}//j
@@ -520,8 +520,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	 * @param branchLength the length of the branch
 	 */
 	public void recalcProbabilities(double branchLength){
-		if (unassigned)
-			return;
+	//	if (unassigned)
+	//		return;
 		previousBranchLength = branchLength;
 		if (eigenValues == null)
 			return;
@@ -547,10 +547,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
         					negativeRoundOff = true;
         					probMatrix[i][j] = 0;    //fix the problem; rows must add to one, so no relative size issue
         				}
-        				else{
-        					negativeProbabilities= true;
-        					negativeProbValue = probMatrix[i][j];
-        				}
+        				//else{                      // no need to save the problem if we're not going to report it for now.
+        				//	negativeProbabilities= true;
+        				//	negativeProbValue = probMatrix[i][j];
+        				//}
         	//if ()  {
         	//	MesquiteMessage.warnProgrammer("Negative value in recalcProbabilities: " + bogusValue);
         	    //MesquiteMessage.println("rate matrix is " + Double2DArray.toString(rateMatrix));
