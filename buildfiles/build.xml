@@ -55,6 +55,7 @@
 		<property name="jars.dir" location="jars"/>
 		
 		<property file="${os.name}.properties"/>
+		<property file="${buildfiles.dir}/build.properties"/>
 		
 		<path id="compile.classpath" >
 			<fileset dir="${jars.dir}">
