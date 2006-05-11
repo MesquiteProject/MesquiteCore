@@ -30,9 +30,12 @@
 		<property name="installer.dir" location="${basedir}/../mesquiteinstaller"/>     
 
 		<!-- assorted mac folders and files that need to be excluded for linux builds -->
-		<property name="osxdirpath" value="**/Mesquite OSX.app/" />
-		<property name="osxdirpath1.4" value="**/Mesquite OSX (Java 1.4).app/" />
-		<property name="osxdirpath1.5" value="**/Mesquite OSX (Java 1.5).app/" />
+		<property name="osxdirname" value="Mesquite OSX.app" />		
+		<property name="osxdirpath" value="**/${osxdirname}/" />
+		<property name="osxdir1.4name" value="Mesquite OSX (Java 1.4).app" />				
+		<property name="osxdirpath1.4" value="**/${osxdir1.4name}/" />
+		<property name="osxdir1.5name" value="Mesquite OSX (Java 1.5).app" />		
+		<property name="osxdirpath1.5" value="**/${osxdir1.5name}/" />
 		<property name="os9path" value="**/Mesquite OS9" />
 
 		<!-- server destination locations -->
@@ -152,13 +155,16 @@
 		
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
-				<include name="${osxdirpath}" />
-				<include name="${osxdirpath1.4}" />
+				<include name="${osxdirpath}"/>
+				<include name="${osxdirpath1.4}"/>
 				<include name="${osxdirpath1.5}" />
-				<include name="${os9path}" />
 			</fileset>
 		</copy>
-
+		
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirname}/Contents/MacOS/Mesquite'"/>
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1.4name}/Contents/MacOS/Mesquite'"/>
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1.5name}/Contents/MacOS/Mesquite'"/>
+		
 		<!-- create .dmg -->
 		<exec executable="hdiutil" failonerror="false" os="Mac OS X">
 			<arg value="create" />
@@ -174,6 +180,8 @@
 		</exec>
 		-->
 	</target>
+	
+	<target depends="packagedist,packagesrc" name="packagedistandsrc"/>
 
 	<target depends="init" name="packagesrc">
 		<description>packages up the source distributions</description>
