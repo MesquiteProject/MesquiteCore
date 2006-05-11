@@ -60,6 +60,8 @@ java.lang.NullPointerException
 bugs to fix for 1.07
 ¥¥¥¥ INCLUDE TAXA & MATRICWES only works for Taxa/Char blocks
 ¥¥¥¥ clustal align default costs?
+¥¥¥¥ live changing of tree vector as option in tree window
+¥¥¥¥ can't set branch lengths to ?
 ÃÃÃÃ include taxa & matrices leaves remnant in script???
 ÃÃÃÃMANUAL toggle for coloring list
 ÃÃÃÃMANUAL Columns menu
