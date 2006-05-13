@@ -55,6 +55,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private boolean[] paramUnassigned;
     private double[][] probMatrix, rateMatrix, eigenVectors, inverseEigenVectors;
     private double[] eigenValues;  //, imagEigenValues;  //may use imagEigenValues with Putzer's method
+    private double[][] tent;
     private boolean negativeProbabilities = false;
     private double negativeProbValue = 0.0;
     //private MesquiteInteger pos = new MesquiteInteger(0);
@@ -124,6 +125,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
         qConstrained=null;         // true if a parameter is somehow constrained
         qBound=null;               // parameter bound to another parameter (-1 = not bound)
         qConstant=null;            // parameter is set to this value; 
+        tent= null;
         this.setConstraints(modelType);
         needToPrepareMatrices = true;
         recalcProbsNeeded = true;
@@ -490,7 +492,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		if (probMatrix == null)
 			return 0;
 		//TODO the following only works for two binary characters -- needs to be extended
-		return probMatrix[recodeStatePair(beginState[0],beginState[1])][recodeStatePair(endState[0],endState[1])];
+		// begin end reversed as in Asym2.
+		return probMatrix[recodeStatePair(endState[0],endState[1])][recodeStatePair(beginState[0],beginState[1])];
 	}
 	
 	/**
@@ -511,7 +514,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			recalcProbabilities(branchLength);
 		if (probMatrix ==null)
 			return 0;
-		return  probMatrix[recodeStatePair(beginState1,beginState2)][recodeStatePair(endState1,endState2)];
+		//begin end reversed as in Asym2
+		return probMatrix[recodeStatePair(endState1,endState2)][recodeStatePair(beginState1,beginState2)];
 	}
 	
 	
@@ -526,21 +530,25 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		if (eigenValues == null)
 			return;
 		int evl = eigenValues.length;
-		double[][] tent  =  new double[evl][evl];
-		for (int i=0; i< evl; i++)
-			for (int j=0; j< evl; j++){
-				if (i== j)
-					tent[i][j] = Math.exp(eigenValues[i]*branchLength);
-				else
-					tent[i][j] = 0;
-			}
+		if (tent == null  || tent.length != evl || tent[0].length != evl) {
+			tent  =  new double[evl][evl];
+			Double2DArray.zeroArray(tent);
+		}
+		for (int i=0;i<evl;i++)
+			tent[i][i] = Math.exp(eigenValues[i]*branchLength);
+		//		for (int i=0; i< evl; i++)
+//			for (int j=0; j< evl; j++){
+//				if (i== j)
+//					tent[i][j] = Math.exp(eigenValues[i]*branchLength);
+//				else
+//					tent[i][j] = 0;
+//			}
 			
 		double[][] p = Double2DArray.multiply(eigenVectors, tent);
 		probMatrix = Double2DArray.multiply(p, inverseEigenVectors);
 		probMatrix = Double2DArray.squnch(probMatrix);
-        	probMatrix = Double2DArray.transpose(probMatrix);
         	boolean negativeRoundOff = false;
-        	for (int i=0; i<probMatrix.length;i++)
+        	for (int i=0; i<probMatrix.length;i++)         //transposition not an issue here
         		for (int j=0;j<probMatrix[0].length;j++)
         			if (probMatrix[i][j]<= 0)
         				if (Math.abs(probMatrix[i][j])<1E-15) {
@@ -1200,17 +1208,24 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			recalcProbabilities(branchLength);
 		if (probMatrix == null)
 			return null;
-		if (index> probMatrix.length)  //TODO replace with appropriate test
+		if (index> probMatrix[0].length)  //TODO replace with appropriate test
 			return null;
 		double accumProb = 0;
 		int resultCode = recodeStatePair(maxState[0],maxState[1]);
-		for (int i=0; i<probMatrix[index].length; i++) {
-			accumProb +=  probMatrix[index][i];
-			if (r< accumProb){
-				resultCode = i;
-				break;
-			}
+//		for (int i=0; i<probMatrix[index].length; i++) {
+//			accumProb +=  probMatrix[index][i];
+//			if (r< accumProb){
+//				resultCode = i;
+//				break;
+//			}
+//		}
+		for (int i=0; i<probMatrix.length; i++) {
+		accumProb +=  probMatrix[i][index];
+		if (r< accumProb){
+			resultCode = i;
+			break;
 		}
+	}
 		return statePairFromCode(resultCode);
 	}
 
