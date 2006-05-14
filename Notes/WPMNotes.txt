@@ -58,10 +58,13 @@ java.lang.NullPointerException
 	at mesquite.lib.MainThread.run(MainThread.java:116)
 ===============
 bugs to fix for 1.07
-•••• INCLUDE TAXA & MATRICWES only works for Taxa/Char blocks
+√√√ INCLUDE TAXA & MATRICWES only works for Taxa/Char blocks
+√√√√ can't set branch lengths to ?
+•••• example files
+√√√√ Double2DArray multiply don't make new matrices
+
 •••• clustal align default costs?
 •••• live changing of tree vector as option in tree window
-•••• can't set branch lengths to ?
 √√√√ include taxa & matrices leaves remnant in script???
 √√√√MANUAL toggle for coloring list
 √√√√MANUAL Columns menu
@@ -69,7 +72,6 @@ bugs to fix for 1.07
 √√√√ condense taxonnames not functioning; doesn't remove (. space etc.
 •••• Matrices via assocaites (cf. fused export) -- converts associate matrix (via merging) into matrix for this taxa. Thus can use Save Multiple Matrices to save all associated
 •••• Save all stored matrices (disperse)
-•••• example files
 •••• multiple file import
 •••• schluter root states
 √√√√ disable directionality in MolecularData: swap acharacters; integrity check, e.g. 

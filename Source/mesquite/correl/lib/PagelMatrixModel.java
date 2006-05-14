@@ -518,7 +518,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		return probMatrix[recodeStatePair(endState1,endState2)][recodeStatePair(beginState1,beginState2)];
 	}
 	
-	
+	double[][] p, tprobMatrix;
 	/**
 	 * Updates the transition probability matrix for a branch with the specified length
 	 * @param branchLength the length of the branch
@@ -544,9 +544,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 //					tent[i][j] = 0;
 //			}
 			
-		double[][] p = Double2DArray.multiply(eigenVectors, tent);
-		probMatrix = Double2DArray.multiply(p, inverseEigenVectors);
-		probMatrix = Double2DArray.squnch(probMatrix);
+		
+		p = Double2DArray.multiply(eigenVectors, tent, p);
+		tprobMatrix = Double2DArray.multiply(p, inverseEigenVectors, tprobMatrix);
+		probMatrix = Double2DArray.squnch(tprobMatrix, probMatrix);
         	boolean negativeRoundOff = false;
         	for (int i=0; i<probMatrix.length;i++)         //transposition not an issue here
         		for (int j=0;j<probMatrix[0].length;j++)
