@@ -250,10 +250,10 @@ public class Pagel94 extends Pagel94Calculator {
         double score = result4-result8;
         if (logger!= null){ logger.cwrite("\n\nFor four parameter model : \n");
 	        logger.cwrite(model4.getParameters());
-	        logger.cwrite("\n\nLikelihood is " + result4);
+	        logger.cwrite("\n\nlog Likelihood is " + (-1*result4));
 	        logger.cwrite("\n\n\nFor eight parameter model : \n");
 	        logger.cwrite(model8.getParameters());
-	        logger.cwrite("\n\nLikelihood is " + result8);
+	        logger.cwrite("\n\nlog Likelihood is " + (-1*result8));
 	        
 	        logger.cwrite("\n\nDifference is " + score);
        }

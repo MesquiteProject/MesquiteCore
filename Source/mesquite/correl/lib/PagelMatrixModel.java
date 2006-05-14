@@ -448,13 +448,13 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	 * recodes a pair of characters into a single state for the transition matrix index
 	 */
 	private int recodeStatePair(int i, int j) {		//todo extend beyond binary characters?
-		return 3-(2*i+j); 
+		return (2*i+j);  
 	}
 	
-	private int[] pair0 = {1,1};
-	private int[] pair1 = {1,0};
-	private int[] pair2 = {0,1};
-	private int[] pair3 = {0,0};
+	private int[] pair0 = {0,0};
+	private int[] pair1 = {0,1};
+	private int[] pair2 = {1,0};
+	private int[] pair3 = {1,1};  
 	
 	private int[] statePairFromCode(int code){
 		switch (code){
@@ -546,8 +546,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			
 		
 		p = Double2DArray.multiply(eigenVectors, tent, p);
-		tprobMatrix = Double2DArray.multiply(p, inverseEigenVectors, tprobMatrix);
-		probMatrix = Double2DArray.squnch(tprobMatrix, probMatrix);
+		probMatrix = Double2DArray.multiply(p,inverseEigenVectors,probMatrix);
         	boolean negativeRoundOff = false;
         	for (int i=0; i<probMatrix.length;i++)         //transposition not an issue here
         		for (int j=0;j<probMatrix[0].length;j++)
