@@ -62,13 +62,13 @@ bugs to fix for 1.07
 ÃÃÃÃ can't set branch lengths to ?
 ¥¥¥¥ example files
 ÃÃÃÃ Double2DArray multiply don't make new matrices
+¥¥¥¥ David's aligner bugs
+¥¥¥¥ getDefaultCode
+¥¥¥¥ Manual: credits: What to say about Danny's joining team?
 
 ¥¥¥¥ clustal align default costs?
 ¥¥¥¥ live changing of tree vector as option in tree window
 ÃÃÃÃ include taxa & matrices leaves remnant in script???
-ÃÃÃÃMANUAL toggle for coloring list
-ÃÃÃÃMANUAL Columns menu
-ÃÃÃMANUAL high ascii file paths don't work (Laurin)
 ÃÃÃÃ condense taxonnames not functioning; doesn't remove (. space etc.
 ¥¥¥¥ Matrices via assocaites (cf. fused export) -- converts associate matrix (via merging) into matrix for this taxa. Thus can use Save Multiple Matrices to save all associated
 ¥¥¥¥ Save all stored matrices (disperse)
