@@ -46,6 +46,10 @@ wheeler = rw
 @wasabi = r
 * =
 
+[/mesquite_admin]
+@committers = rw
+* =
+
 [/mesquite_next_release]
 @committers = rw
 wheeler = r
