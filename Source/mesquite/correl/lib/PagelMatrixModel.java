@@ -54,8 +54,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private double [] params;
     private boolean[] paramUnassigned;
     private double[][] probMatrix, rateMatrix, eigenVectors, inverseEigenVectors;
-    private double[] eigenValues;  //, imagEigenValues;  //may use imagEigenValues with Putzer's method
-    private double[][] tent;
+    private double[] eigenValues;   //,imagEigenValues;  maybe use imagEigenValues with Putzer's method
     private boolean negativeProbabilities = false;
     private double negativeProbValue = 0.0;
     //private MesquiteInteger pos = new MesquiteInteger(0);
@@ -80,7 +79,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	long underflowCheck = 1;
 	MesquiteNumber minChecker;
 
-	private MesquiteInteger eightParameterExtraSearch = new MesquiteInteger(5);
+	private MesquiteInteger eightParameterExtraSearch = new MesquiteInteger(10);
 	
     private double previousBranchLength = MesquiteDouble.unassigned;
     //private boolean unassigned = true;
@@ -125,7 +124,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
         qConstrained=null;         // true if a parameter is somehow constrained
         qBound=null;               // parameter bound to another parameter (-1 = not bound)
         qConstant=null;            // parameter is set to this value; 
-        tent= null;
         this.setConstraints(modelType);
         needToPrepareMatrices = true;
         recalcProbsNeeded = true;
@@ -327,8 +325,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
                 //imagEigenValues = e.getImagEigenValues();
                 eigenVectors = e.getEigenvectors();
                 Matrix m = new Matrix(eigenVectors);
-                Matrix r = m.inverse();
-                inverseEigenVectors = r.getArrayCopy();
+                inverseEigenVectors = m.inverse().getArray();  //no need to copy here, m.inverse() is a throw-away
           //  }
         }
     }
@@ -530,56 +527,23 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		if (eigenValues == null)
 			return;
 		int evl = eigenValues.length;
-		if (tent == null  || tent.length != evl || tent[0].length != evl) {
-			tent  =  new double[evl][evl];
-			Double2DArray.zeroArray(tent);
+		if (p == null || p.length != evl || (p.length>0 && p[0].length != evl))
+			p = new double[evl][evl];
+		for(int i=0;i<evl;i++){       //here multiplying p by a diagonal matrix has been flattened to a nested pair of loops
+			double eigenExp = Math.exp(eigenValues[i]*branchLength);
+			for(int j = 0;j<evl;j++)
+				p[i][j]=eigenVectors[i][j]*eigenExp;
 		}
-		for (int i=0;i<evl;i++)
-			tent[i][i] = Math.exp(eigenValues[i]*branchLength);
-		//		for (int i=0; i< evl; i++)
-//			for (int j=0; j< evl; j++){
-//				if (i== j)
-//					tent[i][j] = Math.exp(eigenValues[i]*branchLength);
-//				else
-//					tent[i][j] = 0;
-//			}
-			
-		
-		p = Double2DArray.multiply(eigenVectors, tent, p);
 		probMatrix = Double2DArray.multiply(p,inverseEigenVectors,probMatrix);
-        	boolean negativeRoundOff = false;
         	for (int i=0; i<probMatrix.length;i++)         //transposition not an issue here
         		for (int j=0;j<probMatrix[0].length;j++)
         			if (probMatrix[i][j]<= 0)
         				if (Math.abs(probMatrix[i][j])<1E-15) {
-        					negativeRoundOff = true;
         					probMatrix[i][j] = 0;    //fix the problem; rows must add to one, so no relative size issue
         				}
-        				//else{                      // no need to save the problem if we're not going to report it for now.
-        				//	negativeProbabilities= true;
-        				//	negativeProbValue = probMatrix[i][j];
-        				//}
-        	//if ()  {
-        	//	MesquiteMessage.warnProgrammer("Negative value in recalcProbabilities: " + bogusValue);
-        	    //MesquiteMessage.println("rate matrix is " + Double2DArray.toString(rateMatrix));
-        		//MesquiteMessage.println("eigenValues are                       " + DoubleArray.toString(eigenValues));
-           	//	MesquiteMessage.println("imaginary portions of eigenvalues are " + DoubleArray.toString(imagEigenValues));
-        		//MesquiteMessage.println("tent is " + Double2DArray.toString(tent));
-        		//MesquiteMessage.println("EigenVectors are " + Double2DArray.toString(eigenVectors));
-        		//MesquiteMessage.println("inverseEigenVectors are " + Double2DArray.toString(inverseEigenVectors));
-        		//MesquiteMessage.println("result is " + Double2DArray.toString(probMatrix));
-        	//}
-        	//if (negativeRoundOff)
-        //		MesquiteMessage.println("Small negative roundoff errors set to zero");
-        	
-        	//MesquiteMessage.println("Trying alternate exp");
-        //	double[][] altProbMatrix = altMatrixExp(rateMatrix, eigenValues,imagEigenValues,branchLength);
-        	
-        	//MesquiteMessage.println("Original calculation: " + Double2DArray.toString(probMatrix));
-        	//MesquiteMessage.println("Alternate calculation: " + Double2DArray.toString(altProbMatrix));
-        	//probMatrix = altProbMatrix;
-        	recalcProbsNeeded = false;
+         	recalcProbsNeeded = false;
 	}
+	
 
 	// complex exponential
 	double[] complexExp(double re,double im){
@@ -607,8 +571,11 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				return MesquiteDouble.veryLargeNumber;
 			}
         		negativeProbabilities = false;
-			params = DoubleArray.clone(values);
-			prepareMatrices();
+        		if (params == null || params.length != values.length)
+        			params = new double[values.length];
+        		for(int i=0;i<values.length;i++)
+        			params[i] = values[i];
+			prepareMatrices();			
 			double result =  -this.logLikelihoodCalc(workingTree);
 			return result;
 		}
@@ -848,15 +815,16 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		else  
 			workingTree = originalTree;
 		Optimizer opt = new Optimizer(this);
-		double best = Double.MAX_VALUE;
 		// **** estParams is the matrix of trial values
 		double estParams[];
 		// estjust saves the starting values for error reporting
 		double backupEst[] = null;
-		double [] b = null;
-		double next;
 		switch (modelType) {
 			case MODEL8PARAM:{  // first try two versions of a 6-parameter model
+				estParams = new double[8];
+				double [] b = new double[8];
+				double next;
+				double best = Double.MAX_VALUE;
 				// no need to reallocate the two 6-p models everytime
 				if (intermediate1 == null)
 					intermediate1 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEY);
@@ -864,7 +832,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					intermediate2 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEX);
 				PagelMatrixModel model6_cy = intermediate1;
 				PagelMatrixModel model6_cx = intermediate2;
-				estParams = new double[8];
 				// first a model with changes in Y contingent on changes in X
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEY){
 				    model6_cy.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
@@ -894,11 +861,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				}
 				else {     //shouldn't need to compare best with next here
 					best = next;
-					if (b == null)
-						b = DoubleArray.clone(estParams);	
-					else
-						for (int i=0; i< estParams.length; i++)
-							b[i] = estParams[i];
+					for (int i=0; i< estParams.length; i++)
+						b[i] = estParams[i];
 				}
 				// now the other 6-parameter model (changes in X contingent on Y)
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEX){
@@ -929,11 +893,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				}
 				else if (next<best) {
 					best = next;
-					if (b == null)
-						b = DoubleArray.clone(estParams);	
-					else
-						for (int i=0; i< estParams.length; i++)
-							b[i] = estParams[i];
+					for (int i=0; i< estParams.length; i++)
+						b[i] = estParams[i];
 				}
 				//PETER: added these tick notifications to keep user informed of progress of search
 				if (commandRec != null) commandRec.tick("8 parameter model preliminary -ln likelihood: " + MesquiteDouble.toString(best));
@@ -956,20 +917,24 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						}
 						else if (next<best) {
 							best = next;
-							if (b == null)
-								b = DoubleArray.clone(estParams);	
-							else
-								for (int m=0; m< estParams.length; m++)
-									b[m] = estParams[m];
+							for (int m=0; m< estParams.length; m++)
+								b[m] = estParams[m];
 						}
 						if (commandRec != null) commandRec.tick("8 parameter model -ln likelihood after " + (i+1) + " searches: " + MesquiteDouble.toString(best));
+					}
 				}
-				}
+		 		if (params == null ||params.length != 8)
+		 			params = new double[8];
+		 		for(int i=0;i<b.length;i++)
+		 			params[i]= b[i];
+
 				break;
 			}
 			case MODEL6PARAMCONTINGENTCHANGEX:
 			case MODEL6PARAMCONTINGENTCHANGEY: {
 				estParams = new double[6];
+				if (params == null ||params.length != 6)
+					params = new double[6];
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL4PARAM) {
 					PagelMatrixModel model4 = new PagelMatrixModel("",CategoricalState.class,MODEL4PARAM);
 					model4.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
@@ -999,50 +964,43 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				}
 				allowedEdgeHits = beginningAllowed;
 				//backupEst = (double [])estParams.clone();
-				next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
+				double next = opt.optimize(estParams, null); // try optimizing from the contingentchangeX best parameters
 				if (!acceptableResults(next, estParams)) {
 					MesquiteMessage.println("Warning: NaN encountered in PagelMatrixModel optimization");
 					reportUnacceptableValues(next, estParams,backupEst);
-					//if (b == null)
-					//	b = DoubleArray.clone(estParams);	//only do this to get b set to something...
 				}
-				else if (next<best) {
-					best = next;
-					if (b == null)
-						b = DoubleArray.clone(estParams);	
-					else
-						for (int i=0; i< estParams.length; i++)
-							b[i] = estParams[i];
+				else { 
+					for(int i=0;i<estParams.length;i++)
+						params[i]= estParams[i];
 				}
 				break;
 			}
 			case MODEL4PARAM: {  // for now, just use flip/flop, though we might try getting estimates from MODEL2PARAM in the future
 				estParams = new double[4];
+				double[] b = new double[4];
+				double best = Double.MAX_VALUE;
+				double next;
 				estParams[2] = FLIP_FLOP_HIGH;
 				estParams[3] = FLIP_FLOP_HIGH;
 				estParams[0] = FLIP_FLOP_HIGH;
 				estParams[1] = FLIP_FLOP_HIGH;
-				if (b == null)
-					b = DoubleArray.clone(estParams);	
+				for(int i = 0;i<4;i++)
+					b[i] = estParams[i];
 				//backupEst = (double [])estParams.clone();
 		 		next = opt.optimize(estParams, null); //bundle);
 		 		if (!acceptableResults(next, estParams)) {
 		 			MesquiteMessage.warnProgrammer("Warning: NaN encountered in PagelMatrixModel optimization");
 					reportUnacceptableValues(next, estParams,backupEst);
 		 		}
-		 		else if (next<best) {
+		 		else{
 		 			best = next;
-					if (b == null)
-						b = DoubleArray.clone(estParams);	
-					else
-						for (int i=0; i< estParams.length; i++)
-							b[i] = estParams[i];
+					for (int i=0; i< 4; i++)
+						b[i] = estParams[i];
 		 		}
 				estParams[0] = FLIP_FLOP_LOW;
 				estParams[2] = FLIP_FLOP_LOW; //
 				estParams[1] = FLIP_FLOP_HIGH;  //forward
 				estParams[3] = FLIP_FLOP_HIGH;
-			 	params = DoubleArray.clone(estParams);
 				allowedEdgeHits = beginningAllowed;
 				//backupEst = (double [])estParams.clone();
 		 		next = opt.optimize(estParams, null); //bundle);
@@ -1052,17 +1010,13 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		 		}
 		 		else if (next<best) {
 		 			best = next;
-					if (b == null)
-						b = DoubleArray.clone(estParams);	
-					else
-						for (int i=0; i< estParams.length; i++)
-							b[i] = estParams[i];
+					for (int i=0; i< estParams.length; i++)
+						b[i] = estParams[i];
 		 		}
 		 		estParams[0] = FLIP_FLOP_HIGH;
 				estParams[2] = FLIP_FLOP_HIGH; //
 				estParams[1] = FLIP_FLOP_LOW;  //forward
 				estParams[3] = FLIP_FLOP_LOW;
-			 	params = DoubleArray.clone(estParams);
 				allowedEdgeHits = beginningAllowed;
 				//backupEst = (double [])estParams.clone();
 		 		next = opt.optimize(estParams, null); //bundle);
@@ -1072,12 +1026,13 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		 		}
 		 		else if (next<best) {
 		 			best = next;
-					if (b == null)
-						b = DoubleArray.clone(estParams);	
-					else
-						for (int i=0; i< estParams.length; i++)
-							b[i] = estParams[i];
+					for (int i=0; i< estParams.length; i++)
+						b[i] = estParams[i];
 		 		}
+		 		if (params == null ||params.length != 4)
+		 			params = new double[4];
+		 		for(int i=0;i<b.length;i++)
+		 			params[i]= b[i];
 				if (commandRec != null) commandRec.tick("4 parameter model -ln likelihood: " + MesquiteDouble.toString(best));
 				break;
 			}
@@ -1087,7 +1042,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				break;
 			}
 		} // end switch (??)
-		params = DoubleArray.clone(b);
 		if (scaleRescale && height != 0){ //UNDO the scaling of the tree
 			rescaleAllParameters(invHeight);
 			workingTree = originalTree;  // faster, less error prone than rescaling from mTree??
@@ -1120,7 +1074,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     				for (int j=0;j<estimateWidth;j++)
     					total += savedRootEstimates[i][j];
     			for (int i=0;i<estimateLength;i++)
-    				for (int j=0;j<estimateLength;j++)
+    				for (int j=0;j<estimateWidth;j++)
     					rootPriors[i][j] = savedRootEstimates[i][j]/total;
     		}
     		return rootPriors;
@@ -1220,12 +1174,12 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 //			}
 //		}
 		for (int i=0; i<probMatrix.length; i++) {
-		accumProb +=  probMatrix[i][index];
-		if (r< accumProb){
-			resultCode = i;
-			break;
+			accumProb +=  probMatrix[i][index];
+			if (r< accumProb){
+				resultCode = i;
+				break;
+			}
 		}
-	}
 		return statePairFromCode(resultCode);
 	}
 

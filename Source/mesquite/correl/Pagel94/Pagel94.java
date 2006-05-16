@@ -54,9 +54,11 @@ public class Pagel94 extends Pagel94Calculator {
     private PagelMatrixModel model8;
     
     private int simCount = 100;
+    private int completedCount = 0;
     private MesquiteBoolean presentPValue;
     private CLogger logger;
     private MesquiteBoolean resimulateConstantCharacters;
+    private int constantCharCount = 0;
     private int numIterations = 10;
     
       
@@ -272,6 +274,7 @@ public class Pagel94 extends Pagel94Calculator {
 	        model8.copyToClone(savedModel8);
 	        double diffs[] = new double[simCount];
 	        DoubleArray.deassignArray(diffs);
+	        constantCharCount=0;
 	        boolean hasAborted = false;
 	        progress = new ProgressIndicator(getProject(),"Running simulations", "Running", simCount, true);
 	        progress.start();
@@ -334,7 +337,10 @@ public class Pagel94 extends Pagel94Calculator {
 	            		        hasAborted = progress.isAborted();
 	            	    	    }
 	            	    }
-	            	    else diffs[simNumber] = 0;   //if character is constant the 4-parameter and 8-parameter models ought to be =
+	            	    else{
+	            	    		diffs[simNumber] = 0;   //if character is constant the 4-parameter and 8-parameter models ought to be =
+	            	    		constantCharCount++;
+	            	    	}
 	            }
 	        }
 	        catch(PagelMatrixModel.StuckSearchException e){
@@ -353,22 +359,29 @@ public class Pagel94 extends Pagel94Calculator {
 	        	 	if (completedDiffs>0){
 	        	 		pvalue = 1-(1.0*position)/(1.0*completedDiffs);
 	        	 		logger.cwrite("\np-value from " + completedDiffs +" simulations is " + pvalue + "\n");
+	        	 		if (constantCharCount >0)
+	        	 			logger.cwrite("Simulation set includes " + constantCharCount + " sets with constant characters");
+	        	 		completedCount = completedDiffs;
 	        	 	}
 	        	 	else{
 	        	 		pvalue = MesquiteDouble.unassigned;
 	        	 		logger.cwrite("\nNo simulations completed");
+	        	 		completedCount = 0;
 	        	 	}
 	         }
 	         else {
 	        	 	pvalue = 1-(1.0*position)/(1.0*simCount);
 	        	 	logger.cwrite ("\np-value from " + simCount + " simulations is " + pvalue + "\n");
+        	 		if (constantCharCount >0)
+        	 			logger.cwrite("Simulation set includes " + constantCharCount + " sets with constant characters");
+	        	 	completedCount = simCount;
 	         }
   	         if (result != null)
 	     	    result.setValue(pvalue);
 	         if (result.isUnassigned())
 	            resultString.setValue("No pvalue was calculated, see MesquiteLog for details");
 	        else
-	            resultString.setValue("p-value = " + result.getDoubleValue() + " (from " + simCount + " simulations)" );
+	            resultString.setValue("p-value = " + result.getDoubleValue() + " (from " + completedCount + " simulations)" );
      }
        else {
 	         if (result != null)
