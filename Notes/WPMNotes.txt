@@ -60,11 +60,13 @@ java.lang.NullPointerException
 bugs to fix for 1.07
 √√√ INCLUDE TAXA & MATRICWES only works for Taxa/Char blocks
 √√√√ can't set branch lengths to ?
-•••• example files
-√√√√ Double2DArray multiply don't make new matrices
-•••• David's aligner bugs
-•••• getDefaultCode
+•••• example files: correl
+•••• Double2DArray transpose don't make new matrices
 •••• Manual: credits: What to say about Danny's joining team?
+•••• find duplicate Consensus Tree(s) managers and deal with that
+•••• how to choose tree block for consensus tree in tree window?
+•••• downloads area, pages
+•••• date everywhere
 
 •••• clustal align default costs?
 •••• live changing of tree vector as option in tree window
@@ -73,7 +75,7 @@ bugs to fix for 1.07
 •••• Matrices via assocaites (cf. fused export) -- converts associate matrix (via merging) into matrix for this taxa. Thus can use Save Multiple Matrices to save all associated
 •••• Save all stored matrices (disperse)
 •••• multiple file import
-•••• schluter root states
+√√√√√ schluter root states
 √√√√ disable directionality in MolecularData: swap acharacters; integrity check, e.g. 
 √√√ tree legend fails because first calc fails; menu item remains but legend won't show
 √√√√ Move Archived to Current taxon namnes
