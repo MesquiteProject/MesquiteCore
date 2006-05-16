@@ -54,7 +54,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private double [] params;
     private boolean[] paramUnassigned;
     private double[][] probMatrix, rateMatrix, eigenVectors, inverseEigenVectors;
-    private double[] eigenValues;   //,imagEigenValues;  maybe use imagEigenValues with Putzer's method
+    private double[] eigenValues,imagEigenValues;  //use imagEigenValues with Putzer's method
     private boolean negativeProbabilities = false;
     private double negativeProbValue = 0.0;
     //private MesquiteInteger pos = new MesquiteInteger(0);
@@ -322,7 +322,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
          //   else  {
                 EigenAnalysis e = new EigenAnalysis(rateMatrix, true, false, true);
                 eigenValues = e.getEigenvalues();
-                //imagEigenValues = e.getImagEigenValues();
+                imagEigenValues = e.getImagEigenValues();  // grab in case putzer's method is necessary
                 eigenVectors = e.getEigenvectors();
                 Matrix m = new Matrix(eigenVectors);
                 inverseEigenVectors = m.inverse().getArray();  //no need to copy here, m.inverse() is a throw-away
@@ -535,13 +535,27 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				p[i][j]=eigenVectors[i][j]*eigenExp;
 		}
 		probMatrix = Double2DArray.multiply(p,inverseEigenVectors,probMatrix);
-        	for (int i=0; i<probMatrix.length;i++)         //transposition not an issue here
+		boolean needRecalc = false;   // set true if we need to try putzer's method, slower but less likely to break
+		for (int i=0; i<probMatrix.length;i++)         
         		for (int j=0;j<probMatrix[0].length;j++)
         			if (probMatrix[i][j]<= 0)
-        				if (Math.abs(probMatrix[i][j])<1E-15) {
+        				if (Math.abs(probMatrix[i][j])<1E-15) 
         					probMatrix[i][j] = 0;    //fix the problem; rows must add to one, so no relative size issue
-        				}
-         	recalcProbsNeeded = false;
+        				else
+        					needRecalc = true;
+		if (needRecalc){
+        		double[][] altProbMatrix = altMatrixExp(rateMatrix, eigenValues,imagEigenValues,branchLength);
+        	
+       		probMatrix = altProbMatrix;
+       		// check, just in case there is a round off error in Putzer's
+        		for (int i=0; i<probMatrix.length;i++)         
+            		for (int j=0;j<probMatrix[0].length;j++)
+            			if (probMatrix[i][j]<= 0)
+            				if (Math.abs(probMatrix[i][j])<1E-15) 
+            					probMatrix[i][j] = 0;    //fix the problem; rows must add to one, so no relative size issue
+
+		}
+         recalcProbsNeeded = false;
 	}
 	
 
@@ -552,6 +566,338 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		result[1]=Math.sin(im)*Math.exp(re);
 		return result;
 	}
+	
+	// Putzer code here
+	double[][] x = null;
+	double[][] identity = null;
+	double[][] p1 = null;  // clone from identity?
+	double[][] p2 = null;
+	double[][] p3 = null;
+	double[][] p4 = null;
+	double[][] putzerT1 = null;
+	double[][] putzerT2 = null;
+	double[][] putzerT3 = null;
+	double[] workingValues = null;
+	double[] workingIValues = null;
+	
+	int eigenValueStatus = UNEQUALTRIPLE;
+	public final static int UNEQUALTRIPLE = 0;
+	public final static int COMPLEXPAIR = 1;
+	public final static int EQUALPAIR  = 2;
+	public final static int EQUALTRIPLE = 3;
+	
+	public final static double equalTol = 0.001;
+	
+	double[][] altMatrixExp(double[][] baseArray,double[] eigenValues,double[] imagEigenValues,double t){
+
+		// find the zero eigenvalue; it may only be approximately 0, but it will be the
+		// largest, since the others all have negative real parts
+		double largest = -1E99;  
+		int largestIndex = -1;
+		int evl = eigenValues.length;
+		for (int i=0;i<evl;i++)
+			if (eigenValues[i] > largest) {
+				largest = eigenValues[i];
+				largestIndex = i;
+			}
+		// check for a conjugate pair
+		int imag1 = -1;
+		int imag2 = -1;
+		int realgroup1 = -1;
+		int realgroup2 = -1;
+		int realgroup3 = -1;
+		for(int i=0;i<evl;i++){
+			if (imagEigenValues[i] != 0)
+				if (imag1 == -1)
+					imag1 = i;
+				else imag2 = i;
+		}
+		if (imag1 > -1){
+			eigenValueStatus = COMPLEXPAIR;
+			for(int i= 0; i<evl;i++)
+				if (i != imag1 && i != imag2 && i != largestIndex)
+					realgroup1 = i;   // hold lone negative real;
+		}
+		else {  // no conjugate pairs, check for multiple == reals
+			for(int i=0;i<evl-1;i++)
+				for(int j=i+1;j<evl;j++){
+					//System.out.println("Test: " + Math.abs(eigenValues[i]-eigenValues[j]));
+					if(Math.abs((eigenValues[i]-eigenValues[j])/eigenValues[i]) < equalTol){  // found a pair
+						realgroup1=i;
+						realgroup2=j;
+						break;
+					}
+				}
+				if (realgroup2 == -1)
+					eigenValueStatus = UNEQUALTRIPLE;
+				else {  //find realgroup3
+					for(int i=0;i<evl;i++){
+						if (i != largestIndex && i != realgroup1 && i != realgroup2)
+							realgroup3 = i;
+					}
+					if (Math.abs((eigenValues[realgroup1]-eigenValues[realgroup3])/eigenValues[realgroup1])<equalTol)
+						eigenValueStatus = EQUALTRIPLE;
+					else 
+						eigenValueStatus = EQUALPAIR;
+				}	
+		}
+
+		if (identity == null || identity.length != evl || identity[0].length != evl) {
+			identity = new double[evl][evl];
+			Double2DArray.setToIdentityMatrix(identity);
+		}
+		if (p1 == null || p1.length != evl || p1[0].length != evl){
+			p1 = new double[evl][evl];
+			Double2DArray.setToIdentityMatrix(p1); 
+		}
+
+		if (workingValues == null || workingValues.length != evl)
+			workingValues = new double[evl];
+		workingValues[0] = 0;      // assert that the max eigenvalue is identically zero!
+		switch (eigenValueStatus) {
+			case UNEQUALTRIPLE: {
+				int nexteigenslot=1;
+				for (int i=0;i<evl;i++){
+					if(i!=largestIndex)
+						workingValues[nexteigenslot++] = eigenValues[i];
+				}	
+				//double z = workingValues[0];
+				double k = workingValues[1];
+				double m = workingValues[2];
+				
+				
+				//p2 = Double2DArray.multiply(baseArray,p1,p2);
+				//p2 = copy(baseArray,p2);
+				putzerT1 = scalarProduct(identity,k,putzerT1);
+				putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p3 = Double2DArray.multiply(putzerT2,baseArray,p3);
+				putzerT1 = scalarProduct(identity,m,putzerT1);
+				putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p4 = Double2DArray.multiply(putzerT2,p3,p4);
+				
+				x = copy(p1,x);
+				x = plusEquals(x,scalarProduct(baseArray,realR2(t,workingValues),p2));
+				x = plusEquals(x,scalarProduct(p3,realR3(t,workingValues),p3));
+				x = plusEquals(x,scalarProduct(p4,realR4(t,workingValues),p4));
+
+				break;
+			}
+			case COMPLEXPAIR: {
+				if (workingIValues == null || workingIValues.length != evl)
+					workingIValues = new double[evl];
+				DoubleArray.zeroArray(workingIValues);
+				workingValues[1] = eigenValues[imag1];
+				workingIValues[1] = imagEigenValues[imag1];
+				workingValues[2] = eigenValues[imag2];
+				workingIValues[2] = imagEigenValues[imag2];
+				workingValues[3] = eigenValues[realgroup1];
+
+				//double z = workingValues[0];
+				double k = workingValues[1];
+				
+				//p2 = Double2DArray.multiply(baseArray,p1,p2);
+				//p2 = copy(baseArray,p2);
+				putzerT1 = scalarProduct(identity,k,putzerT1);
+				putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p3 = Double2DArray.multiply(putzerT2,baseArray,p3);
+				//putzerT1 = scalarProduct(identity,k,putzerT1);
+				//putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p4 = Double2DArray.multiply(putzerT2,p3,p4);
+				x = copy(p1,x);
+				x = plusEquals(x,scalarProduct(baseArray,complexPairR2(t,workingValues,workingIValues),p2));
+				x = plusEquals(x,scalarProduct(p3,complexPairR3(t,workingValues,workingIValues),p3));
+				x = plusEquals(x,scalarProduct(p4,complexPairR4(t,workingValues,workingIValues),p4));
+				break;
+			}
+			case EQUALPAIR: {
+				workingValues[1] = eigenValues[realgroup1];
+				workingValues[2] = eigenValues[realgroup1];   // if they're close, force them equal
+				workingValues[3] = eigenValues[realgroup3];
+				
+				//double z = workingValues[0];
+				double k = workingValues[1];
+
+				//p2 = Double2DArray.multiply(baseArray,p1,p2);
+				//p2 = copy(baseArray,p2);
+				putzerT1 = scalarProduct(identity,k,putzerT1);
+				putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p3 = Double2DArray.multiply(putzerT2,baseArray,p3);
+				//putzerT1 = scalarProduct(identity,k,putzerT1);
+				//putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p4 = Double2DArray.multiply(putzerT2,p3,p4);
+				x = copy(p1,x);
+				x = plusEquals(x,scalarProduct(baseArray,realR2(t,workingValues),p2));
+				x = plusEquals(x,scalarProduct(p3,realPairR3(t,workingValues),p3));
+				x = plusEquals(x,scalarProduct(p4,realPairR4(t,workingValues),p4));
+				break;
+			}
+			case EQUALTRIPLE: {
+				workingValues[1] = eigenValues[realgroup1];
+				workingValues[2] = eigenValues[realgroup2];
+				workingValues[3] = eigenValues[realgroup3];
+				double k = workingValues[1];
+
+				putzerT1 = scalarProduct(identity,k,putzerT1);
+				putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p3 = Double2DArray.multiply(putzerT2,baseArray,p3);
+				//putzerT1 = scalarProduct(identity,k,putzerT1);
+				//putzerT2 = minus(baseArray,putzerT1,putzerT2);
+				p4 = Double2DArray.multiply(putzerT2,p3,p4);
+				x = copy(p1,x);
+				x = plusEquals(x,scalarProduct(baseArray,realR2(t,workingValues),p2));
+				x = plusEquals(x,scalarProduct(p3,realPairR3(t,workingValues),p3));
+				x = plusEquals(x,scalarProduct(p4,realTripleR4(t,workingValues),p4));				
+				break;
+			}
+		}
+		return Double2DArray.transpose(x);
+	}
+	
+
+	double realR2(double t, double[] realEigenValues){
+		double k = realEigenValues[1];
+		return (Math.exp(k*t) - 1)/(k);
+	}
+	
+	double complexPairR2(double t, double[] realEigenValues, double[] imagEigenValues){
+		double ka = realEigenValues[1];
+		double kb = imagEigenValues[1];
+		return -((ka*(1 - Math.exp(ka*t)*Math.cos(kb*t)))/(ka*ka + kb*kb)) + 
+		  (Math.exp(ka*t)*kb*Math.sin(kb*t))/(ka*ka + kb*kb);
+	}
+	
+	
+	double realR3(double t, double[] realEigenValues){
+		//double z = realEigenValues[0];
+		double k = realEigenValues[1];
+		double m = realEigenValues[2];
+		return (Math.exp(m*t)*k - k - Math.exp(k*t)*m + m)/((-k + m)*(k)*(m)); 
+	}
+	
+	double complexPairR3(double t, double[] realEigenValues, double[] imagEigenValues){
+		double ka = realEigenValues[1];
+		double kb = imagEigenValues[1];
+		double expkat = Math.exp(ka*t);
+		return (2*kb - 2*expkat*kb*Math.cos(kb*t) + 2*expkat*ka*Math.sin(kb*t))/ 
+		  (2*(ka*ka*kb + kb*kb*kb));
+	}
+	
+	double realPairR3(double t, double[] values){
+		double k = values[1];
+		double expkt = Math.exp(k*t);
+		return (1 - expkt + expkt*k*t)/(k*k);
+	}
+	
+	double realR4(double t, double[] realEigenValues){
+		double k = realEigenValues[1];
+		double m = realEigenValues[2];
+		double n = realEigenValues[3];
+		double expnt = Math.exp(n*t);
+		double expmt = Math.exp(m*t);
+		double expkt = Math.exp(k*t);
+		return (-(expnt*k*k*m) + k*k*m + 
+		          expnt*k*m*m - k*m*m + expmt*k*k*n - 
+		          k*k*n - expkt*m*m*n + m*m*n - 
+		          expmt*k*n*n + k*n*n + expkt*m*n*n - 
+		          m*n*n)/((-k + m)*(-k + n)*(-m + n)*(k)*(m)*(n));
+	}
+
+	double complexPairR4(double t, double[] realEigenValues, double[] imagEigenValues){
+		double ka = realEigenValues[1];
+		double kb = imagEigenValues[1];
+		double n = realEigenValues[3];
+		double expkat = Math.exp(ka*t);
+		double expnt = Math.exp(n*t);
+		double coskbt = Math.cos(kb*t);
+		double sinkbt = Math.sin(kb*t);
+		return (-2*ka*ka*kb + 2*expnt*ka*ka*kb - 2*kb*kb*kb + 2*expnt*kb*kb*kb + 
+			    4*ka*kb*n - 2*kb*n*n - 4*expkat*ka*kb*n*coskbt + 
+			    2*expkat*kb*n*n*coskbt + 
+			    2*expkat*ka*ka*n*sinkbt - 
+			    2*expkat*kb*kb*n*sinkbt - 2*expkat*ka*n*n*sinkbt)/
+			    (2*kb*(ka*ka + kb*kb)*n*(ka*ka + kb*kb - 2*ka*n + n*n));
+	}
+	
+	double realPairR4(double t, double [] values){
+		double k = values[1];
+		double n = values[3];
+		double expkt = Math.exp(k*t);
+		return (-k*k + Math.exp(n*t)*k*k + 2*k*n - 2*expkt*k*n - 
+			       n*n + expkt*n*n + expkt*k*k*n*t - expkt*k*n*n*t)/(k*k*n*(n-k)*(n-k));
+	}
+	double realTripleR4(double t, double[] values){
+		double k = values[1];
+		double expkt = Math.exp(k*t);
+		return (-2 + 2*expkt - 2*expkt*k*t +  expkt*k*k*t*t)/(2*k*k*k);
+	}
+	
+	// Trying to replace Jama matrices with Double2DArrays
+	
+	double[][] plusEquals(double[][]dest, double[][]addend){
+		int numRows1 = Double2DArray.numFullRows(dest);
+		int numRows2 = Double2DArray.numFullRows(addend);
+		int numColumns1 = Double2DArray.numFullColumns(dest);
+		int numColumns2 = Double2DArray.numFullColumns(addend);
+		boolean flag = (numColumns1!= numRows2 || numColumns1!=numColumns2);
+		if (flag) MesquiteMessage.println("Wow! You are trying to add a:   " 
+		        +Integer.toString(numRows2) +"x" +Integer.toString(numColumns2)  
+		             +" to a  " 
+		        +Integer.toString(numRows1) +"x" +Integer.toString(numColumns1)  ); 
+		if (flag)
+		    return null; 
+		for (int i=0; i<numColumns1; i++) 
+			for (int j=0; j<numRows1; j++) 
+				dest[i][j] += addend[i][j];
+		return dest;
+	}
+	
+	double[][]scalarProduct(double[][]source,double multiplier,double[][]result){
+		int numRows = Double2DArray.numFullRows(source);
+		int numColumns = Double2DArray.numFullColumns(source);
+		if (numRows==0 ||  numColumns==0)
+			return null;  
+		if (result == null || result.length != numRows || (result.length>0 && result[0].length != numColumns))
+			result = new double[numRows][numColumns];
+		for(int i=0;i<numRows;i++)
+			for(int j=0;j<numColumns;j++)
+				result[i][j]=source[i][j]*multiplier;
+		return result;
+	}
+	
+	double[][]minus(double[][]source,double[][]subtractor,double[][]result){
+		int numRows1 = Double2DArray.numFullRows(source);
+		int numRows2 = Double2DArray.numFullRows(subtractor);
+		int numColumns1 = Double2DArray.numFullColumns(source);
+		int numColumns2 = Double2DArray.numFullColumns(subtractor);
+		boolean flag = (numColumns1!= numRows2 || numColumns1!=numColumns2);
+		if (flag) MesquiteMessage.println("Wow! You are trying subtract a:   " 
+		        +Integer.toString(numRows2) +"x" +Integer.toString(numColumns2)  
+		             +" from a  " 
+		        +Integer.toString(numRows1) +"x" +Integer.toString(numColumns1)  ); 
+		if (flag)
+		    return null; 
+		if (result == null || result.length != numRows1 || (result.length>0 && result[0].length != numColumns1))
+			result = new double[numRows1][numColumns1];
+		Double2DArray.zeroArray(result);
+		for(int i=0;i<numRows1;i++)
+			for(int j=0;j<numColumns1;j++)
+				result[i][j]=source[i][j]-subtractor[i][j];
+		return result;
+	}
+
+	
+	double[][]copy(double[][]source,double[][]result){
+		int numRows1 = Double2DArray.numFullRows(source);
+		int numColumns1 = Double2DArray.numFullColumns(source);
+		if (result == null || result.length != numRows1 || (result.length>0 && result[0].length != numColumns1))
+			result = new double[numRows1][numColumns1];
+		for(int i=0;i<numRows1;i++)
+			for(int j=0;j<numColumns1;j++)
+				result[i][j]=source[i][j];
+		return result;		
+	}
+
+
 	
 
 	double limit = 10000;
