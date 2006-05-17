@@ -62,7 +62,7 @@ bugs to fix for 1.07
 ÃÃÃÃ can't set branch lengths to ?
 ¥¥¥¥ example files: correl
 ¥¥¥¥ Double2DArray transpose don't make new matrices
-¥¥¥¥ Manual: credits: What to say about Danny's joining team?
+ÃÃÃÃ Manual: credits: What to say about Danny's joining team?
 ¥¥¥¥ find duplicate Consensus Tree(s) managers and deal with that
 ¥¥¥¥ how to choose tree block for consensus tree in tree window?
 ¥¥¥¥ downloads area, pages
