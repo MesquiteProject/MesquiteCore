@@ -1,0 +1,400 @@
+#NEXUS
+[written Sat May 06 22:06:12 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+
+BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
+	DIMENSIONS NTAX=24;
+	TAXLABELS
+		species_0 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_10 species_11 species_12 species_13 species_14 species_15 species_16 species_17 species_18 species_19 species_20 species_21 species_22 species_23 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  habitat;
+	DIMENSIONS  NCHAR=1;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS 
+		1 habitat /  aquatic terrestrial ; 
+	MATRIX
+	species_0   0
+	species_1   1
+	species_2   0
+	species_3   0
+	species_4   1
+	species_5   1
+	species_6   0
+	species_7   0
+	species_8   1
+	species_9   1
+	species_10  0
+	species_11  0
+	species_12  0
+	species_13  0
+	species_14  0
+	species_15  1
+	species_16  1
+	species_17  1
+	species_18  0
+	species_19  0
+	species_20  1
+	species_21  0
+	species_22  0
+	species_23  0
+
+;
+
+END;
+BEGIN CHARACTERS;
+	TITLE  physiology;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = CONTINUOUS;
+CHARSTATELABELS 
+		1 metabolic_rate,
+		2 sprint_speed ; 
+	MATRIX
+	species_0    1.219 11.3
+	species_1    3.56 17.98
+	species_2    0.98 15.16
+	species_3    2.341 19.53
+	species_4    1.998 23.07
+	species_5    2.951 20.78
+	species_6    0.5681 20.44
+	species_7    1.153 17.82
+	species_8    2.713 22.37
+	species_9    5.673 20.12
+	species_10   0.112 13.0
+	species_11   0.6743 15.91
+	species_12   0.9881 16.19
+	species_13   1.231 20.35
+	species_14   1.987 20.32
+	species_15   1.7 18.87
+	species_16   2.987 22.82
+	species_17   3.209 29.87
+	species_18   0.456 19.53
+	species_19   0.9868 16.07
+	species_20   1.233 24.62
+	species_21   0.871 21.01
+	species_22   0.3451 12.83
+	species_23   0.795 13.99
+
+;
+
+END;
+BEGIN TREES;
+	Title 'Trees from "01-pairwise.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
+	TRANSLATE
+		1 species_0,
+		2 species_1,
+		3 species_2,
+		4 species_3,
+		5 species_4,
+		6 species_5,
+		7 species_6,
+		8 species_7,
+		9 species_8,
+		10 species_9,
+		11 species_10,
+		12 species_11,
+		13 species_12,
+		14 species_13,
+		15 species_14,
+		16 species_15,
+		17 species_16,
+		18 species_17,
+		19 species_18,
+		20 species_19,
+		21 species_20,
+		22 species_21,
+		23 species_22,
+		24 species_23;
+	TREE mtDNA_phylogeny = (((((1,16),((9,17),14)),(((6,20),(((8,24),(15,(18,21))),(10,((11,22),12)))),(7,(2,19)))),4),((3,(13,23)),5));
+
+END;
+
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED  (CHARACTERS = habitat)  =  unord:  1;
+TYPESET Current_Parsimony_Models  (CHARACTERS = habitat)  =  unord:  1;
+TYPESET * UNTITLED  (CHARACTERS = physiology)  =  Linear:  1 -  2;
+TYPESET Current_Parsimony_Models  (CHARACTERS = physiology)  =  Linear:  1 -  2;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED  (CHARACTERS = habitat)  =  'Mk1 (est.)':  1;
+ProbModelSet * UNTITLED  (CHARACTERS = physiology)  =  Brownian_default:  1 -  2;
+ProbModelSet Current_Probability_Models  (CHARACTERS = physiology)  =  Brownian_default:  1 -  2;
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = habitat)  =  universal:  1;
+
+
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 5616496406151607698;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 5359875599842773608;
+			checksum 0 2437689620;
+			setID 1 1344182101150933612;
+			checksum 1 573191175;
+		endTell;
+		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
+		tell It;
+			makeTreeWindow #5616496406151607698  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
+			tell It;
+				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
+				tell It;
+					setTreeBlock 1;
+					toggleUseWeights off;
+				endTell;
+				setAssignedID 865.967565541874.2516291620293279705;
+				getTreeWindow;
+				tell It;
+					setSize 450 526;
+					setLocation 5 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				tell It;
+					suppress;
+					setTreeDrawer  #mesquite.trees.DiagonalDrawTree.DiagonalDrawTree;
+					tell It;
+						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+						tell It;
+							stretchToggle off;
+							branchLengthsToggle off;
+							toggleScale on;
+							toggleCenter off;
+							toggleEven off;
+							namesAngle ?;
+						endTell;
+						setEdgeWidth 12;
+						orientRight;
+					endTell;
+					setBackground White;
+					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
+					desuppress;
+					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
+					tell It;
+						setFont SanSerif;
+						setFontSize 10;
+						setColor Black;
+						toggleColorPartition on;
+						toggleShadePartition off;
+						toggleNodeLabels on;
+						toggleShowNames on;
+					endTell;
+				endTell;
+					setTreeNumber 1;
+					useSuggestedSize off;
+					toggleSizeToFit on;
+					toggleTextOnTree off;
+					newAssistant  #mesquite.pairwise.PairwiseComparison.PairwiseComparison;
+				tell It;
+					requireCalculate;
+					showStates off;
+					setPairSelector  #mesquite.pairwise.PairsOneChar.PairsOneChar;
+					tell It;
+						setLimit 5;
+					endTell;
+					getCharacterSourceA  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+					tell It;
+						setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+						tell It;
+							setDataSet #5359875599842773608;
+						endTell;
+					endTell;
+					getCharacterSourceB  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+					tell It;
+						setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+						tell It;
+							setDataSet #1344182101150933612;
+						endTell;
+					endTell;
+					setCharacterA 1;
+					setCharacterB 1;
+					setPairing 1;
+					setInitialOffsetX 3;
+					setInitialOffsetY -508;
+					calculate;
+				endTell;
+					newWindowAssistant  #mesquite.trees.MirrorTreeWindowMaker.MirrorTreeWindowMaker;
+				tell It;
+					getWindow;
+					tell It;
+						setSize 584 476;
+						setLocation 428 22;
+						setFont SanSerif;
+						setFontSize 10;
+						onInfoBar;
+						setExplanationSize 0;
+						setAnnotationSize 0;
+						setFontIncAnnot 0;
+						setFontIncExp 0;
+						newAssistantLeft #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
+					tell It;
+						suspend ;
+						setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
+						tell It;
+							toggleLabels off;
+						endTell;
+						setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
+						tell It;
+							getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+							tell It;
+								setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+								tell It;
+									setDataSet #5359875599842773608;
+								endTell;
+							endTell;
+							setMethod  #mesquite.parsimony.ParsAncestralStates.ParsAncestralStates;
+							tell It;
+								setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
+							endTell;
+						endTell;
+						setCharacter 1;
+						setMapping 1;
+						toggleShowLegend on;
+						toggleGray off;
+						toggleWeights on;
+						setInitialOffsetX 20;
+						setInitialOffsetY -161;
+						setLegendWidth 142;
+						setLegendHeight 161;
+						resume ;
+					endTell;
+						newAssistantRight #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
+					tell It;
+						suspend ;
+						setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
+						tell It;
+							toggleLabels off;
+						endTell;
+						setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
+						tell It;
+							getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+							tell It;
+								setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+								tell It;
+									setDataSet #1344182101150933612;
+								endTell;
+							endTell;
+							setMethod  #mesquite.parsimony.ParsAncestralStates.ParsAncestralStates;
+							tell It;
+								setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
+							endTell;
+						endTell;
+						setCharacter 1;
+						setMapping 1;
+						toggleShowLegend on;
+						toggleGray off;
+						toggleWeights on;
+						setInitialOffsetX -162;
+						setInitialOffsetY -305;
+						setLegendWidth 142;
+						setLegendHeight 305;
+						resume ;
+					endTell;
+					endTell;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+					tell It;
+						suppress;
+						setTreeDrawer  #mesquite.trees.DiagonalDrawTree.DiagonalDrawTree;
+						tell It;
+							setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
+							tell It;
+								stretchToggle off;
+								branchLengthsToggle off;
+								toggleScale on;
+								toggleCenter off;
+								toggleEven off;
+								namesAngle ?;
+							endTell;
+							setEdgeWidth 12;
+							orientLeft;
+						endTell;
+						setBackground White;
+						setBranchColor Black;
+						showNodeNumbers off;
+						labelBranchLengths off;
+						desuppress;
+						getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
+						tell It;
+							setFont SanSerif;
+							setFontSize 10;
+							setColor Black;
+							toggleColorPartition on;
+							toggleShadePartition off;
+							toggleNodeLabels on;
+							toggleShowNames on;
+						endTell;
+					endTell;
+					showWindow;
+				endTell;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
+				tell It;
+					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
+				endTell;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '02-pairwiseFig2(1).nex';
+			setPrevFileName '00-introduction.nex';
+			getWindow;
+			tell It;
+					setSize 489 163;
+					setLocation 462 563;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+				setExplanation 'This file shows the use of pairwise comparisons to test association between characters on a phylogeny.  At right are two data matrices, categorical and continuous.  The first character of each is compared  in the mirror tree window.  Above left is an analysis of pairwise comparisons automatically chosen by the algorithm of W. Maddison (2000).  There are 3696 pairings of terminal taxa with 7 pairs contrasting the independent (categorical) variable.  The first pairing (#1) is shown: all 7 of its pairs have the dependent variable greater in the terrestrial species, significant with p=0.0078.  However, among all 3696 pairings, some are not significant (worst p is 0.2265).';
+				setTitle Pairwise_comparison;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+
+

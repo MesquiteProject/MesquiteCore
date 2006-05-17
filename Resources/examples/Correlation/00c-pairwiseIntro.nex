@@ -1,0 +1,35 @@
+#NEXUS
+[written Wed May 17 13:36:35 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
+		tell It;
+			setNextFileName '01-pairwise.nex';
+			setPrevFileName '00b-pagel94Hominids.nex';
+			getWindow;
+			tell It;
+					setSize 429 332;
+					setLocation 318 26;
+					setFont SanSerif;
+					setFontSize 10;
+					offInfoBar;
+					setExplanationSize 0;
+					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'The following examples concern pairwise tests of character association^n^nThey illustrate the methods described in: ^n^nMaddison, W.P.  2000. Testing character correlation using pairwise comparisons on a phylogeny.  Journal of Theoretical Biology. 202: 195-204.^n^nThis paper describes methods to choose pairs of taxa for comparative method calculations (tests of character association). The corresponding Mesquite modules automatically find phylogenetically separate pairs of taxa according to specific criteria. ^n^nThe example files begin with a fairly complex example, then proceed through the examples of the figures of the paper cited above.^n';
+				setTitle Pairwise_comparison_examples;
+				toggleFileNames off;
+				setPrevButtonName Previous;
+				setNextButtonName Next;
+				setEditorsVisible;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+
+
