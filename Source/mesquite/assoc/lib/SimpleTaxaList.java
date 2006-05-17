@@ -199,6 +199,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		return row;
 	}
 	
+	
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		int  row = findRow(y);
 		if (row>=0 && row<=selected.length && row<=taxa.getNumTaxa()) {
