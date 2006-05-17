@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:25:42 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Wed May 17 13:48:34 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -13,37 +13,27 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN CHARACTERS;
 	TITLE  16epq_sequence;
-	DIMENSIONS NCHAR=19;
+	DIMENSIONS  NCHAR=19;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
 	Aus         AACATCTGGGAACCGTGCG
@@ -66,6 +56,7 @@ BEGIN CHARACTERS;
 
 
 ;
+
 
 
 END;
@@ -93,7 +84,6 @@ CHARSTATELABELS
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -116,9 +106,8 @@ BEGIN TREES;
 END;
 
 
-
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                    unord PolyTcount =                    MINSTEPS;
+OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
@@ -135,15 +124,22 @@ ProbModelSet * UNTITLED  (CHARACTERS = 16epq_sequence)  =  'Mk1 (est.)':  1 -  1
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+CODESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  universal:  1 -  19;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434;
 			checksum 0 4129971366;
@@ -151,6 +147,9 @@ Begin MESQUITE;
 			checksum 1 1838322636;
 			setID 2 3243446279249302787;
 			checksum 2 2830407910;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
 			showDatasList  #mesquite.lists.DatasetList.DatasetList;
 			tell It;
 				getWindow;
@@ -158,19 +157,21 @@ Begin MESQUITE;
 					newAssistant  #mesquite.lists.DatasetsListTaxa.DatasetsListTaxa;
 					newAssistant  #mesquite.lists.DatasetsListNumChars.DatasetsListNumChars;
 					setSize 370 148;
-					setLocation 487 12;
+					setLocation 487 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 				endTell;
 				showWindow;
 			endTell;
-			showCharacters 0 #mesquite.lists.CharacterList.CharacterList;
+			showCharacters #974864624972105434 #mesquite.lists.CharacterList.CharacterList;
 			tell It;
 				setData 0;
 				getWindow;
@@ -185,14 +186,19 @@ Begin MESQUITE;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.lists.CharListAnnotPanel.CharListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 			endTell;
-			showCharacters 2 #mesquite.lists.CharacterList.CharacterList;
+			showCharacters #3243446279249302787 #mesquite.lists.CharacterList.CharacterList;
 			tell It;
 				setData 2;
 				getWindow;
@@ -207,13 +213,19 @@ Begin MESQUITE;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.lists.CharListAnnotPanel.CharListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 			endTell;
-			showCharacters 1 #mesquite.lists.CharacterList.CharacterList;
+			showCharacters #7634018259203763187 #mesquite.lists.CharacterList.CharacterList;
 			tell It;
 				setData 1;
 				getWindow;
@@ -222,17 +234,23 @@ Begin MESQUITE;
 					newAssistant  #mesquite.lists.CharacterStats.CharacterStats;
 					newAssistant  #mesquite.parsimony.CharListParsModels.CharListParsModels;
 					setSize 441 124;
-					setLocation 12 9;
+					setLocation 12 22;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.lists.CharListAnnotPanel.CharListAnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -248,7 +266,10 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
-				setExplanation 'The characters of a data matrix can be manipulated in Character Matrix Editors as in previous examples, or in Character List windows as here.  ^n^nEach of the windows at left summarizes information about each of the characters in a matrix.  There may be one or more columns.  In these examples, there are three columns: one indicating whether the character is currently included, a second showing the number of states or range of states, and a third indicating the assumption used for parsimony calculations.  ^n^nAdditional columns can be added using the Add Column submenu in the List menu of the windows.  You can ask to have the current character weights, probability models, etc., shown.^n^nCharacters can be reordered by selecting the character (touch on its number to the left of its name) and dragging the characters to a new place in the sequence.  Characters can be sorted in different orders using the Sort tool.  Touch on a column with the sort tool to sort according to the values in that column.^n^nThese list windows allow you to do calculations and set options.  For instance, if you select a row in the lower left list (for the data matrix "Measurements", you can then touch on the column headings which have inverted triangles.  Menus will drop down that allow you to set inclusion of the selected characters, or manipulate parsimony models, and so on.^n^nAbove is a list window summarizing the data matrices currently stored in the project.';
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setActive;
+				setExplanation 'The characters of a data matrix can be manipulated in Character Matrix Editors as in previous examples, or in Character List windows as here.  ^n^nEach of the windows at left summarizes information about each of the characters in a matrix.  There may be one or more columns.  In these examples, there are three columns: one indicating whether the character is currently included, a second showing the number of states or range of states, and a third indicating the assumption used for parsimony calculations.  ^n^nAdditional columns can be added using the Columns menu of the List window.  You can ask to have the current character weights, probability models, etc., shown.^n^nCharacters can be reordered by selecting the character (touch on its number to the left of its name) and dragging the characters to a new place in the sequence.  Characters can be sorted in different orders using the Sort tool.  Touch on a column with the sort tool to sort according to the values in that column.^n^nThese list windows allow you to do calculations and set options.  For instance, if you select a row in the lower left list (for the data matrix "Measurements", you can then touch on the column headings which have inverted triangles.  Menus will drop down that allow you to set inclusion of the selected characters, or manipulate parsimony models, and so on.^n^nAbove is a list window summarizing the data matrices currently stored in the project.';
 				setTitle Character_Lists;
 				toggleFileNames off;
 				setPrevButtonName Previous;
@@ -258,4 +279,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

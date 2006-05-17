@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:47:38 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 14:24:07 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE swordtails;
@@ -277,7 +277,7 @@ Begin MESQUITE;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setActive;
-				setExplanation 'The asymmetrical model of evolution (AsymmMk) has two options: either the root state frequencies are assumed to be the same as the implicit equilibrium frequencies, or they are assumed to be equal (i.e. a flat prior).  Try choosing the alternative options in the editor for the model.  Note how the reconstruction at the root changes if the root state option is changed. ';
+				setExplanation 'The asymmetrical model of evolution (AsymmMk) has two options: either the root state frequencies are assumed to be the same as the implicit equilibrium frequencies, or they are assumed to be equal (i.e. a flat prior).  Try choosing the alternative options in the editor for the model.  Note how the reconstruction at the root changes if the root state option is changed.  This effect is particularly strong if one of the states is more common than the other.';
 				setTitle Likelihood;
 				toggleFileNames off;
 				setPrevButtonName Previous;

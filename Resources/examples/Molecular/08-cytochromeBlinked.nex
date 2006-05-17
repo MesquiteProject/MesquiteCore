@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:08:13 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Wed May 17 13:41:56 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -13,7 +13,7 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  Amino_acids;
-	DIMENSIONS NCHAR=382;
+	DIMENSIONS  NCHAR=382;
 	FORMAT DATATYPE = Protein GAP = - MISSING = ?;
 	OPTIONS  LINKCHARACTERS = location;
 	MATRIX
@@ -171,9 +171,9 @@ BEGIN CHARACTERS;
 ;
 
 END;
-
 BEGIN CODONS;
-CODESET * UNTITLED = Universal : all;
+CODESET * UNTITLED  (CHARACTERS = Amino_acids)  =  universal:  1 -  382;
+
 
 END;
 
@@ -232,9 +232,8 @@ BEGIN TREES;
 END;
 
 
-
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Amino_acids)  =  unord:  1 -  382;
 TYPESET * UNTITLED  (CHARACTERS = location)  =  Squared:  1 -  382;
 
@@ -249,11 +248,11 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 5749286926902316461;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 7273041429729163753;
 			checksum 0 2913214590;
@@ -273,20 +272,53 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames off;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
+				tell It;
+					gapCosts 8 3;
 				endTell;
 			endTell;
 			showDataWindow #1052710308229948178 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -300,20 +332,42 @@ Begin MESQUITE;
 					onInfoBar;
 					setExplanationSize 30;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames on;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -330,6 +384,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'How were the plots of cytochrome B in the previous example made?  At present, the way to do this in Mesquite is a bit convoluted.  The trick is to subvert the characters scattergram, showing position in space of the amino acids as X and Y axes, then coloring the amino acids by the desired statistic.  The position in space is stored as a second matrix (below right) linked to the protein sequence matrix (above right).^n^nTo reproduce this yourself, first make the molecular sequence matrix.  Then, select New Linked Matrix from the Characters menu.  When a matrix is made to be linked to a second matrix, the two matrices are constrained to have the same number of characters.  If character 10 is deleted from one matrix, character 10 will also be deleted from the other.^n^nIn this case we made the linked matrix to be a Continuous matrix, and then turned it into a three dimensional matrix (Taxa X Characters X Coordinates [x, y and z]) by using Add Item and Rename Item in the Utilities submenu of the Matrix menu of the Character Matrix Editor.  The x,y,z coordinates could be added for all taxa if known, but otherwise only the first taxon (in this case Lamprey) needs to be filled out (because we will use the average x,y,z coordinates for the amino acids).';
 				setTitle Cytochrome_B;
 				toggleFileNames off;
@@ -340,4 +396,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

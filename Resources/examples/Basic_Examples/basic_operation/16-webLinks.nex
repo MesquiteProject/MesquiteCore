@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Apr 22 13:09:58 PDT 2004 by Mesquite  version 1.01+ (build e97)]
+[written Wed May 17 13:45:12 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
@@ -17,6 +17,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'The files that Mesquite reads can either be local, for instance on your hard drive, or at a URL on the internet.  You can read the latter using the "URL" item in the Open menu of the file menu.  For instance, if you touch the Go button below, you will be taken to a file on Mesquite''s website.^n^nOnce you touch on the "Go" button, you will not have a button to return to this file.';
 				setTitle Web_Links;
@@ -29,4 +31,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

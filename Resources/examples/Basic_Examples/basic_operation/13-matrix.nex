@@ -1,35 +1,25 @@
 #NEXUS
-[written Sun Sep 21 12:21:33 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Wed May 17 13:44:57 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 BEGIN CHARACTERS;
 	TITLE  Structure_&_Color;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 
@@ -38,4 +28,11 @@ END;
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 

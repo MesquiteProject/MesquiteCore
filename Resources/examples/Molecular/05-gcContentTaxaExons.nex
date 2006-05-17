@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:07:15 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Wed May 17 13:41:39 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -13,7 +13,7 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "05-gcContentTaxaExons.nex"';
-	DIMENSIONS NCHAR=716;
+	DIMENSIONS  NCHAR=716;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 CHARSTATELABELS 
 18 #17, 244 ex1., 245 Int1, 391 int1, 392 ex2., 573 ex2., 574 int2, 665 int2, 666 ex3. ; 
@@ -224,6 +224,7 @@ CHARSTATELABELS
 ;
 
 
+
 END;
 
 BEGIN LABELS;
@@ -359,9 +360,8 @@ BEGIN ASSUMPTIONS;
 END;
 
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = '1. special character: GC bias for taxon^n^n2. *** number for character: GC bias chart^n^n3. Parsimony steps^n^n4. Gaps';
-
-
 
 END;
 
@@ -369,15 +369,21 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  716;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  716;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 5362004184182154199;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 5453088708553656046;
 			checksum 0 2175300760;
@@ -392,7 +398,22 @@ Begin MESQUITE;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 419.967566324406.1416342777910267728;
-				getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
+				getTreeWindow;
+				tell It;
+					setSize 734 533;
+					setLocation 272 22;
+					setFont SanSerif;
+					setFontSize 10;
+					onInfoBar;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					getToolPalette;
+					tell It;
+					endTell;
+					setActive;
+					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
 					setTreeDrawer  #mesquite.ornamental.CircularTree.CircularTree;
@@ -406,6 +427,8 @@ Begin MESQUITE;
 					endTell;
 					setBackground Light_Blue;
 					setBranchColor Black;
+					showNodeNumbers off;
+					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -413,25 +436,14 @@ Begin MESQUITE;
 						setFontSize 10;
 						setColor Black;
 						toggleColorPartition on;
+						toggleShadePartition off;
 						toggleNodeLabels on;
 						toggleShowNames on;
 					endTell;
 				endTell;
-				getTreeWindow;
-				tell It;
-					setSize 734 533;
-					setLocation 272 4;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					getToolPalette;
-					tell It;
-					endTell;
-					setActive;
 					setTreeNumber 1;
 					setTree '(1,((2,(3,4)),((((((5,6),7),8),9),((((15,16),17),18),((((((19,20),((21,23),22)),((32,33),43)),(39,(40,41))),((24,(26,((27,28),29))),(((((30,31),((57,59),58)),38),42),((34,37),(35,36))))),(((((((((((25,(75,76)),(((60,(61,(62,65))),(63,64)),(66,(68,(71,((((((((79,(80,89)),81),91),90),(((((95,96),98),97),100),101)),(85,86)),94),(83,((87,88),(92,(93,99)))))))))),84),67),72),78),74),73),77),((69,70),82)),((((((((((44,46),50),48),45),(47,49)),52),51),56),(53,54)),55))))),(10,((11,12),(13,14))))));';
+					useSuggestedSize off;
 					toggleSizeToFit off;
 					sizeDrawing 500 500;
 					toggleLegendFloat on;
@@ -463,7 +475,7 @@ Begin MESQUITE;
 						tell It;
 							setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
 							tell It;
-								setDefaultModel 13;
+								setDefaultModel 21;
 							endTell;
 							getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 							tell It;
@@ -472,12 +484,14 @@ Begin MESQUITE;
 						endTell;
 					endTell;
 					setCharacter 1;
+					setMapping 1;
 					toggleShowLegend on;
+					toggleGray off;
 					toggleWeights on;
 					setInitialOffsetX -162;
 					setInitialOffsetY -317;
 					setLegendWidth 142;
-					setLegendHeight 302;
+					setLegendHeight 305;
 					resume ;
 				endTell;
 				endTell;
@@ -485,6 +499,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
+				endTell;
+				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+				tell It;
+					colorByPartition off;
 				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
@@ -506,6 +524,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'This shows the same analysis of GC bias across taxa as the previous example, except that the introns are now excluded from the calculations.  The variation in GC bias appears not so extreme. Some of the variation in GC bias across taxa appears not to be due to compositional bias in homologous sites, but rather to the fact that some taxa have longer introns than others, which  leads to a lower GC bias for these taxa (because the introns are AT rich).';
 				setTitle GC_bias;
 				toggleFileNames off;
@@ -516,4 +536,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:27:15 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 14:22:50 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE swordtails;
@@ -81,18 +81,18 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1;
+
+
+END;
+
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1;
 END;
 
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1;
-
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1;
-
 
 END;
 
@@ -133,7 +133,6 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -206,7 +205,7 @@ Begin MESQUITE;
 					toggleGray off;
 					toggleWeights on;
 					setInitialOffsetX -239;
-					setInitialOffsetY -173;
+					setInitialOffsetY -178;
 					setLegendWidth 218;
 					setLegendHeight 161;
 					resume ;
@@ -243,6 +242,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setActive;
 				setExplanation 'Mesquite has the option to reconstruct ancestral states using likelihood.  Two models of evolution are available: a symmetrical one-parameter model (Lewis''s Markov k model, called here the Mk1 model) and an asymmetrical two parameter model, in which increases in state (e.g., 0 to 1) have a different rate from decreased (1 to 0).^n^nHere shown is an example from Figure 5 of Schluter et al., 1997 (Evolution 51:1699), of swordtail fish.^n^nThe reconstruction method focuses on each node separately, for each determining the likelihood of character states at that node.   This is equivalent to the "marginal" method of Swofford''s PAUP, or the Fossil Likelihood method of the Graphics window of Pagel''s Discrete.  If parameters need to be estimated, this is done in advance of the reconstruction.  This is equivalent to the "Global" option of Discrete.^n^nTo see the relatively likelihoods of different states, hold the cursor over a branch.  Information appears at the bottom of the Trace Character legend.^n^nTo select a different model, use the Probability Model submenu of the Trace menu of the tree window.';
 				setTitle Likelihood;
 				toggleFileNames off;

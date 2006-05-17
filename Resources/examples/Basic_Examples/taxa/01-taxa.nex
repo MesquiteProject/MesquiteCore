@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Aug 13 21:43:43 PDT 2005 by Mesquite  version 1.06beta (build g86) at Pellenes.local/10.0.1.2]
+[written Wed May 17 13:46:19 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -19,28 +19,18 @@ BEGIN CHARACTERS;
 		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
-
 	Fubonidia   11
-
 	Ibbinidibe  11
-
 	Snorolopa   1(0,1)
-
 	Quidnubia   00
-
 	Suinon      00
-
 	Zorabynyx   00
-
 	Huichoros   00
-
 	Jotinupa    00
-
 
 ;
 
 END;
-
 BEGIN TREES;
 	Title Basic_Trees;
 	LINK Taxa = Fubonidians;
@@ -72,7 +62,7 @@ BEGIN NOTES;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -80,6 +70,12 @@ END;
 
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
 END;
 
 Begin MESQUITE;
@@ -150,4 +146,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

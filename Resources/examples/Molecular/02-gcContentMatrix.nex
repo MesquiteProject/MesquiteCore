@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Aug 30 16:55:02 PDT 2005 by Mesquite  version 1.06 (build g97) at Pellenes-3.local/10.0.1.2]
+[written Wed May 17 13:40:52 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -369,6 +369,12 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  716;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  716;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
@@ -414,9 +420,10 @@ Begin MESQUITE;
 					toggleShowChanges on;
 					toggleSeparateLines off;
 					toggleShowStates on;
-					toggleAutoWithCharNames on;
+					toggleAutoWCharNames off;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 16;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -424,9 +431,9 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
-					forceAutosize;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
@@ -440,6 +447,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
 				tell It;
 					autotabOff;
+				endTell;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
+				tell It;
+					gapCosts 8 3;
 				endTell;
 			endTell;
 		endTell;
@@ -468,4 +479,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

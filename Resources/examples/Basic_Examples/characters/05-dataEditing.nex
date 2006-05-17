@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:21:28 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 13:48:40 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -53,8 +53,14 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -62,12 +68,6 @@ END;
 
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
 END;
 
 Begin MESQUITE;

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:48:13 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 14:27:54 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE taxa;
@@ -52,6 +52,12 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1;
 
@@ -59,12 +65,6 @@ END;
 
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1;
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1;
-
-
 END;
 
 Begin MESQUITE;
@@ -105,7 +105,6 @@ Begin MESQUITE;
 					tell It;
 						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -184,7 +183,7 @@ Begin MESQUITE;
 					toggleShowLegend on;
 					setMode Uniquely_Best_States;
 					setInitialOffsetX -162;
-					setInitialOffsetY -182;
+					setInitialOffsetY -263;
 					setLegendWidth 142;
 					setLegendHeight 161;
 					desuppress ;
@@ -221,6 +220,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setActive;
 				setExplanation 'At left are four trees with likelihood reconstructions of a character shown.  Above is the Trace Character Over Trees facility, summarizing these reconstructions.  ^n^nNote that the most recent common ancestor (MRCA) of E and C is shown as black in the Trace Over Trees image, because in each of the trees at left it is reconstructed with strong likelihood preference for state 1.  Hold the cursor over this node in the tree above; note the legend indicates that the node is present in 4 of 4 trees, and all show state 1. In contrast, the MRCA of ECDF is shown gray, because there are no uniquely best states in any trees.  Holding the cursor over this node gives the message "Node present in 3 of 4 trees", because the node is absent in tree 4 (the clade ECDF does not exist in the tree).^n^nOn tree 2 it would seem that state 0 is much preferred at the MRCA of ECDF.  Why is that state not shown on that node in the Trace Over Trees above?  Go to the next example for explanation.';
 				setTitle 'Trace over trees: likelihood';
 				toggleFileNames off;

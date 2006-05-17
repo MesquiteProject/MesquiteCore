@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:17:04 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 13:45:01 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -53,6 +53,12 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 
@@ -60,12 +66,6 @@ END;
 
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
 END;
 
 Begin MESQUITE;
@@ -169,6 +169,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 16;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -176,10 +177,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;

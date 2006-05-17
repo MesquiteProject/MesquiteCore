@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:22:03 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 13:49:58 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE species;
@@ -209,7 +209,7 @@ Begin MESQUITE;
 					setX 1;
 					setY 1;
 					setSize 524 317;
-					setLocation 11 308;
+					setLocation 2 314;
 					setFont SanSerif;
 					setFontSize 10;
 					onInfoBar;
@@ -242,7 +242,7 @@ Begin MESQUITE;
 			getWindow;
 			tell It;
 					setSize 455 343;
-					setLocation 549 305;
+					setLocation 531 311;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
@@ -251,7 +251,7 @@ Begin MESQUITE;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setActive;
-				setExplanation 'Just as with taxa, characters can be partitioned into assigned groups.  Thus, in this example, the first two characters are placed in the group "Morphology", while the second two characters are placed in the group "Physiology & Behavior".  Partitioning is useful for display (e.g., in these examples colors are associated with the groups).  In the future it will become more important as various modules perform analyses that compare results from characters belonging in different groups. ^n^nTo make a character partition, go to the List of Characters window (available in the Characters menu).  Use the Add Column submenu in the List menu to choose Group Membership.  This will add a Groups column to the list.  Next, create the groups.  You can create a group by touching on the column heading "Groups".  A drop down menu will appear.  Select "New Group..." and enter the group name.  You can assign a color to the group by choosing Edit Group Color (from the drop down menu) and selecting a color.  Then, you can assign a character to the group by selecting the character''s row in the list window and choose the group designation from the Set Group submenu in the drop down menu.';
+				setExplanation 'Just as with taxa, characters can be partitioned into assigned groups.  Thus, in this example, the first two characters are placed in the group "Morphology", while the second two characters are placed in the group "Physiology & Behavior".  Partitioning is useful for display (e.g., in these examples colors are associated with the groups).  In the future it will become more important as various modules perform analyses that compare results from characters belonging in different groups. ^n^nTo make a character partition, go to the List of Characters window (available in the Characters menu).  Use the Columns menu to choose Group Membership.  This will add a Groups column to the list.  Next, create the groups.  You can create a group by touching on the column heading "Groups".  A drop down menu will appear.  Select "New Group..." and enter the group name.  You can assign a color to the group by choosing Edit Group Color (from the drop down menu) and selecting a color.  Then, you can assign a character to the group by selecting the character''s row in the list window and choose the group designation from the Set Group submenu in the drop down menu.';
 				setTitle 'Character groups (partitions)';
 				toggleFileNames off;
 				setPrevButtonName Previous;

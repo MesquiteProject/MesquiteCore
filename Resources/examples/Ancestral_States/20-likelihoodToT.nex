@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:48:19 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 14:27:58 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE taxa;
@@ -52,6 +52,12 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1;
 
@@ -59,12 +65,6 @@ END;
 
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1;
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1;
-
-
 END;
 
 Begin MESQUITE;

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:46:52 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 14:33:30 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE swordtails;
@@ -240,7 +240,7 @@ Begin MESQUITE;
 					setInitialOffsetX 7;
 					setInitialOffsetY -170;
 					setLegendWidth 243;
-					setLegendHeight 161;
+					setLegendHeight 163;
 					resume ;
 				endTell;
 				endTell;
@@ -266,7 +266,7 @@ Begin MESQUITE;
 			setPrevFileName '15aa-xiphLikelihood.nex';
 			getWindow;
 			tell It;
-					setSize 384 206;
+					setSize 448 252;
 					setLocation 1 318;
 					setFont SanSerif;
 					setFontSize 10;
@@ -276,11 +276,12 @@ Begin MESQUITE;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setActive;
-				setExplanation 'This shows a realization of character evolution made by stochastic character mapping.  Use the "realization" arrows to see alternative realizations.  The model of evolution, shown in the small window, has its rate estimated from the tree and data.  Try raising the rate to see how the realizations change.';
+				setExplanation 'This shows a realization of character evolution made by stochastic character mapping.  Stochastic character mapping is available as a reconstruction method for categorical data.^n^nUse the "realization" arrows to see alternative realizations.  The model of evolution, shown in the small window, has its rate estimated from the tree and data.  Try raising the rate to see how the realizations change.';
 				setTitle Stochastic_character_mapping;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
+				addWebLink Show_Manual  'docs/mesquite/CharacterEvolution/AncestralStates.html#scm';
 			endTell;
 			showWindow;
 		endTell;

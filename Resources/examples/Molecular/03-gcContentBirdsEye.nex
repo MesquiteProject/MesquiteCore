@@ -1,5 +1,5 @@
 #NEXUS
-[written Mon Oct 18 22:00:21 PDT 2004 by Mesquite  version 1.05+ (build g25)]
+[written Wed May 17 13:40:56 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -13,7 +13,7 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "03-gcContentBirdsEye.nex"';
-	DIMENSIONS NCHAR=716;
+	DIMENSIONS  NCHAR=716;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 CHARSTATELABELS 
 18 #17, 244 ex1., 245 Int1, 391 int1, 392 ex2., 573 ex2., 574 int2, 665 int2, 666 ex3. ; 
@@ -224,6 +224,7 @@ CHARSTATELABELS
 ;
 
 
+
 END;
 
 BEGIN LABELS;
@@ -359,14 +360,19 @@ BEGIN ASSUMPTIONS;
 END;
 
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = '1. special character: GC bias for taxon^n^n2. *** number for character: GC bias chart^n^n3. Parsimony steps^n^n4. Gaps';
-
-
 
 END;
 
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  716;
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  716;
+
+
 END;
 
 Begin MESQUITE;
@@ -388,13 +394,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 913 443;
+					setSize 913 468;
 					setLocation 1 22;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -405,17 +413,30 @@ Begin MESQUITE;
 					setWindowWidth 15;
 				endTell;
 					setBackground White;
-					toggleShowNames off;
+					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
 					toggleShowStates on;
-					toggleAutoWithCharNames on;
+					toggleAutoWCharNames off;
+					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
 					setColumnWidth 3;
 					toggleBirdsEye on;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -425,10 +446,9 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
-				getEmployee #mesquite.ornamental.CellPictures.CellPictures;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
 				tell It;
-					toggleSeparate off;
-					toggleAA off;
+					gapCosts 8 3;
 				endTell;
 			endTell;
 		endTell;
@@ -445,6 +465,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'In this "bird''s eye" view of the data matrix, the columns are made very narrow and the ^nstate names are suppressed.  The moving window for the GC bias coloring is 15 bases.';
 				setTitle GC_bias;
@@ -456,4 +478,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

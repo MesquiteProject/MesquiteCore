@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:27:09 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 14:19:46 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Anolis;
@@ -178,6 +178,13 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = island)  =  universal:  1;
+CODESET * UNTITLED  (CHARACTERS = Ecomorph)  =  universal:  1;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  6;
 TYPESET * UNTITLED  (CHARACTERS = island)  =  unord:  1;
@@ -189,13 +196,6 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  6;
 ProbModelSet * UNTITLED  (CHARACTERS = island)  =  'Mk1 (est.)':  1;
 ProbModelSet * UNTITLED  (CHARACTERS = Ecomorph)  =  'Mk1 (est.)':  1;
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED  (CHARACTERS = island)  =  universal:  1;
-CODESET * UNTITLED  (CHARACTERS = Ecomorph)  =  universal:  1;
-
-
 END;
 
 Begin MESQUITE;
@@ -244,6 +244,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 70;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -251,10 +252,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;

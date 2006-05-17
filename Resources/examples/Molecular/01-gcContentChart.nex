@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 19:04:37 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Wed May 17 13:40:47 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -13,7 +13,7 @@ END;
 
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "01-gcContentChart.nex"';
-	DIMENSIONS NCHAR=716;
+	DIMENSIONS  NCHAR=716;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 CHARSTATELABELS 
 18 #17, 244 ex1., 245 Int1, 391 int1, 392 ex2., 573 ex2., 574 int2, 665 int2, 666 ex3. ; 
@@ -224,6 +224,7 @@ CHARSTATELABELS
 ;
 
 
+
 END;
 
 BEGIN LABELS;
@@ -359,9 +360,8 @@ BEGIN ASSUMPTIONS;
 END;
 
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = '1. special character: GC bias for taxon^n^n2. *** number for character: GC bias chart^n^n3. Parsimony steps^n^n4. Gaps';
-
-
 
 END;
 
@@ -369,15 +369,21 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  716;
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  716;
+
+
+END;
+
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 5362004184182154199;
 		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 5453088708553656046;
 			checksum 0 2175300760;
@@ -395,25 +401,58 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
 					toggleShowNames on;
 					toggleTight off;
 					toggleShowChanges on;
+					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleAutoWCharNames off;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
 				getWindow;
 				tell It;
 					forceAutosize;
 				endTell;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
 				getEmployee #mesquite.molec.ColorByNumber.ColorByNumber;
 				tell It;
 					setNumberTask  #mesquite.molec.GCAsNumber.GCAsNumber;
 					setWindowWidth 1;
+				endTell;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
+				tell It;
+					gapCosts 8 3;
 				endTell;
 			endTell;
 		endTell;
@@ -442,6 +481,8 @@ Begin MESQUITE;
 					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -450,6 +491,8 @@ Begin MESQUITE;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
 					showAverageToggle on;
+					setCumulativeMode 0;
+					showAsBarChartToggle on;
 					showRawToggle off;
 					setNumberIntervals 20;
 					setIntervalSize 1.0;
@@ -478,6 +521,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 				setExplanation 'At left are DNA sequences of EF1-alpha in some spiders.  The cells of the matrix are colored using Color By State from the Color Cells submenu.^n^nAt lower left is a chart of average (across taxa) GC bias for each site along the sequence.  The chart is using amoving window analysis to smooth the chart.  The red regions are the introns.  As expected, the introns are less GC rich (i.e. more AT rich) than the exons.';
 				setTitle GC_bias;
 				toggleFileNames off;
@@ -488,4 +533,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

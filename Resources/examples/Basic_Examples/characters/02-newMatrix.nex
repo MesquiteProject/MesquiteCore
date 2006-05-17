@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun Sep 21 12:25:15 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Wed May 17 13:47:53 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -37,7 +37,7 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209;
 		endTell;
@@ -54,6 +54,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'This file has no character matrices.  To make a new, blank character matrix, go to the Characters menu and choose New Empty Matrix...  You will be presented with a dialog box allowing you to:^n^n-- set the name of the matrix (in Mesquite it''s a good idea to give informative names to your matrices, since you can have several in a single file)^n^n-- indicate how many characters the matrix is to start out with^n^n-- what type of matrix it will be.^n^nWhat types of matrices are available depends on the modules installed in Mesquite.  You will probably see at least three choices: Categorical (e.g., data with states 0, 1, 2, etc.), DNA (states A, C, G, T) and Continuous (states 0.231, -5.987, and so on).  Categorical data matrices can handle states from 0-55.  You can enter the states as single symbols (0-9, A-Z, a-z) or as numbers (0 through 55).^n';
 				setTitle Making_matrices;
@@ -65,4 +67,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

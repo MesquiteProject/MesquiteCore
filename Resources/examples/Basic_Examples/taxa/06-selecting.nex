@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:20:31 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 13:47:30 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -90,8 +90,14 @@ TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.831372553 0.33725490) ;
 
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
+OPTIONS DEFTYPE =                               unord PolyTcount =                               MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -101,12 +107,6 @@ END;
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED  (CHARACTERS = Structure_&_Color)  =  'Mk1 (est.)':  1 -  2;
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
-
-
 END;
 
 Begin MESQUITE;
@@ -157,6 +157,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 70;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -164,10 +165,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;

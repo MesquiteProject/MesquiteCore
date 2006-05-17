@@ -147,7 +147,6 @@ public class ListTable extends MesquiteTable {
 		ListAssistant assistant = window.findAssistant(column);
 		if (assistant!=null) {
 			try{
-//if (column == 2) Debugg.println("gmt assistant " +  assistant + "   " + column);
 				return assistant.getStringForRow(row);
 			}
 			catch (NullPointerException e){
@@ -163,12 +162,10 @@ public class ListTable extends MesquiteTable {
 	}
 	public void drawMatrixCell(Graphics g, int x, int y,  int w, int h, int column, int row, boolean selected){  
 		ListAssistant assistant = window.findAssistant(column);
-//if (column == 2) Debugg.println("assistant " +  assistant + "   " + column);
 		if (assistant!=null) {
 			String s = "";
 			try{
 				s = assistant.getStringForRow(row); 
-			if (column ==2)	Debugg.println("s== " + s + " " + assistant);
 			}
 			catch (NullPointerException e){
 			}
@@ -180,7 +177,6 @@ public class ListTable extends MesquiteTable {
 				try{
 					Color old = g.getColor();
 					Color c = assistant.getBackgroundColorOfCell(row,selected);
-//Debugg.println("c " + c + " " + assistant);
 					if (c!=null)
 						if (selected)
 							c = Color.black;

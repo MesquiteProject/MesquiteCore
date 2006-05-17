@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:21:50 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 13:49:18 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Fubonidians;
@@ -115,12 +115,18 @@ BEGIN NOTES;
 
 	CHARACTERS = 16epq_sequence TAXA = Fubonidians;
 
-BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                  unord PolyTcount =                  MINSTEPS;
-	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
-TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
-TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
-TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
+OPTIONS DEFTYPE =                   unord PolyTcount =                   MINSTEPS;
+	TYPESET *  UNTITLED ( CHARACTERS =  Structure_&_Color ) =   unord :   1 -   2;
+TYPESET Current_Parsimony_Models ( CHARACTERS =  Structure_&_Color ) =   unord :   1 -   2;
+TYPESET *  UNTITLED ( CHARACTERS =  16epq_sequence ) =   unord :   1 -   19;
+TYPESET *  UNTITLED ( CHARACTERS =  Measurements ) =   Squared :   1 -   4;
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+CODESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  universal:  1 -  19;
+
 
 END;
 
@@ -130,10 +136,10 @@ ProbModelSet * UNTITLED  (CHARACTERS = 16epq_sequence)  =  'Mk1 (est.)':  1 -  1
 ProbModelSet * UNTITLED  (CHARACTERS = Measurements)  =  Brownian_default:  1 -  4;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
-CODESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  universal:  1 -  19;
-
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
+TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
+TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
 
 END;
 
@@ -189,6 +195,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 16;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -196,10 +203,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;
@@ -240,6 +243,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames off;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 16;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -247,10 +251,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;
@@ -305,6 +305,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 70;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -312,10 +313,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;

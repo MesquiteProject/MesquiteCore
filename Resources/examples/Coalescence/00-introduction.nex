@@ -1,9 +1,8 @@
 #NEXUS
-[written Sun Sep 21 19:11:02 PDT 2003 by Mesquite  version 1.0 (build e57)]
+[written Wed May 17 13:39:06 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 BEGIN NOTES;
+
 	TEXT  FILE TEXT = 'Example files for coalescence calculations^n^nThe files linked to this one illustrate some of the coalescence calculations that can be done by the package of coalescence modules of the Mesquite system.  To learn more about this package, use the Coalescence Package menu item of the Help menu, or touch on the banner in the Mesquite Startup window. (It should take you to your web browser, perhaps after asking you to locate the browser.)^n^nTo go from one file to another, hit the "Go" button in the green window.';
-
-
 
 END;
 
@@ -23,6 +22,8 @@ Begin MESQUITE;
 					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
 					setActive;
 				setExplanation 'Example files for coalescence calculations^n^nThe files linked to this one illustrate some of the coalescence calculations that can be done by the package of coalescence modules of the Mesquite system.  To learn more about this package, go to the population genetics section of the manual using the button below, or use the Coalescence Package menu item of the Help menu, or touch on the banner in the Mesquite Startup window. (It should take you to your web browser, perhaps after asking you to locate the browser.)^n^nTo go from one file to another, hit the "Next" button.';
 				setTitle Coalescence_examples;
@@ -36,4 +37,5 @@ Begin MESQUITE;
 		endTell;
 		endTell;
 end;
+
 

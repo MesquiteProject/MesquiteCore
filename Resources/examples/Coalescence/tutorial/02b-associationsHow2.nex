@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:58:50 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 13:39:58 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Species;
@@ -66,14 +66,14 @@ Begin MESQUITE;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
 					newAssistant  #mesquite.assoc.TaxonListAssoc.TaxonListAssoc;
 				tell It;
-					getAssociationsTask Stored Taxa Associations (id# 22247);
+					getAssociationsTask Stored Taxa Associations (id# 4074);
 					resetAssociation;
 					getEmployee #mesquite.assoc.StoredAssociations.StoredAssociations;
 					tell It;
 						setCurrentAssociation 0;
 					endTell;
 				endTell;
-					setSize 586 162;
+					setSize 603 218;
 					setLocation 9 22;
 					setFont SanSerif;
 					setFontSize 10;
@@ -85,6 +85,7 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 				endTell;
 				showWindow;
 				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
@@ -100,7 +101,7 @@ Begin MESQUITE;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
 					setSize 201 204;
-					setLocation 7 270;
+					setLocation 4 317;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
@@ -126,7 +127,7 @@ Begin MESQUITE;
 			getWindow;
 			tell It;
 					setSize 563 251;
-					setLocation 224 253;
+					setLocation 224 312;
 					setFont SanSerif;
 					setFontSize 10;
 					offInfoBar;
@@ -134,7 +135,6 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setActive;
 				setExplanation 'The List of Taxa window above for species has a column showing the genes associated with each species, and at right has an editor for the association.  To change what genes are associated with what species, do the following:^n^n1.  select a species^n2. Go to the Associations Editor panel and touch on the genes you want to assign to that species.  Hit the arrow button to assign the genes.^n^nYou can also use the add and subtract buttons to change what genes are assigned to the species.^n^nTo see the next step in analyzing gene trees within species trees, hit the button "Next".';
 				setTitle Building_a_Taxa_Association;
 				toggleFileNames off;

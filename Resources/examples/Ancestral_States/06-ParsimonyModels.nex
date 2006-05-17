@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:26:53 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed May 17 14:19:33 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
 
 BEGIN TAXA;
 	TITLE Bembidion;
@@ -100,7 +100,7 @@ CHARPARTITION 'adult/larvae'  =  Adult :  1 -  58, Chromosomes :  59 -  60, Larv
 END;
 
 BEGIN ASSUMPTIONS;
-	OPTIONS  DEFTYPE =                unord PolyTcount =                MINSTEPS;
+	OPTIONS  DEFTYPE =                   unord PolyTcount =                   MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  34 64, ord:  1 -  33 35 -  63 65 -  85;
 TYPESET types   =  unord:  34 64, ord:  1 -  33 35 -  63 65 -  85;
 
@@ -215,11 +215,11 @@ BEGIN MacClade;
 	LastModified -1204394462;
 	FileSettings treewindow '2' '2' '1' '1';
 	Singles 000;
-	Editor 0001100111111110010001001 '0' '24'                 Geneva '9' '100' '1'                 all;
+	Editor 0001100111111110010001001 '0' '24'                    Geneva '9' '100' '1'                    all;
 	EditorPosition '46' '9' '435' '411';
 	TreeWindowPosition '46' '6' '632' '899';
-	ListWindow Characters open Geneva '9' '80' '597' '273' '480'                 001;
-	ListWindow Taxa closed Geneva '9' '117' '383' '209' '302'                 100;
+	ListWindow Characters open Geneva '9' '80' '597' '273' '480'                    001;
+	ListWindow Taxa closed Geneva '9' '117' '383' '209' '302'                    100;
 	ListWindow Trees closed Geneva '9' '50' '10' '276' '490';
 	ListWindow TypeSets closed Geneva '9' '50' '10' '276' '490';
 	ListWindow WtSets closed Geneva '9' '50' '10' '276' '490';
@@ -232,11 +232,11 @@ BEGIN MacClade;
 	ChartWindowPosition '50' '30' '688' '964';
 	StateNamesSymbols closed Geneva '9' '10' '431' '726' '192' '220';
 	WindowOrder  Tree List Characters List GroupLabels List CharPartitions;
-	OtherSymbols & /                 00 ? -;
-	Correlation '0' '0' '1000' '0' '0'                 10011010;
+	OtherSymbols & /                    00 ? -;
+	Correlation '0' '0' '1000' '0' '0'                    10011010;
 	Salmo 00000001;
 	EditorFile '2';
-	ExportHTML _ MOSS '100'                 110000;
+	ExportHTML _ MOSS '100'                    110000;
 	PrettyPrint 10;
 	CharLegendPosition '519' '697' '120' '111';
 	TreeLegendPosition '575' '601' '64' '93';
@@ -244,33 +244,33 @@ BEGIN MacClade;
 	TreeToolsPosition '607' '5' '126' '138';
 	TreeWindowProgram 00;
 	TreeWindow 0000;
-	Continuous '0' '3'                 1;
+	Continuous '0' '3'                    1;
 	Calculations 0000001;
-	SummaryMode '0' '0'                 0;
-	Charts  Geneva '9' (                normal )                 0010;
-	NexusOptions '0' '0' '50'                 001011011;
+	SummaryMode '0' '0'                    0;
+	Charts  Geneva '9' (                   normal )                    0010;
+	NexusOptions '0' '0' '50'                    001011011;
 	TipLabel '1';
-	TreeFont  Geneva '9' (                normal );
+	TreeFont  Geneva '9' (                   normal );
 	TreeShape  1.0 1.0 1101;
 	TraceLabels 0101;
-	ChartColors '0' '0' '65535' '9' '0'                 1;
+	ChartColors '0' '0' '65535' '9' '0'                    1;
 	ChartBiggestSpot 1;
 	ChartPercent 10;
-	ChartBarWidth '10'                 1;
+	ChartBarWidth '10'                    1;
 	ChartVerticalAxis 10101;
 	ChartMinMax '0';
-	TraceAllChangesDisplay '0'                 1;
-	BarsOnBranchesDisplay '5' '0' '60000' '10000' '10000' '10000' '10000' '60000' '65000' '65000' '65000' '6' '1'                 0000101;
+	TraceAllChangesDisplay '0'                    1;
+	BarsOnBranchesDisplay '5' '0' '60000' '10000' '10000' '10000' '10000' '60000' '65000' '65000' '65000' '6' '1'                    0000101;
 	ContinuousBranchLabels 0;
 	AllStatesBranchLabels 1;
-	IndexNotation '2'                 1;
-	PrintTree  10.00 '2' '2' '2' '2' '2' '2' '2' '2' '2' '2' '2'                 Geneva '9' (                normal )                 Geneva '10' (                normal )                 Geneva '9' (                normal )                 Geneva '9' (                normal )                 Geneva '9' (                bold )                 Geneva '9' (                normal )                 Geneva '9' (                normal ) '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '1' '1' '1' '1' '10' '0' '-39' '4' '-40' '0' '1' '2' '1' '8' '0' '0' '0' '2'                 1000111000000000000100000111000;
+	IndexNotation '2'                    1;
+	PrintTree  10.00 '2' '2' '2' '2' '2' '2' '2' '2' '2' '2' '2'                    Geneva '9' (                   normal )                    Geneva '10' (                   normal )                    Geneva '9' (                   normal )                    Geneva '9' (                   normal )                    Geneva '9' (                   bold )                    Geneva '9' (                   normal )                    Geneva '9' (                   normal ) '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '1' '1' '1' '1' '10' '0' '-39' '4' '-40' '0' '1' '2' '1' '8' '0' '0' '0' '2'                    1000111000000000000100000111000;
 	MatchChar 00 .;
 	EntryInterpretation 01;
 	ColorOptions 0;
-	TreeTools '0' '5' '4' '0' '10' '4' '0'                 00100111111101110;
-	EditorTools '0' '0' '0' '1000' '0' '0' '6' '3' '0'                 100000101110001;
-	PairAlign '2' '2' '3' '2' '1' '1' '2' '1' '3'                 1010;
+	TreeTools '0' '5' '4' '0' '10' '4' '0'                    00100111111101110;
+	EditorTools '0' '0' '0' '1000' '0' '0' '6' '3' '0'                    100000101110001;
+	PairAlign '2' '2' '3' '2' '1' '1' '2' '1' '3'                    1010;
 	BothTools '1';
 
 END;
