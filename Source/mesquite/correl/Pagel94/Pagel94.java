@@ -376,6 +376,8 @@ public class Pagel94 extends Pagel94Calculator {
         	 			logger.cwrite("Simulation set includes " + constantCharCount + " sets with constant characters");
 	        	 	completedCount = simCount;
 	         }
+       }
+       if (presentPValue.getValue()){  //PETER: here do the chi square regardless; if pvalue is unassigned from simulations then use the chi square in result.  
   	         if (result != null)
 	     	    result.setValue(pvalue);
 	         if (result.isUnassigned())
