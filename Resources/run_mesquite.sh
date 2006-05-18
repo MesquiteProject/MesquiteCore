@@ -55,4 +55,3 @@ else
   echo "$java -cp $dir mesquite.Mesquite $*"
   $java -cp "$dir" mesquite.Mesquite $*
 fi
-
