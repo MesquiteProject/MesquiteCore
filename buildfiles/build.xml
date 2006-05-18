@@ -58,6 +58,8 @@
 		<property name="sftpjar" value="maverick-ant.jar"/>
 		<property name="jars.dir" location="jars"/>
 		
+		<property name="javadoc.dir" location="../Mesquite Admin/mesquite/development/javadocnew"/>
+		
 		<property file="${buildfiles.dir}/${os.name}.properties"/>
 		<property file="${buildfiles.dir}/build.properties"/>
 		
@@ -152,6 +154,10 @@
 				<exclude name="MRJToolkitStubs.zip"/>				
 			</fileset>
 		</copy>
+		
+
+		<antcall target="javadoc"/>	
+		
 		<!-- package up the linux dist before we copy the mac stuff -->
 		<tar basedir="${release.dir}" destfile="${linuxbin.tgz}" compression="gzip" />	
 		
@@ -185,6 +191,14 @@
 			<arg line="-q -n='${sitbin}' -f=sit5 '${mesquitefolder.dir}'"/>
 		</exec>
 		-->
+	</target>
+	
+	<target depends="init" name="javadoc">
+		<javadoc destdir="${javadoc.dir}" doctitle="Mesquite Package Overview">
+			<packageset dir="${src.dir}">
+				<include name="**/*"/>
+			</packageset>
+		</javadoc>
 	</target>
 	
 	<target depends="packagedist,packagesrc" name="packagedistandsrc"/>
