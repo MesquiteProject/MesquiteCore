@@ -498,7 +498,7 @@ public class Pagel94 extends Pagel94Calculator {
     
     // This isPrerelease also proxies for PagelMatrixModel in mesquite.correl.lib  
     public boolean isPrerelease(){
-    		return true;
+    		return false;
     }
 
 }
