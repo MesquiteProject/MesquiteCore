@@ -16,7 +16,7 @@
   <div id="banner"><img src="splash.gif" width="164" height="64"></div>
   <div id="mainTitle"><font id="packageName"><b>Align</b></font><font id="version"><br>
     Version 1.0 <br>
-    6 May 2006 </font><BR>
+    17 May 2006 </font><BR>
   David R. Maddison, Travis J. Wheeler, and Wayne P. Maddison </div>
   <div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Automated Alignment <!-- InstanceEndEditable --></div>
  
@@ -35,6 +35,7 @@
   <p>This tool allows one to select a single block of sequences, and then have ClustalW align them. To do this, select the block, then choose Matrix&gt;Align Multiple Sequences&gt;Clustal Align... </p>
   <p>You will be presented first with a query as to whether you want to do the ClustalW alignment on a separate thread, or on the same thread. Mesquite can do multiple things at once, because it can have one thing running on one computational &quot;thread&quot;, and another thing happening on a separate thread. There is a main thread of the program that is the thread the user deals with directly, and that allows you to give commands to Mesquite (via menus, etc.). If this main thread is busy with a calculation, then you will not be able to ask for new things to happen in Mesquite until the calculation is done. By choosing &quot;Separate&quot; in the query that appears, you are asking Mesquite to create a thread separate from the main thread, thus enabling you to do things in Mesquite while the Clustal alignment is proceeding. However, if you do this, you must remember not to edit the matrix or close the window showing the matrix; if you do, Mesquite will be very unhappy. The safest thing to do is choose &quot;No&quot; to that query. </p>
   <p>Once you make that choice, you will see a dialog box in which you must enter the directory location of ClustalW (and the program <em>must</em> be named &quot;clustalw&quot;); if you use the Browse button in the dialog box  you can choose the directory and have the directory location filled in automatically. If you wish, you can also alter the options of clustalw. If you then press OK, Mesquite will send that section of the matrix to ClustalW and ask for it to be aligned; it will then harvest the results and reincorporate that piece into the matrix.</p>
+  <p>The version of ClustalW that is to be used by Mesquite <em>must</em> be a version of ClustalW that is executable from the command line of your operating system.  </p>
   <p>&nbsp;  </p>
 <!-- InstanceEndEditable --></div>
 <!--end content -->
