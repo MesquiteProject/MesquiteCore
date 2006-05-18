@@ -119,6 +119,7 @@
 				<exclude name="${osxdirpath1.5}" />
 				<exclude name="${os9path}" />
 				<exclude name="**/*.java"/>
+				<exclude name="**/*.html"/>
 			</fileset>
 			<fileset dir="${srcpath}">
 				<include name="**/*" />
@@ -130,6 +131,9 @@
 		</copy>
 		<echo message="going to copy and replace html files"/>
 		<copy todir="${mesquitefolder.dir}">
+			<fileset dir="${rsrcs.dir}">
+				<include name="**/*.html"/>				
+			</fileset>
 			<fileset dir="${srcpath}">
 				<include name="**/a*Intro/*.html"/>
 			</fileset>
