@@ -124,6 +124,7 @@
 				<include name="**/*" />
 				<exclude name="**/*.java" />
 				<exclude name="**/Notes/" />
+				<exclude name="**/notes/" />				
 				<exclude name="**/a*Intro/*.html"/>
 			</fileset>
 		</copy>
