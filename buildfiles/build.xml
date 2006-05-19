@@ -156,9 +156,9 @@
 			</fileset>
 		</copy>
 		
-
+		<!--
 		<antcall target="javadoc"/>	
-		
+		-->
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<include name="${scriptfile}"/>
@@ -212,7 +212,7 @@
 			<packageset dir="${src.dir}">
 				<exclude name="**/corejava*"/>
 				<exclude name="**/edu*/**"/>				
-				<include name="**/mesquite/lib/**"/>
+				<include name="**/mesquite/**/lib/**"/>
 				<include name="**/mesquite/lib/"/>				
 			</packageset>
 		</javadoc>
