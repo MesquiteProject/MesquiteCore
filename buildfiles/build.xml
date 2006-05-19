@@ -58,7 +58,8 @@
 		<property name="sftpjar" value="maverick-ant.jar"/>
 		<property name="jars.dir" location="jars"/>
 		
-		<property name="javadoc.dir" location="../Mesquite Admin/mesquite/development/javadocnew"/>
+		<property name="javadoc.dir" location="${dist.dir}/javadoc"/>
+		<property name="scriptfile" value="run_mesquite.sh"/>
 		
 		<property file="${buildfiles.dir}/${os.name}.properties"/>
 		<property file="${buildfiles.dir}/build.properties"/>
@@ -158,8 +159,21 @@
 
 		<antcall target="javadoc"/>	
 		
+		<copy todir="${mesquitefolder.dir}">
+			<fileset dir="${rsrcs.dir}">
+				<include name="${scriptfile}"/>
+			</fileset>
+		</copy>
 		<!-- package up the linux dist before we copy the mac stuff -->
-		<tar basedir="${release.dir}" destfile="${linuxbin.tgz}" compression="gzip" />	
+		<tar destfile="${linuxbin.tgz}" compression="gzip">	
+			<tarfileset dir="${release.dir}" mode="755"/>
+		</tar>
+		<!-- delete the script file before we package up the windows or mac distros -->
+		<delete>
+			<fileset dir="${mesquitefolder.dir}">
+				<include name="${scriptfile}"/>
+			</fileset>
+		</delete>
 		
 		<antcall target="callwindowsinstaller"/>
 		
@@ -196,7 +210,10 @@
 	<target depends="init" name="javadoc">
 		<javadoc destdir="${javadoc.dir}" doctitle="Mesquite Package Overview">
 			<packageset dir="${src.dir}">
-				<include name="**/*"/>
+				<exclude name="**/corejava*"/>
+				<exclude name="**/edu*/**"/>				
+				<include name="**/mesquite/lib/**"/>
+				<include name="**/mesquite/lib/"/>				
 			</packageset>
 		</javadoc>
 	</target>
