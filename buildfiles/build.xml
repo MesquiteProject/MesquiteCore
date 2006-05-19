@@ -156,9 +156,8 @@
 			</fileset>
 		</copy>
 		
-		<!--
 		<antcall target="javadoc"/>	
-		-->
+
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<include name="${scriptfile}"/>
