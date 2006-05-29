@@ -46,7 +46,7 @@
  */
 package com.lowagie.text.pdf;
 
-import java.awt.Font;
+import headless.awt.Font;
 
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.DefaultFontMapper;

@@ -35,8 +35,8 @@ public class ListTable extends MesquiteTable {
 		showColumnGrabbers=true;
 		cornerIsHeading = true;
 		//setAutoEditable(false, true, false, false);
-		setEditable(false, true, false, false);
-		setSelectable(false, true, true, true, false, false);
+		setEditable(true, true, false, false);
+		//setSelectable(false, true, true, true, false, false);
 		setSelectable(true, true, true, true, true, false);
 		setUserMove(true, false);
 	}
@@ -103,9 +103,9 @@ public class ListTable extends MesquiteTable {
 		return super.getCellDimmed(column, row);
 	}
 	/*...............................................................................................................*/
-	/** returns whether or not a cell of table is editable.*/
-	public boolean checkCellEditable(int column, int row){
-		return super.isCellEditable(column, row);
+	/** returns whether or not a cells of table editable by default.*/
+	public boolean cellsEditableByDefault(){
+		return false;
 	}
 	/*...............................................................................................................*/
 	/** returns whether or not a row name of table is editable.*/
@@ -376,6 +376,14 @@ public class ListTable extends MesquiteTable {
 	public void returnedRowNameText(int row, String s, CommandRecord commandRec){
 		if (s!=null && !s.equals(window.getRowName(row)))
 			window.setRowName(row, s, commandRec);
+	}
+	/*...............................................................................................................*/
+	public void returnedMatrixText(int column, int row, String s, CommandRecord commandRec){
+		if (s!=null){
+			ListAssistant assistant = window.findAssistant(column);
+			if (assistant!=null)
+				assistant.setString(  row, s);
+		}
 	}
 }
 

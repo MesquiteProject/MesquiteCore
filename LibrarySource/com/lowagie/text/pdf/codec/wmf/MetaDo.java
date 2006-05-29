@@ -53,8 +53,8 @@ import java.io.*;
 import com.lowagie.text.pdf.*;
 import com.lowagie.text.pdf.codec.BmpImage;
 import com.lowagie.text.*;
-import java.awt.Point;
-import java.awt.Color;
+import headless.awt.Point;
+import headless.awt.Color;
 import java.util.ArrayList;
 
 public class MetaDo {

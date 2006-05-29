@@ -13,9 +13,9 @@
 package com.lowagie.text.pdf.codec.postscript;
 
 import java.util.*;
-import java.awt.*;
-import java.awt.font.*;
-import java.awt.geom.*;
+import headless.awt.*;
+import headless.awt.font.*;
+import headless.awt.geom.*;
 
 
 public class PAPencil extends Object {

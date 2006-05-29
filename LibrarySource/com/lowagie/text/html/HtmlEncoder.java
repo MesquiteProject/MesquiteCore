@@ -50,7 +50,7 @@
 
 package com.lowagie.text.html;
 
-import java.awt.Color;
+import headless.awt.Color;
 
 import com.lowagie.text.Element;
 

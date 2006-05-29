@@ -47,7 +47,7 @@
 
 package com.lowagie.text.pdf;
 
-import java.awt.Font;
+import headless.awt.Font;
 
 /**
  * A FontMapper implementation handles mappings between AWT Fonts and PDF

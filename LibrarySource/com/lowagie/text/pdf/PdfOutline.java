@@ -55,7 +55,7 @@ import java.util.Iterator;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Paragraph;
 import java.util.ArrayList;
-import java.awt.Color;
+import headless.awt.Color;
 import com.lowagie.text.Font;
 import java.io.OutputStream;
 import java.io.IOException;

@@ -16,10 +16,10 @@ import java.lang.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.io.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.color.*;
-import java.awt.font.*;
+import headless.awt.*;
+import headless.awt.geom.*;
+import headless.awt.color.*;
+import headless.awt.font.*;
 
 public class PAContext
     extends Object {

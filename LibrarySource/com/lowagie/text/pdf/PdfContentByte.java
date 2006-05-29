@@ -49,10 +49,10 @@
  */
 
 package com.lowagie.text.pdf;
-import java.awt.Color;
+import headless.awt.Color;
 import java.util.ArrayList;
-import java.awt.geom.AffineTransform;
-import java.awt.print.PrinterJob;
+import headless.awt.geom.AffineTransform;
+import headless.awt.print.PrinterJob;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;

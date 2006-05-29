@@ -50,7 +50,7 @@
 
 package com.lowagie.text;
 
-import java.awt.Color;
+import headless.awt.Color;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Set;

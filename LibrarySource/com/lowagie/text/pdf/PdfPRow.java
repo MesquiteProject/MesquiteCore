@@ -55,7 +55,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
-import java.awt.Color;
+import headless.awt.Color;
 
 /**
  * A row in a PdfPTable.

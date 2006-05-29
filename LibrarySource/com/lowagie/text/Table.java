@@ -53,9 +53,9 @@
 
 package com.lowagie.text;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
+import headless.awt.Color;
+import headless.awt.Dimension;
+import headless.awt.Point;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;

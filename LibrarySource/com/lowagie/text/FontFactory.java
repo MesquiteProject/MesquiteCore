@@ -50,7 +50,7 @@
 
 package com.lowagie.text;
 
-import java.awt.Color;
+import headless.awt.Color;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.HashSet;

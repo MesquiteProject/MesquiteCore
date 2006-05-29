@@ -50,8 +50,8 @@
 
 package com.lowagie.text.pdf;
 
-import java.awt.print.PrinterGraphics;
-import java.awt.print.PrinterJob;
+import headless.awt.print.PrinterGraphics;
+import headless.awt.print.PrinterJob;
 
 /**
  * This is an extension class for the sole purpose of implementing the

@@ -46,7 +46,7 @@
  */
 package com.lowagie.text.pdf;
 
-import java.awt.Color;
+import headless.awt.Color;
 import java.io.IOException;
 /** Implements the shading dictionary (or stream).
  *

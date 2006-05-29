@@ -52,7 +52,7 @@ package com.lowagie.text.pdf;
 
 import com.lowagie.text.Rectangle;
 import java.util.HashMap;
-import java.awt.Color;
+import headless.awt.Color;
 import java.io.*;
 /**
  * A <CODE>PdfAnnotation</CODE> is a note that is associated with a page.

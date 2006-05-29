@@ -51,7 +51,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import java.awt.Color;
+import headless.awt.Color;
 
 /**
  *

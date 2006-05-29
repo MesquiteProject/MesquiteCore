@@ -609,7 +609,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
-					if (cellsEditable)
+					if (isCellEditable(i, j))
 						returnedMatrixText(i, j, null, commandRec);
 				}
 			}
@@ -643,7 +643,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
-					if (cellsEditable) {
+					if (isCellEditable(i, j)) {
 						String t = getNextTabbedToken(s, pos);
 						if (t != null)
 							returnedMatrixText(i, j, t, commandRec);
@@ -2808,7 +2808,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
 		if (!columnLegal(column) || !rowLegal(row))
 			return;
-		if (!cellsSelectable && !cellsEditable)
+		if (!cellsSelectable && !isCellEditable(column, row))
 			return;
 		/*
 		 * if ((column == columnFirstTouched && row == rowFirstTouched) && (anyCellSelected() || editingMatrixCell())) { offEditMatrixCell(); deselectAllNotify(); selectCell(column,row); redrawCell(column,row); } else
@@ -3298,7 +3298,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** Place text edit box in cell with current value, to allow user to edit content. */
 	public void editMatrixCell(int column, int row) {
-		if (!cellsEditable)
+		if (!isCellEditable(column, row))
 			return;
 		if (columnLegal(column) && rowLegal(row)) {
 			deselectAllNotify();

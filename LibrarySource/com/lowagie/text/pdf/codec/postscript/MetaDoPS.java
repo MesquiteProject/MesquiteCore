@@ -51,7 +51,7 @@
 package com.lowagie.text.pdf.codec.postscript;
 
 import java.io.*;
-import java.awt.*;
+import headless.awt.*;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 

@@ -50,7 +50,7 @@
 
 package com.lowagie.text.pdf;
 
-import java.awt.Color;
+import headless.awt.Color;
 /**
  *
  * @author  Paulo Soares (psoares@consiste.pt)

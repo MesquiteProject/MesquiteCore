@@ -81,7 +81,7 @@
 
 package com.lowagie.text.pdf.codec;
 
-import java.awt.color.ICC_Profile;
+import headless.awt.color.ICC_Profile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

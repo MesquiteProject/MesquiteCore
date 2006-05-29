@@ -50,7 +50,7 @@
 
 package com.lowagie.text;
 
-import java.awt.Color;
+import headless.awt.Color;
 
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.markup.MarkupTags;

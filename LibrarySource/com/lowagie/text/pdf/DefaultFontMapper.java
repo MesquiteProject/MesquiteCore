@@ -46,7 +46,7 @@
  */
 package com.lowagie.text.pdf;
 
-import java.awt.Font;
+import headless.awt.Font;
 import com.lowagie.text.ExceptionConverter;
 import java.util.HashMap;
 import java.io.File;

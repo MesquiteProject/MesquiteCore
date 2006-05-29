@@ -57,7 +57,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.Set;
-import java.awt.color.ICC_Profile;
+import headless.awt.color.ICC_Profile;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.codec.CCITTG4Encoder;
 import java.lang.reflect.Constructor;

@@ -49,7 +49,7 @@
  */
 
 package com.lowagie.text.pdf;
-import java.awt.Color;
+import headless.awt.Color;
 /**
  * A <CODE>PdfColor</CODE> defines a Color (it's a <CODE>PdfArray</CODE> containing 3 values).
  *

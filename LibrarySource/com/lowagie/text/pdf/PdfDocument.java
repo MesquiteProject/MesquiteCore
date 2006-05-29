@@ -50,7 +50,7 @@
 
 package com.lowagie.text.pdf;
 
-import java.awt.Color;
+import headless.awt.Color;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;

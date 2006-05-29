@@ -51,7 +51,7 @@
 package com.lowagie.text.pdf.codec.wmf;
 
 import java.io.*;
-import java.awt.Color;
+import headless.awt.Color;
 
 public class InputMeta {
     

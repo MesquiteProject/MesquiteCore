@@ -50,7 +50,7 @@ import com.lowagie.text.Image;
 import com.lowagie.text.ExceptionConverter;
 import java.io.*;
 import java.util.zip.*;
-import java.awt.color.ICC_Profile;
+import headless.awt.color.ICC_Profile;
 
 /** Reads TIFF images
  * @author Paulo Soares (psoares@consiste.pt)
