@@ -28,7 +28,7 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		return true;
-	}
+	} 
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
