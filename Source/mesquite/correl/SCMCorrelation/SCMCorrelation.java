@@ -100,22 +100,10 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 	public void initialize(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, CommandRecord commandRec) {
 		if (!(charStates1 instanceof CategoricalDistribution ||
 				charStates2 instanceof CategoricalDistribution)) {
-			if (!(charStates1 instanceof CategoricalDistribution))
-				MesquiteMessage.warnProgrammer("Quitting because the first character is not Categorical");
-			else
-				MesquiteMessage.warnProgrammer("Quitting because the second character is not Categorical");
-			iQuit();
+
 		}
 		observedStates1 = (CategoricalDistribution)charStates1;
 		observedStates2 = (CategoricalDistribution)charStates2;
-		if (observedStates1.getMaxState() > 1 ||
-				observedStates2.getMaxState() > 1) {
-			if (observedStates1.getMaxState() > 1)
-				MesquiteMessage.warnProgrammer("Quitting because the first character doesn't seem to be binary -- getMaxState() returned " + observedStates1.getMaxState());
-			else
-				MesquiteMessage.warnProgrammer("Quitting because the second character doesn't seem to be binary -- getMaxState() returned " + observedStates2.getMaxState());
-			iQuit();
-		}
 
 	}
 
@@ -129,6 +117,12 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 		if (!(charStates1 instanceof CategoricalDistribution) || !(charStates2 instanceof CategoricalDistribution)){
 			if (resultString != null)
 				resultString.setValue("SCM correlation can't be calculated because one or both of the character are not categorical");
+			return;
+		}
+		if (observedStates1.getMaxState() > 1 ||
+				observedStates2.getMaxState() > 1) {
+			if (resultString != null)
+				resultString.setValue("SCM correlation can't be calculated because one or both of the characters are not binary");
 			return;
 		}
 		MesquiteNumber correl = new MesquiteNumber();
