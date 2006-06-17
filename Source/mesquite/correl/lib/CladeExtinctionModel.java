@@ -1,7 +1,7 @@
 package mesquite.correl.lib;
 
 
-public class OttoExtinctionModel implements DESystem {
+public class CladeExtinctionModel implements DESystem {
 	
 	
 	private double e0;   //extinction rate in state 0
@@ -12,7 +12,7 @@ public class OttoExtinctionModel implements DESystem {
 	private double t10;  //transition rate from state 1 to state 0
 	
 
-	public OttoExtinctionModel(double e0, double s0, double e1, double s1, double t01, double t10){
+	public CladeExtinctionModel(double e0, double s0, double e1, double s1, double t01, double t10){
 		this.e0 = e0;
 		this.s0 = s0;
 		this.e1 = e1;
