@@ -1,6 +1,7 @@
 package mesquite.correl.ExtinctionIntegrator;
 
 
+import mesquite.correl.IntegLikeCateg.IntegLikeCateg;
 import mesquite.correl.lib.DEQNumSolver;
 import mesquite.correl.lib.DESystem;
 import mesquite.correl.lib.RK4Solver;
@@ -11,7 +12,6 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.Tree;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
-import mesquite.stochchar.IntegLikeCateg.IntegLikeCateg;
 
 public class ExtinctionIntegrator extends NumberForCharAndTree {
 	
