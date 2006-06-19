@@ -5,7 +5,7 @@ import mesquite.correl.IntegLikeCateg.IntegLikeCateg;
 import mesquite.correl.lib.DEQNumSolver;
 import mesquite.correl.lib.DESystem;
 import mesquite.correl.lib.RK4Solver;
-import mesquite.correl.lib.OttoExtinctionModel;
+import mesquite.correl.lib.CladeExtinctionModel;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
@@ -25,7 +25,7 @@ public class ExtinctionIntegrator extends NumberForCharAndTree {
 			return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 
 		solver = new RK4Solver();
-		speciesModel = new OttoExtinctionModel(0.001, 0.001, 0.005, 0.001, 0.01, 0.01);
+		speciesModel = new CladeExtinctionModel(0.001, 0.001, 0.005, 0.001, 0.01, 0.01);
 		return true;
 	}
 
