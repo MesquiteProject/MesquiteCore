@@ -1,7 +1,7 @@
 /* Mesquite source code.  Copyright 1997-2006 W. Maddison and D. Maddison. 
  This module copyright 2006 P. Midford and W. Maddison
 
-Version 1.1, May 2006.
+Version 1.11, June 2006.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -16,47 +16,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.correl.CategContrasts;
 
 
-import mesquite.categ.lib.CategoricalDistribution;
-import mesquite.categ.lib.CategoricalHistory;
+import mesquite.categ.lib.*;
 import mesquite.correl.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
-import mesquite.lib.characters.ModelCompatibilityInfo;
 import mesquite.lib.duties.*;
-import mesquite.stochchar.lib.MargLikeAncStCLForModel;
-import mesquite.stochchar.lib.ProbModelSourceLike;
-import mesquite.stochchar.lib.ProbPhenCategCharModel;
-import mesquite.stochchar.lib.ProbabilityCategCharModel;
 
 public class CategContrasts extends NumberFor2CharAndTree {
-
-	MargLikeAncStCLForModel reconstructTask;
-	ProbModelSourceLike modelTask;
-	MesquiteString modelTaskName;
-	ProbPhenCategCharModel model;  //CharacterModel model;  - temporary restriction to nonMolecular models PEM 6-Jan-2006
 
 	private CLogger logger;
 	private CategoricalDistribution observedStates1;
 	private CategoricalDistribution observedStates2;
+	ContrastsForCharAndTree contrastsTask;
+	MesquiteString contrastsTaskName;
 
-	
+
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-		hireAllEmployees(commandRec, MargLikeAncStCLForModel.class);
-		for (int i = 0; i<getNumberOfEmployees() && reconstructTask==null; i++) {
-			Object e=getEmployeeVector().elementAt(i);
-			if (e instanceof MargLikeAncStCLForModel){
-				((MargLikeAncStCLForModel)e).setReportCladeLocalValues(true);
-			}
-
-
-		}
-		modelTask = (ProbModelSourceLike)hireEmployee(commandRec, ProbModelSourceLike.class, "Source of probability character models (for likelihood calculations)");
-		if (modelTask == null)
-			return sorry(commandRec, getName() + " couldn't start because no source of models of character evolution obtained.");
-		modelTaskName = new MesquiteString(modelTask.getName());
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Source of probability models", makeCommand("setModelSource", this), ProbModelSourceLike.class);
-		mss.setCompatibilityCheck(new ModelCompatibilityInfo(ProbabilityCategCharModel.class, null));
-		mss.setSelected(modelTaskName);
+		contrastsTask = (ContrastsForCharAndTree)hireEmployee(commandRec, ContrastsForCharAndTree.class, "Contrasts calculator");
+		if (contrastsTask == null)
+			return sorry(commandRec, getName() + " couldn't start because no contrasts calculator obtained.");
+		contrastsTaskName = new MesquiteString(contrastsTask.getName());
+		MesquiteSubmenuSpec mss = addSubmenu(null, "Contrast calculator", makeCommand("setContrastCalculator", this), ContrastsForCharAndTree.class);
+		mss.setCompatibilityCheck(CategoricalState.class);
+		mss.setSelected(contrastsTaskName);
 		if (getEmployer() instanceof CLogger)
 			setLogger((CLogger)getEmployer());
 		return true;
@@ -65,41 +47,39 @@ public class CategContrasts extends NumberFor2CharAndTree {
 	public void setLogger(CLogger logger){
 		this.logger = logger;
 	}
-	/*.................................................................................................................*/
-	public Snapshot getSnapshot(MesquiteFile file) { 
-		Snapshot temp = new Snapshot();
-		temp.addLine("setModelSource ",modelTask);
-		return temp;
-	}
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets module used to supply character models", "[name of module]", commandName, "setModelSource")) {
-			ProbModelSourceLike temp=  (ProbModelSourceLike)replaceEmployee(commandRec, ProbModelSourceLike.class, arguments, "Source of probability character models", modelTask);
-			if (temp!=null) {
-				modelTask= temp;
-				incrementMenuResetSuppression();
-				modelTaskName.setValue(modelTask.getName());
-				parametersChanged(null, commandRec);
-				decrementMenuResetSuppression();
-			}
-			return modelTask;
-		}
-		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
-		
-	}
 
 	/*.................................................................................................................*/
 	public void employeeQuit(MesquiteModule m){
-		if (m == modelTask)
+		if (m == contrastsTask)
 			iQuit();
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setContrastCalculator ",contrastsTask);
+		return temp;
+	}
+	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets module used to calculate contrasts", "[name of module]", commandName, "setContrastCalculator")) {
+			ContrastsForCharAndTree temp=  (ContrastsForCharAndTree)replaceEmployee(commandRec, ContrastsForCharAndTree.class, arguments, "Contrast calculator", contrastsTask);
+			if (temp!=null) {
+				contrastsTask= temp;
+				contrastsTaskName.setValue(contrastsTask.getName());
+				parametersChanged(null, commandRec);
+
+			}
+			return contrastsTask;
+		}
+		else
+			return super.doCommand(commandName, arguments, commandRec, checker);
+
+	}
+
 
 	public void initialize(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, CommandRecord commandRec) {
 	}
-
-	CategoricalHistory cladeLikelihoods1, cladeLikelihoods2 = null;
-	ProbabilityCategCharModel tempModel;
-
+	NumberArray contrasts1 = new NumberArray();
+	NumberArray contrasts2 = new NumberArray();
 
 	public  void calculateNumber(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec){
 		if (result == null)
@@ -120,31 +100,49 @@ public class CategContrasts extends NumberFor2CharAndTree {
 				resultString.setValue("CategContrasts correlation can't be calculated because one or both of the characters are not binary");
 			return;
 		}
+		contrasts1.resetSize(tree.getNumNodeSpaces());
+		contrasts2.resetSize(tree.getNumNodeSpaces());
+		contrasts1.deassignArray();
+		contrasts2.deassignArray();
 		MesquiteString rs1 = new MesquiteString();
 		MesquiteString rs2 = new MesquiteString();
-		cladeLikelihoods1 = calculateLikelihoods(tree, (CategoricalDistribution)charStates1, cladeLikelihoods1, rs1, commandRec);
-		cladeLikelihoods2 = calculateLikelihoods(tree, (CategoricalDistribution)charStates2, cladeLikelihoods2, rs2, commandRec);
-		
-		if (!cladeLikelihoods1.frequenciesExist() || !cladeLikelihoods2.frequenciesExist()){
-			if (resultString != null)
-				resultString.setValue("CategContrasts correlation can't be calculated because clade likelihoods not obtained");
-			return;
-		}
+		contrastsTask.calculateContrasts(tree, charStates1, contrasts1, rs1, commandRec);
+		contrastsTask.calculateContrasts(tree, charStates2, contrasts2, rs2, commandRec);
+
+		boolean assignedContrastsFound = false;
 		double[][] contrasts = new double[2][tree.getNumNodeSpaces()];
 		Double2DArray.deassignArray(contrasts);
-		getContrasts(tree, tree.getRoot(), cladeLikelihoods1, contrasts[0]);
-		getContrasts(tree, tree.getRoot(), cladeLikelihoods2, contrasts[1]);
 		for (int i=0; i<tree.getNumNodeSpaces(); i++){
-			if (contrasts[0][i] == 0 && contrasts[1][i]  == 0){
-					contrasts[0][i] = MesquiteDouble.unassigned; 
-					contrasts[1][i] = MesquiteDouble.unassigned; 
+			contrasts[0][i] = contrasts1.getDouble(i);
+			contrasts[1][i] = contrasts2.getDouble(i);
+			if (MesquiteDouble.isCombinable(contrasts[0][i]) && MesquiteDouble.isCombinable(contrasts[1][i]))
+				assignedContrastsFound = true;
+		}
+
+		for (int i=0; i<tree.getNumNodeSpaces(); i++){
+			if (contrasts[0][i] == 0 || contrasts[1][i]  == 0){
+				contrasts[0][i] = MesquiteDouble.unassigned; 
+				contrasts[1][i] = MesquiteDouble.unassigned; 
 			}
 		}
 
 		double r2 = calculateR2(contrasts[0], contrasts[1], true);
 		if (!MesquiteDouble.isCombinable(r2)){
-			if (resultString != null)
-				resultString.setValue("No valid contrasts found");
+			if (assignedContrastsFound){
+				result.setValue(0);
+				if (resultString != null)
+					resultString.setValue("No countable contrasts found");
+				if (logger!= null){ 
+					logger.cwrite("\n\n CategContrasts r squared: \n" + result);
+				
+				}
+
+			}
+			else {
+				result.setToUnassigned();
+				if (resultString != null)
+					resultString.setValue("No valid contrasts found");
+			}
 			return;
 		}
 		result.setValue(r2);
@@ -155,7 +153,7 @@ public class CategContrasts extends NumberFor2CharAndTree {
 			logger.cwrite("\n" + resultString);
 		}
 	}
-	
+
 	private double calculateR2(double[] c0, double[] c1, boolean positivize){
 		int n = 0;
 		double sum0 = 0;
@@ -170,7 +168,7 @@ public class CategContrasts extends NumberFor2CharAndTree {
 			if (MesquiteDouble.isCombinable(c0i) && MesquiteDouble.isCombinable(c1i)){
 				if (positivize && c0i <0){
 					c0i = -c0i;//positivizing
-						c1i = -c1i;
+					c1i = -c1i;
 				}
 				sum0 += c0i;
 				sumSq0 += c0i*c0i;
@@ -189,76 +187,14 @@ public class CategContrasts extends NumberFor2CharAndTree {
 		double r2 = rd*rd / (sumSq0 - (n * mean0 * mean0))/ (sumSq1 - (n * mean1 * mean1));
 		return r2;
 	}
-	
-	private void getContrasts(Tree tree, int node, CategoricalHistory cladeLikelihoods, double[] contrasts){
-		for(int d=tree.firstDaughterOfNode(node);tree.nodeExists(d);d=tree.nextSisterOfNode(d))
-			getContrasts(tree,d,cladeLikelihoods, contrasts);
-		if (tree.nodeIsInternal(node) && tree.numberOfDaughtersOfNode(node)==2){
-			int left = tree.firstDaughterOfNode(node);
-			int right = tree.lastDaughterOfNode(node);
-			double L0 = cladeLikelihoods.getFrequency(left,0);
-			double R0 = cladeLikelihoods.getFrequency(right,0);
-			if (Math.abs(L0-R0)>0.5){
-				contrasts[node] = L0-R0;
-			}
-			else
-				contrasts[node] = 0;
-		}
-		
-	}
-	private CategoricalHistory calculateLikelihoods(Tree tree, CategoricalDistribution observedStates, CategoricalHistory cladeLikelihoods, MesquiteString resultString, CommandRecord commandRec){
-		cladeLikelihoods = (CategoricalHistory)observedStates.adjustHistorySize(tree, cladeLikelihoods);
-		cladeLikelihoods.deassignStates();
-		ProbPhenCategCharModel origModel = null;
-		//getting the model
-		if (modelTask.getCharacterModel(observedStates, commandRec) instanceof ProbPhenCategCharModel )
-			origModel = (ProbPhenCategCharModel)modelTask.getCharacterModel(observedStates, commandRec);
-		if (origModel == null && !commandRec.scripting()){
-			if (resultString != null)
-				resultString.setValue("No model obtained");
-			return cladeLikelihoods;
-		}
 
-
-		//getting the reconstructing module
-		if (reconstructTask == null || !reconstructTask.compatibleWithContext(origModel, observedStates)) { 
-			reconstructTask = null;
-			for (int i = 0; i<getNumberOfEmployees() && reconstructTask==null; i++) {
-				Object e=getEmployeeVector().elementAt(i);
-				if (e instanceof MargLikeAncStCLForModel)
-					if (((MargLikeAncStCLForModel)e).compatibleWithContext(origModel, observedStates)) {
-						reconstructTask=(MargLikeAncStCLForModel)e;
-					}
-			}
-		}
-		MesquiteNumber likelihood = new MesquiteNumber();
-		
-		//doing the likelihood calculations
-		if (reconstructTask != null) { 
-			
-			if (tempModel == null || tempModel.getClass() != origModel.getClass()){
-				tempModel = (ProbabilityCategCharModel)origModel.cloneModelWithMotherLink(null);
-			}
-			origModel.copyToClone(tempModel);
-			model = (ProbPhenCategCharModel)tempModel;
-			cladeLikelihoods.deassignStates();
-			reconstructTask.estimateParameters( tree,  observedStates,  model, null,   commandRec);
-			reconstructTask.calculateStates( tree,  observedStates,  cladeLikelihoods, model, null, likelihood, commandRec);
-
-		}
-		else {
-			if (resultString != null)
-				resultString.setValue("No appropriate likelihood module obtained");
-		}
-		return cladeLikelihoods;
-	}
 	/*.................................................................................................................*/
 
 
 	public String getVeryShortName() {
 		return "CategContrasts Correlation test";
 	}
-	
+
 	public String getAuthors() {
 		return "Wayne P. Maddison & Peter E. Midford";
 	}
