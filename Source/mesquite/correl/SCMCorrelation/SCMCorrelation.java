@@ -18,6 +18,7 @@ package mesquite.correl.SCMCorrelation;
 
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.CategoricalHistory;
+import mesquite.categ.lib.RequiresExactlyCategoricalData;
 import mesquite.correl.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
@@ -51,6 +52,9 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 		if (getEmployer() instanceof CLogger)
 			setLogger((CLogger)getEmployer());
 		return true;
+	}
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresExactlyCategoricalData();
 	}
 
 	public void setLogger(CLogger logger){

@@ -43,6 +43,9 @@ public class CategContrasts extends NumberFor2CharAndTree {
 			setLogger((CLogger)getEmployer());
 		return true;
 	}
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresExactlyCategoricalData();
+	}
 
 	public void setLogger(CLogger logger){
 		this.logger = logger;
