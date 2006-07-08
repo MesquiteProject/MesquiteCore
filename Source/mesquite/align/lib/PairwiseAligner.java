@@ -82,7 +82,7 @@ public class PairwiseAligner  {
 		if ( returnAlignment) { 
 		
 			long ret[][];
-			if ((A.length*B.length)>getCharThresholdForLowMemory()) {
+			if ((lengthA*lengthB)>getCharThresholdForLowMemory()) { 
 				//low memory (but slower, due to recursion) alignment
 				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, keepGaps, followsGapSize);
 				
@@ -115,7 +115,7 @@ public class PairwiseAligner  {
 		} else { 
 			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.	
 			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true, keepGaps, followsGapSize);
-			helper.fillForward(0,lengthB,0,lengthA,helper.noGap);			
+			helper.fillForward(0,lengthA,0,lengthB,helper.noGap);			
 			int myScore = Math.min(helper.fH[lengthA], Math.min (helper.fD[lengthA], helper.fV[lengthA])) ;
 			
 			if (score != null)
