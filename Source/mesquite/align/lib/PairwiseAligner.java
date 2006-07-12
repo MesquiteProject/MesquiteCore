@@ -70,7 +70,7 @@ public class PairwiseAligner  {
 	
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the passed sequences.
 	 * If object has been told to retain gaps, gaps in A_withGaps will remain intact (new ones  may be added)*/
-	public long[][] alignSequences( long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score) {
+	public synchronized long[][] alignSequences( long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score) {
 		
 		if (!gapCostsInitialized  || !subCostsInitialized) {
 			score.setValue( -1 );
@@ -128,7 +128,7 @@ public class PairwiseAligner  {
 	
 	/** private method used to convert seqs from mesquite long values to the correct indexes for the subs table
 	 * */
-	private int preProcess (long[] A_withGaps, long[] B_withGaps) { //translates sequences to ints, strips gaps, and possibly swaps A and B.
+	private synchronized int preProcess (long[] A_withGaps, long[] B_withGaps) { //translates sequences to ints, strips gaps, and possibly swaps A and B.
 		int i;
 		int totalGapChars = 0;
 		
@@ -156,8 +156,12 @@ public class PairwiseAligner  {
 		}
 		//followsGapSize[lengthA] = 0; //the final entry in this array is spurious ... it says the character after the last character in the string follows a bunhc of gap characters; not meaningful. 
 		
+		lengthB = 0;
 		for (i=0; i<B_withGaps.length; i++) { 
 			if (!CategoricalState.isInapplicable(B_withGaps[i])) {
+				if (lengthB>=B.length) {
+					Debugg.println("|||||||| OVERFLOW B   |||||||||\n   i: " + i + "\n   A.length: " + A.length + "\n   lengthA: " + lengthA + "\n   B.length: " + B.length + "\n   lengthB: " + lengthB + "\n   A_withGaps.length: " + A_withGaps.length + "\n   B_withGaps.length: " + B_withGaps.length + "\n      keepGaps: " + keepGaps);
+				}
 				B[lengthB] = MolecularState.compressToInt(B_withGaps[i]);  //gets the lower 32 bits of the state set
 				lengthB++;
 			}
