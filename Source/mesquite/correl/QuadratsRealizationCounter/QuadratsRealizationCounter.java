@@ -133,25 +133,34 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 		
 	
 	private Quadrat calculateOneBranch(Tree tree,int endNode,CategoricalHistory history1,CategoricalHistory history2,Quadrat q){
-		
 		//counters
 		Vector independentEvents = history1.getInternodeHistoryVector(endNode);
 		Vector dependentEvents = history2.getInternodeHistoryVector(endNode);
 		int independentCount = independentEvents.size();
 		int dependentCount = dependentEvents.size();
+		CategInternodeEvent curDependentEvent = null;
+		Debugg.println("Check: iCount = " + independentCount + " dCount = " + dependentCount);
 		//counting process
-		if (independentCount == 0){   // no changes, this branch just extends the quadrat
+		if (independentCount == 1){   // no changes, this branch just extends the quadrat
+			//CategInternodeEvent checkIndepEvent = (CategInternodeEvent)independentEvents.get(0);
+			//if (checkIndepEvent.getChangeVersusSample())
+			//	Debugg.println("No changes on this branch (true)");
+			//else
+			//	Debugg.println("No changes on this branch (false)");
 			quadrats[endNode]= null;  // no new quadrats for this branch
 			q.length++;  // so update the current one - note that distances are proportional to branch length
-			Debugg.println("Triggered an addition, q.length is now: " + q.length +
-					"at " + (quadrats[endNode].size()-1));
+			Debugg.println("Triggered an addition, q.length is now: " + q.length); 
+			int dependentIndex = 0;
+			while(dependentIndex<dependentCount-1){
+				dependentIndex++;
+			}
 			return q;                 // and return it
 		}  // otherwise keep counting until the first shift in the independent history
 		quadrats[endNode] = new Vector(independentCount);
 		Quadrat currentQuad = q;
 		int dependentIndex = 0;
 		int independentIndex = 0;
-		CategInternodeEvent curDependentEvent = (CategInternodeEvent)dependentEvents.get(dependentIndex);
+		curDependentEvent = (CategInternodeEvent)dependentEvents.get(dependentIndex);
 		CategInternodeEvent curIndependentEvent = (CategInternodeEvent)independentEvents.get(independentIndex);
 		while(true){
 			while(curDependentEvent.getPosition() < curIndependentEvent.getPosition()){
@@ -201,7 +210,6 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 			    //			" at " + (quadrats[endNode].size()-1));
 			}
 		}
-		
 	}
 	
 	

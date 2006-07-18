@@ -16,6 +16,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.correl.SCMCorrelation;
 
 
+import pal.statistics.ChiSquareDistribution;
+import pal.statistics.NormalDistribution;
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.CategoricalHistory;
 import mesquite.categ.lib.RequiresExactlyCategoricalData;
@@ -123,6 +125,8 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 				resultString.setValue("SCM correlation can't be calculated because one or both of the character are not categorical");
 			return;
 		}
+		observedStates1 = (CategoricalDistribution)charStates1;
+		observedStates2 = (CategoricalDistribution)charStates2;
 		if (observedStates1.getMaxState() > 1 ||
 				observedStates2.getMaxState() > 1) {
 			if (resultString != null)
@@ -130,9 +134,11 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 			return;
 		}
 		MesquiteNumber correl = new MesquiteNumber();
-		MesquiteNumber sum = new MesquiteNumber();
-		observedStates1 = (CategoricalDistribution)charStates1;
-		observedStates2 = (CategoricalDistribution)charStates2;
+		MesquiteNumber sum = new MesquiteNumber(0.0);
+		MesquiteNumber logSum = new MesquiteNumber(0.0);
+		MesquiteNumber chiResult = null;
+		MesquiteNumber quantileSum = new MesquiteNumber(0.0);
+		MesquiteNumber zResult = null;
 		mapper1.setObservedStates( tree,  observedStates1,  commandRec);
 		int numMaps1 = mapper1.getNumberOfMappings(commandRec);
 		if (!MesquiteInteger.isCombinable(numMaps1))
@@ -152,18 +158,33 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 			if (correl.isCombinable()){
 				n++;
 				sum.add(correl);
+				logSum.add(Math.log(correl.getDoubleValue()));
+				quantileSum.add(NormalDistribution.quantile(correl.getDoubleValue(),0.0,1.0));
 			}
 			
 		}
-		if (n == 0)
+		if (n == 0){
 			sum.setToUnassigned();
-		else
+			chiResult.setToUnassigned();
+			quantileSum.setToUnassigned();
+		}
+		else{
 			sum.divideBy(n);
-		result.setValue(sum);
+			double chiSum = -2*logSum.getDoubleValue();
+			if (MesquiteDouble.isInfinite(chiSum))
+				chiResult = new MesquiteNumber(0);
+			else
+				chiResult = new MesquiteNumber(1-ChiSquareDistribution.cdf(chiSum,2*n));
+			zResult = new MesquiteNumber(NormalDistribution.cdf((quantileSum.getDoubleValue()/Math.sqrt((double)n)),0.0,1.0));
+		}
+		if (zResult != null)
+		result.setValue(zResult);
 		if (resultString != null)
 			resultString.setValue(" n = " + n);
 		if (logger!= null){ 
-			logger.cwrite("\n\nSCM Correlation Result : \n" + result);
+			logger.cwrite("\n\nCorrelation Result (Mean of p-values) : \n " + sum);
+			logger.cwrite("\nSCM Correlation Result (Fisher's method) : \n" + chiResult);
+			logger.cwrite("\nSCM Correlation Result (Z-transform method) : \n" + zResult);
 			logger.cwrite("\n" + resultString);
 		}
 	}
