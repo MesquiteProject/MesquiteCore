@@ -72,8 +72,6 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 	    
 		//examine histories here
 		countChanges(tree,(CategoricalHistory)history1,(CategoricalHistory)history2,result,resultString);
-		
-		
 	}
 
 	/*.................................................................................................................*/
@@ -138,8 +136,6 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 		Vector dependentEvents = history2.getInternodeHistoryVector(endNode);
 		int independentCount = independentEvents.size();
 		int dependentCount = dependentEvents.size();
-		CategInternodeEvent curDependentEvent = null;
-		Debugg.println("Check: iCount = " + independentCount + " dCount = " + dependentCount);
 		//counting process
 		if (independentCount == 1){   // no changes, this branch just extends the quadrat
 			//CategInternodeEvent checkIndepEvent = (CategInternodeEvent)independentEvents.get(0);
@@ -160,7 +156,7 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 		Quadrat currentQuad = q;
 		int dependentIndex = 0;
 		int independentIndex = 0;
-		curDependentEvent = (CategInternodeEvent)dependentEvents.get(dependentIndex);
+        CategInternodeEvent curDependentEvent = (CategInternodeEvent)dependentEvents.get(dependentIndex);
 		CategInternodeEvent curIndependentEvent = (CategInternodeEvent)independentEvents.get(independentIndex);
 		while(true){
 			while(curDependentEvent.getPosition() < curIndependentEvent.getPosition()){
@@ -294,6 +290,14 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 			of[0][1] = totalWhiteChange01;
 			of[1][0] = totalBlackChange10;
 			of[1][1] = totalBlackChange01;
+            
+            if (allChange == 0)
+                MesquiteMessage.warnProgrammer("Total changes counted = 0");
+            if (blackFrac == 0)
+                MesquiteMessage.warnProgrammer("No black changes counted");
+            if (whiteFrac == 0)
+                MesquiteMessage.warnProgrammer("No white changes counted");
+            
 			double chisqStat = ((of[0][0]-ef[0][0])*(of[0][0]-ef[0][0]))/ef[0][0];
 			chisqStat += ((of[0][1]-ef[0][1])*(of[0][1]-ef[0][1]))/ef[0][1];
 			chisqStat += ((of[1][0]-ef[1][0])*(of[1][0]-ef[1][0]))/ef[1][0];
@@ -309,7 +313,7 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 				tmpBuffer.append(" total black changes 1->0: " + totalBlackChange10);
 				tmpBuffer.append(" total black changes 0->1: " + totalBlackChange01);
 				tmpBuffer.append(" total black length: " + totalBlackLength);
-				tmpBuffer.append(" total length (check): " + (totalWhiteLength + totalBlackLength));
+				//tmpBuffer.append(" total length (check): " + (totalWhiteLength + totalBlackLength));
 				tmpBuffer.append(" Chi-square stat = " + chisqStat);
 				tmpBuffer.append(" pvalue (1 df) = " + result.getDoubleValue());
 				Debugg.println(tmpBuffer.toString());

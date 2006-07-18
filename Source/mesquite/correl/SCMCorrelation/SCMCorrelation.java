@@ -106,11 +106,9 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 	public void initialize(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, CommandRecord commandRec) {
 		if (!(charStates1 instanceof CategoricalDistribution ||
 				charStates2 instanceof CategoricalDistribution)) {
-
 		}
 		observedStates1 = (CategoricalDistribution)charStates1;
 		observedStates2 = (CategoricalDistribution)charStates2;
-
 	}
 
 
