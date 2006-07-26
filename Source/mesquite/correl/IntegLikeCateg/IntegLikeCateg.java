@@ -1,6 +1,5 @@
 package mesquite.correl.IntegLikeCateg;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import mesquite.categ.lib.CategoricalDistribution;
@@ -12,6 +11,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Double2DArray;
 import mesquite.lib.DoubleArray;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
@@ -20,14 +20,10 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteSubmenuSpec;
-import mesquite.lib.ParseUtil;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringArray;
 import mesquite.lib.Tree;
-import mesquite.lib.characters.CModelEstimator;
 import mesquite.lib.characters.CharacterDistribution;
-import mesquite.lib.characters.CharacterModel;
-import mesquite.lib.characters.ProbabilityModel;
 import mesquite.stochchar.lib.ProbabilityCategCharModel;
 
 public class IntegLikeCateg extends MesquiteModule {
@@ -66,16 +62,17 @@ public class IntegLikeCateg extends MesquiteModule {
 	StringArray reportModes;
 	int reportMode = REPORT_Proportional;
 	MesquiteString reportModeName;
+    MesquiteBoolean intermediatesToConsole = new MesquiteBoolean(false);
 
-	boolean[] deleted;
+	boolean[] deleted = null;
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		loadPreferences();
 		probabilityValue = new MesquiteNumber();
 		minChecker = new MesquiteNumber(MesquiteDouble.unassigned);
-
-
+        
 		addMenuItem("Likelihood Decision Threshold...", makeCommand("setDecision", this));
+        this.addCheckMenuItem(null, "Intermediates to console", makeCommand("toggleIntermediatesToConsole",this), intermediatesToConsole);
 		rootModes = new StringArray(2);  
 		rootModes.setValue(ROOT_IGNOREPRIOR, "Ignore Root State Frequencies");  //the strings passed will be the menu item labels
 		rootModes.setValue(ROOT_USEPRIOR, "Use Root State Frequencies as Prior");
@@ -117,6 +114,9 @@ public class IntegLikeCateg extends MesquiteModule {
 				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
+        if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
+            intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
+        }
 		else
 			return super.doCommand(commandName, arguments, commandRec, checker);
 		return null;
@@ -160,11 +160,17 @@ public class IntegLikeCateg extends MesquiteModule {
 	/*.................................................................................................................*/
 	/* assumes hard polytomies */
 	Vector integrationResults = null;
-	
+    
+	double[] e = null;
+    double[] d = null;
+    double[] y = null;
+    
 	private void downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
-		double[] e = new double[numStates];
-		double[] d = new double[numStates];
-		double[] y = new double[2*numStates];
+        if (e == null || e.length != numStates) {
+           e = new double[numStates];
+           d = new double[numStates];
+           y = new double[2*numStates];
+        }
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
@@ -197,7 +203,7 @@ public class IntegLikeCateg extends MesquiteModule {
 			y[i+numStates] = d[i];
 		}
 		
-		integrationResults = solver.integrate(x,y,h,length,model,integrationResults);
+		integrationResults = solver.integrate(x,y,h,length,model,integrationResults,intermediatesToConsole.getValue());        
 		double[] yEnd = (double[])integrationResults.lastElement();
 		if (yEnd.length == 2*numStates){
 			for(int i=0;i<numStates;i++){
@@ -212,6 +218,21 @@ public class IntegLikeCateg extends MesquiteModule {
 				probsData[node][i]=0;  //this is probably the best choice here
 			}
 		}
+        MesquiteMessage.warnProgrammer("IntermediatestoConsole is " + intermediatesToConsole.getValue());
+        if (intermediatesToConsole.getValue()){
+            MesquiteMessage.println("Intermediate values");
+            x = 0;
+            for(int i=0;i<integrationResults.size();i++){
+                if(i%100 == 0){
+                    MesquiteMessage.print("x= "+ x + " y =[");
+                    y = (double[])integrationResults.get(i);
+                    for(int j=0;j<y.length;j++)
+                        MesquiteMessage.print(y[j]+" ");
+                    MesquiteMessage.println("]");
+                    x += h;
+                }
+            }
+        }
 	}
 	
 	/*.................................................................................................................*/

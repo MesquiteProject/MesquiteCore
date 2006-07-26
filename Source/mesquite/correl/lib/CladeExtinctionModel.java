@@ -31,8 +31,7 @@ public class CladeExtinctionModel implements DESystem {
 	 * @see mesquite.correl.lib.DESystem#calculateDerivative(double, double[])
 	 */
 	
-	public double[]calculateDerivative(double t,double probs[]){
-		double[] result = new double[4];
+	public double[]calculateDerivative(double t,double probs[],double[] result){
 		// for clarity
 		double extProb0 = probs[0];
 		double extProb1 = probs[1];

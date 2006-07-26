@@ -20,7 +20,7 @@ public class ExtinctionIntegrator extends NumberForCharAndTree {
 	IntegLikeCateg calcTask;
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
- 		calcTask = (IntegLikeCateg)hireEmployee(commandRec, IntegLikeCateg.class, "Correlation analysis");
+ 		calcTask = (IntegLikeCateg)hireEmployee(commandRec, IntegLikeCateg.class, "Integrating Likelihood");
 		if (calcTask == null)
 			return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 
