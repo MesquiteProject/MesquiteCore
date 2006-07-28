@@ -15,8 +15,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.correl.QuadratsRealizationCounter;
 
-
-
 import java.util.Vector;
 
 import pal.statistics.ChiSquareDistribution;
@@ -40,8 +38,7 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		//temp.addLine("setSeed " + originalSeed); 
-		
+		//temp.addLine("setSeed " + originalSeed); 		
 		return temp;
 	}
 
@@ -69,15 +66,11 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 				resultString.setValue("Quadrats counting can't be done because one or both of the character are not categorical");
 			return;
 		}
-	    
 		//examine histories here
 		countChanges(tree,(CategoricalHistory)history1,(CategoricalHistory)history2,result,resultString);
 	}
 
 	/*.................................................................................................................*/
-
-
-
 
 	public String getAuthors() {
 		return "Peter E. Midford & Wayne P. Maddison";
@@ -115,7 +108,7 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 		total.getResults(result,resultString);
 	}
 	
-	Quadrat upPass(Tree tree,int node,CategoricalHistory history1, CategoricalHistory history2,Quadrat q){
+	private Quadrat upPass(Tree tree,int node,CategoricalHistory history1, CategoricalHistory history2,Quadrat q){
 		Quadrat myQuad;
 		if (node != tree.getRoot()){
 			myQuad = calculateOneBranch(tree, node, history1, history2,q);
@@ -138,17 +131,19 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 		int dependentCount = dependentEvents.size();
 		//counting process
 		if (independentCount == 1){   // no changes, this branch just extends the quadrat
-			//CategInternodeEvent checkIndepEvent = (CategInternodeEvent)independentEvents.get(0);
-			//if (checkIndepEvent.getChangeVersusSample())
-			//	Debugg.println("No changes on this branch (true)");
-			//else
-			//	Debugg.println("No changes on this branch (false)");
 			quadrats[endNode]= null;  // no new quadrats for this branch
 			q.length++;  // so update the current one - note that distances are proportional to branch length
 			Debugg.println("Triggered an addition, q.length is now: " + q.length); 
 			int dependentIndex = 0;
 			while(dependentIndex<dependentCount-1){
-				dependentIndex++;
+                CategInternodeEvent curDependentEvent = (CategInternodeEvent)dependentEvents.get(dependentIndex++);
+                if (curDependentEvent.getChangeVersusSample()){  //check that it's a real change
+                    if (CategoricalState.minimum(curDependentEvent.getState()) == 0)
+                        q.dependent10Changes++;
+                    else
+                        q.dependent01Changes++;
+                }
+			    dependentIndex++;
 			}
 			return q;                 // and return it
 		}  // otherwise keep counting until the first shift in the independent history
@@ -172,17 +167,17 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 						lastPosition = ((CategInternodeEvent)independentEvents.get(i-1)).getPosition();
 						CategInternodeEvent nextEvent = (CategInternodeEvent)independentEvents.get(i);
 						if (nextEvent.getChangeVersusSample()) {   // make sure it's real
-							//Debugg.println("New quadrat because out of dependent events: " + i );
+							Debugg.println("New quadrat because out of dependent events: " + i );
 							currentQuad = new Quadrat(CategoricalState.minimum(nextEvent.getState()),nextEvent.getPosition()-lastPosition);
 							quadrats[endNode].add(currentQuad);
 							lastPosition = nextEvent.getPosition();   // in case we bail
-							//Debugg.println("(1)Added quadrat of length " + ((Quadrat)quadrats[endNode].lastElement()).length +
-							//		" at " + (quadrats[endNode].size()-1));
+							Debugg.println("(1)Added quadrat of length " + ((Quadrat)quadrats[endNode].lastElement()).length +
+									" at " + (quadrats[endNode].size()-1));
 						}
 					}
-					//Debugg.println("Spot check; emptyQ length is now " + currentQuad.length + " lastPosition = " + lastPosition);
+					Debugg.println("Spot check; emptyQ length is now " + currentQuad.length + " lastPosition = " + lastPosition);
 					currentQuad.length += 1-lastPosition;
-					//Debugg.println("Out of independent events (1); emptyQ length is now " + currentQuad.length);
+					Debugg.println("Out of independent events (1); emptyQ length is now " + currentQuad.length);
 					return currentQuad;
 				}
 				else
@@ -192,22 +187,21 @@ public class QuadratsRealizationCounter extends NumFor2CharHistAndTree {
 			if (independentIndex == independentCount){ // finish up
 				// do we need to adjust length here?
 				currentQuad.length += 1-((CategInternodeEvent)independentEvents.lastElement()).getPosition();
-				//Debugg.println("Out of independent events (2); currentQuad length is now " + currentQuad.length);
+				Debugg.println("Out of independent events (2); currentQuad length is now " + currentQuad.length);
 				return currentQuad;
 			}
 			else{  // new quadrat
 				double lastPosition = curIndependentEvent.getPosition();
 				curIndependentEvent = (CategInternodeEvent)independentEvents.get(independentIndex);
-				//Debugg.println("New quadrat because independentIndex was bumped" + independentIndex);
-				//Debugg.println("current position is " +curIndependentEvent.getPosition() + "last position is " + lastPosition + " diff is " + (curIndependentEvent.getPosition()-lastPosition));
+				Debugg.println("New quadrat because independentIndex was bumped" + independentIndex);
+				Debugg.println("current position is " +curIndependentEvent.getPosition() + "last position is " + lastPosition + " diff is " + (curIndependentEvent.getPosition()-lastPosition));
 				currentQuad = new Quadrat(CategoricalState.minimum(curIndependentEvent.getState()),curIndependentEvent.getPosition()-lastPosition);
 				quadrats[endNode].add(currentQuad);
-				//Debugg.println("(2)Added quadrat of length " + ((Quadrat)quadrats[endNode].lastElement()).length +
-			    //			" at " + (quadrats[endNode].size()-1));
+				Debugg.println("(2)Added quadrat of length " + ((Quadrat)quadrats[endNode].lastElement()).length +
+			    			" at " + (quadrats[endNode].size()-1));
 			}
 		}
 	}
-	
 	
 	// This holds overrun as states continue up past nodes
 	private class Quadrat{

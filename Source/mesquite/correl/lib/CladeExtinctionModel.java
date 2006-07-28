@@ -37,8 +37,8 @@ public class CladeExtinctionModel implements DESystem {
 		double extProb1 = probs[1];
 		double dataProb0 = probs[2];
 		double dataProb1 = probs[3];
-		result[0] = -(e0+t01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + t01*extProb1;
-		result[1] = -(e1+t10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + t10*extProb0;
+        result[0] = -(e0+t01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + t01*extProb1; 
+        result[1] = -(e1+t10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + t10*extProb0;            
 		result[2] = -(e0+t01+s0)*dataProb0 + s0*extProb0*dataProb0 + t01*dataProb1;
 		result[3] = -(e1+t10+s1)*dataProb1 + s1*extProb1*dataProb1 + t10*dataProb0;
 		return result;

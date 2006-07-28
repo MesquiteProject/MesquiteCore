@@ -9,6 +9,7 @@ import mesquite.correl.lib.DESystem;
 import mesquite.correl.lib.RK4Solver;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.Double2DArray;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.MesquiteBoolean;
@@ -114,7 +115,7 @@ public class IntegLikeCateg extends MesquiteModule {
 				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
-        if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
+        else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
             intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
         }
 		else
@@ -161,19 +162,14 @@ public class IntegLikeCateg extends MesquiteModule {
 	/* assumes hard polytomies */
 	Vector integrationResults = null;
     
-	double[] e = null;
-    double[] d = null;
-    double[] y = null;
-    
 	private void downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
-        if (e == null || e.length != numStates) {
-           e = new double[numStates];
-           d = new double[numStates];
-           y = new double[2*numStates];
-        }
+        double[]e = new double[numStates];
+        double[]d = new double[numStates];
+        double[]y = new double[2*numStates];
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
+			//Debugg.println("node " + node + " state " + CategoricalState.toString(observed));
 			for (int state = 0;state < numStates;state++){
 				e[state]=0;
 				if (state == obs)
@@ -195,40 +191,56 @@ public class IntegLikeCateg extends MesquiteModule {
 				}
 			}
 		}
-		double x = 0;
-		double length = tree.getBranchLength(node,1.0,deleted);
-		double h = length/10000;       //this will need tweaking!
-		for(int i=0;i<numStates;i++){
-			y[i] = e[i];
-			y[i+numStates] = d[i];
-		}
-		
-		integrationResults = solver.integrate(x,y,h,length,model,integrationResults,intermediatesToConsole.getValue());        
-		double[] yEnd = (double[])integrationResults.lastElement();
-		if (yEnd.length == 2*numStates){
-			for(int i=0;i<numStates;i++){
-				probsExt[node][i] = yEnd[i];
-				probsData[node][i] = yEnd[i+numStates];
-			}
-		}
-		else {
-			MesquiteMessage.warnProgrammer("Vector returned by solver not the same size supplied!");
-			for(int i=0;i<numStates;i++){
-				probsExt[node][i]=0;   //is this the right thing here?
-				probsData[node][i]=0;  //this is probably the best choice here
-			}
-		}
-        MesquiteMessage.warnProgrammer("IntermediatestoConsole is " + intermediatesToConsole.getValue());
-        if (intermediatesToConsole.getValue()){
-            MesquiteMessage.println("Intermediate values");
-            x = 0;
-            for(int i=0;i<integrationResults.size();i++){
-                if(i%100 == 0){
-                    MesquiteMessage.print("x= "+ x + " y =[");
-                    y = (double[])integrationResults.get(i);
-                    for(int j=0;j<y.length;j++)
-                        MesquiteMessage.print(y[j]+" ");
-                    MesquiteMessage.println("]");
+        if (node == tree.getRoot()){
+            for(int i=0;i<numStates;i++){
+                probsExt[node][i] = e[i];
+                probsData[node][i] = d[i];
+            }
+        }
+        else{
+            double x = 0;
+            double length = tree.getBranchLength(node,1.0,deleted);
+            double h = length/10000;       //this will need tweaking!
+            for(int i=0;i<numStates;i++){
+                y[i] = e[i];
+                y[i+numStates] = d[i];
+            }
+            if (intermediatesToConsole.getValue()){
+                MesquiteMessage.print("node " + node);
+                if (node == tree.getRoot())
+                    MesquiteMessage.println(" is root");
+                else
+                    MesquiteMessage.println("");
+                Debugg.println("At start, y is " + DoubleArray.toString(y));
+            }
+            integrationResults = solver.integrate(x,y,h,length,model,integrationResults,intermediatesToConsole.getValue());        
+            double[] yEnd = (double[])integrationResults.lastElement();
+            if (yEnd.length == 2*numStates){
+                for(int i=0;i<numStates;i++){
+                    probsExt[node][i] = yEnd[i];
+                    probsData[node][i] = yEnd[i+numStates];
+                }
+            }
+            else {
+                MesquiteMessage.warnProgrammer("Vector returned by solver not the same size supplied!");
+                for(int i=0;i<numStates;i++){
+                    probsExt[node][i]=0;   //is this the right thing here?
+                    probsData[node][i]=0;  //this is probably the best choice here
+                }
+            }
+            //MesquiteMessage.warnProgrammer("IntermediatestoConsole is " + intermediatesToConsole.getValue());
+            if (intermediatesToConsole.getValue()){
+                MesquiteMessage.println("Intermediate values");
+                x = 0;
+                for(int i=0;i<integrationResults.size();i++){
+                    if(i%100 == 0){
+                        String xString = MesquiteDouble.toFixedWidthString(x, 13, false);
+                        MesquiteMessage.print("x= "+ xString + " y =[");
+                        y = (double[])integrationResults.get(i);
+                        for(int j=0;j<y.length;j++)
+                            MesquiteMessage.print(MesquiteDouble.toFixedWidthString(y[j],13,false)+" ");
+                        MesquiteMessage.println("]");
+                    }   
                     x += h;
                 }
             }
@@ -247,6 +259,7 @@ public class IntegLikeCateg extends MesquiteModule {
 		double comp;
 		int root = tree.getRoot(deleted);
 		boolean estimated = false;
+        
 
 		initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); 
 
