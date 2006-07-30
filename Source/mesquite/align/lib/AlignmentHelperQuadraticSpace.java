@@ -7,6 +7,10 @@ import mesquite.lib.*;
 public class AlignmentHelperQuadraticSpace extends AlignmentHelper {	
 	
 	public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
+		this(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpen, gapExtend, alphabetLength);
+	}
+
+	public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
 		A = seq1;
 		B = seq2;
 		this.lengthA = lengthA;
@@ -14,9 +18,11 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		this.subs = subs;
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
+		this.gapOpenTerminal = 2;//gapOpenTerminal;
+		this.gapExtendTerminal = 2;//gapExtendTerminal;		
 		this.alphabetLength=alphabetLength;
 	}
-
+	
 	public long[][] doAlignment (boolean returnAlignment, MesquiteNumber score, boolean keepGaps, int[] followsGapSize, int totalGapChars) {
 		//Height = lengthA, Width = lengthB
 		
@@ -27,41 +33,47 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		int i,j;		
 		
 		for (i=1; i<=lengthA; i++) {
-			V[i][0] = D[i][0] = gapOpen + gapExtend*i;
-			H[i][0] = 2*gapOpen +  gapExtend*i;
+			V[i][0] = D[i][0] = gapOpenTerminal + gapExtendTerminal*i;
+			H[i][0] = gapOpen + gapOpenTerminal +  gapExtendTerminal*i;
 		}
 		for (j=1; j<=lengthB; j++) {
-			D[0][j] = H[0][j] = gapOpen + gapExtend*j;
-			V[0][j] = 2*gapOpen +  gapExtend*j;
+			D[0][j] = H[0][j] = gapOpenTerminal + gapExtendTerminal*j;
+			V[0][j] = gapOpen + gapOpenTerminal +  gapExtendTerminal*j;
 		}
 		
-		int gapOpenOnA;
+		int gapOpenOnA, gapOpenOnB, gapExtendOnA, gapExtendOnB;
 		for (i=1; i<=lengthA; i++) {
-			gapOpenOnA = gapOpen;
-			if (keepGaps && i<followsGapSize.length && followsGapSize[i]>0)
+			gapOpenOnA =  (i==lengthA) ? gapOpenTerminal : gapOpen;
+			gapExtendOnA = (i==lengthA) ? gapExtendTerminal : gapExtend ;			
+			if (keepGaps && i<followsGapSize.length && followsGapSize[i]>0) {
 				gapOpenOnA = 0;
+			}
+
 
 			for (j=1; j<=lengthB; j++) {
 //				look at three preceding values.				
+
+				gapOpenOnB =  (j==lengthB) ? gapOpenTerminal : gapOpen;
+				gapExtendOnB = (j==lengthB) ? gapExtendTerminal : gapExtend ;
 				
 				if (isMinimize) {
-					V[i][j] = Math.min(  V[i-1][j] + gapExtend,  
-								Math.min ( D[i-1][j] + gapOpen + gapExtend,
-												 H[i-1][j] + gapOpen + gapExtend));
+					V[i][j] = Math.min(  V[i-1][j] + gapExtendOnB,  
+								Math.min ( D[i-1][j] + gapOpenOnB + gapExtendOnB,
+												 H[i-1][j] + gapOpenOnB + gapExtendOnB));
 	
-					H[i][j] = Math.min(  V[i][j-1] + gapOpenOnA + gapExtend,  
-								Math.min ( D[i][j-1] + gapOpenOnA + gapExtend ,
-												 H[i][j-1] + gapExtend));
+					H[i][j] = Math.min(  V[i][j-1] + gapOpenOnA + gapExtendOnA,  
+								Math.min ( D[i][j-1] + gapOpenOnA + gapExtendOnA ,
+												 H[i][j-1] + gapExtendOnA));
 
 					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength)  +  Math.min(  V[i-1][j-1] , Math.min ( D[i-1][j-1] , H[i-1][j-1] ));
 				} else { //maximize
-					V[i][j] = Math.max(  V[i-1][j] + gapExtend,  
-								Math.max( D[i-1][j] + gapOpen + gapExtend,
-												H[i-1][j] + gapOpen + gapExtend));
+					V[i][j] = Math.max(  V[i-1][j] + gapExtendOnB,  
+								Math.max( D[i-1][j] + gapOpenOnB + gapExtendOnB,
+												H[i-1][j] + gapOpenOnB + gapExtendOnB));
 				
-					H[i][j] = Math.max(  V[i][j-1] + gapOpenOnA + gapExtend,  
-								Math.max ( D[i][j-1] + gapOpenOnA + gapExtend ,
-												 H[i][j-1] + gapExtend));					
+					H[i][j] = Math.max(  V[i][j-1] + gapOpenOnA + gapExtendOnA,  
+								Math.max ( D[i][j-1] + gapOpenOnA + gapExtendOnA ,
+												 H[i][j-1] + gapExtendOnA));					
 	
 					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  V[i-1][j-1] , Math.max( D[i-1][j-1] , H[i-1][j-1] ));
 				}
@@ -108,28 +120,32 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 					a_cnt++;
 				}				
 			} else if  ( V[i][j] == myScore) { //an optimal path came from vertical (letter from A with gap in B)
-			
+				gapOpenOnB =  (j==lengthB) ? gapOpenTerminal : gapOpen;
+				gapExtendOnB = (j==lengthB) ? gapExtendTerminal : gapExtend ;				
+				
 				backtrack[k][0] = CategoricalState.expandFromInt(A[i-1]);
 				backtrack[k][1] = CategoricalState.inapplicable;
-				if ( V[i][j] == V[i-1][j] + gapExtend){
-					myScore -= gapExtend;
+				if ( V[i][j] == V[i-1][j] + gapExtendOnB){
+					myScore -= gapExtendOnB;
 				} else { //V[i][j]  == D[i-1][j] + gapOpen + gapExtend  or V[i][j] == H[i-1][j] + gapOpen + gapExtend
-					myScore -= gapOpen + gapExtend;
+					myScore -= gapOpenOnB + gapExtendOnB;
 				}
 				i--;
 				k++;
 				a_cnt++;
 			} else if (H[i][j] == myScore) { //an optimal path came from horizontal (letter from B with gap in A)
-				gapOpenOnA = gapOpen;
+				gapOpenOnA=  (i==lengthA) ? gapOpenTerminal : gapOpen;
+				gapExtendOnA= (i==lengthA) ? gapExtendTerminal : gapExtend ;				
+			
 				if (keepGaps && i<followsGapSize.length && followsGapSize[i]>0)
 					gapOpenOnA = 0;
 				
 				backtrack[k][0] = CategoricalState.inapplicable;
 				backtrack[k][1] = CategoricalState.expandFromInt(B[j-1]);
-				if ( H[i][j] == H[i][j-1] + gapExtend){
-					myScore -= gapExtend;
+				if ( H[i][j] == H[i][j-1] + gapExtendOnA){
+					myScore -= gapExtendOnA;
 				} else { //H[i][j]  == D[i-1][j] + gapOpen + gapExtend  or H[i][j] == V[i-1][j] + gapOpen + gapExtend
-						myScore -= gapOpenOnA + gapExtend;
+						myScore -= gapOpenOnA + gapExtendOnA;
 				}
 				j--;
 				k++;

@@ -12,6 +12,8 @@ public abstract class AlignmentHelper {
 	int[][] subs;
 	int gapOpen;
 	int gapExtend;
+	int gapOpenTerminal;
+	int gapExtendTerminal;	
 	int alphabetLength;
 	boolean isMinimize = true;
 	
