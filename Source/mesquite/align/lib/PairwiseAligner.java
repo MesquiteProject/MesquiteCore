@@ -82,7 +82,7 @@ public class PairwiseAligner  {
 		if ( returnAlignment) { 
 		
 			long ret[][];
-			if ((lengthA*lengthB)>getCharThresholdForLowMemory()) { 
+			if ((lengthA*lengthB)<getCharThresholdForLowMemory()) { 
 				//low memory (but slower, due to recursion) alignment
 				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, keepGaps, followsGapSize);
 				
