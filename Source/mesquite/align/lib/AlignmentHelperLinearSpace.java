@@ -31,35 +31,56 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	private int shapeLeavingPosInA[];
 	
 	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, false);
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpen, gapExtend, alphabetLength, false);
 	}
-
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, false);
+	}
+	
+	
 	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean keepGaps, int[] followsGapSize) {
 		this.keepGaps = keepGaps;
 		this.followsGapSize = followsGapSize;
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, false);
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpen, gapExtend, alphabetLength, false);
+	}
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength, boolean keepGaps, int[] followsGapSize) {
+		this.keepGaps = keepGaps;
+		this.followsGapSize = followsGapSize;
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, false);
+	}	
+	
+	
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean forwardArrayOnly) {
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpen, gapExtend, alphabetLength, forwardArrayOnly);
+	}
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength, boolean forwardArrayOnly) {
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, forwardArrayOnly);
 	}
 
 	
-	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean forwardArrayOnly) {
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, forwardArrayOnly);
-	}
-
 	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean forwardArrayOnly, boolean keepGaps, int[] followsGapSize) {
 		this.keepGaps = keepGaps;
 		this.followsGapSize = followsGapSize;
-		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, forwardArrayOnly);
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpen, gapExtend, alphabetLength, forwardArrayOnly);
 	}
+	public AlignmentHelperLinearSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength, boolean forwardArrayOnly, boolean keepGaps, int[] followsGapSize) {
+		this.keepGaps = keepGaps;
+		this.followsGapSize = followsGapSize;
+		initialize(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, forwardArrayOnly);
+	}	
 	
 	
-	private void initialize (int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength, boolean forwardArrayOnly) {
+	private void initialize (int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength, boolean forwardArrayOnly) {
 		A = seq1;
 		B = seq2;
 
 		this.subs = subs;
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
+		this.gapOpenTerminal = 2;//gapOpenTerminal;
+		this.gapExtendTerminal = 2;//gapExtendTerminal;
 
+		
 		fH = new int[lengthB+1];
 		fD = new int[lengthB+1];
 		fV = new int[lengthB+1];
@@ -85,11 +106,14 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	
 	public void fillForward(int firstRow, int lastRow, int firstColumn, int lastColumn, int shape) {
 		
-		int lengthA = lastRow - firstRow + 1;
-		int lengthB = lastColumn - firstColumn + 1;
+		//int lengthA = lastRow - firstRow + 1;
+		//int lengthB = lastColumn - firstColumn + 1;
 		int i,j;
 		
-		fH[firstColumn] = fV[firstColumn] = gapOpen;
+		int gapExtendOnB, gapExtendOnA;
+		int gapOpenOnB, gapOpenOnA;		
+
+		fH[firstColumn] = fV[firstColumn] =   (0==firstColumn) ? gapOpenTerminal : gapOpen;
 		fD[firstColumn] = 0;
 		
 		if (shape == gapInA) {
@@ -99,56 +123,56 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		}
 		
 		//fill row-by-row. First row is a special case 
-		
-		for (j=firstColumn+1; j<=lastColumn; j++) {
+		gapExtendOnA = (0==firstRow || lengthB==firstRow) ? gapExtendTerminal : gapExtend ;		
+		for (j=firstColumn+1; j<=lastColumn; j++) {			
 			fD[j] = fV[j] = bigNumber;
-			fH[j] = fH[firstColumn] + gapExtend*(j-firstColumn);		
+			fH[j] = fH[firstColumn] + gapExtendOnA*(j-firstColumn);		
 		}
 		
-		int gapOpenOnA;
+
 		int tmp1H, tmp1D, tmp1V, tmp2H, tmp2D, tmp2V;
 	//reuse the arrays, treating it as the next row in the DP table. Keep one temp variable for each array
 		for (i=firstRow+1; i<=lastRow; i++) { // for each "row" in DP table
 			tmp1H = fH[firstColumn];
 			tmp1D = fD[firstColumn];
 			tmp1V = fV[firstColumn];
-
+		
 			fD[firstColumn] = fH[firstColumn] = bigNumber;
-			fV[firstColumn] += gapExtend; 
-/*			if (shape == gapInB) {
-				fV[firstColumn] = gapExtend*(j-firstRow);
-			} else { //gapInA or noGap
-				fV[firstColumn] = gapOpen + gapExtend*(j-firstRow);
-			}
-*/				
+			fV[firstColumn] += (0==firstColumn || lengthB==firstColumn) ? gapExtendTerminal : gapExtend ;
 
-			gapOpenOnA = gapOpen;
+			gapOpenOnA =  (lengthA==i) ? gapOpenTerminal : gapOpen;
+			gapExtendOnA = (lengthA==i) ? gapExtendTerminal : gapExtend ;
+			//gapOpenOnA = gapOpen;
 			if (keepGaps &&  i<followsGapSize.length && followsGapSize[i]>0)
 				gapOpenOnA = 0;
+
 			
 			for (j=firstColumn+1; j<=lastColumn; j++) { // for each column
 				tmp2H = fH[j];
 				tmp2D = fD[j];
 				tmp2V = fV[j];
 
+				gapOpenOnB =  (lengthB==j) ? gapOpenTerminal : gapOpen;
+				gapExtendOnB = (lengthB==j) ? gapExtendTerminal : gapExtend ;
+				
 				if (isMinimize) {
-					fV[j] = Math.min(  fH[j] + gapOpen + gapExtend,  
-							Math.min ( fD[j]  + gapOpen + gapExtend ,
-											 fV[j] + gapExtend));
+					fV[j] = Math.min(  fH[j] + gapOpenOnB + gapExtendOnB,  
+							Math.min ( fD[j]  + gapOpenOnB + gapExtendOnB ,
+											 fV[j] + gapExtendOnB));
 
-					fH[j] = Math.min(  fH[j-1] + gapExtend,  
-								Math.min ( fD[j-1] + gapOpenOnA + gapExtend,
-												 fV[j-1] + gapOpenOnA + gapExtend));
+					fH[j] = Math.min(  fH[j-1] + gapExtendOnA,  
+								Math.min ( fD[j-1] + gapOpenOnA + gapExtendOnA,
+												 fV[j-1] + gapOpenOnA + gapExtendOnA));
 	
 					fD[j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.min(  tmp1H, Math.min ( tmp1D , tmp1V));
 				} else { //maximize
-					fV[j] = Math.max(  fH[j] + gapOpen + gapExtend,  
-							Math.max ( fD[j] + gapOpen + gapExtend ,
-											 fV[j] + gapExtend));					
+					fV[j] = Math.max(  fH[j] + gapOpenOnB + gapExtendOnB,  
+							Math.max ( fD[j] + gapOpenOnB + gapExtendOnB ,
+											 fV[j] + gapExtendOnB));					
 					
-					fH[j] = Math.max(  fH[j-1] + gapExtend,  
-								Math.max( fD[j-1] + gapOpenOnA + gapExtend,
-												fV[j-1] + gapOpenOnA + gapExtend));
+					fH[j] = Math.max(  fH[j-1] + gapExtendOnA,  
+								Math.max( fD[j-1] + gapOpenOnA + gapExtendOnA,
+												fV[j-1] + gapOpenOnA + gapExtendOnA));
 					
 					fD[j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  tmp1H , Math.max( tmp1D, tmp1V ));
 				}
@@ -162,11 +186,14 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		
 	}
 	public void fillReverse(int firstRow, int lastRow, int firstColumn, int lastColumn, int shape) {
-		int lengthA = lastRow - firstRow +1;
-		int lengthB = lastColumn - firstColumn +1;		
+		//int lengthA = lastRow - firstRow +1;
+		//int lengthB = lastColumn - firstColumn +1;		
 		int i,j;
+		int gapExtendOnB, gapExtendOnA;
+		int gapOpenOnB, gapOpenOnA;		
 		
-		rH[lastColumn] = rV[lastColumn] = gapOpen;
+		
+		rH[lastColumn] = rV[lastColumn] = (lengthB==lastColumn) ? gapOpenTerminal : gapOpen;;
 		rD[lastColumn] = 0;
 		
 		if (shape == gapInA || (keepGaps &&  lastRow<followsGapSize.length && followsGapSize[lastRow]>0)) {
@@ -175,25 +202,26 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			rV[lastColumn] = 0;
 		}
 		
-		//fill row-by-row. First row is a special case 
-		
+		//fill row-by-row. Last row is a special case 
+		gapExtendOnA = (0==lastRow || lengthB==lastRow) ? gapExtendTerminal : gapExtend ;
 		for (j=lastColumn-1; j>=firstColumn; j--) {
 			rD[j] = rV[j] = bigNumber;
-			rH[j] = rH[lastColumn] + gapExtend*(lastColumn-j);
+			rH[j] = rH[lastColumn] + gapExtendOnA*(lastColumn-j);
 		}
 		
-		int gapOpenOnA;
 		int tmp1H, tmp1D, tmp1V, tmp2H, tmp2D, tmp2V;
 	//reuse the arrays, treating it as the next row in the DP table. Keep one temp variable for each array
 		for (i=lastRow-1; i>=firstRow; i--) { // for each "row" in DP table
 			tmp1H = rH[lastColumn];
 			tmp1D = rD[lastColumn];
 			tmp1V = rV[lastColumn];
-			
-			rD[lastColumn] = rH[lastColumn] = bigNumber;
-			rV[lastColumn] +=  gapExtend ;			
 
-			gapOpenOnA = gapOpen; 
+			rD[lastColumn] = rH[lastColumn] = bigNumber;
+			rV[lastColumn] +=  (0==lastColumn || lengthB==lastColumn) ? gapExtendTerminal : gapExtend ;
+			
+			gapOpenOnA =  (0==i) ? gapOpenTerminal : gapOpen;
+			gapExtendOnA = (0==i) ? gapExtendTerminal : gapExtend ;
+//			gapOpenOnA = gapOpen; 
 			if (keepGaps &&  i<followsGapSize.length && followsGapSize[i]>0) // followsGapSize[i] means reversePrecedsGapSize[i-1]
 				gapOpenOnA = 0;
 			
@@ -202,6 +230,10 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				tmp2D = rD[j];
 				tmp2V = rV[j];
 
+				gapOpenOnB =  (0==j) ? gapOpenTerminal : gapOpen;
+				gapExtendOnB = (0==j) ? gapExtendTerminal : gapExtend ;
+				
+				
 				if (isMinimize) {
 					rV[j] = Math.min(  rH[j] + gapOpen + gapExtend,  
 							Math.min ( rD[j]  + gapOpen + gapExtend ,
@@ -237,6 +269,8 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	 * */
 	public int recursivelyFillArray(int firstRow, int lastRow, int firstColumn, int lastColumn, int precedingShape, int succeedingShape) {
 
+		int gapOpenOnB, gapExtendOnB;		
+		
 		//Height (of the 2d array)=lengthA, Width = lengthB
 		
 		fillArrays(firstRow, lastRow, firstColumn, lastColumn, precedingShape, succeedingShape );
@@ -246,16 +280,18 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		int i, verticalColScore, diagonalColScore; 
 		int bestColScore = bigNumber , bestCol = -1, bestColShape = noGap;
 		for (i=firstColumn; i<=lastColumn; i++) {			
+			gapOpenOnB =  (0==i || lengthB==i) ? gapOpenTerminal : gapOpen;
+			gapExtendOnB = (0==i || lengthB==i) ? gapExtendTerminal : gapExtend ;
 			// best of the ways of leaving the i,j cell of the full DP table with a vertical edge 
-			verticalColScore = Math.min(fH[i] + rH[i] + gapExtend + gapOpen,
-							Math.min(fH[i] + rD[i] + gapExtend + gapOpen,
-							Math.min(fH[i] + rV[i] + gapExtend,
-							Math.min(fD[i] + rH[i] + gapExtend + gapOpen,
-							Math.min(fD[i] + rD[i] + gapExtend + gapOpen,
-							Math.min(fD[i] + rV[i] + gapExtend,			
-							Math.min(fV[i] + rH[i] + gapExtend,
-							Math.min(fV[i] + rD[i] + gapExtend,
-										fV[i] + rV[i] + gapExtend - gapOpen))))))));			
+			verticalColScore = Math.min(fH[i] + rH[i] + gapExtendOnB + gapOpenOnB,
+							Math.min(fH[i] + rD[i] + gapExtendOnB + gapOpenOnB,
+							Math.min(fH[i] + rV[i] + gapExtendOnB,
+							Math.min(fD[i] + rH[i] + gapExtendOnB + gapOpenOnB,
+							Math.min(fD[i] + rD[i] + gapExtendOnB + gapOpenOnB,
+							Math.min(fD[i] + rV[i] + gapExtendOnB,			
+							Math.min(fV[i] + rH[i] + gapExtendOnB,
+							Math.min(fV[i] + rD[i] + gapExtendOnB,
+										fV[i] + rV[i] + gapExtendOnB - gapOpenOnB))))))));			
 
 			// best of the ways of leaving the i,j cell of the full DP table with a diagonal edge
 			if (i == lastColumn) { 
