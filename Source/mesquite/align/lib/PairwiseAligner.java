@@ -18,6 +18,8 @@ public class PairwiseAligner  {
     //first gap char costs gapOpen + gapExtend, and each additional character costs gapExtend 
 	private int gapOpen;
 	private int gapExtend;
+	private int gapOpenTerminal;
+	private int gapExtendTerminal;
 	private int subs[][];
 	private boolean keepGaps = false;
 	
@@ -36,6 +38,14 @@ public class PairwiseAligner  {
 	private boolean subCostsInitialized = false;
 	private boolean seqsWereExchanged = false;
 		
+	public PairwiseAligner (boolean keepGaps, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
+		setSubsCostMatrix(subs);
+		setGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);
+		setKeepGaps (keepGaps);
+		this.alphabetLength=alphabetLength;
+		gapCostsInitialized = subCostsInitialized = true;
+	}	
+
 	public PairwiseAligner (boolean keepGaps, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
 		setSubsCostMatrix(subs);
 		setGapCosts(gapOpen, gapExtend);
@@ -84,7 +94,7 @@ public class PairwiseAligner  {
 			long ret[][];
 			if ((lengthA*lengthB)<getCharThresholdForLowMemory()) { 
 				//low memory (but slower, due to recursion) alignment
-				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, keepGaps, followsGapSize);
+				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, keepGaps, followsGapSize);
 				
 				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
 		
@@ -93,7 +103,7 @@ public class PairwiseAligner  {
 
 			} else {
 //				 fast (but quadratic space) alignment
-				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength);
+				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength);
 				ret = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
 				gapInsertionArray = helper.getGapInsertionArray();
 			}
@@ -191,6 +201,18 @@ public class PairwiseAligner  {
 	    //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
+		this.gapOpenTerminal = gapOpen;
+		this.gapExtendTerminal = gapExtend;
+		gapCostsInitialized = true;
+	}
+
+	/** If object wasn't called with gap cost arguments, this must be called or alignment will fail*/
+	public void setGapCosts(int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal){
+	    //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
+		this.gapOpen = gapOpen;
+		this.gapExtend = gapExtend;
+		this.gapOpenTerminal = gapOpenTerminal;
+		this.gapExtendTerminal = gapExtendTerminal;
 		gapCostsInitialized = true;
 	}
 

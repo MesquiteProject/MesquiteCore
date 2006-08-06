@@ -48,11 +48,13 @@ public abstract class AlignMatch extends CategDataMatcher {
 	protected void initAligner() {
   		MesquiteInteger gapOpen = new MesquiteInteger();
    		MesquiteInteger gapExtend = new MesquiteInteger();
+ 		MesquiteInteger gapOpenTerminal = new MesquiteInteger();
+   		MesquiteInteger gapExtendTerminal = new MesquiteInteger();
   		alphabetLength = ((CategoricalState)state).getMaxPossibleState()+1;
- 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend);  
+ 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);  
   		int subs[][] = AlignUtil.getDefaultSubstitutionCosts(alphabetLength);  
   		subs = modifyAlignmentCosts(subs);
-   		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), alphabetLength);
+   		aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 	}
 	/*.................................................................................................................*/
 	public void setTableAndData( MesquiteTable table, CharacterData data) {
