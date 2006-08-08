@@ -45,6 +45,8 @@
 		<string>1.5*</string>
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
+        <key>VMOptions</key>
+        <string>-Xmx512m</string>		
 	</dict>
 </dict>
 </plist>
