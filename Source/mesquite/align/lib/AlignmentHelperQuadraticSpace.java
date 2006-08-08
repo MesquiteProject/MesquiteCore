@@ -18,8 +18,8 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		this.subs = subs;
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
-		this.gapOpenTerminal = 2;//gapOpenTerminal;
-		this.gapExtendTerminal = 2;//gapExtendTerminal;		
+		this.gapOpenTerminal = gapOpenTerminal;
+		this.gapExtendTerminal = gapExtendTerminal;		
 		this.alphabetLength=alphabetLength;
 	}
 	
