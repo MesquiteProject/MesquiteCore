@@ -5,6 +5,7 @@ import java.util.Vector;
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.correl.lib.DEQNumSolver;
+import mesquite.correl.lib.DESpeciationSystem;
 import mesquite.correl.lib.DESystem;
 import mesquite.correl.lib.RK4Solver;
 import mesquite.lib.CommandChecker;
@@ -118,6 +119,16 @@ public class IntegLikeCateg extends MesquiteModule {
         else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
             intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
         }
+        else if (checker.compare(getClass(), "Sets the frequency of checking for underflow", "[integer, 1 or greater]", commandName, "setUnderflowCheckFreq")) {
+            int freq = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+            if (!MesquiteInteger.isCombinable(freq) && !commandRec.scripting())
+                freq = MesquiteInteger.queryInteger(containerOfModule(), "Checking frequency", "Frequency at which underflow checking is performed in likelihood calculations.  A value of n means checking is performed on each nth calculation; higher numbers mean the calculations go faster but are at risk of underflow problems.  Values over 10 are not recommended", (int)underflowCheckFrequency, 1, 10000);
+
+            if (MesquiteInteger.isCombinable(freq) && freq >=0 && freq!=underflowCheckFrequency){
+                underflowCheckFrequency = freq; //change mode
+                parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+            }
+        }
 		else
 			return super.doCommand(commandName, arguments, commandRec, checker);
 		return null;
@@ -162,10 +173,14 @@ public class IntegLikeCateg extends MesquiteModule {
 	/* assumes hard polytomies */
 	Vector integrationResults = null;
     
-	private void downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
+    
+    /* now returns underflow compensation */
+	private double downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
         double[]e = new double[numStates];
         double[]d = new double[numStates];
+        double[]n = new double[numStates];
         double[]y = new double[2*numStates];
+        double comp;
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
@@ -177,11 +192,14 @@ public class IntegLikeCateg extends MesquiteModule {
 				else
 					d[state] = 0;
 			}
+            comp = 0.0;  // no compensation required yet
 		}
 		else {
+            comp = 0.0;
 			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
-				downPass(nd,tree,model,solver,observedStates);
+				comp += downPass(nd,tree,model,solver,observedStates);
 			}
+            double sum = 0.0;
 			for(int state = 0; state < numStates;state++){
 				d[state] = 1;
 				e[state] = 1;
@@ -189,6 +207,11 @@ public class IntegLikeCateg extends MesquiteModule {
 					e[state] *= probsExt[nd][state];
 					d[state] *= probsData[nd][state];
 				}
+                //sum += d[state];
+                if (model instanceof DESpeciationSystem){
+                    DESpeciationSystem ms = (DESpeciationSystem)model;
+                    d[state] *= ms.getSRate(state);
+                }
 			}
 		}
         if (node == tree.getRoot()){
@@ -196,6 +219,7 @@ public class IntegLikeCateg extends MesquiteModule {
                 probsExt[node][i] = e[i];
                 probsData[node][i] = d[i];
             }
+            return comp;
         }
         else{
             double x = 0;
@@ -220,6 +244,9 @@ public class IntegLikeCateg extends MesquiteModule {
                     probsExt[node][i] = yEnd[i];
                     probsData[node][i] = yEnd[i+numStates];
                 }
+                if (++underflowCheck % underflowCheckFrequency == 0){
+                    comp += checkUnderflow(probsData[node]);
+                }
             }
             else {
                 MesquiteMessage.warnProgrammer("Vector returned by solver not the same size supplied!");
@@ -228,7 +255,6 @@ public class IntegLikeCateg extends MesquiteModule {
                     probsData[node][i]=0;  //this is probably the best choice here
                 }
             }
-            //MesquiteMessage.warnProgrammer("IntermediatestoConsole is " + intermediatesToConsole.getValue());
             if (intermediatesToConsole.getValue()){
                 MesquiteMessage.println("Intermediate values");
                 x = 0;
@@ -244,11 +270,12 @@ public class IntegLikeCateg extends MesquiteModule {
                     x += h;
                 }
             }
+            return comp;
         }
 	}
 	
 	/*.................................................................................................................*/
-	public  void calculateLogProbability(Tree tree, DESystem speciesModel, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
+	public void calculateLogProbability(Tree tree, DESystem speciesModel, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
 		if (speciesModel==null || obsStates==null || prob == null)
 			return;
 		estCount =0;
@@ -263,7 +290,7 @@ public class IntegLikeCateg extends MesquiteModule {
 
 		initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); 
 
-		downPass(root, tree,speciesModel, solver, observedStates);
+		comp = downPass(root, tree,speciesModel, solver, observedStates);
 		double likelihood = 0.0;
 		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
 

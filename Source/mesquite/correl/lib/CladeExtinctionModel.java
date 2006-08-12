@@ -1,7 +1,9 @@
 package mesquite.correl.lib;
 
+import mesquite.lib.MesquiteDouble;
 
-public class CladeExtinctionModel implements DESystem {
+
+public class CladeExtinctionModel implements DESpeciationSystem {
 	
 	
 	private double e0;   //extinction rate in state 0
@@ -43,6 +45,30 @@ public class CladeExtinctionModel implements DESystem {
 		result[3] = -(e1+t10+s1)*dataProb1 + s1*extProb1*dataProb1 + t10*dataProb0;
 		return result;
 	}
+    
+    public void setE0(double e0){
+        this.e0 = e0;
+    }
+    
+    public void setS0(double s0){
+        this.s0 = s0;
+    }
+    
+    public void setE1(double e1){
+        this.e1 = e1;
+    }
+    
+    public void setS1(double s1){
+        this.s1 = s1;
+    }
+    
+    public void setT01(double t01){
+        this.t01 = t01;
+    }
+    
+    public void setT10(double t10){
+        this.t10 = t10;
+    }
 
 	public void resetParameters(double e0, double s0, double e1, double s1, double t01, double t10){
 		this.e0 = e0;
@@ -52,6 +78,15 @@ public class CladeExtinctionModel implements DESystem {
 		this.t01 = t01;
 		this.t10 = t10;
 	}
+
+
+    public double getSRate(int state) {
+        if (state == 0)
+            return s0;
+        else if (state == 1)
+            return s1;
+        else return MesquiteDouble.unassigned;
+    }
 	
 	
 }
