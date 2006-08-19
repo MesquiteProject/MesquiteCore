@@ -36,6 +36,7 @@ public abstract class AlignmentHelper {
 		int recentGapRunLength=0;
 		j=0; // counts the number of letters in A seen so far
 		int retainedGapsSeen = 0;
+		int numPosnsToShift=0; // used at most, in the event of a terminal original gap in A that's longer than the one in the alignmnt of A and B  
 		for (i=0; i<k; i++) {
 			if(inputSequence[i][0] == CategoricalState.inapplicable) {
 				recentGapRunLength++;
@@ -44,12 +45,29 @@ public abstract class AlignmentHelper {
 					retainedGapsSeen++;
 				}
 			} else {
+
+				if ( i == retainedGapsSeen && followsGapSize[j]>recentGapRunLength ){
+					numPosnsToShift = retainedGapsSeen; // used at most once, to make the left side of the alignment look right 
+														// in the event of a terminal original gap in A that's longer than the one in the alignmnt of A and B
+				}
 				for (int m=0 ; m < followsGapSize[j]-recentGapRunLength; m++){
 					gappedSeq2return[i+usedGaps][0] =  CategoricalState.inapplicable; 
 					gappedSeq2return[i+usedGaps][1] =  CategoricalState.inapplicable; 
 					usedGaps++;
 					retainedGapsSeen++;
 				}
+				if (numPosnsToShift>0) {//will only happen at most once, in special terminal gap case
+					int c; 
+					long tmp[] = new long[numPosnsToShift];
+					for (c=0; c<numPosnsToShift; c++){
+						tmp[c] = gappedSeq2return[c][1];
+						gappedSeq2return[c][1] = CategoricalState.inapplicable;
+					}
+					for (c=0; c<numPosnsToShift; c++){
+						gappedSeq2return[retainedGapsSeen-numPosnsToShift+c][1] = tmp[c];				
+					}
+					numPosnsToShift = 0;
+				}				
 				j++;
 				recentGapRunLength=0;
 			}
