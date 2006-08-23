@@ -47,7 +47,7 @@ public class ExtinctionIntegrator extends NumberForCharAndTree {
         addMenuItem("Set 0 to 1 Transition Rate...", makeCommand("setT01", this));
         addMenuItem("Set 1 to 0 Transition Rate...", makeCommand("setT10", this));
         addMenuItem("Write table to console", makeCommand("writeTable",this));
-
+        addMenuItem("Write code for R to console", makeCommand("writeForExternalApp",this));
         speciesModel = new CladeExtinctionModel(0.001, 0.001, 0.005, 0.001, 0.01, 0.01);
 		return true;
 	}
@@ -60,6 +60,8 @@ public class ExtinctionIntegrator extends NumberForCharAndTree {
     /*.................................................................................................................*/
     /*  the main command handling method.  */
     public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+        // Should be removed when debugged
+        double [] testvals = { 1E-11,1E-10,1E-9,1E-8,1E-7,5E-7,1E-6,2E-6,1E-5,1E-4,5E-4,1E-3,5E-3,1E-2,2E-2,5E-2,1E-1,2E-1,5E-01};
         if (checker.compare(getClass(), "Sets extinction rate in state 0", "[double]", commandName, "setE0")) {
             double newE0 = MesquiteDouble.fromString(parser.getFirstToken(arguments));
             if (!MesquiteDouble.isCombinable(newE0) && !commandRec.scripting())
@@ -144,7 +146,6 @@ public class ExtinctionIntegrator extends NumberForCharAndTree {
             MesquiteMessage.println("t01 = " + t01);
             MesquiteMessage.println("t10 = " + t10);
             MesquiteMessage.println("s1/s0");
-            double [] testvals = { 1E-11,1E-10,1E-9,1E-8,1E-7,5E-7,1E-6,2E-6,1E-5,1E-4,1E-3,5E-3,1E-2,2E-2,5E-2,1E-1,2E-1,5E-01,1.0 };
             MesquiteNumber savedResult = new MesquiteNumber();
             MesquiteMessage.print("           ");
             for(int j=0;j<testvals.length;j++)
@@ -161,6 +162,38 @@ public class ExtinctionIntegrator extends NumberForCharAndTree {
                 MesquiteMessage.println("");
             }
         }
+        else if (checker.compare(getClass(), "Writes text for external app to console", "", commandName, "writeForExternalApp")) {
+            MesquiteMessage.println("e0 = " + e0);
+            MesquiteMessage.println("e1 = " + e1);
+            MesquiteMessage.println("t01 = " + t01);
+            MesquiteMessage.println("t10 = " + t10);
+            MesquiteMessage.println("s1/s0");
+            MesquiteNumber savedResult = new MesquiteNumber();
+            MesquiteMessage.println("Cut here......");
+            MesquiteMessage.print("x <- c(");
+            for(int j=0;j<testvals.length;j++){
+                MesquiteMessage.print("log10(" + MesquiteDouble.toFixedWidthString(testvals[j],10)+ ")");
+                if (j<(testvals.length-1))
+                    MesquiteMessage.print(", ");
+            }
+            MesquiteMessage.println(");");
+            MesquiteMessage.println("y<-x;");
+            MesquiteMessage.println("z <- matrix(nrow=length(y),ncol=length(x));");
+            for(int i=0;i<testvals.length;i++){
+                speciesModel.setS1(testvals[i]);
+                MesquiteMessage.print("z[" + (i+1) + ",] <- c(");
+                for(int j=0;j<testvals.length;j++){
+                    speciesModel.setS0(testvals[j]);
+                    calculateNumber(lastTree,lastCharDistribution,savedResult,null,commandRec);
+                    MesquiteMessage.print(MesquiteDouble.toFixedWidthString(-1*savedResult.getDoubleValue(),10));
+                    if (j<(testvals.length-1))
+                        MesquiteMessage.print(", ");
+                }
+                MesquiteMessage.println(");");
+            }
+            MesquiteMessage.println("persp(x,y,z,xlab='log10(s0)',ylab='log10(s1)',zlab='logLike',ticktype='detailed',theta=125,phi=30,col='lightblue');");
+        }
+   
         else
             return super.doCommand(commandName, arguments, commandRec, checker);
         return null;
