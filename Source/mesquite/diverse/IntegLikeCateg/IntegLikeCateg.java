@@ -1,13 +1,10 @@
-package mesquite.correl.IntegLikeCateg;
+package mesquite.diverse.IntegLikeCateg;
 
 import java.util.Vector;
 
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.CategoricalState;
-import mesquite.correl.lib.DEQNumSolver;
-import mesquite.correl.lib.DESpeciationSystem;
-import mesquite.correl.lib.DESystem;
-import mesquite.correl.lib.RK4Solver;
+import mesquite.diverse.lib.*;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Debugg;

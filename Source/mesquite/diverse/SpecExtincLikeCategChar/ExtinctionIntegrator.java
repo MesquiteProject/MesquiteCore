@@ -1,11 +1,8 @@
-package mesquite.correl.ExtinctionIntegrator;
+package mesquite.diverse.SpecExtincLikeCategChar;
 
 
-import mesquite.correl.IntegLikeCateg.IntegLikeCateg;
-import mesquite.correl.lib.DEQNumSolver;
-import mesquite.correl.lib.DESystem;
-import mesquite.correl.lib.RK4Solver;
-import mesquite.correl.lib.CladeExtinctionModel;
+import mesquite.diverse.lib.*;
+import mesquite.diverse.IntegLikeCateg.IntegLikeCateg;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.MesquiteDouble;
