@@ -13,7 +13,7 @@ import mesquite.lib.Tree;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
 
-public class ExtinctionIntegrator extends NumberForCharAndTree {
+public class SpecExtincLikeCategChar extends NumberForCharAndTree {
 	
 	DEQNumSolver solver;
 	CladeExtinctionModel speciesModel;
