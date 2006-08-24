@@ -30,8 +30,8 @@ public class ExtinctionIntegrator extends NumberForCharAndTree {
     double s0 = 0.001;   //user specified speciation rate in state 0
     double e1 = 0.005;   //user specified extinction rate in state 1
     double s1 = 0.001;   //user specified speciation rate in state 1
-    double t01 = 0.01;  //user specified transition rate from state 0 to state 1
-    double t10 = 0.01;  //user specifiedtransition rate from state 1 to state 0
+    double t01 = 0.01;   //user specified transition rate from state 0 to state 1
+    double t10 = 0.01;   //user specifiedtransition rate from state 1 to state 0
 
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
