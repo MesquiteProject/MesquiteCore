@@ -49,7 +49,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree {
 		return true;
 	}
 
-	public void initialize(Tree tree, CharacterDistribution charStates1, CommandRecord commandRec) {
+ 	public void initialize(Tree tree, CharacterDistribution charStates1, CommandRecord commandRec) {
 		// TODO Auto-generated method stub
 
 	}
