@@ -88,23 +88,25 @@ public class RK4Solver implements DEQNumSolver {
 	private double[] yk3 = null;
 
 	private double[] step(double x, double [] y, double h){
-		if (k1 == null || k1.length != y.length){
-			k1 = new double[y.length];
-			k2 = new double[y.length];
-			k3 = new double[y.length];
-			k4 = new double[y.length];
-			yk1 = new double[y.length];
-			yk2 = new double[y.length];
-			yk3 = new double[y.length];
+        int ylen = y.length;
+        double half_h = 0.5*h;
+		if (k1 == null || k1.length != ylen){
+			k1 = new double[ylen];
+			k2 = new double[ylen];
+			k3 = new double[ylen];
+			k4 = new double[ylen];
+			yk1 = new double[ylen];
+			yk2 = new double[ylen];
+			yk3 = new double[ylen];
 		}
 		k1 = mySystem.calculateDerivative(x,y,k1);
-		for(int i=0;i<yk1.length;i++)
-			yk1[i]=y[i]+k1[i]*0.5*h;
-		k2 = mySystem.calculateDerivative(x+0.5*h,yk1,k2);
-		for(int i=0;i<yk2.length;i++)
-			yk2[i]=y[i]+k2[i]*0.5*h;
-		k3 = mySystem.calculateDerivative(x+0.5*h,yk2,k3);
-		for(int i=0;i<yk3.length;i++)
+		for(int i=0;i<ylen;i++)
+			yk1[i]=y[i]+k1[i]*half_h;
+		k2 = mySystem.calculateDerivative(x+half_h,yk1,k2);
+		for(int i=0;i<ylen;i++)
+			yk2[i]=y[i]+k2[i]*half_h;
+		k3 = mySystem.calculateDerivative(x+half_h,yk2,k3);
+		for(int i=0;i<ylen;i++)
 			yk3[i]=y[i]+k3[i]*h;
 		k4 = mySystem.calculateDerivative(x+h,yk3,k4);
 		for(int i=0;i<nextY.length;i++)

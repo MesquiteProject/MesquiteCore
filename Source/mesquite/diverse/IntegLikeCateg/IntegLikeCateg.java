@@ -33,6 +33,8 @@ public class IntegLikeCateg extends MesquiteModule {
 	double[][] downProbs,  finalProbs;  // probability at node N given state s at base
 	double[][] downProbs2; // probabilty at node N given state s1 for char1 and s2 for char2 at base
 	double [][] probsExt, probsData;
+    double[] yStart;  //initial value for numerical integration
+    double[] d,e; //intermediate results
 	double[][] savedRootEstimates; // holds the estimates at the root (for simulation priors, etc.)
 	double[] underflowCompDown, underflowCompUp;  // ln of compensation for underflow
 	double[] empirical;
@@ -141,6 +143,9 @@ public class IntegLikeCateg extends MesquiteModule {
 			underflowCompDown = new double[nodes];
 			underflowCompUp = new double[nodes];
 			empirical = new double[numStates];
+            yStart = new double[2*numStates];
+            d = new double[numStates];
+            e = new double[numStates];
 		}
 		Double2DArray.zeroArray(downProbs);
 		Double2DArray.zeroArray(probsData);
@@ -170,13 +175,9 @@ public class IntegLikeCateg extends MesquiteModule {
 	/* assumes hard polytomies */
 	Vector integrationResults = null;
     
-    
+
     /* now returns underflow compensation */
 	private double downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
-        double[]e = new double[numStates];
-        double[]d = new double[numStates];
-        double[]n = new double[numStates];
-        double[]y = new double[2*numStates];
         double comp;
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
@@ -196,7 +197,6 @@ public class IntegLikeCateg extends MesquiteModule {
 			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
 				comp += downPass(nd,tree,model,solver,observedStates);
 			}
-            double sum = 0.0;
 			for(int state = 0; state < numStates;state++){
 				d[state] = 1;
 				e[state] = 1;
@@ -204,7 +204,6 @@ public class IntegLikeCateg extends MesquiteModule {
 					e[state] *= probsExt[nd][state];
 					d[state] *= probsData[nd][state];
 				}
-                //sum += d[state];
                 if (model instanceof DESpeciationSystem){
                     DESpeciationSystem ms = (DESpeciationSystem)model;
                     d[state] *= ms.getSRate(state);
@@ -223,8 +222,8 @@ public class IntegLikeCateg extends MesquiteModule {
             double length = tree.getBranchLength(node,1.0,deleted);
             double h = length/10000;       //this will need tweaking!
             for(int i=0;i<numStates;i++){
-                y[i] = e[i];
-                y[i+numStates] = d[i];
+                yStart[i] = e[i];
+                yStart[i+numStates] = d[i];
             }
             if (intermediatesToConsole.getValue()){
                 MesquiteMessage.print("node " + node);
@@ -232,9 +231,9 @@ public class IntegLikeCateg extends MesquiteModule {
                     MesquiteMessage.println(" is root");
                 else
                     MesquiteMessage.println("");
-                Debugg.println("At start, y is " + DoubleArray.toString(y));
+                MesquiteMessage.println("At start, y is " + DoubleArray.toString(yStart));
             }
-            integrationResults = solver.integrate(x,y,h,length,model,integrationResults,intermediatesToConsole.getValue());        
+            integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());        
             double[] yEnd = (double[])integrationResults.lastElement();
             if (yEnd.length == 2*numStates){
                 for(int i=0;i<numStates;i++){
@@ -259,9 +258,9 @@ public class IntegLikeCateg extends MesquiteModule {
                     if(i%100 == 0){
                         String xString = MesquiteDouble.toFixedWidthString(x, 13, false);
                         MesquiteMessage.print("x= "+ xString + " y =[");
-                        y = (double[])integrationResults.get(i);
-                        for(int j=0;j<y.length;j++)
-                            MesquiteMessage.print(MesquiteDouble.toFixedWidthString(y[j],13,false)+" ");
+                        double [] tempResults = (double[])integrationResults.get(i);
+                        for(int j=0;j<tempResults.length;j++)
+                            MesquiteMessage.print(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
                         MesquiteMessage.println("]");
                     }   
                     x += h;
@@ -284,8 +283,12 @@ public class IntegLikeCateg extends MesquiteModule {
 		int root = tree.getRoot(deleted);
 		boolean estimated = false;
         
-
-		initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); 
+		if (observedStates.getMaxState() == 0){
+		    MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; will try to proceed assuming 2 possible states");
+		    initProbs(tree.getNumNodeSpaces(),2);
+        }
+        else
+            initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); 
 
 		comp = downPass(root, tree,speciesModel, solver, observedStates);
 		double likelihood = 0.0;
@@ -322,7 +325,13 @@ public class IntegLikeCateg extends MesquiteModule {
 		if (zeroHit)
 			return -0.001*(++estCount);  // to shortcircuit the optimizer wandering around zero with very high rates
 		CategoricalDistribution observedStates = (CategoricalDistribution)states;
-		initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); //the model should use the observedStates to set this; observedStates should carry info about its maximun conceivable number of states?
+        if (observedStates.getMaxState() == 0){
+            MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; will try to proceed assuming 2 possible states");
+            initProbs(tree.getNumNodeSpaces(),2);
+        }
+        else
+            initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); //the model should use the observedStates to set this; observedStates should carry info about its maximum conceivable number of states?
+
 		estCount++;
 		int root = tree.getRoot(deleted);
 		downPass(root, tree,speciesModel, solver, observedStates);
