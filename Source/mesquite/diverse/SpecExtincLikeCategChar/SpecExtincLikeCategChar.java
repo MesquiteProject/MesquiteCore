@@ -3,15 +3,7 @@ package mesquite.diverse.SpecExtincLikeCategChar;
 
 import mesquite.diverse.lib.*;
 import mesquite.diverse.IntegLikeCateg.IntegLikeCateg;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CommandRecord;
-import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteNumber;
-import mesquite.lib.MesquiteParameter;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.ParametersExplorable;
-import mesquite.lib.Tree;
+import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
 import mesquite.lib.duties.ParametersExplorer;
@@ -61,28 +53,34 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 
 		//following is for the parameters explorer
 		s0p.setName("s0");
-		s0p.setMinimumAllowed(0.01);
-		s0p.setMaximumAllowed(0.11);
+		s0p.setExplanation("Rate of speciation with state 0");
+		s0p.setMinimumAllowed(0.0001);
+		s0p.setMaximumAllowed(0.1);
 		s0p.setValue(s0);
 		s1p.setName("s1");
-		s1p.setMinimumAllowed(0.01);
-		s1p.setMaximumAllowed(0.11);
+		s1p.setExplanation("Rate of speciation with state 1");
+		s1p.setMinimumAllowed(0.0001);
+		s1p.setMaximumAllowed(0.1);
 		s1p.setValue(s1);
 		e0p.setName("e0");
-		e0p.setMinimumAllowed(0.01);
-		e0p.setMaximumAllowed(0.11);
+		e0p.setExplanation("Rate of extinction with state 0");
+		e0p.setMinimumAllowed(0.0001);
+		e0p.setMaximumAllowed(0.1);
 		e0p.setValue(e0);
 		e1p.setName("e1");
-		e1p.setMinimumAllowed(0.01);
-		e1p.setMaximumAllowed(0.11);
+		e1p.setExplanation("Rate of extinction with state 1");
+		e1p.setMinimumAllowed(0.0001);
+		e1p.setMaximumAllowed(0.1);
 		e1p.setValue(e1);
 		t01p.setName("t01");
-		t01p.setMinimumAllowed(0.01);
-		t01p.setMaximumAllowed(0.11);
+		t01p.setExplanation("Rate of 0->1 changes");
+		t01p.setMinimumAllowed(0.0001);
+		t01p.setMaximumAllowed(0.1);
 		t01p.setValue(t01);
 		t10p.setName("t10");
-		t10p.setMinimumAllowed(0.01);
-		t10p.setMaximumAllowed(0.11);
+		t10p.setExplanation("Rate of 1->0 changes");
+		t10p.setMinimumAllowed(0.0001);
+		t10p.setMaximumAllowed(0.1);
 		t10p.setValue(t10);
 		parameters = new MesquiteParameter[]{s0p, s1p, e0p, e1p, t01p, t10p};
 		return true;
@@ -92,7 +90,26 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		// TODO Auto-generated method stub
 
 	}
+	public void employeeQuit(MesquiteModule employee){
+		if (employee == explorer)
+			explorer = null;
+	}
+	/*.................................................................................................................*/
 
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+
+			temp.addLine("setS0 " + MesquiteDouble.toString(s0));
+			temp.addLine("setS1 " + MesquiteDouble.toString(s1));
+			temp.addLine("setE0 " + MesquiteDouble.toString(e0));
+			temp.addLine("setE1 " + MesquiteDouble.toString(e1));
+			temp.addLine("setT01 " + MesquiteDouble.toString(t01));
+			temp.addLine("setT10 " + MesquiteDouble.toString(t10));
+			if (explorer != null)
+				temp.addLine("showParamExplorer ", explorer);
+		
+		return temp;
+	}
 	/*.................................................................................................................*/
 	/*  the main command handling method.  */
 	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
@@ -181,6 +198,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 			if (explorer == null)
 				return null;
 			explorer.setExplorable(this, commandRec);
+			return explorer;
 		}
 		else if (checker.compare(getClass(), "Writes table to console", "", commandName, "writeTable")) {
 			MesquiteMessage.println("e0 = " + e0);
