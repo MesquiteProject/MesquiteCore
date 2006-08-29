@@ -47,7 +47,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	MesquiteNumber minChecker;
 	
 	// Number of steps per branch, reduce for a faster, possibily sloppier result
-    public static final double STEP_COUNT = 10000;
+    public static final double STEP_COUNT = 1000;
 
 	//In version 1.1. the assumption about the root prior for model estimation, ancestral state reconstruction and simulation is assumed to be embedded in the model
 	//Thus, the control is removed here

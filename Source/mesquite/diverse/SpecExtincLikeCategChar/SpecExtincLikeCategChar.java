@@ -46,6 +46,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		addMenuItem("Set State 1 Speciation Rate...", makeCommand("setS1", this));
 		addMenuItem("Set 0 to 1 Transition Rate...", makeCommand("setT01", this));
 		addMenuItem("Set 1 to 0 Transition Rate...", makeCommand("setT10", this));
+		addMenuItem("-", null);
 		addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
 		addMenuItem("Write table to console", makeCommand("writeTable",this));
 		addMenuItem("Write code for R to console", makeCommand("writeForExternalApp",this));
@@ -287,6 +288,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		calculateNumber( lastTree,  lastCharDistribution, likelihood, resultString, commandRec);
 		return likelihood.getDoubleValue();
 	}
+	/*------------------------------------------------------------------------------------------*/
 
 	public void calculateNumber(Tree tree, CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
 		if (result == null)

@@ -32,7 +32,9 @@ public class CladeExtinctionModel implements DESpeciationSystem {
 	 *  probs[3] = P1 = probability of explaining the data, given system in in state 1 at time t
 	 * @see mesquite.correl.lib.DESystem#calculateDerivative(double, double[])
 	 */
-	
+	public String toString(){
+		return "Model s0=" + MesquiteDouble.toString(s0, 4) +" s1=" + MesquiteDouble.toString(s1, 4) +" e0=" + MesquiteDouble.toString(e0, 4) +" e1=" + MesquiteDouble.toString(e1, 4) +" t01=" + MesquiteDouble.toString(t01, 4) +" t10=" + MesquiteDouble.toString(t10, 4);
+	}
 	public double[]calculateDerivative(double t,double probs[],double[] result){
 		// for clarity
 		double extProb0 = probs[0];
