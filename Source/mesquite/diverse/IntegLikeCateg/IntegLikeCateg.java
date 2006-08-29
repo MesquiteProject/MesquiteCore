@@ -46,7 +46,8 @@ public class IntegLikeCateg extends MesquiteModule {
 	long underflowCheck = 1;
 	MesquiteNumber minChecker;
 	
-
+	// Number of steps per branch, reduce for a faster, possibily sloppier result
+    public static final double STEP_COUNT = 10000;
 
 	//In version 1.1. the assumption about the root prior for model estimation, ancestral state reconstruction and simulation is assumed to be embedded in the model
 	//Thus, the control is removed here
@@ -220,7 +221,7 @@ public class IntegLikeCateg extends MesquiteModule {
         else{
             double x = 0;
             double length = tree.getBranchLength(node,1.0,deleted);
-            double h = length/10000;       //this will need tweaking!
+            double h = length/STEP_COUNT;       //this will need tweaking!
             for(int i=0;i<numStates;i++){
                 yStart[i] = e[i];
                 yStart[i+numStates] = d[i];
