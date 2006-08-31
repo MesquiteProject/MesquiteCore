@@ -103,6 +103,10 @@ public class Pagel94 extends Pagel94Calculator {
    public void setLogger(CLogger logger){
 	   this.logger = logger;
    }
+   void writeToLogger(String s){
+	   if (logger != null)
+		   logger.cwrite(s);
+   }
  	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) { 
    	 	Snapshot temp = new Snapshot();
@@ -250,14 +254,14 @@ public class Pagel94 extends Pagel94Calculator {
         result8 = model8.evaluate(model8.getParams(),null);
 
         double score = result4-result8;
-        if (logger!= null){ logger.cwrite("\n\nFor four parameter model : \n");
-	        logger.cwrite(model4.getParameters());
-	        logger.cwrite("\n\nlog Likelihood is " + (-1*result4));
-	        logger.cwrite("\n\n\nFor eight parameter model : \n");
-	        logger.cwrite(model8.getParameters());
-	        logger.cwrite("\n\nlog Likelihood is " + (-1*result8));
+        if (logger!= null){ writeToLogger("\n\nFor four parameter model : \n");
+	        writeToLogger(model4.getParameters());
+	        writeToLogger("\n\nlog Likelihood is " + (-1*result4));
+	        writeToLogger("\n\n\nFor eight parameter model : \n");
+	        writeToLogger(model8.getParameters());
+	        writeToLogger("\n\nlog Likelihood is " + (-1*result8));
 	        
-	        logger.cwrite("\n\nDifference is " + score);
+	        writeToLogger("\n\nDifference is " + score);
        }
        
        if (presentPValue.getValue() && simCount>0){
@@ -358,22 +362,22 @@ public class Pagel94 extends Pagel94Calculator {
 	        	 	int completedDiffs = countAssigned(diffs);
 	        	 	if (completedDiffs>0){
 	        	 		pvalue = 1-(1.0*position)/(1.0*completedDiffs);
-	        	 		logger.cwrite("\np-value from " + completedDiffs +" simulations is " + pvalue + "\n");
+	        	 		writeToLogger("\np-value from " + completedDiffs +" simulations is " + pvalue + "\n");
 	        	 		if (constantCharCount >0)
-	        	 			logger.cwrite("Simulation set includes " + constantCharCount + " sets with constant characters");
+	        	 			writeToLogger("Simulation set includes " + constantCharCount + " sets with constant characters");
 	        	 		completedCount = completedDiffs;
 	        	 	}
 	        	 	else{
 	        	 		pvalue = MesquiteDouble.unassigned;
-	        	 		logger.cwrite("\nNo simulations completed");
+	        	 		writeToLogger("\nNo simulations completed");
 	        	 		completedCount = 0;
 	        	 	}
 	         }
 	         else {
 	        	 	pvalue = 1-(1.0*position)/(1.0*simCount);
-	        	 	logger.cwrite ("\np-value from " + simCount + " simulations is " + pvalue + "\n");
+	        	 	writeToLogger ("\np-value from " + simCount + " simulations is " + pvalue + "\n");
         	 		if (constantCharCount >0)
-        	 			logger.cwrite("Simulation set includes " + constantCharCount + " sets with constant characters");
+        	 			writeToLogger("Simulation set includes " + constantCharCount + " sets with constant characters");
 	        	 	completedCount = simCount;
 	         }
    	         if (result != null)

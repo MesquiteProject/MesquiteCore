@@ -28,8 +28,8 @@ import mesquite.lib.duties.*;
 
 public class SCMCorrelation extends NumberFor2CharAndTree {
 
-	MesquiteLong seed;
-	long originalSeed=System.currentTimeMillis(); //0L;
+	//MesquiteLong seed;
+	//long originalSeed=System.currentTimeMillis(); //0L;
 
 	private CLogger logger;
 	private int numRealizations = 10;
@@ -37,23 +37,33 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 	private CategoricalDistribution observedStates2;
 	NumFor2CharHistAndTree  realizationCounter;
 	CharMapper mapper1, mapper2;
-
+	int whichMapper = 1;
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-		seed = new MesquiteLong(originalSeed);
+	//	seed = new MesquiteLong(originalSeed);
 		realizationCounter = (NumFor2CharHistAndTree)hireEmployee(commandRec, NumFor2CharHistAndTree.class, "Correlation assessment on stochastic-character-mapping realizations");
 		if (realizationCounter == null)
 			return sorry(commandRec, "Sorry, realization counter could not be started");
+		whichMapper = 1; // a bit kludgy
 		mapper1 = (CharMapper)hireNamedEmployee(commandRec, CharMapper.class, "#StochCharMapper");
 		if (mapper1 == null)
 			return sorry(commandRec, getName() + " couldn't start because no mapping module was obtained.");
+		whichMapper = 2;
 		mapper2 = (CharMapper)hireNamedEmployee(commandRec, CharMapper.class, "#StochCharMapper");
 		if (mapper2 == null)
 			return sorry(commandRec, getName() + " couldn't start because no mapping module was obtained.");
+		whichMapper = 0;
 		addMenuItem("Realizations examined (SCM Correlation)...", makeCommand("setNumRealizations", this));
-		addMenuItem("Set Seed (SCM Correlation)...", makeCommand("setSeed", this));
+		//addMenuItem("Set Seed (SCM Correlation)...", makeCommand("setSeed", this));
 		if (getEmployer() instanceof CLogger)
 			setLogger((CLogger)getEmployer());
 		return true;
+	}
+	public String purposeOfEmployee(MesquiteModule employee){
+		if (whichMapper == 1)
+			return "Stoch. Map. Character 1";
+		else	if (whichMapper == 2)
+			return "Stoch. Map. Character 2";
+		return "Stochastic character mapping";
 	}
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresExactlyCategoricalData();
@@ -65,24 +75,20 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("setSeed " + originalSeed); 
+	//	temp.addLine("setSeed " + originalSeed); 
 		temp.addLine("setNumRealizations " + numRealizations);
+		temp.addLine("getMapper1", mapper1);
+		temp.addLine("getMapper2", mapper2);
 		return temp;
 	}
 	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the random number seed to that passed", "[long integer seed]", commandName, "setSeed")) {
-			long s = MesquiteLong.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteLong.isCombinable(s) && !commandRec.scripting()){
-				s = MesquiteLong.queryLong(containerOfModule(), "Random number seed", "Enter an integer value for the random number seed for character evolution simulation", originalSeed);
-			}
-			if (MesquiteLong.isCombinable(s)){
-				originalSeed = s;
-				seed.setValue(originalSeed);
-				if (!commandRec.scripting()) parametersChanged(null, commandRec); //?
-			}
-			return null;
+		if (checker.compare(this.getClass(), "Gets the first mapper", null, commandName, "getMapper1")) {
+			return mapper1;
 		}
-		else if (checker.compare(this.getClass(), "Sets the number of realizations examined for the quadrats method", "[number]", commandName, "setNumRealizations")) {
+		else if (checker.compare(this.getClass(), "Gets the second mapper", null, commandName, "getMapper2")) {
+			return mapper2;
+		}
+		else  if (checker.compare(this.getClass(), "Sets the number of realizations examined for the quadrats method", "[number]", commandName, "setNumRealizations")) {
 			MesquiteInteger pos = new MesquiteInteger();
 			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newNum))
@@ -149,7 +155,9 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 		CategoricalHistory history1 =(CategoricalHistory)observedStates1.adjustHistorySize(tree, null);
 		CategoricalHistory history2 =(CategoricalHistory)observedStates2.adjustHistorySize(tree, null);
 		int n = 0;
+	//Debugg.println("=============================@@@@@@@@@@@");
 		for (int i=0; i<MesquiteInteger.minimum(numMaps1, numMaps2); i++){
+			//Debugg.println("=============================replicate");
 			mapper1.getMapping( i,  history1, null,  commandRec); 
 			mapper2.getMapping( i,  history2, null,  commandRec); 
 			realizationCounter.calculateNumber(tree, history1, history2, correl, resultString, commandRec);
@@ -159,30 +167,35 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 				logSum.add(Math.log(correl.getDoubleValue()));
 				quantileSum.add(NormalDistribution.quantile(correl.getDoubleValue(),0.0,1.0));
 			}
-			
+
 		}
+	//	Debugg.println("end=============================@@@@@@@@@@@");
 		if (n == 0){
 			sum.setToUnassigned();
+			chiResult = new MesquiteNumber();
 			chiResult.setToUnassigned();
 			quantileSum.setToUnassigned();
 		}
 		else{
 			sum.divideBy(n);
 			double chiSum = -2*logSum.getDoubleValue();
-			if (MesquiteDouble.isInfinite(chiSum))
+			 if (MesquiteDouble.isInfinite(chiSum))
 				chiResult = new MesquiteNumber(0);
 			else
 				chiResult = new MesquiteNumber(1-ChiSquareDistribution.cdf(chiSum,2*n));
+				
 			zResult = new MesquiteNumber(NormalDistribution.cdf((quantileSum.getDoubleValue()/Math.sqrt((double)n)),0.0,1.0));
+			
 		}
 		if (zResult != null)
-		result.setValue(zResult);
+			result.setValue(zResult);
 		if (resultString != null)
 			resultString.setValue(" n = " + n);
 		if (logger!= null){ 
-			logger.cwrite("\n\nCorrelation Result (Mean of p-values) : \n " + sum);
-			logger.cwrite("\nSCM Correlation Result (Fisher's method) : \n" + chiResult);
-			logger.cwrite("\nSCM Correlation Result (Z-transform method) : \n" + zResult);
+			logger.cwrite("\n\nCorrelation calculated from stochastic character mapping replicates by method: " + realizationCounter.getName());
+			logger.cwrite("\n\nMean of p-values : \n   " + sum);
+			logger.cwrite("\nFisher's method : \n   " + chiResult);
+			logger.cwrite("\nZ-transform method : \n   " + zResult);
 			logger.cwrite("\n" + resultString);
 		}
 	}
@@ -191,7 +204,7 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 
 
 	public String getVeryShortName() {
-		return "SCM Correlation test";
+		return "SCM Correlation tests";
 	}
 	public String getNameAndParameters() {
 		if (realizationCounter == null)
@@ -208,11 +221,11 @@ public class SCMCorrelation extends NumberFor2CharAndTree {
 	}
 
 	public String getName() {
-		return "SCM Correlation test";
+		return "Stoch. Char. Map. Correlation tests";
 	}
 
 	public String getExplanation(){
-		return "A correlation test for two categorical characters using stochastic character mapping";
+		return "Correlation tests for two categorical characters using stochastic character mapping";
 	}
 
 	public boolean isPrerelease(){
