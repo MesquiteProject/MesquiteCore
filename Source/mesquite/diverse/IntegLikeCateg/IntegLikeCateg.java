@@ -30,14 +30,10 @@ public class IntegLikeCateg extends MesquiteModule {
 	// bunch of stuff copied from zMargLikeCateg - need to prune!!
 	
 	
-	double[][] downProbs,  finalProbs;  // probability at node N given state s at base
-	double[][] downProbs2; // probabilty at node N given state s1 for char1 and s2 for char2 at base
 	double [][] probsExt, probsData;
     double[] yStart;  //initial value for numerical integration
     double[] d,e; //intermediate results
 	double[][] savedRootEstimates; // holds the estimates at the root (for simulation priors, etc.)
-	double[] underflowCompDown, underflowCompUp;  // ln of compensation for underflow
-	double[] empirical;
 	MesquiteNumber probabilityValue;
 	int numStates;
 	ProbabilityCategCharModel tempModel;
@@ -52,7 +48,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	//In version 1.1. the assumption about the root prior for model estimation, ancestral state reconstruction and simulation is assumed to be embedded in the model
 	//Thus, the control is removed here
 	public static final int ROOT_IGNOREPRIOR = 0;  // likelihoodignore's model's prior
-	public static final int ROOT_USEPRIOR = 1;  // calculates ancesteral states imposing model's prior
+	public static final int ROOT_USEPRIOR = 1;  // calculates ancestral states imposing model's prior
 	public boolean showRootModeChoices = false; 
 	int rootMode = ROOT_USEPRIOR; //what if anything is done with prior probabilities of states at subroot?  
 	StringArray rootModes;
@@ -139,22 +135,12 @@ public class IntegLikeCateg extends MesquiteModule {
 		if (probsData==null || probsData.length!=nodes || probsData[0].length!=numStates){
 			probsData = new double[nodes][numStates];
 			probsExt = new double[nodes][numStates];
-			downProbs = new double[nodes][numStates];
-			finalProbs = new double[nodes][numStates];
-			underflowCompDown = new double[nodes];
-			underflowCompUp = new double[nodes];
-			empirical = new double[numStates];
             yStart = new double[2*numStates];
             d = new double[numStates];
             e = new double[numStates];
 		}
-		Double2DArray.zeroArray(downProbs);
 		Double2DArray.zeroArray(probsData);
 		Double2DArray.zeroArray(probsExt);
-		Double2DArray.zeroArray(finalProbs);
-		DoubleArray.zeroArray(underflowCompDown);
-		DoubleArray.zeroArray(underflowCompUp);
-		DoubleArray.zeroArray(empirical);
 	}
 	
 
@@ -174,8 +160,9 @@ public class IntegLikeCateg extends MesquiteModule {
 	}
 	/*.................................................................................................................*/
 	/* assumes hard polytomies */
-	Vector integrationResults = null;
-    
+
+    // This might hold the intermediate step results if requested for debugging
+    Vector integrationResults = null;
 
     /* now returns underflow compensation */
 	private double downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
@@ -210,6 +197,9 @@ public class IntegLikeCateg extends MesquiteModule {
                     d[state] *= ms.getSRate(state);
                 }
 			}
+            if (++underflowCheck % underflowCheckFrequency == 0){
+                comp += checkUnderflow(d);
+            }
 		}
         if (node == tree.getRoot()){
             for(int i=0;i<numStates;i++){
@@ -241,9 +231,6 @@ public class IntegLikeCateg extends MesquiteModule {
                     probsExt[node][i] = yEnd[i];
                     probsData[node][i] = yEnd[i+numStates];
                 }
-                if (++underflowCheck % underflowCheckFrequency == 0){
-                    comp += checkUnderflow(probsData[node]);
-                }
             }
             else {
                 MesquiteMessage.warnProgrammer("Vector returned by solver not the same size supplied!");
@@ -254,18 +241,25 @@ public class IntegLikeCateg extends MesquiteModule {
             }
             if (intermediatesToConsole.getValue()){
                 MesquiteMessage.println("Intermediate values");
-                x = 0;
+                x = h;
+                double [] tempResults;
                 for(int i=0;i<integrationResults.size();i++){
                     if(i%100 == 0){
                         String xString = MesquiteDouble.toFixedWidthString(x, 13, false);
                         MesquiteMessage.print("x= "+ xString + " y =[");
-                        double [] tempResults = (double[])integrationResults.get(i);
+                        tempResults = (double[])integrationResults.get(i);
                         for(int j=0;j<tempResults.length;j++)
                             MesquiteMessage.print(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
                         MesquiteMessage.println("]");
                     }   
-                    x += h;
+                    x += 100*h;
                 }
+                MesquiteMessage.print("Final value; ");
+                MesquiteMessage.print("x= " + h*STEP_COUNT + " y =[");
+                tempResults = (double[])integrationResults.lastElement();
+                for(int j=0;j<tempResults.length;j++)
+                    MesquiteMessage.print(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
+                MesquiteMessage.println("]");
             }
             return comp;
         }
@@ -298,7 +292,6 @@ public class IntegLikeCateg extends MesquiteModule {
 		for (int i=0;  i<=observedStates.getMaxState(); i++) 
 			likelihood += probsData[root][i];
 
-		comp = underflowCompDown[root];
 		double negLogLikelihood = -(Math.log(likelihood) - comp);
 		if (prob!=null)
 			prob.setValue(negLogLikelihood);
@@ -335,15 +328,13 @@ public class IntegLikeCateg extends MesquiteModule {
 
 		estCount++;
 		int root = tree.getRoot(deleted);
-		downPass(root, tree,speciesModel, solver, observedStates);
+		double comp = downPass(root, tree,speciesModel, solver, observedStates);
 		double likelihood = 0.0;
-		double comp;
 		/*~~~~~~~~~~~~~~ logLikelihoodCalc ~~~~~~~~~~~~~~*/
 
 		for (int i=0;  i<=observedStates.getMaxState(); i++) 
 			likelihood += probsData[root][i];
 
-		comp = underflowCompDown[root];
 		double logLike = Math.log(likelihood) - comp;
 		if (logLike> -0.00001) {
 			zeroHit = true;
