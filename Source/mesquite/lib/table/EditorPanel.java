@@ -187,6 +187,15 @@ public abstract class EditorPanel extends MesquitePanel {
 		editRow = -2;
 		tb.setFocusedCell(c, r);
 	}
+	public void offEditDontRecord(){  //1. 12
+		editField.offEditDontRecord();
+		editField.setVisible(false);
+		editField.setText(null);
+		editField.setBounds(0, 0, 0, 0);
+		editField.setColumnRow(-2, -2);
+		editColumn=-2;
+		editRow = -2;
+	}
 	public void offEdit(){  
 		editField.offEdit();
 		editField.setVisible(false);

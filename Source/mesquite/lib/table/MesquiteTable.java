@@ -3275,6 +3275,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
+	/** Remove all edit boxes; don't record the states. */
+	public void offAllEditsDontRecord() {//1. 12
+		defocusCell();
+
+		matrix.offEditDontRecord();
+		rowNames.offEditDontRecord();
+		columnNames.offEditDontRecord();
+	}
+	/* ............................................................................................................... */
 	/** Remove all edit boxes. */
 	public void offAllEdits() {
 		defocusCell();
