@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<mesquite>
-       <classpath>../../jars/iText.jar</classpath>
-       <classpath>../../jars/Jama-1.0.1.zip</classpath>
-       <classpath>../../jars/JSci.zip</classpath>
-       <classpath>../../jars/pal.zip</classpath>
-</mesquite>
