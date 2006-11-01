@@ -146,8 +146,8 @@ public class PairwiseAligner  {
 		B = new int[B_withGaps.length];
 		
 		if (keepGaps) { // only do this in case where gaps in A are tracked
-			followsGapSize = new int[A_withGaps.length];
-			//translate sequences to ints, and remove gaps
+			followsGapSize = new int[A_withGaps.length + 1];
+
 			for (i=0; i<A_withGaps.length; i++) 
 				followsGapSize[i] = 0;
 		}
@@ -164,7 +164,7 @@ public class PairwiseAligner  {
 				totalGapChars++;	
 			}
 		}
-		//followsGapSize[lengthA] = 0; //the final entry in this array is spurious ... it says the character after the last character in the string follows a bunhc of gap characters; not meaningful. 
+		followsGapSize[lengthA] = 0; //the final entry in this array is a placeholder ... it says the character after the last character in the string follows 0 spacers ...  
 		
 		lengthB = 0;
 		for (i=0; i<B_withGaps.length; i++) { 
