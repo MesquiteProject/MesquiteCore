@@ -40,8 +40,9 @@ public abstract class AlignmentHelper {
 		for (i=0; i<k; i++) {
 			if(inputSequence[i][0] == CategoricalState.inapplicable) {
 				recentGapRunLength++;
+				if (j+retainedGapsSeen < gapInsertionArray.length && j < followsGapSize.length) //Wayne's workaround to crash
 				gapInsertionArray[j+retainedGapsSeen] = Math.max(0, recentGapRunLength - followsGapSize[j] );
-				if (followsGapSize[j] > recentGapRunLength) { 	
+				if (j< followsGapSize.length && followsGapSize[j] > recentGapRunLength) { 	
 					retainedGapsSeen++;
 				}
 			} else {
