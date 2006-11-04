@@ -43,7 +43,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	MesquiteNumber minChecker;
 	
 	// Number of steps per branch, reduce for a faster, possibily sloppier result
-    public static final double STEP_COUNT = 1000;
+    public static final double STEP_COUNT = 10000;
 
 	//In version 1.1. the assumption about the root prior for model estimation, ancestral state reconstruction and simulation is assumed to be embedded in the model
 	//Thus, the control is removed here
@@ -173,7 +173,7 @@ public class IntegLikeCateg extends MesquiteModule {
 			//Debugg.println("node " + node + " state " + CategoricalState.toString(observed));
 			for (int state = 0;state < numStates;state++){
 				e[state]=0;
-				if (state == obs)
+				if ((state == obs) || (model instanceof DESpeciationSystem))
 					d[state] = 1;
 				else
 					d[state] = 0;
@@ -189,13 +189,19 @@ public class IntegLikeCateg extends MesquiteModule {
 				d[state] = 1;
 				e[state] = 1;
 				for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
+                   // Debugg.println("probsExt["+nd +"][" + state + "] = " + probsExt[nd][state]);
+                   // Debugg.println("probsData["+nd +"][" + state + "] = " + probsData[nd][state]);
 					e[state] *= probsExt[nd][state];
 					d[state] *= probsData[nd][state];
 				}
                 if (model instanceof DESpeciationSystem){
                     DESpeciationSystem ms = (DESpeciationSystem)model;
+                    //Debugg.println("d["+state + "] = " + d[state]);
                     d[state] *= ms.getSRate(state);
                 }
+                //Debugg.println("e["+state + "] = " + e[state]);
+                //Debugg.println("d["+state + "] = " + d[state]);
+                
 			}
             if (++underflowCheck % underflowCheckFrequency == 0){
                 comp += checkUnderflow(d);
@@ -241,25 +247,28 @@ public class IntegLikeCateg extends MesquiteModule {
             }
             if (intermediatesToConsole.getValue()){
                 MesquiteMessage.println("Intermediate values");
+                StringBuffer stateMsg = new StringBuffer(1000);
+                //stateMsg.delete(0,stateMsg.length());  //flush everything
                 x = h;
                 double [] tempResults;
                 for(int i=0;i<integrationResults.size();i++){
                     if(i%100 == 0){
                         String xString = MesquiteDouble.toFixedWidthString(x, 13, false);
-                        MesquiteMessage.print("x= "+ xString + " y =[");
+                        stateMsg.append("x= "+ xString + " y =[");
                         tempResults = (double[])integrationResults.get(i);
                         for(int j=0;j<tempResults.length;j++)
-                            MesquiteMessage.print(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
-                        MesquiteMessage.println("]");
+                            stateMsg.append(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
+                        stateMsg.append("]\n");
                     }   
-                    x += 100*h;
+                    x += h;
                 }
-                MesquiteMessage.print("Final value; ");
-                MesquiteMessage.print("x= " + h*STEP_COUNT + " y =[");
+                stateMsg.append("Final value; \n");
+                stateMsg.append("x= " + h*STEP_COUNT + " y =[");
                 tempResults = (double[])integrationResults.lastElement();
                 for(int j=0;j<tempResults.length;j++)
-                    MesquiteMessage.print(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
-                MesquiteMessage.println("]");
+                    stateMsg.append(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
+                stateMsg.append("]\n");
+                MesquiteMessage.println(stateMsg.toString());
             }
             return comp;
         }
@@ -277,19 +286,24 @@ public class IntegLikeCateg extends MesquiteModule {
 		double comp;
 		int root = tree.getRoot(deleted);
 		boolean estimated = false;
+        int workingMaxState;
         
-		if (observedStates.getMaxState() == 0){
+		if (speciesModel instanceof ReducedCladeModel)
+            workingMaxState =1;
+        else if (observedStates.getMaxState() == 0){
 		    MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; will try to proceed assuming 2 possible states");
-		    initProbs(tree.getNumNodeSpaces(),2);
+		    workingMaxState = 1;
         }
         else
-            initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); 
+            workingMaxState = observedStates.getMaxState()+1; 
+        
+        initProbs(tree.getNumNodeSpaces(),workingMaxState);
 
-		comp = downPass(root, tree,speciesModel, solver, observedStates);
+        comp = downPass(root, tree,speciesModel, solver, observedStates);
 		double likelihood = 0.0;
 		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
 
-		for (int i=0;  i<=observedStates.getMaxState(); i++) 
+		for (int i=0;  i<workingMaxState; i++) 
 			likelihood += probsData[root][i];
 
 		double negLogLikelihood = -(Math.log(likelihood) - comp);

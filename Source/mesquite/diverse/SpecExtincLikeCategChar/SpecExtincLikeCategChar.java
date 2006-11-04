@@ -1,6 +1,8 @@
 package mesquite.diverse.SpecExtincLikeCategChar;
 
 
+import java.util.Vector;
+
 import mesquite.diverse.lib.*;
 import mesquite.diverse.IntegLikeCateg.IntegLikeCateg;
 import mesquite.lib.*;
@@ -12,6 +14,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 
 	DEQNumSolver solver;
 	CladeExtinctionModel speciesModel;
+    CladeExtinctionModel testModel;
 	IntegLikeCateg calcTask;
 
 	// hooks for capturing context for table dump.
@@ -96,6 +99,40 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		t10p.setMaximumAllowed(MesquiteDouble.infinite);
 		t10p.setValue(t10);
 		parameters = new MesquiteParameter[]{s0p, s1p, e0p, e1p, t01p, t10p};
+        
+        // Test model will dump values to console for fixed branch lenght and different e values
+        testModel = new CladeExtinctionModel(1E-6, 0.001, 1E-6, 0.01, 0.05, 0.05);
+        Vector integrationResults = null;
+        double x = 0;
+        double length = 1.0;
+        int STEP_COUNT = 1000;
+        double h = length/STEP_COUNT;       //this will need tweaking!
+        double[] yStart = new double[4];
+        yStart[0] = 1;
+        yStart[1] = 1;
+        yStart[2] = 0;
+        yStart[1] = 1;
+        //double [] eVals = {0, 1E-8,(root10*1E-8),1E-7,(root10*1E-7),1E-6,(root10*1E-6),1E-5,(root10*1E-5),1E-4,(root10*1E-4),1E-3,(root10*1E-3),1E-2,(root10*1E-2),1E-1,(root10*1E-1),1,root10,10};
+        //double [] sVals = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
+        double [] eVals = {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+        double [] sVals = {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+        System.out.println("Test model: columns are s, e, E0, E1, D0, D1");
+        for (int i=0;i<sVals.length;i++){
+            testModel.setS0(sVals[i]);
+            testModel.setS1(sVals[i]);
+            for (int j=0;j<eVals.length;j++){
+                testModel.setE0(eVals[j]);
+                testModel.setE1(eVals[j]);
+                integrationResults = solver.integrate(x,yStart,h,length,testModel,integrationResults,false); 
+            
+                double[] yEnd = (double[])integrationResults.lastElement();
+
+                System.out.println(sVals[i]+"\t" + eVals[j]+"\t" + yEnd[0] + "\t"+ yEnd[1] + "\t"+ yEnd[2] + "\t" + yEnd[3]);
+            }
+        }
+
+        
+        
 		return true;
 	}
 
