@@ -3,24 +3,10 @@ package mesquite.diverse.ReducedCladeLikeCategChar;
 import java.util.Vector;
 
 import mesquite.diverse.IntegLikeCateg.IntegLikeCateg;
-import mesquite.diverse.lib.DEQNumSolver;
-import mesquite.diverse.lib.RK4Solver;
-import mesquite.diverse.lib.ReducedCladeModel;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CommandRecord;
-import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteNumber;
-import mesquite.lib.MesquiteParameter;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.ParametersExplorable;
-import mesquite.lib.Snapshot;
-import mesquite.lib.Tree;
+import mesquite.diverse.lib.*;
+import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
-import mesquite.lib.duties.NumberForCharAndTree;
-import mesquite.lib.duties.ParametersExplorer;
+import mesquite.lib.duties.*;
 
 public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements ParametersExplorable {
 
@@ -31,18 +17,20 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
     ReducedCladeModel testModel;
     IntegLikeCateg calcTask;
 
-    MesquiteParameter sp = new MesquiteParameter();
-    MesquiteParameter ep = new MesquiteParameter();
+    MesquiteParameter sp = new MesquiteParameter(); //used only for parameter exploration
+    MesquiteParameter ep = new MesquiteParameter();//used only for parameter exploration
 
     MesquiteParameter[] parameters;
     ParametersExplorer explorer;
-
+    
     // hooks for capturing context for table dump.
     Tree lastTree;
     CharacterDistribution lastCharDistribution;
 
     double e = 0.001;   //user specified extinction rate in state 0
     double s = 0.001;   //user specified speciation rate in state 0
+    
+    MesquiteBoolean conditionBySurvival;
 
     public boolean startJob(String arguments, Object condition,
             CommandRecord commandRec, boolean hiredByName) {
@@ -53,6 +41,8 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
         solver = new RK4Solver();
         addMenuItem("Set Extinction Rate...", makeCommand("setE", this));
         addMenuItem("Set Speciation Rate...", makeCommand("setS", this));
+        conditionBySurvival = new MesquiteBoolean(false);
+		addCheckMenuItem(null, "Condition by Survival", MesquiteModule.makeCommand("conditionBySurvival", this), conditionBySurvival);
         addMenuItem("-", null);
         addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
         addMenuItem("Write table to console", makeCommand("writeTable",this));
@@ -117,7 +107,8 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
         Snapshot temp = new Snapshot();
         temp.addLine("setS " + MesquiteDouble.toString(s));
         temp.addLine("setE " + MesquiteDouble.toString(e));
-        if (explorer != null)
+		temp.addLine("conditionBySurvival  " + conditionBySurvival.toOffOnString());
+       if (explorer != null)
             temp.addLine("showParamExplorer ", explorer);
         return temp;
     }
@@ -137,7 +128,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
                     speciesModel.setE(e);
                 else
                     speciesModel = new ReducedCladeModel(e,s);
-                parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+                parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
             }
         }
         else if (checker.compare(getClass(), "Sets speciation rate", "[double]", commandName, "setS")) {
@@ -150,10 +141,14 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
                     speciesModel.setS(s);
                 else
                     speciesModel = new ReducedCladeModel(e,s);
-                parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+                parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
             }
         }
-        else if (checker.compare(getClass(), "Show Parameter Explorer", "", commandName, "showParamExplorer")) {
+		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionBySurvival")) {
+			conditionBySurvival.toggleValue(new Parser().getFirstToken(arguments));
+			parametersChangedNotifyExpl(null, commandRec);
+		}
+      else if (checker.compare(getClass(), "Show Parameter Explorer", "", commandName, "showParamExplorer")) {
             explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
             if (explorer == null)
                 return null;
@@ -165,7 +160,13 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
             return super.doCommand(commandName, arguments, commandRec, checker);
         return null;
     }
-    
+    public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
+    	if (!commandRec.scripting())
+   	parametersChanged(n, commandRec);
+   Debugg.println("pcne");
+    	if (explorer != null)
+    	explorer.explorableChanged(this, commandRec);
+    }
     
     public void calculateNumber(Tree tree, CharacterDistribution charStates,
             MesquiteNumber result, MesquiteString resultString,
@@ -188,11 +189,19 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
         lastCharDistribution = charStates;
         if (speciesModel == null)
             speciesModel = new ReducedCladeModel(e, s);
-        calcTask.calculateLogProbability(tree, speciesModel, solver,
+        calcTask.calculateLogProbability(tree, speciesModel, conditionBySurvival.getValue(), solver,
                 charStates, resultString, result, commandRec);
 
     }
 
+	public void restoreAfterExploration(){
+	       if (speciesModel == null)
+	            speciesModel = new ReducedCladeModel(e, s);
+	        else {
+	        	speciesModel.setE(e);
+	        	speciesModel.setS(s);
+	        }
+	}
 
     public void initialize(Tree tree, CharacterDistribution charStates,
             CommandRecord commandRec) {

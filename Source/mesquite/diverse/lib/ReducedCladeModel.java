@@ -6,8 +6,7 @@ public class ReducedCladeModel implements DESpeciationSystem {
 
     private double e;   //extinction rate in state 0
     private double s;   //speciation rate in state 0
-    
-
+ 
     public ReducedCladeModel(double e, double s){
         this.e = e;
         this.s = s;
@@ -40,7 +39,7 @@ public class ReducedCladeModel implements DESpeciationSystem {
         this.s = s;
     }
     
-
+ 
     public void resetParameters(double e0, double s0, double e1, double s1, double t01, double t10){
         this.e = e0;
         this.s = s0;

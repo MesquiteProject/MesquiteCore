@@ -36,6 +36,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 	MesquiteParameter t10p = new MesquiteParameter();
 	MesquiteParameter[] parameters;
 	ParametersExplorer explorer;
+	   MesquiteBoolean conditionBySurvival;
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		calcTask = (IntegLikeCateg)hireEmployee(commandRec, IntegLikeCateg.class, "Integrating Likelihood");
@@ -49,6 +50,8 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		addMenuItem("Set State 1 Speciation Rate...", makeCommand("setS1", this));
 		addMenuItem("Set 0 to 1 Transition Rate...", makeCommand("setT01", this));
 		addMenuItem("Set 1 to 0 Transition Rate...", makeCommand("setT10", this));
+	       conditionBySurvival = new MesquiteBoolean(false);
+			addCheckMenuItem(null, "Condition by Survival", MesquiteModule.makeCommand("conditionBySurvivial", this), conditionBySurvival);
 		addMenuItem("-", null);
 		addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
 		addMenuItem("Write table to console", makeCommand("writeTable",this));
@@ -155,6 +158,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 			temp.addLine("setE1 " + MesquiteDouble.toString(e1));
 			temp.addLine("setT01 " + MesquiteDouble.toString(t01));
 			temp.addLine("setT10 " + MesquiteDouble.toString(t10));
+			temp.addLine("conditionBySurvival  " + conditionBySurvival.toOffOnString());
 			if (explorer != null)
 				temp.addLine("showParamExplorer ", explorer);
 		
@@ -175,7 +179,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 					speciesModel.setE0(e0);
 				else
 					speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets speciation rate in state 0", "[double]", commandName, "setS0")) {
@@ -188,7 +192,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 					speciesModel.setS0(s0);
 				else
 					speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets extinction rate in state 1", "[double]", commandName, "setE1")) {
@@ -201,7 +205,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 					speciesModel.setE1(e1);
 				else
 					speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets speciation rate in state 1", "[double]", commandName, "setS1")) {
@@ -214,7 +218,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 					speciesModel.setS1(s1);
 				else
 					speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets transition rate from state 0 to state 1", "[double]", commandName, "setT01")) {
@@ -227,7 +231,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 					speciesModel.setT01(t01);
 				else
 					speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets transition rate from state 1 to state 0", "[double]", commandName, "setT10")) {
@@ -240,10 +244,14 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 					speciesModel.setT10(t10);
 				else
 					speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
-		else if (checker.compare(getClass(), "Writes table to console", "", commandName, "showParamExplorer")) {
+		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionBySurvival")) {
+			conditionBySurvival.toggleValue(new Parser().getFirstToken(arguments));
+			parametersChangedNotifyExpl(null, commandRec);
+		}
+ 		else if (checker.compare(getClass(), "Writes table to console", "", commandName, "showParamExplorer")) {
 			explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
 			if (explorer == null)
 				return null;
@@ -308,6 +316,12 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 			return super.doCommand(commandName, arguments, commandRec, checker);
 		return null;
 	}
+	   public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
+	    	if (!commandRec.scripting())
+	    		parametersChanged(n, commandRec);
+	    	if (explorer != null)
+	    		explorer.explorableChanged(this, commandRec);
+	    }
 
 	/*------------------------------------------------------------------------------------------*/
 	/** these methods for ParametersExplorable interface */
@@ -343,9 +357,24 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		lastCharDistribution = charStates;
 		if (speciesModel == null)
 			speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-		calcTask.calculateLogProbability(tree, speciesModel, solver, charStates, resultString, result, commandRec);
+		calcTask.calculateLogProbability(tree, speciesModel, conditionBySurvival.getValue(),solver, charStates, resultString, result, commandRec);
 
 	}
+	public void restoreAfterExploration(){
+
+		if (speciesModel == null)
+			speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
+		else{
+			speciesModel.setE0(e0);
+	        	speciesModel.setE1(e1);
+	        	speciesModel.setS0(s0);
+	        	speciesModel.setS1(s1);
+	        	speciesModel.setT01(t01);
+	        	speciesModel.setT10(t10);
+	       }
+	}
+
+ 	
 	/*------------------------------------------------------------------------------------------*/
 
 

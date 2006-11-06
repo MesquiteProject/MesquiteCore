@@ -275,7 +275,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	}
 	
 	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, DESystem speciesModel, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
+	public void calculateLogProbability(Tree tree, DESystem speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
 		if (speciesModel==null || obsStates==null || prob == null)
 			return;
 		estCount =0;
@@ -302,10 +302,17 @@ public class IntegLikeCateg extends MesquiteModule {
         comp = downPass(root, tree,speciesModel, solver, observedStates);
 		double likelihood = 0.0;
 		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
-
-		for (int i=0;  i<workingMaxState; i++) 
-			likelihood += probsData[root][i];
-
+		if (conditionBySurvival){
+			
+		for (int i=0;  i<workingMaxState; i++) {
+			likelihood += probsData[root][i]/(1-probsExt[root][i]);
+Debugg.println("pe " + probsExt[root][i]);
+			}
+		}
+		else
+			for (int i=0;  i<workingMaxState; i++) 
+				likelihood += probsData[root][i];
+			
 		double negLogLikelihood = -(Math.log(likelihood) - comp);
 		if (prob!=null)
 			prob.setValue(negLogLikelihood);
