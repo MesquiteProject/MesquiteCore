@@ -38,12 +38,12 @@ public class IntegLikeCateg extends MesquiteModule {
 	int numStates;
 	ProbabilityCategCharModel tempModel;
 	ProbabilityCategCharModel passedModel;
-	long underflowCheckFrequency = 2;  //how often to check that not about to underflow; 1 checks every time
+	long underflowCheckFrequency = -1; //2;  //how often to check that not about to underflow; 1 checks every time
 	long underflowCheck = 1;
 	MesquiteNumber minChecker;
 	
 	// Number of steps per branch, reduce for a faster, possibily sloppier result
-    public static final double STEP_COUNT = 10000;
+    public static final double STEP_COUNT = 10000;  //default 10000
 
 	//In version 1.1. the assumption about the root prior for model estimation, ancestral state reconstruction and simulation is assumed to be embedded in the model
 	//Thus, the control is removed here
@@ -153,6 +153,7 @@ public class IntegLikeCateg extends MesquiteModule {
 		if (q == 0)
 			return 0;
 		else {
+Debugg.println("underflow comp used " + q);
 			for (int i=0; i<probs.length; i++)
 				probs[i] /= q;
 		}
@@ -167,43 +168,47 @@ public class IntegLikeCateg extends MesquiteModule {
     /* now returns underflow compensation */
 	private double downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
         double comp;
-		if (tree.nodeIsTerminal(node)) {
+		if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
 			//Debugg.println("node " + node + " state " + CategoricalState.toString(observed));
 			for (int state = 0;state < numStates;state++){
 				e[state]=0;
-				if ((state == obs) || (model instanceof DESpeciationSystem))
+				if ((state == obs) || (model instanceof ReducedCladeModel))
 					d[state] = 1;
 				else
 					d[state] = 0;
 			}
             comp = 0.0;  // no compensation required yet
 		}
-		else {
+		else { //initial conditions from daughters if internal
             comp = 0.0;
 			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
 				comp += downPass(nd,tree,model,solver,observedStates);
 			}
 			for(int state = 0; state < numStates;state++){
-				d[state] = 1;
+				d[state] = 1;  //two here to anticipate two daughters???
 				e[state] = 1;
+				//TODO: either filter to permit only ultrametric, or redo calculations to permit extinct nodes.
+				//TODO: likewise for polytomies
 				for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
                    // Debugg.println("probsExt["+nd +"][" + state + "] = " + probsExt[nd][state]);
                    // Debugg.println("probsData["+nd +"][" + state + "] = " + probsData[nd][state]);
-					e[state] *= probsExt[nd][state];
+					e[state] = probsExt[nd][state];
 					d[state] *= probsData[nd][state];
 				}
-                if (model instanceof DESpeciationSystem){
+
+                if (model instanceof DESpeciationSystem && node != tree.getRoot()){  //condition on splitting at root; thus don't include rate if at root
                     DESpeciationSystem ms = (DESpeciationSystem)model;
                     //Debugg.println("d["+state + "] = " + d[state]);
                     d[state] *= ms.getSRate(state);
+    				//e[state] *= ms.getSRate(state);
                 }
                 //Debugg.println("e["+state + "] = " + e[state]);
                 //Debugg.println("d["+state + "] = " + d[state]);
                 
 			}
-            if (++underflowCheck % underflowCheckFrequency == 0){
+            if (underflowCheckFrequency>=0 && ++underflowCheck % underflowCheckFrequency == 0){
                 comp += checkUnderflow(d);
             }
 		}
