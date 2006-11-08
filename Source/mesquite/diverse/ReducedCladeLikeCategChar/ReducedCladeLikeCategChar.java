@@ -54,13 +54,13 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
         sp.setExplanation("Rate of speciation");
         sp.setMinimumAllowed(0);
         sp.setMaximumAllowed(MesquiteDouble.infinite);
-        sp.setMinimumSuggested(0.0001);
-        sp.setMaximumSuggested(0.1);
+        sp.setMinimumSuggested(0.0000);
+        sp.setMaximumSuggested(1);
         sp.setValue(s);
         ep.setName("e");
         ep.setExplanation("Rate of extinction");
-        ep.setMinimumSuggested(0.0001);
-        ep.setMaximumSuggested(0.1);
+        ep.setMinimumSuggested(0.0000);
+        ep.setMaximumSuggested(1);
         ep.setMinimumAllowed(0);
         ep.setMaximumAllowed(MesquiteDouble.infinite);
         ep.setValue(e);

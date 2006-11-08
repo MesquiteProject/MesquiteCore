@@ -43,7 +43,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	MesquiteNumber minChecker;
 	
 	// Number of steps per branch, reduce for a faster, possibily sloppier result
-    public static final double STEP_COUNT = 10000;  //default 10000
+    double stepCount = 10000;  //default 10000
 
 	//In version 1.1. the assumption about the root prior for model estimation, ancestral state reconstruction and simulation is assumed to be embedded in the model
 	//Thus, the control is removed here
@@ -69,8 +69,8 @@ public class IntegLikeCateg extends MesquiteModule {
 		probabilityValue = new MesquiteNumber();
 		minChecker = new MesquiteNumber(MesquiteDouble.unassigned);
         
-		addMenuItem("Likelihood Decision Threshold...", makeCommand("setDecision", this));
-        this.addCheckMenuItem(null, "Intermediates to console", makeCommand("toggleIntermediatesToConsole",this), intermediatesToConsole);
+		addMenuItem("Steps per Branch...", makeCommand("setStepCount", this));
+		addCheckMenuItem(null, "Intermediates to console", makeCommand("toggleIntermediatesToConsole",this), intermediatesToConsole);
 		rootModes = new StringArray(2);  
 		rootModes.setValue(ROOT_IGNOREPRIOR, "Ignore Root State Frequencies");  //the strings passed will be the menu item labels
 		rootModes.setValue(ROOT_USEPRIOR, "Use Root State Frequencies as Prior");
@@ -112,20 +112,20 @@ public class IntegLikeCateg extends MesquiteModule {
 				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
-        else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
+	       else if (checker.compare(getClass(), "Sets the number of steps per branch", "[integer, 1 or greater]", commandName, "setStepCount")) {
+	            int steps = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+	            if (!MesquiteInteger.isCombinable(steps) && !commandRec.scripting())
+	            	steps = MesquiteInteger.queryInteger(containerOfModule(), "Steps per branch", "Number of divisions of each branch for numerical integration.  Higher numbers mean the calculations are more accurate but go more slowly.  Values under 100 are not recommended", (int)stepCount, 10, 1000000);
+
+	            if (MesquiteInteger.isCombinable(steps) && steps >=0 && steps!=stepCount){
+	            	stepCount = steps; //change mode
+	                parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+	            }
+	        }
+       else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
             intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
         }
-        else if (checker.compare(getClass(), "Sets the frequency of checking for underflow", "[integer, 1 or greater]", commandName, "setUnderflowCheckFreq")) {
-            int freq = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-            if (!MesquiteInteger.isCombinable(freq) && !commandRec.scripting())
-                freq = MesquiteInteger.queryInteger(containerOfModule(), "Checking frequency", "Frequency at which underflow checking is performed in likelihood calculations.  A value of n means checking is performed on each nth calculation; higher numbers mean the calculations go faster but are at risk of underflow problems.  Values over 10 are not recommended", (int)underflowCheckFrequency, 1, 10000);
-
-            if (MesquiteInteger.isCombinable(freq) && freq >=0 && freq!=underflowCheckFrequency){
-                underflowCheckFrequency = freq; //change mode
-                parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
-            }
-        }
-		else
+ 		else
 			return super.doCommand(commandName, arguments, commandRec, checker);
 		return null;
 	}
@@ -222,7 +222,7 @@ Debugg.println("underflow comp used " + q);
         else{
             double x = 0;
             double length = tree.getBranchLength(node,1.0,deleted);
-            double h = length/STEP_COUNT;       //this will need tweaking!
+            double h = length/stepCount;       //this will need tweaking!
             for(int i=0;i<numStates;i++){
                 yStart[i] = e[i];
                 yStart[i+numStates] = d[i];
@@ -268,7 +268,7 @@ Debugg.println("underflow comp used " + q);
                     x += h;
                 }
                 stateMsg.append("Final value; \n");
-                stateMsg.append("x= " + h*STEP_COUNT + " y =[");
+                stateMsg.append("x= " + h*stepCount + " y =[");
                 tempResults = (double[])integrationResults.lastElement();
                 for(int j=0;j<tempResults.length;j++)
                     stateMsg.append(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");

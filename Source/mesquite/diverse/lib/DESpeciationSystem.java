@@ -11,5 +11,6 @@ package mesquite.diverse.lib;
 public interface DESpeciationSystem extends DESystem {
     
     double getSRate(int state);
+    double getERate(int state);
 
 }

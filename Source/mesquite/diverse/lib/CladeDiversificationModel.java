@@ -31,6 +31,9 @@ public class CladeDiversificationModel implements DESpeciationSystem {
     public double getSRate(int state) {
         return wrapped.getSRate(state);
     }
+    public double getERate(int state) {
+        return wrapped.getERate(state);
+    }
 
     public double[] calculateDerivative(double x, double[] y, double[] result) {
         return wrapped.calculateDerivative(x, y, result);
