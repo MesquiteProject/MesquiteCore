@@ -152,7 +152,8 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 
-			temp.addLine("setS0 " + MesquiteDouble.toString(s0));
+	       temp.addLine("getIntegTask ", calcTask);
+	       			temp.addLine("setS0 " + MesquiteDouble.toString(s0));
 			temp.addLine("setS1 " + MesquiteDouble.toString(s1));
 			temp.addLine("setE0 " + MesquiteDouble.toString(e0));
 			temp.addLine("setE1 " + MesquiteDouble.toString(e1));
@@ -247,6 +248,9 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
+	       else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
+	           return calcTask;
+	        }
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionBySurvival")) {
 			conditionBySurvival.toggleValue(new Parser().getFirstToken(arguments));
 			parametersChangedNotifyExpl(null, commandRec);

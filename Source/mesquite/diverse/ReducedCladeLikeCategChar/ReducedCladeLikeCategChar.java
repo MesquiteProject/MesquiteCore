@@ -105,6 +105,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
     /*.................................................................................................................*/
     public Snapshot getSnapshot(MesquiteFile file) {
         Snapshot temp = new Snapshot();
+        temp.addLine("getIntegTask ", calcTask);
         temp.addLine("setS " + MesquiteDouble.toString(s));
         temp.addLine("setE " + MesquiteDouble.toString(e));
 		temp.addLine("conditionBySurvival  " + conditionBySurvival.toOffOnString());
@@ -131,7 +132,10 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
                 parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
             }
         }
-        else if (checker.compare(getClass(), "Sets speciation rate", "[double]", commandName, "setS")) {
+        else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
+           return calcTask;
+        }
+       else if (checker.compare(getClass(), "Sets speciation rate", "[double]", commandName, "setS")) {
             double newS = MesquiteDouble.fromString(parser.getFirstToken(arguments));
             if (!MesquiteDouble.isCombinable(newS) && !commandRec.scripting())
                 newS = MesquiteDouble.queryDouble(containerOfModule(), "s", "Instantaneous speciation rate", (double)s);
@@ -163,7 +167,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
     public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
     	if (!commandRec.scripting())
    	parametersChanged(n, commandRec);
-   Debugg.println("pcne");
+   
     	if (explorer != null)
     	explorer.explorableChanged(this, commandRec);
     }

@@ -5,25 +5,8 @@ import java.util.Vector;
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.diverse.lib.*;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CommandRecord;
-import mesquite.lib.Debugg;
-import mesquite.lib.Double2DArray;
-import mesquite.lib.DoubleArray;
-import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteNumber;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.MesquiteSubmenuSpec;
-import mesquite.lib.Snapshot;
-import mesquite.lib.StringArray;
-import mesquite.lib.Tree;
+import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
-import mesquite.stochchar.lib.ProbabilityCategCharModel;
 
 public class IntegLikeCateg extends MesquiteModule {
 
@@ -36,10 +19,10 @@ public class IntegLikeCateg extends MesquiteModule {
 	double[][] savedRootEstimates; // holds the estimates at the root (for simulation priors, etc.)
 	MesquiteNumber probabilityValue;
 	int numStates;
-	ProbabilityCategCharModel tempModel;
-	ProbabilityCategCharModel passedModel;
-	long underflowCheckFrequency = -1; //2;  //how often to check that not about to underflow; 1 checks every time
+
+	long underflowCheckFrequency = 2; //2;  //how often to check that not about to underflow; 1 checks every time
 	long underflowCheck = 1;
+	double underflowCompensation = 1;
 	MesquiteNumber minChecker;
 	
 	// Number of steps per branch, reduce for a faster, possibily sloppier result
@@ -96,6 +79,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		temp.addLine("setUnderflowCheckFreq " + underflowCheckFrequency);
+		temp.addLine("setStepCount " + stepCount);
 		return temp;
 	}
 
@@ -109,16 +93,18 @@ public class IntegLikeCateg extends MesquiteModule {
 
 			if (MesquiteInteger.isCombinable(freq) && freq >=0 && freq!=underflowCheckFrequency){
 				underflowCheckFrequency = freq; //change mode
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				if (!commandRec.scripting())
+					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 	       else if (checker.compare(getClass(), "Sets the number of steps per branch", "[integer, 1 or greater]", commandName, "setStepCount")) {
-	            int steps = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-	            if (!MesquiteInteger.isCombinable(steps) && !commandRec.scripting())
-	            	steps = MesquiteInteger.queryInteger(containerOfModule(), "Steps per branch", "Number of divisions of each branch for numerical integration.  Higher numbers mean the calculations are more accurate but go more slowly.  Values under 100 are not recommended", (int)stepCount, 10, 1000000);
+				double steps = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+	            if (!MesquiteDouble.isCombinable(steps) && !commandRec.scripting())
+	            	steps = MesquiteDouble.queryDouble(containerOfModule(), "Steps per branch", "Number of divisions of each branch for numerical integration.  Higher numbers mean the calculations are more accurate but go more slowly.  Values under 100 are not recommended", stepCount, 10, 1000000);
 
-	            if (MesquiteInteger.isCombinable(steps) && steps >=0 && steps!=stepCount){
+	            if (MesquiteDouble.isCombinable(steps) && steps >=0 && steps!=stepCount){
 	            	stepCount = steps; //change mode
+					if (!commandRec.scripting())
 	                parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 	            }
 	        }
@@ -153,7 +139,7 @@ public class IntegLikeCateg extends MesquiteModule {
 		if (q == 0)
 			return 0;
 		else {
-Debugg.println("underflow comp used " + q);
+//Debugg.println("underflow comp used " + q);
 			for (int i=0; i<probs.length; i++)
 				probs[i] /= q;
 		}
@@ -167,7 +153,7 @@ Debugg.println("underflow comp used " + q);
 
     /* now returns underflow compensation */
 	private double downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
-        double comp;
+        double logComp;
 		if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
@@ -179,12 +165,12 @@ Debugg.println("underflow comp used " + q);
 				else
 					d[state] = 0;
 			}
-            comp = 0.0;  // no compensation required yet
+			logComp = 0.0;  // no compensation required yet
 		}
 		else { //initial conditions from daughters if internal
-            comp = 0.0;
+			logComp = 0.0;
 			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
-				comp += downPass(nd,tree,model,solver,observedStates);
+				logComp += downPass(nd,tree,model,solver,observedStates);
 			}
 			for(int state = 0; state < numStates;state++){
 				d[state] = 1;  //two here to anticipate two daughters???
@@ -209,7 +195,7 @@ Debugg.println("underflow comp used " + q);
                 
 			}
             if (underflowCheckFrequency>=0 && ++underflowCheck % underflowCheckFrequency == 0){
-                comp += checkUnderflow(d);
+            	logComp += checkUnderflow(d);
             }
 		}
         if (node == tree.getRoot()){
@@ -217,7 +203,7 @@ Debugg.println("underflow comp used " + q);
                 probsExt[node][i] = e[i];
                 probsData[node][i] = d[i];
             }
-            return comp;
+            return logComp;
         }
         else{
             double x = 0;
@@ -275,7 +261,7 @@ Debugg.println("underflow comp used " + q);
                 stateMsg.append("]\n");
                 MesquiteMessage.println(stateMsg.toString());
             }
-            return comp;
+            return logComp;
         }
 	}
 	
@@ -288,7 +274,7 @@ Debugg.println("underflow comp used " + q);
 		prob.setToUnassigned();
 		CategoricalDistribution observedStates = (CategoricalDistribution)obsStates;
 		String rep = speciesModel.toString();
-		double comp;
+		double logComp;
 		int root = tree.getRoot(deleted);
 		boolean estimated = false;
         int workingMaxState;
@@ -304,30 +290,25 @@ Debugg.println("underflow comp used " + q);
         
         initProbs(tree.getNumNodeSpaces(),workingMaxState);
 
-        comp = downPass(root, tree,speciesModel, solver, observedStates);
+        logComp = downPass(root, tree,speciesModel, solver, observedStates);
 		double likelihood = 0.0;
 		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
 		if (conditionBySurvival){
 			
 		for (int i=0;  i<workingMaxState; i++) {
 			likelihood += probsData[root][i]/(1-probsExt[root][i]);
-Debugg.println("pe " + probsExt[root][i]);
+//Debugg.println("pe " + probsExt[root][i]);
 			}
 		}
 		else
 			for (int i=0;  i<workingMaxState; i++) 
 				likelihood += probsData[root][i];
 			
-		double negLogLikelihood = -(Math.log(likelihood) - comp);
+		double negLogLikelihood = -(Math.log(likelihood) - logComp);
 		if (prob!=null)
 			prob.setValue(negLogLikelihood);
 		if (resultString!=null) {
-			String s = "Likelihood from integration with model " + rep + "over branches;  -log L.:"+ MesquiteDouble.toString(negLogLikelihood) + " [L. "+ MesquiteDouble.toString(likelihood * Math.exp(-comp)) + "]";
-			if (estimated){
-				String set = passedModel.getSettingsString();
-				if (set !=null)
-					s += " " + set;
-			}
+			String s = "Likelihood from integration with model " + rep + "over branches;  -log L.:"+ MesquiteDouble.toString(negLogLikelihood) + " [L. "+ MesquiteDouble.toString(likelihood * Math.exp(-logComp)) + "]";
 			s += "  " + getParameters();
 			resultString.setValue(s);
 		}
