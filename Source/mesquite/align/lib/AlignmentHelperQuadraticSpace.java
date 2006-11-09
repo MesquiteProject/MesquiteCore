@@ -49,7 +49,6 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 				gapOpenOnA = 0;
 			}
 
-
 			for (j=1; j<=lengthB; j++) {
 //				look at three preceding values.				
 
@@ -104,6 +103,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		j = lengthB;
 		int a_cnt = 0; //count of letters from A used in path so far 
 		while (i>0 || j>0 ) {
+			
 			if (i ==0) { 
 				while (j>0){
 					backtrack[k][0] = CategoricalState.inapplicable;
@@ -186,8 +186,7 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		      left++;
 		      right--;
 		}
-		
-		
+				
 		if (keepGaps) {
 			return ReInsertGaps(k, followsGapSize, totalGapChars, false, seq2return) ;
 		} else {
