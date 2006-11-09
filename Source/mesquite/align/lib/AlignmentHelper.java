@@ -36,6 +36,7 @@ public abstract class AlignmentHelper {
 		int recentGapRunLength=0;
 		j=0; // counts the number of letters in A seen so far
 		int retainedGapsSeen = 0;
+		boolean onLeftEnd = true;
 		int numPosnsToShift=0; // used at most, in the event of a terminal original gap in A that's longer than the one in the alignmnt of A and B  
 		for (i=0; i<k; i++) {
 			if(inputSequence[i][0] == CategoricalState.inapplicable) {
@@ -46,8 +47,7 @@ public abstract class AlignmentHelper {
 					retainedGapsSeen++;
 				}
 			} else {
-
-				if ( i == retainedGapsSeen && followsGapSize[j]>recentGapRunLength ){
+				if ( onLeftEnd && i == retainedGapsSeen && followsGapSize[j]>recentGapRunLength ){
 					numPosnsToShift = retainedGapsSeen; // used at most once, to make the left side of the alignment look right 
 														// in the event of a terminal original gap in A that's longer than the one in the alignmnt of A and B
 				}
@@ -69,12 +69,31 @@ public abstract class AlignmentHelper {
 					}
 					numPosnsToShift = 0;
 				}				
+				onLeftEnd = false;
 				j++;
 				recentGapRunLength=0;
 			}
 			gappedSeq2return[i+usedGaps][0] = inputSequence[i][0] ;
-			gappedSeq2return[i+usedGaps][1] = inputSequence[i][1] ;									
+			gappedSeq2return[i+usedGaps][1] = inputSequence[i][1] ;
 		}		
+/*		
+		long gap_seqA[] = new long[gappedSeq2return.length];
+		long gap_seqB[] = new long[gappedSeq2return.length];
+		
+		for (i=0; i<gappedSeq2return.length; i++) {
+			gap_seqA[i] = gappedSeq2return[i][0];
+			gap_seqB[i] = gappedSeq2return[i][1];
+		}		
+		long input_seqA[] = new long[inputSequence.length];
+		long input_seqB[] = new long[inputSequence.length];
+		
+		for (i=0; i<inputSequence.length; i++) {
+			input_seqA[i] = inputSequence[i][0];
+			input_seqB[i] = inputSequence[i][0];
+		}		
+	
+		*/
+		
 		return gappedSeq2return;	
 	}
 
