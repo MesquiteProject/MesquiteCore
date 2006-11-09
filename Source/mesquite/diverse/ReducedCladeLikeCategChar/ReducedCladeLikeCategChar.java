@@ -30,7 +30,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
     double e = 0.001;   //user specified extinction rate in state 0
     double s = 0.001;   //user specified speciation rate in state 0
     
-    MesquiteBoolean conditionBySurvival;
+    MesquiteBoolean conditionOnSurvival;
 
     public boolean startJob(String arguments, Object condition,
             CommandRecord commandRec, boolean hiredByName) {
@@ -41,8 +41,8 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
         solver = new RK4Solver();
         addMenuItem("Set Extinction Rate...", makeCommand("setE", this));
         addMenuItem("Set Speciation Rate...", makeCommand("setS", this));
-        conditionBySurvival = new MesquiteBoolean(false);
-		addCheckMenuItem(null, "Condition by Survival", MesquiteModule.makeCommand("conditionBySurvival", this), conditionBySurvival);
+        conditionOnSurvival = new MesquiteBoolean(false);
+		addCheckMenuItem(null, "Condition on Survival", MesquiteModule.makeCommand("conditionOnSurvival", this), conditionOnSurvival);
         addMenuItem("-", null);
         addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
         addMenuItem("Write table to console", makeCommand("writeTable",this));
@@ -108,7 +108,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
         temp.addLine("getIntegTask ", calcTask);
         temp.addLine("setS " + MesquiteDouble.toString(s));
         temp.addLine("setE " + MesquiteDouble.toString(e));
-		temp.addLine("conditionBySurvival  " + conditionBySurvival.toOffOnString());
+		temp.addLine("conditionOnSurvival  " + conditionOnSurvival.toOffOnString());
        if (explorer != null)
             temp.addLine("showParamExplorer ", explorer);
         return temp;
@@ -148,8 +148,8 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
                 parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
             }
         }
-		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionBySurvival")) {
-			conditionBySurvival.toggleValue(new Parser().getFirstToken(arguments));
+		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
+			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
 			parametersChangedNotifyExpl(null, commandRec);
 		}
       else if (checker.compare(getClass(), "Show Parameter Explorer", "", commandName, "showParamExplorer")) {
@@ -193,7 +193,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
         lastCharDistribution = charStates;
         if (speciesModel == null)
             speciesModel = new ReducedCladeModel(e, s);
-        calcTask.calculateLogProbability(tree, speciesModel, conditionBySurvival.getValue(), solver,
+        calcTask.calculateLogProbability(tree, speciesModel, conditionOnSurvival.getValue(), solver,
                 charStates, resultString, result, commandRec);
 
     }

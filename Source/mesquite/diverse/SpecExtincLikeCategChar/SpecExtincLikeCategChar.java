@@ -36,7 +36,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 	MesquiteParameter t10p = new MesquiteParameter();
 	MesquiteParameter[] parameters;
 	ParametersExplorer explorer;
-	   MesquiteBoolean conditionBySurvival;
+	   MesquiteBoolean conditionOnSurvival;
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		calcTask = (IntegLikeCateg)hireEmployee(commandRec, IntegLikeCateg.class, "Integrating Likelihood");
@@ -50,8 +50,8 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		addMenuItem("Set State 1 Speciation Rate...", makeCommand("setS1", this));
 		addMenuItem("Set 0 to 1 Transition Rate...", makeCommand("setT01", this));
 		addMenuItem("Set 1 to 0 Transition Rate...", makeCommand("setT10", this));
-	       conditionBySurvival = new MesquiteBoolean(false);
-			addCheckMenuItem(null, "Condition by Survival", MesquiteModule.makeCommand("conditionBySurvivial", this), conditionBySurvival);
+	       conditionOnSurvival = new MesquiteBoolean(false);
+			addCheckMenuItem(null, "Condition on Survival", MesquiteModule.makeCommand("conditionOnSurvival", this), conditionOnSurvival);
 		addMenuItem("-", null);
 		addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
 		addMenuItem("Write table to console", makeCommand("writeTable",this));
@@ -159,7 +159,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 			temp.addLine("setE1 " + MesquiteDouble.toString(e1));
 			temp.addLine("setT01 " + MesquiteDouble.toString(t01));
 			temp.addLine("setT10 " + MesquiteDouble.toString(t10));
-			temp.addLine("conditionBySurvival  " + conditionBySurvival.toOffOnString());
+			temp.addLine("conditionOnSurvival  " + conditionOnSurvival.toOffOnString());
 			if (explorer != null)
 				temp.addLine("showParamExplorer ", explorer);
 		
@@ -251,8 +251,8 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 	       else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
 	           return calcTask;
 	        }
-		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionBySurvival")) {
-			conditionBySurvival.toggleValue(new Parser().getFirstToken(arguments));
+		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
+			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
 			parametersChangedNotifyExpl(null, commandRec);
 		}
  		else if (checker.compare(getClass(), "Writes table to console", "", commandName, "showParamExplorer")) {
@@ -361,7 +361,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		lastCharDistribution = charStates;
 		if (speciesModel == null)
 			speciesModel = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
-		calcTask.calculateLogProbability(tree, speciesModel, conditionBySurvival.getValue(),solver, charStates, resultString, result, commandRec);
+		calcTask.calculateLogProbability(tree, speciesModel, conditionOnSurvival.getValue(),solver, charStates, resultString, result, commandRec);
 
 	}
 	public void restoreAfterExploration(){
