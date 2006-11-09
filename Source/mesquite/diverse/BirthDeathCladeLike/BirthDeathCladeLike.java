@@ -58,13 +58,13 @@ public class BirthDeathCladeLike extends NumberForTree implements ParametersExpl
         lambdap.setExplanation("Rate of speciation");
         lambdap.setMinimumAllowed(0);
         lambdap.setMaximumAllowed(MesquiteDouble.infinite);
-        lambdap.setMinimumSuggested(0.0001);
-        lambdap.setMaximumSuggested(0.1);
+        lambdap.setMinimumSuggested(0.000);
+        lambdap.setMaximumSuggested(1);
         lambdap.setValue(lambda);
         mup.setName("mu");
         mup.setExplanation("Rate of extinction");
-        mup.setMinimumSuggested(0.0001);
-        mup.setMaximumSuggested(0.1);
+        mup.setMinimumSuggested(0.000);
+        mup.setMaximumSuggested(1);
         mup.setMinimumAllowed(0);
         mup.setMaximumAllowed(MesquiteDouble.infinite);
         mup.setValue(mu);
@@ -152,7 +152,7 @@ public class BirthDeathCladeLike extends NumberForTree implements ParametersExpl
     }
     
     private double u(double t){
-        return (lambda*(1-Math.exp(-(lambda-mu)*t)))/(lambda-mu*(-(lambda-mu)*t));
+        return (lambda*(1-Math.exp(-(lambda-mu)*t)))/(lambda-mu*(Math.exp(-(lambda-mu)*t)));
     }
 
     public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
@@ -163,7 +163,7 @@ public class BirthDeathCladeLike extends NumberForTree implements ParametersExpl
 
         if (tree == null)
             return;
-        int n = tree.getNumTaxa();
+        int n = tree.numberOfTerminalsInClade(tree.getRoot());
 
         /*
          * Note: currently does not refresh parameters explorer if tree changed.
@@ -181,22 +181,23 @@ public class BirthDeathCladeLike extends NumberForTree implements ParametersExpl
             height = tree.tallestPathAboveNode(tree.getRoot());
             lastTree = tree;
         }
-        Debugg.println("branchTimes array = " + DoubleArray.toString(branchTimes));
+     //   Debugg.println("height " + height);
+    //    Debugg.println("branchTimes array = " + DoubleArray.toString(branchTimes));
         double lik;
         double prod1 = 1.0;
         double x2 = height;
-        double ux2 = u(x2);
+        double ux2 = u(x2); 
         for(int i = 1;i<branchTimes.length;i++){  // skip root branching at 0
             prod1*=P(branchTimes[i],height);
         }
 
         double prod2 = 1.0;
         for(int i=1;i<branchTimes.length;i++){
-            prod2*=1-u(branchTimes[i]);
+            prod2*=1-u(height-branchTimes[i]);
         }
         
         lik = Math.pow(lambda,n-2)*prod1*(1-ux2)*(1-ux2)*prod2;
-  
+      
         //lik = prod1*(1-ux2)*(1-ux2)*prod2;
         if (lik > 0) lik = -1*Math.log(lik);
         else lik = MesquiteDouble.unassigned;

@@ -296,7 +296,7 @@ public class IntegLikeCateg extends MesquiteModule {
 		if (conditionBySurvival){
 			
 		for (int i=0;  i<workingMaxState; i++) {
-			likelihood += probsData[root][i]/(1-probsExt[root][i]);
+			likelihood += probsData[root][i]/(1-probsExt[root][i])/(1-probsExt[root][i]);
 //Debugg.println("pe " + probsExt[root][i]);
 			}
 		}
