@@ -8,7 +8,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.*;
 
-public class SECladeLike extends NumberForCharAndTree implements ParametersExplorable {
+public class SpecExtincCladeLike extends NumberForCharAndTree implements ParametersExplorable {
 
     static final double root10=Math.sqrt(10.0);
     
