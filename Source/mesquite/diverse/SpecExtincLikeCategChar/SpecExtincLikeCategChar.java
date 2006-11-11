@@ -383,7 +383,6 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 
 
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "Speciation/Extinction Likelihood (Categ. Char.)";
 	}
 

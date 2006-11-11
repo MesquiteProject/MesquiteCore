@@ -8,7 +8,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.*;
 
-public class SpecExtincCladeLike extends NumberForCharAndTree implements ParametersExplorable {
+public class SpecExtincCladeLike extends NumberForTree implements ParametersExplorable {
 
     static final double root10=Math.sqrt(10.0);
     
@@ -118,7 +118,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
     /*  the main command handling method.  */
     public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
         // Should be removed when debugged
-        double [] testvals = { 1E-11,1E-10,1E-9,1E-8,1E-7,5E-7,1E-6,2E-6,1E-5,1E-4,5E-4,1E-3,5E-3,1E-2,2E-2,5E-2,1E-1,2E-1,5E-01};
+      //  double [] testvals = { 1E-11,1E-10,1E-9,1E-8,1E-7,5E-7,1E-6,2E-6,1E-5,1E-4,5E-4,1E-3,5E-3,1E-2,2E-2,5E-2,1E-1,2E-1,5E-01};
         if (checker.compare(getClass(), "Sets extinction rate", "[double]", commandName, "setE")) {
             double newE = MesquiteDouble.fromString(parser.getFirstToken(arguments));
             if (!MesquiteDouble.isCombinable(newE) && !commandRec.scripting())
@@ -172,14 +172,14 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
     	explorer.explorableChanged(this, commandRec);
     }
     
-    public void calculateNumber(Tree tree, CharacterDistribution charStates,
+    public void calculateNumber(Tree tree, 
             MesquiteNumber result, MesquiteString resultString,
             CommandRecord commandRec) {
         if (result == null)
             return;
         result.setToUnassigned();
 
-        if (tree == null || charStates == null)
+        if (tree == null)
             return;
 
         /*
@@ -190,11 +190,9 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
          * explorer.explorableChanged(this, commandRec);
          */
         lastTree = tree;
-        lastCharDistribution = charStates;
         if (speciesModel == null)
             speciesModel = new SpecExtincCladeModel(e, s);
-        calcTask.calculateLogProbability(tree, speciesModel, conditionOnSurvival.getValue(), solver,
-                charStates, resultString, result, commandRec);
+        calcTask.calculateLogProbability(tree, speciesModel, conditionOnSurvival.getValue(), solver, resultString, result, commandRec);
 
     }
 
@@ -214,8 +212,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
     }
 
     public String getName() {
-        // TODO Auto-generated method stub
-        return "Reduced Clade Likelihood (Categ. Char.)";
+        return "Speciation/Extinction Likelihood";
     }
 
     public String getAuthors() {
@@ -227,7 +224,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
     }
 
     public String getExplanation(){
-        return "Calculates likelihoods using a REDUCED speciation/extinction model ";
+        return "Calculates likelihoods using a speciation/extinction model ";
     }
 
     public boolean isPrerelease(){

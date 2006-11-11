@@ -224,7 +224,7 @@ public class IntegLikeNoChar extends MesquiteModule {
 	}
 	
 	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, DESpeciationSystemNoChar speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
+	public void calculateLogProbability(Tree tree, DESpeciationSystemNoChar speciesModel, boolean conditionBySurvival, DEQNumSolver solver, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
 		if (speciesModel==null ||  prob == null)
 			return;
 		estCount =0;
