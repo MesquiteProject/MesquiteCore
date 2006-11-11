@@ -3,7 +3,7 @@ package mesquite.diverse.lib;
 import mesquite.lib.MesquiteDouble;
 
 
-public class CladeExtinctionModel implements DESpeciationSystemCateg {
+public class SpecExtincCategModel implements DESpeciationSystemCateg {
 	
 	
 	private double e0;   //extinction rate in state 0
@@ -14,7 +14,7 @@ public class CladeExtinctionModel implements DESpeciationSystemCateg {
 	private double t10;  //transition rate from state 1 to state 0
 	
 
-	public CladeExtinctionModel(double e0, double s0, double e1, double s1, double t01, double t10){
+	public SpecExtincCategModel(double e0, double s0, double e1, double s1, double t01, double t10){
 		this.e0 = e0;
 		this.s0 = s0;
 		this.e1 = e1;

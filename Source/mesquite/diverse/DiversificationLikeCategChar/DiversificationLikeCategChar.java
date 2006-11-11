@@ -15,7 +15,7 @@ import mesquite.lib.duties.ParametersExplorer;
     public class DiversificationLikeCategChar extends NumberForCharAndTree implements ParametersExplorable {
 
         DEQNumSolver solver;
-        CladeDiversificationModel speciesModel;
+        SpecExtincRatioDiffCategModel speciesModel;
         IntegLikeCateg calcTask;
 
         // hooks for capturing context for table dump.
@@ -56,7 +56,7 @@ import mesquite.lib.duties.ParametersExplorer;
             addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
             addMenuItem("Write table to console", makeCommand("writeTable",this));
             addMenuItem("Write code for R to console", makeCommand("writeForExternalApp",this));
-            speciesModel = new CladeDiversificationModel(a0, r0, a1, r1, t01, t10);
+            speciesModel = new SpecExtincRatioDiffCategModel(a0, r0, a1, r1, t01, t10);
 
             //following is for the parameters explorer
             r0p.setName("r0");
@@ -143,7 +143,7 @@ import mesquite.lib.duties.ParametersExplorer;
                     if (speciesModel != null)
                         speciesModel.setR0(r0);
                     else
-                        speciesModel = new CladeDiversificationModel(a0,r0,a1,r1,t01,t10);
+                        speciesModel = new SpecExtincRatioDiffCategModel(a0,r0,a1,r1,t01,t10);
                     parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
                 }
             }
@@ -156,7 +156,7 @@ import mesquite.lib.duties.ParametersExplorer;
                     if (speciesModel != null)
                         speciesModel.setA0(a0);
                     else
-                        speciesModel = new CladeDiversificationModel(a0,r0,a1,r1,t01,t10);
+                        speciesModel = new SpecExtincRatioDiffCategModel(a0,r0,a1,r1,t01,t10);
                     parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
                 }
             }
@@ -169,7 +169,7 @@ import mesquite.lib.duties.ParametersExplorer;
                     if (speciesModel != null)
                         speciesModel.setR1(r1);
                     else
-                        speciesModel = new CladeDiversificationModel(a0,r0,a1,r1,t01,t10);
+                        speciesModel = new SpecExtincRatioDiffCategModel(a0,r0,a1,r1,t01,t10);
                     parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
                 }
             }
@@ -182,7 +182,7 @@ import mesquite.lib.duties.ParametersExplorer;
                     if (speciesModel != null)
                         speciesModel.setA1(a1);
                     else
-                        speciesModel = new CladeDiversificationModel(a0,r0,a1,r1,t01,t10);
+                        speciesModel = new SpecExtincRatioDiffCategModel(a0,r0,a1,r1,t01,t10);
                     parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
                 }
             }
@@ -195,7 +195,7 @@ import mesquite.lib.duties.ParametersExplorer;
                     if (speciesModel != null)
                         speciesModel.setT01(t01);
                     else
-                        speciesModel = new CladeDiversificationModel(a0,r0,a1,r1,t01,t10);
+                        speciesModel = new SpecExtincRatioDiffCategModel(a0,r0,a1,r1,t01,t10);
                     parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
                 }
             }
@@ -208,7 +208,7 @@ import mesquite.lib.duties.ParametersExplorer;
                     if (speciesModel != null)
                         speciesModel.setT10(t10);
                     else
-                        speciesModel = new CladeDiversificationModel(a0,r0,a1,r1,t01,t10);
+                        speciesModel = new SpecExtincRatioDiffCategModel(a0,r0,a1,r1,t01,t10);
                     parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
                 }
             }
@@ -311,7 +311,7 @@ import mesquite.lib.duties.ParametersExplorer;
             lastTree = tree;
             lastCharDistribution = charStates;
             if (speciesModel == null)
-                speciesModel = new CladeDiversificationModel(a0,r0,a1,r1,t01,t10);
+                speciesModel = new SpecExtincRatioDiffCategModel(a0,r0,a1,r1,t01,t10);
             calcTask.calculateLogProbability(tree, speciesModel, conditionBySurvival, solver, charStates, resultString, result, commandRec);
 
         }

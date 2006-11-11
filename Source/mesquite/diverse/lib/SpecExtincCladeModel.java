@@ -2,12 +2,12 @@ package mesquite.diverse.lib;
 
 import mesquite.lib.MesquiteDouble;
 
-public class ReducedCladeModel implements DESpeciationSystemNoChar {
+public class SpecExtincCladeModel implements DESpeciationSystemNoChar {
 
     private double e;   //extinction rate in state 0
     private double s;   //speciation rate in state 0
  
-    public ReducedCladeModel(double e, double s){
+    public SpecExtincCladeModel(double e, double s){
         this.e = e;
         this.s = s;
     }

@@ -11,11 +11,11 @@ import mesquite.lib.MesquiteMessage;
  * created Sep 28, 2006
  *
  */
-public class CladeDiversificationModel implements DESpeciationSystemCateg {
+public class SpecExtincRatioDiffCategModel implements DESpeciationSystemCateg {
 
-    private CladeExtinctionModel wrapped;
+    private SpecExtincCategModel wrapped;
 
-    public CladeDiversificationModel(double a0, double r0, double a1, double r1, double t01, double t10){
+    public SpecExtincRatioDiffCategModel(double a0, double r0, double a1, double r1, double t01, double t10){
         if (a0==1.0 || a1==1.0){
             wrapped = null;
             MesquiteMessage.warnProgrammer("Either a0 or a1 == 1, no wrapped model created.");
@@ -25,7 +25,7 @@ public class CladeDiversificationModel implements DESpeciationSystemCateg {
         double s0=r0+e0;
         double e1=r1*a1/(1-a1);
         double s1=r1+e1;
-        wrapped = new CladeExtinctionModel(e0,s0,e1,s1,t01,t10);
+        wrapped = new SpecExtincCategModel(e0,s0,e1,s1,t01,t10);
     }
 
     public double getSRate(int state) {

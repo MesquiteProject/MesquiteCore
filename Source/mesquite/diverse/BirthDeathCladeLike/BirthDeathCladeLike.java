@@ -2,8 +2,8 @@ package mesquite.diverse.BirthDeathCladeLike;
 
 import java.util.Arrays;
 
-import mesquite.diverse.lib.CladeExtinctionModel;
-import mesquite.diverse.lib.ReducedCladeModel;
+import mesquite.diverse.lib.SpecExtincCategModel;
+import mesquite.diverse.lib.SpecExtincCladeModel;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.duties.ParametersExplorer;
