@@ -59,42 +59,42 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 		speciesModel = new CladeExtinctionModel(0.001, 0.001, 0.005, 0.001, 0.01, 0.01);
 
 		//following is for the parameters explorer
-		s0p.setName("s0");
+		s0p.setName("lambda0");
 		s0p.setExplanation("Rate of speciation with state 0");
 		s0p.setMinimumAllowed(0);
 		s0p.setMaximumAllowed(MesquiteDouble.infinite);
 		s0p.setMinimumSuggested(0.0001);
 		s0p.setMaximumSuggested(0.1);
 		s0p.setValue(s0);
-		s1p.setName("s1");
+		s1p.setName("lambda1");
 		s1p.setExplanation("Rate of speciation with state 1");
 		s1p.setMinimumSuggested(0.0001);
 		s1p.setMaximumSuggested(0.1);
 		s1p.setMinimumAllowed(0);
 		s1p.setMaximumAllowed(MesquiteDouble.infinite);
 		s1p.setValue(s1);
-		e0p.setName("e0");
+		e0p.setName("mu0");
 		e0p.setExplanation("Rate of extinction with state 0");
 		e0p.setMinimumSuggested(0.0001);
 		e0p.setMaximumSuggested(0.1);
 		e0p.setMinimumAllowed(0);
 		e0p.setMaximumAllowed(MesquiteDouble.infinite);
 		e0p.setValue(e0);
-		e1p.setName("e1");
+		e1p.setName("mu1");
 		e1p.setExplanation("Rate of extinction with state 1");
 		e1p.setMinimumSuggested(0.0001);
 		e1p.setMaximumSuggested(0.1);
 		e1p.setMinimumAllowed(0);
 		e1p.setMaximumAllowed(MesquiteDouble.infinite);
 		e1p.setValue(e1);
-		t01p.setName("t01");
+		t01p.setName("rho01");
 		t01p.setExplanation("Rate of 0->1 changes");
 		t01p.setMinimumSuggested(0.0001);
 		t01p.setMaximumSuggested(0.1);
 		t01p.setMinimumAllowed(0);
 		t01p.setMaximumAllowed(MesquiteDouble.infinite);
 		t01p.setValue(t01);
-		t10p.setName("t10");
+		t10p.setName("rho10");
 		t10p.setExplanation("Rate of 1->0 changes");
 		t10p.setMinimumSuggested(0.0001);
 		t10p.setMaximumSuggested(0.1);
@@ -388,7 +388,7 @@ public class SpecExtincLikeCategChar extends NumberForCharAndTree implements Par
 	}
 
 	public String getAuthors() {
-		return "Peter E. Midford, Sarah P. Otto & Wayne P. Maddison";
+		return "Peter E. Midford, Wayne P. Maddison & Sarah P. Otto";
 	}
 
 	public String getVersion() {

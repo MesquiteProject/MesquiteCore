@@ -11,7 +11,7 @@ import mesquite.lib.MesquiteMessage;
  * created Sep 28, 2006
  *
  */
-public class CladeDiversificationModel implements DESpeciationSystem {
+public class CladeDiversificationModel implements DESpeciationSystemCateg {
 
     private CladeExtinctionModel wrapped;
 

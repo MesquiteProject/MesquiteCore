@@ -2,7 +2,7 @@ package mesquite.diverse.lib;
 
 import mesquite.lib.MesquiteDouble;
 
-public class ReducedCladeModel implements DESpeciationSystem {
+public class ReducedCladeModel implements DESpeciationSystemCateg {
 
     private double e;   //extinction rate in state 0
     private double s;   //speciation rate in state 0
@@ -40,13 +40,9 @@ public class ReducedCladeModel implements DESpeciationSystem {
     }
     
  
-    public void resetParameters(double e0, double s0, double e1, double s1, double t01, double t10){
-        this.e = e0;
-        this.s = s0;
-        //this.e1 = e1;
-        //this.s1 = s1;
-        //this.t01 = t01;
-        //this.t10 = t10;
+    public void resetParameters(double e, double s){
+        this.e = e;
+        this.s = s;
     }
 
 

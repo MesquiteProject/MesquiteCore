@@ -3,7 +3,7 @@ package mesquite.diverse.lib;
 import mesquite.lib.MesquiteDouble;
 
 
-public class CladeExtinctionModel implements DESpeciationSystem {
+public class CladeExtinctionModel implements DESpeciationSystemCateg {
 	
 	
 	private double e0;   //extinction rate in state 0

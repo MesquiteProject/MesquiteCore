@@ -324,7 +324,7 @@ import mesquite.lib.duties.ParametersExplorer;
         }
 
         public String getAuthors() {
-            return "Peter E. Midford, Sarah P. Otto & Wayne P. Maddison";
+            return "Peter E. Midford, Wayne P. Maddison & Sarah P. Otto";
         }
 
         public String getVersion() {

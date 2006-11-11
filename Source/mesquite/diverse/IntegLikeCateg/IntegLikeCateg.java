@@ -26,7 +26,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	MesquiteNumber minChecker;
 	
 	// Number of steps per branch, reduce for a faster, possibily sloppier result
-    double stepCount = 10000;  //default 10000
+    double stepCount = 1000;  //default 10000
 
 	//In version 1.1. the assumption about the root prior for model estimation, ancestral state reconstruction and simulation is assumed to be embedded in the model
 	//Thus, the control is removed here
@@ -152,7 +152,7 @@ public class IntegLikeCateg extends MesquiteModule {
     Vector integrationResults = null;
 
     /* now returns underflow compensation */
-	private double downPass(int node, Tree tree, DESystem model, DEQNumSolver solver, CategoricalDistribution observedStates) {
+	private double downPass(int node, Tree tree, DESpeciationSystemCateg model, DEQNumSolver solver, CategoricalDistribution observedStates) {
         double logComp;
 		if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
@@ -184,15 +184,10 @@ public class IntegLikeCateg extends MesquiteModule {
 					d[state] *= probsData[nd][state];
 				}
 
-                if (model instanceof DESpeciationSystem && node != tree.getRoot()){  //condition on splitting at root; thus don't include rate if at root
-                    DESpeciationSystem ms = (DESpeciationSystem)model;
-                    //Debugg.println("d["+state + "] = " + d[state]);
-                    d[state] *= ms.getSRate(state);
-    				//e[state] *= ms.getSRate(state);
+                if (node != tree.getRoot()){  //condition on splitting at root; thus don't include rate if at root
+                     d[state] *= model.getSRate(state);
                 }
-                //Debugg.println("e["+state + "] = " + e[state]);
-                //Debugg.println("d["+state + "] = " + d[state]);
-                
+                 
 			}
             if (underflowCheckFrequency>=0 && ++underflowCheck % underflowCheckFrequency == 0){
             	logComp += checkUnderflow(d);
@@ -266,7 +261,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	}
 	
 	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, DESystem speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
+	public void calculateLogProbability(Tree tree, DESpeciationSystemCateg speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
 		if (speciesModel==null || obsStates==null || prob == null)
 			return;
 		estCount =0;
@@ -279,9 +274,7 @@ public class IntegLikeCateg extends MesquiteModule {
 		boolean estimated = false;
         int workingMaxState;
         
-		if (speciesModel instanceof ReducedCladeModel)
-            workingMaxState =1;
-        else if (observedStates.getMaxState() == 0){
+		if (observedStates.getMaxState() == 0){
 		    MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; will try to proceed assuming 2 possible states");
 		    workingMaxState = 1;
         }
@@ -297,7 +290,6 @@ public class IntegLikeCateg extends MesquiteModule {
 			
 		for (int i=0;  i<workingMaxState; i++) {
 			likelihood += probsData[root][i]/(1-probsExt[root][i])/(1-probsExt[root][i]);
-//Debugg.println("pe " + probsExt[root][i]);
 			}
 		}
 		else
@@ -318,7 +310,7 @@ public class IntegLikeCateg extends MesquiteModule {
 	int estCount =0;
 	boolean zeroHit = false;
 
-	public double logLikelihoodCalc(Tree tree, DESystem speciesModel, DEQNumSolver solver, CharacterDistribution states) {
+/*	public double logLikelihoodCalc(Tree tree, DESystem speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution states) {
 		if (speciesModel == null)
 			return 0;
 		if (solver == null)
@@ -337,7 +329,17 @@ public class IntegLikeCateg extends MesquiteModule {
 		int root = tree.getRoot(deleted);
 		double comp = downPass(root, tree,speciesModel, solver, observedStates);
 		double likelihood = 0.0;
-		/*~~~~~~~~~~~~~~ logLikelihoodCalc ~~~~~~~~~~~~~~*/
+		/*~~~~~~~~~~~~~~ logLikelihoodCalc ~~~~~~~~~~~~~~*
+		if (conditionBySurvival){
+			
+			for (int i=0;  i<workingMaxState; i++) {
+				likelihood += probsData[root][i]/(1-probsExt[root][i])/(1-probsExt[root][i]);
+//	Debugg.println("pe " + probsExt[root][i]);
+				}
+			}
+			else
+				for (int i=0;  i<workingMaxState; i++) 
+					likelihood += probsData[root][i];
 
 		for (int i=0;  i<=observedStates.getMaxState(); i++) 
 			likelihood += probsData[root][i];
@@ -349,7 +351,7 @@ public class IntegLikeCateg extends MesquiteModule {
 
 		return (logLike);
 	}
-
+*/
 
 	public Class getDutyClass() {
 		// TODO Auto-generated method stub
