@@ -15,11 +15,10 @@ public class IntegLikeNoChar extends MesquiteModule {
 	
 	double [] probsExt, probsData;
     double[] yStart;  //initial value for numerical integration
- 	double[][] savedRootEstimates; // holds the estimates at the root (for simulation priors, etc.)
+ 
 	MesquiteNumber probabilityValue;
-	int numStates;
 
-	long underflowCheckFrequency = 2; //2;  //how often to check that not about to underflow; 1 checks every time
+	long underflowCheckFrequency = -1; //2;  //how often to check that not about to underflow; 1 checks every time
 	long underflowCheck = 1;
 	double underflowCompensation = 1;
 	MesquiteNumber minChecker;
@@ -91,8 +90,7 @@ public class IntegLikeNoChar extends MesquiteModule {
 		return null;
 	}
 	/*.................................................................................................................*/
-	private void initProbs(int nodes, int numStates) {
-		this.numStates = numStates;
+	private void initProbs(int nodes) {
 		if (probsData==null || probsData.length!=nodes){
 			probsData = new double[nodes];
 			probsExt = new double[nodes];
@@ -121,14 +119,11 @@ public class IntegLikeNoChar extends MesquiteModule {
     Vector integrationResults = null;
 
     /* now returns underflow compensation */
-	private double downPass(int node, Tree tree, DESpeciationSystemNoChar model, DEQNumSolver solver, CategoricalDistribution observedStates) {
+	private double downPass(int node, Tree tree, DESpeciationSystemNoChar model, DEQNumSolver solver) {
         double logComp;
 		double d = 1;
 		double e = 0;
 		if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
-			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
-			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
-			//Debugg.println("node " + node + " state " + CategoricalState.toString(observed));
 			e = 0;
 			d = 1;
 			logComp = 0.0;  // no compensation required yet
@@ -136,7 +131,7 @@ public class IntegLikeNoChar extends MesquiteModule {
 		else { //initial conditions from daughters if internal
 			logComp = 0.0;
 			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
-				logComp += downPass(nd,tree,model,solver,observedStates);
+				logComp += downPass(nd,tree,model,solver);
 			}
 			
 				d = 1;  //two here to anticipate two daughters???
@@ -157,7 +152,7 @@ public class IntegLikeNoChar extends MesquiteModule {
 			
             if (underflowCheckFrequency>=0 && ++underflowCheck % underflowCheckFrequency == 0){
         		if (d  < 0.01) {
-        			logComp *=  -Math.log(d);
+        			logComp +=  -Math.log(d);
         			d = 1.0;
         		}
              }
@@ -230,38 +225,26 @@ public class IntegLikeNoChar extends MesquiteModule {
 	
 	/*.................................................................................................................*/
 	public void calculateLogProbability(Tree tree, DESpeciationSystemNoChar speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution obsStates, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
-		if (speciesModel==null || obsStates==null || prob == null)
+		if (speciesModel==null ||  prob == null)
 			return;
 		estCount =0;
 		zeroHit = false;
 		prob.setToUnassigned();
-		CategoricalDistribution observedStates = (CategoricalDistribution)obsStates;
 		String rep = speciesModel.toString();
-		double logComp;
 		int root = tree.getRoot(deleted);
 		boolean estimated = false;
-        int workingMaxState;
+       
         
-		if (speciesModel instanceof ReducedCladeModel)
-            workingMaxState =1;
-        else if (observedStates.getMaxState() == 0){
-		    MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; will try to proceed assuming 2 possible states");
-		    workingMaxState = 1;
-        }
-        else
-            workingMaxState = observedStates.getMaxState()+1; 
-        
-        initProbs(tree.getNumNodeSpaces(),workingMaxState);
+        initProbs(tree.getNumNodeSpaces());
 
-        logComp = downPass(root, tree,speciesModel, solver, observedStates);
+        double  logComp = downPass(root, tree,speciesModel, solver);
 		double likelihood = 0.0;
 		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
 		if (conditionBySurvival)
 			likelihood = probsData[root]/(1-probsExt[root])/(1-probsExt[root]);
 
 		else
-
-				likelihood = probsData[root];
+			likelihood = probsData[root];
 			
 		double negLogLikelihood = -(Math.log(likelihood) - logComp);
 		if (prob!=null)
@@ -314,13 +297,11 @@ public class IntegLikeNoChar extends MesquiteModule {
 
 */
 	public Class getDutyClass() {
-		// TODO Auto-generated method stub
 		return IntegLikeNoChar.class;
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
-		return "Integrating (speciation/extinction) Likelihood Calculator for Categorical Data";
+		return "Integrating (speciation/extinction) Likelihood Calculator";
 	}
 	public String getAuthors() {
 		return "Peter E. Midford & Wayne P. Maddison";
@@ -331,7 +312,7 @@ public class IntegLikeNoChar extends MesquiteModule {
 	}
 
 	public String getExplanation(){
-		return "Calculates likelihood of a tree and tip values using an extinction/speciation model expressed as a system of differential equations.";
+		return "Calculates likelihood of a tree using an extinction/speciation model expressed as a system of differential equations.";
 	}
 
 	public boolean isPrerelease(){
