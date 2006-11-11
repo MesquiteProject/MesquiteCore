@@ -13,8 +13,8 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
     static final double root10=Math.sqrt(10.0);
     
     DEQNumSolver solver;
-    ReducedCladeModel speciesModel;
-    ReducedCladeModel testModel;
+    SpecExtincCladeModel speciesModel;
+    SpecExtincCladeModel testModel;
     IntegLikeNoChar calcTask;
 
     MesquiteParameter sp = new MesquiteParameter(); //used only for parameter exploration
@@ -47,7 +47,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
         addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
         addMenuItem("Write table to console", makeCommand("writeTable",this));
         addMenuItem("Write code for R to console", makeCommand("writeForExternalApp",this));
-        speciesModel = new ReducedCladeModel(0.001, 0.001);
+        speciesModel = new SpecExtincCladeModel(0.001, 0.001);
 
         //following is for the parameters explorer
         sp.setName("s");
@@ -67,7 +67,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
         parameters = new MesquiteParameter[]{sp, ep};
         
         // Test model will dump values to console for fixed branch lenght and different e values
-        testModel = new ReducedCladeModel(1E6,0.001);
+        testModel = new SpecExtincCladeModel(1E6,0.001);
         //testModel.setS(0.000001);
         Vector integrationResults = null;
         double x = 0;
@@ -128,7 +128,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
                 if (speciesModel != null)
                     speciesModel.setE(e);
                 else
-                    speciesModel = new ReducedCladeModel(e,s);
+                    speciesModel = new SpecExtincCladeModel(e,s);
                 parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
             }
         }
@@ -144,7 +144,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
                 if (speciesModel != null)
                     speciesModel.setS(s);
                 else
-                    speciesModel = new ReducedCladeModel(e,s);
+                    speciesModel = new SpecExtincCladeModel(e,s);
                 parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
             }
         }
@@ -192,7 +192,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
         lastTree = tree;
         lastCharDistribution = charStates;
         if (speciesModel == null)
-            speciesModel = new ReducedCladeModel(e, s);
+            speciesModel = new SpecExtincCladeModel(e, s);
         calcTask.calculateLogProbability(tree, speciesModel, conditionOnSurvival.getValue(), solver,
                 charStates, resultString, result, commandRec);
 
@@ -200,7 +200,7 @@ public class SpecExtincCladeLike extends NumberForCharAndTree implements Paramet
 
 	public void restoreAfterExploration(){
 	       if (speciesModel == null)
-	            speciesModel = new ReducedCladeModel(e, s);
+	            speciesModel = new SpecExtincCladeModel(e, s);
 	        else {
 	        	speciesModel.setE(e);
 	        	speciesModel.setS(s);
