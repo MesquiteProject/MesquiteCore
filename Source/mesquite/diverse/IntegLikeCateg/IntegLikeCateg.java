@@ -160,7 +160,7 @@ public class IntegLikeCateg extends MesquiteModule {
 			//Debugg.println("node " + node + " state " + CategoricalState.toString(observed));
 			for (int state = 0;state < numStates;state++){
 				e[state]=0;
-				if ((state == obs) || (model instanceof SpecExtincCladeModel))
+				if ((state == obs))
 					d[state] = 1;
 				else
 					d[state] = 0;

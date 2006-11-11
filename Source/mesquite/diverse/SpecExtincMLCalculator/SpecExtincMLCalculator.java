@@ -8,7 +8,7 @@ import mesquite.diverse.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 
-public class IntegLikeNoChar extends MesquiteModule {
+public class SpecExtincMLCalculator extends MesquiteModule {
 
 	// bunch of stuff copied from zMargLikeCateg - need to prune!!
 	
@@ -30,12 +30,16 @@ public class IntegLikeNoChar extends MesquiteModule {
 	MesquiteBoolean conditionOnSurvival;
 
 	boolean[] deleted = null;
+	SpecExtincModel model;
+	DEQNumSolver solver;
 
+	
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		loadPreferences();
+		solver = new RK4Solver();
 		probabilityValue = new MesquiteNumber();
 		minChecker = new MesquiteNumber(MesquiteDouble.unassigned);
-        
+		model = new SpecExtincModel(MesquiteDouble.unassigned, MesquiteDouble.unassigned);
 		conditionOnSurvival = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Condition on Survival", MesquiteModule.makeCommand("conditionOnSurvival", this), conditionOnSurvival);
 		addMenuItem("Steps per Branch...", makeCommand("setStepCount", this));
@@ -127,7 +131,7 @@ public class IntegLikeNoChar extends MesquiteModule {
     Vector integrationResults = null;
 
     /* now returns underflow compensation */
-	private double downPass(int node, Tree tree, DESpeciationSystemNoChar model, DEQNumSolver solver) {
+	private double downPass(int node, Tree tree, SpecExtincModel model, DEQNumSolver solver) {
         double logComp;
 		double d = 1;
 		double e = 0;
@@ -232,22 +236,23 @@ public class IntegLikeNoChar extends MesquiteModule {
 	}
 	
 	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, DESpeciationSystemNoChar speciesModel, DEQNumSolver solver, MesquiteString resultString, MesquiteNumber prob, CommandRecord commandRec) {  
-		if (speciesModel==null ||  prob == null)
+	public void calculateLogProbability(Tree tree, MesquiteNumber prob, MesquiteDouble lambda, MesquiteDouble mu, MesquiteString resultString, CommandRecord commandRec) {  
+		if (model==null ||  prob == null)
 			return;
 		estCount =0;
 		zeroHit = false;
 		prob.setToUnassigned();
-		String rep = speciesModel.toString();
+		String rep = model.toString();
 		int root = tree.getRoot(deleted);
 		boolean estimated = false;
+		model.setE(mu.getValue());
+		model.setS(lambda.getValue());
        
         initProbs(tree.getNumNodeSpaces());
 
-		if (!speciesModel.isFullySpecified())
-			return;
+		
         
-		double  logComp = downPass(root, tree,speciesModel, solver);
+		double  logComp = downPass(root, tree,model, solver);
 		double likelihood = 0.0;
 		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
 		if (conditionOnSurvival.getValue())
@@ -331,3 +336,54 @@ public class IntegLikeNoChar extends MesquiteModule {
 
 	
 }
+
+class SpecExtincModel implements DESystem {
+
+    private double e;   //extinction rate in state 0
+    private double s;   //speciation rate in state 0
+ 
+    public SpecExtincModel(double e, double s){
+        this.e = e;
+        this.s = s;
+    }
+
+    public boolean isFullySpecified(){
+    	return MesquiteDouble.isCombinable(e) && MesquiteDouble.isCombinable(s);
+    }
+   
+    /*
+     *  The probability values are passed the probs array in the following order
+     *  probs[0] = E0 = extinction probability in lineage starting at t in the past at state 0
+     *  probs[1] = P0 = probability of explaining the data, given system is in state 0 at time t
+     * @see mesquite.correl.lib.DESystem#calculateDerivative(double, double[])
+     */
+    public String toString(){
+        return "Reduced Clade Model s=" + MesquiteDouble.toString(s, 4) + " e=" + MesquiteDouble.toString(e, 4);
+    }
+    public double[]calculateDerivative(double t,double probs[],double[] result){
+        // for clarity
+        double extProb = probs[0];
+        double dataProb = probs[1];
+        result[0] = -(e+s)*extProb + s*extProb*extProb + e; 
+        result[1] = -(e+s)*dataProb + 2*s*extProb*dataProb;
+        return result;
+    }
+    
+    public void setE(double e){
+        this.e = e;
+    }
+    
+    public void setS(double s){
+        this.s = s;
+    }
+    
+
+    public double getSRate() {
+            return s;
+    }
+    
+    public double getERate() {
+            return e;
+    }
+}
+
