@@ -2,7 +2,7 @@ package mesquite.diverse.lib;
 
 import mesquite.lib.MesquiteDouble;
 
-public class ReducedCladeModel implements DESpeciationSystemCateg {
+public class ReducedCladeModel implements DESpeciationSystemNoChar {
 
     private double e;   //extinction rate in state 0
     private double s;   //speciation rate in state 0
@@ -46,19 +46,12 @@ public class ReducedCladeModel implements DESpeciationSystemCateg {
     }
 
 
-    public double getSRate(int state) {
-        if (state == 0)
+    public double getSRate() {
+
             return s;
-        //else if (state == 1)
-        //    return s1;
-        else return MesquiteDouble.unassigned;
     }
     
-    public double getERate(int state) {
-        if (state == 0)
+    public double getERate() {
             return e;
-        //else if (state == 1)
-        //    return e1;
-        else return MesquiteDouble.unassigned;
     }
 }

@@ -2,7 +2,7 @@ package mesquite.diverse.ReducedCladeLikeCategChar;
 
 import java.util.Vector;
 
-import mesquite.diverse.IntegLikeCateg.IntegLikeCateg;
+import mesquite.diverse.IntegLikeNoChar.IntegLikeNoChar;
 import mesquite.diverse.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
@@ -15,7 +15,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
     DEQNumSolver solver;
     ReducedCladeModel speciesModel;
     ReducedCladeModel testModel;
-    IntegLikeCateg calcTask;
+    IntegLikeNoChar calcTask;
 
     MesquiteParameter sp = new MesquiteParameter(); //used only for parameter exploration
     MesquiteParameter ep = new MesquiteParameter();//used only for parameter exploration
@@ -34,7 +34,7 @@ public class ReducedCladeLikeCategChar extends NumberForCharAndTree implements P
 
     public boolean startJob(String arguments, Object condition,
             CommandRecord commandRec, boolean hiredByName) {
-        calcTask = (IntegLikeCateg)hireEmployee(commandRec, IntegLikeCateg.class, "Integrating Likelihood");
+        calcTask = (IntegLikeNoChar)hireEmployee(commandRec, IntegLikeNoChar.class, "Integrating Likelihood");
         if (calcTask == null)
             return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 
