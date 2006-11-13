@@ -8,21 +8,18 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.*;
 
-public class SpecExtincLikelihood extends NumberForTree implements ParametersExplorable {
+public class SpecExtincLikelihood extends NumberForTree  {
 
 	static final double root10=Math.sqrt(10.0);
 
 	SpecExtincMLCalculator calcTask;
 
-	MesquiteParameter sp = new MesquiteParameter(); //used only for parameter exploration
+/*	MesquiteParameter sp = new MesquiteParameter(); //used only for parameter exploration
 	MesquiteParameter ep = new MesquiteParameter();//used only for parameter exploration
 
 	MesquiteParameter[] parameters;
 	ParametersExplorer explorer;
-
-	// hooks for capturing context for table dump.
-	Tree lastTree;
-	CharacterDistribution lastCharDistribution;
+*/
 
 	MesquiteDouble lambda = new MesquiteDouble();   //speciation rate
 	MesquiteDouble mu = new MesquiteDouble();   //extinction rate
@@ -34,29 +31,12 @@ public class SpecExtincLikelihood extends NumberForTree implements ParametersExp
 		if (calcTask == null)
 			return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 
-		addMenuItem("Set Extinction ŒRate...", makeCommand("setE", this));
 		addMenuItem("Set Speciation Rate...", makeCommand("setS", this));
+		addMenuItem("Set Extinction Rate...", makeCommand("setE", this));
 		addMenuItem("-", null);
-		addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
 		addMenuItem("Write table to console", makeCommand("writeTable",this));
 		addMenuItem("Write code for R to console", makeCommand("writeForExternalApp",this));
 
-		//following is for the parameters explorer
-		sp.setName("lambda");
-		sp.setExplanation("Rate of speciation");
-		sp.setMinimumAllowed(0);
-		sp.setMaximumAllowed(MesquiteDouble.infinite);
-		sp.setMinimumSuggested(0.0000);
-		sp.setMaximumSuggested(1);
-		sp.setValue(lambda.getValue());
-		ep.setName("mu");
-		ep.setExplanation("Rate of extinction");
-		ep.setMinimumSuggested(0.0000);
-		ep.setMaximumSuggested(1);
-		ep.setMinimumAllowed(0);
-		ep.setMaximumAllowed(MesquiteDouble.infinite);
-		ep.setValue(mu.getValue());
-		parameters = new MesquiteParameter[]{sp, ep};
 
 		/*
 		// Test model will dump values to console for fixed branch lenght and different e values
@@ -91,10 +71,6 @@ public class SpecExtincLikelihood extends NumberForTree implements ParametersExp
 		return true;
 	}
 
-	public void employeeQuit(MesquiteModule employee){
-		if (employee == explorer)
-			explorer = null;
-	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
@@ -102,8 +78,6 @@ public class SpecExtincLikelihood extends NumberForTree implements ParametersExp
 		temp.addLine("getIntegTask ", calcTask);
 		temp.addLine("setS " + MesquiteDouble.toString(lambda.getValue()));
 		temp.addLine("setE " + MesquiteDouble.toString(mu.getValue()));
-		if (explorer != null)
-			temp.addLine("showParamExplorer ", explorer);
 		return temp;
 	}
 
@@ -116,9 +90,10 @@ public class SpecExtincLikelihood extends NumberForTree implements ParametersExp
 			double newE = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteDouble.isCombinable(newE) && !commandRec.scripting())
 				newE = MesquiteDouble.queryDouble(containerOfModule(), "mu", "Instantaneous extinction rate", mu.getValue());
-			if (MesquiteDouble.isCombinable(newE) && newE >=0 && newE != mu.getValue()){
+			if ((MesquiteDouble.isUnassigned(newE) ||  newE >=0) && newE != mu.getValue()){
 				mu.setValue(newE); //change mode
-				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				if (!commandRec.scripting())
+				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
@@ -128,32 +103,19 @@ public class SpecExtincLikelihood extends NumberForTree implements ParametersExp
 			double newS = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteDouble.isCombinable(newS) && !commandRec.scripting())
 				newS = MesquiteDouble.queryDouble(containerOfModule(), "lambda", "Instantaneous speciation rate", lambda.getValue());
-			if (MesquiteDouble.isCombinable(newS) && newS >=0 && newS != lambda.getValue()){
+			if ((MesquiteDouble.isUnassigned(newS) || newS >=0) && newS != lambda.getValue()){
 				lambda.setValue(newS); //change mode
-				parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				if (!commandRec.scripting())
+					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
-		}
-		else if (checker.compare(getClass(), "Show Parameter Explorer", "", commandName, "showParamExplorer")) {
-			explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
-			if (explorer == null)
-				return null;
-			explorer.setExplorable(this, commandRec);
-			return explorer;
 		}
 
 		else
 			return super.doCommand(commandName, arguments, commandRec, checker);
 		return null;
 	}
-	/*---------------------------------------------------------------------------------*/
-	public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
-		if (!commandRec.scripting())
-			parametersChanged(n, commandRec);
-
-		if (explorer != null)
-			explorer.explorableChanged(this, commandRec);
-	}
-
+	MesquiteDouble tempLambda = new MesquiteDouble();
+	MesquiteDouble tempMu = new MesquiteDouble();
 	/*---------------------------------------------------------------------------------*/
 	public void calculateNumber(Tree tree, 
 			MesquiteNumber result, MesquiteString resultString,
@@ -164,23 +126,12 @@ public class SpecExtincLikelihood extends NumberForTree implements ParametersExp
 
 		if (tree == null)
 			return;
-
-		/*
-		 * Note: currently does not refresh parameters explorer if tree changed.
-		 * This would be tough to do automatically, because in response to a
-		 * change in tree here, calculate number could then be called by the
-		 * explorer! Perhaps always require user request? if (lastTree != tree)
-		 * explorer.explorableChanged(this, commandRec);
-		 */
-		lastTree = tree;
-		calcTask.calculateLogProbability(tree, likelihood, lambda, mu, resultString, commandRec);
+		tempLambda.setValue(lambda.getValue());
+		tempMu.setValue(mu.getValue());
+		calcTask.calculateLogProbability(tree, result, tempLambda, tempMu, resultString, commandRec);
 
 	}
-	/*---------------------------------------------------------------------------------*/
-	public void restoreAfterExploration(){
-		
-	}
-
+	
 	/*---------------------------------------------------------------------------------*/
 	public void initialize(Tree tree, CharacterDistribution charStates,
 			CommandRecord commandRec) {
@@ -211,19 +162,5 @@ public class SpecExtincLikelihood extends NumberForTree implements ParametersExp
 
 
 
-	/*------------------------------------------------------------------------------------------*/
-	/** these methods for ParametersExplorable interface */
-	public MesquiteParameter[] getExplorableParameters(){
-		return parameters;
-	}
-
-	MesquiteNumber likelihood = new MesquiteNumber();
-
-	public double calculate(MesquiteString resultString, CommandRecord commandRec){
-		lambda.setValue(sp.getValue());
-		mu.setValue(ep.getValue());
-		calculateNumber( lastTree,  lastCharDistribution, likelihood, resultString, commandRec);
-		return likelihood.getDoubleValue();
-	}
 
 }

@@ -6,7 +6,7 @@ import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.Tree;
 import mesquite.diverse.lib.*;
-import mesquite.diverse.IntegLikeCateg.IntegLikeCateg;
+import mesquite.diverse.SpExtCategCharMLCalculator.SpExtCategCharMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
@@ -16,7 +16,7 @@ import mesquite.lib.duties.ParametersExplorer;
 
         DEQNumSolver solver;
         SpecExtincRatioDiffCategModel speciesModel;
-        IntegLikeCateg calcTask;
+        SpExtCategCharMLCalculator calcTask;
 
         // hooks for capturing context for table dump.
         Tree lastTree;
@@ -41,7 +41,7 @@ import mesquite.lib.duties.ParametersExplorer;
         ParametersExplorer explorer;
 
         public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-            calcTask = (IntegLikeCateg)hireEmployee(commandRec, IntegLikeCateg.class, "Integrating Likelihood");
+            calcTask = (SpExtCategCharMLCalculator)hireEmployee(commandRec, SpExtCategCharMLCalculator.class, "Integrating Likelihood");
             if (calcTask == null)
                 return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 

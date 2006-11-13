@@ -99,6 +99,8 @@ public class RK4Solver implements DEQNumSolver {
 			yk2 = new double[ylen];
 			yk3 = new double[ylen];
 		}
+		if (y.length == 0 || k1.length == 0)
+			System.out.println("oops");
 		k1 = mySystem.calculateDerivative(x,y,k1);
 		for(int i=0;i<ylen;i++)
 			yk1[i]=y[i]+k1[i]*half_h;

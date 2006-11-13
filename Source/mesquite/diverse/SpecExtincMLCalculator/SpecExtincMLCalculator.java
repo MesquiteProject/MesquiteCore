@@ -7,33 +7,40 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.diverse.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.duties.ParametersExplorer;
+import mesquite.stochchar.lib.TreeDataModelBundle;
 
-public class SpecExtincMLCalculator extends MesquiteModule {
+public class SpecExtincMLCalculator extends MesquiteModule implements ParametersExplorable, Evaluator {
 
 	// bunch of stuff copied from zMargLikeCateg - need to prune!!
-	
-	
+
+
 	double [] probsExt, probsData;
-    double[] yStart;  //initial value for numerical integration
- 
+	double[] yStart;  //initial value for numerical integration
+
 	MesquiteNumber probabilityValue;
 
 	long underflowCheckFrequency = -1; //2;  //how often to check that not about to underflow; 1 checks every time
 	long underflowCheck = 1;
 	double underflowCompensation = 1;
 	MesquiteNumber minChecker;
-	
-	// Number of steps per branch, reduce for a faster, possibily sloppier result
-    double stepCount = 1000;  //default 10000
 
-    MesquiteBoolean intermediatesToConsole = new MesquiteBoolean(false);
+	// Number of steps per branch, reduce for a faster, possibily sloppier result
+	double stepCount = 1000;  //default 10000
+
+	MesquiteBoolean intermediatesToConsole = new MesquiteBoolean(false);
 	MesquiteBoolean conditionOnSurvival;
 
 	boolean[] deleted = null;
 	SpecExtincModel model;
 	DEQNumSolver solver;
 
-	
+	MesquiteParameter sp = new MesquiteParameter(); //used only for parameter exploration
+	MesquiteParameter ep = new MesquiteParameter();//used only for parameter exploration
+	MesquiteParameter[] parameters;
+	ParametersExplorer explorer;
+
+
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		loadPreferences();
 		solver = new RK4Solver();
@@ -42,14 +49,37 @@ public class SpecExtincMLCalculator extends MesquiteModule {
 		model = new SpecExtincModel(MesquiteDouble.unassigned, MesquiteDouble.unassigned);
 		conditionOnSurvival = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Condition on Survival", MesquiteModule.makeCommand("conditionOnSurvival", this), conditionOnSurvival);
+		addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
 		addMenuItem("Steps per Branch...", makeCommand("setStepCount", this));
 		addCheckMenuItem(null, "Intermediates to console", makeCommand("toggleIntermediatesToConsole",this), intermediatesToConsole);
 
 		MesquiteSubmenuSpec mLO = addSubmenu(null, "Likelihood Optimization", null); 
 		addItemToSubmenu(null, mLO, "Underflow Checking...", makeCommand("setUnderflowCheckFreq", this));
+		//following is for the parameters explorer
+		sp.setName("lambda");
+		sp.setExplanation("Rate of speciation");
+		sp.setMinimumAllowed(0);
+		sp.setMaximumAllowed(MesquiteDouble.infinite);
+		sp.setMinimumSuggested(0.0000);
+		sp.setMaximumSuggested(1);
+		sp.setValue(0.1);
+		ep.setName("mu");
+		ep.setExplanation("Rate of extinction");
+		ep.setMinimumSuggested(0.0000);
+		ep.setMaximumSuggested(1);
+		ep.setMinimumAllowed(0);
+		ep.setMaximumAllowed(MesquiteDouble.infinite);
+		ep.setValue(0.01);
+		parameters = new MesquiteParameter[]{sp, ep};
 
 		return true;
 	}
+	public void employeeQuit(MesquiteModule employee){
+		if (employee == explorer)
+			explorer = null;
+	}
+
+
 	boolean reportCladeValues = false;
 	public void setReportCladeLocalValues(boolean reportCladeValues){
 		this.reportCladeValues = reportCladeValues;
@@ -62,6 +92,8 @@ public class SpecExtincMLCalculator extends MesquiteModule {
 		temp.addLine("setUnderflowCheckFreq " + underflowCheckFrequency);
 		temp.addLine("setStepCount " + stepCount);
 		temp.addLine("conditionOnSurvival  " + conditionOnSurvival.toOffOnString());
+		if (explorer != null)
+			temp.addLine("showParamExplorer ", explorer);
 		return temp;
 	}
 
@@ -79,60 +111,65 @@ public class SpecExtincMLCalculator extends MesquiteModule {
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
+		else if (checker.compare(getClass(), "Show Parameter Explorer", "", commandName, "showParamExplorer")) {
+			explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
+			if (explorer == null)
+				return null;
+			explorer.setExplorable(this, commandRec);
+			return explorer;
+		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
 			parametersChanged(null, commandRec);
 		}
-	       else if (checker.compare(getClass(), "Sets the number of steps per branch", "[integer, 1 or greater]", commandName, "setStepCount")) {
-				double steps = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-	            if (!MesquiteDouble.isCombinable(steps) && !commandRec.scripting())
-	            	steps = MesquiteDouble.queryDouble(containerOfModule(), "Steps per branch", "Number of divisions of each branch for numerical integration.  Higher numbers mean the calculations are more accurate but go more slowly.  Values under 100 are not recommended", stepCount, 10, 1000000);
+		else if (checker.compare(getClass(), "Sets the number of steps per branch", "[integer, 1 or greater]", commandName, "setStepCount")) {
+			double steps = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+			if (!MesquiteDouble.isCombinable(steps) && !commandRec.scripting())
+				steps = MesquiteDouble.queryDouble(containerOfModule(), "Steps per branch", "Number of divisions of each branch for numerical integration.  Higher numbers mean the calculations are more accurate but go more slowly.  Values under 100 are not recommended", stepCount, 10, 1000000);
 
-	            if (MesquiteDouble.isCombinable(steps) && steps >=0 && steps!=stepCount){
-	            	stepCount = steps; //change mode
-					if (!commandRec.scripting())
-	                parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
-	            }
-	        }
-       else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
-            intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
-        }
- 		else
+			if (MesquiteDouble.isCombinable(steps) && steps >=0 && steps!=stepCount){
+				stepCount = steps; //change mode
+				if (!commandRec.scripting())
+					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+			}
+		}
+		else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
+			intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
+		}
+		else
 			return super.doCommand(commandName, arguments, commandRec, checker);
 		return null;
+	}
+	/*---------------------------------------------------------------------------------*/
+	public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
+		if (!commandRec.scripting())
+			parametersChanged(n, commandRec);
+
+		if (explorer != null)
+			explorer.explorableChanged(this, commandRec);
 	}
 	/*.................................................................................................................*/
 	private void initProbs(int nodes) {
 		if (probsData==null || probsData.length!=nodes){
 			probsData = new double[nodes];
 			probsExt = new double[nodes];
-            yStart = new double[2];
-  		}
+			yStart = new double[2];
+		}
 		DoubleArray.zeroArray(probsData);
 		DoubleArray.zeroArray(probsExt);
+		DoubleArray.zeroArray(yStart);
 	}
-	
 
-	/*.................................................................................................................*/
-	private double checkUnderflow(double prob, MesquiteDouble logComp){
 
-		if (prob > 0.01)
-			return prob;
-		else {
-			logComp.setValue(logComp.getValue()*( -Math.log(prob)));
-				prob = 1.0;
-		}
-		return prob;
-	}
 	/*.................................................................................................................*/
 	/* assumes hard polytomies */
 
-    // This might hold the intermediate step results if requested for debugging
-    Vector integrationResults = null;
+	// This might hold the intermediate step results if requested for debugging
+	Vector integrationResults = null;
 
-    /* now returns underflow compensation */
+	/* now returns underflow compensation */
 	private double downPass(int node, Tree tree, SpecExtincModel model, DEQNumSolver solver) {
-        double logComp;
+		double logComp;
 		double d = 1;
 		double e = 0;
 		if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
@@ -145,137 +182,291 @@ public class SpecExtincMLCalculator extends MesquiteModule {
 			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
 				logComp += downPass(nd,tree,model,solver);
 			}
-			
-				d = 1;  //two here to anticipate two daughters???
-				e = 1;
-				//TODO: either filter to permit only ultrametric, or redo calculations to permit extinct nodes.
-				//TODO: likewise for polytomies
-				for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
-                   // Debugg.println("probsExt["+nd +"][" + state + "] = " + probsExt[nd][state]);
-                   // Debugg.println("probsData["+nd +"][" + state + "] = " + probsData[nd][state]);
-					e = probsExt[nd];
-					d *= probsData[nd];
+
+			d = 1;  //two here to anticipate two daughters???
+			e = 1;
+			//TODO: either filter to permit only ultrametric, or redo calculations to permit extinct nodes.
+			//TODO: likewise for polytomies
+			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
+				// Debugg.println("probsExt["+nd +"][" + state + "] = " + probsExt[nd][state]);
+				// Debugg.println("probsData["+nd +"][" + state + "] = " + probsData[nd][state]);
+				e = probsExt[nd];
+				d *= probsData[nd];
+			}
+
+			if (node != tree.getRoot()){  //condition on splitting at root; thus don't include rate if at root
+				d *= model.getS();
+			}
+
+
+			if (underflowCheckFrequency>=0 && ++underflowCheck % underflowCheckFrequency == 0){
+				if (d  < 0.01) {
+					logComp +=  -Math.log(d);
+					d = 1.0;
 				}
-
-                if (node != tree.getRoot()){  //condition on splitting at root; thus don't include rate if at root
-                    d *= model.getSRate();
-                 }
-                 
-			
-            if (underflowCheckFrequency>=0 && ++underflowCheck % underflowCheckFrequency == 0){
-        		if (d  < 0.01) {
-        			logComp +=  -Math.log(d);
-        			d = 1.0;
-        		}
-             }
+			}
 		}
-        if (node == tree.getRoot()){
-                probsExt[node]= e;
-                probsData[node] = d;
-            
-            return logComp;
-        }
-        else{
-            double x = 0;
-            double length = tree.getBranchLength(node,1.0,deleted);
-            double h = length/stepCount;       //this will need tweaking!
+		if (node == tree.getRoot()){
+			probsExt[node]= e;
+			probsData[node] = d;
 
-                yStart[0] = e;
-                yStart[1] = d;
-            
-            if (intermediatesToConsole.getValue()){
-                MesquiteMessage.print("node " + node);
-                if (node == tree.getRoot())
-                    MesquiteMessage.println(" is root");
-                else
-                    MesquiteMessage.println("");
-                MesquiteMessage.println("At start, y is " + DoubleArray.toString(yStart));
-            }
-            integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());        
-            double[] yEnd = (double[])integrationResults.lastElement();
-            if (yEnd.length == 2){
-              
-                    probsExt[node] = yEnd[0];
-                    probsData[node] = yEnd[1];
-                
-            }
-            else {
-                MesquiteMessage.warnProgrammer("Vector returned by solver not the same size supplied!");
+			return logComp;
+		}
+		else{
+			double x = 0;
+			double length = tree.getBranchLength(node,1.0,deleted);
+			double h = length/stepCount;       //this will need tweaking!
 
-                    probsExt[node]=0;   //is this the right thing here?
-                    probsData[node]=0;  //this is probably the best choice here
-                
-            }
-            if (intermediatesToConsole.getValue()){
-                MesquiteMessage.println("Intermediate values");
-                StringBuffer stateMsg = new StringBuffer(1000);
-                //stateMsg.delete(0,stateMsg.length());  //flush everything
-                x = h;
-                double [] tempResults;
-                for(int i=0;i<integrationResults.size();i++){
-                    if(i%100 == 0){
-                        String xString = MesquiteDouble.toFixedWidthString(x, 13, false);
-                        stateMsg.append("x= "+ xString + " y =[");
-                        tempResults = (double[])integrationResults.get(i);
-                        for(int j=0;j<tempResults.length;j++)
-                            stateMsg.append(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
-                        stateMsg.append("]\n");
-                    }   
-                    x += h;
-                }
-                stateMsg.append("Final value; \n");
-                stateMsg.append("x= " + h*stepCount + " y =[");
-                tempResults = (double[])integrationResults.lastElement();
-                for(int j=0;j<tempResults.length;j++)
-                    stateMsg.append(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
-                stateMsg.append("]\n");
-                MesquiteMessage.println(stateMsg.toString());
-            }
-            return logComp;
-        }
+			yStart[0] = e;
+			yStart[1] = d;
+
+			if (intermediatesToConsole.getValue()){
+				MesquiteMessage.print("node " + node);
+				if (node == tree.getRoot())
+					MesquiteMessage.println(" is root");
+				else
+					MesquiteMessage.println("");
+				MesquiteMessage.println("At start, y is " + DoubleArray.toString(yStart));
+			}
+			integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());        
+			double[] yEnd = (double[])integrationResults.lastElement();
+			if (yEnd.length == 2){
+
+				probsExt[node] = yEnd[0];
+				probsData[node] = yEnd[1];
+
+			}
+			else {
+				MesquiteMessage.warnProgrammer("Vector returned by solver not the same size supplied!");
+
+				probsExt[node]=0;   //is this the right thing here?
+				probsData[node]=0;  //this is probably the best choice here
+
+			}
+			if (intermediatesToConsole.getValue()){
+				MesquiteMessage.println("Intermediate values");
+				StringBuffer stateMsg = new StringBuffer(1000);
+				//stateMsg.delete(0,stateMsg.length());  //flush everything
+				x = h;
+				double [] tempResults;
+				for(int i=0;i<integrationResults.size();i++){
+					if(i%100 == 0){
+						String xString = MesquiteDouble.toFixedWidthString(x, 13, false);
+						stateMsg.append("x= "+ xString + " y =[");
+						tempResults = (double[])integrationResults.get(i);
+						for(int j=0;j<tempResults.length;j++)
+							stateMsg.append(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
+						stateMsg.append("]\n");
+					}   
+					x += h;
+				}
+				stateMsg.append("Final value; \n");
+				stateMsg.append("x= " + h*stepCount + " y =[");
+				tempResults = (double[])integrationResults.lastElement();
+				for(int j=0;j<tempResults.length;j++)
+					stateMsg.append(MesquiteDouble.toFixedWidthString(tempResults[j],13,false)+" ");
+				stateMsg.append("]\n");
+				MesquiteMessage.println(stateMsg.toString());
+			}
+			return logComp;
+		}
 	}
-	
-	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, MesquiteNumber prob, MesquiteDouble lambda, MesquiteDouble mu, MesquiteString resultString, CommandRecord commandRec) {  
-		if (model==null ||  prob == null)
-			return;
-		estCount =0;
-		zeroHit = false;
-		prob.setToUnassigned();
-		String rep = model.toString();
-		int root = tree.getRoot(deleted);
-		boolean estimated = false;
-		model.setE(mu.getValue());
-		model.setS(lambda.getValue());
-       
-        initProbs(tree.getNumNodeSpaces());
 
-		
-        
+	/*------------------------------------------------------------------------------------------*/
+	/** these methods for ParametersExplorable interface */
+	public MesquiteParameter[] getExplorableParameters(){
+		return parameters;
+	}
+	public void restoreAfterExploration(){
+	}
+	MesquiteNumber likelihood = new MesquiteNumber();
+	MesquiteDouble lamdaExp = new MesquiteDouble();
+	MesquiteDouble muExp = new MesquiteDouble();
+
+	public double calculate(MesquiteString resultString, CommandRecord commandRec){
+		lamdaExp.setValue(sp.getValue());
+		muExp.setValue(ep.getValue());
+		calculateLogProbability( lastTree, likelihood, lamdaExp, muExp, resultString, commandRec);
+		return likelihood.getDoubleValue();
+	}
+	Tree lastTree;
+
+	/*.................................................................................................................*/
+	MesquiteDouble tempLambda = new MesquiteDouble();
+	MesquiteDouble tempMu = new MesquiteDouble();
+	long count = 0;
+	/*.................................................................................................................*/
+	boolean anyNegative(double[] params){
+		if (params == null)
+			return false;
+		for (int i=0; i<params.length; i++)
+			if (params[i]<0)
+				return true;
+		return false;
+	}
+	/*.................................................................................................................*/
+	public double evaluate(double[] params, Object bundle){
+//		Debugg.println("lambda " + params[0] + " mu " + params[1]);
+		if (anyNegative(params))
+			return 1e100;
+		if (params.length == 2)
+			return logLike((Tree)((Object[])bundle)[0], params[0], params[1]);
+		Object[] b = ((Object[])bundle);
+		Tree tree = (Tree)b[0];
+		MesquiteDouble lambda = (MesquiteDouble)b[1];
+		MesquiteDouble mu = (MesquiteDouble)b[2];
+		if (count++ % 10 == 0)
+			CommandRecord.getRecSIfNull().tick("Evaluating  lambda " + lambda + " mu " + mu);
+		//	Debugg.println("lambda " + lambda + " mu " + mu + " param " + params[0]);
+		double result = 0;
+		if (lambda.isUnassigned())
+			result = logLike(tree, params[0], mu.getValue());
+		else if (mu.isUnassigned())
+			result = logLike(tree, lambda.getValue(), params[0]);
+		else
+			result = MesquiteDouble.unassigned;
+		if (!MesquiteDouble.isCombinable(result))
+			result = 1e100;
+		return result;
+	}
+	/*.................................................................................................................*/
+	public double evaluate(MesquiteDouble param, Object bundle){
+		if (!param.isCombinable() || param.getValue()<0)
+			return 1e100;
+		Object[] b = ((Object[])bundle);
+		Tree tree = (Tree)b[0];
+		MesquiteDouble lambda = (MesquiteDouble)b[1];
+		MesquiteDouble mu = (MesquiteDouble)b[2];
+		if (count++ % 10 == 0)
+			CommandRecord.getRecSIfNull().tick("Evaluating  lambda " + lambda + " mu " + mu);
+		double result = 0;
+		if (lambda.isUnassigned())
+			result = logLike(tree, param.getValue(), mu.getValue());
+		else if (mu.isUnassigned())
+			result = logLike(tree, lambda.getValue(), param.getValue());
+		else
+			result = MesquiteDouble.unassigned;
+		if (!MesquiteDouble.isCombinable(result))
+			result = 1e100;
+		return result;
+	}
+
+	/*{
+ 		Optimizer opt = new Optimizer(this);
+ 		Object[] bundle = new Object[] {tree, lambda, mu};
+			best = opt.optimize(paramMesquiteDouble,min, max, bundle);
+			best = opt.optimize(startingPointsDoublearray, bundle)
+	}
+	/*.................................................................................................................*/
+	public double logLike(Tree tree, double lambda, double mu) {  
+		if (model==null)
+			return MesquiteDouble.unassigned;
+		model.setE(mu);
+		model.setS(lambda);
+		initProbs(tree.getNumNodeSpaces());
+		int root = tree.getRoot(deleted);
 		double  logComp = downPass(root, tree,model, solver);
 		double likelihood = 0.0;
-		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
 		if (conditionOnSurvival.getValue())
 			likelihood = probsData[root]/(1-probsExt[root])/(1-probsExt[root]);
-
 		else
 			likelihood = probsData[root];
-			
 		double negLogLikelihood = -(Math.log(likelihood) - logComp);
+		return negLogLikelihood;
+
+	}
+	/*.................................................................................................................*/
+	public void calculateLogProbability(Tree tree, MesquiteNumber prob, MesquiteDouble lambda, MesquiteDouble mu, MesquiteString resultString, CommandRecord commandRec) {  
+		if (model==null ||  prob == null || lambda ==null || mu == null)
+			return;
+		lastTree = tree;
+		prob.setToUnassigned();
+		String rep = model.toString();
+		String estimatedLambda = "";
+		String estimatedMu = "";
+
+		double negLogLikelihood = MesquiteDouble.unassigned;
+		//if lambda and mu are not both specified, then estimate
+		if (lambda.isUnassigned() || mu.isUnassigned()){
+			double currentE = model.getE();
+			double currentS = model.getS();
+			Optimizer opt = new Optimizer(this);
+			Object[] bundle = new Object[] {tree, lambda, mu};
+			if (lambda.isUnassigned() && mu.isUnassigned()){ //both unassigned
+				double[] suggestions = new double[]{1, 1};
+				negLogLikelihood = opt.optimize(suggestions, bundle);
+				lambda.setValue(suggestions[0]);
+				mu.setValue(suggestions[1]);
+				estimatedLambda = "[est.]";
+				estimatedMu = "[est.]";
+			}
+			else { //one of two unassigned
+				/*
+					double[] suggestions = new double[]{1};
+					negLogLikelihood = opt.optimize(suggestions, bundle);
+					lambda.setValue(suggestions[0]);
+					/**/
+				/**/
+				MesquiteDouble suggestion = new MesquiteDouble(1);
+				double currentStep = stepCount;
+				stepCount = 100;
+				negLogLikelihood = opt.optimize(suggestion, 0.0, 10, bundle);
+				double best = negLogLikelihood;
+				double first = suggestion.getValue();
+				negLogLikelihood = opt.optimize(suggestion, 0.0, 100, bundle);
+				//	Debugg.println("a " + best + " param " + first + "   b  " + negLogLikelihood + "  param " + suggestion);
+				if (best < negLogLikelihood)
+					suggestion.setValue(first);
+				stepCount = 1000;
+				negLogLikelihood = opt.optimize(suggestion, suggestion.getValue() * 0.6, suggestion.getValue() * 1.4, bundle);
+				//	Debugg.println("finer " + negLogLikelihood + "  param " + suggestion);
+				stepCount = currentStep;
+				if (lambda.isUnassigned()){
+					lambda.setValue(suggestion.getValue());
+					/**/
+					estimatedLambda = "[est.]";
+				}
+				else {
+					mu.setValue(suggestion.getValue()); /**/
+					estimatedMu = "[est.]";
+				}
+			}
+
+
+			model.setE(currentE);
+			model.setS(currentS);
+		}
+		else 
+			negLogLikelihood = logLike(tree, lambda.getValue(), mu.getValue());
+		/*======*
+		model.setE(mu.getValue());
+		model.setS(lambda.getValue());
+        initProbs(tree.getNumNodeSpaces());
+		int root = tree.getRoot(deleted);
+		double  logComp = downPass(root, tree,model, solver);
+		double likelihood = 0.0;
+		if (conditionOnSurvival.getValue())
+			likelihood = probsData[root]/(1-probsExt[root])/(1-probsExt[root]);
+		else
+			likelihood = probsData[root];
+
+		double negLogLikelihood = -(Math.log(likelihood) - logComp);
+		/*======*/
+
 		if (prob!=null)
 			prob.setValue(negLogLikelihood);
+		double likelihood = Math.exp(-negLogLikelihood);
+		if (MesquiteDouble.isUnassigned(negLogLikelihood))
+			likelihood = MesquiteDouble.unassigned;
 		if (resultString!=null) {
-			String s = "Likelihood from integration with model " + rep + "over branches;  -log L.:"+ MesquiteDouble.toString(negLogLikelihood) + " [L. "+ MesquiteDouble.toString(likelihood * Math.exp(-logComp)) + "]";
+			String s = "Sp/Ext Likelihood with spec. rate " + lambda + " " + estimatedLambda + "; ext. rate " + mu + " " + estimatedMu + ";  -log L.:"+ MesquiteDouble.toString(negLogLikelihood) + " [L. "+ MesquiteDouble.toString(likelihood) + "]";
 			s += "  " + getParameters();
 			resultString.setValue(s);
 		}
 	}
-	
-			
-	int estCount =0;
-	boolean zeroHit = false;
 
-/*	public double logLikelihoodCalc(Tree tree, DESystem speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution states) {
+
+	/*	public double logLikelihoodCalc(Tree tree, DESystem speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution states) {
 		if (speciesModel == null)
 			return 0;
 		if (solver == null)
@@ -310,7 +501,7 @@ public class SpecExtincMLCalculator extends MesquiteModule {
 		return (logLike);
 	}
 
-*/
+	 */
 	public Class getDutyClass() {
 		return SpecExtincMLCalculator.class;
 	}
@@ -334,56 +525,56 @@ public class SpecExtincMLCalculator extends MesquiteModule {
 		return true;
 	}
 
-	
+
 }
 
 class SpecExtincModel implements DESystem {
 
-    private double e;   //extinction rate in state 0
-    private double s;   //speciation rate in state 0
- 
-    public SpecExtincModel(double e, double s){
-        this.e = e;
-        this.s = s;
-    }
+	private double e;   //extinction rate in state 0
+	private double s;   //speciation rate in state 0
 
-    public boolean isFullySpecified(){
-    	return MesquiteDouble.isCombinable(e) && MesquiteDouble.isCombinable(s);
-    }
-   
-    /*
-     *  The probability values are passed the probs array in the following order
-     *  probs[0] = E0 = extinction probability in lineage starting at t in the past at state 0
-     *  probs[1] = P0 = probability of explaining the data, given system is in state 0 at time t
-     * @see mesquite.correl.lib.DESystem#calculateDerivative(double, double[])
-     */
-    public String toString(){
-        return "Reduced Clade Model s=" + MesquiteDouble.toString(s, 4) + " e=" + MesquiteDouble.toString(e, 4);
-    }
-    public double[]calculateDerivative(double t,double probs[],double[] result){
-        // for clarity
-        double extProb = probs[0];
-        double dataProb = probs[1];
-        result[0] = -(e+s)*extProb + s*extProb*extProb + e; 
-        result[1] = -(e+s)*dataProb + 2*s*extProb*dataProb;
-        return result;
-    }
-    
-    public void setE(double e){
-        this.e = e;
-    }
-    
-    public void setS(double s){
-        this.s = s;
-    }
-    
+	public SpecExtincModel(double e, double s){
+		this.e = e;
+		this.s = s;
+	}
 
-    public double getSRate() {
-            return s;
-    }
-    
-    public double getERate() {
-            return e;
-    }
+	public boolean isFullySpecified(){
+		return MesquiteDouble.isCombinable(e) && MesquiteDouble.isCombinable(s);
+	}
+
+	/*
+	 *  The probability values are passed the probs array in the following order
+	 *  probs[0] = E0 = extinction probability in lineage starting at t in the past at state 0
+	 *  probs[1] = P0 = probability of explaining the data, given system is in state 0 at time t
+	 * @see mesquite.correl.lib.DESystem#calculateDerivative(double, double[])
+	 */
+	public String toString(){
+		return "Speciation/Extinction Model lambda=" + MesquiteDouble.toString(s, 4) + " mu=" + MesquiteDouble.toString(e, 4);
+	}
+	public double[]calculateDerivative(double t,double probs[],double[] result){
+		// for clarity
+		double extProb = probs[0];
+		double dataProb = probs[1];
+		result[0] = -(e+s)*extProb + s*extProb*extProb + e; 
+		result[1] = -(e+s)*dataProb + 2*s*extProb*dataProb;
+		return result;
+	}
+
+	public void setE(double e){
+		this.e = e;
+	}
+
+	public void setS(double s){
+		this.s = s;
+	}
+
+
+	public double getS() {
+		return s;
+	}
+
+	public double getE() {
+		return e;
+	}
 }
 
