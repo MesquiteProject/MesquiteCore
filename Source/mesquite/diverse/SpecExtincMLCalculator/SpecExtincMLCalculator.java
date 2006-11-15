@@ -120,7 +120,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
-			parametersChanged(null, commandRec);
+			if (!commandRec.scripting()) parametersChanged(null, commandRec);
 		}
 		else if (checker.compare(getClass(), "Sets the number of steps per branch", "[integer, 1 or greater]", commandName, "setStepCount")) {
 			double steps = MesquiteDouble.fromString(parser.getFirstToken(arguments));
@@ -315,9 +315,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		Tree tree = (Tree)b[0];
 		MesquiteDouble lambda = (MesquiteDouble)b[1];
 		MesquiteDouble mu = (MesquiteDouble)b[2];
-		if (count++ % 10 == 0)
-			CommandRecord.getRecSIfNull().tick("Evaluating  lambda " + lambda + " mu " + mu);
-		//	Debugg.println("lambda " + lambda + " mu " + mu + " param " + params[0]);
+
 		double result = 0;
 		if (lambda.isUnassigned())
 			result = logLike(tree, params[0], mu.getValue());
@@ -325,6 +323,8 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			result = logLike(tree, lambda.getValue(), params[0]);
 		else
 			result = MesquiteDouble.unassigned;
+		if (count++ % 10 == 0)
+			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + "  lambda " + lambda + " mu " + mu);
 		if (!MesquiteDouble.isCombinable(result))
 			result = 1e100;
 		return result;
@@ -337,8 +337,6 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		Tree tree = (Tree)b[0];
 		MesquiteDouble lambda = (MesquiteDouble)b[1];
 		MesquiteDouble mu = (MesquiteDouble)b[2];
-		if (count++ % 10 == 0)
-			CommandRecord.getRecSIfNull().tick("Evaluating  lambda " + lambda + " mu " + mu);
 		double result = 0;
 		if (lambda.isUnassigned())
 			result = logLike(tree, param.getValue(), mu.getValue());
@@ -348,6 +346,8 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			result = MesquiteDouble.unassigned;
 		if (!MesquiteDouble.isCombinable(result))
 			result = 1e100;
+		if (count++ % 10 == 0)
+			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + "  lambda " + lambda + " mu " + mu);
 		return result;
 	}
 
@@ -410,16 +410,21 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 				MesquiteDouble suggestion = new MesquiteDouble(1);
 				double currentStep = stepCount;
 				stepCount = 100;
+				logln("Sp/Ext: Estimating parameters, phase 1: step count 100");
 				negLogLikelihood = opt.optimize(suggestion, 0.0, 10, bundle);
+				logln("Sp/Ext: neg. Log Likelihood first attempt:" + negLogLikelihood);
 				double best = negLogLikelihood;
 				double first = suggestion.getValue();
 				negLogLikelihood = opt.optimize(suggestion, 0.0, 100, bundle);
+				logln("Sp/Ext: neg. Log Likelihood second attempt:" + negLogLikelihood);
 				//	Debugg.println("a " + best + " param " + first + "   b  " + negLogLikelihood + "  param " + suggestion);
 				if (best < negLogLikelihood)
 					suggestion.setValue(first);
 				stepCount = 1000;
+				logln("Sp/Ext: Estimating parameters, phase 2: step count 1000");
 				negLogLikelihood = opt.optimize(suggestion, suggestion.getValue() * 0.6, suggestion.getValue() * 1.4, bundle);
 				//	Debugg.println("finer " + negLogLikelihood + "  param " + suggestion);
+				logln("Sp/Ext: neg. Log Likelihood final attempt:" + negLogLikelihood);
 				stepCount = currentStep;
 				if (lambda.isUnassigned()){
 					lambda.setValue(suggestion.getValue());

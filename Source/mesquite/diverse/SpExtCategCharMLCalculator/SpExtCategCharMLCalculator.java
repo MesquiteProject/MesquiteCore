@@ -51,82 +51,56 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	MesquiteBoolean intermediatesToConsole = new MesquiteBoolean(false);
 
 	boolean[] deleted = null;
-	MesquiteParameter s0p = new MesquiteParameter();
-	MesquiteParameter s1p = new MesquiteParameter();
-	MesquiteParameter e0p = new MesquiteParameter();
-	MesquiteParameter e1p = new MesquiteParameter();
-	MesquiteParameter t01p = new MesquiteParameter();
-	MesquiteParameter t10p = new MesquiteParameter();
-	MesquiteParameter[] parameters;
-	MesquiteDouble[] paramsExpl;
-	MesquiteDouble[] tempParams;
+	MesquiteParameter s0p;
+	MesquiteParameter s1p;
+	MesquiteParameter e0p;
+	MesquiteParameter e1p;
+	MesquiteParameter t01p;
+	MesquiteParameter t10p;
+//	MesquiteParameter[] parameters;
+	MesquiteParameter[] paramsForExploration;
+	MesquiteParameter[] previousParams;
 	ParametersExplorer explorer;
 	MesquiteBoolean conditionOnSurvival;
 	SpecExtincCategModel speciesModel;
+	RandomBetween rng;
+	int iterations = 2;
+	boolean suspended = false;
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		loadPreferences();
 		probabilityValue = new MesquiteNumber();
 		minChecker = new MesquiteNumber(MesquiteDouble.unassigned);
 
-		speciesModel = new SpecExtincCategModel(0.001, 0.001, 0.005, 0.001, 0.01, 0.01);
 		solver = new RK4Solver();
-
+		rng = new RandomBetween(System.currentTimeMillis());
 		//following is for the parameters explorer
-		s0p.setName("s0");
-		s0p.setExplanation("Rate of speciation with state 0");
-		s0p.setMinimumAllowed(0);
-		s0p.setMaximumAllowed(MesquiteDouble.infinite);
-		s0p.setMinimumSuggested(0.000);
-		s0p.setMaximumSuggested(1);
-		s0p.setValue(0.1);
-		s1p.setName("s1");
-		s1p.setExplanation("Rate of speciation with state 1");
-		s1p.setMinimumSuggested(0.0);
-		s1p.setMaximumSuggested(1);
-		s1p.setMinimumAllowed(0);
-		s1p.setMaximumAllowed(MesquiteDouble.infinite);
-		s1p.setValue(0.1);
-		e0p.setName("e0");
-		e0p.setExplanation("Rate of extinction with state 0");
-		e0p.setMinimumSuggested(0.000);
-		e0p.setMaximumSuggested(1);
-		e0p.setMinimumAllowed(0);
-		e0p.setMaximumAllowed(MesquiteDouble.infinite);
-		e0p.setValue(0.1);
-		e1p.setName("e1");
-		e1p.setExplanation("Rate of extinction with state 1");
-		e1p.setMinimumSuggested(0.000);
-		e1p.setMaximumSuggested(1);
-		e1p.setMinimumAllowed(0);
-		e1p.setMaximumAllowed(MesquiteDouble.infinite);
-		e1p.setValue(0.1);
-		t01p.setName("r01");
-		t01p.setExplanation("Rate of 0->1 changes");
-		t01p.setMinimumSuggested(0.00);
-		t01p.setMaximumSuggested(1);
-		t01p.setMinimumAllowed(0);
-		t01p.setMaximumAllowed(MesquiteDouble.infinite);
-		t01p.setValue(0.1);
-		t10p.setName("r10");
-		t10p.setExplanation("Rate of 1->0 changes");
-		t10p.setMinimumSuggested(0.000);
-		t10p.setMaximumSuggested(1);
-		t10p.setMinimumAllowed(0);
-		t10p.setMaximumAllowed(MesquiteDouble.infinite);
-		t10p.setValue(0.1);
-		parameters = new MesquiteParameter[]{s0p, s1p, e0p, e1p, t01p, t10p};
-		paramsExpl = new MesquiteDouble[6];
-		tempParams = new MesquiteDouble[6];
-		for (int i = 0; i<6; i++){
-			paramsExpl [i] = new MesquiteDouble();
-			tempParams [i] = new MesquiteDouble();
-		}
+		s0p = new MesquiteParameter("s0", "Rate of speciation with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		s1p = new MesquiteParameter("s1", "Rate of speciation with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		e0p = new MesquiteParameter("e0", "Rate of extinction with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		e1p = new MesquiteParameter("e1", "Rate of extinction with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		t01p = new MesquiteParameter("r01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		t10p = new MesquiteParameter("r10", "Rate of 1->0 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+
+		paramsForExploration= new MesquiteParameter[]{s0p, s1p, e0p, e1p, t01p, t10p};
+		speciesModel = new SpecExtincCategModel();
+		speciesModel.setParams(paramsForExploration);
+
+//		parameters = MesquiteParameter.cloneArray(paramsForExploration, null);
+		previousParams = new MesquiteParameter[6];
+		for (int i = 0; i<6; i++)
+			previousParams [i] = new MesquiteParameter();
+
 		conditionOnSurvival = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Condition on Survival", MesquiteModule.makeCommand("conditionOnSurvival", this), conditionOnSurvival);
-		addMenuItem("Steps per Branch...", makeCommand("setStepCount", this));
+		MesquiteSubmenuSpec mLO = addSubmenu(null, "Likelihood Calculation", null); 
+		addItemToSubmenu(null, mLO, "Steps per Branch...", makeCommand("setStepCount", this));
+		addItemToSubmenu(null, mLO, "Optimization Iterations...", makeCommand("setIterations", this));
+		addItemToSubmenu(null, mLO, "Underflow Checking...", makeCommand("setUnderflowCheckFreq", this));
+		addMenuItem("-", null);
 		addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
 		addCheckMenuItem(null, "Intermediates to console", makeCommand("toggleIntermediatesToConsole",this), intermediatesToConsole);
+//		addMenuItem("-", null);
 		rootModes = new StringArray(2);  
 		rootModes.setValue(ROOT_IGNOREPRIOR, "Ignore Root State Frequencies");  //the strings passed will be the menu item labels
 		rootModes.setValue(ROOT_USEPRIOR, "Use Root State Frequencies as Prior");
@@ -137,8 +111,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		//	MesquiteSubmenuSpec mssr = addSubmenu(null, "Root Reconstruction", makeCommand("setRootMode", this), rootModes); 
 		//	mssr.setSelected(rootModeName);
 		/**/
-		MesquiteSubmenuSpec mLO = addSubmenu(null, "Likelihood Optimization", null); 
-		addItemToSubmenu(null, mLO, "Underflow Checking...", makeCommand("setUnderflowCheckFreq", this));
 
 		return true;
 	}
@@ -155,11 +127,14 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	}
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
+		temp.addLine("suspend ");
 		temp.addLine("setUnderflowCheckFreq " + underflowCheckFrequency);
 		temp.addLine("setStepCount " + stepCount);
+		temp.addLine("setIterations " + iterations);
 		temp.addLine("conditionOnSurvival  " + conditionOnSurvival.toOffOnString());
 		if (explorer != null)
 			temp.addLine("showParamExplorer ", explorer);
+		temp.addLine("resume ");
 		return temp;
 	}
 
@@ -177,7 +152,16 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
-		else if (checker.compare(getClass(), "Sets the number of steps per branch", "[integer, 1 or greater]", commandName, "setStepCount")) {
+		else if (checker.compare(getClass(), "Suspends calculations", null, commandName, "suspend")) {
+			suspended = true;
+		}
+		else if (checker.compare(getClass(), "Resumes calculations", null, commandName, "resume")) {
+			suspended = false;
+		}
+		else if (checker.compare(getClass(), "Returns last result string", null, commandName, "getLastResultString")) {
+			return lastResultString;
+		}
+		else if (checker.compare(getClass(), "Sets the number of steps per branch", "[double, 1 or greater]", commandName, "setStepCount")) {
 			double steps = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteDouble.isCombinable(steps) && !commandRec.scripting())
 				steps = MesquiteDouble.queryDouble(containerOfModule(), "Steps per branch", "Number of divisions of each branch for numerical integration.  Higher numbers mean the calculations are more accurate but go more slowly.  Values under 100 are not recommended", stepCount, 10, 1000000);
@@ -188,9 +172,20 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
+		else if (checker.compare(getClass(), "Sets the number of iterations in the likelihood optimization", "[integer, 1 or greater]", commandName, "setIterations")) {
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (!MesquiteInteger.isCombinable(it) && !commandRec.scripting())
+				it = MesquiteInteger.queryInteger(containerOfModule(), "Optimization Iterations", "Number of random starting points for likelihood optimizationi.  Higher numbers mean the optimization is more thorough  but goes more slowly.", iterations, 1, 1000);
+
+			if (MesquiteInteger.isCombinable(it) && it >=0 && it!=iterations){
+				iterations = it; //change mode
+				if (!commandRec.scripting())
+					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+			}
+		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
-			parametersChanged(null, commandRec);
+			if (!commandRec.scripting())parametersChanged(null, commandRec);
 		}
 		else if (checker.compare(getClass(), "Writes table to console", "", commandName, "showParamExplorer")) {
 			explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
@@ -353,22 +348,21 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	/*------------------------------------------------------------------------------------------*/
 	/** these methods for ParametersExplorable interface */
 	public MesquiteParameter[] getExplorableParameters(){
-		return parameters;
+		return paramsForExploration;
 	}
 	MesquiteNumber likelihood = new MesquiteNumber();
 	public double calculate(MesquiteString resultString, CommandRecord commandRec){
-		for (int i = 0; i<6; i++)
-			paramsExpl[i].setValue(parameters[i].getValue());
-		calculateLogProbability( lastTree,  lastCharDistribution, paramsExpl, likelihood, resultString, commandRec);
+		if (suspended)
+			return MesquiteDouble.unassigned;
+		calculateLogProbability( lastTree,  lastCharDistribution, paramsForExploration, likelihood, resultString, commandRec);
 		return likelihood.getDoubleValue();
 	}
 	public void restoreAfterExploration(){
 	}
 	/*------------------------------------------------------------------------------------------*/
 	int lastMaxState = 1;
-	double[] doubleParams = new double[6];
 	long count = 0;
-	
+
 	boolean anyNegative(double[] params){
 		if (params == null)
 			return false;
@@ -381,34 +375,44 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	public double evaluate(double[] params, Object bundle){
 		if (anyNegative(params))
 			return 1e100;
-		double result =  logLike((Tree)((Object[])bundle)[0], (CategoricalDistribution)((Object[])bundle)[1], params);
+		Object[] b = ((Object[])bundle);
+		Tree tree = (Tree)b[0];
+		CategoricalDistribution states = (CategoricalDistribution)b[1];
+		SpecExtincCategModel model = (SpecExtincCategModel)b[2];
+		model.setParamValuesUsingConstraints(params);
+		double result =  logLike(tree, states, model);
 		if (count++ % 10 == 0)
-			CommandRecord.getRecSIfNull().tick("Evaluating: likelihood " + result + " params " + DoubleArray.toString(params));
-		//if (count % 10 ==0)
-		//	Debugg.println("Evaluating: likelihood " + result + " params " + DoubleArray.toString(params));
+			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + " params " + MesquiteParameter.toString(params));
 		if (!MesquiteDouble.isCombinable(result))
 			result = 1e100;
 		return result;
 	}
 	/*.................................................................................................................*/
+	double[] oneParam = new double[1];
+	/*.................................................................................................................*/
 	public double evaluate(MesquiteDouble param, Object bundle){
-		if (!param.isCombinable() || param.getValue()<0)
+		oneParam[0] = param.getValue();
+		if (anyNegative(oneParam))
 			return 1e100;
-				Object[] b = ((Object[])bundle);
+		Object[] b = ((Object[])bundle);
 		Tree tree = (Tree)b[0];
 		CategoricalDistribution states = (CategoricalDistribution)b[1];
-		double[] params = (double[])b[2];
-
-		return 0;
+		SpecExtincCategModel model = (SpecExtincCategModel)b[2];
+		model.setParamValuesUsingConstraints(oneParam);
+		double result =  logLike(tree, states, model);
+		if (count++ % 10 == 0)
+			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + " param " + MesquiteParameter.toString(oneParam));
+		if (!MesquiteDouble.isCombinable(result))
+			result = 1e100;
+		return result;
 	}
 	/*.................................................................................................................*/
-	public double logLike(Tree tree, CategoricalDistribution states, double[] params) {  
-		if (speciesModel==null)
+	public double logLike(Tree tree, CategoricalDistribution states, SpecExtincCategModel model) {  
+		if (model==null)
 			return MesquiteDouble.unassigned;
-		speciesModel.setParams(params);
 		int root = tree.getRoot(deleted);
 		initProbs(tree.getNumNodeSpaces(),lastMaxState);
-		double logComp = downPass(root, tree,speciesModel, solver, states);
+		double logComp = downPass(root, tree, model, solver, states);
 		double likelihood = 0.0;
 		/*~~~~~~~~~~~~~~ calculateLogProbability ~~~~~~~~~~~~~~*/
 		if (conditionOnSurvival.getValue()){
@@ -421,16 +425,17 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		double negLogLikelihood = -(Math.log(likelihood) - logComp);
 		return negLogLikelihood;
 	}
-	
+String lastResultString;
 	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteDouble[] params, MesquiteNumber prob, MesquiteString resultString, CommandRecord commandRec) {  
+	public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteParameter[] params, MesquiteNumber prob, MesquiteString resultString, CommandRecord commandRec) {  
 		if (speciesModel==null || obsStates==null || prob == null)
 			return;
 		lastTree = tree;
 		lastCharDistribution = obsStates;
 		prob.setToUnassigned();
+		if (suspended)
+			return;
 		CategoricalDistribution observedStates = (CategoricalDistribution)obsStates;
-		boolean estimated = false;
 		int workingMaxState;
 		if (observedStates.getMaxState() <= 0){
 			MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; cannot calculated likelihood of tree and character");
@@ -439,33 +444,164 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		else
 			workingMaxState = observedStates.getMaxState()+1; 
 		lastMaxState = workingMaxState;
-		speciesModel.getParams(tempParams);
+		speciesModel.getParams(previousParams);
 		speciesModel.setParams(params);
-		
-		for (int i = 0; i< 6; i++)
-			doubleParams[i] = params[i].getValue();
-		
+		double currentStep = stepCount;
+
 		double negLogLikelihood = 0;
 		String modelString = "";
 		if (speciesModel.isFullySpecified()){
-			negLogLikelihood = logLike(tree, observedStates, doubleParams);
+			negLogLikelihood = logLike(tree, observedStates, speciesModel);
 			modelString  = speciesModel.toString();
 		}
-		else {
-				Optimizer opt = new Optimizer(this);
-				Object[] bundle = new Object[] {tree, observedStates, doubleParams};
-				stepCount = 100;
-			double[] suggestions = new double[]{1, 0.5, 1, 0.5, 0.1, 0.1};
-			logln("Sp/Ext Categ Char: Estimating parameters, phase 1: step count 100");
-			negLogLikelihood = opt.optimize(suggestions, bundle);
+		else if (speciesModel.numberSpecified() ==0 && speciesModel.numberEffectiveParameters() == 6){  //all unspecified
+			//some or all parameters are unassigned, and thus need to be estimated
+			//First, we need to go through the parameters array to construct a mapping between our local free parameters and the original
+			Optimizer opt = new Optimizer(this);
+			Object[] bundle = new Object[] {tree, observedStates, speciesModel};
+			stepCount = 100;
+			double[] suggestions1 = new double[]{1, 0.5, 0.5, 0.2, 0.1, 0.05};
+			logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
+			logln("Sp/Ext Categ Char: Estimating all 6 parameters, phase 1: step count 100");
+			double negLogLikelihood1 = opt.optimize(suggestions1, bundle);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood first attempt:" + negLogLikelihood1);
+			double[] suggestions2 = new double[]{0.5, 1, 0.2, 0.5, 0.05, 0.1};
+			double negLogLikelihood2 = opt.optimize(suggestions2, bundle);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood second attempt:" + negLogLikelihood2);
+			double[] suggestions;
+			double bestL;
+			int bestS;
+			String attemptName;
+			if (negLogLikelihood1 < negLogLikelihood2) {
+				suggestions = suggestions1;
+				bestS = -1;
+				bestL = negLogLikelihood1;
+				attemptName = " first attempt" ;
+		}
+			else {
+				suggestions = suggestions2;
+				bestS = -2;
+				bestL = negLogLikelihood2;
+				attemptName = " second attempt" ;
+			}
+
+
+			double[][] randomSuggestions = new double[iterations][6];
+			for (int i = 0; i< iterations; i++){  
+				double max = 1.0;
+				if (i>= iterations/2)//0 to 1 first then 0 to 10.0
+					max = 10.0;
+				for (int k = 0; k<6; k++)
+					randomSuggestions[i][k] = rng.randomDoubleBetween(0, max);
+				if (i % 2 == 0){ //every other one enforce e < s
+					randomSuggestions[i][3] = rng.randomDoubleBetween(0, randomSuggestions[i][1] );
+					randomSuggestions[i][4] = rng.randomDoubleBetween(0, randomSuggestions[i][2] );
+				}
+			}
+			for (int i = 0; i< iterations; i++){ // 0 to 10
+				double nLL = opt.optimize(randomSuggestions[i], bundle);
+				logln("Sp/Ext Categ Char: random attempt " + i + " neg. Log Likelihood:" + nLL);
+				if (nLL < bestL){
+					bestS = i;
+					bestL = nLL;
+					attemptName = "random attempt " + i ;
+				}
+			}
+			if (bestS>=0)
+				suggestions = randomSuggestions[bestS];
 			stepCount = 1000;
-			logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000");
+			logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
 			negLogLikelihood = opt.optimize(suggestions, bundle);
-			
-			speciesModel.setParams(suggestions);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
+
+			speciesModel.setParamValuesUsingConstraints(suggestions);
 			modelString  = speciesModel.toString() + " [est.]";
 
 		}
+		else if (speciesModel.numberEffectiveParameters() == 1) {  //1 parametersunassigned;
+			Optimizer opt = new Optimizer(this);
+			Object[] bundle = new Object[] {tree, observedStates, speciesModel};
+			stepCount = 100;
+
+			logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
+			logln("Sp/Ext Categ Char: Estimating one free parameter");
+			logln("Sp/Ext Categ Char: Estimating parameter, phase 1: step count 100");
+			MesquiteDouble suggestion = new MesquiteDouble(1);
+			negLogLikelihood = opt.optimize(suggestion, 0, 100, bundle);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood first attempt:" + negLogLikelihood);
+			double bestL = negLogLikelihood;
+			double bestP = suggestion.getValue();
+			negLogLikelihood = opt.optimize(suggestion, 0.0, 10, bundle);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood second attempt:" + negLogLikelihood);
+			if (bestL < negLogLikelihood)
+				suggestion.setValue(bestP);
+			else{
+				bestP = suggestion.getValue();
+				bestL = negLogLikelihood;
+			}
+			negLogLikelihood = opt.optimize(suggestion, 0.0, 1, bundle);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood third attempt:" + negLogLikelihood);
+			if (bestL < negLogLikelihood)
+				suggestion.setValue(bestP);
+			else{
+				bestP = suggestion.getValue();
+				bestL = negLogLikelihood;
+			}
+			stepCount = 1000;
+			logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000");
+			negLogLikelihood = opt.optimize(suggestion, suggestion.getValue() * 0.6, suggestion.getValue() * 1.4, bundle);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
+
+			oneParam[0] = suggestion.getValue();
+			speciesModel.setParamValuesUsingConstraints(oneParam);
+			modelString  = speciesModel.toString() + " [est.]";
+
+		}
+		else {  //2 to 5 parameters unassigned; should have separate for 1!
+			//some parameters are unassigned, and thus need to be estimated
+			//First, we need to go through the parameters array to construct a mapping between our local free parameters and the original
+			Optimizer opt = new Optimizer(this);
+			Object[] bundle = new Object[] {tree, observedStates, speciesModel};
+			stepCount = 100;
+			int numParams = speciesModel.numberEffectiveParameters();
+			double[] suggestions1 = new double[numParams];
+			logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
+			logln("Sp/Ext Categ Char: Estimating " + numParams + " free parameters");
+			for (int i=0; i < suggestions1.length; i++)
+				suggestions1[i] = 0.1*(i+1);
+			logln("Sp/Ext Categ Char: Estimating parameters, phase 1: step count 100");
+			double bestL = MesquiteDouble.unassigned;
+			int bestS = -1;
+
+			String attemptName = "random attempt";
+			double[][] randomSuggestions = new double[iterations][numParams];
+			for (int i = 0; i< iterations; i++){  
+				double max = 1.0;
+				if (i>= iterations/2)//0 to 1 first then 0 to 10.0
+					max = 10.0;
+				for (int k = 0; k<numParams; k++)
+					randomSuggestions[i][k] = rng.randomDoubleBetween(0, max);
+			}
+			for (int i = 0; i< iterations; i++){ // 0 to 10
+				double nLL = opt.optimize(randomSuggestions[i], bundle);
+				logln("Sp/Ext Categ Char: attempt " + i + " neg. Log Likelihood:" + nLL);
+				if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
+					bestS = i;
+					bestL = nLL;
+					attemptName = "random attempt " + i ;
+				}
+			}
+			double[] suggestions = randomSuggestions[bestS];
+		stepCount = 1000;
+			logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
+			negLogLikelihood = opt.optimize(suggestions, bundle);
+			logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
+
+			speciesModel.setParamValuesUsingConstraints(suggestions);
+			modelString  = speciesModel.toString() + " [est.]";
+
+		}
+		stepCount = currentStep;
 
 		if (prob!=null)
 			prob.setValue(negLogLikelihood);
@@ -477,7 +613,8 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			s += "  " + getParameters();
 			resultString.setValue(s);
 		}
-		speciesModel.setParams(tempParams);
+		lastResultString = tree.getName() + "\t" + obsStates.getName() +"\t" + speciesModel.toStringForAnalysis();
+		speciesModel.setParams(previousParams);
 	}
 
 
@@ -507,27 +644,16 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		return true;
 	}
 }
-
+/*============================================================================*/
 class SpecExtincCategModel implements DESystem {
 
-
-	private double e0;   //extinction rate in state 0
-	private double s0;   //speciation rate in state 0
-	private double e1;   //extinction rate in state 1
-	private double s1;   //speciation rate in state 1
-	private double t01;  //transition rate from state 0 to state 1
-	private double t10;  //transition rate from state 1 to state 0
-
-
-	public SpecExtincCategModel(double e0, double s0, double e1, double s1, double t01, double t10){
-		this.e0 = e0;
-		this.s0 = s0;
-		this.e1 = e1;
-		this.s1 = s1;
-		this.t01 = t01;
-		this.t10 = t10;
+	MesquiteParameter[] original, parameters;
+	int[] constraintMap, effectiveParamMapping;
+	boolean[] checked;
+	public SpecExtincCategModel(){
+		constraintMap = new int[6];
+		checked = new boolean[6];
 	}
-
 
 	/*
 	 *  The probability values are passed the probs array in the following order
@@ -538,15 +664,25 @@ class SpecExtincCategModel implements DESystem {
 	 * @see mesquite.correl.lib.DESystem#calculateDerivative(double, double[])
 	 */
 	public String toString(){
-		return "Model s0=" + MesquiteDouble.toString(s0, 4) +" s1=" + MesquiteDouble.toString(s1, 4) +" e0=" + MesquiteDouble.toString(e0, 4) +" e1=" + MesquiteDouble.toString(e1, 4) +" t01=" + MesquiteDouble.toString(t01, 4) +" t10=" + MesquiteDouble.toString(t10, 4);
+		return MesquiteParameter.toString(parameters);
+	}
+	public String toStringForAnalysis(){
+		return MesquiteParameter.toStringForAnalysis(parameters);
 	}
 	public double[]calculateDerivative(double t,double probs[],double[] result){
 		// for clarity
-//Debugg.println("probs " + probs.length + " result " + result.length);
+//		Debugg.println("probs " + probs.length + " result " + result.length);
 		double extProb0 = probs[0];
 		double extProb1 = probs[1];
 		double dataProb0 = probs[2];
 		double dataProb1 = probs[3];
+		double s0 = parameters[0].getValue();
+		double s1 = parameters[1].getValue();
+		double e0 = parameters[2].getValue();
+		double e1 = parameters[3].getValue();
+		double t01 = parameters[4].getValue();
+		double t10 = parameters[5].getValue();
+
 		result[0] = -(e0+t01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + t01*extProb1; 
 		result[1] = -(e1+t10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + t10*extProb0;            
 		result[2] = -(e0+t01+s0)*dataProb0 + 2*s0*extProb0*dataProb0 + t01*dataProb1;
@@ -555,47 +691,97 @@ class SpecExtincCategModel implements DESystem {
 	}
 
 	public boolean isFullySpecified(){
-		return (MesquiteDouble.isCombinable(s0) && MesquiteDouble.isCombinable(s1) &&MesquiteDouble.isCombinable(e0) &&MesquiteDouble.isCombinable(e1) &&MesquiteDouble.isCombinable(t01) &&MesquiteDouble.isCombinable(t10));
+		return MesquiteParameter.numberSpecified(original) == 6;
 	}
-	
-	public void setParams(MesquiteDouble[] params){
-		this.s0 = params[0].getValue();
-		this.s1 = params[1].getValue();
-		this.e0 = params[2].getValue();
-		this.e1 = params[3].getValue();
-		this.t01 = params[4].getValue();
-		this.t10 = params[5].getValue();
+	public int numberSpecified(){
+		return MesquiteParameter.numberSpecified(original);
 	}
-	public void setParams(double[] params){
-		this.s0 = params[0];
-		this.s1 = params[1];
-		this.e0 = params[2];
-		this.e1 = params[3];
-		this.t01 = params[4];
-		this.t10 = params[5];
+	public int numberEffectiveParameters(){
+		if (effectiveParamMapping == null)
+			return 0;
+		return effectiveParamMapping.length;
 	}
 
-	public void getParams(MesquiteDouble[] params){
-		params[0].setValue(s0);
-		params[1].setValue(s1);
-		params[2].setValue(e0);
-		params[3].setValue(e1);
-		params[4].setValue(t01);
-		params[5].setValue(t10);
+	public void setParams(MesquiteParameter[] params){
+		original = MesquiteParameter.cloneArray(params, original);
+		parameters = MesquiteParameter.cloneArray(params, parameters);
+		for (int i=0; i<6; i++){
+			int c = MesquiteParameter.getWhichConstrained(params, i);
+
+			if (c >= 0)
+				constraintMap[i] = c;
+			else
+				constraintMap[i] = i;
+			checked[i] = false;
+		}
+		int count = 0;
+		for (int i=0; i<6; i++){  //figuring out what are the unset parameters;
+			int mapee = constraintMap[i];
+			if (!checked[mapee])
+				if (!original[mapee].isCombinable())
+					count++;
+			checked[mapee] = true;
+		}
+		if (effectiveParamMapping == null || effectiveParamMapping.length != count)
+			effectiveParamMapping = new int[count];
+		count = 0;
+		for (int i=0; i<6; i++)
+			checked[i] = false;
+		for (int i=0; i<6; i++){  //figuring out what are the unset parameters;
+			int mapee = constraintMap[i];
+			if (!checked[mapee])
+				if (!original[mapee].isCombinable()){
+					effectiveParamMapping[count] = mapee;
+					count++;
+				}
+			checked[mapee] = true;
+		}
+//		Debugg.println("constraintMap " + constraintMap.length + "  " + IntegerArray.toString(constraintMap));
+//		Debugg.println("effective mapping " + effectiveParamMapping.length + "  " + IntegerArray.toString(effectiveParamMapping));
+	}
+	public void setParamValuesUsingConstraints(double[] params){
+		if (params == null || params.length == 0)
+			return;
+		if (params.length == 6 && effectiveParamMapping == null){
+			for (int i=0; i<6; i++)
+				parameters[i].setValue(params[i]);
+		}
+		else if (effectiveParamMapping== null){
+			MesquiteMessage.warnProgrammer("Sp/Ext setParamValuesUsingConstraints with effective params NULL");
+		}
+		else if (params.length != effectiveParamMapping.length){
+			MesquiteMessage.warnProgrammer("Sp/Ext setParamValuesUsingConstraints with effective params size mismatch " + params.length + " " + effectiveParamMapping.length);
+		}
+		else {
+			for (int i=0; i<params.length; i++) {
+				int mapee = effectiveParamMapping[i]; //find parameter representing constraint group
+				//now find all params constrained to it, and set them
+				for (int k = 0; k< parameters.length; k++){
+					if (constraintMap[k] == mapee)
+						parameters[k].setValue(params[i]);
+				}
+			}
+		}
+		//	Debugg.println("examined params " + MesquiteParameter.toString(parameters));
+	}
+
+	public void getParams(MesquiteParameter[] params){
+		if (params != null)
+			params = MesquiteParameter.cloneArray(original, params);
 	}
 	public double getSRate(int state) {
 		if (state == 0)
-			return s0;
+			return parameters[0].getValue();
 		else if (state == 1)
-			return s1;
+			return parameters[1].getValue();
 		else return MesquiteDouble.unassigned;
 	}
 
 	public double getERate(int state) {
 		if (state == 0)
-			return e0;
+			return parameters[2].getValue();
 		else if (state == 1)
-			return e1;
+			return parameters[3].getValue();
 		else return MesquiteDouble.unassigned;
 	}
 
