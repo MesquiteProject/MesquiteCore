@@ -37,18 +37,19 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		calcTask = (SpExtCategCharMLCalculator)hireEmployee(commandRec, SpExtCategCharMLCalculator.class, "Integrating Likelihood");
 		if (calcTask == null)
 			return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
+		double def = MesquiteDouble.unassigned;
 		//following is for the parameters explorer
-		s0 = new MesquiteParameter("s0", "Rate of speciation with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		s1 = new MesquiteParameter("s1", "Rate of speciation with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		e0 = new MesquiteParameter("e0", "Rate of extinction with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		e1 = new MesquiteParameter("e1", "Rate of extinction with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		s0 = new MesquiteParameter("s0", "Rate of speciation with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		s1 = new MesquiteParameter("s1", "Rate of speciation with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		e0 = new MesquiteParameter("e0", "Rate of extinction with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		e1 = new MesquiteParameter("e1", "Rate of extinction with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
 		params = new MesquiteParameter[]{s0, s1, e0, e1, t01, t10};
-		//TEMPORARY
+		/*TEMPORARY
 		for (int i= 0; i<6; i++)
 			params[i].setValue(0.1);
-
+	*/
 		if (!commandRec.scripting()){
 			showDialog();
 		}
@@ -139,11 +140,20 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 			return null;
 		String pString = "";
 		for (int i = 0; i<p.length; i++)
-			pString += " " + p[i].toString();
+			pString += " " + p[i].toString()+ " " + MesquiteParameter.constraintsToString(p, i);
 		return pString;
 	}
-	boolean setParam(MesquiteParameter p, Parser parser){
+	boolean setParam(MesquiteParameter p, MesquiteParameter[] params, Parser parser){
 		double newValue = MesquiteDouble.fromString(parser);
+		int loc = parser.getPosition();
+		String token = parser.getNextToken();
+		if (token != null && "=".equals(token)){
+			int con = MesquiteInteger.fromString(parser);
+			if (MesquiteInteger.isCombinable(con) && con>=0 && con < params.length)
+				p.setConstrainedTo(params[con], false);
+		}
+		else
+			parser.setPosition(loc);
 		if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != e0.getValue()){
 			p.setValue(newValue); //change mode
 			return true;
@@ -163,12 +173,17 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 			}
 			else {
 				parser.setString(arguments);
-				boolean changed =  setParam(s0, parser);
-				changed = changed || setParam(s1, parser);
-				changed = changed || setParam(e0, parser);
-				changed = changed || setParam(e1, parser);
-				changed = changed || setParam(t01, parser);
-				changed = changed || setParam(t10, parser);
+				boolean changed =  setParam(s0, params, parser);
+				boolean more = setParam(s1, params, parser);
+				changed = changed || more;
+				more = setParam(e0, params, parser);
+				changed = changed || more;
+				more = setParam(e1, params, parser);
+				changed = changed || more;
+				more = setParam(t01, params, parser);
+				changed = changed || more;
+				more = setParam(t10, params, parser);
+				changed = changed || more;
 				if (changed && !commandRec.scripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}

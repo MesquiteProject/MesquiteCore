@@ -323,10 +323,10 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			result = logLike(tree, lambda.getValue(), params[0]);
 		else
 			result = MesquiteDouble.unassigned;
+		if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result > 1e100)
+			result = 1e100;
 		if (count++ % 10 == 0)
 			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + "  lambda " + lambda + " mu " + mu);
-		if (!MesquiteDouble.isCombinable(result))
-			result = 1e100;
 		return result;
 	}
 	/*.................................................................................................................*/
@@ -344,7 +344,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			result = logLike(tree, lambda.getValue(), param.getValue());
 		else
 			result = MesquiteDouble.unassigned;
-		if (!MesquiteDouble.isCombinable(result))
+		if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result > 1e100)
 			result = 1e100;
 		if (count++ % 10 == 0)
 			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + "  lambda " + lambda + " mu " + mu);
