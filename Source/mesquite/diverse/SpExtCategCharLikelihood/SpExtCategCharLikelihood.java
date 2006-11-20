@@ -189,6 +189,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 			}
 
 		}
+		/*
 		else if (checker.compare(getClass(), "Sets extinction rate in state 0", "[double]", commandName, "setE0")) {
 			double newValue = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteDouble.isCombinable(newValue) && !commandRec.scripting())
@@ -248,7 +249,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 				if (!commandRec.scripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
-		}
+		}*/
 		else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
 			return calcTask;
 		}

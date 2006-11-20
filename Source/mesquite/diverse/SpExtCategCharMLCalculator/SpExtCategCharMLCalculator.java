@@ -427,6 +427,10 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		return negLogLikelihood;
 	}
 	String lastResultString;
+	/*
+	 Options:
+	 1. calculation determined entirely by params.  Constraints etc. determined within params array which is contained in species model
+	 2. predefined: constraint s0-e0 = s1-e1
 	/*.................................................................................................................*/
 	public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteParameter[] params, MesquiteNumber prob, MesquiteString resultString, CommandRecord commandRec) {  
 		if (speciesModel==null || obsStates==null || prob == null)
@@ -455,6 +459,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			negLogLikelihood = logLike(tree, observedStates, speciesModel);
 			modelString  = speciesModel.toString();
 		}
+		//========================== all 6 parameters unspecified ==============================
 		else if (speciesModel.numberSpecified() ==0 && speciesModel.numberEffectiveParameters() == 6){  //all unspecified
 			//some or all parameters are unassigned, and thus need to be estimated
 			//First, we need to go through the parameters array to construct a mapping between our local free parameters and the original
@@ -492,22 +497,41 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 				useIterations = iterations + 2;
 
 			double[][] randomSuggestions = new double[iterations][6];
-			for (int i = 0; i< iterations; i++){  
+			
+			for (int i = 0; i< useIterations; i++){  
 				double max = 1.0;
-				if (i>= iterations/2)//0 to 1 first then 0 to 10.0
-					max = 10.0;
-				for (int k = 0; k<6; k++)
-					randomSuggestions[i][k] = rng.randomDoubleBetween(0, max);
-				if (i % 2 == 0){ //every other one enforce e < s
-					randomSuggestions[i][3] = rng.randomDoubleBetween(0, randomSuggestions[i][1] );
-					randomSuggestions[i][4] = rng.randomDoubleBetween(0, randomSuggestions[i][2] );
-				}
-
+				if (i< useIterations/2){
+					max =  1.0;
+					for (int k = 0; k<6; k++){
+						randomSuggestions[i][k] = rng.randomDoubleBetween(0, max);
+					}
+					if (i % 2 == 0){ //every other one enforce e < s
+						randomSuggestions[i][3] = rng.randomDoubleBetween(0, randomSuggestions[i][1] );
+						randomSuggestions[i][4] = rng.randomDoubleBetween(0, randomSuggestions[i][2] );
+					}
 			}
-			for (int i = 0; i< iterations; i++){ // 0 to 10
+				else { //0 to 1 first then 0 to 10.0
+					max =  rng.randomDoubleBetween(0, 10.0);
+					for (int k = 0; k<6; k++){
+						randomSuggestions[i][k] = max - 0.5 + rng.randomDoubleBetween(0, 2.0);
+					}
+					if (i % 2 == 0){ //every other one enforce e < s
+						if (randomSuggestions[i][3]> randomSuggestions[i][1])
+							randomSuggestions[i][3] = rng.randomDoubleBetween(MesquiteDouble.maximum(randomSuggestions[i][1]-1.0, 0), randomSuggestions[i][1] );
+						if (randomSuggestions[i][4]> randomSuggestions[i][2])
+							randomSuggestions[i][4] = rng.randomDoubleBetween(MesquiteDouble.maximum(randomSuggestions[2][1]-1.0, 0), randomSuggestions[2][1] );
+					}
+
+				}
+			}
+			for (int i = 0; i< useIterations; i++){ // 0 to 10
 				if (evaluate(randomSuggestions[i], bundle) < 1e99){  //don't start if it hits surface in NaN-land
+					logln("Sp/Ext Categ Char: random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
 					double nLL = opt.optimize(randomSuggestions[i], bundle);
-					logln("Sp/Ext Categ Char: random attempt " + i + " neg. Log Likelihood:" + nLL);
+					stepCount = 1000;
+					nLL = evaluate(randomSuggestions[i], bundle);
+					stepCount = 100;
+					logln("Sp/Ext Categ Char: random attempt " + i + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
 					if (nLL < bestL){
 						bestS = i;
 						bestL = nLL;
@@ -519,11 +543,13 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			}
 			if (bestS>=0)
 				suggestions = randomSuggestions[bestS];
-			stepCount = 1000;
 			if (suggestions == null){
 				logln("Sp/Ext Categ Char: Estimating parameters failed");
 			}
 			else {
+				logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 100; best so far " + evaluate(suggestions, bundle));
+				stepCount = 1000;
+				logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000; best so far " + evaluate(suggestions, bundle));
 				logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
 				negLogLikelihood = opt.optimize(suggestions, bundle);
 				logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
@@ -532,7 +558,77 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 				modelString  = speciesModel.toString() + " [est.]";
 			}
 		}
-		else if (speciesModel.numberEffectiveParameters() == 1) {  //1 parametersunassigned;
+		//========================== 2 - 5 parameters unspecified ==============================
+		else if (speciesModel.numberEffectiveParameters() > 1) {  //2 to 5 parameters unassigned; should have separate for 1!
+			//some parameters are unassigned, and thus need to be estimated
+			//First, we need to go through the parameters array to construct a mapping between our local free parameters and the original
+			Optimizer opt = new Optimizer(this);
+			Object[] bundle = new Object[] {tree, observedStates, speciesModel};
+			stepCount = 100;
+			int numParams = speciesModel.numberEffectiveParameters();
+			double[] suggestions1 = new double[numParams];
+			logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
+			logln("Sp/Ext Categ Char: Estimating " + numParams + " free parameters");
+			for (int i=0; i < suggestions1.length; i++)
+				suggestions1[i] = 0.1*(i+1);
+			logln("Sp/Ext Categ Char: Estimating parameters, phase 1: step count 100");
+			double bestL = MesquiteDouble.unassigned;
+			int bestS = -1;
+
+			String attemptName = "random attempt";
+			double[][] randomSuggestions = new double[iterations][numParams];
+			for (int i = 0; i< iterations; i++){  
+				double max = 1.0;
+				if (i< iterations/2){
+					max =  1.0;
+					for (int k = 0; k<numParams; k++){
+						randomSuggestions[i][k] = rng.randomDoubleBetween(0, max);
+					}
+				}
+				else { //0 to 1 first then 0 to 10.0
+					for (int k = 0; k<numParams; k++){
+						max =  rng.randomDoubleBetween(0, 10.0);
+						//randomSuggestions[i][k] = max - 0.5 + rng.randomDoubleBetween(0, 2.0);
+					}
+
+				}
+			}
+			for (int i = 0; i< iterations; i++){ // 0 to 10
+				if (evaluate(randomSuggestions[i], bundle) < 1e99){  //don't start if it hits surface in NaN-land
+					logln("Sp/Ext Categ Char: random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
+					double nLL = opt.optimize(randomSuggestions[i], bundle);
+					stepCount = 1000;
+					nLL = evaluate(randomSuggestions[i], bundle);
+					stepCount = 100;
+					logln("Sp/Ext Categ Char: attempt " + i + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
+					if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
+						bestS = i;
+						bestL = nLL;
+						attemptName = "random attempt " + i ;
+					}
+				}
+				else 
+					logln("Sp/Ext Categ Char: random attempt " + i + " failed because starting position had undefined likleihood");
+			}
+			if (bestS>=0){
+				double[] suggestions = randomSuggestions[bestS];
+				logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 100; best so far " + evaluate(suggestions, bundle));
+				stepCount = 1000;
+				logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000; best so far " + evaluate(suggestions, bundle));
+				logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
+				negLogLikelihood = opt.optimize(suggestions, bundle);
+				logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
+
+				speciesModel.setParamValuesUsingConstraints(suggestions);
+				modelString  = speciesModel.toString() + " [est.]";
+			}
+			else 
+				logln("Sp/Ext Categ Char: Estimating parameters failed");
+
+
+		}
+		//========================== 1 parameter unspecified ==============================
+		else  {  //1 parametersunassigned;
 			Optimizer opt = new Optimizer(this);
 			Object[] bundle = new Object[] {tree, observedStates, speciesModel};
 			stepCount = 100;
@@ -571,59 +667,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			modelString  = speciesModel.toString() + " [est.]";
 
 		}
-		else {  //2 to 5 parameters unassigned; should have separate for 1!
-			//some parameters are unassigned, and thus need to be estimated
-			//First, we need to go through the parameters array to construct a mapping between our local free parameters and the original
-			Optimizer opt = new Optimizer(this);
-			Object[] bundle = new Object[] {tree, observedStates, speciesModel};
-			stepCount = 100;
-			int numParams = speciesModel.numberEffectiveParameters();
-			double[] suggestions1 = new double[numParams];
-			logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
-			logln("Sp/Ext Categ Char: Estimating " + numParams + " free parameters");
-			for (int i=0; i < suggestions1.length; i++)
-				suggestions1[i] = 0.1*(i+1);
-			logln("Sp/Ext Categ Char: Estimating parameters, phase 1: step count 100");
-			double bestL = MesquiteDouble.unassigned;
-			int bestS = -1;
-
-			String attemptName = "random attempt";
-			double[][] randomSuggestions = new double[iterations][numParams];
-			for (int i = 0; i< iterations; i++){  
-				double max = 1.0;
-				if (i>= iterations/2)//0 to 1 first then 0 to 10.0
-					max = 10.0;
-				for (int k = 0; k<numParams; k++)
-					randomSuggestions[i][k] = rng.randomDoubleBetween(0, max);
-			}
-			for (int i = 0; i< iterations; i++){ // 0 to 10
-				if (evaluate(randomSuggestions[i], bundle) < 1e99){  //don't start if it hits surface in NaN-land
-					double nLL = opt.optimize(randomSuggestions[i], bundle);
-					logln("Sp/Ext Categ Char: attempt " + i + " neg. Log Likelihood:" + nLL);
-					if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
-						bestS = i;
-						bestL = nLL;
-						attemptName = "random attempt " + i ;
-					}
-				}
-				else 
-					logln("Sp/Ext Categ Char: random attempt " + i + " failed because starting position had undefined likleihood");
-			}
-			if (bestS>=0){
-			double[] suggestions = randomSuggestions[bestS];
-			stepCount = 1000;
-			logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
-			negLogLikelihood = opt.optimize(suggestions, bundle);
-			logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
-
-			speciesModel.setParamValuesUsingConstraints(suggestions);
-			modelString  = speciesModel.toString() + " [est.]";
-			}
-			else 
-				logln("Sp/Ext Categ Char: Estimating parameters failed");
-			
-
-		}
 		stepCount = currentStep;
 
 		if (prob!=null)
@@ -636,7 +679,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			s += "  " + getParameters();
 			resultString.setValue(s);
 		}
-		lastResultString = tree.getName() + "\t" + obsStates.getName() +"\t" + speciesModel.toStringForAnalysis();
+		lastResultString = tree.getName() + "\t" + obsStates.getName() +"\t" + speciesModel.toStringForAnalysis() + "\t" + MesquiteDouble.toString(negLogLikelihood);
 		speciesModel.setParams(previousParams);
 	}
 
@@ -810,3 +853,25 @@ class SpecExtincCategModel implements DESystem {
 
 }
 
+/*============================================================================*
+class EqualDiversificationModel implements DESystem {
+ /*This is based on a reparametrizaition to r = s - e, a = e/s (following Nee et al)
+  How to back convert?  Given r and a, what are s and ?
+  s = r + e;
+  e = s*a;
+  thus s = r + s*a
+  s-sa =r
+  if (a != 1)
+  	s = r/(1-a);  //note this doesn't work if e = s
+  	e = ra/(1-a)
+  else
+  	
+  e = s*a;
+  r = s - (s*a)
+  r = s(1-a)
+  s = r/(1-a)
+  
+  
+	
+}
+*/
