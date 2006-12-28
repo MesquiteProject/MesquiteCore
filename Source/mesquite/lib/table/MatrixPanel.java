@@ -120,6 +120,8 @@ timer6.end();
 			//MesquiteTrunk.mesquiteTrunk.logln("WARNING: error drawing matrix (returning; MatrixPanel) " + column + "  " + row);
 			return; //don't draw if text about to be returned to cell, and will soon be redrawn anyway
 		}
+		if (column>= table.columnWidths.length || row >= table.rowHeights.length)
+			return;
 		int leftSide = startOfColumn(column);
 		int topSide = startOfRow(row);
 		if (leftSide>getBounds().width || leftSide+columnWidth(column)<0) {

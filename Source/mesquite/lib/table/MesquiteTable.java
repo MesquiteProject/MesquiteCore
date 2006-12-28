@@ -1399,7 +1399,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			if (startOfToken >= 0) {
 				endOfToken = i;
 				pos.setValue(i + 1);
-				if (isLineBreak(s, i) && StringUtil.lineEnding().length() > 1)
+				if (isLineBreak(s,i) && i+1<s.length() && isLineBreak(s, i+1) && s.charAt(i) != s.charAt(i+1) && StringUtil.lineEnding().length() > 1)
 					pos.increment();
 				return s.substring(startOfToken, endOfToken);
 			}

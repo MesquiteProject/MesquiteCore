@@ -122,7 +122,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		Snapshot temp = new Snapshot();
 
 		temp.addLine("getIntegTask ", calcTask);
-		String pLine = paramsToString(params);
+		String pLine = MesquiteParameter.paramsToScriptString(params);
 		if (!StringUtil.blank(pLine))
 			temp.addLine("setParameters " + pLine);
 		/*
@@ -134,14 +134,6 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		temp.addLine("setT10 " + t10);
 	*/
 		return temp;
-	}
-	String paramsToString(MesquiteParameter[] p){
-		if (p == null)
-			return null;
-		String pString = "";
-		for (int i = 0; i<p.length; i++)
-			pString += " " + p[i].toString()+ " " + MesquiteParameter.constraintsToString(p, i);
-		return pString;
 	}
 	boolean setParam(MesquiteParameter p, MesquiteParameter[] params, Parser parser){
 		double newValue = MesquiteDouble.fromString(parser);
@@ -333,11 +325,11 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 
 
 	public String getName() {
-		return "Speciation/Extinction Likelihood (Categ. Char.)";
+		return "BCSE Speciation/Extinction Likelihood";
 	}
 
 	public String getAuthors() {
-		return "Peter E. Midford, Wayne P. Maddison & Sarah P. Otto";
+		return "Peter E. Midford & Wayne P. Maddison";
 	}
 
 	public String getVersion() {
