@@ -274,7 +274,7 @@ public abstract class EditorPanel extends MesquitePanel {
 				color = Color.white;
 			else
 				color = ColorDistribution.uneditable;
-		//	color = Color.green;
+	//		color = Color.lightGray;  //
 			g.setColor(color);
 			g.fillRect(x,y,w,h);
 			if (selected)
