@@ -164,7 +164,8 @@ public class PairwiseAligner  {
 				totalGapChars++;	
 			}
 		}
-		followsGapSize[lengthA] = 0; //the final entry in this array is a placeholder ... it says the character after the last character in the string follows 0 spacers ...  
+		if (keepGaps)
+			followsGapSize[lengthA] = 0; //the final entry in this array is a placeholder ... it says the character after the last character in the string follows 0 spacers ...  
 		
 		lengthB = 0;
 		for (i=0; i<B_withGaps.length; i++) { 
