@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 
 package mesquite.parsimony.InitCategParsimony;
 /*~~  */
@@ -24,41 +24,39 @@ import mesquite.parsimony.lib.*;
 import mesquite.categ.lib.*;
 
 public class InitCategParsimony extends FileInit {
+	public String getName() {
+		return "Initialize predefined categorical parsimony models";
+	}
+	public String getExplanation() {
+		return "Initializes the predefined categorical parsimony models." ;
+	}
+	/*.................................................................................................................*/
 	CharacterModel unorderedModel,orderedModel,irreversibleModel, dolloModel;
-	
+
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
 
- 		unorderedModel = new UnorderedModel();
+		unorderedModel = new UnorderedModel();
 		orderedModel = new OrderedModel();
- 		irreversibleModel = new IrreversibleModel();
- 		dolloModel = new DolloModel();
+		irreversibleModel = new IrreversibleModel();
+		dolloModel = new DolloModel();
 		CategoricalData.registerDefaultModel("Parsimony", "Unordered");
 		DNAData.registerDefaultModel("Parsimony", "Unordered");
 		return true;
 	}
 	/*.................................................................................................................*/
- 	/** A method called immediately after the file has been established but not yet read in.*/
- 	public void projectEstablished() {
-     		unorderedModel.addToFile(null, getProject(), null);
-    		orderedModel.addToFile(null, getProject(), null);
-    		irreversibleModel.addToFile(null, getProject(), null);
-    		dolloModel.addToFile(null, getProject(), null);
-    		super.projectEstablished();
- 	}
+	/** A method called immediately after the file has been established but not yet read in.*/
+	public void projectEstablished() {
+		unorderedModel.addToFile(null, getProject(), null);
+		orderedModel.addToFile(null, getProject(), null);
+		irreversibleModel.addToFile(null, getProject(), null);
+		dolloModel.addToFile(null, getProject(), null);
+		super.projectEstablished();
+	}
 
 	/*.................................................................................................................*/
-    	 public String getName() {
-		return "Initialize predefined categorical parsimony models";
-   	 }
-	/*.................................................................................................................*/
-    	 public boolean isSubstantive() {
+	public boolean isSubstantive() {
 		return false;
-   	 }
-   	 
-	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Initializes the predefined categorical parsimony models." ;
-   	 }
+	}
+
 }
-	
+
