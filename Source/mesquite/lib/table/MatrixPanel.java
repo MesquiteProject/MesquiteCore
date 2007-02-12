@@ -15,6 +15,7 @@ package mesquite.lib.table;
 import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
+
 import java.io.*;
 
 
@@ -401,9 +402,7 @@ timer6.end();
 		}
 		catch (Throwable e){
 			MesquiteMessage.warnProgrammer("Exception or Error in drawing table (Matrix Panel); details in Mesquite log file");
-			PrintWriter pw = MesquiteFile.getLogWriter();
-			if (pw!=null)
-				e.printStackTrace(pw);
+			MesquiteFile.throwableToLog(this, e);
 		}
 
 		MesquiteWindow.uncheckDoomed(this);

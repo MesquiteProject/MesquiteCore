@@ -20,15 +20,29 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public class AuthorDefaults extends DefaultsAssistant {
+	MesquiteBoolean authorBlockDefault;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+		authorBlockDefault = new MesquiteBoolean(Author.addAuthorBlockByDefault);
 		loadPreferences();
 		addMenuItem( "Set Author...", makeCommand("setAuthor",  this));
+ 		addCheckMenuItem(null, "Record Authors by Default", makeCommand("recordAuthors",  this), authorBlockDefault);
 		return true;
   	 }
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
-				if ("-*".equals(prefs[0]))
+				if ("&".equals(prefs[0])){
+					if (prefs.length > 1){
+						authorBlockDefault.setValue("recordAuthors".equalsIgnoreCase(prefs[1]));
+						if (prefs.length >2){
+							MesquiteModule.author.setName(prefs[2]);
+							if (prefs.length>3)
+								MesquiteModule.author.setCode(prefs[3]);
+		    	 			
+						}
+				}
+				}
+				else if ("-*".equals(prefs[0]))
 					;
 				else {
 					MesquiteModule.author.setName(prefs[0]);
@@ -37,15 +51,23 @@ public class AuthorDefaults extends DefaultsAssistant {
     	 			}
 		}
 	}
+	public void endJob(){
+		super.endJob();
+		storePreferences();
+	}
 	/*.................................................................................................................*/
 	public String[] preparePreferencesForFile () {
+		String authorsRecDef = "recordAuthors";
+		if (!Author.addAuthorBlockByDefault)
+			authorsRecDef = "dontrecordAuthorsbyDefault";
 		if (!StringUtil.blank(MesquiteModule.author.getName())) {
 			if (MesquiteModule.author.getCode() != null) 
-				return (new String[] {MesquiteModule.author.getName(), MesquiteModule.author.getCode()});
+				return (new String[] {"&", authorsRecDef, MesquiteModule.author.getName(), MesquiteModule.author.getCode()});
 			else
-				return (new String[] {MesquiteModule.author.getName()});
+				return (new String[] {"&", authorsRecDef, MesquiteModule.author.getName()});
 		}
-		return null;
+		else
+			return (new String[] {"&", authorsRecDef});
 	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
@@ -64,7 +86,13 @@ public class AuthorDefaults extends DefaultsAssistant {
 			return null;
 
     	 	}
-    	 	else
+    		else	if (checker.compare(this.getClass(), "Sets default to record authors", null, commandName, "recordAuthors")) {
+    			authorBlockDefault.toggleValue(parser.getFirstToken(arguments));
+    			Author.addAuthorBlockByDefault = authorBlockDefault.getValue();
+    	 		storePreferences();
+    	 		return null;
+    		}
+   	 	else
     	 		return super.doCommand(commandName, arguments, commandRec, checker);
    	 }
   	 

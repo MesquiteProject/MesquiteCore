@@ -229,9 +229,7 @@ public class RowNamesPanel extends EditorPanel  {
 		}
 		catch (Throwable e){
 			MesquiteMessage.warnProgrammer("Exception or Error in drawing table (RNP); details in Mesquite log file");
-			PrintWriter pw = MesquiteFile.getLogWriter();
-			if (pw!=null)
-				e.printStackTrace(pw);
+			MesquiteFile.throwableToLog(this, e);
 		}
 		MesquiteWindow.uncheckDoomed(this);
 
