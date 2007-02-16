@@ -150,6 +150,7 @@ timer6.end();
 					prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column+offsetColumn, row+offsetRow), table.isCellEditable(column+offsetColumn, row+offsetRow));
 					table.drawMatrixCellString(g, null, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow, supplied);
 				}
+//				table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow);
 			}
 		}
 		else {
@@ -163,8 +164,9 @@ timer6.end();
 				prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column, row), table.isCellEditable(column, row));
 				table.drawMatrixCellString(g, null, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row, supplied);
 			}
+//			table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row);
+			
 		}
-
 
 		if (table.getDropDown(column, row)) {
 			dropDownTriangle.translate(leftSide+1,topSide + 1);

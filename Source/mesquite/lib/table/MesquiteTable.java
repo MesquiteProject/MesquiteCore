@@ -16,6 +16,9 @@ import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
+
+import javax.swing.text.JTextComponent;
+
 import mesquite.lib.*;
 
 /* ======================================================================== */
@@ -333,13 +336,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					edit = rowNames.getEditField();
 				else if (columnNames.getEditing())
 					edit = columnNames.getEditField();
-				if (edit != null) {
+				if (edit != null && edit.hasFocus()) {
 					String copied = getSelectedText(edit);
 					if (copied == null)
 						return null;
 					Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 					StringSelection ss = new StringSelection(copied);
 					clip.setContents(ss, ss);
+					return null;
 				}
 			}
 			else {
@@ -359,13 +363,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					edit = rowNames.getEditField();
 				else if (columnNames.getEditing())
 					edit = columnNames.getEditField();
-				if (edit != null) {
+				if (edit != null && edit.hasFocus()) {
 					String copied = getSelectedText(edit);
 					if (copied == null)
 						return null;
 					Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 					StringSelection ss = new StringSelection(copied);
 					clip.setContents(ss, ss);
+					return null;
 				}
 			}
 			else {
@@ -385,7 +390,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					edit = rowNames.getEditField();
 				else if (columnNames.getEditing())
 					edit = columnNames.getEditField();
-				if (edit != null) {
+				if (edit != null && edit.hasFocus()) {
 					String copied = getSelectedText(edit);
 					if (copied == null)
 						return null;
@@ -416,16 +421,38 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					edit = rowNames.getEditField();
 				else if (columnNames.getEditing())
 					edit = columnNames.getEditField();
-				if (edit != null) {
+				if (edit != null && edit.hasFocus()) {
 					String text = edit.getText();
 					String newText = text.substring(0, edit.getSelectionStart()) + text.substring(edit.getSelectionEnd(), text.length());
 					edit.setText(newText);
+					return null;
 				}
 			}
 			else {
+				MesquiteWindow ww = MesquiteWindow.windowOfItem(this);
+			if (ww.componentWithFocus() != null){
+				Component c = ww.componentWithFocus();
+				if (c instanceof TextComponent){
+					TextComponent tc = (TextComponent)c;
+					if (tc.isEditable()){
+						tc.setText("");
+					}
+					return null;
+				}
+				else if (c instanceof JTextComponent){
+					JTextComponent tc = (JTextComponent)c;
+					if (tc.isEditable()){
+						tc.setText("");
+					}
+					return null;
+				}
+
+			}
+			}
+		
 				clearIt(false, commandRec);
 				repaintAll();
-			}
+
 		}
 		else if (checker.compare(MesquiteTable.class, "Selects all of table, columns, rows, cells, or names, depending on current selection", null, commandName, "selectAll")) {
 			if (matrix.getEditing() || rowNames.getEditing() || columnNames.getEditing()) {
@@ -436,8 +463,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					edit = rowNames.getEditField();
 				else if (columnNames.getEditing())
 					edit = columnNames.getEditField();
-				if (edit != null) {
+				if (edit != null && edit.hasFocus()) {
 					edit.selectAll();
+					return null;
 				}
 			}
 			else {
@@ -480,13 +508,36 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 							edit = rowNames.getEditField();
 						else if (columnNames.getEditing())
 							edit = columnNames.getEditField();
-						if (edit != null) {
+						if (edit != null && edit.hasFocus()) {
 							String text = edit.getText();
 							String newText = text.substring(0, edit.getSelectionStart()) + s + text.substring(edit.getSelectionEnd(), text.length());
 							edit.setText(newText);
+							return newText;
 						}
 					}
-					else if (clipboardDimensionsFit(s)) {
+					else if (ww.componentWithFocus() != null){
+						Component c = ww.componentWithFocus();
+						if (c instanceof TextComponent){
+							TextComponent tc = (TextComponent)c;
+							if (tc.isEditable()){
+								String text = tc.getText();
+								String newText = text.substring(0, tc.getSelectionStart()) + s + text.substring(tc.getSelectionEnd(), text.length());
+								tc.setText(newText);
+							}
+							return s;
+						}
+						else if (c instanceof JTextComponent){
+							JTextComponent tc = (JTextComponent)c;
+							if (tc.isEditable()){
+								String text = tc.getText();
+								String newText = text.substring(0, tc.getSelectionStart()) + s + text.substring(tc.getSelectionEnd(), text.length());
+								tc.setText(newText);
+							}
+							return s;
+						}
+
+					}
+					if (clipboardDimensionsFit(s)) {
 						pasteIt(s, commandRec);
 						repaintAll();
 					}
@@ -2619,11 +2670,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/**
-	 * Draws cell of matrix of given column and row. Must be overridden in subclasses to fill in matrix cell appropriately.
+	 * Draws cell of matrix of given column and row. Must be overridden in subclasses to fill in matrix cell appropriately.  Called only if useString is false for this cell.
 	 */
 	public void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected) {
 		// g.drawString(Integer.toString(row + column), x+2, y+h-2);
 	}
+	/* ............................................................................................................... */
 	//to be overridden to change color; works only for MatrixPanel, and only when useString & overriding permit it
 	public Color getBackgroundColor(int column, int row, boolean selected){
 		return null;
@@ -2672,10 +2724,21 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			g.drawString(supplied, useX, svp);
 
 		}
+		if (isAttachedNoteAvailable(column, row)){
+			g.drawLine(x+w-2,y+1, x+w-2,y+2); //left
+			g.drawLine(x+w-2,y+2, x+w,y+2); //bottom
+			g.drawLine(x+w,y+1, x+w,y+2); //right
+			g.drawLine(x+w-2,y, x+w,y); //top
+		}
 		if (clip != null)
 			g.setClip(clip);
 	}
 
+	/* ............................................................................................................... */
+	/** ¥¥¥¥ */
+	public boolean isAttachedNoteAvailable(int column, int row) {
+		return false;
+	}
 	/* ............................................................................................................... */
 	/** ¥¥¥¥ */
 	public boolean useString(int column, int row) {
@@ -2684,11 +2747,17 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/** Draws column name. */
-	public void drawColumnNameCell(Graphics g, int x, int top, int w, int h, int column) {
+	public void drawColumnNameCell(Graphics g, int x, int y, int w, int h, int column) {
 		String supplied = getColumnNameTextForDisplay(column);
 		if (supplied == null)
 			return;
-		g.drawString(supplied, x + getNameStartOffset(), StringUtil.getStringVertPosition(g, top, h, null));
+		g.drawString(supplied, x + getNameStartOffset(), StringUtil.getStringVertPosition(g, y, h, null));
+		if (isAttachedNoteAvailable(column, -1)){
+			g.drawLine(x+w-2,y+1, x+w-2,y+2); //left
+			g.drawLine(x+w-2,y+2, x+w,y+2); //bottom
+			g.drawLine(x+w,y+1, x+w,y+2); //right
+			g.drawLine(x+w-2,y, x+w,y); //top
+		}
 	}
 
 	/* ............................................................................................................... */
@@ -2775,6 +2844,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int svp = StringUtil.getStringVertPosition(g, y, h, null);
 		int xgnso = x + getNameStartOffset();
 		g.drawString(supplied, xgnso, svp);
+		if (isAttachedNoteAvailable(-1, row)){
+			g.drawLine(x+w-3,y+1, x+w-3,y+3); //left
+			g.drawLine(x+w-3,y+3, x+w,y+3); //bottom
+			g.drawLine(x+w,y+1, x+w,y+3); //right
+			g.drawLine(x+w-3,y, x+w,y); //top
+		}
 	}
 
 	/* ............................................................................................................... */
