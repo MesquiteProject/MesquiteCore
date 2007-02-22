@@ -430,28 +430,28 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			else {
 				MesquiteWindow ww = MesquiteWindow.windowOfItem(this);
-			if (ww.componentWithFocus() != null){
-				Component c = ww.componentWithFocus();
-				if (c instanceof TextComponent){
-					TextComponent tc = (TextComponent)c;
-					if (tc.isEditable()){
-						tc.setText("");
+				if (ww.componentWithFocus() != null){
+					Component c = ww.componentWithFocus();
+					if (c instanceof TextComponent){
+						TextComponent tc = (TextComponent)c;
+						if (tc.isEditable()){
+							tc.setText("");
+						}
+						return null;
 					}
-					return null;
-				}
-				else if (c instanceof JTextComponent){
-					JTextComponent tc = (JTextComponent)c;
-					if (tc.isEditable()){
-						tc.setText("");
+					else if (c instanceof JTextComponent){
+						JTextComponent tc = (JTextComponent)c;
+						if (tc.isEditable()){
+							tc.setText("");
+						}
+						return null;
 					}
-					return null;
-				}
 
+				}
 			}
-			}
-		
-				clearIt(false, commandRec);
-				repaintAll();
+
+			clearIt(false, commandRec);
+			repaintAll();
 
 		}
 		else if (checker.compare(MesquiteTable.class, "Selects all of table, columns, rows, cells, or names, depending on current selection", null, commandName, "selectAll")) {
@@ -1108,6 +1108,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		setFocusedCell(column, row, false);
 	}
 
+	public boolean isCellVisible(int column, int row){
+		if (column < -1 || row < -1)
+			return false;
+		if (column > getLastColumnVisible() || column < getFirstColumnVisible())
+			return false;
+		if (row > getLastRowVisible() || row < getFirstRowVisible())
+			return false;
+		return true;
+	}
 	public void setFocusedCell(int column, int row, boolean evenIfMultipleSelected) {
 		// can be overridden to respond to focus as in touch, edit etc. for explanation showing, but should call super.setFocusedCell(column, row);
 		defocusCell();
@@ -2786,7 +2795,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				nearZoneOnRight = 0;
 			else
 				nearZoneOnRight = getNearZone(columnWidths[column]);
-			
+
 			columnBoundary += columnWidths[column];
 			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight)
 				return true;
@@ -2811,7 +2820,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				nearZoneOnBottom = 0;
 			else
 				nearZoneOnBottom = getNearZone(rowHeights[row]);
-			
+
 			rowBoundary += rowHeights[row];
 			if (y>rowBoundary-nearZoneOnTop  && y<rowBoundary+nearZoneOnBottom)
 				return true;
@@ -4521,7 +4530,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 		return -2;//past the last row
 	}
-/* ............................................................................................................... */
+	/* ............................................................................................................... */
 	public void deselectAndRedrawAllSelectedRows() {
 		for (int it=0; it<getNumRows(); it++) {
 			if (isRowSelected(it)) {
@@ -4568,7 +4577,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				right = getWidth();
 				GraphicsUtil.shadeRectangle(rg, left + 1, top + 1, right - left, matrix.endOfRow(row) - top, color);
 			}
-			
+
 			if (previousRow > -1) {
 				matrix.redrawRow(mg, previousRow);
 				rowNames.redrawName(rg, previousRow);
