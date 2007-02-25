@@ -42,7 +42,7 @@
 			<string>$APP_PACKAGE/../</string>
 		</array>
 		<key>JVMVersion</key>
-		<string>1.3+</string>
+		<string>1.4+</string>
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
         <key>VMOptions</key>
