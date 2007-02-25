@@ -944,6 +944,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	public void keyPressed(KeyEvent e) {
+		if (!MesquiteWindow.belongsTo(e.getComponent(), this))
+				return;
+		if (e.getComponent() instanceof Scrollbar)
+			return;
 		if (e.getKeyCode() == KeyEvent.VK_ENTER)
 			enterPressed(e);
 		else if (e.getKeyCode() == KeyEvent.VK_TAB)
