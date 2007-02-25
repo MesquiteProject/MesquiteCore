@@ -277,19 +277,6 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
         MesquiteTree tree = null;
         CategoricalHistory charHistory = null;
 
-        Object t = treeContainer.getObject();
-        if (t == null || !(t instanceof MesquiteTree))
-            tree = new MesquiteTree(taxa);
-        else
-            tree = (MesquiteTree)t;
-        Object c = characterHistoryContainer.getObject();
-        if (c == null || !(c instanceof CategoricalHistory))
-            charHistory = new CategoricalHistory(taxa);
-        else  
-            charHistory = (CategoricalHistory)c;
-
-        charHistory = (CategoricalHistory)charHistory.adjustSize(tree);
-
         int numTaxa = taxa.getNumTaxa();
         if (numTaxa < maxSizeMultiple*expectedSize){
             taxa.addTaxa(numTaxa-1, maxSizeMultiple*expectedSize-numTaxa, true);  // avoid error at end?
@@ -298,6 +285,21 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
         if (numTaxa < maxSizeMultiple*expectedSize){
             MesquiteMessage.warnProgrammer("Taxa block failed to grow to 6*expected size; numTaxa = " + numTaxa);
         }
+        
+        Object t = treeContainer.getObject();
+        if (t == null || !(t instanceof MesquiteTree))
+            tree = new MesquiteTree(taxa);
+        else
+            tree = (MesquiteTree)t;
+
+        Object c = characterHistoryContainer.getObject();
+        if (c == null || !(c instanceof CategoricalHistory))
+            charHistory = new CategoricalHistory(taxa);
+        else  
+            charHistory = (CategoricalHistory)c;
+
+        charHistory = (CategoricalHistory)charHistory.adjustSize(tree);
+
         double targetHeight = timeForBreadth(expectedSize);
         Debugg.println("xhat = " + stationaryFreq0());
         Debugg.println("target height is " + targetHeight);
