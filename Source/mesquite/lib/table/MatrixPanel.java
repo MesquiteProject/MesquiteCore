@@ -165,7 +165,7 @@ timer6.end();
 				table.drawMatrixCellString(g, null, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row, supplied);
 			}
 //			table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row);
-			
+
 		}
 
 		if (table.getDropDown(column, row)) {
@@ -280,7 +280,7 @@ timer6.end();
 		checkEditFieldLocation();
 		super.repaint();
 	}
-	
+
 	/*...............................................................................................................*/
 	public void paint(Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
@@ -352,19 +352,19 @@ timer6.end();
 							Color color = table.getBackgroundColor(c, r, selected);
 							if (color == null){
 								if (selected) {
-								if (!MesquiteWindow.Java2Davailable)
-									color = Color.black;
+									if (!MesquiteWindow.Java2Davailable)
+										color = Color.black;
+									else
+										color = Color.white;
+								}
+								else if (fillColor!=null)
+									color = fillColor;
+								else if (table.isCellEditable(c, r)){
+									if (!table.useQuickMode())
+										color = Color.white;
+								}
 								else
-									color = Color.white;
-							}
-							else if (fillColor!=null)
-								color = fillColor;
-							else if (table.isCellEditable(c, r)){
-								if (!table.useQuickMode())
-									color = Color.white;
-							}
-							else
-								color = ColorDistribution.uneditable;
+									color = ColorDistribution.uneditable;
 							}
 							if (color !=null){
 								g.setColor(color);
@@ -518,7 +518,7 @@ timer6.end();
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
 			mouseDownInField = true;
 //			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
-//				table.emphasizeRow(-1,row, -1, false, Color.red);
+//			table.emphasizeRow(-1,row, -1, false, Color.red);
 //			}
 		}
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
@@ -571,7 +571,9 @@ timer6.end();
 		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
 			table.cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
 		else if (!mouseDownInField && ((TableTool)tool).getDeselectIfOutsideOfCells()) {
+
 			table.offAllEdits();
+			table.clickOutside();
 			if (table.anythingSelected()) {
 				table.deselectAllNotify();
 				table.repaintAll();

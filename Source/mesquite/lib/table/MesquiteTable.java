@@ -945,7 +945,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public void keyPressed(KeyEvent e) {
 		if (!MesquiteWindow.belongsTo(e.getComponent(), this))
-				return;
+			return;
 		if (e.getComponent() instanceof Scrollbar)
 			return;
 		if (e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -2710,32 +2710,34 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** ееее */
 	public void drawMatrixCellString(Graphics g, FontMetrics fm, int x, int y, int w, int h, int column, int row, String supplied) {
-		if (StringUtil.blank(supplied))
-			return;
-		Shape clip = null;
-		if (fm == null && g.getFont() != null)
-			fm = g.getFontMetrics(g.getFont());
-		int svp = StringUtil.getStringVertPosition(fm, y, h, null);
-		if (fm == null) {
-			clip = g.getClip();
-			g.setClip(x, y, w, h);
-			g.drawString(supplied, x + 2, svp);
-		}
-		else {
-			int length = fm.stringWidth(supplied);
-			if (length + 2 > w || svp > y + h) {
+		if (!StringUtil.blank(supplied)){
+			Shape clip = null;
+			if (fm == null && g.getFont() != null)
+				fm = g.getFontMetrics(g.getFont());
+			int svp = StringUtil.getStringVertPosition(fm, y, h, null);
+			if (fm == null) {
 				clip = g.getClip();
 				g.setClip(x, y, w, h);
+				g.drawString(supplied, x + 2, svp);
 			}
-			int useX;
-			if (justification == LEFT)
-				useX = x + 2;
-			else if (justification == RIGHT)
-				useX = w - length - 2;
-			else
-				useX = x + (w - length) / 2;
-			g.drawString(supplied, useX, svp);
+			else {
+				int length = fm.stringWidth(supplied);
+				if (length + 2 > w || svp > y + h) {
+					clip = g.getClip();
+					g.setClip(x, y, w, h);
+				}
+				int useX;
+				if (justification == LEFT)
+					useX = x + 2;
+				else if (justification == RIGHT)
+					useX = w - length - 2;
+				else
+					useX = x + (w - length) / 2;
+				g.drawString(supplied, useX, svp);
 
+			}
+			if (clip != null)
+				g.setClip(clip);
 		}
 		if (isAttachedNoteAvailable(column, row)){
 			g.drawLine(x+w-2,y+1, x+w-2,y+2); //left
@@ -2743,8 +2745,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			g.drawLine(x+w,y+1, x+w,y+2); //right
 			g.drawLine(x+w-2,y, x+w,y); //top
 		}
-		if (clip != null)
-			g.setClip(clip);
 	}
 
 	/* ............................................................................................................... */
@@ -2762,9 +2762,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** Draws column name. */
 	public void drawColumnNameCell(Graphics g, int x, int y, int w, int h, int column) {
 		String supplied = getColumnNameTextForDisplay(column);
-		if (supplied == null)
-			return;
-		g.drawString(supplied, x + getNameStartOffset(), StringUtil.getStringVertPosition(g, y, h, null));
+		if (supplied != null)
+			g.drawString(supplied, x + getNameStartOffset(), StringUtil.getStringVertPosition(g, y, h, null));
 		if (isAttachedNoteAvailable(column, -1)){
 			g.drawLine(x+w-2,y+1, x+w-2,y+2); //left
 			g.drawLine(x+w-2,y+2, x+w,y+2); //bottom
@@ -2852,11 +2851,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** Draws row name. */
 	public void drawRowNameCell(Graphics g, int x, int y, int w, int h, int row) {
 		String supplied = getRowNameTextForDisplay(row);
-		if (supplied == null)
-			return;
+		if (supplied != null){
 		int svp = StringUtil.getStringVertPosition(g, y, h, null);
 		int xgnso = x + getNameStartOffset();
 		g.drawString(supplied, xgnso, svp);
+		}
 		if (isAttachedNoteAvailable(-1, row)){
 			g.drawLine(x+w-3,y+1, x+w-3,y+3); //left
 			g.drawLine(x+w-3,y+3, x+w,y+3); //bottom
@@ -3507,7 +3506,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** Selects row */
+	/** Selects row; DOES NOT UPDATE ASSOCIABLE */
 	public void selectRow(int row) {
 		if (rowLegal(row))
 			rowsSelected[0].setBit(row);
@@ -3563,7 +3562,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** Selects column. */
+	/** Selects column.; DOES NOT UPDATE ASSOCIABLE */
 	public void selectColumn(int column) {
 		if (columnLegal(column))
 			columnsSelected[0].setBit(column);
@@ -4250,14 +4249,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** deselects row */
+	/** deselects row; DOES NOT UPDATE ASSOCIABLE*/
 	public void deselectRow(int row) {
 		if (rowLegal(row))
 			rowsSelected[0].clearBit(row);
 	}
 
 	/* ............................................................................................................... */
-	/** deselects column */
+	/** deselects column; DOES NOT UPDATE ASSOCIABLE */
 	public void deselectColumn(int column) {
 		if (columnLegal(column))
 			columnsSelected[0].clearBit(column);
@@ -4459,6 +4458,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			setFirstColumnVisible(horizScroll.getValue() + value);
 	}
 
+	/* ............................................................................................................... */
+	public void clickOutside(){
+	}
 	/* ............................................................................................................... */
 	public void shimmerVerticalOff(Panel panel, int x) {
 		GraphicsUtil.shimmerVerticalOn(null,panel,0,matrixHeight,x);
