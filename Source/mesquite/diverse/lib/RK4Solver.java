@@ -2,6 +2,8 @@ package mesquite.diverse.lib;
 
 import java.util.Vector;
 
+import mesquite.lib.Debugg;
+
 
 public class RK4Solver implements DEQNumSolver {
 
@@ -20,7 +22,9 @@ public class RK4Solver implements DEQNumSolver {
 				return null;
 			double x = x0;
 			while(x < xend){
-				step(x,nextY,h);
+                if ((x+h) > xend)
+                    h = xend-x;
+                step(x,nextY,h);
 				x += h;
 			}
 		}
@@ -29,6 +33,8 @@ public class RK4Solver implements DEQNumSolver {
 				return null;
 			double x = x0;
 			while (x> xend){
+			    if ((x-h) < xend)
+                    h = x-xend;
 				step(x,nextY,-h);
 				x -= h;
 			}
@@ -53,6 +59,8 @@ public class RK4Solver implements DEQNumSolver {
 				return null;
 			double x = x0;
 			while(x < xend){
+                if ((x+h) > xend)
+                    h = xend-x;
 				step(x,nextY,h);
                 if (saveResults && results != null)
                     results.add(nextY.clone());
