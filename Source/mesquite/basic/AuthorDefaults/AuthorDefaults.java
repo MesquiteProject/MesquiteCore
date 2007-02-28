@@ -96,7 +96,7 @@ public class AuthorDefaults extends DefaultsAssistant {
     	 		return super.doCommand(commandName, arguments, commandRec, checker);
    	 }
   	 
-  	 private void setCurrentAllProjects(){
+  	 protected void setCurrentAllProjects(){
   	 //go through all projects changing current author or adding current author
   	 	Projects p = MesquiteTrunk.mesquiteTrunk.getProjectList();
   	 	for (int i=0; i<p.getNumProjects(); i++){
