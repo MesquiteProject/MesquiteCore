@@ -2,19 +2,44 @@ package mesquite.lib;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Utility class for dealing with zip files
  *
  */
 public class ZipUtil {
+	
+    public static ZipOutputStream createZipFile(List files, OutputStream destStream) throws IOException {
+        byte b[] = new byte[512];
+        ZipOutputStream zout = new ZipOutputStream(destStream);
+        int totalSize = 0;
+        for (Iterator iter = files.iterator(); iter.hasNext();) {
+			File nextFile = (File) iter.next();
+	        InputStream in = new FileInputStream(nextFile);
+	        ZipEntry e = new ZipEntry(nextFile.getName());
+	        zout.putNextEntry(e);
+	        int len=0;
+	        while((len=in.read(b)) != -1) {
+	        	zout.write(b,0,len);
+	        	totalSize += len;
+	        }
+	        zout.closeEntry();
+		}
+        zout.finish();
+        return zout;
+    }	
 
 	/**
 	 * Unzips the zip file at the specified path to the specified directory
@@ -61,6 +86,8 @@ public class ZipUtil {
 		filename = cleanStringForFilename(filename);
 		BufferedInputStream bis = null;
 		FileOutputStream fos = null;
+		String additionalPiece = directory.endsWith(MesquiteFile.fileSeparator) ? "" : MesquiteFile.fileSeparator; 
+		directory =  directory + additionalPiece;
 		try {
 			bis = new BufferedInputStream(istr);        	
 		    fos = new FileOutputStream(directory + filename);
