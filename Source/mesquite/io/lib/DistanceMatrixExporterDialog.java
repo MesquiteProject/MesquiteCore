@@ -17,8 +17,7 @@ import java.awt.Choice;
 import java.awt.Frame;
 
 import mesquite.io.ExportDistanceMatrix.ExportDistanceMatrix;
-import mesquite.lib.ExporterDialog;
-import mesquite.lib.MesquiteInteger;
+import mesquite.lib.*;
 
 public class DistanceMatrixExporterDialog extends ExporterDialog {
 	boolean showHeaders;
@@ -26,7 +25,7 @@ public class DistanceMatrixExporterDialog extends ExporterDialog {
 	Choice columnDelimiterDropDown;
 	ExportDistanceMatrix exporter;
 	
-	public DistanceMatrixExporterDialog (ExportDistanceMatrix module, Frame parent, String title, MesquiteInteger buttonPressed) {
+	public DistanceMatrixExporterDialog (ExportDistanceMatrix module, MesquiteWindow parent, String title, MesquiteInteger buttonPressed) {
 		super(module, parent, title, buttonPressed);
 		this.exporter = module;
 	}

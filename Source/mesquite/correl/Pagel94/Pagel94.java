@@ -93,7 +93,7 @@ public class Pagel94 extends Pagel94Calculator {
 				return false;
 			
 		/*	int newNum = MesquiteInteger.queryInteger(containerOfModule(), "Likelihood Iterations (Pagel 94)", "Intensity of likelihood search for 8 parameter model for Pagel 94 (Number of extra iterations):", numIterations, 0, MesquiteInteger.infinite);
-			//MesquiteInteger.queryTwoIntegers(Frame parent, String title, String label1, String label2, MesquiteBoolean answer, MesquiteInteger num1, MesquiteInteger num2,int min1,int max1,int min2, int max2, String helpString) {
+			//MesquiteInteger.queryTwoIntegers(MesquiteWindow parent, String title, String label1, String label2, MesquiteBoolean answer, MesquiteInteger num1, MesquiteInteger num2,int min1,int max1,int min2, int max2, String helpString) {
 			if (MesquiteInteger.isCombinable(newNum))
 					numIterations = newNum;*/
 		}

@@ -13,17 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.io.lib;
 
-import java.awt.Frame;
+import java.awt.*;
 
-import mesquite.lib.Debugg;
-import mesquite.lib.ExporterDialog;
-import mesquite.lib.IntegerField;
-import mesquite.lib.MesquiteInteger;
+import mesquite.lib.*;
 	
 public class PhylipExporterDialog extends ExporterDialog {
 	int tnl = 10;
 	IntegerField f;
-	public PhylipExporterDialog (InterpretPhylip module, Frame parent, String title, MesquiteInteger buttonPressed) {
+	public PhylipExporterDialog (InterpretPhylip module, MesquiteWindow parent, String title, MesquiteInteger buttonPressed) {
 		super(module, parent, title, buttonPressed);
 		this.tnl = module.taxonNameLength;
 	}

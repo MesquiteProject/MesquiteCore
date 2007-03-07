@@ -543,15 +543,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					}
 
 					else if (anythingSelected()) {
-						Frame frame = MesquiteTrunk.mesquiteTrunk.containerOfModule();
+						MesquiteWindow frame = MesquiteTrunk.mesquiteTrunk.containerOfModule();
 						if (ww != null) {
 							MesquiteModule mm = ww.getOwnerModule();
 							if (mm != null) {
 								frame = mm.containerOfModule();
 							}
 						}
-						if (AlertDialog
-								.query(frame, "Paste shape mismatch", "Sorry, the number of lines and of items pasted don't match the spaces selected to be filled.  Would you like Mesquite to attempt to adjust the selected region so that you can paste?", "OK", "Cancel", 1))
+						if (AlertDialog.query(frame, "Paste shape mismatch", "Sorry, the number of lines and of items pasted don't match the spaces selected to be filled.  Would you like Mesquite to attempt to adjust the selected region so that you can paste?", "OK", "Cancel", 1))
 							setSelectionToShape(getTabbedLines(s), commandRec);
 
 						return null;
