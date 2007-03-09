@@ -1,6 +1,7 @@
 package mesquite.diverse.SpExtCategCharLikelihood;
 
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import mesquite.diverse.lib.*;
@@ -95,7 +96,34 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
             }
         }
 		 */
-
+        
+        // running RK4 to compare with RKF45
+/*        DEQNumSolver testSolver4 = new RK4Solver();
+        Vector results = new Vector();
+        DESystem ts = new TestModel();
+        double [] starts = {0.5,0.5};
+        testSolver4.integrate(0.0, starts, 0.025, 1.1, ts, results, true);
+        
+        Iterator foo = results.iterator();
+        Debugg.println("RKF4 results");
+        while (foo.hasNext()){
+            double[] aResult = (double[]) foo.next();
+            Debugg.println(DoubleArray.toString(aResult));
+        }
+        
+        
+        // testing RKF45
+        DEQNumSolver testSolver45 = new RKF45Solver();
+        results = new Vector();
+        testSolver45.integrate(0.0, starts, 0.25, 1.1, ts, results, true);
+        
+        foo = results.iterator();
+        Debugg.println("RKF45 results");
+        while (foo.hasNext()){
+            double[] aResult = (double[]) foo.next();
+            Debugg.println(DoubleArray.toString(aResult));
+        }
+*/
 
 		return true;
 	}
@@ -346,3 +374,21 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 
 
 }
+
+class TestModel implements DESystem {
+
+    //private double e;   //extinction rate in state 0
+    //private double s;   //speciation rate in state 0
+
+    public TestModel(){
+    }
+    public double[]calculateDerivative(double t,double probs[],double[] result){
+        // for clarity
+        result[0] = 1+probs[0]*probs[0]; 
+        result[1] = t*t + probs[1]*probs[1];
+        return result;
+    }
+
+
+}
+

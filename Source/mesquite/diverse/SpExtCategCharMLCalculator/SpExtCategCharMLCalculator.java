@@ -67,7 +67,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		probabilityValue = new MesquiteNumber();
 		minChecker = new MesquiteNumber(MesquiteDouble.unassigned);
 
-		solver = new RK4Solver();
+		solver = new RKF45Solver();  //new RK4Solver();
 		rng = new RandomBetween(System.currentTimeMillis());
 		//following is for the parameters explorer
 		double def = MesquiteDouble.unassigned;
