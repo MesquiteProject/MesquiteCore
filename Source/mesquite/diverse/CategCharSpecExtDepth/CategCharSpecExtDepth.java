@@ -373,7 +373,6 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
                             overFlow = true;
                             overFlowCount++;
                         }
-                        addLengthToAllTerminals(tree, tree.getRoot(), increment, taxaInTree);
 
                         commandRec.tick("Speciation event (height of tree currently:  " + generations  + ") [attempt: "+ (attempts+1) + "] ");
                     }
