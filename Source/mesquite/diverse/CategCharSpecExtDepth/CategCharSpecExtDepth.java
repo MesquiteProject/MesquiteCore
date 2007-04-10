@@ -98,7 +98,6 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 		return true;
 	}
 
-
 	private double timeForBreadth(int breadth){
 		double xhat = stationaryFreq0();
 		return Math.log((double)breadth)/(xhat*(spnForState0-extForState0) + (1-xhat)*(spnForState1-extForState1));
@@ -226,7 +225,7 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 	}
 
 	/*.................................................................................................................*/
-	protected void executeEvent(MesquiteTree tree,int eventNode, int eventChange,boolean [] taxaInTree, CategoricalHistory charHistory,MesquiteInteger countOfSpecies, CommandRecord commandRec){
+	protected void executeEvent(MesquiteTree tree,int eventNode, int eventChange,boolean [] taxaInTree, long [] localHistory,MesquiteInteger countOfSpecies, CommandRecord commandRec){
 		switch (eventChange){
 		case EXTINCTIONEVENT:{
 			int it = tree.taxonNumberOfNode(eventNode);
@@ -245,15 +244,15 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 		case SPECIATIONEVENT:{
 			int taxon = tree.taxonNumberOfNode(eventNode);
 			if (taxon >=0 && taxaInTree[taxon]){
-				long statesAtNode = charHistory.getState(eventNode);
+				long statesAtNode = localHistory[eventNode];
 				tree.splitTerminal(taxon, -1, false);
 				countSpeciations++;
 				int firstD = tree.firstDaughterOfNode(eventNode);
 				int lastD = tree.lastDaughterOfNode(eventNode);
 				if (tree.taxonNumberOfNode(lastD) == -1)
 					Debugg.println("lastD =" + lastD + "; taxonNumber is " + tree.taxonNumberOfNode(lastD));
-				charHistory.setState(firstD, statesAtNode);
-				charHistory.setState(lastD, statesAtNode);
+				localHistory[firstD]=statesAtNode;
+				localHistory[lastD] = statesAtNode;
 				taxaInTree[tree.taxonNumberOfNode(firstD)] = true;
 				taxaInTree[tree.taxonNumberOfNode(lastD)] = true;
 				countOfSpecies.increment();
@@ -262,7 +261,7 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 			break;
 		}
 		case CHANGEEVENT:{
-			flipState(charHistory, eventNode);
+			flipState(localHistory, eventNode);
 			numFlips++;
 			break;
 		}
@@ -276,6 +275,7 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 		rng.setSeed(seed.getValue());
 		MesquiteTree tree = null;
 		CategoricalHistory charHistory = null;
+        long localHistory[] = null;
 
 		int numTaxa = taxa.getNumTaxa();
 		if (numTaxa < maxSizeMultiple*expectedSize){
@@ -293,12 +293,20 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 			tree = (MesquiteTree)t;
 
 		Object c = characterHistoryContainer.getObject();
-		if (c == null || !(c instanceof CategoricalHistory))
-			charHistory = new CategoricalHistory(taxa);
-		else  
-			charHistory = (CategoricalHistory)c;
-
-		charHistory = (CategoricalHistory)charHistory.adjustSize(tree);
+        if (c == null || !(c instanceof CategoricalHistory)){
+            charHistory = (CategoricalHistory)charHistory.adjustSize(tree);
+            //charHistory = new CategoricalHistory(taxa);  // remove
+            localHistory = new long[tree.getNumNodeSpaces()];
+            for(int i=0;i<localHistory.length;i++)
+                localHistory[i]= CategoricalState.unassigned;
+        }
+        else { 
+            charHistory = (CategoricalHistory)c;
+            localHistory = new long[charHistory.getNumTaxa()];
+            for(int i=0;i<localHistory.length;i++){
+                localHistory[i]= charHistory.getState(i);
+            }
+        }
 
 		double targetHeight = timeForBreadth(expectedSize);
 		Debugg.println("xhat = " + stationaryFreq0());
@@ -328,7 +336,7 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 			if (rng.nextDouble()<prior1AtRoot)
 				state = 2L; //state 1
 			for (int i=0; i<tree.getNumNodeSpaces(); i++){  //state 0
-				charHistory.setState(i, state);
+                localHistory[i] = state;
 			}
 
 			tree.setToDefaultBush(2, false);
@@ -342,13 +350,13 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 			numFlips =0;
 			hitsString = "";
 			while (generations<targetHeight && !wentExtinct && !overFlow){
-				double globalRate = getGlobalRate(tree,tree.getRoot(),charHistory);
+				double globalRate = getGlobalRate(tree,tree.getRoot(),taxaInTree,localHistory);
 				double eventTime = nextTime(globalRate);
 				accumulator.setValue(0.0);
 				double limit = rng.nextDouble();
-				int eventNode = nextNode(tree,tree.getRoot(),charHistory,globalRate,limit,accumulator);
+				int eventNode = nextNode(tree,tree.getRoot(),taxaInTree,localHistory,globalRate,limit,accumulator);
 				limit = rng.nextDouble();
-				int eventChange = nextChange(charHistory, limit, eventNode);
+				int eventChange = nextChange(localHistory, limit, eventNode);
 				if (generations+eventTime > targetHeight){
 					addLengthToAllTerminals(tree,tree.getRoot(),targetHeight-generations,taxaInTree);
 					generations = targetHeight;
@@ -356,7 +364,7 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 				else {
 					generations += eventTime;
 					addLengthToAllTerminals(tree,tree.getRoot(),eventTime,taxaInTree);
-					executeEvent(tree,eventNode,eventChange,taxaInTree,charHistory,countOfSpecies, commandRec);
+					executeEvent(tree,eventNode,eventChange,taxaInTree,localHistory,countOfSpecies, commandRec);
 					if (countOfSpecies.getValue() == 0 || tree.numberOfTerminalsInClade(tree.getRoot()) == 0){
 						wentExtinct = true;             
 						commandRec.tick("Extinction event (height of tree currently:  " + generations + ") [attempt: "+ (attempts+1) + "] ");
