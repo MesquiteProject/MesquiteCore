@@ -171,7 +171,7 @@ public class PairwiseAligner  {
 		for (i=0; i<B_withGaps.length; i++) { 
 			if (!CategoricalState.isInapplicable(B_withGaps[i])) {
 				if (lengthB>=B.length) {
-					Debugg.println("|||||||| OVERFLOW B   |||||||||\n   i: " + i + "\n   A.length: " + A.length + "\n   lengthA: " + lengthA + "\n   B.length: " + B.length + "\n   lengthB: " + lengthB + "\n   A_withGaps.length: " + A_withGaps.length + "\n   B_withGaps.length: " + B_withGaps.length + "\n      keepGaps: " + keepGaps);
+					MesquiteMessage.println("|||||||| OVERFLOW B   |||||||||\n   i: " + i + "\n   A.length: " + A.length + "\n   lengthA: " + lengthA + "\n   B.length: " + B.length + "\n   lengthB: " + lengthB + "\n   A_withGaps.length: " + A_withGaps.length + "\n   B_withGaps.length: " + B_withGaps.length + "\n      keepGaps: " + keepGaps);
 				}
 				B[lengthB] = MolecularState.compressToInt(B_withGaps[i]);  //gets the lower 32 bits of the state set
 				lengthB++;

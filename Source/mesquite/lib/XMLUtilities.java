@@ -62,7 +62,7 @@ public class XMLUtilities {
 			}
 		} else {
 			String error = "You don't appear to have an internet connection.  This operation cannot complete without a connection";
-			Debugg.println(error);
+			MesquiteMessage.println(error);
 		}
 		return returnDoc;
 	}

@@ -4601,6 +4601,7 @@ class TableScroll extends MesquiteScrollbar {
 	public TableScroll(MesquiteTable table, int orientation, int value, int visible, int min, int max) {
 		super(orientation, value, visible, min, max);
 		this.table = table;
+		setFocusTraversalKeysEnabled(false);
 	}
 
 	public void scrollTouched() {
