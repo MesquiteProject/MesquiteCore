@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.distance.SharedProportionalDistance;
 
 import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
 import mesquite.lib.Incrementable;
 import mesquite.lib.Taxa;
 
@@ -21,6 +22,10 @@ import mesquite.lib.duties.*;
 import mesquite.distance.lib.*;
 
 public class SharedProportionalDistance extends IncTaxaDistanceSource implements Incrementable {
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(TreeSource.class, getName() + "  needs a source of trees.",
+		"The source of trees is arranged initially");
+	}
 	TreeSource treeSourceTask;
 	Taxa taxa;
 	long currentTree = 0;

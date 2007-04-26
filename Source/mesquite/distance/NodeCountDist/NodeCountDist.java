@@ -15,20 +15,16 @@ package mesquite.distance.NodeCountDist;
 
 import mesquite.distance.lib.IncTaxaDistanceSource;
 import mesquite.distance.lib.TaxaDistance;
-import mesquite.lib.CommandRecord;
-import mesquite.lib.Double2DArray;
-import mesquite.lib.Incrementable;
-import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteListener;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.Notification;
-import mesquite.lib.Taxa;
-import mesquite.lib.Tree;
+import mesquite.lib.*;
 import mesquite.lib.duties.TreeSource;
 
 public class NodeCountDist extends IncTaxaDistanceSource implements Incrementable {
-    TreeSource treeSourceTask;
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(TreeSource.class, getName() + "  needs a source of trees.",
+		"The source of trees is arranged initially");
+	}
+	/*.................................................................................................................*/
+   TreeSource treeSourceTask;
     Taxa taxa;
     long currentTree = 0;
     /*.................................................................................................................*/

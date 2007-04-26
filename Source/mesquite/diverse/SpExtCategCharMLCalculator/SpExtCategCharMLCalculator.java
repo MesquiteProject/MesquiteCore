@@ -10,6 +10,11 @@ import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.ParametersExplorer;
 
 public class SpExtCategCharMLCalculator extends MesquiteModule implements ParametersExplorable, Evaluator {
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(ParametersExplorer.class, getName() + "  uses a Parameters Explorer to show likelihood surfaces.",
+		"The parameter explorer is arranged automatically");
+	}
+	/*.................................................................................................................*/
 
 	// bunch of stuff copied from zMargLikeCateg - need to prune!!
 

@@ -20,40 +20,37 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public class WindowBabysitter extends WindowHolder {
+	public String getName() {
+		return "Window Holder";
+	}
+	public String getExplanation() {
+		return "Helps other modules by holding their windows." ;
+	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
- 		return true; 
- 	}
+		return true; 
+	}
 	/*.................................................................................................................*/
-  	 public Snapshot getSnapshot(MesquiteFile file) {
-   	 	if (getModuleWindow() == null)
-   	 		return null;
-   	 	Snapshot temp = new Snapshot();
-  	 	temp.addLine("getWindow");
-  	 	temp.addLine("tell It");
-	  	temp.incorporate(getModuleWindow().getSnapshot(file), true);
-  	 	temp.addLine("endTell");
-  	 	temp.addLine("showWindow");
-  	 	return temp;
-  	 }
-   
+	public Snapshot getSnapshot(MesquiteFile file) {
+		if (getModuleWindow() == null)
+			return null;
+		Snapshot temp = new Snapshot();
+		temp.addLine("getWindow");
+		temp.addLine("tell It");
+		temp.incorporate(getModuleWindow().getSnapshot(file), true);
+		temp.addLine("endTell");
+		temp.addLine("showWindow");
+		return temp;
+	}
+
+
 	/*.................................................................................................................*/
-    public String getName() {
-		return "Window Holder";
-   	 }
-	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Helps other modules by holding their windows." ;
-   	 }
-   	 
-	/*.................................................................................................................*/
- 	public void windowGoAway(MesquiteWindow whichWindow) {
-			if (whichWindow == null)
-				return;
-			whichWindow.hide();
-			whichWindow.dispose();
-			iQuit();
+	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
+		whichWindow.hide();
+		whichWindow.dispose();
+		iQuit();
 	}
 }
 

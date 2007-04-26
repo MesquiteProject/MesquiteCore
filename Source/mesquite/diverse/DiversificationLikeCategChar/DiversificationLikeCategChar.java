@@ -1,6 +1,7 @@
 package mesquite.diverse.DiversificationLikeCategChar;
 
 import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
@@ -13,6 +14,12 @@ import mesquite.lib.duties.NumberForCharAndTree;
 import mesquite.lib.duties.ParametersExplorer;
 
     public class DiversificationLikeCategChar extends NumberForCharAndTree implements ParametersExplorable {
+    	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+    		EmployeeNeed e = registerEmployeeNeed(ParametersExplorer.class, getName() + "  uses a Parameters Explorer to show likelihood surfaces.",
+    		"The parameter explorer is arranged automatically");
+       		EmployeeNeed e = registerEmployeeNeed(SpExtCategCharMLCalculator.class, getName() + "  needs a likelihood calculator.",
+    		"The likelihood caclulator is arranged initially");
+    	}
 
         DEQNumSolver solver;
         SpecExtincRatioDiffCategModel speciesModel;

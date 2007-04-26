@@ -21,6 +21,11 @@ import mesquite.lib.duties.OneTreeSource;
 import mesquite.io.lib.DistanceMatrixExporterDialog;
 
 public class ExportDistanceMatrix extends FileInterpreterI{
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(IncTaxaDistanceSource.class, getName() + "  needs a method to calculate distances.",
+		"The method to calculate distances is selected initially");
+	}
+	/*.................................................................................................................*/
 	public static final int TABDELIMITER=0;
 	public static final int COMMADELIMITER=1;
 	public static final int SPACEDELIMITER=2;

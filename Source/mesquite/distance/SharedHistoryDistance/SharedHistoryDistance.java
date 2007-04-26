@@ -17,6 +17,10 @@ import mesquite.lib.duties.*;
 import mesquite.distance.lib.*;
 
 public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incrementable {
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(TreeSource.class, getName() + "  needs a source of trees.",
+		"The source of trees is arranged initially");
+	}
 	TreeSource treeSourceTask;
 	Taxa taxa;
 	long currentTree = 0;

@@ -6,11 +6,16 @@ import java.util.Vector;
 
 import mesquite.diverse.lib.*;
 import mesquite.diverse.SpExtCategCharMLCalculator.SpExtCategCharMLCalculator;
+import mesquite.diverse.SpecExtincMLCalculator.SpecExtincMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
 
 public class SpExtCategCharLikelihood extends NumberForCharAndTree {
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(SpExtCategCharMLCalculator.class, getName() + "  needs a method to calculate likelihoods.",
+		"The method to calcualte likelihoods is arranged initially");
+	}
 
 	SpExtCategCharMLCalculator calcTask;
 

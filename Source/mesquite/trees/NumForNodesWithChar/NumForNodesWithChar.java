@@ -22,6 +22,17 @@ import mesquite.lib.duties.*;
 /**Suppliies numbers for each node of a tree.*/
 
 public class NumForNodesWithChar extends NumbersForNodes {
+	public String getName() {
+		return "Number for Nodes using Character";
+	}
+	public String getExplanation() {
+		return "Supplies numbers, based on a character, for each node of a tree.";
+	}
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(CharSourceCoordObed.class, getName() + "  needs a source of characters.",
+		"");
+	}
+	/*.................................................................................................................*/
 	CharSourceCoordObed characterSourceTask;
 	private NumbersForNodesWithChar numAndCharTask;
 	Object dataCondition;
@@ -173,17 +184,10 @@ public class NumForNodesWithChar extends NumbersForNodes {
 	}
 
 	/*.................................................................................................................*/
-	public String getExplanation() {
-		return "Supplies numbers, based on a character, for each node of a tree.";
-	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
-	}
-	/*.................................................................................................................*/
-	public String getName() {
-		return "Number for Nodes using Character";
 	}
 
 }

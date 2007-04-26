@@ -7,6 +7,10 @@ import mesquite.lib.duties.ParametersExplorer;
 import mesquite.lib.*;
 
 public class NMHBirthDeathLikelihood extends NumberForTree implements ParametersExplorable {
+   	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(ParametersExplorer.class, getName() + "  uses a Parameters Explorer to show likelihood surfaces.",
+		"The parameter explorer is arranged automatically");
+	}
 
     MesquiteParameter lambdaP = new MesquiteParameter();
     MesquiteParameter muP = new MesquiteParameter();
