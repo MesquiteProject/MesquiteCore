@@ -581,7 +581,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 				else
 					useIterations = iterations + 2;
 
-				double[][] randomSuggestions = new double[iterations][6];
+				double[][] randomSuggestions = new double[(int)useIterations][6];
 
 				for (int i = 0; i< useIterations; i++){  
 					double max = 1.0;
@@ -626,7 +626,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 						}
 					}
 					else 
-						logln("Sp/Ext Categ Char: random attempt " + i + " failed because starting position had undefined likleihood");
+						logln("Sp/Ext Categ Char: random attempt " + i + " failed because starting position had undefined likelihood");
 				}
 				if (bestS>=0)
 					suggestions = randomSuggestions[bestS];

@@ -14,7 +14,7 @@ import mesquite.lib.duties.NumberForCharAndTree;
 public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(SpExtCategCharMLCalculator.class, getName() + "  needs a method to calculate likelihoods.",
-		"The method to calcualte likelihoods is arranged initially");
+		"The method to calculate likelihoods is arranged initially");
 	}
 
 	SpExtCategCharMLCalculator calcTask;
@@ -358,7 +358,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 
 
 	public String getName() {
-		return "BCSE Speciation/Extinction Likelihood";
+		return "BiSSE Speciation/Extinction Likelihood";
 	}
 
 	public String getAuthors() {
