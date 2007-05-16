@@ -136,7 +136,68 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         //  MesquiteSubmenuSpec mssr = addSubmenu(null, "Root Reconstruction", makeCommand("setRootMode", this), rootModes); 
         //  mssr.setSelected(rootModeName);
         /**/
-
+        
+        // test values of r,a for stationary frequencies
+        // save current parameter values
+/*        double savedr0p = r0p.getValue();
+        double savedr1p = r1p.getValue();
+        double saveda0p = a0p.getValue();
+        double saveda1p = a1p.getValue();
+        double savedt01p = t01p.getValue();
+        double savedt10p = t10p.getValue();
+        r0p.setValue(0.05);
+        r1p.setValue(0.05);
+        a0p.setValue(0.5);
+        a1p.setValue(0.5);
+        t01p.setValue(0.005);
+        t10p.setValue(0.005);
+        // create model
+        DiversificationCategModel testModel = new DiversificationCategModel();
+        double upper;
+        double lower;
+        // try values of r
+        for(double ratio = 1.13;ratio<1.15;ratio+= 0.001){
+            upper = 0.05*Math.sqrt(ratio);
+            lower = 0.05/Math.sqrt(ratio);
+            r0p.setValue(upper);
+            r1p.setValue(lower);
+            testModel.setParams(paramsForExploration);
+            double freq0 = stationaryFreq0(testModel);
+            Debugg.println("ratio = " + ratio + "; r0 = " + lower + "; r1 = " + upper + "; freq0 = " + freq0);
+        }
+        r0p.setValue(0.05);
+        r1p.setValue(0.05);
+        for(double ratio = 1.4;ratio<1.41;ratio+= 0.001){
+            upper = 0.05*Math.sqrt(ratio);
+            lower = 0.05/Math.sqrt(ratio);
+            r0p.setValue(upper);
+            r1p.setValue(lower);
+            testModel.setParams(paramsForExploration);
+            double freq0 = stationaryFreq0(testModel);
+            Debugg.println("ratio = " + ratio + "; r0 = " + lower + "; r1 = " + upper + "; freq0 = " + freq0);
+        }
+        r0p.setValue(0.05);
+        r1p.setValue(0.05);
+        // try values of a
+        for(double ratio = 1;ratio<2.0;ratio+=0.1){
+            upper = 0.5*Math.sqrt(ratio);
+            lower = 0.5/Math.sqrt(ratio);
+            a0p.setValue(lower);
+            a1p.setValue(upper);
+            testModel.setParams(paramsForExploration);
+            double freq0 = stationaryFreq0(testModel);
+            Debugg.println("ratio = " + ratio + ";a0 = " + lower + "; a1 = " + upper + "; freq0 = " + freq0);
+            Debugg.println("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
+            Debugg.println("Calculated e0 = " + testModel.getERate(0) + "; calculated e1 = " + testModel.getERate(1));
+        }
+        // restore
+        r0p.setValue(savedr0p);
+        r1p.setValue(savedr1p);
+        a0p.setValue(saveda0p);
+        a1p.setValue(saveda1p);
+        t01p.setValue(savedt01p);
+        t10p.setValue(savedt10p);
+*/
         return true;
     }
     boolean reportCladeValues = false;
@@ -552,36 +613,24 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
                         max =  1.0;
                         for (int k = 0; k<2; k++){  //better maps the space we're trying to search?
                             double r1 = rng.randomDoubleBetween(0.001, max);  // avoid divide by zero
-                            double r2 = rng.randomDoubleBetween(0, max);
+                            double r2 = rng.randomDoubleBetween(0, r1);      //(always) enforce e < s, but do it differently
                             randomSuggestions[i][k] = r1-r2;
                             randomSuggestions[i][k+2] = r2/r1;
                         }
                         randomSuggestions[i][4] = rng.randomDoubleBetween(0, max);
                         randomSuggestions[i][5] = rng.randomDoubleBetween(0, max);
-                        if (i % 2 == 0){ //every other one enforce e < s, but do it differently
-                            if (randomSuggestions[i][0] < 0){
-                                randomSuggestions[i][0] *= -1;
-                                randomSuggestions[i][1] = 1/(randomSuggestions[i][1]);
-                            }
-                            if (randomSuggestions[i][2] < 0){
-                                randomSuggestions[i][2] *= -1;
-                                randomSuggestions[i][3] = 1/(randomSuggestions[i][3]);
-                            }
-                            //randomSuggestions[i][3] = rng.randomDoubleBetween(0, randomSuggestions[i][1] );
-                            //randomSuggestions[i][4] = rng.randomDoubleBetween(0, randomSuggestions[i][2] );
-                        }
+
                     }
                     else { //0 to 1 first then 0 to 10.0
                         max =  rng.randomDoubleBetween(0, 10.0);
-                        for (int k = 0; k<6; k++){
-                            randomSuggestions[i][k] = max - 0.5 + rng.randomDoubleBetween(0, 2.0);
+                        for (int k = 0; k<2; k++){  //better maps the space we're trying to search?
+                            double r1 = rng.randomDoubleBetween(0.001, max);  // avoid divide by zero
+                            double r2 = rng.randomDoubleBetween(0, r1);      //(always) enforce e < s, but do it differently
+                            randomSuggestions[i][k] = r1-r2;
+                            randomSuggestions[i][k+2] = r2/r1;
                         }
-                        if (i % 2 == 0){ //every other one enforce e < s
-                            if (randomSuggestions[i][3]> randomSuggestions[i][1])
-                                randomSuggestions[i][3] = rng.randomDoubleBetween(MesquiteDouble.maximum(randomSuggestions[i][1]-1.0, 0), randomSuggestions[i][1] );
-                            if (randomSuggestions[i][4]> randomSuggestions[i][2])
-                                randomSuggestions[i][4] = rng.randomDoubleBetween(MesquiteDouble.maximum(randomSuggestions[2][1]-1.0, 0), randomSuggestions[2][1] );
-                        }
+                        randomSuggestions[i][4] = rng.randomDoubleBetween(0, max);
+                        randomSuggestions[i][5] = rng.randomDoubleBetween(0, max);
                         if (evaluate(randomSuggestions[i], bundle) > 1e99) //likelihood bad; try a 0 to 1 one instead
                             for (int k = 0; k<6; k++)
                                 randomSuggestions[i][k] = rng.randomDoubleBetween(0, max);
@@ -772,7 +821,8 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         Tree tree = (Tree)b[0];
         CategoricalDistribution states = (CategoricalDistribution)b[1];
         DiversificationCategModel model = (DiversificationCategModel)b[2];
-        model.setParamValuesUsingConstraints(params);
+        if (!model.setParamValuesUsingConstraints(params))
+            return 1e100 + 1e99*badCount++;
         double result =  logLike(tree, states, model);
         if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result >= 1e100)
             result = 1e100 + 1e99*badCount++;
@@ -841,6 +891,8 @@ class DiversificationCategModel implements DESystem  {
     MesquiteParameter[] original, parameters;
     int[] constraintMap, effectiveParamMapping;
     boolean[] checked;
+    
+    int messageCount = 0;   //awful thing to reduce junk output
     public DiversificationCategModel(){
         constraintMap = new int[6];
         checked = new boolean[6];
@@ -886,6 +938,20 @@ class DiversificationCategModel implements DESystem  {
         double e0 = r0*a0/(1-a0);
         double s1 = r1/(1-a1);
         double e1 = r1*a1/(1-a1);
+        
+        //messageCount++;
+        if (a0 > 1 || a1 > 1){
+            Debugg.print("r0 = " + r0);
+            Debugg.print("; a0 = " + a0);
+            Debugg.print("; r1 = " + r1);
+            Debugg.println("; a1 = " + a1);
+            Debugg.print("Back calculated s0 = " + s0);
+            Debugg.print("; Back calculated e0 = " + e0);
+            Debugg.print("; Back calculated s1 = " + s1);
+            Debugg.println("; Back calculated e1 = " + e1);
+        }
+//        else if (messageCount == 1000)
+ //           messageCount = 0;    // faster and fewer overflows than modulo solution
         
         result[0] = -(e0+q01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + q01*extProb1; 
         result[1] = -(e1+q10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + q10*extProb0;            
@@ -944,12 +1010,15 @@ class DiversificationCategModel implements DESystem  {
 //      Debugg.println("constraintMap " + constraintMap.length + "  " + IntegerArray.toString(constraintMap));
 //      Debugg.println("effective mapping " + effectiveParamMapping.length + "  " + IntegerArray.toString(effectiveParamMapping));
     }
-    public void setParamValuesUsingConstraints(double[] params){
+    public boolean setParamValuesUsingConstraints(double[] params){
         if (params == null || params.length == 0)
-            return;
+            return true;  //nothing to do, so return success?
         if (params.length == 6 && effectiveParamMapping == null){
-            for (int i=0; i<6; i++)
+            for (int i=0; i<6; i++){
                 parameters[i].setValue(params[i]);
+                if (((i == 2) || (i == 3)) && (params[i] >= 1.0))
+                    return false;
+            }
         }
         else if (effectiveParamMapping== null){
             MesquiteMessage.warnProgrammer("Diversif setParamValuesUsingConstraints with effective params NULL");
@@ -957,16 +1026,20 @@ class DiversificationCategModel implements DESystem  {
         else if (params.length != effectiveParamMapping.length){
             MesquiteMessage.warnProgrammer("Diverse setParamValuesUsingConstraints with effective params size mismatch " + params.length + " " + effectiveParamMapping.length);
         }
-        else {
+        else {   // this should help handling constraints between parameters in the 2-5 case
             for (int i=0; i<params.length; i++) {
                 int mapee = effectiveParamMapping[i]; //find parameter representing constraint group
                 //now find all params constrained to it, and set them
                 for (int k = 0; k< parameters.length; k++){
-                    if (constraintMap[k] == mapee)
+                    if (constraintMap[k] == mapee){
                         parameters[k].setValue(params[i]);
+                        if (((k == 2) || (k==3)) && (parameters[k].getValue() >= 1.0))
+                            return false;
+                    }
                 }
             }
         }
+        return true;
         //  Debugg.println("examined params " + MesquiteParameter.toString(parameters));
     }
 
