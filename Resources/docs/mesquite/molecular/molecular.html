@@ -54,7 +54,16 @@
 				<a href="../charts.html">Charts</a><br>
                 <a href="../scripting.html">Scripts/Macros</a> <br>
                 <a href="../modules.html">Modules</a><br>
-				<a href="../howMesquiteWorks.html">How</a></span></font></p>
+				<a href="../howMesquiteWorks.html">How</a></span></font>
+				<!-- Google CSE Search Box Begins  -->
+				  <form id="searchbox_016202157087875381635:khljhzi-ps8" action="http://www.google.com/cse">
+				    <input type="hidden" name="cx" value="016202157087875381635:khljhzi-ps8" />
+				    <input type="hidden" name="cof" value="FORID:0" />
+				    <input name="q" type="text" size="20" />
+				    <input type="submit" name="sa" value="Search Mesquite" />
+				  </form>
+				  <script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_016202157087875381635%3Akhljhzi-ps8"></script>
+				<!-- Google CSE Search Box Ends --></p>
               </td>
       		<td bgcolor="#99FF99"><img src="../images/objects.gif" valign="bottom"></td>
 			<td align="left" valign="top" height="92" width="260"  bgcolor="#99FF99">
@@ -83,6 +92,10 @@
     <tr> 
       <td valign="top" align="left" width="110" height="100%"> 
         <table border="0" cellspacing="0" cellpadding="0" width="142">
+		  <tr>
+		    <td width="6"></td>
+			<td><a href="../toc.html"><img src="../images/toc.gif" width="100" height="50" border="0" ></a></td>
+		  </tr>
           <tr> 
             <td width="6" bgcolor="#99FF99"><font face="Trebuchet MS"><img src="../images/fadeDown.gif" width="5" valign = "top" height="95" border="0" alt=" "></font></td>
             <td colspan="2" bgcolor="#99FF99"><p><font face="Trebuchet MS"><img src="../images/fadeDown.gif" width="100%" height="72" border="0" alt=" "><img src="../images/analyses.gif"></font></p>
@@ -132,14 +145,14 @@
                 	<ul>
 						<li><a href="#altertransform">Alter/Transform Tools</a> </li>
 						<li><a href="#alignment">Alignment</a></li>
-                		<li><a href="#Finding">Finding sequences</a></li>
+                		<li><a href="#finding">Finding sequences</a></li>
 					    <li><a href="#sequencedisplay">Display of sequences</a> </li>
                 	</ul>
                 <li><a href="#managing">Managing molecular matrices</a> 
                   <ul>
                     <li><a href="#includetaxafromfile">Include Taxa from File</a></li>
                     <li><a href="#fusedMatrices">Fused Matrix Export</a></li>
-                    <li><a href="#archivingnames">Archiving Taxon Names</a> </li>
+                    <li><a href="#archivenames">Archiving Taxon Names</a> </li>
                   </ul>
                 </li>
                 <li><a href="#genbank">Interactions with GenBank</a> </li>
@@ -312,18 +325,18 @@
                   Name</font></u>. Archiving names can be useful if you want to 
                   temporarily rename taxa for export (e.g., shorter names for 
                   use by CLUSTAL) and later recover the original names. </li>
-                <li><strong>Translation to protein</strong>: a new matrix of amino acids, derived by translation from existing protein-coding DNA matrix, can be formed by choosing Characters&gt;Make New Matrix from&gt;Translate DNA to Protein.</li>
+                <li><strong><a name="transProtein"></a>Translation to protein</strong>: a new matrix of amino acids, derived by translation from existing protein-coding DNA matrix, can be formed by choosing <u><font size="-1">Characters&gt;Make New Matrix from&gt;Translate DNA to Protein</font></u>.</li>
               </ul>
               <h3><font face="Trebuchet MS"> </font>
                 </p>
              
                 <a name="sequencedisplay"></a>Display of Sequences</h3>
-              <p>Protein-coding sequences can be colored by the amino acid into which a triplet would be translated (under the genetic code for that triplet) by choosing Matrix&gt;Color Cells&gt;Color Nucleotide by Amino Acid. </p>
+              <p>Protein-coding sequences can be colored by the amino acid into which a triplet would be translated (under the genetic code for that triplet) by choosing <u><font size="-1">Matrix&gt;Color Cells&gt;Color Nucleotide by Amino Acid</font></u>. </p>
               <h2><a name="geneticcodes"></a>Genetic Codes</h2>
               <p>The genetic code for sequence data can be specified in Mesquite's 
                 List of Characters window (by choosing List of Characters, and 
-                then Columns&gt;Current Genetic Codes, or with a data matrix frontmost, 
-                Matrix&gt;Genetic Codes...). Genetic codes are assigned to individual 
+                then <u><font size="-1">Columns&gt;Current Genetic Codes</font></u>, or with a data matrix frontmost, 
+                <u><font size="-1">Matrix&gt;Genetic Codes...</font></u>). Genetic codes are assigned to individual 
                 characters (thus allowing one to have a mixed matrix of mitochondrial 
                 and nuclear data, for example). To assign a genetic code, choose 
                 select the characters, and use the popup menu of the title of 
@@ -334,8 +347,8 @@
 			  
 			  <p>The following features allow one to interact with GenBank. They require that you have an Internet connection. </p>
 			  <ul>
-			  	<li><strong>BLAST in Web Browser</strong>: Select	a	sequence	or portion thereof in the data matrix. Choose Matrix&gt;Search&gt;BLAST in Web Browser, and Mesquite will send a BLAST request to GenBank to search for matching sequences. Your default web browser should open and take you to the BLAST page. </li>
-				<li><strong>Top BLAST Matches</strong>: Select	a	sequence	or portion thereof in the data matrix. Choose Matrix&gt;Search&gt;Top BLAST Matches, and you will be presented with a dialog box. In this you can choose:
+			  	<li><strong>BLAST in Web Browser</strong>: Select a	sequence or portion thereof in the data matrix. Choose <u><font size="-1">Matrix&gt;Search&gt;BLAST in Web Browser</font></u>, and Mesquite will send a BLAST request to GenBank to search for matching sequences. Your default web browser should open and take you to the BLAST page. </li>
+				<li><strong>Top BLAST Matches</strong>: Select a sequence or portion thereof in the data matrix. Choose <u><font size="-1">Matrix&gt;Search&gt;Top BLAST Matches</font></u>, and you will be presented with a dialog box. In this you can choose:
 				  <ul>
 				    <li> maximum number of matches to be sought by Mesquite </li>
 			        <li>whether the report of results should be saved to a text file</li>
@@ -344,7 +357,7 @@
 				    <li>the maximum time in seconds to wait for the BLAST search to complete.   </li>
 				  </ul>
 				</li>
-				<li><strong>Fetch &amp; Add GenBank Sequences</strong>: This	option,	in	Matrix&gt;Utilities&gt; Fetch &amp; Add GenBank Sequences, allows one to enter a comma-delimited list of GenBank accession numbers, and Mesquite will acquire these from GenBank and import them into the current matrix. </li>
+				<li><strong>Fetch &amp; Add GenBank Sequences</strong>: This option, in	<u><font size="-1">Matrix&gt;Utilities&gt; Fetch &amp; Add GenBank Sequences</font></u>, allows one to enter a comma-delimited list of GenBank accession numbers, and Mesquite will acquire these from GenBank and import them into the current matrix. </li>
 			  </ul>
 			  
               <h2><a name="simDNA" id="simDNA"></a>Simulating DNA sequence evolution</h2>
@@ -361,7 +374,7 @@
                 Mesquite_Folder/examples/Molecular. These calculate compositional 
                 bias:</p>
               <ul>
-                <li><strong>ACGT Compositional Bias</strong> &#8212; This module 
+                <li><a name="acgtBias"></a><strong>ACGT Compositional Bias</strong> &#8212; This module 
                   supplies the compositional bias of taxa, measured over the taxon's 
                   sequence. The bias is treated as a continuous character, and 
                   thus can be used wherever characters are used, as for instance 
@@ -371,7 +384,7 @@
               </ul>
               <p align="center"><img src="images/gcBiasTaxa.jpg" width="446" height="350"></p>
               <ul>
-                <li><strong>Character Compositional Bias</strong> &#8212; This 
+                <li> <a name="charBias"></a><strong>Character Compositional Bias</strong> &#8212; This 
                   module supplies the compositional bias for characters. It calculates 
                   the percent of taxa with particular nucleotides (GC bias, or 
                   individual frequency of A, C, G or T) for a character. The image 
@@ -381,7 +394,7 @@
               </ul>
               <p align="center"><img src="../images/gcSequence.jpg" width="557" height="188"></p>
               <ul>
-                <li><strong>GC bias coloring of matrices</strong> &#8212; The 
+                <li> <a name="colorGCBias"></a><strong>GC bias coloring of matrices</strong> &#8212; The 
                   cells of the Character Matrix Editor may be colored according 
                   to a moving window of GC bias along the sequence, as shown below, 
                   by selecting <u><font size="-1" face="Arial, Helvetica, sans-serif">Matrix&gt;Color 
@@ -409,10 +422,10 @@ There are several options available (in the Distance Parameters submenu) for dea
                   <li><strong>Base Frequence on Entire Matrix</strong>: If this is chosen, then those distances that use as parameters the frequencies of bases (A, C, G, and T) will calculate those frequencies based on all sequences; if it is not chosen, then the frequencies are calculated based upon just the two sequences being compared at any one time.</li>
                 </ul>
 </p>
-              <h2>Statistics for Protein Data</h2>
+              <h2><a name="statsProtein"></a>Statistics for Protein Data</h2>
               <p> 
               <ul>
-                <li><strong>Site hydrophobicity</strong> &#8212; This module supplies 
+                <li><a name="siteHydrophobicity"></a><strong>Site hydrophobicity</strong> &#8212; This module supplies 
                   the average amino acid hydrophobicity, averaged across taxa, 
                   for each site. It can be used in charts, for instance to see 
                   the relationship between a phylogenetic statistic for the site 
@@ -423,7 +436,7 @@ There are several options available (in the Distance Parameters submenu) for dea
               <p align="center"><img src="../images/stepsVsHydro.jpg" width="260" height="217"></p>
               <p> 
               <ul>
-                <li><strong>Amino Acid hydrophobicity</strong> &#8212; The cells 
+                <li><a name="aaHydrophobicity"></a><strong>Amino Acid hydrophobicity</strong> &#8212; The cells 
                   of the Character Matrix Editor may be colored according to a 
                   moving window of hydrophobicity along the sequence, as shown 
                   below, by selecting <u><font size="-1" face="Arial, Helvetica, sans-serif">Matrix&gt;Color 
