@@ -54,8 +54,8 @@ public class DiversificationCategCharLikelihood extends NumberForCharAndTree {
             return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
         double def = MesquiteDouble.unassigned;
         //following is for the parameters explorer
-        r0 = new MesquiteParameter("r0", "Rate of diversification with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
-        r1 = new MesquiteParameter("r1", "Rate of diversification with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
+        r0 = new MesquiteParameter("r0", "Rate of net diversification with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
+        r1 = new MesquiteParameter("r1", "Rate of net diversification with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
         a0 = new MesquiteParameter("a0", "Extinction/Speciation ratio with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
         a1 = new MesquiteParameter("a1", "Extinction/Speciation ratio with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
         t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
@@ -163,7 +163,7 @@ public class DiversificationCategCharLikelihood extends NumberForCharAndTree {
 
 
     public String getName() {
-        return "BiSSE Diversification Likelihood";
+        return "BiSSE Net Diversification Likelihood";
     }
 
     public String getAuthors() {

@@ -516,7 +516,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	}
 
 	public String getName() {
-		return "Integrating (speciation/extinction) Likelihood Calculator";
+		return "Speciation/extinction Likelihood Calculator";
 	}
 	public String getAuthors() {
 		return "Peter E. Midford & Wayne P. Maddison";

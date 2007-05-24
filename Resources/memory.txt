@@ -1,0 +1,13 @@
+Running Mesquite with more memory
+
+Windows
+
+
+Mac OS X
+
+Right-click (or control-click) on Mesquite (OS X).app or 
+
+		<key>MainClass</key>
+		<string>mesquite.Mesquite</string>
+        <key>VMOptions</key>
+        <string>-Xmx512m</string>

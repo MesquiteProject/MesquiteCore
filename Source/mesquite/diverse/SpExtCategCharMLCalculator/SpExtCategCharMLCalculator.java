@@ -782,7 +782,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "BCSE Integrating Likelihood Calculator";
+		return "BiSSE Likelihood Calculator";
 	}
 	public String getAuthors() {
 		return "Peter E. Midford & Wayne P. Maddison";

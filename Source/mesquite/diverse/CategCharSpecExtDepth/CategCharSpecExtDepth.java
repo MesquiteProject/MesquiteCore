@@ -419,6 +419,10 @@ public class CategCharSpecExtDepth extends CategCharSpecExtNExp {
 	public String getVersion() {
 		return null;
 	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return true;
+	}
 
 	/*.................................................................................................................*/
 
