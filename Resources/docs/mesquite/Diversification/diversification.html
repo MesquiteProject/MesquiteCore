@@ -2,7 +2,9 @@
 <html><!-- #BeginTemplate "/Templates/Template.dwt" --><!-- DW6 -->
 <head>
 <!--LINK REL="SHORTCUT ICON" HREF="images/mesq.ico"-->
-<!-- #BeginEditable "doctitle" --> <title>Simulations and Randomizations</title><!-- #EndEditable -->
+<!-- #BeginEditable "doctitle" --> 
+<title>Character Evolution</title>
+<!-- #EndEditable -->
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
@@ -101,12 +103,12 @@
 			  <font face="Trebuchet MS">
 			  <a href="../CharacterEvolution/charEvolution.html">Character</a><br>
 			    &nbsp; <a href="../CharacterEvolution/charEvolution.html">Evolution</a> <br> <br>
-			  <a href="../Diversification/diversification.html">Diversification</a><br><br>
+			  <a href="diversification.html">Diversification</a><br><br>
 			  <a href="../molecular/molecular.html">Molecular</a><br>
 			    &nbsp; <a href="../molecular/molecular.html">Data</a><br><br>
 			  <a href="../popGen/popGen.html">Gene trees</a> <br>  <br>
-			  <a href="RandomSimul.html">Simulations &amp;</a><br>
-			    &nbsp; <a href="RandomSimul.html">Randomizations</a> <br> <br>
+			  <a href="../RandomSimul/RandomSimul.html">Simulations &amp;</a><br>
+			    &nbsp; <a href="../RandomSimul/RandomSimul.html">Randomizations</a> <br> <br>
 			  <a href="../continuous/continuous.html">Continuous</a><br>
 			    &nbsp; <a href="../continuous/continuous.html">Characters</a><br> <br>
 			  <a href="../otherPrograms.html">Use with</a><br>
@@ -128,7 +130,65 @@
       <td valign="top" width="100%" height="100%"> 
         <table width="700" border="0" cellpadding="10" cellspacing="0">
           <tr> 
-            <td><font face="Trebuchet MS"><!-- #BeginEditable "body" -->               <h2>S<font face="Trebuchet MS">tatistical inference using simulations                 or randomizations </font></h2>              <p><font face="Trebuchet MS">Mesquite has various tools to simulate                 and randomize characters and trees, including simulations of DNA                 sequence evolution, tree reshuffling, coalescent gene tree simulations,                 and others. With these tools, you can build your own statistical                 inference methods tailored to your question. </font></p>              <p><font face="Trebuchet MS">For instance, you can test an hypothesis                 about phylogenetic structure using parametric bootstrapping, simulating                 many character matrices on a proposed tree, for each attempting                 to reconstruct the tree and assessing the reconstruction. Or,                 you can simulate gene trees within a population to test a population                 genetics or phylogeographic hypothesis. Or, you can study the                 effect of branch length uncertainty on calculation of Felsenstein's                 contrasts by adding random noise to branch lengths on a given                 tree, repeating many times to see the variation in calculated                 correlation coefficient of contrasts in two characters. Many other                 analyses are possible. We give an overview of the features and                 some examples in the following. </font></p>              <ul>                <li>Simulating and randomizing characters</a>                <ul>				<li><a href="simChars.html">Overview</a></li>				<li><a href="simDNA.html">Simulating DNA sequence evolution,                 with examples of hypothesis testing</a></li>				<li><a href="../popGen/popGen.html">Simulating coalescence and sequence evolution within populations</a></li>				</ul></li>                <li><a href="simTrees.html">Simulating and randomizing trees</a>,                   including species trees and gene trees</li>              </ul></p>              <font face="Trebuchet MS"><p>&nbsp;</p>              </font> <!-- #EndEditable --></font></td>
+            <td><font face="Trebuchet MS"><!-- #BeginEditable "body" --> 
+              <h2>Diversification: Speciation and extinction</h2>
+              <p>[UNDER CONSTRUCTION]</p>
+              <p>The diversification processes that determine the branching pattern 
+                of the phylogenetic tree, speciation and extinction, can be simulated 
+                and analyzed. </p>
+              <h3>Simulations</h3>
+              <p>Trees can be created through simulations of speciation and extinction. 
+                Here are options:</p>
+              <ul>
+                <li><strong>Uniform speciation (Yule)</strong> (trees package) 
+                  - Generates tree by a pure birth process (a Yule process). The 
+                  chance of speciation is equal for all tips. Options: total time 
+                  depth of tree.</li>
+                <li><strong>Uniform speciation with sampling</strong> (TreeFarm 
+                  package) &#8212; Generates a tree by Yule process, as above, 
+                  but with to a total number of species greater than in the taxa 
+                  block. Extra species are then randomly sampled out, to leave 
+                  the tree with the appropriate number of species. Barraclough 
+                  &amp; Nee (2001) discuss how this sampling alters the branch 
+                  length distribution of the tree. </li>
+                <li><strong>Trees &amp; Diversification Characters</strong> (Diverse 
+                  package) &#8212; (Available in the Taxa &amp; Trees menu) Simulates 
+                  speciation and extinction, and the evolution of characters that 
+                  influence speciation and extinction rates. One option evolves 
+                  a binary character under the BiSSE model, which has different 
+                  rates of speciation and extinction for the two states of the 
+                  character. Another option evolves a continuous character (speciation 
+                  rate) under Brownian motion; it is a speciation-only simulation.</li>
+              </ul>
+              <h3>Analysis: A binary character's effect on diversification</h3>
+              <p>These analyses are available in the tree legend of the tree window 
+                (Analysis&gt;Tree Legend&gt;Tree Value Using Character, Show secondary 
+                choices), in the List of Trees (Columns&gt;Number for Tree&gt;Tree 
+                Value Using Character, Show secondary choices), and in charts 
+                of trees. They are also available in the List of Characters window 
+                (Columns&gt;Number For Character&gt;Character Value with Current 
+                Tree, Show secondary choices) and in charts of characters.</p>
+              <p> 
+              <ul>
+                <li><strong>BiSSE model</strong> (Maddison, Midford &amp; Otto) 
+                  - </li>
+                <li><strong>Slowinski and Guyer</strong> - </li>
+                <li><strong>Sister Diversification</strong> - clade sign test 
+                  (Mitter et al.)</li>
+              </ul></p>
+              <h3>Analysis: Speciation/Extinction rates</h3>
+              <p>These analyses are available in the Tree Legend of the tree window 
+                (under Analysis), in the LIst of Trees (Columns&gt;Number For 
+                Tree&gt;Other Choices), </p>
+              <p> 
+              <ul>
+                <li><strong>Nee et al. Birth/Death Tree Likelihood</strong> - 
+                </li>
+                <li><strong>Speciation/Extinction Likelihood</strong> -</li>
+              </ul></p>
+              <p>&nbsp;</p>
+              <h3>&nbsp;</h3>
+              <!-- #EndEditable --></font></td>
           </tr>
         </table>
         <table border="0" cellspacing="0" cellpadding="5" width="100%">
