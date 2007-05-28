@@ -1,9 +1,9 @@
-<!--This file created 1.4.99 9:31 PM by Claris Home Page version 2.0-->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><!-- #BeginTemplate "/Templates/Template.dwt" --><!-- DW6 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><!-- #BeginTemplate "/Templates/Template.dwt" --><!-- DW6 -->
 <head>
 <!--LINK REL="SHORTCUT ICON" HREF="images/mesq.ico"-->
-<!-- #BeginEditable "doctitle" -->
-<title>Glossary</title>
+<!-- #BeginEditable "doctitle" --> 
+<title>Mesquite Manual</title>
 <!-- #EndEditable -->
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
@@ -142,84 +142,78 @@
         <table width="700" border="0" cellpadding="10" cellspacing="0">
           <tr> 
             <td><font face="Trebuchet MS"><!-- #BeginEditable "body" --> 
-              <h2>Basic concepts and vocabulary</h2>
-              <p>Mesquite was designed to explore the evolution of organsims and 
-                their characteristics. Here is some basic vocabulary that relates 
-                the biology to the implementation in Mesquite.</p>
-              <h3><a name="taxa"></a> Taxa</h3>
-              <ul>
-                <li><b>Taxon</b> - One of the basic entities being studied, usually 
-                  a species or a gene sequence. In Mesquite (as in other programs), 
-                  the word &quot;Taxon&quot; has shifted from its traditional 
-                  meaning to become more or less equivalent to &quot;terminal 
-                  taxon&quot; (the smallest unit of analysis of relationships). 
-                <li><b>Block of taxa</b> - A collection of taxa grouped together 
-                  for analysis. In most programs dealing with phylogeny, there 
-                  is only a single block of taxa allowed in a file (e.g., &quot;Primates&quot;, 
-                  consisting of 20 species of primates). In Mesquite, multiple 
-                  blocks are allowed (perhaps to study associations among them, 
-                  in the style of Rod Page's programs), and so it is useful to 
-                  refer to different blocks of taxa. A block of taxa is equivalent 
-                  to a TAXA block in a NEXUS file. 
-                <li><b>Group Membership (Taxa partition</b>) - A subdivision of 
-                  a taxa block into disjoint subsets. Thus, a taxa block for Mammals 
-                  may have its taxa partitioned into one of three groups, Carnivore, 
-                  Ominvore and Herbivore. A taxa partition is equivalent to a 
-                  TAXAPARTITION in a NEXUS file. 
-              </ul>
-              <h3> 
-                <hr>
-                <a name="chars"></a>Characters</h3>
-              <ul>
-                <li><b>Character</b> - A variable or characteristic measured or 
-                  observed for a block of taxa. It could be from molecular data 
-                  (&quot;Nucleotide at position 367 of the 18S gene&quot;), or 
-                  it could be phenotypic (&quot;length of wing&quot;). Characters 
-                  in Mesquite typically exist only within character matrices. 
-                <li><b>Character model</b> - a model of the evolution of a character.
-                  This could be a model for use in parsimony calculations (e.g., &quot;unordered&quot;,
-                   a cost matrix) or in likelihood calculations or stochastic
-                  simulations (e.g., HKY85, GTR). 
-                <li><b>Character matrix</b> - A matrix representing the character 
-                  states of various characters for a block of taxa. Each character 
-                  matrix in Mesquite must be homogeneous with respect to type 
-                  of character (e.g. nucleotide sequences can't be intermingled 
-                  with morphometrics data). 
-                <li><b>Character partition</b> - A subdivision of a characters 
-                  into disjoint subsets. Thus, a character matrix for insects 
-                  may have its characters partitioned into one of three groups, 
-                  larval, pupal, and adult. A character partition is equivalent 
-                  to a CHARPARTITION in a NEXUS file. 
-                <li><b>Character inclusion set</b> - A specification of what characters 
-                  are to be included and what excluded from analyses. This is 
-                  equivalent (in inverse form) to an EXSET in a NEXUS file. 
-                <li><b>Character weight set</b> - A specification of what weights 
-                  are to be applied to characters in summed calculations (especially 
-                  for parsimony calculations). This is equivalent to a WTSET in 
-                  a NEXUS file. 
-                <li><b>Parsimony model set</b> - A specification of what parsimony
-                  model of character evolution  (i.e.,
-                  what 
-                  &quot;transformation type&quot;) is to be applied to each character
-                   of a matrix. This is equivalent to a TYPESET in a NEXUS file. 
-                <li><b>Probability model set</b> - A specification of what probalistic
-                  model of character evolution  is
-                  to be
-                  applied 
-                  to each character of a matrix. 
-              </ul>
-              <h3> 
-                <hr>
-                <a name="trees"></a>Trees</h3>
-              <ul>
-                <li><b>Tree</b> - A tree representing the relationships of the 
-                  taxa. If the taxa are species, the tree represents phylogeny; 
-                  if the taxa are gene sequences, the tree represents a gene genealogy. 
-                <li><b>Block of trees</b> - A collection of trees. This might 
-                  be a set of trees saved by the user, or output by a program 
-                  like PAUP*. 
-              </ul>
-              <p><!-- #EndEditable --></font></td>
+              <h2><font face="Trebuchet MS">Mesquite: A modular system for evolutionary 
+                analysis, version 2.0 BETA</font></h2>
+              <p><em><strong>Principal Authors:<br>
+                </strong>Wayne P. Maddison, 
+                University of British Columbia</em><br>
+                <em>David R. Maddison, University of Arizona</em></p>
+              <p><em><strong>Development Team:<br>
+                </strong>Wayne Maddison<br>
+                David Maddison<br>
+                Peter Midford (2006-)</em><br>
+                <em>Danny Mandel (2006-7)</em><br>
+                <em>Jeff Oliver (2007-)</em></p>
+              <p><font face="Trebuchet MS">This manual introduces you to the Mesquite 
+                system for analysis in evolutionary biology. It explains the basic 
+                operation of the system (the links above) and some standard analyses 
+                (the links at left). </font></p>
+              <p><font face="Trebuchet MS">New features and bug fixes since version 
+                1.0 are described on the page on <a href="changes.html">new features 
+                and history of changes</a>.</font></p>
+              <p><font face="Trebuchet MS">Mesquite's analyses currently include 
+                phylogenetic analyses (parsimony, likelihood, comparative method, 
+                simulations and randomizations of characters and trees) and population 
+                genetics analyses (coalescence). You can also use Mesquite as 
+                an editor for phylogenetic data files. Mesquite is not primarily 
+                designed to infer phylogenetic trees, but rather for diverse analyses 
+                using already inferred trees. Mesquite's web site contains an 
+                outline of <a href="http://mesquiteproject.org/mesquite/features.html">Mesquite's 
+                features</a>.</font></p>
+              <p>Because many analyses are possible and those available depend 
+                on what modules are installed and loaded, a comprehensive manual 
+                cannot easily be written. For this reason, many analyses available 
+                in Mesquite are not included in this manual. You are encouraged 
+                to explore, and invent new analyses.</p>
+              <p>Mesquite's web site is <a href="http://mesquiteproject.org">here</a>; 
+                check it for updates. We recommend you sign up to the <a href="http://mesquiteproject.org/mailman/listinfo/mesquitelist">Mesquite 
+                discussion e-mail list</a> to learn about updates and bug reports.</p>
+              <h3>Getting started</h3>
+              <p>To begin using Mesquite on the Mac OS, Unix/Linux or Windows, 
+                see the <a href="installation/installation.html">installation 
+                instructions</a>. We encourage you to explore the example files 
+                in the &quot;examples&quot; directory of the Mesquite_Folder.</p>
+              <p>The website has a list of some <a href="http://mesquiteproject.org/mesquite/mesquite.html#thirdParty">third-party 
+                modules</a> you can install. See the page on <a href="modules.html#places">modules</a> 
+                for instructions on where they can be installed.</p>
+              <h3>Reporting Bugs</h3>
+              <p>We encourage you to report bugs or misbehaviour of Mesquite. 
+                You may find a problem that seems so obvious to you that you expect 
+                we must have seen it. Please report it anyway, because perhaps 
+                it occurs only in particular circumstances that we didn't test, 
+                or it occurs with a combination of options that we haven't tested 
+                recently. The <a href="support.html">Support</a> page has more 
+                details on reporting bugs.</p>
+              <h3><font face="Trebuchet MS">Conventions of this manual</font></h3>
+              <p><font face="Trebuchet MS">For compactness, we will use a special 
+                convention to refer to menu items. For example, <u><font size="-1">File&gt;Save 
+                File</font></u> refers to the Save File menu item of the File 
+                menu. <u><font size="-1">(Tree Window)Drawing&gt;Tree Form&gt;Diagonal 
+                Tree</font></u> refers to the Diagonal Tree menu item of the Tree 
+                Form submenu of the Drawing menu that is associated with the Tree 
+                Window. By referring to a menu as &quot;associated with&quot; 
+                a window, we mean that that menu is present in the menu bar at 
+                the top of the screen when the window is frontmost (on the MacOS), 
+                or that the menu is embedded within the window (on the Windows 
+                OS and most other operating systems). </font></p>
+              <h3>Information for Developers</h3>
+              <p>Mesquite is modular, and can be extended by adding modules into 
+                the folder &quot;mesquite&quot; in the folder &quot;Mesquite_Folder&quot;. 
+                Developers interested in writing modules should contact us at 
+                <img src="images/demail.jpg" width="218" height="18">. Information 
+                on development for Mesquite is also available <a href="http://mesquiteproject.org/mesquite/development/development.html">here</a>, 
+                although it is out of date.</p>
+              <!-- #EndEditable --></font></td>
           </tr>
         </table>
         <table border="0" cellspacing="0" cellpadding="5" width="100%">
