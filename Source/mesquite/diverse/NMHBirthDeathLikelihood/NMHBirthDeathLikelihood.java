@@ -78,7 +78,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
         // Should be removed when debugged
         if (checker.compare(getClass(), "Sets mu (extinction rate)", "[double]", commandName, "setMu")) {
             double newMu = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-            if (!MesquiteDouble.isCombinable(newMu) && !commandRec.scripting())
+            if (!MesquiteDouble.isCombinable(newMu) && !MesquiteThread.isScripting())
                 newMu = MesquiteDouble.queryDouble(containerOfModule(), "mu", "mu (extinction rate)", (double)mu);
             if (MesquiteDouble.isCombinable(newMu) && newMu >=0 && newMu != mu){
                 mu = newMu; //change mode
@@ -87,7 +87,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
         }
         else if (checker.compare(getClass(), "Sets lambda (speciation rate)", "[double]", commandName, "setLambda")) {
             double newLambda = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-            if (!MesquiteDouble.isCombinable(newLambda) && !commandRec.scripting())
+            if (!MesquiteDouble.isCombinable(newLambda) && !MesquiteThread.isScripting())
                 newLambda = MesquiteDouble.queryDouble(containerOfModule(), "lambda", "lambda (speciation rate)", (double)lambda);
             if (MesquiteDouble.isCombinable(newLambda) && newLambda >=0 && newLambda != lambda){
                 lambda = newLambda; //change mode
@@ -108,7 +108,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
 
     
     public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
-        if (!commandRec.scripting())
+        if (!MesquiteThread.isScripting())
             parametersChanged(n, commandRec);
         if (explorer != null)
             explorer.explorableChanged(this, commandRec);

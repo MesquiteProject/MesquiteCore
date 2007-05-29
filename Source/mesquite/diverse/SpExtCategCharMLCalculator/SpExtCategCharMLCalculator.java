@@ -144,12 +144,12 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
 		if (checker.compare(getClass(), "Sets the frequency of checking for underflow", "[integer, 1 or greater]", commandName, "setUnderflowCheckFreq")) {
 			int freq = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteInteger.isCombinable(freq) && !commandRec.scripting())
+			if (!MesquiteInteger.isCombinable(freq) && !MesquiteThread.isScripting())
 				freq = MesquiteInteger.queryInteger(containerOfModule(), "Checking frequency", "Frequency at which underflow checking is performed in likelihood calculations.  A value of n means checking is performed on each nth calculation; higher numbers mean the calculations go faster but are at risk of underflow problems.  Values over 10 are not recommended", (int)underflowCheckFrequency, 1, 10000);
 
 			if (MesquiteInteger.isCombinable(freq) && freq >=0 && freq!=underflowCheckFrequency){
 				underflowCheckFrequency = freq; //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
@@ -164,29 +164,29 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		}
 		else if (checker.compare(getClass(), "Sets the number of steps per branch", "[double, 1 or greater]", commandName, "setStepCount")) {
 			double steps = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(steps) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(steps) && !MesquiteThread.isScripting())
 				steps = MesquiteDouble.queryDouble(containerOfModule(), "Steps per branch", "Number of divisions of each branch for numerical integration.  Higher numbers mean the calculations are more accurate but go more slowly.  Values under 100 are not recommended", stepCount, 10, 1000000);
 
 			if (MesquiteDouble.isCombinable(steps) && steps >=0 && steps!=stepCount){
 				stepCount = steps; //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets the number of iterations in the likelihood optimization", "[integer, 1 or greater]", commandName, "setIterations")) {
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteInteger.isCombinable(it) && !commandRec.scripting())
+			if (!MesquiteInteger.isCombinable(it) && !MesquiteThread.isScripting())
 				it = MesquiteInteger.queryInteger(containerOfModule(), "Optimization Iterations", "Number of random starting points for likelihood optimizationi.  Higher numbers mean the optimization is more thorough  but goes more slowly.", iterations, 1, 1000);
 
 			if (MesquiteInteger.isCombinable(it) && it >=0 && it!=iterations){
 				iterations = it; //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
-			if (!commandRec.scripting())parametersChanged(null, commandRec);
+			if (!MesquiteThread.isScripting())parametersChanged(null, commandRec);
 		}
 		else if (checker.compare(getClass(), "Writes table to console", "", commandName, "showParamExplorer")) {
 			explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");

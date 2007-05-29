@@ -56,7 +56,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		for (int i= 0; i<6; i++)
 			params[i].setValue(0.1);
 	*/
-		if (!commandRec.scripting()){
+		if (!MesquiteThread.isScripting()){
 			showDialog();
 		}
 		addMenuItem("Set Parameters...", makeCommand("setParameters", this));
@@ -193,7 +193,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		//double [] testvals = { 1E-11,1E-10,1E-9,1E-8,1E-7,5E-7,1E-6,2E-6,1E-5,1E-4,5E-4,1E-3,5E-3,1E-2,2E-2,5E-2,1E-1,2E-1,5E-01};
 		if (checker.compare(getClass(), "Sets rate parameters", "[double double double double double double]", commandName, "setParameters")) {
 			if (StringUtil.blank(arguments)){
-				if (!commandRec.scripting() && showDialog())
+				if (!MesquiteThread.isScripting() && showDialog())
 					parametersChanged(null, commandRec);
 			}
 			else {
@@ -209,7 +209,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 				changed = changed || more;
 				more = setParam(t10, params, parser);
 				changed = changed || more;
-				if (changed && !commandRec.scripting())
+				if (changed && !MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 
@@ -217,61 +217,61 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		/*
 		else if (checker.compare(getClass(), "Sets extinction rate in state 0", "[double]", commandName, "setE0")) {
 			double newValue = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newValue) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newValue) && !MesquiteThread.isScripting())
 				newValue = MesquiteDouble.queryDouble(containerOfModule(), "e0", "Instantaneous extinction rate in state 0", e0.getValue());
 			if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != e0.getValue()){
 				e0.setValue(newValue); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets speciation rate in state 0", "[double]", commandName, "setS0")) {
 			double newValue = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newValue) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newValue) && !MesquiteThread.isScripting())
 				newValue = MesquiteDouble.queryDouble(containerOfModule(), "s0", "Instantaneous speciation rate in state 0", (double)s0.getValue());
 			if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != s0.getValue()){
 				s0.setValue(newValue); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets extinction rate in state 1", "[double]", commandName, "setE1")) {
 			double newValue = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newValue) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newValue) && !MesquiteThread.isScripting())
 				newValue = MesquiteDouble.queryDouble(containerOfModule(), "e1", "Instantaneous extinction rate in state 1", (double)e1.getValue());
 			if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != e1.getValue()){
 				e1.setValue(newValue); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets speciation rate in state 1", "[double]", commandName, "setS1")) {
 			double newValue = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newValue) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newValue) && !MesquiteThread.isScripting())
 				newValue = MesquiteDouble.queryDouble(containerOfModule(), "s1", "Instantaneous speciation rate in state 1", (double)s1.getValue());
 			if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != s1.getValue()){
 				s1.setValue(newValue); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets transition rate from state 0 to state 1", "[double]", commandName, "setT01")) {
 			double newValue = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newValue) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newValue) && !MesquiteThread.isScripting())
 				newValue = MesquiteDouble.queryDouble(containerOfModule(), "t01", "Instantaneous transition rate from 0 to 1", (double)t01.getValue());
 			if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != t01.getValue()){
 				t01.setValue(newValue); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets transition rate from state 1 to state 0", "[double]", commandName, "setT10")) {
 			double newValue = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newValue) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newValue) && !MesquiteThread.isScripting())
 				newValue = MesquiteDouble.queryDouble(containerOfModule(), "t10", "Instantaneous transition rate from 1 to 0", (double)t10.getValue());
 			if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != t10.getValue()){
 				t10.setValue(newValue); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}*/

@@ -93,7 +93,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
 		Taxa taxa = data.getTaxa();
 		OneTreeSource treeTask = (OneTreeSource)hireEmployee(commandRec, OneTreeSource.class, "Source of tree for calculating tree-based distance measures");
 		Tree tree = null;
-		if (!commandRec.scripting() && !usePrevious)
+		if (!MesquiteThread.isScripting() && !usePrevious)
 			if (!getExportOptions(data.anySelected(), taxa.anySelected()))
 				return;
 		TaxaDistance distanceSource =  distSource.getTaxaDistance(taxa, commandRec);

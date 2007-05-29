@@ -73,7 +73,7 @@ public class Pagel94 extends Pagel94Calculator {
 		addMenuItem("Likelihood Iterations (Pagel 94)...", makeCommand("setNumIterations", this));
 		addMenuItem("Set Seed (Pagel 94)...", makeCommand("setSeed", this));
 	   addMenuItem("Set Simulation Replicates...", makeCommand("setSimCount", this));
-		if (!commandRec.scripting()){
+		if (!MesquiteThread.isScripting()){
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
 			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Pagel 94 parameters",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
@@ -119,13 +119,13 @@ public class Pagel94 extends Pagel94Calculator {
   public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
        if (checker.compare(this.getClass(), "Sets the random number seed to that passed", "[long integer seed]", commandName, "setSeed")) {
             long s = MesquiteLong.fromString(parser.getFirstToken(arguments));
-            if (!MesquiteLong.isCombinable(s) && !commandRec.scripting()){
+            if (!MesquiteLong.isCombinable(s) && !MesquiteThread.isScripting()){
                 s = MesquiteLong.queryLong(containerOfModule(), "Random number seed", "Enter an integer value for the random number seed for character evolution simulation", originalSeed);
             }
             if (MesquiteLong.isCombinable(s)){
                 originalSeed = s;
                 seed.setValue(originalSeed);
-               if (!commandRec.scripting()) parametersChanged(null, commandRec); //?
+               if (!MesquiteThread.isScripting()) parametersChanged(null, commandRec); //?
             }
             return null;
         }
@@ -136,7 +136,7 @@ public class Pagel94 extends Pagel94Calculator {
 				newNum = MesquiteInteger.queryInteger(containerOfModule(), "Likelihood iterations", "Intensity of likelihood search for 8 parameter model for Pagel 94 (Number of extra iterations):", numIterations, 0, MesquiteInteger.infinite);
     	 		if (newNum>0  && newNum!=numIterations) {
     	 			numIterations = newNum;
-  				if (!commandRec.scripting()){
+  				if (!MesquiteThread.isScripting()){
 					parametersChanged(null, commandRec);
 				}
     	 		}
@@ -147,7 +147,7 @@ public class Pagel94 extends Pagel94Calculator {
     	 			sCount = MesquiteInteger.queryInteger(containerOfModule(),"Number of simulations", "Number of simulations to estimate p-value for Pagel 94 analysis", getSimCount(),0,1000,true);
     	 		if (MesquiteInteger.isCombinable(sCount)){
     	 			setSimCount(sCount);
-    	 			if (!commandRec.scripting())
+    	 			if (!MesquiteThread.isScripting())
     	 				parametersChanged(null, commandRec);
   	 		}
     	 		else 
@@ -158,7 +158,7 @@ public class Pagel94 extends Pagel94Calculator {
   	 	else if (checker.compare(this.getClass(), "Sets whether or not P values are to be presented", "[on; off]", commandName, "togglePresentPValue")) {
     	 		presentPValue.toggleValue(parser.getFirstToken(arguments));
     	 		
-			if (commandRec != null && !commandRec.scripting()) {
+			if (commandRec != null && !MesquiteThread.isScripting()) {
 
 				if (presentPValue.getValue()){
 					int sCount = MesquiteInteger.queryInteger(containerOfModule(),"Number of simulations", "Number of simulations to estimate p-value for Pagel 94 analysis", getSimCount(),0,10000,true);

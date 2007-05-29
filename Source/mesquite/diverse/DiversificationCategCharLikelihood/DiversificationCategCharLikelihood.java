@@ -10,20 +10,7 @@ package mesquite.diverse.DiversificationCategCharLikelihood;
 
 import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
 import mesquite.diverse.SpExtCategCharMLCalculator.SpExtCategCharMLCalculator;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CommandRecord;
-import mesquite.lib.EmployeeNeed;
-import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteNumber;
-import mesquite.lib.MesquiteParameter;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.ParametersDialog;
-import mesquite.lib.Parser;
-import mesquite.lib.Snapshot;
-import mesquite.lib.StringUtil;
-import mesquite.lib.Tree;
+import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
 
@@ -61,7 +48,7 @@ public class DiversificationCategCharLikelihood extends NumberForCharAndTree {
         t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
         t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
         params = new MesquiteParameter[]{r0, r1, a0, a1, t01, t10};
-        if (!commandRec.scripting()){
+        if (!MesquiteThread.isScripting()){
             showDialog();
         }
         addMenuItem("Set Parameters...", makeCommand("setParameters", this));
@@ -118,7 +105,7 @@ public class DiversificationCategCharLikelihood extends NumberForCharAndTree {
         // Should be removed when debugged
         if (checker.compare(getClass(), "Sets rate parameters", "[double double double double double double]", commandName, "setParameters")) {
             if (StringUtil.blank(arguments)){
-                if (!commandRec.scripting() && showDialog())
+                if (!MesquiteThread.isScripting() && showDialog())
                     parametersChanged(null, commandRec);
             }
             else {
@@ -134,7 +121,7 @@ public class DiversificationCategCharLikelihood extends NumberForCharAndTree {
                 changed = changed || more;
                 more = setParam(t10, params, parser);
                 changed = changed || more;
-                if (changed && !commandRec.scripting())
+                if (changed && !MesquiteThread.isScripting())
                     parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
             }
         }

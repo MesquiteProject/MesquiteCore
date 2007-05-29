@@ -93,11 +93,11 @@ public class SpecExtincLikelihood extends NumberForTree  {
 		//  double [] testvals = { 1E-11,1E-10,1E-9,1E-8,1E-7,5E-7,1E-6,2E-6,1E-5,1E-4,5E-4,1E-3,5E-3,1E-2,2E-2,5E-2,1E-1,2E-1,5E-01};
 		if (checker.compare(getClass(), "Sets extinction rate", "[double]", commandName, "setE")) {
 			double newE = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newE) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newE) && !MesquiteThread.isScripting())
 				newE = MesquiteDouble.queryDouble(containerOfModule(), "mu", "Instantaneous extinction rate", mu.getValue());
 			if ((MesquiteDouble.isUnassigned(newE) ||  newE >=0) && newE != mu.getValue()){
 				mu.setValue(newE); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
@@ -106,11 +106,11 @@ public class SpecExtincLikelihood extends NumberForTree  {
 		}
 		else if (checker.compare(getClass(), "Sets speciation rate", "[double]", commandName, "setS")) {
 			double newS = MesquiteDouble.fromString(parser.getFirstToken(arguments));
-			if (!MesquiteDouble.isCombinable(newS) && !commandRec.scripting())
+			if (!MesquiteDouble.isCombinable(newS) && !MesquiteThread.isScripting())
 				newS = MesquiteDouble.queryDouble(containerOfModule(), "lambda", "Instantaneous speciation rate", lambda.getValue());
 			if ((MesquiteDouble.isUnassigned(newS) || newS >=0) && newS != lambda.getValue()){
 				lambda.setValue(newS); //change mode
-				if (!commandRec.scripting())
+				if (!MesquiteThread.isScripting())
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
