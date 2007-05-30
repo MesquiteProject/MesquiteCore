@@ -6,7 +6,7 @@
  * Last updated on Apr 24, 2007
  * 
  */
-package mesquite.diverse.DiversificationCategCharLikelihood;
+package mesquite.diverse.DiversCategCharLikelihood;
 
 import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
 import mesquite.diverse.SpExtCategCharMLCalculator.SpExtCategCharMLCalculator;
@@ -14,11 +14,12 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
 
-public class DiversificationCategCharLikelihood extends NumberForCharAndTree {
+public class DiversCategCharLikelihood extends NumberForCharAndTree {
     public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
         EmployeeNeed e = registerEmployeeNeed(DivCategCharMLCalculator.class, getName() + "  needs a method to calculate likelihoods.",
         "The method to calculate likelihoods is arranged initially");
-    }
+		e.setSuppressListing(true);
+   }
 
     DivCategCharMLCalculator calcTask;
 
@@ -92,7 +93,7 @@ public class DiversificationCategCharLikelihood extends NumberForCharAndTree {
         }
         else
             parser.setPosition(loc);
-        if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != a0.getValue()){
+        if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != p.getValue()){
             p.setValue(newValue); //change mode
             return true;
         }

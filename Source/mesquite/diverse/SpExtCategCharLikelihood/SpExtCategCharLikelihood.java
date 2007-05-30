@@ -15,8 +15,9 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(SpExtCategCharMLCalculator.class, getName() + "  needs a method to calculate likelihoods.",
 		"The method to calculate likelihoods is arranged initially");
+		e.setSuppressListing(true);
 	}
-
+	
 	SpExtCategCharMLCalculator calcTask;
 
 
@@ -38,6 +39,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	MesquiteParameter[] params;
 	MesquiteParameter[] paramsCopy;
 	boolean[] selected;
+	boolean suspended = false;
 
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
 		calcTask = (SpExtCategCharMLCalculator)hireEmployee(commandRec, SpExtCategCharMLCalculator.class, "Integrating Likelihood");
@@ -52,6 +54,8 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
 		t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
 		params = new MesquiteParameter[]{s0, s1, e0, e1, t01, t10};
+		if (MesquiteThread.isScripting())
+			suspended = true;
 		/*TEMPORARY
 		for (int i= 0; i<6; i++)
 			params[i].setValue(0.1);
@@ -138,10 +142,13 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 			return false;
 		ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", params, null, 2, 2, false);
 		dlog.completeAndShowDialog(true);
+
 		boolean ok = (dlog.query()==0);
 		if (ok) 
 			dlog.acceptParameters();
+	//	dlog.setInWizard(false);
 		dlog.dispose();
+	
 		return ok;
 	}
 
@@ -153,11 +160,13 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
-
-		temp.addLine("getIntegTask ", calcTask);
 		String pLine = MesquiteParameter.paramsToScriptString(params);
+		temp.addLine("suspend ");
 		if (!StringUtil.blank(pLine))
 			temp.addLine("setParameters " + pLine);
+
+		temp.addLine("getIntegTask ", calcTask);
+		temp.addLine("resume ");
 		/*
 		 * temp.addLine("setS0 " + s0);
 		temp.addLine("setS1 " + s1);
@@ -179,7 +188,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		}
 		else
 			parser.setPosition(loc);
-		if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != e0.getValue()){
+		if ((MesquiteDouble.isUnassigned(newValue) ||  newValue >=0) && newValue != p.getValue()){
 			p.setValue(newValue); //change mode
 			return true;
 		}
@@ -213,6 +222,13 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
 			}
 
+		}
+		else if (checker.compare(getClass(), "Suspends calculations", null, commandName, "suspend")) {
+			suspended = true;
+		}
+		else if (checker.compare(getClass(), "Resumes calculations", null, commandName, "resume")) {
+			suspended = false;
+			parametersChanged(null, commandRec);
 		}
 		/*
 		else if (checker.compare(getClass(), "Sets extinction rate in state 0", "[double]", commandName, "setE0")) {
@@ -343,7 +359,8 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		if (result == null)
 			return;
 		result.setToUnassigned();
-
+		if (suspended)
+			return;
 		if (tree == null || charStates == null)
 			return;
 		
@@ -372,6 +389,12 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	public String getExplanation(){
 		return "Calculates likelihoods using a speciation/extinction model whose probabilities depend on the state of a single categorical character";
 	}
+	
+	/*.................................................................................................................*/
+ 	/** returns keywords related to what the module does, for help-related searches. */ 
+ 	public  String getKeywords()  {
+ 		return "diversification birth death";
+   	 }
 
 	public boolean isPrerelease(){
 		return true;

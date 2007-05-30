@@ -82,7 +82,8 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		e1p = new MesquiteParameter("e1", "Rate of extinction with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
 		t01p = new MesquiteParameter("r01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
 		t10p = new MesquiteParameter("r10", "Rate of 1->0 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-
+		if (MesquiteThread.isScripting())
+			suspended = true;
 		paramsForExploration= new MesquiteParameter[]{s0p, s1p, e0p, e1p, t01p, t10p};
 		speciesModel = new SpecExtincCategModel();
 		speciesModel.setParams(paramsForExploration);
@@ -158,6 +159,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		}
 		else if (checker.compare(getClass(), "Resumes calculations", null, commandName, "resume")) {
 			suspended = false;
+			parametersChanged(null, commandRec);
 		}
 		else if (checker.compare(getClass(), "Returns last result string", null, commandName, "getLastResultString")) {
 			return lastResultString;
@@ -382,8 +384,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	public double calculate(MesquiteString resultString, CommandRecord commandRec){
 		if (suspended)
 			return MesquiteDouble.unassigned;
-		if(true){
-		}
 		calculateLogProbability( lastTree,  lastCharDistribution, paramsForExploration, likelihood, resultString, commandRec);
 		return likelihood.getDoubleValue();
 	}
@@ -542,7 +542,8 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			negLogLikelihood = logLike(tree, observedStates, speciesModel);
 			modelString  = speciesModel.toString();
 		}
-		else {
+		else {	
+
 			logln("Estimating model with parameters " + speciesModel.toStringForScript());
 			//========================== all 6 parameters unspecified ==============================
 			if (speciesModel.numberSpecified() ==0 && speciesModel.numberEffectiveParameters() == 6){  //all unspecified

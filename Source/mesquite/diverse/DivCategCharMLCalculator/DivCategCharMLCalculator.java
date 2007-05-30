@@ -435,7 +435,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     }
 
     public String getName() {
-        return "BiSSE based Diversification Integrating Likelihood Calculator";
+        return "BiSSE Net Diversification Likelihood (Calculator)";
     }
     public String getAuthors() {
         return "Peter E. Midford & Wayne P. Maddison";
