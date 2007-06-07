@@ -16,12 +16,37 @@
 	else {
 	  document.getElementById(elementName).className = class1;
 	  }
+	  
   }
+
+  function openAll(){
+    var show = 'show';
+	var childLists = document.getElementsByTagName("ul");
+	for (var i = 0; i < childLists.length; i++){
+	  currentList = childLists[i];
+	  if (currentList.className != 'always'){
+	    currentList.className = show;
+	  }
+	}
+  }  
   
+  function closeAll(){
+    var hide = 'hide';
+	var childLists = document.getElementsByTagName("ul");
+	for (var i = 0; i < childLists.length; i++){
+	  currentList = childLists[i];
+	  if (currentList.className != 'always'){
+	    currentList.className = hide;
+	  }
+	}
+  }
+
 </script>
 <style>
+  ul {cursor:pointer;}
   .show {display:block;}
   .hide {display:none;}
+  .always {display:block;}
 </style>
 
 <!-- #EndEditable -->
@@ -163,12 +188,13 @@
           <tr> 
             <td><font face="Trebuchet MS"><!-- #BeginEditable "body" --> 
 			<h1>Mesquite Manual Table of Contents</h1>
-			<p>Click on a topic to expand its contents, or click <a href="tocExpanded.html">here</a> to expand the entire table of contents</p>
-    		<table width="750" cellpadding="9">
-			  <tr>
-				<td width="750" rowspan="2" align="left" valign="top">
+			<p>Click on a topic to expand its contents 
+			[<a style="cursor:pointer; text-decoration:underline" id="openAll" onClick="openAll()">Expand All</a> / <a  style="cursor:pointer; text-decoration:underline" id="closeAll" onClick="closeAll()">Collapse All</a>]</p>
+    		<!--<table width="750" cellpadding="9">-->
+			  <!--<tr>-->
+				<!--<td width="750" rowspan="2" align="left" valign="top">-->
 				  <h4>Part I: Mesquite Basics</h4>
-				  <ul id="partI">
+				  <ul id="partI" class="always">
  					<li><a href="manual.html">Introduction</a></li>
 					<li id="whyMesquite" onClick="changeclass('whyMesquiteSubmenu', 'show', 'hide')">Why Mesquite was made
 					  <ul id="whyMesquiteSubmenu" class="hide" onClick="changeclass('whyMesquiteSubmenu', 'show', 'hide')">
@@ -297,7 +323,7 @@
 				  </ul>
 
 				  <h4>Part II: Characters, Taxa, and Trees</h4>
-				  <ul id="partII">
+				  <ul id="partII" class="always">
 					<li id="characters" onClick="changeclass('charactersSubmenu', 'show', 'hide')">Characters
 					  <ul id="charactersSubmenu" class="hide" onClick="changeclass('charactersSubmenu', 'show', 'hide')">
 					    <li><a href="characters.html">Overview</a></li>
@@ -369,7 +395,7 @@
 					
 				  <h4>Part III: Analyses</h4>
 
-				  <ul id="PartIII">
+				  <ul id="PartIII" class="always">
 					<li id="charEvol" onClick="changeclass('charEvolSubmenu', 'show', 'hide')">Character Evolution
 					  <ul id="charEvolSubmenu" class="hide" onClick="changeclass('charEvolSubmenu', 'show', 'hide')">
 					    <li><a href="CharacterEvolution/charEvolution.html">Overview</a></li>
@@ -592,7 +618,7 @@
 				  </ul>
 
 				  <h4>Part IV: Miscellaneous Debris</h4>
-				  <ul id="partIV">
+				  <ul id="partIV" class="always">
 					<li id="interact" onClick="changeclass('interactSubmenu', 'show', 'hide')">Interactions with other programs
 					  <ul id="interactSubmenu" class="hide" onClick="changeclass('interactSubmenu', 'show', 'hide')">
 					    <li><a href="otherPrograms.html">Why?</a></li>
@@ -668,9 +694,9 @@
 					</li>
 					<li><a href="credits.html">Credits &amp; Acknowledgments</a></li>
 				  </ul>
-				</td>
-			  </tr>
-			</table>
+				<!--</td>-->
+			  <!--</tr>-->
+			<!--</table>-->
               <!-- #EndEditable --></font></td>
           </tr>
         </table>
