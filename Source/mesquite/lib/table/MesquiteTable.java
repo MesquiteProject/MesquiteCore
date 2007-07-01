@@ -3378,6 +3378,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		rowNames.offEdit();
 		columnNames.offEdit();
 	}
+	/* ............................................................................................................... */
+	/** Called to just clean up whatever is now being edited etc. in matrix. */
+	public void offAllEditingSelection() {
+		if (anyCellSelected())
+			deselectAllNotify();
+		offAllEdits();
+	}
 
 	/* ............................................................................................................... */
 	/** Remove all edit boxes but the one of the given panel. */
