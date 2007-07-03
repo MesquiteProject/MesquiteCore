@@ -79,7 +79,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec){
 		if (result==null)
 			return;
-		result.setToUnassigned();
+		clearResultAndLastResult(result);
 		Taxa taxa = taxon.getTaxa();
 		if (comparisonTaxon.getValue()<0 || comparisonTaxon.getValue()>=taxa.getNumTaxa())
 			comparisonTaxon.setValue(0);
@@ -107,6 +107,8 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 			result.setValue(score);
 		if (resultString!=null)
 			resultString.setValue(getScoreName() + " of sequence in matrix "+ observedStates.getName() + ": " + score.getIntValue());
+		saveLastResult(result);
+		saveLastResultString(resultString);
 	}
 	/*.................................................................................................................*/
 	protected abstract void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates, int it1, int it2, MesquiteNumber score, CommandRecord commandRec) ;

@@ -144,7 +144,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
         // TODO Auto-generated method stub
         if (result == null)
             return;
-        result.setToUnassigned();
+       	clearResultAndLastResult(result);
 
         if (tree == null)
             return;
@@ -189,7 +189,9 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
         result.setValue(lik);
         if (resultString != null)
             resultString.setValue("Result is " + lik);
-    }
+		saveLastResult(result);
+		saveLastResultString(resultString);
+   }
 
     public String getName() {
         return "Nee et al. Birth/Death Tree Likelihood";

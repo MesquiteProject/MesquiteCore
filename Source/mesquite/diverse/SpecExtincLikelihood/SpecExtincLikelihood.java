@@ -127,13 +127,15 @@ public class SpecExtincLikelihood extends NumberForTree  {
 			CommandRecord commandRec) {
 		if (result == null)
 			return;
-		result.setToUnassigned();
+	   	clearResultAndLastResult(result);
 
 		if (tree == null)
 			return;
 		tempLambda.setValue(lambda.getValue());
 		tempMu.setValue(mu.getValue());
 		calcTask.calculateLogProbability(tree, result, tempLambda, tempMu, resultString, commandRec);
+		saveLastResult(result);
+		saveLastResultString(resultString);
 
 	}
 	

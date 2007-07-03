@@ -57,6 +57,7 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 		CharacterData data = charsHistory.getParentData();
 		if (!(data instanceof CategoricalData))
 			return;
+		clearResultAndLastResult(result);
 		result.zeroArray();
 		if (resultString!=null)
 			resultString.setValue("");
@@ -68,6 +69,8 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 				visitNodes(tree.getRoot(), tree, cH, result, commandRec);		
 			}
 		}
+		saveLastResults(result);
+		saveLastResultString(resultString);
 	}
 
 	public String getName() {

@@ -24,8 +24,8 @@ public class MrBayesScore extends NumberForTree {
       public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
         if (result == null || tree == null)
             return;
-        result.setToUnassigned();
-        if (tree instanceof Attachable){
+	   	clearResultAndLastResult(result);
+       if (tree instanceof Attachable){
         	Object obj = ((Attachable)tree).getAttachment("MrBayesScore");
         	if (obj == null){
         			if (resultString != null)
@@ -41,7 +41,9 @@ public class MrBayesScore extends NumberForTree {
         if (resultString != null) {
             resultString.setValue("MrBayes score : " + result.toString());
         }
-    }
+		saveLastResult(result);
+		saveLastResultString(resultString);
+      }
 
   	/*.................................................................................................................*/
    	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

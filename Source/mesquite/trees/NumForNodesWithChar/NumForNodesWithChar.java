@@ -140,8 +140,11 @@ public class NumForNodesWithChar extends NumbersForNodes {
 	}
 	/*.................................................................................................................*/
 	public void calculateNumbers(Tree tree, NumberArray result, MesquiteString resultString, CommandRecord commandRec){
+	   	clearResultAndLastResult(result);
 		CharacterDistribution observedStates = characterSourceTask.getCharacter(tree, currentChar, commandRec);
 		numAndCharTask.calculateNumbers(tree, observedStates, result, resultString, commandRec);
+		saveLastResults(result);
+		saveLastResultString(resultString);
 	}
 
 

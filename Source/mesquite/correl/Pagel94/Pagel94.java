@@ -224,7 +224,8 @@ public class Pagel94 extends Pagel94Calculator {
 
 
     public void calculateNumber(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
-    		double result4;
+       	clearResultAndLastResult(result);
+   		double result4;
     		double result8;
     		double pvalue = MesquiteDouble.unassigned;
     	
@@ -395,7 +396,9 @@ public class Pagel94 extends Pagel94Calculator {
 	        else
 	            resultString.setValue("Difference in log likelihoods = " + result.getDoubleValue());
        }
-    }
+		saveLastResult(result);
+		saveLastResultString(resultString);
+   }
     
     private boolean eitherCharacterConstant(Tree tree,CategoricalAdjustable char1, CategoricalAdjustable char2) {
         return (char1.isConstant(tree,tree.getRoot()) || char2.isConstant(tree,tree.getRoot()));

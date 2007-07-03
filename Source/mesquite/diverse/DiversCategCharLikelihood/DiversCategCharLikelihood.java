@@ -139,13 +139,15 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
     public void calculateNumber(Tree tree, CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
         if (result == null)
             return;
-        result.setToUnassigned();
+       	clearResultAndLastResult(result);
 
         if (tree == null || charStates == null)
             return;
         paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
         calcTask.calculateLogProbability(tree, charStates, paramsCopy, result, resultString, commandRec);
-    }
+		saveLastResult(result);
+		saveLastResultString(resultString);
+   }
 
     /*------------------------------------------------------------------------------------------*/
 

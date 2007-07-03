@@ -45,6 +45,8 @@ public class UndoInstructions {
 	public static final int SINGLECHARACTERNAME = 3;
 	public static final int EDITTEXTFIELD = 4;
 	public static final int ALLDATACELLS = 5;
+	public static final int ALLTAXONNAMES=6;
+	public static final int ALLCHARACTERNAMES=7;
 
 
 	int changeClass;
@@ -90,6 +92,8 @@ public class UndoInstructions {
 		this.newState = newState;
 		this.textField = textField;
 	}
+	
+	
 
 	public void setNewState (Object newState) {
 		this.newState = newState;
@@ -130,8 +134,7 @@ public class UndoInstructions {
 		case ALLDATACELLS:
 			newData = data.cloneData();
 			data.copyData(oldData);
-			return new UndoInstructions(changeClass, newData, data);
-			
+			return new UndoInstructions(changeClass, newData, data);	
 		}
 		
 			
