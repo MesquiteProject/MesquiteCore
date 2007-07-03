@@ -69,7 +69,7 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 				visitNodes(tree.getRoot(), tree, cH, result, commandRec);		
 			}
 		}
-		saveLastResults(result);
+		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
 

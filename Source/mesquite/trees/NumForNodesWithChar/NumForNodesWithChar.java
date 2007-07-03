@@ -143,7 +143,7 @@ public class NumForNodesWithChar extends NumbersForNodes {
 	   	clearResultAndLastResult(result);
 		CharacterDistribution observedStates = characterSourceTask.getCharacter(tree, currentChar, commandRec);
 		numAndCharTask.calculateNumbers(tree, observedStates, result, resultString, commandRec);
-		saveLastResults(result);
+		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
 
