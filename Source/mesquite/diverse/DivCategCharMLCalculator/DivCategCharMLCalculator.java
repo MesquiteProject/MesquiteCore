@@ -1,3 +1,15 @@
+/* Mesquite source code.  Copyright 1997-2006 W. Maddison and D. Maddison.
+Version 1.11, June 2006.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+ */
 package mesquite.diverse.DivCategCharMLCalculator;
 
 
@@ -116,7 +128,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         
         // test values of r,a for stationary frequencies
         // save current parameter values
-/*        double savedr0p = r0p.getValue();
+        double savedr0p = r0p.getValue();
         double savedr1p = r1p.getValue();
         double saveda0p = a0p.getValue();
         double saveda1p = a1p.getValue();
@@ -133,30 +145,40 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         double upper;
         double lower;
         // try values of r
-        for(double ratio = 1.13;ratio<1.15;ratio+= 0.001){
+        for(double ratio = 1.304;ratio<1.306;ratio+= 0.0001){
             upper = 0.05*Math.sqrt(ratio);
             lower = 0.05/Math.sqrt(ratio);
-            r0p.setValue(upper);
-            r1p.setValue(lower);
+            r0p.setValue(lower);
+            r1p.setValue(upper);
+            a0p.setValue(0.5);
+            a1p.setValue(0.5);
             testModel.setParams(paramsForExploration);
             double freq0 = stationaryFreq0(testModel);
             Debugg.println("ratio = " + ratio + "; r0 = " + lower + "; r1 = " + upper + "; freq0 = " + freq0);
+            Debugg.print("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
+            Debugg.println("Calculated e0 = " + testModel.getERate(0) + "; calculated e1 = " + testModel.getERate(1));
+            Debugg.println("Calculated r0 = " + testModel.getR(0) + "; calculated r1 = " + testModel.getR(1) + "Calculated a0 = " + testModel.getA(0) + "; calculated a1 = " + testModel.getA(1));
         }
         r0p.setValue(0.05);
         r1p.setValue(0.05);
-        for(double ratio = 1.4;ratio<1.41;ratio+= 0.001){
+        for(double ratio = 1.9;ratio<2.0;ratio+= 0.01){
             upper = 0.05*Math.sqrt(ratio);
             lower = 0.05/Math.sqrt(ratio);
-            r0p.setValue(upper);
-            r1p.setValue(lower);
+            r0p.setValue(lower);
+            r1p.setValue(upper);
+            a0p.setValue(0.5);
+            a1p.setValue(0.5);
             testModel.setParams(paramsForExploration);
             double freq0 = stationaryFreq0(testModel);
             Debugg.println("ratio = " + ratio + "; r0 = " + lower + "; r1 = " + upper + "; freq0 = " + freq0);
+            Debugg.print("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
+            Debugg.println("Calculated e0 = " + testModel.getERate(0) + "; calculated e1 = " + testModel.getERate(1));
+            Debugg.println("Calculated r0 = " + testModel.getR(0) + "; calculated r1 = " + testModel.getR(1) + "Calculated a0 = " + testModel.getA(0) + "; calculated a1 = " + testModel.getA(1));
         }
         r0p.setValue(0.05);
         r1p.setValue(0.05);
         // try values of a
-        for(double ratio = 1;ratio<2.0;ratio+=0.1){
+/*        for(double ratio = 1;ratio<2.0;ratio+=0.1){
             upper = 0.5*Math.sqrt(ratio);
             lower = 0.5/Math.sqrt(ratio);
             a0p.setValue(lower);
@@ -164,17 +186,17 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             testModel.setParams(paramsForExploration);
             double freq0 = stationaryFreq0(testModel);
             Debugg.println("ratio = " + ratio + ";a0 = " + lower + "; a1 = " + upper + "; freq0 = " + freq0);
-            Debugg.println("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
+            Debugg.print("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
             Debugg.println("Calculated e0 = " + testModel.getERate(0) + "; calculated e1 = " + testModel.getERate(1));
         }
-        // restore
+*/        // restore
         r0p.setValue(savedr0p);
         r1p.setValue(savedr1p);
         a0p.setValue(saveda0p);
         a1p.setValue(saveda1p);
         t01p.setValue(savedt01p);
         t10p.setValue(savedt10p);
-*/
+
         return true;
     }
     boolean reportCladeValues = false;
@@ -834,11 +856,13 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             return MesquiteDouble.unassigned;
         int root = tree.getRoot(deleted);
         double f0 = stationaryFreq0(model);
+        if ((f0 <0) ||(f0 > 1))
+            return 1.0e101;
     //  Debugg.println("f0" + f0 + " model " + model.toString());
         initProbs(tree.getNumNodeSpaces(),lastMaxState);
         double logComp = downPass(root, tree, model, solver, states);
-        freq[0] = stationaryFreq0(model);
-        freq[1] = 1.0 - freq[0];
+        freq[0] = f0;
+        freq[1] = 1.0 - f0;
         double likelihood = 0.0;
         if (rootMode == ROOT_USEPRIOR){
             if (conditionOnSurvival.getValue()){
@@ -1056,7 +1080,7 @@ class DiversificationCategModel implements DESystem  {
         if (state == 0)
             return (parameters[0].getValue()*parameters[2].getValue())/(1-parameters[2].getValue());
         else if (state == 1)
-            return (parameters[0].getValue()*parameters[3].getValue())/(1-parameters[3].getValue());
+            return (parameters[1].getValue()*parameters[3].getValue())/(1-parameters[3].getValue());
         else return MesquiteDouble.unassigned;
     }
     public double getCRate(int state) {
