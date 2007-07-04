@@ -16,9 +16,9 @@ public abstract class DataAltererCon extends DataAlterer {
 		}
 
 	   	/** Called to alter data in those cells selected in table*/
-	   	public boolean alterData(CharacterData data, MesquiteTable table, CommandRecord commandRec){
+	   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference, CommandRecord commandRec){
 	  			boolean did=false;
-	  			UndoInstructions undoInstructions = data.setUndoInstructionsAllData();
+	  			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
 	   	 		if (table==null && data!=null){
 	   	 				
 						for (int i=0; i<data.getNumTaxa(); i++)
@@ -51,6 +51,10 @@ public abstract class DataAltererCon extends DataAlterer {
 					
 				}
 	   	   		undoInstructions.setNewData(data);
+	   			if (undoReference!=null){
+	   				undoReference.setUndoer(undoInstructions);
+	   				undoReference.setResponsibleModule(this);
+	   			}
 	   			if (did)
 	   				data.notifyInLinked(new Notification(DATA_CHANGED, null));
 				return did;

@@ -39,7 +39,8 @@ from MacClade:
 
  * */
 
-public class UndoInstructions {
+public class UndoInstructions implements Undoer {
+	public static final int CANTUNDO=-1;
 	public static final int SINGLEDATACELL = 1;
 	public static final int SINGLETAXONNAME = 2;
 	public static final int SINGLECHARACTERNAME = 3;
@@ -54,6 +55,7 @@ public class UndoInstructions {
 	int itEnd;
 	int icStart;
 	int icEnd;
+	int row;
 	Object oldState;
 	Object newState;
 	CharacterData data;
@@ -61,6 +63,7 @@ public class UndoInstructions {
 	CharacterData newData;
 	MesquiteTable table;
 	EditorTextField textField;
+	Taxa taxa;
 
 	/** This is the constructor for single-cell changes.  */
 	public UndoInstructions ( int changeClass, int ic, int it, Object oldState, Object newState, CharacterData data, MesquiteTable table) {
@@ -74,6 +77,24 @@ public class UndoInstructions {
 		this.oldState = oldState;
 		this.newState = newState;
 		this.data = data;
+	}
+
+	/** This is the constructor for single-cell changes.  */
+	public UndoInstructions ( int changeClass, int row, Object oldState, Object newState, Object obj, MesquiteTable table) {
+
+		this.table = table;
+		this.changeClass = changeClass;
+		this.row = row;
+		this.itStart = row;
+		this.itEnd = row;
+		this.icStart = row;
+		this.icEnd = row;
+		this.oldState = oldState;
+		this.newState = newState;
+		if (obj instanceof CharacterData)
+			data = (CharacterData)obj;
+		if (obj instanceof Taxa)
+			taxa = (Taxa)obj;
 	}
 
 	/** This is the constructor for whole-matrix changes.  */
@@ -102,28 +123,42 @@ public class UndoInstructions {
 		this.newData = data.cloneData();
 	}
 
-	public UndoInstructions undo() {
+	public Undoer undo() {
 
 		switch (changeClass) {
 
 		case SINGLEDATACELL:
-			table.offAllEditingSelection();
-			table.setFocusedCell(icStart, itStart, true);
+			if (table!=null){
+				table.offAllEditingSelection();
+				table.setFocusedCell(icStart, itStart, true);
+			}
 			data.setState(icStart, itStart, (CharacterState)oldState); //receive errors?
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, new int[] {icStart, itStart}));
 			return new UndoInstructions(changeClass, icStart,itStart,newState, oldState, data, table);
 
 		case SINGLETAXONNAME:
-			table.offAllEditingSelection();
-			table.setFocusedCell(-1, itStart, true);
-			data.getTaxa().setTaxonName(itStart, ((MesquiteString)oldState).getValue());
-			return new UndoInstructions(changeClass, -1, itStart, newState, oldState, data, table);
+			if (table!=null) {
+				table.offAllEditingSelection();
+				table.setFocusedCell(-1, itStart, true);
+			}
+			if (taxa!=null) {
+				taxa.setTaxonName(itStart, ((MesquiteString)oldState).getValue());
+				return new UndoInstructions(changeClass, itStart, newState, oldState, taxa, table);
+			}
+			else if (data!=null) {
+				data.getTaxa().setTaxonName(itStart, ((MesquiteString)oldState).getValue());
+				return new UndoInstructions(changeClass, -1, itStart, newState, oldState, data, table);
+			}
+			return null;
 
 		case SINGLECHARACTERNAME:
 			// problems if no name in cell, as with undo will be fixed as "Character 25", for example, and will display as such
-			table.offAllEditingSelection();
-			table.setFocusedCell(icStart, -1, true);
-			data.setCharacterName(icStart, ((MesquiteString)oldState).getValue());
+			if (table!=null){
+				table.offAllEditingSelection();
+				table.setFocusedCell(icStart, -1, true);
+			}
+			if (data!=null)
+				data.setCharacterName(icStart, ((MesquiteString)oldState).getValue());
 			return new UndoInstructions(changeClass, icStart, -1, newState, oldState, data, table);
 			
 		case EDITTEXTFIELD:

@@ -18,6 +18,7 @@ import java.util.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.*;
 
 
@@ -374,8 +375,12 @@ public class ListTable extends MesquiteTable {
 	}
 	/*...............................................................................................................*/
 	public void returnedRowNameText(int row, String s, CommandRecord commandRec){
-		if (s!=null && !s.equals(window.getRowName(row)))
+		if (s!=null && !s.equals(window.getRowName(row))) {
+			String oldName = window.getRowName(row);
 			window.setRowName(row, s, commandRec);
+			window.setUndoer(ownerModule.getSingleNameUndoInstructions(row,oldName, s));
+		}
+		
 	}
 	/*...............................................................................................................*/
 	public void returnedMatrixText(int column, int row, String s, CommandRecord commandRec){
