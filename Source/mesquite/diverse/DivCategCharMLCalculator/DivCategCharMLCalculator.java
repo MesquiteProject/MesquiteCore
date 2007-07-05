@@ -496,10 +496,11 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     public double stationaryFreq0(DiversificationCategModel model) {  
         if (model==null)
             return MesquiteDouble.unassigned;
-        double d = model.getSRate(0)-model.getSRate(1)+model.getERate(1)-model.getERate(0);
-        double r01 = model.getCRate(0);
-        double r10 = model.getCRate(1);
-        if (Math.abs(d ) < 1e-100){
+        final double d = model.getSRate(0)-model.getSRate(1)+model.getERate(1)-model.getERate(0);
+        final double noise = (model.getSRate(0)+model.getSRate(1)+model.getERate(1)+model.getERate(0))*1E-14;
+        final double r01 = model.getCRate(0);
+        final double r10 = model.getCRate(1);
+        if (Math.abs(d ) < noise){
             if (r01 + r10 == 0)
                 return 0.5;
             return r10/(r01+r10);
@@ -510,8 +511,8 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             part = Math.sqrt(part);
         else
             return MesquiteDouble.unassigned;
-        double plus = (r01 + r10 - d + part) / (-2*d);
-        double minus = (r01 + r10 - d - part) / (-2*d);
+        final double plus = (r01 + r10 - d + part) / (-2*d);
+        final double minus = (r01 + r10 - d - part) / (-2*d);            
         if (minus < 0 || minus >1)
             return plus;
         else if (plus < 0 || plus >1)
@@ -519,6 +520,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         else
             return MesquiteDouble.unassigned;
     }
+
 
     /*
      Options:
