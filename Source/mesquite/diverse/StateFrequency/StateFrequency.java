@@ -121,40 +121,37 @@ public class StateFrequency extends NumberForCharacter {
      public void calculateNumber(CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
          if (result==null)
              return;
-         result.setToUnassigned();
+         clearResultAndLastResult(result);
          String itemName = Integer.toString(selectedState+1);
-         if (charStates==null)
-             result.setToUnassigned();
-         else if  (!(charStates instanceof CategoricalDistribution)){
-             if (!warnedOnce)
-                 discreetAlert(commandRec, "Frequency of character state can be calculated only for Categorical characters");
-             warnedOnce = true;
-             result.setToUnassigned();
-             if (resultString!=null)
-                 resultString.setValue("No frequency of character state; can be calculated only for Categorical characters");
-         }
-         else {
-             warnedOnce = false;
-             cStates = (CategoricalDistribution)charStates;
-             int numtaxa = cStates.getNumNodes();
-             int count= 0;
-             int n=0;
-             for (int i=0; i<numtaxa; i++){
-                 long s = cStates.getState(i);
-                 if (CategoricalState.isCombinable(s)) {
-                     //Debugg.println("CharState = " + s + "selected State = " + selectedState);
-                     if (CategoricalState.isElement(s, selectedState))
-                             count++;
-                     n++;
-                 }
+         if (charStates!=null)
+             if  (!(charStates instanceof CategoricalDistribution)){
+                 if (!warnedOnce)
+                     discreetAlert(commandRec, "Frequency of character state can be calculated only for Categorical characters");
+                 warnedOnce = true;
+                 if (resultString!=null)
+                     resultString.setValue("No frequency of character state; can be calculated only for Categorical characters");
              }
-             if (n==0)
-                 result.setToUnassigned();
-             else
-                 result.setValue((1.0*count)/n);
-             if (resultString!=null)
-                 resultString.setValue("State Frequency: "+ result.toString() + " for State: " + itemName);
-         }
+             else {
+                 warnedOnce = false;
+                 cStates = (CategoricalDistribution)charStates;
+                 int numtaxa = cStates.getNumNodes();
+                 int count= 0;
+                 int n=0;
+                 for (int i=0; i<numtaxa; i++){
+                     long s = cStates.getState(i);
+                     if (CategoricalState.isCombinable(s)) {
+                         if (CategoricalState.isElement(s, selectedState))
+                             count++;
+                         n++;
+                     }
+                 }
+                 if (n != 0)
+                     result.setValue((1.0*count)/n);
+                 if (resultString!=null)
+                     resultString.setValue("State Frequency: "+ result.toString() + " for State: " + itemName);
+             }
+         saveLastResult(result);
+         saveLastResultString(resultString);
      }
 
     public void initialize(CharacterDistribution charStates, CommandRecord commandRec) {
