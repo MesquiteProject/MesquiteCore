@@ -56,7 +56,7 @@ public abstract class DataAltererCon extends DataAlterer {
 	   				undoReference.setResponsibleModule(this);
 	   			}
 	   			if (did)
-	   				data.notifyInLinked(new Notification(DATA_CHANGED, null));
+	   				data.notifyInLinked(new Notification(DATA_CHANGED));
 				return did;
 	   	}
 	   	
