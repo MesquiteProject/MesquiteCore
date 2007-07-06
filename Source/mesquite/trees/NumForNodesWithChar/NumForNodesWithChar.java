@@ -34,7 +34,7 @@ public class NumForNodesWithChar extends NumbersForNodes {
 	}
 	/*.................................................................................................................*/
 	CharSourceCoordObed characterSourceTask;
-	private NumbersForNodesWithChar numAndCharTask;
+	private NumbersForNodesAndChar numAndCharTask;
 	Object dataCondition;
 	Taxa taxa;
 	MesquiteString numberTaskName;
@@ -43,7 +43,7 @@ public class NumForNodesWithChar extends NumbersForNodes {
 	int currentChar = 0;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
-		numAndCharTask = (NumbersForNodesWithChar)hireCompatibleEmployee(commandRec, NumbersForNodesWithChar.class, getCharacterClass(), "Calculator (for " + getName() + ")");
+		numAndCharTask = (NumbersForNodesAndChar)hireCompatibleEmployee(commandRec, NumbersForNodesAndChar.class, getCharacterClass(), "Calculator (for " + getName() + ")");
 		if (numAndCharTask == null)
 			return sorry(commandRec, getName() + " couldn't start because no calculator (for " + getName() + ") was obtained");
 		//assume hired as NumbersForNodes; thus responsible for getting characters
@@ -85,7 +85,7 @@ public class NumForNodesWithChar extends NumbersForNodes {
 			return characterSourceTask;
 		}
 		else if (checker.compare(this.getClass(), "Returns module supplying numbers", null, commandName, "setNumNodesSource")) {
-			NumbersForNodesWithChar temp =  (NumbersForNodesWithChar)replaceEmployee(commandRec, NumbersForNodesWithChar.class, arguments, "Number for nodes", numAndCharTask);
+			NumbersForNodesAndChar temp =  (NumbersForNodesAndChar)replaceEmployee(commandRec, NumbersForNodesAndChar.class, arguments, "Number for nodes", numAndCharTask);
 			if (temp!=null) {
 				numAndCharTask = temp;
 				numAndCharTask.setHiringCommand(ntC);
