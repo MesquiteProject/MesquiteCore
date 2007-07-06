@@ -1,14 +1,22 @@
+/* Mesquite source code.  Copyright 1997-2006 W. Maddison and D. Maddison.
+Version 1.11, June 2006.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+*/
 package mesquite.diverse.SpecExtincMLCalculator;
 
 import java.util.Vector;
 
-import mesquite.categ.lib.CategoricalDistribution;
-import mesquite.categ.lib.CategoricalState;
 import mesquite.diverse.lib.*;
 import mesquite.lib.*;
-import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.ParametersExplorer;
-import mesquite.stochchar.lib.TreeDataModelBundle;
 
 public class SpecExtincMLCalculator extends MesquiteModule implements ParametersExplorable, Evaluator {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -17,7 +25,6 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	}
 
 	// bunch of stuff copied from zMargLikeCateg - need to prune!!
-
 
 	double [] probsExt, probsData;
 	double[] yStart;  //initial value for numerical integration
@@ -92,7 +99,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		return reportCladeValues;
 	}
 	public Snapshot getSnapshot(MesquiteFile file) {
-		Snapshot temp = new Snapshot();
+		final Snapshot temp = new Snapshot();
 		temp.addLine("setUnderflowCheckFreq " + underflowCheckFrequency);
 		temp.addLine("setStepCount " + stepCount);
 		temp.addLine("conditionOnSurvival  " + conditionOnSurvival.toOffOnString());
@@ -192,8 +199,6 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			//TODO: either filter to permit only ultrametric, or redo calculations to permit extinct nodes.
 			//TODO: likewise for polytomies
 			for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
-				// Debugg.println("probsExt["+nd +"][" + state + "] = " + probsExt[nd][state]);
-				// Debugg.println("probsData["+nd +"][" + state + "] = " + probsData[nd][state]);
 				e = probsExt[nd];
 				d *= probsData[nd];
 			}
@@ -310,12 +315,11 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	}
 	/*.................................................................................................................*/
 	public double evaluate(double[] params, Object bundle){
-//		Debugg.println("lambda " + params[0] + " mu " + params[1]);
 		if (anyNegative(params))
 			return 1e100;
 		if (params.length == 2)
 			return logLike((Tree)((Object[])bundle)[0], params[0], params[1]);
-		Object[] b = ((Object[])bundle);
+		final Object[] b = ((Object[])bundle);
 		Tree tree = (Tree)b[0];
 		MesquiteDouble lambda = (MesquiteDouble)b[1];
 		MesquiteDouble mu = (MesquiteDouble)b[2];
@@ -337,7 +341,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	public double evaluate(MesquiteDouble param, Object bundle){
 		if (!param.isCombinable() || param.getValue()<0)
 			return 1e100;
-		Object[] b = ((Object[])bundle);
+		final Object[] b = ((Object[])bundle);
 		Tree tree = (Tree)b[0];
 		MesquiteDouble lambda = (MesquiteDouble)b[1];
 		MesquiteDouble mu = (MesquiteDouble)b[2];
@@ -355,12 +359,6 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		return result;
 	}
 
-	/*{
- 		Optimizer opt = new Optimizer(this);
- 		Object[] bundle = new Object[] {tree, lambda, mu};
-			best = opt.optimize(paramMesquiteDouble,min, max, bundle);
-			best = opt.optimize(startingPointsDoublearray, bundle)
-	}
 	/*.................................................................................................................*/
 	public double logLike(Tree tree, double lambda, double mu) {  
 		if (model==null)
@@ -368,16 +366,14 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		model.setE(mu);
 		model.setS(lambda);
 		initProbs(tree.getNumNodeSpaces());
-		int root = tree.getRoot(deleted);
-		double  logComp = downPass(root, tree,model, solver);
+		final int root = tree.getRoot(deleted);
+		double  logComp = downPass(root, tree, model, solver);
 		double likelihood = 0.0;
 		if (conditionOnSurvival.getValue())
 			likelihood = probsData[root]/(1-probsExt[root])/(1-probsExt[root]);
 		else
 			likelihood = probsData[root];
-		double negLogLikelihood = -(Math.log(likelihood) - logComp);
-		return negLogLikelihood;
-
+		return (-(Math.log(likelihood) - logComp));
 	}
 	/*.................................................................................................................*/
 	public void calculateLogProbability(Tree tree, MesquiteNumber prob, MesquiteDouble lambda, MesquiteDouble mu, MesquiteString resultString, CommandRecord commandRec) {  
@@ -385,7 +381,6 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			return;
 		lastTree = tree;
 		prob.setToUnassigned();
-		String rep = model.toString();
 		String estimatedLambda = "";
 		String estimatedMu = "";
 
@@ -394,8 +389,8 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		if (lambda.isUnassigned() || mu.isUnassigned()){
 			double currentE = model.getE();
 			double currentS = model.getS();
-			Optimizer opt = new Optimizer(this);
-			Object[] bundle = new Object[] {tree, lambda, mu};
+			final Optimizer opt = new Optimizer(this);
+			final Object[] bundle = new Object[] {tree, lambda, mu};
 			if (lambda.isUnassigned() && mu.isUnassigned()){ //both unassigned
 				double[] suggestions = new double[]{1, 1};
 				negLogLikelihood = opt.optimize(suggestions, bundle);
@@ -421,13 +416,11 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 				double first = suggestion.getValue();
 				negLogLikelihood = opt.optimize(suggestion, 0.0, 100, bundle);
 				logln("Sp/Ext: neg. Log Likelihood second attempt:" + negLogLikelihood);
-				//	Debugg.println("a " + best + " param " + first + "   b  " + negLogLikelihood + "  param " + suggestion);
 				if (best < negLogLikelihood)
 					suggestion.setValue(first);
 				stepCount = 1000;
 				logln("Sp/Ext: Estimating parameters, phase 2: step count 1000");
 				negLogLikelihood = opt.optimize(suggestion, suggestion.getValue() * 0.6, suggestion.getValue() * 1.4, bundle);
-				//	Debugg.println("finer " + negLogLikelihood + "  param " + suggestion);
 				logln("Sp/Ext: neg. Log Likelihood final attempt:" + negLogLikelihood);
 				stepCount = currentStep;
 				if (lambda.isUnassigned()){
@@ -440,8 +433,6 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 					estimatedMu = "[est.]";
 				}
 			}
-
-
 			model.setE(currentE);
 			model.setS(currentS);
 		}
@@ -475,42 +466,6 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	}
 
 
-	/*	public double logLikelihoodCalc(Tree tree, DESystem speciesModel, boolean conditionBySurvival, DEQNumSolver solver, CharacterDistribution states) {
-		if (speciesModel == null)
-			return 0;
-		if (solver == null)
-			solver = new RK4Solver();
-		if (zeroHit)
-			return -0.001*(++estCount);  // to shortcircuit the optimizer wandering around zero with very high rates
-		CategoricalDistribution observedStates = (CategoricalDistribution)states;
-        if (observedStates.getMaxState() == 0){
-            MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; will try to proceed assuming 2 possible states");
-            initProbs(tree.getNumNodeSpaces(),2);
-        }
-        else
-            initProbs(tree.getNumNodeSpaces(), observedStates.getMaxState()+1); //the model should use the observedStates to set this; observedStates should carry info about its maximum conceivable number of states?
-
-		estCount++;
-		int root = tree.getRoot(deleted);
-		double comp = downPass(root, tree,speciesModel, solver, observedStates);
-		double likelihood = 0.0;
-		/*~~~~~~~~~~~~~~ logLikelihoodCalc ~~~~~~~~~~~~~~*
-		if (conditionBySurvival)
-			likelihood = probsData[root]/(1-probsExt[root])/(1-probsExt[root]);
-
-		else
-
-				likelihood = probsData[root];
-
-		double logLike = Math.log(likelihood) - comp;
-		if (logLike> -0.00001) {
-			zeroHit = true;
-		}
-
-		return (logLike);
-	}
-
-	 */
 	public Class getDutyClass() {
 		return SpecExtincMLCalculator.class;
 	}
@@ -560,10 +515,12 @@ class SpecExtincModel implements DESystem {
 	public String toString(){
 		return "Speciation/Extinction Model lambda=" + MesquiteDouble.toString(s, 4) + " mu=" + MesquiteDouble.toString(e, 4);
 	}
+    
+    /*.................................................................................................................*/
 	public double[]calculateDerivative(double t,double probs[],double[] result){
 		// for clarity
-		double extProb = probs[0];
-		double dataProb = probs[1];
+		final double extProb = probs[0];
+		final double dataProb = probs[1];
 		result[0] = -(e+s)*extProb + s*extProb*extProb + e; 
 		result[1] = -(e+s)*dataProb + 2*s*extProb*dataProb;
 		return result;

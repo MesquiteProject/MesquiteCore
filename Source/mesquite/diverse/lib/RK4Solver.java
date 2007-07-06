@@ -1,8 +1,18 @@
+/* Mesquite source code.  Copyright 1997-2006 W. Maddison and D. Maddison.
+Version 1.11, June 2006.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+ */
 package mesquite.diverse.lib;
 
 import java.util.Vector;
-
-import mesquite.lib.Debugg;
 
 
 public class RK4Solver implements DEQNumSolver {
@@ -10,6 +20,14 @@ public class RK4Solver implements DEQNumSolver {
 	DESystem mySystem;
 	double[] nextY;
 
+    /**
+     * @arg x0 starting point
+     * @arg y0 starting values
+     * @arg step size
+     * @arg xend
+     * @arg ds system of equations to solve
+     * @arg results saves intermediate values, last element is (estimated) y at xend
+     */
 	public double[] integrate(double x0, double[] y0, double h, double xend, DESystem ds, double[] results){
 		mySystem = ds;
 		if (results == null || results.length != y0.length)
@@ -42,7 +60,14 @@ public class RK4Solver implements DEQNumSolver {
 		return results;
 	}
 
-	
+    /**
+     * @arg x0 starting point
+     * @arg y0 starting values
+     * @arg step size
+     * @arg xend end point
+     * @arg ds system of equations to solve
+     * @arg results saves intermediate values, last element is (estimated) y at xend
+     */	
 	public Vector integrate(double x0, double[] y0, double h, double xend, DESystem ds,Vector results,boolean saveResults) {
 		mySystem = ds;
         double[] lastResult = null;
@@ -123,11 +148,5 @@ public class RK4Solver implements DEQNumSolver {
 			nextY[i] = y[i] + (h/6)*(k1[i]+2*k2[i]+2*k3[i]+k4[i]);
 		return nextY;
 	}
-
-	
-
-
-
-
 
 }

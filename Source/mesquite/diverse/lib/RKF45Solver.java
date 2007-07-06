@@ -1,8 +1,19 @@
+/* Mesquite source code.  Copyright 1997-2006 W. Maddison and D. Maddison.
+Version 1.11, June 2006.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+ */
 package mesquite.diverse.lib;
 
 import java.util.Vector;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteDouble;
 
 
@@ -19,6 +30,12 @@ public class RKF45Solver implements DEQNumSolver {
 
     /**
      * Solves the system specified by ds over the interval [x0,xend] with initial condition y0 using RKF45
+     * @arg x0 starting point
+     * @arg y0 starting values
+     * @arg step size
+     * @arg xend
+     * @arg ds system of equations to solve
+     * @arg results saves intermediate values, last element is (estimated) y at xend
      */
     public double[] integrate(double x0, double[] y0, double h, double xend, DESystem ds, double[] results){
         mySystem = ds;
@@ -44,7 +61,15 @@ public class RKF45Solver implements DEQNumSolver {
         return results;
     }
 
-    
+    /**
+     * Solves the system specified by ds over the interval [x0,xend] with initial condition y0 using RKF45
+     * @arg x0 starting point
+     * @arg y0 starting values
+     * @arg step size
+     * @arg xend
+     * @arg ds system of equations to solve
+     * @arg results saves intermediate values, last element is (estimated) y at xend
+     */    
     public Vector integrate(double x0, double[] y0, double h, double xend, DESystem ds,Vector results,boolean saveResults) {
         mySystem = ds;
         minh = 0.1*h;
@@ -79,7 +104,6 @@ public class RKF45Solver implements DEQNumSolver {
             else
                 lastResult = nextY;
         }        
-        
         if (!saveResults){
             if (results == null)
                 results = new Vector(1);

@@ -1,3 +1,15 @@
+/* Mesquite source code.  Copyright 1997-2006 W. Maddison and D. Maddison.
+Version 1.11, June 2006.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+*/
 package mesquite.diverse.SpExtCategCharMLCalculator;
 
 import java.util.Vector;
@@ -228,7 +240,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		if (q == 0)
 			return 0;
 		else {
-//			Debugg.println("underflow comp used " + q);
 			for (int i=0; i<probs.length; i++)
 				probs[i] /= q;
 		}
@@ -258,7 +269,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
-			//Debugg.println("node " + node + " state " + CategoricalState.toString(observed));
 			for (int state = 0;state < numStates;state++){
 				e[state]=0;
 				if ((state == obs))
@@ -279,8 +289,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 				//TODO: either filter to permit only ultrametric, or redo calculations to permit extinct nodes.
 				//TODO: likewise for polytomies
 				for (int nd = tree.firstDaughterOfNode(node, deleted); tree.nodeExists(nd); nd = tree.nextSisterOfNode(nd, deleted)) {
-					// Debugg.println("probsExt["+nd +"][" + state + "] = " + probsExt[nd][state]);
-					// Debugg.println("probsData["+nd +"][" + state + "] = " + probsData[nd][state]);
 					e[state] = probsExt[nd][state];
 					d[state] *= probsData[nd][state];
 				}
@@ -371,7 +379,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			proposedSteps = stepCount/2;
 		else if (proposedSteps > 4* stepCount)
 			proposedSteps =4* stepCount;
-//Debugg.println("steps " + proposedSteps);		
 		return length/proposedSteps;       //this will need tweaking!
 
 	}
@@ -443,8 +450,6 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		if (model==null)
 			return MesquiteDouble.unassigned;
 		int root = tree.getRoot(deleted);
-		double f0 = stationaryFreq0(model);
-	//	Debugg.println("f0" + f0 + " model " + model.toString());
 		initProbs(tree.getNumNodeSpaces(),lastMaxState);
 		double logComp = downPass(root, tree, model, solver, states);
 		freq[0] = stationaryFreq0(model);
@@ -466,21 +471,21 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		else
 			for (int i=0;  i<lastMaxState; i++) 
 				likelihood += probsData[root][i];
-		double negLogLikelihood = -(Math.log(likelihood) - logComp);
-		return negLogLikelihood;
+		return (-(Math.log(likelihood) - logComp));
 	}
 	/*.................................................................................................................*/
 	public double stationaryFreq0(SpecExtincCategModel model) {  
 		if (model==null)
 			return MesquiteDouble.unassigned;
-		double d = model.getSRate(0)-model.getSRate(1)+model.getERate(1)-model.getERate(0);
-		double r01 = model.getCRate(0);
-		double r10 = model.getCRate(1);
-		if (Math.abs(d ) < 1e-100){
-			if (r01 + r10 == 0)
-				return 0.5;
-			return r10/(r01+r10);
-		}
+		final double d = model.getSRate(0)-model.getSRate(1)+model.getERate(1)-model.getERate(0);
+        final double noise = (model.getSRate(0)+model.getSRate(1)+model.getERate(1)+model.getERate(0))*1E-14;
+		final double r01 = model.getCRate(0);
+		final double r10 = model.getCRate(1);
+        if (Math.abs(d ) < noise){
+            if (r01 + r10 == 0)
+                return 0.5;
+            return r10/(r01+r10);
+        }
 		double part = d - r01 - r10;
 		part = part*part + 4*d*r10;
 		if (part >=0)
@@ -828,20 +833,20 @@ class SpecExtincCategModel implements DESystem {
 	}
 	public String toStringForScript(){
 		return MesquiteParameter.paramsToScriptString(parameters);
-}
+	}
+    /*.................................................................................................................*/
 	public double[]calculateDerivative(double t,double probs[],double[] result){
 		// for clarity
-//		Debugg.println("probs " + probs.length + " result " + result.length);
-		double extProb0 = probs[0];
-		double extProb1 = probs[1];
-		double dataProb0 = probs[2];
-		double dataProb1 = probs[3];
-		double s0 = parameters[0].getValue();
-		double s1 = parameters[1].getValue();
-		double e0 = parameters[2].getValue();
-		double e1 = parameters[3].getValue();
-		double t01 = parameters[4].getValue();
-		double t10 = parameters[5].getValue();
+		final double extProb0 = probs[0];
+		final double extProb1 = probs[1];
+		final double dataProb0 = probs[2];
+		final double dataProb1 = probs[3];
+		final double s0 = parameters[0].getValue();
+		final double s1 = parameters[1].getValue();
+		final double e0 = parameters[2].getValue();
+		final double e1 = parameters[3].getValue();
+		final double t01 = parameters[4].getValue();
+		final double t10 = parameters[5].getValue();
 
 		result[0] = -(e0+t01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + t01*extProb1; 
 		result[1] = -(e1+t10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + t10*extProb0;            
@@ -856,12 +861,14 @@ class SpecExtincCategModel implements DESystem {
 	public int numberSpecified(){
 		return MesquiteParameter.numberSpecified(original);
 	}
+    /*.................................................................................................................*/
 	public int numberEffectiveParameters(){
 		if (effectiveParamMapping == null)
 			return 0;
 		return effectiveParamMapping.length;
 	}
 
+    /*.................................................................................................................*/
 	public void setParams(MesquiteParameter[] params){
 		original = MesquiteParameter.cloneArray(params, original);
 		parameters = MesquiteParameter.cloneArray(params, parameters);
@@ -896,10 +903,10 @@ class SpecExtincCategModel implements DESystem {
 				}
 			checked[mapee] = true;
 		}
-//		Debugg.println("constraintMap " + constraintMap.length + "  " + IntegerArray.toString(constraintMap));
-//		Debugg.println("effective mapping " + effectiveParamMapping.length + "  " + IntegerArray.toString(effectiveParamMapping));
 	}
-	public void setParamValuesUsingConstraints(double[] params){
+
+    /*.................................................................................................................*/
+    public void setParamValuesUsingConstraints(double[] params){
 		if (params == null || params.length == 0)
 			return;
 		if (params.length == 6 && effectiveParamMapping == null){
@@ -922,13 +929,14 @@ class SpecExtincCategModel implements DESystem {
 				}
 			}
 		}
-		//	Debugg.println("examined params " + MesquiteParameter.toString(parameters));
 	}
 
+    /*.................................................................................................................*/
 	public void getParams(MesquiteParameter[] params){
 		if (params != null)
 			params = MesquiteParameter.cloneArray(original, params);
 	}
+    /*.................................................................................................................*/
 	public double getSRate(int state) {
 		if (state == 0)
 			return parameters[0].getValue();
@@ -937,6 +945,7 @@ class SpecExtincCategModel implements DESystem {
 		else return MesquiteDouble.unassigned;
 	}
 
+    /*.................................................................................................................*/
 	public double getERate(int state) {
 		if (state == 0)
 			return parameters[2].getValue();
@@ -944,6 +953,7 @@ class SpecExtincCategModel implements DESystem {
 			return parameters[3].getValue();
 		else return MesquiteDouble.unassigned;
 	}
+    /*.................................................................................................................*/
 	public double getCRate(int state) {
 		if (state == 0)
 			return parameters[4].getValue();

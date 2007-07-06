@@ -125,12 +125,6 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
         }
     }
     
-
-    //TODO translate to iteration or find a library version of this
-    private double fact(double n){
-        if (n==1) return 1;
-        else return n*fact(n-1);
-    }
     
     private double P(double startT, double endT){
         return (lambda-mu)/(lambda - mu*Math.exp(-(lambda-mu)*(endT-startT)));

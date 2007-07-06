@@ -1,9 +1,19 @@
+/* Mesquite source code.  Copyright 1997-2006 W. Maddison and D. Maddison.
+Version 1.11, June 2006.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+*/
 package mesquite.diverse.SpecExtincLikelihood;
 
-import java.util.Vector;
 
 import mesquite.diverse.SpecExtincMLCalculator.SpecExtincMLCalculator;
-import mesquite.diverse.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.*;
@@ -89,8 +99,6 @@ public class SpecExtincLikelihood extends NumberForTree  {
 	/*.................................................................................................................*/
 	/*  the main command handling method.  */
 	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
-		// Should be removed when debugged
-		//  double [] testvals = { 1E-11,1E-10,1E-9,1E-8,1E-7,5E-7,1E-6,2E-6,1E-5,1E-4,5E-4,1E-3,5E-3,1E-2,2E-2,5E-2,1E-1,2E-1,5E-01};
 		if (checker.compare(getClass(), "Sets extinction rate", "[double]", commandName, "setE")) {
 			double newE = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteDouble.isCombinable(newE) && !MesquiteThread.isScripting())
@@ -122,9 +130,7 @@ public class SpecExtincLikelihood extends NumberForTree  {
 	MesquiteDouble tempLambda = new MesquiteDouble();
 	MesquiteDouble tempMu = new MesquiteDouble();
 	/*---------------------------------------------------------------------------------*/
-	public void calculateNumber(Tree tree, 
-			MesquiteNumber result, MesquiteString resultString,
-			CommandRecord commandRec) {
+	public void calculateNumber(Tree tree,MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
 		if (result == null)
 			return;
 	   	clearResultAndLastResult(result);
@@ -140,10 +146,8 @@ public class SpecExtincLikelihood extends NumberForTree  {
 	}
 	
 	/*---------------------------------------------------------------------------------*/
-	public void initialize(Tree tree, CharacterDistribution charStates,
-			CommandRecord commandRec) {
+	public void initialize(Tree tree, CharacterDistribution charStates, CommandRecord commandRec) {
 		// TODO Auto-generated method stub
-
 	}
 	/*---------------------------------------------------------------------------------*/
 

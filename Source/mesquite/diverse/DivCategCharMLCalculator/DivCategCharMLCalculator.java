@@ -42,7 +42,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     MesquiteNumber probabilityValue;
     int numStates;
 
-    long underflowCheckFrequency = 2; //2;  //how often to check that not about to underflow; 1 checks every time
+    long underflowCheckFrequency = 2; //how often to check that not about to underflow; 1 checks every time
     long underflowCheck = 1;
     double underflowCompensation = 1;
     MesquiteNumber minChecker;
@@ -126,77 +126,6 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         //  mssr.setSelected(rootModeName);
         /**/
         
-        // test values of r,a for stationary frequencies
-        // save current parameter values
-        double savedr0p = r0p.getValue();
-        double savedr1p = r1p.getValue();
-        double saveda0p = a0p.getValue();
-        double saveda1p = a1p.getValue();
-        double savedt01p = t01p.getValue();
-        double savedt10p = t10p.getValue();
-        r0p.setValue(0.05);
-        r1p.setValue(0.05);
-        a0p.setValue(0.5);
-        a1p.setValue(0.5);
-        t01p.setValue(0.005);
-        t10p.setValue(0.005);
-        // create model
-        DiversificationCategModel testModel = new DiversificationCategModel();
-        double upper;
-        double lower;
-        // try values of r
-        for(double ratio = 1.304;ratio<1.306;ratio+= 0.0001){
-            upper = 0.05*Math.sqrt(ratio);
-            lower = 0.05/Math.sqrt(ratio);
-            r0p.setValue(lower);
-            r1p.setValue(upper);
-            a0p.setValue(0.5);
-            a1p.setValue(0.5);
-            testModel.setParams(paramsForExploration);
-            double freq0 = stationaryFreq0(testModel);
-            Debugg.println("ratio = " + ratio + "; r0 = " + lower + "; r1 = " + upper + "; freq0 = " + freq0);
-            Debugg.print("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
-            Debugg.println("Calculated e0 = " + testModel.getERate(0) + "; calculated e1 = " + testModel.getERate(1));
-            Debugg.println("Calculated r0 = " + testModel.getR(0) + "; calculated r1 = " + testModel.getR(1) + "Calculated a0 = " + testModel.getA(0) + "; calculated a1 = " + testModel.getA(1));
-        }
-        r0p.setValue(0.05);
-        r1p.setValue(0.05);
-        for(double ratio = 1.9;ratio<2.0;ratio+= 0.01){
-            upper = 0.05*Math.sqrt(ratio);
-            lower = 0.05/Math.sqrt(ratio);
-            r0p.setValue(lower);
-            r1p.setValue(upper);
-            a0p.setValue(0.5);
-            a1p.setValue(0.5);
-            testModel.setParams(paramsForExploration);
-            double freq0 = stationaryFreq0(testModel);
-            Debugg.println("ratio = " + ratio + "; r0 = " + lower + "; r1 = " + upper + "; freq0 = " + freq0);
-            Debugg.print("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
-            Debugg.println("Calculated e0 = " + testModel.getERate(0) + "; calculated e1 = " + testModel.getERate(1));
-            Debugg.println("Calculated r0 = " + testModel.getR(0) + "; calculated r1 = " + testModel.getR(1) + "Calculated a0 = " + testModel.getA(0) + "; calculated a1 = " + testModel.getA(1));
-        }
-        r0p.setValue(0.05);
-        r1p.setValue(0.05);
-        // try values of a
-/*        for(double ratio = 1;ratio<2.0;ratio+=0.1){
-            upper = 0.5*Math.sqrt(ratio);
-            lower = 0.5/Math.sqrt(ratio);
-            a0p.setValue(lower);
-            a1p.setValue(upper);
-            testModel.setParams(paramsForExploration);
-            double freq0 = stationaryFreq0(testModel);
-            Debugg.println("ratio = " + ratio + ";a0 = " + lower + "; a1 = " + upper + "; freq0 = " + freq0);
-            Debugg.print("Calculated s0 = " + testModel.getSRate(0) + "; calculated s1 = " + testModel.getSRate(1));
-            Debugg.println("Calculated e0 = " + testModel.getERate(0) + "; calculated e1 = " + testModel.getERate(1));
-        }
-*/        // restore
-        r0p.setValue(savedr0p);
-        r1p.setValue(savedr1p);
-        a0p.setValue(saveda0p);
-        a1p.setValue(saveda1p);
-        t01p.setValue(savedt01p);
-        t10p.setValue(savedt10p);
-
         return true;
     }
     boolean reportCladeValues = false;
@@ -310,7 +239,6 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         if (q == 0)
             return 0;
         else {
-          //Debugg.println("underflow comp used " + q);
             for (int i=0; i<probs.length; i++)
                 probs[i] /= q;
         }
@@ -446,9 +374,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             proposedSteps = stepCount/2;
         else if (proposedSteps > 4* stepCount)
             proposedSteps =4* stepCount;
-//Debugg.println("steps " + proposedSteps);     
         return length/proposedSteps;       //this will need tweaking!
-
     }
 
     
@@ -860,7 +786,6 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         double f0 = stationaryFreq0(model);
         if ((f0 <0) ||(f0 > 1))
             return 1.0e101;
-    //  Debugg.println("f0" + f0 + " model " + model.toString());
         initProbs(tree.getNumNodeSpaces(),lastMaxState);
         double logComp = downPass(root, tree, model, solver, states);
         freq[0] = f0;
@@ -924,7 +849,6 @@ class DiversificationCategModel implements DESystem  {
 
 */
     public double[] calculateDerivative(double t, double[] probs, double[] result) {
-//      Debugg.println("probs " + probs.length + " result " + result.length);
         double extProb0 = probs[0];
         double extProb1 = probs[1];
         double dataProb0 = probs[2];
@@ -941,21 +865,7 @@ class DiversificationCategModel implements DESystem  {
         double e0 = r0*a0/(1-a0);
         double s1 = r1/(1-a1);
         double e1 = r1*a1/(1-a1);
-        
-        //messageCount++;
-        if (a0 > 1 || a1 > 1){
-            Debugg.print("r0 = " + r0);
-            Debugg.print("; a0 = " + a0);
-            Debugg.print("; r1 = " + r1);
-            Debugg.println("; a1 = " + a1);
-            Debugg.print("Back calculated s0 = " + s0);
-            Debugg.print("; Back calculated e0 = " + e0);
-            Debugg.print("; Back calculated s1 = " + s1);
-            Debugg.println("; Back calculated e1 = " + e1);
-        }
-//        else if (messageCount == 1000)
- //           messageCount = 0;    // faster and fewer overflows than modulo solution
-        
+                
         result[0] = -(e0+q01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + q01*extProb1; 
         result[1] = -(e1+q10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + q10*extProb0;            
         result[2] = -(e0+q01+s0)*dataProb0 + 2*s0*extProb0*dataProb0 + q01*dataProb1;
@@ -1010,9 +920,8 @@ class DiversificationCategModel implements DESystem  {
                 }
             checked[mapee] = true;
         }
-//      Debugg.println("constraintMap " + constraintMap.length + "  " + IntegerArray.toString(constraintMap));
-//      Debugg.println("effective mapping " + effectiveParamMapping.length + "  " + IntegerArray.toString(effectiveParamMapping));
     }
+    
     public boolean setParamValuesUsingConstraints(double[] params){
         if (params == null || params.length == 0)
             return true;  //nothing to do, so return success?
@@ -1043,7 +952,6 @@ class DiversificationCategModel implements DESystem  {
             }
         }
         return true;
-        //  Debugg.println("examined params " + MesquiteParameter.toString(parameters));
     }
 
     public void getParams(MesquiteParameter[] params){

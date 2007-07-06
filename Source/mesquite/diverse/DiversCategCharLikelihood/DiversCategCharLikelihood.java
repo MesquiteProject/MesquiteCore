@@ -13,7 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.diverse.DiversCategCharLikelihood;
 
 import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
-import mesquite.diverse.SpExtCategCharMLCalculator.SpExtCategCharMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
@@ -44,7 +43,7 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
         calcTask = (DivCategCharMLCalculator)hireEmployee(commandRec, DivCategCharMLCalculator.class, "Integrating Likelihood");
         if (calcTask == null)
             return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
-        double def = MesquiteDouble.unassigned;
+        final double def = MesquiteDouble.unassigned;
         //following is for the parameters explorer
         r0 = new MesquiteParameter("r0", "Rate of net diversification with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
         r1 = new MesquiteParameter("r1", "Rate of net diversification with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
@@ -87,7 +86,7 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
         return temp;
     }
     boolean setParam(MesquiteParameter p, MesquiteParameter[] params, Parser parser){
-        double newValue = MesquiteDouble.fromString(parser);
+        final double newValue = MesquiteDouble.fromString(parser);
         int loc = parser.getPosition();
         String token = parser.getNextToken();
         if (token != null && "=".equals(token)){
@@ -107,7 +106,6 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
     /*.................................................................................................................*/
     /*  the main command handling method.  */
     public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
-        // Should be removed when debugged
         if (checker.compare(getClass(), "Sets rate parameters", "[double double double double double double]", commandName, "setParameters")) {
             if (StringUtil.blank(arguments)){
                 if (!MesquiteThread.isScripting() && showDialog())
