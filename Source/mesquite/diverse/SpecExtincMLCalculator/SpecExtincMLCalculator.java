@@ -334,7 +334,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result > 1e100)
 			result = 1e100;
 		if (count++ % 10 == 0)
-			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + "  lambda " + lambda + " mu " + mu);
+			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + "  lambda " + lambda + " mu " + mu);
 		return result;
 	}
 	/*.................................................................................................................*/
@@ -355,7 +355,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result > 1e100)
 			result = 1e100;
 		if (count++ % 10 == 0)
-			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toString(result, 4) + "  lambda " + lambda + " mu " + mu);
+			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + "  lambda " + lambda + " mu " + mu);
 		return result;
 	}
 
@@ -513,7 +513,7 @@ class SpecExtincModel implements DESystem {
 	 * @see mesquite.correl.lib.DESystem#calculateDerivative(double, double[])
 	 */
 	public String toString(){
-		return "Speciation/Extinction Model lambda=" + MesquiteDouble.toString(s, 4) + " mu=" + MesquiteDouble.toString(e, 4);
+		return "Speciation/Extinction Model lambda=" + MesquiteDouble.toStringDigitsSpecified(s, 4) + " mu=" + MesquiteDouble.toStringDigitsSpecified(e, 4);
 	}
     
     /*.................................................................................................................*/
