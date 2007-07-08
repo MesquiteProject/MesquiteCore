@@ -92,7 +92,8 @@ public class PairwiseAligner  {
 		if ( returnAlignment) { 
 		
 			long ret[][];
-			if ((lengthA*lengthB)>getCharThresholdForLowMemory()) { 
+			long charThreshold = getCharThresholdForLowMemory();
+			if ((lengthA*lengthB)>charThreshold) { 
 				//low memory (but slower, due to recursion) alignment
 				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, keepGaps, followsGapSize);
 				
@@ -238,7 +239,7 @@ public class PairwiseAligner  {
 	public long getCharThresholdForLowMemory(){
 		//return charThresholdForLowMemory;
 		long charsFitInMemWithQuadraticDPTable = MesquiteTrunk.getMaxAvailableMemory()/10; //rough approximation
-		return charsFitInMemWithQuadraticDPTable/2; // conservative - if it should only use up half of available memory, use quadratic space algorithm (faster); else use linear space	
+		return charsFitInMemWithQuadraticDPTable/3; // conservative - if it should only use up third of available memory, use quadratic space algorithm (faster); else use linear space	
 	}
 
 	public void setCharThresholdForLowMemory(int numChars){
