@@ -5,4 +5,4 @@
  repeat1 = 'execute ''<name><number>.nex'';^nhs;^nsavetrees file = ''<name><number>.trees'';^ncontree / strict= yes majrule=no treefile = ''CB<name>'' append = yes;'
  end1 = 'gettrees file = ''CB<name>''  warntree = no allblocks;^nsavetrees file = ''consensus.trees'';^ncontree / strict= yes treefile = ''StrictConsCons.trees'';^ncontree / strict= no majrule=yes treefile = ''MajRuleConsCons.trees'';^nend;'
  batchFileName1 = paupCommands.nex
- matrixExportFormat =  NEXUS_file
+ matrixExportFormat =  NEXUS_file_interpreter

@@ -1,1 +1,1 @@
-#MESQUITEINIT BATCHFILE 1name = 'Simple List'explanation = 'Produces an accessory file consisting of a simple list of the data matrix files'repeat1 = '<name><number>.nex'matrixExportFormat = 'NEXUS file'batchFileName1 = 'commands.txt'
+#MESQUITEINIT BATCHFILE 1name = 'Simple List'explanation = 'Produces an accessory file consisting of a simple list of the data matrix files'repeat1 = '<name><number>.nex'matrixExportFormat = 'NEXUS file interpreter'batchFileName1 = 'commands.txt'

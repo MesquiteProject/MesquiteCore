@@ -7,4 +7,4 @@
  batchFileName1 = PaupCommands.nex
  start2 = 'MesquiteInstructions^nnumVariables = 2^nnumFiles = 1^nfile1 = ''itemsPerRecord=8 v1=4 v2=8''^nrecordLabel = ''Replicates''^nformula = ''v1-v2''^nlabel1 = ''Constrained treelength''^nlabel2 = ''Unconstrained treelength'''
  batchFileName2 = MesquiteInstructions
- matrixExportFormat =  NEXUS_file
+ matrixExportFormat =  NEXUS_file_interpreter
