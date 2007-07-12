@@ -94,7 +94,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 			}
 	}
 	public void setTaxa(Taxa taxa) {
-		if (taxa!=null && taxa!=this.taxa) {
+		if (taxa!=null){//&& taxa!=this.taxa) {
 			this.taxa = taxa;
 			selected = new boolean[taxa.getNumTaxa()];
 			assigned = new boolean[taxa.getNumTaxa()];
