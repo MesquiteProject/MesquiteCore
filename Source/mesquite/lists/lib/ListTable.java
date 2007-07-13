@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.lib;
 
 import java.awt.*;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.util.*;
 import mesquite.lib.duties.*;
