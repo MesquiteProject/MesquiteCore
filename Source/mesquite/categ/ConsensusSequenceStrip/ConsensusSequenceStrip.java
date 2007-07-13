@@ -50,7 +50,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		stSubmenu = addSubmenu(null, "State Calculator", stC, CategStateForCharacter.class);
 		stSubmenu.setSelected(stateTaskName);
 		menuItem1= addCheckMenuItem(null,"Selected Taxa Only", makeCommand("toggleSelectedOnly", this), selectedOnly);
-		menuItem2= addCheckMenuItem(null,"Show As Gray if Any Gaps", makeCommand("toggleGrayIfGaps", this), showSomeInapplicableAsGray);
+		menuItem2= addCheckMenuItem(null,"Darken if Any Gaps", makeCommand("toggleGrayIfGaps", this), showSomeInapplicableAsGray);
 		
 		
 		this.data = data;
