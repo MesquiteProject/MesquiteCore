@@ -19,7 +19,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	MesquiteString stateTaskName;
 	MesquiteCommand stC;
 	MesquiteSubmenuSpec stSubmenu;
-	MesquiteMenuItemSpec menuItem1, menuItem2, colorByAAMenuItem;
+	MesquiteMenuItemSpec menuItem1, menuItem2, colorByAAMenuItem, closeMenuItem, lineMenuItem;
 	MesquiteBoolean colorByAA = new MesquiteBoolean(false);
 	
 	boolean suspend = false;
@@ -54,13 +54,25 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	public void checkMenuItems() {
 		colorByAAMenuItem.setEnabled((data instanceof DNAData) && ((DNAData)data).someCoding());
 	}
+	public void deleteRemoveMenuItem() {
+		deleteMenuItem(lineMenuItem);
+		deleteMenuItem(closeMenuItem);
+	}
+	public void addRemoveMenuItem() {
+		closeMenuItem= addMenuItem(null,"Remove Consensus Sequence", makeCommand("remove", this));
+		lineMenuItem = addMenuLine();
+	}
+		
 	public void setTableAndData(MesquiteTable table, CharacterData data, CommandRecord commandRec) {
 		deleteMenuItems();
+		deleteRemoveMenuItem();
+		addRemoveMenuItem();
 		stSubmenu = addSubmenu(null, "State Calculator", stC, CategStateForCharacter.class);
 		stSubmenu.setSelected(stateTaskName);
 		menuItem1= addCheckMenuItem(null,"Selected Taxa Only", makeCommand("toggleSelectedOnly", this), selectedOnly);
 		menuItem2= addCheckMenuItem(null,"Darken if Any Gaps", makeCommand("toggleGrayIfGaps", this), showSomeInapplicableAsGray);
 		colorByAAMenuItem= addCheckMenuItem(null,"Color Nucleotide by AA Color", makeCommand("toggleColorByAA", this), colorByAA);
+		
 		
 		if (data != null)
 			data.removeListener(this);
@@ -121,6 +133,9 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				}
 			}
 		}
+		else if (checker.compare(this.getClass(), "Removes the Info Strip", null, commandName, "remove")) {
+			iQuit();
+		}
 		else if (checker.compare(this.getClass(), "Suspends calculations", null, commandName, "suspend")) {
 			suspend = true;
 		}
@@ -145,6 +160,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				}
 				return stateTask;
 			}
+			addRemoveMenuItem();
 		}
 		else
 			return super.doCommand(commandName, arguments, commandRec, checker);
