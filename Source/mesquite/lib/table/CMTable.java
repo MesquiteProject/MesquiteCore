@@ -28,4 +28,5 @@ public abstract class CMTable extends MesquiteTable {
 	public abstract void setFirstRowVisibleLinked(int row);
 	public abstract CellColorer getCellColorer();
 
+
 }

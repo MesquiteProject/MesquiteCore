@@ -15,6 +15,7 @@ package mesquite.lib.table;
 import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
+import mesquite.lib.duties.FileInterpreter;
 
 import java.io.*;
 
@@ -616,4 +617,6 @@ timer6.end();
 		setCurrentCursor(modifiers, column,  row, tool);
 		table.mouseInCell(modifiers, column,-1,  row, -1, tool);
 	}
+	
+
 }

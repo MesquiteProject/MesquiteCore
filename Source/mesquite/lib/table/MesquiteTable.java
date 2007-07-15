@@ -20,6 +20,7 @@ import java.awt.datatransfer.*;
 import javax.swing.text.JTextComponent;
 
 import mesquite.lib.*;
+import mesquite.lib.duties.FileInterpreter;
 
 /* ======================================================================== */
 /**
