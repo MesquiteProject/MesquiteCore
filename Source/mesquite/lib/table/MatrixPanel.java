@@ -273,6 +273,26 @@ timer6.end();
 		}
 		g.setClip(clip);
 	}
+
+	/*...............................................................................................................*/
+	public void drawBetweenSelection(Graphics g){
+		if (table.selectedBetweenColumns()) {
+			int x = table.getColumnX(table.getStartBetweenColumnSelection());
+			int top = table.getRowY(table.getStartBetweenRowSelection());
+			int bottom = table.getRowY(table.getEndBetweenRowSelection());
+			g.setColor(Color.blue);
+			g.fillRect(x-MesquiteTable.BETWEENLINEWIDTH/2,top,MesquiteTable.BETWEENLINEWIDTH,bottom-top);
+		}
+		else
+			if (table.selectedBetweenRows()) {
+				int left = table.getColumnX(table.getStartBetweenColumnSelection());
+				int right = table.getColumnX(table.getEndBetweenColumnSelection());
+				int top = table.getRowY(table.getStartBetweenRowSelection());
+				g.setColor(Color.blue);
+				g.fillRect(left,top-MesquiteTable.BETWEENLINEWIDTH/2, right-left,MesquiteTable.BETWEENLINEWIDTH);
+			}
+
+	}
 	/*...............................................................................................................*/
 	public void update(Graphics g){
 		paint(g);
@@ -387,6 +407,9 @@ timer6.end();
 					oldLineX = lineX;
 				}
 				oldLineY=lineY;
+			}
+			if (table.getBetweenSelected()) {
+				drawBetweenSelection(g);
 			}
 			if ((endOfLastColumn()>=0) && (endOfLastColumn()<table.matrixWidth)) {
 				g.setClip(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
@@ -514,7 +537,7 @@ timer6.end();
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			if (((TableTool)tool).getIsBetweenRowColumnTool()) {
 				column = table.findColumnBeforeBetween(x);
-				row = table.findColumnBeforeBetween(y);
+				row = table.findRowBeforeBetween(y);  //this was findColumnBeforeBetween
 			}
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
 			mouseDownInField = true;

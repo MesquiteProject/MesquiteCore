@@ -34,15 +34,10 @@ import mesquite.lib.duties.FileInterpreter;
  */
 public class MesquiteTable extends MesquitePanel implements KeyListener {
 	protected ColumnNamesPanel columnNames = null;
-
 	protected RowNamesPanel rowNames = null;
-
 	protected MatrixPanel matrix;
-
 	protected CornerPanel cornerCell;
-
 	protected ControlStrip controlStrip;
-
 	public static final int LEFT = 0;
 
 	public static final int RIGHT = 1;
@@ -186,6 +181,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	private Bits[] rowNamesSelected;
 
 	private boolean[] cornerSelected;
+	
+
+	
+	public static final int BETWEENLINEWIDTH = 4;
+ 	private int startBetweenRowSelection = MesquiteInteger.unassigned;
+	private int endBetweenRowSelection = MesquiteInteger.unassigned;
+	private int startBetweenColumnSelection = MesquiteInteger.unassigned;
+	private int endBetweenColumnSelection = MesquiteInteger.unassigned;
+
 
 	private int numSelectTypes = 3; // 0 = selection; 1 = dimming; 2 = dropdown menu
 
@@ -603,8 +607,64 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return null;
 	}
 
-	// public static final int GRABBERS = 8;
+	/* ................................................................................................................. */
+	public boolean selectedBetweenRows() {
+		return (getBetweenSelected() && startBetweenRowSelection==endBetweenRowSelection);
+	}
+	/* ................................................................................................................. */
+	public boolean selectedBetweenColumns() {
+		return (getBetweenSelected() && startBetweenColumnSelection==endBetweenColumnSelection);
+	}
+	/* ................................................................................................................. */
+	public int betweenColumn() {
+		return startBetweenColumnSelection;
+	}
+	/* ................................................................................................................. */
+	public int betweenRow() {
+		return startBetweenRowSelection;
+	}
+	/* ................................................................................................................. */
+	
+	public boolean inBetweenSelectionRowColumns( int column, int row) {
+		 int buff = 2;
+		if (selectedBetweenRows())
+			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection()  && (row == getStartBetweenRowSelection()) ;
+		else if (selectedBetweenColumns())
+			return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (column == getStartBetweenColumnSelection()) ;
+		return false;
+	}
+	/* ................................................................................................................. */
+	
+	public boolean inBetweenSelection( int column, int row, int regionInCellH, int regionInCellV) {
+		 int buff = 2;
+		if (selectedBetweenRows())
+			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection() && (regionInCellV>80) && (row == getStartBetweenRowSelection()) ;
+		else if (selectedBetweenColumns())
+			return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (regionInCellH>80) && (column == getStartBetweenColumnSelection()) ;
+		return false;
+	}
+	/* ................................................................................................................. */
+	
+	public boolean inBetweenSelection(int x, int y) {
+		 int buff = 2;
+		if (selectedBetweenRows())
+			return (x>= getColumnX(getStartBetweenColumnSelection()-buff)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff)) && (y>= getRowY(getStartBetweenRowSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (y<= getRowY(getEndBetweenRowSelection()+buff+MesquiteTable.BETWEENLINEWIDTH));
+		else if (selectedBetweenColumns())
+			return (x>= getColumnX(getStartBetweenColumnSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff + MesquiteTable.BETWEENLINEWIDTH)) && (y>= getRowY(getStartBetweenRowSelection()-buff)) && (y<= getRowY(getEndBetweenRowSelection()+buff));
+		return false;
+	}
+	/* ................................................................................................................. */
+	public boolean getBetweenSelected() {
+		boolean assigned = MesquiteInteger.isCombinable(startBetweenRowSelection)&&MesquiteInteger.isCombinable(endBetweenRowSelection)&&MesquiteInteger.isCombinable(startBetweenColumnSelection)&&MesquiteInteger.isCombinable(endBetweenColumnSelection);
+		if (!assigned)
+			return false;
+		boolean inRange =  (startBetweenRowSelection>=0 && startBetweenRowSelection<=getNumRows()) &&  (endBetweenRowSelection>=0 && endBetweenRowSelection<=getNumRows()) &&  (startBetweenColumnSelection>=0 && startBetweenColumnSelection<=getNumColumns()) &&  (endBetweenColumnSelection>=0 && endBetweenColumnSelection<=getNumColumns());
+		if (!inRange)
+			return false;
+		return (Math.abs(startBetweenRowSelection-endBetweenRowSelection)>0 || Math.abs(startBetweenColumnSelection-endBetweenColumnSelection)>0);
+	}
 
+	// public static final int GRABBERS = 8;
 	/* ................................................................................................................. */
 	public int getRowGrabberWidth() {
 		return rowGrabberWidth;
@@ -2161,6 +2221,26 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return 0;
 	}
 
+	public int getColumnX(int column) {
+		int lineX = 0;
+		for (int c=firstColumnVisible; (c<numColumnsTotal) && c<lastColumnVisible; c++) {
+			lineX += columnWidths[c];
+			if (column==c)
+				return lineX;
+		}
+		return MesquiteInteger.unassigned;
+
+	}
+	public int getRowY(int row) {
+		int lineY = 0;
+		for (int c=firstRowVisible; (c<numRowsTotal) && c<lastRowVisible; c++) {
+			lineY += rowHeights[c];
+			if (row==c)
+				return lineY;
+		}
+		return MesquiteInteger.unassigned;
+
+	}
 	/* ............................................................................................................... */
 	/** Sets height of column names. */
 	public void setColumnNamesRowHeight(int h) {
@@ -4598,6 +4678,38 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			rg.dispose();
 			mg.dispose();
 		}
+	}
+
+	public int getEndBetweenColumnSelection() {
+		return endBetweenColumnSelection;
+	}
+
+	public void setEndBetweenColumnSelection(int endBetweenColumnSelection) {
+		this.endBetweenColumnSelection = endBetweenColumnSelection;
+	}
+
+	public int getEndBetweenRowSelection() {
+		return endBetweenRowSelection;
+	}
+
+	public void setEndBetweenRowSelection(int endBetweenRowSelection) {
+		this.endBetweenRowSelection = endBetweenRowSelection;
+	}
+
+	public int getStartBetweenColumnSelection() {
+		return startBetweenColumnSelection;
+	}
+
+	public void setStartBetweenColumnSelection(int startBetweenColumnSelection) {
+		this.startBetweenColumnSelection = startBetweenColumnSelection;
+	}
+
+	public int getStartBetweenRowSelection() {
+		return startBetweenRowSelection;
+	}
+
+	public void setStartBetweenRowSelection(int startBetweenRowSelection) {
+		this.startBetweenRowSelection = startBetweenRowSelection;
 	}
 }
 
