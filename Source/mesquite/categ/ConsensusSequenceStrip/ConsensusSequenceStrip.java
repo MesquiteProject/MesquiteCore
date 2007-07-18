@@ -44,6 +44,13 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		return true;
   	 }
 	/*.................................................................................................................*/
+	public void getSubfunctions(){
+		String  explanationString = "(An Info Strip of a Categorical Matrix Window) Displays a consensus sequence for categorical data, as indicated by the two arrows in the figure below. <br> <img src=\"" + MesquiteFile.massageFilePathToURL(getPath() + "consensus.gif");
+		explanationString += "\"><br>To create a consensus sequence, choose Matrix>Add Info Strip>Consensus Sequence.  To adjust options, use the drop-down menu that appears when you touch on the consensus sequence.<br>";
+		registerSubfunction(new FunctionExplanation("Consensus Sequence", explanationString, null, null));
+		super.getSubfunctions();
+	}
+	/*.................................................................................................................*/
 	public void deleteMenuItems() {
 		deleteMenuItem(stSubmenu);
 		deleteMenuItem(menuItem1);
@@ -246,20 +253,22 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				 g.setColor(Color.darkGray);
 			 }
 			 if (data instanceof DNAData){
-				 if (e>=0) {
-					 if (colorByAA.getValue()){
-						 Color color = null;
-						 long aa = ((DNAData)data).getAminoAcid(consensusSequence, ic,true);
-						 if (!CategoricalState.isImpossible(aa))
-							 color = ProteinData.getAminoAcidColor(aa);
-						 if (color==null)
+				 if (colorByAA.getValue()){
+					 Color color = null;
+					 long aa = ((DNAData)data).getAminoAcid(consensusSequence, ic,true);
+					 if (!CategoricalState.isImpossible(aa))
+						 color = ProteinData.getAminoAcidColor(aa);
+					 if (color==null){
+						 if (e>=0)
 							 g.setColor(DNAData.getDNAColorOfState(e));
 						 else
-							 g.setColor(color);
+							 g.setColor(Color.white);
 					 }
 					 else
-						 g.setColor(DNAData.getDNAColorOfState(e));
+						 g.setColor(color);
 				 }
+				 else if (e>=0)
+					 g.setColor(DNAData.getDNAColorOfState(e));
 				 else {
 					 g.setColor(Color.white);
 					 grayText =true;
@@ -329,12 +338,16 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		 return true;  
 	 }
 	public String getTitle() {
-		return "Consensus Sequence";
+		return "Consensus Sequence Strip";
 	}
 
 
 	public String getName() {
-		return "Consensus Sequence";
+		return "Consensus Sequence Strip";
+	}	
+	
+	public String getExplanation() {
+		return "Displays a consensus sequence as in info strip in a character matrix editor.";
 	}
 
 }
