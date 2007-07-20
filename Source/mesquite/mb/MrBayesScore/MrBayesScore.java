@@ -11,7 +11,7 @@ public class MrBayesScore extends NumberForTree {
 
     /* ................................................................................................................. */
 
-    public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+    public boolean startJob(String arguments, Object condition, boolean hiredByName) {
         return true;
     }
 
@@ -21,7 +21,7 @@ public class MrBayesScore extends NumberForTree {
   	 }
 
     /* ................................................................................................................. */
-      public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
+      public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString) {
         if (result == null || tree == null)
             return;
 	   	clearResultAndLastResult(result);

@@ -79,7 +79,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	int iterations = 2;
 	boolean suspended = false;
 
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
 		probabilityValue = new MesquiteNumber();
 		minChecker = new MesquiteNumber(MesquiteDouble.unassigned);
@@ -154,7 +154,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 
 	/*.................................................................................................................*/
 	/*  the main command handling method.  */
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(getClass(), "Sets the frequency of checking for underflow", "[integer, 1 or greater]", commandName, "setUnderflowCheckFreq")) {
 			int freq = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteInteger.isCombinable(freq) && !MesquiteThread.isScripting())
@@ -163,7 +163,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			if (MesquiteInteger.isCombinable(freq) && freq >=0 && freq!=underflowCheckFrequency){
 				underflowCheckFrequency = freq; //change mode
 				if (!MesquiteThread.isScripting())
-					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Suspends calculations", null, commandName, "suspend")) {
@@ -171,7 +171,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		}
 		else if (checker.compare(getClass(), "Resumes calculations", null, commandName, "resume")) {
 			suspended = false;
-			parametersChanged(null, commandRec);
+			parametersChanged();
 		}
 		else if (checker.compare(getClass(), "Returns last result string", null, commandName, "getLastResultString")) {
 			return lastResultString;
@@ -184,7 +184,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			if (MesquiteDouble.isCombinable(steps) && steps >=0 && steps!=stepCount){
 				stepCount = steps; //change mode
 				if (!MesquiteThread.isScripting())
-					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Sets the number of iterations in the likelihood optimization", "[integer, 1 or greater]", commandName, "setIterations")) {
@@ -195,25 +195,25 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			if (MesquiteInteger.isCombinable(it) && it >=0 && it!=iterations){
 				iterations = it; //change mode
 				if (!MesquiteThread.isScripting())
-					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
-			if (!MesquiteThread.isScripting())parametersChanged(null, commandRec);
+			if (!MesquiteThread.isScripting())parametersChanged();
 		}
 		else if (checker.compare(getClass(), "Writes table to console", "", commandName, "showParamExplorer")) {
-			explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
+			explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
 			if (explorer == null)
 				return null;
-			explorer.setExplorable(this, commandRec);
+			explorer.setExplorable(this);
 			return explorer;
 		}
 		else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
 			intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
 		}
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -388,10 +388,10 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 		return paramsForExploration;
 	}
 	MesquiteNumber likelihood = new MesquiteNumber();
-	public double calculate(MesquiteString resultString, CommandRecord commandRec){
+	public double calculate(MesquiteString resultString){
 		if (suspended)
 			return MesquiteDouble.unassigned;
-		calculateLogProbability( lastTree,  lastCharDistribution, paramsForExploration, likelihood, resultString, commandRec);
+		calculateLogProbability( lastTree,  lastCharDistribution, paramsForExploration, likelihood, resultString);
 		return likelihood.getDoubleValue();
 	}
 	public void restoreAfterExploration(){
@@ -507,7 +507,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	 1. calculation determined entirely by params.  Constraints etc. determined within params array which is contained in species model
 	 2. predefined: constraint s0-e0 = s1-e1
 	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteParameter[] params, MesquiteNumber prob, MesquiteString resultString, CommandRecord commandRec) {  
+	public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteParameter[] params, MesquiteNumber prob, MesquiteString resultString) {  
 		if (speciesModel==null || obsStates==null || prob == null)
 			return;
 		lastTree = tree;

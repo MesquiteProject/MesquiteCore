@@ -27,12 +27,12 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	MesquiteBoolean selectedOnly = new MesquiteBoolean(true);
 
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		setUseMenubar(false);
 		
-		stateTask = (CategStateForCharacter)hireEmployee(commandRec, CategStateForCharacter.class, "Calculator of character state for each character");
+		stateTask = (CategStateForCharacter)hireEmployee(CategStateForCharacter.class, "Calculator of character state for each character");
 		if (stateTask == null)
-			return sorry(commandRec, getName() + " couldn't start because no calculator of character state obtained");
+			return sorry(getName() + " couldn't start because no calculator of character state obtained");
 		stateTaskName = new MesquiteString(stateTask.getName());
 		stC = makeCommand("setStateCalculator",  this);
 		stateTask.setHiringCommand(stC);
@@ -70,7 +70,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		lineMenuItem = addMenuLine();
 	}
 		
-	public void setTableAndData(MesquiteTable table, CharacterData data, CommandRecord commandRec) {
+	public void setTableAndData(MesquiteTable table, CharacterData data) {
 		deleteMenuItems();
 		deleteRemoveMenuItem();
 		addRemoveMenuItem();
@@ -104,14 +104,14 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		return temp;
 	}
 	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets whether or not only selected taxa are included are all taxa.", "[on or off]", commandName, "toggleSelectedOnly")) {
 			boolean current = selectedOnly.getValue();
 			selectedOnly.toggleValue(parser.getFirstToken(arguments));
 			if (stateTask!=null)
 				stateTask.setSelectedOnly(selectedOnly.getValue());
 			if (current!=selectedOnly.getValue() && !suspend) {
-				parametersChanged(null, commandRec);
+				parametersChanged();
 				calculateSequence();
 				if (table !=null) {
 						table.repaintAll();
@@ -122,7 +122,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 			boolean current = colorByAA.getValue();
 			colorByAA.toggleValue(parser.getFirstToken(arguments));
 			if (current!=colorByAA.getValue() && !suspend) {
-				parametersChanged(null, commandRec);
+				parametersChanged();
 				calculateSequence();
 				if (table !=null) {
 					table.repaintAll();
@@ -133,7 +133,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 			boolean current = showSomeInapplicableAsGray.getValue();
 			showSomeInapplicableAsGray.toggleValue(parser.getFirstToken(arguments));
 			if (current!=showSomeInapplicableAsGray.getValue() && !suspend) {
-				parametersChanged(null, commandRec);
+				parametersChanged();
 				calculateSequence();
 				if (table !=null) {
 					table.repaintAll();
@@ -149,17 +149,17 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		else if (checker.compare(this.getClass(), "Resumes calculations", null, commandName, "resume")) {
 			suspend = false;
 			calculateSequence();
-			parametersChanged(null, commandRec);
+			parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets the calculator of a state for each character", "[name of state calculator module]", commandName, "setStateCalculator")) {
-			CategStateForCharacter temp = (CategStateForCharacter)replaceEmployee(commandRec, CategStateForCharacter.class, arguments, "Calculator of character state for each character", stateTask);
+			CategStateForCharacter temp = (CategStateForCharacter)replaceEmployee(CategStateForCharacter.class, arguments, "Calculator of character state for each character", stateTask);
 			if (temp !=null){
 				stateTask = temp;
 				stateTask.setHiringCommand(stC);
 				stateTaskName.setValue(stateTask.getName());
 				stateTask.setSelectedOnly(selectedOnly.getValue());
 				if (!suspend) {
-					parametersChanged(null, commandRec);
+					parametersChanged();
 					calculateSequence();
 					if (table !=null){
 						table.repaintAll();
@@ -170,7 +170,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 			addRemoveMenuItem();
 		}
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -178,7 +178,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		return true;
 	}
 	/*.................................................................................................................*/
-  	 public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification, CommandRecord commandRec) {
+  	 public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
  		calculateSequence();
 			if (table !=null)
 				table.repaintAll();
@@ -312,7 +312,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 
 	 /*.................................................................................................................*/
 	 /** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
-	 public void changed(Object caller, Object obj, Notification notification, CommandRecord commandRec){
+	 public void changed(Object caller, Object obj, Notification notification){
 		 int code = Notification.getCode(notification);
 		 if (obj instanceof Taxa &&  (Taxa)obj ==data.getTaxa()) {
 			 if (code==MesquiteListener.SELECTION_CHANGED && selectedOnly.getValue()) {
@@ -330,7 +330,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				 calculateSequence();
 			 }
 		 }
-		 super.changed(caller, obj, notification, commandRec);
+		 super.changed(caller, obj, notification);
 	 }
 	 /*.................................................................................................................*/
 	 /** returns whether this module is requesting to appear as a primary choice */

@@ -52,7 +52,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	ParametersExplorer explorer;
 
 
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
 		solver = new RK4Solver();
 		probabilityValue = new MesquiteNumber();
@@ -110,7 +110,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 
 	/*.................................................................................................................*/
 	/*  the main command handling method.  */
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(getClass(), "Sets the frequency of checking for underflow", "[integer, 1 or greater]", commandName, "setUnderflowCheckFreq")) {
 			int freq = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteInteger.isCombinable(freq) && !MesquiteThread.isScripting())
@@ -119,19 +119,19 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			if (MesquiteInteger.isCombinable(freq) && freq >=0 && freq!=underflowCheckFrequency){
 				underflowCheckFrequency = freq; //change mode
 				if (!MesquiteThread.isScripting())
-					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Show Parameter Explorer", "", commandName, "showParamExplorer")) {
-			explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
+			explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
 			if (explorer == null)
 				return null;
-			explorer.setExplorable(this, commandRec);
+			explorer.setExplorable(this);
 			return explorer;
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
-			if (!MesquiteThread.isScripting()) parametersChanged(null, commandRec);
+			if (!MesquiteThread.isScripting()) parametersChanged();
 		}
 		else if (checker.compare(getClass(), "Sets the number of steps per branch", "[integer, 1 or greater]", commandName, "setStepCount")) {
 			double steps = MesquiteDouble.fromString(parser.getFirstToken(arguments));
@@ -141,23 +141,23 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			if (MesquiteDouble.isCombinable(steps) && steps >=0 && steps!=stepCount){
 				stepCount = steps; //change mode
 				if (!MesquiteThread.isScripting())
-					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
 			intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
 		}
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*---------------------------------------------------------------------------------*/
-	public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
+	public void parametersChangedNotifyExpl(Notification n){
 		if (!MesquiteThread.isScripting())
-			parametersChanged(n, commandRec);
+			parametersChanged(n);
 
 		if (explorer != null)
-			explorer.explorableChanged(this, commandRec);
+			explorer.explorableChanged(this);
 	}
 	/*.................................................................................................................*/
 	private void initProbs(int nodes) {
@@ -292,10 +292,10 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	MesquiteDouble lamdaExp = new MesquiteDouble();
 	MesquiteDouble muExp = new MesquiteDouble();
 
-	public double calculate(MesquiteString resultString, CommandRecord commandRec){
+	public double calculate(MesquiteString resultString){
 		lamdaExp.setValue(sp.getValue());
 		muExp.setValue(ep.getValue());
-		calculateLogProbability( lastTree, likelihood, lamdaExp, muExp, resultString, commandRec);
+		calculateLogProbability( lastTree, likelihood, lamdaExp, muExp, resultString);
 		return likelihood.getDoubleValue();
 	}
 	Tree lastTree;
@@ -376,7 +376,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		return (-(Math.log(likelihood) - logComp));
 	}
 	/*.................................................................................................................*/
-	public void calculateLogProbability(Tree tree, MesquiteNumber prob, MesquiteDouble lambda, MesquiteDouble mu, MesquiteString resultString, CommandRecord commandRec) {  
+	public void calculateLogProbability(Tree tree, MesquiteNumber prob, MesquiteDouble lambda, MesquiteDouble mu, MesquiteString resultString) {  
 		if (model==null ||  prob == null || lambda ==null || mu == null)
 			return;
 		lastTree = tree;

@@ -40,7 +40,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
 
 	
 	
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
 
@@ -77,26 +77,26 @@ public class ExportDistanceMatrix extends FileInterpreterI{
  		return " ";   // right default?
    	 }
 
-	public void exportFile(MesquiteFile file, String arguments, CommandRecord commandRec) { //if file is null, consider whole project open to export
+	public void exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");  //Wayne: should I be using this? how?
- 		distSource =  (IncTaxaDistanceSource)hireEmployee(commandRec, IncTaxaDistanceSource.class,"Source of distances to dump to file");
+ 		distSource =  (IncTaxaDistanceSource)hireEmployee(IncTaxaDistanceSource.class,"Source of distances to dump to file");
  		if (distSource == null) {
  			alert(getName() + " couldn't set up the Distance File generator because no distance calculator was obtained.");
  		}
-		CharacterData data = getProject().chooseData(containerOfModule(), file, null, null, "Select data to export", commandRec);
+		CharacterData data = getProject().chooseData(containerOfModule(), file, null, null, "Select data to export");
 		if (data ==null) {
 			showLogWindow(true);
 			logln("WARNING: No suitable data available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
 			return;
 		}
 		Taxa taxa = data.getTaxa();
-		OneTreeSource treeTask = (OneTreeSource)hireEmployee(commandRec, OneTreeSource.class, "Source of tree for calculating tree-based distance measures");
+		OneTreeSource treeTask = (OneTreeSource)hireEmployee(OneTreeSource.class, "Source of tree for calculating tree-based distance measures");
 		Tree tree = null;
 		if (!MesquiteThread.isScripting() && !usePrevious)
 			if (!getExportOptions(data.anySelected(), taxa.anySelected()))
 				return;
-		TaxaDistance distanceSource =  distSource.getTaxaDistance(taxa, commandRec);
+		TaxaDistance distanceSource =  distSource.getTaxaDistance(taxa);
 		double[][] distances = distanceSource.getMatrix();
 		if (distances.length != taxa.getNumTaxa())
 			MesquiteMessage.warnProgrammer("Distances dimension was " + distances.length + "; numTaxa was " + taxa.getNumTaxa());
@@ -149,7 +149,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
 			reportString.append(lineDelimiter);
 			}
 		if (reportString.length()>0)
-			saveExportedFileWithExtension(reportString, arguments, "dst", commandRec);
+			saveExportedFileWithExtension(reportString, arguments, "dst");
  		fireEmployee(distSource);
  		fireEmployee(treeTask);
 
@@ -181,7 +181,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
 	
 
 
-	public void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments, CommandRecord commandRec) {
+	public void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments) {
 		// TODO Auto-generated method stub
 		
 	}

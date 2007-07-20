@@ -211,8 +211,8 @@ timer6.end();
 	}
 
 	/*...............................................................................................................*/
-	public void textReturned(int column, int row, String text, CommandRecord commandRec){
-		table.returnedMatrixText(column, row, text,commandRec);
+	public void textReturned(int column, int row, String text){
+		table.returnedMatrixText(column, row, text);
 	}
 	/*...............................................................................................................*/
 	public void print(Graphics g) {

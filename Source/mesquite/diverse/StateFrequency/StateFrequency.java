@@ -44,9 +44,9 @@ public class StateFrequency extends NumberForCharacter {
     public StateFrequency() {
     }
 
-    public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+    public boolean startJob(String arguments, Object condition, boolean hiredByName) {
         if (condition !=null && condition!= CategoricalData.class && condition!=CategoricalState.class) {
-            return sorry(commandRec, "State Frequency of Character could not start because it can be used only for categorical characters");
+            return sorry("State Frequency of Character could not start because it can be used only for categorical characters");
         }
         if (!(NumberForCharacterIncr.class.isAssignableFrom(getHiredAs()))){ //not hired as obedient
             stateChoiceCommand = MesquiteModule.makeCommand("setState",  this);
@@ -63,20 +63,20 @@ public class StateFrequency extends NumberForCharacter {
         return false;
     }
      
-    public void setCurrent(long i, CommandRecord commandRec){ //SHOULD NOT notify (e.g., parametersChanged)
+    public void setCurrent(long i){ //SHOULD NOT notify (e.g., parametersChanged)
         selectedState = (int)i;
     }
-    public long getCurrent(CommandRecord commandRec){
+    public long getCurrent(){
         return selectedState;
     }
     public String getItemTypeName(){
         return "Item";
     }
     
-    public long getMin(CommandRecord commandRec){
+    public long getMin(){
         return 0;
     }
-    public long getMax(CommandRecord commandRec){
+    public long getMax(){
         if (cStates !=null)
             return cStates.getMaxState();
         return 0;
@@ -88,11 +88,11 @@ public class StateFrequency extends NumberForCharacter {
         return temp;
      }
     /*.................................................................................................................*/
-     public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+     public Object doCommand(String commandName, String arguments, CommandChecker checker) {
          if (checker.compare(this.getClass(), "Sets the state to use (in a multi-item continuous data matrix)", "[item number]", commandName, "setItem")) {
              int ic = MesquiteInteger.fromString(arguments);
              if (!MesquiteInteger.isCombinable(ic) && cStates!=null){
-                 ic = MesquiteInteger.queryInteger(null, "Select State", "Enter the state for finding the frequency", "", ic, (int)getMin(commandRec), (int)getMax(commandRec), false);
+                 ic = MesquiteInteger.queryInteger(null, "Select State", "Enter the state for finding the frequency", "", ic, (int)getMin(), (int)getMax(), false);
              }
              if (!MesquiteInteger.isCombinable(ic))
                  return null;
@@ -100,14 +100,14 @@ public class StateFrequency extends NumberForCharacter {
                  selectedState = ic;
              }
              else if (cStates !=null && cStates instanceof CategoricalDistribution) {
-                 if ((ic>=0) && (ic<=getMax(commandRec))) {
+                 if ((ic>=0) && (ic<=getMax())) {
                      selectedState = ic;
-                     parametersChanged(null, commandRec);
+                     parametersChanged();
                  }
              }
          }
          else
-             return super.doCommand(commandName, arguments, commandRec, checker);
+             return  super.doCommand(commandName, arguments, checker);
          return null;
      }
  
@@ -118,7 +118,7 @@ public class StateFrequency extends NumberForCharacter {
 //     }
  
 
-     public void calculateNumber(CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
+     public void calculateNumber(CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString) {
          if (result==null)
              return;
          clearResultAndLastResult(result);
@@ -126,7 +126,7 @@ public class StateFrequency extends NumberForCharacter {
          if (charStates!=null)
              if  (!(charStates instanceof CategoricalDistribution)){
                  if (!warnedOnce)
-                     discreetAlert(commandRec, "Frequency of character state can be calculated only for Categorical characters");
+                     discreetAlert( "Frequency of character state can be calculated only for Categorical characters");
                  warnedOnce = true;
                  if (resultString!=null)
                      resultString.setValue("No frequency of character state; can be calculated only for Categorical characters");
@@ -154,7 +154,7 @@ public class StateFrequency extends NumberForCharacter {
          saveLastResultString(resultString);
      }
 
-    public void initialize(CharacterDistribution charStates, CommandRecord commandRec) {
+    public void initialize(CharacterDistribution charStates) {
     }
 
     public String getName() {

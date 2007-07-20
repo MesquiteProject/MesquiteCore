@@ -22,9 +22,9 @@ import mesquite.lib.duties.*;
 
 public class AlignScoreForTaxon extends AlignScoreForTaxonGen {
 	/*.................................................................................................................*/
-	protected  void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates,  int it1, int it2, MesquiteNumber score, CommandRecord commandRec) {
+	protected  void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates,  int it1, int it2, MesquiteNumber score) {
 		if (aligner!=null)
-			aligner.alignSequences(observedStates, it1, it2,MesquiteInteger.unassigned,MesquiteInteger.unassigned,false,score,commandRec);
+			aligner.alignSequences(observedStates, it1, it2,MesquiteInteger.unassigned,MesquiteInteger.unassigned,false,score);
    	 }
 	   /*.................................................................................................................*/
   	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

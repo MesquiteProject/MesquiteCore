@@ -41,10 +41,10 @@ public class SpecExtincLikelihood extends NumberForTree  {
 
 
 	public boolean startJob(String arguments, Object condition,
-			CommandRecord commandRec, boolean hiredByName) {
-		calcTask = (SpecExtincMLCalculator)hireEmployee(commandRec, SpecExtincMLCalculator.class, "Integrating Likelihood");
+			boolean hiredByName) {
+		calcTask = (SpecExtincMLCalculator)hireEmployee(SpecExtincMLCalculator.class, "Integrating Likelihood");
 		if (calcTask == null)
-			return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
+			return sorry(getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 
 		addMenuItem("Set Speciation Rate...", makeCommand("setS", this));
 		addMenuItem("Set Extinction Rate...", makeCommand("setE", this));
@@ -98,7 +98,7 @@ public class SpecExtincLikelihood extends NumberForTree  {
 
 	/*.................................................................................................................*/
 	/*  the main command handling method.  */
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(getClass(), "Sets extinction rate", "[double]", commandName, "setE")) {
 			double newE = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (!MesquiteDouble.isCombinable(newE) && !MesquiteThread.isScripting())
@@ -106,7 +106,7 @@ public class SpecExtincLikelihood extends NumberForTree  {
 			if ((MesquiteDouble.isUnassigned(newE) ||  newE >=0) && newE != mu.getValue()){
 				mu.setValue(newE); //change mode
 				if (!MesquiteThread.isScripting())
-				parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+				parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
@@ -119,18 +119,18 @@ public class SpecExtincLikelihood extends NumberForTree  {
 			if ((MesquiteDouble.isUnassigned(newS) || newS >=0) && newS != lambda.getValue()){
 				lambda.setValue(newS); //change mode
 				if (!MesquiteThread.isScripting())
-					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	MesquiteDouble tempLambda = new MesquiteDouble();
 	MesquiteDouble tempMu = new MesquiteDouble();
 	/*---------------------------------------------------------------------------------*/
-	public void calculateNumber(Tree tree,MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
+	public void calculateNumber(Tree tree,MesquiteNumber result, MesquiteString resultString) {
 		if (result == null)
 			return;
 	   	clearResultAndLastResult(result);
@@ -139,14 +139,14 @@ public class SpecExtincLikelihood extends NumberForTree  {
 			return;
 		tempLambda.setValue(lambda.getValue());
 		tempMu.setValue(mu.getValue());
-		calcTask.calculateLogProbability(tree, result, tempLambda, tempMu, resultString, commandRec);
+		calcTask.calculateLogProbability(tree, result, tempLambda, tempMu, resultString);
 		saveLastResult(result);
 		saveLastResultString(resultString);
 
 	}
 	
 	/*---------------------------------------------------------------------------------*/
-	public void initialize(Tree tree, CharacterDistribution charStates, CommandRecord commandRec) {
+	public void initialize(Tree tree, CharacterDistribution charStates) {
 		// TODO Auto-generated method stub
 	}
 	/*---------------------------------------------------------------------------------*/

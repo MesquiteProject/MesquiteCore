@@ -268,13 +268,13 @@ public class PairwiseAligner  {
 	}   	
 
 	/** This method returns the score of two identical copies of the passed sequence.  Override if needed. */
-	public MesquiteNumber getScoreOfIdenticalSequences(long[] sequence, CommandRecord commandRec) {
+	public MesquiteNumber getScoreOfIdenticalSequences(long[] sequence) {
 		return new MesquiteNumber(0.0);
 	}
 
 
 	/** This method returns the score of the worst possible match with the passed sequence.  Acceptable if result is approximate.  Override if needed. */
-	public MesquiteNumber getVeryBadScore(long[] sequence, int oppositeLength, int alphabetLength, CommandRecord commandRec) {
+	public MesquiteNumber getVeryBadScore(long[] sequence, int oppositeLength, int alphabetLength) {
 		MesquiteNumber score = new MesquiteNumber();
 		long[]opposite = new long[oppositeLength];
 		for (int i=0; i<sequence.length && i<oppositeLength; i++) {
@@ -332,7 +332,7 @@ public class PairwiseAligner  {
 
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the sequences identified by the "taxon" and "site" arguments.
 	 * If object has been told to retain gaps, gaps in taxon1 will remain intact (new ones  may be added)*/
-	public long[][] alignSequences(MCategoricalDistribution data, int taxon1, int taxon2, int firstSite, int lastSite, boolean returnAlignment, MesquiteNumber score, CommandRecord commandRec) {
+	public long[][] alignSequences(MCategoricalDistribution data, int taxon1, int taxon2, int firstSite, int lastSite, boolean returnAlignment, MesquiteNumber score) {
 		if (lastSite - firstSite+1 <0 || !MesquiteInteger.isCombinable(firstSite) || !MesquiteInteger.isCombinable(lastSite)){
 			firstSite = 0;
 			lastSite = data.getNumChars()-1;

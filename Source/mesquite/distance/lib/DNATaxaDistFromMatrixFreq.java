@@ -9,8 +9,8 @@ public abstract class DNATaxaDistFromMatrixFreq extends DNATaxaDistFromMatrix {
 	MesquiteBoolean baseFreqEntireMatrix = new MesquiteBoolean(true);  //note:  Swofford uses this as true in PAUP*4.0b10
 	double[] pi = new double[4];
 	/*.................................................................................................................*/
-	public boolean superStartJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-		super.superStartJob(arguments,  condition,  commandRec,  hiredByName);
+	public boolean superStartJob(String arguments, Object condition, boolean hiredByName) {
+		super.superStartJob(arguments,  condition,  hiredByName);
 		for (int i = 0; i<4; i++)
 			pi[i]=0.25;
 		addCheckMenuItemToSubmenu(null,distParamSubmenu, "Base Freq on Entire Matrix", MesquiteModule.makeCommand("toggleBaseFreqEntireMatrix", this), baseFreqEntireMatrix);
@@ -32,13 +32,13 @@ public abstract class DNATaxaDistFromMatrixFreq extends DNATaxaDistFromMatrix {
 			return s;
 		}
 	 /*.................................................................................................................*/
-	 public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 	 	if (checker.compare(this.getClass(), "Sets whether the base frequency values used in distance calculations are based upon the entire matrix (if on) or just the pair of sequences being compared (if off).", "[on; off]", commandName, "toggleBaseFreqEntireMatrix")) {
 	 		baseFreqEntireMatrix.toggleValue(new Parser().getFirstToken(arguments));
-	 		parametersChanged(null, commandRec);
+	 		parametersChanged();
 	 }
 		else
-	 		return super.doCommand(commandName, arguments, commandRec, checker);
+	 		return  super.doCommand(commandName, arguments, checker);
 	 	return null;
 	 }
 		/*.................................................................................................................*/

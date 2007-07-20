@@ -22,7 +22,7 @@ import mesquite.lib.duties.*;
 public class AuthorDefaults extends DefaultsAssistant {
 	MesquiteBoolean authorBlockDefault;
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		authorBlockDefault = new MesquiteBoolean(Author.addAuthorBlockByDefault);
 		loadPreferences();
 		addMenuItem( "Set Author...", makeCommand("setAuthor",  this));
@@ -71,7 +71,7 @@ public class AuthorDefaults extends DefaultsAssistant {
 	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
-    	 public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
     	 	if (checker.compare(MesquiteWindow.class, "Sets the author for this account and machine", null, commandName, "setAuthor")) {
     	 		MesquiteBoolean answer = new MesquiteBoolean(false);
     	 		MesquiteString resp1 = new MesquiteString(MesquiteModule.author.getName());
@@ -93,7 +93,7 @@ public class AuthorDefaults extends DefaultsAssistant {
     	 		return null;
     		}
    	 	else
-    	 		return super.doCommand(commandName, arguments, commandRec, checker);
+    	 		return  super.doCommand(commandName, arguments, checker);
    	 }
   	 
   	 protected void setCurrentAllProjects(){

@@ -7,10 +7,10 @@ import mesquite.lib.duties.*;
 
 public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
-	public void initialize(Tree tree, MCharactersHistory charsHistory, CommandRecord commandRec) {
+	public void initialize(Tree tree, MCharactersHistory charsHistory) {
 	}
 
 	public Class getRequiredStateClass(){
@@ -33,7 +33,7 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 				sum.add(1);
 	}
 	/*.................................................................................................................*/
-	public void visitNodes(int node, Tree tree, CharacterHistory cH, NumberArray result, CommandRecord commandRec) {
+	public void visitNodes(int node, Tree tree, CharacterHistory cH, NumberArray result) {
 		if (node != tree.getRoot()){// && tree.numberOfTerminalsInClade(node)>3){
 			MesquiteNumber sum = new MesquiteNumber(0.0);
 			int[] parents = tree.parentsOfNode(node);
@@ -46,10 +46,10 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 		}
 		if (tree.nodeIsInternal(node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
-				visitNodes(d, tree, cH, result, commandRec);
+				visitNodes(d, tree, cH, result);
 	}
 	/*.................................................................................................................*/
-	public void calculateNumbers(Tree tree, MCharactersHistory charsHistory, NumberArray result, MesquiteString resultString, CommandRecord commandRec) {
+	public void calculateNumbers(Tree tree, MCharactersHistory charsHistory, NumberArray result, MesquiteString resultString) {
 		if (tree==null || charsHistory==null)
 			return;
 		if (result==null)
@@ -66,7 +66,7 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 		for (int ic=0; ic<charsHistory.getNumChars(); ic++) {
 			if (incl == null || incl.isSelected(ic)) {
 				CharacterHistory cH = charsHistory.getCharacterHistory(ic);
-				visitNodes(tree.getRoot(), tree, cH, result, commandRec);		
+				visitNodes(tree.getRoot(), tree, cH, result);		
 			}
 		}
 		saveLastResult(result);

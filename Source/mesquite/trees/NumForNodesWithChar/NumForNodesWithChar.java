@@ -42,14 +42,14 @@ public class NumForNodesWithChar extends NumbersForNodes {
 
 	int currentChar = 0;
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
-		numAndCharTask = (NumbersForNodesAndChar)hireCompatibleEmployee(commandRec, NumbersForNodesAndChar.class, getCharacterClass(), "Calculator (for " + getName() + ")");
+	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		numAndCharTask = (NumbersForNodesAndChar)hireCompatibleEmployee(NumbersForNodesAndChar.class, getCharacterClass(), "Calculator (for " + getName() + ")");
 		if (numAndCharTask == null)
-			return sorry(commandRec, getName() + " couldn't start because no calculator (for " + getName() + ") was obtained");
+			return sorry(getName() + " couldn't start because no calculator (for " + getName() + ") was obtained");
 		//assume hired as NumbersForNodes; thus responsible for getting characters
-		characterSourceTask = (CharSourceCoordObed)hireCompatibleEmployee(commandRec, CharSourceCoordObed.class, numAndCharTask.getCompatibilityTest(), "Source of characters (for " + numAndCharTask.getName() + ")");
+		characterSourceTask = (CharSourceCoordObed)hireCompatibleEmployee(CharSourceCoordObed.class, numAndCharTask.getCompatibilityTest(), "Source of characters (for " + numAndCharTask.getName() + ")");
 		if (characterSourceTask == null)
-			return sorry(commandRec, getName() + " couldn't start because no source of characters was obtained.");
+			return sorry(getName() + " couldn't start because no source of characters was obtained.");
 		ntC =makeCommand("setNumberTask",  this);
 		numAndCharTask.setHiringCommand(ntC);
 		numberTaskName = new MesquiteString();
@@ -80,43 +80,43 @@ public class NumForNodesWithChar extends NumbersForNodes {
 	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns module supplying matrices", null, commandName, "getCharacterSource")) {
 			return characterSourceTask;
 		}
 		else if (checker.compare(this.getClass(), "Returns module supplying numbers", null, commandName, "setNumNodesSource")) {
-			NumbersForNodesAndChar temp =  (NumbersForNodesAndChar)replaceEmployee(commandRec, NumbersForNodesAndChar.class, arguments, "Number for nodes", numAndCharTask);
+			NumbersForNodesAndChar temp =  (NumbersForNodesAndChar)replaceEmployee(NumbersForNodesAndChar.class, arguments, "Number for nodes", numAndCharTask);
 			if (temp!=null) {
 				numAndCharTask = temp;
 				numAndCharTask.setHiringCommand(ntC);
 				numberTaskName.setValue(numAndCharTask.getName());
-				parametersChanged(null, commandRec);
+				parametersChanged();
 				return numAndCharTask;
 			}
 			return numAndCharTask;
 		}
 		else if (checker.compare(this.getClass(), "Goes to next character", null, commandName, "nextCharacter")) {
-			if (currentChar>=characterSourceTask.getNumberOfCharacters(taxa, commandRec)-1)
+			if (currentChar>=characterSourceTask.getNumberOfCharacters(taxa)-1)
 				currentChar=0;
 			else
 				currentChar++;
 			//charStates = null;
-			parametersChanged(null, commandRec); //?
+			parametersChanged(); //?
 		}
 		else if (checker.compare(this.getClass(), "Goes to previous character", null, commandName, "previousCharacter")) {
 			if (currentChar<=0)
-				currentChar=characterSourceTask.getNumberOfCharacters(taxa, commandRec)-1;
+				currentChar=characterSourceTask.getNumberOfCharacters(taxa)-1;
 			else
 				currentChar--;
 			//charStates = null;
-			parametersChanged(null, commandRec); //?
+			parametersChanged(); //?
 		}
 		else if (checker.compare(this.getClass(), "Queries the user about what character to use", null, commandName, "chooseCharacter")) {
-			int ic=characterSourceTask.queryUserChoose(taxa, " to calculate value for tree ", commandRec);
+			int ic=characterSourceTask.queryUserChoose(taxa, " to calculate value for tree ");
 			if (MesquiteInteger.isCombinable(ic)) {
 				currentChar = ic;
 				//charStates = null;
-				parametersChanged(null, commandRec); //?
+				parametersChanged(); //?
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use", "[character number]", commandName, "setCharacter")) {
@@ -124,25 +124,25 @@ public class NumForNodesWithChar extends NumbersForNodes {
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);
-			if ((ic>=0) && characterSourceTask.getNumberOfCharacters(taxa, commandRec)==0) {
+			if ((ic>=0) && characterSourceTask.getNumberOfCharacters(taxa)==0) {
 				currentChar = ic;
 				//charStates = null;
 			}
-			else if ((ic>=0) && (ic<=characterSourceTask.getNumberOfCharacters(taxa, commandRec)-1)) {
+			else if ((ic>=0) && (ic<=characterSourceTask.getNumberOfCharacters(taxa)-1)) {
 				currentChar = ic;
 				//charStates = null;
-				parametersChanged(null, commandRec); //?
+				parametersChanged(); //?
 			}
 		}
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/
-	public void calculateNumbers(Tree tree, NumberArray result, MesquiteString resultString, CommandRecord commandRec){
+	public void calculateNumbers(Tree tree, NumberArray result, MesquiteString resultString){
 	   	clearResultAndLastResult(result);
-		CharacterDistribution observedStates = characterSourceTask.getCharacter(tree, currentChar, commandRec);
-		numAndCharTask.calculateNumbers(tree, observedStates, result, resultString, commandRec);
+		CharacterDistribution observedStates = characterSourceTask.getCharacter(tree, currentChar);
+		numAndCharTask.calculateNumbers(tree, observedStates, result, resultString);
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
@@ -150,12 +150,12 @@ public class NumForNodesWithChar extends NumbersForNodes {
 
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
 	 happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-	public void initialize(Tree tree, CommandRecord commandRec){
+	public void initialize(Tree tree){
 		if (tree == null)
 			return;
 		taxa = tree.getTaxa();
 		if (characterSourceTask!=null) {
-			characterSourceTask.initialize(tree.getTaxa(), commandRec);
+			characterSourceTask.initialize(tree.getTaxa());
 		}
 	}
 

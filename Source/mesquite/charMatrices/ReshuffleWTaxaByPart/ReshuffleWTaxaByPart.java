@@ -23,16 +23,16 @@ import mesquite.charMatrices.lib.*;
 /* ======================================================================== */
 public class ReshuffleWTaxaByPart extends RandomMatrixModifier {
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
   	 	return true; 
   	 }
 
 	/*.................................................................................................................*/
-  	public void modifyMatrix(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng, CommandRecord commandRec){
-  		mmByPart(matrix, modified, rng, commandRec);
+  	public void modifyMatrix(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng){
+  		mmByPart(matrix, modified, rng);
    	}
 	/*.................................................................................................................*/
-  	public void mm(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng, CommandRecord commandRec){
+  	public void mm(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng){
 		if (matrix==null || modified == null)
 			return;
 		int numTaxa = matrix.getNumTaxa();
@@ -58,13 +58,13 @@ public class ReshuffleWTaxaByPart extends RandomMatrixModifier {
  	 	}
    	}
 	/*.................................................................................................................*/
-  	public void mmByPart(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng, CommandRecord commandRec){
+  	public void mmByPart(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng){
 		if (matrix==null || modified == null)
 			return;
 			
 		CharacterData data = matrix.getParentData();
 		if (data == null) {
-			mm(matrix, modified, rng, commandRec);
+			mm(matrix, modified, rng);
 		return;
   	}
 		
@@ -73,7 +73,7 @@ public class ReshuffleWTaxaByPart extends RandomMatrixModifier {
 		if (partition != null)
 			groups = partition.getGroups();
 		if (data == null){
-			mm(matrix, modified, rng, commandRec);
+			mm(matrix, modified, rng);
 			return;
 		}
 		

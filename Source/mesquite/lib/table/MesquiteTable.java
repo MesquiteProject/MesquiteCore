@@ -331,7 +331,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/**
 	 * A request for the MesquiteModule to perform a command. It is passed two strings, the name of the command and the arguments. This should be overridden by any module that wants to respond to a command.
 	 */
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(MesquiteTable.class, "Copies current selection to clipboard", null, commandName, "copy")) {
 			if (matrix.getEditing() || rowNames.getEditing() || columnNames.getEditing()) {
 				TextField edit = null;
@@ -413,7 +413,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				StringSelection ss = new StringSelection(sb.toString());
 				clip.setContents(ss, ss);
-				clearIt(true, commandRec);
+				clearIt(true);
 				repaintAll();
 			}
 		}
@@ -455,7 +455,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				}
 			}
 
-			clearIt(false, commandRec);
+			clearIt(false);
 			repaintAll();
 
 		}
@@ -481,12 +481,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				if (rowsSelectable && (selectA || anyRowSelected())) {
 					selectRows(0, numRowsTotal - 1);
 					if (rowAssociable != null)
-						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
+						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				}
 				if (columnsSelectable && (selectA || anyColumnSelected())) {
 					selectColumns(0, numColumnsTotal - 1);
 					if (columnAssociable != null)
-						columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
+						columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				}
 				if (rowNamesSelectable && (selectA || anyRowNameSelected()))
 					selectRowNames(0, numRowsTotal - 1);
@@ -543,7 +543,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 					}
 					if (clipboardDimensionsFit(s)) {
-						pasteIt(s, commandRec);
+						pasteIt(s);
 						repaintAll();
 					}
 
@@ -556,7 +556,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 							}
 						}
 						if (AlertDialog.query(frame, "Paste shape mismatch", "Sorry, the number of lines and of items pasted don't match the spaces selected to be filled.  Would you like Mesquite to attempt to adjust the selected region so that you can paste?", "OK", "Cancel", 1))
-							setSelectionToShape(getTabbedLines(s), commandRec);
+							setSelectionToShape(getTabbedLines(s));
 
 						return null;
 					}
@@ -602,8 +602,32 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			if (doRepaint)
 				repaintAll();
 		}
-		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+		else if (checker.compare(MesquiteTable.class, "Returns column as string", "[column]", commandName, "getColumn")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int column = MesquiteInteger.fromString(arguments, io);
+			if (column > 0 && column < getNumColumns()){
+				StringBuffer sb = new StringBuffer(getColumnNameText(column));
+				for (int i=0; i<getNumRows(); i++){
+					sb.append('\t');
+					sb.append(getMatrixText(column, i));
+				}
+				return sb.toString();
+			}
+		}
+		else if (checker.compare(MesquiteTable.class, "Returns row as string", "[row]", commandName, "getRow")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int row = MesquiteInteger.fromString(arguments, io);
+			if (row > 0 && row < getNumRows()){
+				StringBuffer sb = new StringBuffer(getRowNameText(row));
+				for (int i=0; i<getNumColumns(); i++){
+					sb.append('\t');
+					sb.append(getMatrixText(i, row));
+				}
+				return sb.toString();
+			}
+		}
+		else 
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 
@@ -706,29 +730,29 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	protected void clearIt(boolean cut, CommandRecord commandRec) {
+	protected void clearIt(boolean cut) {
 		for (int i = 0; i < numColumnsTotal; i++) {
 			if (isColumnNameSelected(i) || isColumnSelected(i)) {
 				if (columnNamesEditable)
-					returnedColumnNameText(i, null, commandRec);
+					returnedColumnNameText(i, null);
 			}
 		}
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
 				if (rowNamesEditable)
-					returnedRowNameText(j, null, commandRec);
+					returnedRowNameText(j, null);
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
 					if (isCellEditable(i, j))
-						returnedMatrixText(i, j, null, commandRec);
+						returnedMatrixText(i, j, null);
 				}
 			}
 		}
 	}
 
 	/* ................................................................................................................. */
-	protected void pasteIt(String s, CommandRecord commandRec) {
+	protected void pasteIt(String s) {
 		int count = 0;
 		MesquiteInteger pos = new MesquiteInteger(0);
 		if (columnNamesCopyPaste) {
@@ -737,7 +761,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					if (columnNamesEditable) {
 						String t = getNextTabbedToken(s, pos);
 						if (t != null)
-							returnedColumnNameText(i, t, commandRec);
+							returnedColumnNameText(i, t);
 					}
 					count++;
 				}
@@ -748,7 +772,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				if (rowNamesEditable) {
 					String t = getNextTabbedToken(s, pos);
 					if (t != null)
-						returnedRowNameText(j, t, commandRec);
+						returnedRowNameText(j, t);
 				}
 				count++;
 			}
@@ -757,7 +781,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					if (isCellEditable(i, j)) {
 						String t = getNextTabbedToken(s, pos);
 						if (t != null)
-							returnedMatrixText(i, j, t, commandRec);
+							returnedMatrixText(i, j, t);
 					}
 					count++;
 				}
@@ -858,7 +882,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	public void setSelectionToShape(int[] lines, CommandRecord commandRec) {
+	public void setSelectionToShape(int[] lines) {
 		if (lines == null)
 			return;
 		if (anyColumnSelected() || anyRowSelected() || anyCellSelected()) {
@@ -907,9 +931,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						}
 				}
 				if (columnAssociable != null && firstColumn >= 0)
-					columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
+					columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				if (rowAssociable != null && firstRow >= 0)
-					rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED), commandRec);
+					rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 		}
 		else if (anyRowNameSelected()) {
@@ -3421,7 +3445,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/**
 	 * Called after editing a cell, passing the String resulting. Can be overridden in subclasses to respond to editing.
 	 */
-	public void returnedMatrixText(int column, int row, String s, CommandRecord commandRec) {
+	public void returnedMatrixText(int column, int row, String s) {
 		System.out.println("Text [" + s + "] returned for Column " + Integer.toString(column) + " Row " + Integer.toString(row));
 	}
 
@@ -3429,7 +3453,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/**
 	 * Called after editing a ColumnName, passing the String resulting. Can be overridden in subclasses to respond to editing.
 	 */
-	public void returnedColumnNameText(int column, String s, CommandRecord commandRec) {
+	public void returnedColumnNameText(int column, String s) {
 		System.out.println("Text [" + s + "] returned for Column " + Integer.toString(column));
 	}
 
@@ -3437,7 +3461,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/**
 	 * Called after editing a row name, passing the String resulting. Can be overridden in subclasses to respond to editing.
 	 */
-	public void returnedRowNameText(int row, String s, CommandRecord commandRec) {
+	public void returnedRowNameText(int row, String s) {
 		System.out.println("Text [" + s + "] returned for Row " + Integer.toString(row));
 	}
 

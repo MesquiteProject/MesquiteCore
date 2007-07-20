@@ -11,7 +11,7 @@ public class ConsensusStateForChar extends CategStateForCharacter {
 
 	MesquiteMenuItemSpec menuItem1, menuItem2;
 
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		menuItem1= addCheckMenuItem(null,"Show Modal Value Only", makeCommand("toggleShowOnlyModal", this), showOnlyModal);
 		menuItem2= addMenuItem(null,"Threshold for Non-Modal States...", makeCommand("setNonModalThreshold", this));
 		return true;
@@ -28,7 +28,7 @@ public class ConsensusStateForChar extends CategStateForCharacter {
 
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the minimum frequency among applicable states required to include state in consensus", "[threshold value]", commandName, "setNonModalThreshold")) {
 			double currentValue = nonModalThreshold;
 			pos.setValue(0);
@@ -39,18 +39,18 @@ public class ConsensusStateForChar extends CategStateForCharacter {
 			if (MesquiteDouble.isCombinable(t))
 				nonModalThreshold = t;
 			if (currentValue!=nonModalThreshold)
-				parametersChanged(null, commandRec);
+				parametersChanged();
 		}
 		
 		else if (checker.compare(this.getClass(), "Sets whether or not only to show only the modal value.", "[on or off]", commandName, "toggleShowOnlyModal")) {
 			boolean current = showOnlyModal.getValue();
 			showOnlyModal.toggleValue(parser.getFirstToken(arguments));
 			if (current!=showOnlyModal.getValue()) {
-				parametersChanged(null, commandRec);
+				parametersChanged();
 			}
 		}
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/

@@ -105,7 +105,7 @@ public abstract class MultipleProbabilityModel extends WholeCharacterModel {
 	public void recalcAfterSetMCharactersStatesHolder (){
 	}
 	/** Returns default number of characters to simulate. This can be useful if the model wants to specify whether to use an empirical number or some other number*/ 
-   	public int getDefaultNumChars(CommandRecord commandRec){
+   	public int getDefaultNumChars(){
 		return defaultNumChars;
    	}
 	/** sets default number of characters to simulate. */ 

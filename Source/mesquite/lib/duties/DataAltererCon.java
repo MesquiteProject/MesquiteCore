@@ -11,12 +11,12 @@ public abstract class DataAltererCon extends DataAlterer {
 	 * It requires that AT MOST ONE such block of cells is selected in each taxon; i.e., within each taxon discontinuous selections
 	 * are not allowed. */
 		
-		public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+		public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 			return true;
 		}
 
 	   	/** Called to alter data in those cells selected in table*/
-	   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference, CommandRecord commandRec){
+	   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 	  			boolean did=false;
 	  			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
 	   	 		if (table==null && data!=null){

@@ -22,7 +22,7 @@ import mesquite.lib.duties.*;
 /* ======================================================================== */
 public class aiTextIntro extends PackageIntro {
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		return true;
   	 }
   	 public Class getDutyClass(){

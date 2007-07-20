@@ -33,7 +33,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
     double height;
     double []branchTimes;
     
-    public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+    public boolean startJob(String arguments, Object condition, boolean hiredByName) {
         addMenuItem("Set lambda (Speciation Rate)...", makeCommand("setLambda", this));
         addMenuItem("Set mu (Extinction Rate)...", makeCommand("setMu", this));
         addMenuItem("-", null);
@@ -74,7 +74,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
         return temp;
     }
 
-    public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+    public Object doCommand(String commandName, String arguments, CommandChecker checker) {
         // Should be removed when debugged
         if (checker.compare(getClass(), "Sets mu (extinction rate)", "[double]", commandName, "setMu")) {
             double newMu = MesquiteDouble.fromString(parser.getFirstToken(arguments));
@@ -82,7 +82,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
                 newMu = MesquiteDouble.queryDouble(containerOfModule(), "mu", "mu (extinction rate)", (double)mu);
             if (MesquiteDouble.isCombinable(newMu) && newMu >=0 && newMu != mu){
                 mu = newMu; //change mode
-                parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+                parametersChangedNotifyExpl(null); //this tells employer module that things changed, and recalculation should be requested
             }
         }
         else if (checker.compare(getClass(), "Sets lambda (speciation rate)", "[double]", commandName, "setLambda")) {
@@ -91,27 +91,27 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
                 newLambda = MesquiteDouble.queryDouble(containerOfModule(), "lambda", "lambda (speciation rate)", (double)lambda);
             if (MesquiteDouble.isCombinable(newLambda) && newLambda >=0 && newLambda != lambda){
                 lambda = newLambda; //change mode
-                parametersChangedNotifyExpl(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+                parametersChangedNotifyExpl(null); //this tells employer module that things changed, and recalculation should be requested
             }
         }
         else if (checker.compare(getClass(), "Displays parameter explorer", "", commandName, "showParamExplorer")) {
-            explorer = (ParametersExplorer)hireEmployee(commandRec, ParametersExplorer.class, "Parameters explorer");
+            explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
             if (explorer == null)
                 return null;
-            explorer.setExplorable(this, commandRec);
+            explorer.setExplorable(this);
             return explorer;
         }
         else
-            return super.doCommand(commandName, arguments, commandRec, checker);
+            return  super.doCommand(commandName, arguments, checker);
         return null;
     }
 
     
-    public void parametersChangedNotifyExpl(Notification n,  CommandRecord commandRec){
+    public void parametersChangedNotifyExpl(Notification n){
         if (!MesquiteThread.isScripting())
-            parametersChanged(n, commandRec);
+            parametersChanged(n);
         if (explorer != null)
-            explorer.explorableChanged(this, commandRec);
+            explorer.explorableChanged(this);
     }
 
     
@@ -134,7 +134,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
         return (lambda*(1-Math.exp(-(lambda-mu)*t)))/(lambda-mu*(Math.exp(-(lambda-mu)*t)));
     }
 
-    public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
+    public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString) {
         // TODO Auto-generated method stub
         if (result == null)
             return;
@@ -149,7 +149,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
          * This would be tough to do automatically, because in response to a
          * change in tree here, calculate number could then be called by the
          * explorer! Perhaps always require user request? if (lastTree != tree)
-         * explorer.explorableChanged(this, commandRec);
+         * explorer.explorableChanged(this);
          */
         if (tree != lastTree){
             //recalculate branch times
@@ -214,10 +214,10 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
     }
     MesquiteNumber likelihood = new MesquiteNumber();
 
-    public double calculate(MesquiteString resultString, CommandRecord commandRec){
+    public double calculate(MesquiteString resultString){
         lambda = lambdap.getValue();
         mu = mup.getValue();
-        calculateNumber( lastTree, likelihood, resultString, commandRec);
+        calculateNumber( lastTree, likelihood, resultString);
         return likelihood.getDoubleValue();
     }
 

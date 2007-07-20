@@ -10,7 +10,7 @@ import mesquite.lib.duties.*;
 
 public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 	/*.................................................................................................................*/
-	protected  void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates, int it1, int it2, MesquiteNumber score, CommandRecord commandRec) {
+	protected  void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates, int it1, int it2, MesquiteNumber score) {
 		if (aligner==null)
 			return;
 		int firstSite = 0;

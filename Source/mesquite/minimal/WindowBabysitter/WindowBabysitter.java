@@ -27,7 +27,7 @@ public class WindowBabysitter extends WindowHolder {
 		return "Helps other modules by holding their windows." ;
 	}
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true; 
 	}
 	/*.................................................................................................................*/

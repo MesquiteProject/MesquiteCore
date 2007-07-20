@@ -19,16 +19,16 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	protected MesquiteInteger comparisonTaxon = new MesquiteInteger(0);
 	//MesquiteTimer timer;
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-		matrixSourceTask = (MatrixSourceCoord)hireEmployee(commandRec, MatrixSourceCoord.class, "Source of character matrix (for number of stops)"); 
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for number of stops)"); 
 		if (matrixSourceTask==null)
-			return sorry(commandRec, getName() + " couldn't start because no source of character matrices was obtained.");
+			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		//timer =  new MesquiteTimer();
 		addMenuItem("Reference Taxon...", MesquiteModule.makeCommand("setReferenceTaxon", this));
 		/*
-		 pairwiseTask = (TwoSequenceAligner)hireEmployee(commandRec, TwoSequenceAligner.class, "Pairwise Aligner");
+		 pairwiseTask = (TwoSequenceAligner)hireEmployee(TwoSequenceAligner.class, "Pairwise Aligner");
 		 if (pairwiseTask == null)
-		 return sorry(commandRec, getName() + " couldn't start because no pairwise aligner obtained.");
+		 return sorry(getName() + " couldn't start because no pairwise aligner obtained.");
 		 */		return true;
 	}
 	
@@ -70,13 +70,13 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
 	 happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-	public void initialize(Taxa taxa, CommandRecord commandRec){
+	public void initialize(Taxa taxa){
 		currentTaxa = taxa;
-		matrixSourceTask.initialize(currentTaxa, commandRec);
+		matrixSourceTask.initialize(currentTaxa);
 		
 	}
 	
-	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec){
+	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString){
 		if (result==null)
 			return;
 		clearResultAndLastResult(result);
@@ -85,7 +85,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 			comparisonTaxon.setValue(0);
 		int it = taxa.whichTaxonNumber(taxon);
 		if (taxa != currentTaxa || observedStates == null ) {
-			observedStates = matrixSourceTask.getCurrentMatrix(taxa, commandRec);
+			observedStates = matrixSourceTask.getCurrentMatrix(taxa);
 			currentTaxa = taxa;
 		}
 		if (observedStates==null)
@@ -100,7 +100,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 			initAligner();
 		}
 		
-		getAlignmentScore(data, (MCategoricalDistribution)observedStates,comparisonTaxon.getValue(),it,score,commandRec);
+		getAlignmentScore(data, (MCategoricalDistribution)observedStates,comparisonTaxon.getValue(),it,score);
 		
 		
 		if (result !=null)
@@ -111,7 +111,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 		saveLastResultString(resultString);
 	}
 	/*.................................................................................................................*/
-	protected abstract void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates, int it1, int it2, MesquiteNumber score, CommandRecord commandRec) ;
+	protected abstract void getAlignmentScore(DNAData data, MCategoricalDistribution observedStates, int it1, int it2, MesquiteNumber score) ;
 	
 	/*.................................................................................................................*/
 	public boolean queryReferenceTaxon() {
@@ -132,7 +132,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Allows one to specify which taxon is the reference taxon.", "[taxon number]", commandName, "setReferenceTaxon")) {
 			MesquiteInteger io = new MesquiteInteger(0);
 			int newRefTaxon = MesquiteInteger.fromString(arguments, io);
@@ -142,11 +142,11 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 			else{
 				comparisonTaxon.setValue(newRefTaxon);
 			}
-			parametersChanged(commandRec);
+			parametersChanged();
 			
 		}
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -155,9 +155,9 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 		return new RequiresAnyMolecularData();
 	}
 	/*.................................................................................................................*/
-	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification, CommandRecord commandRec) {
+	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		observedStates = null;
-		super.employeeParametersChanged(employee, source, notification, commandRec);
+		super.employeeParametersChanged(employee, source, notification);
 	}
 	/*.................................................................................................................*/
 	public abstract String getScoreName() ;

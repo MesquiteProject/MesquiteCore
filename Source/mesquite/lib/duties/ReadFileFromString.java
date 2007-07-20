@@ -6,7 +6,7 @@ import mesquite.lib.characters.CharacterData;
 
 public interface ReadFileFromString {
 
-	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String arguments, CommandRecord commandRec);
+	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String arguments);
 
 		
 }

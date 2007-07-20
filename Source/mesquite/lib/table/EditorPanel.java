@@ -37,7 +37,7 @@ public abstract class EditorPanel extends MesquitePanel {
 		editField.setVisible(false);
 		setBackground(ColorDistribution.light[table.colorScheme]);
 	}
-	public abstract void textReturned(int column, int row, String text, CommandRecord commandRec);
+	public abstract void textReturned(int column, int row, String text);
 	public abstract String getText(int column, int row);
 	public void setFillColor(Color toFill){
 		fillColor = toFill;
@@ -240,7 +240,7 @@ public abstract class EditorPanel extends MesquitePanel {
 	public abstract void redrawCell(int column, int row);
 /*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
-    	 public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
     	 	if (checker.compare(this.getClass(), "Indicates editing is complete and text is being passed back", "[column] [row] [tokenized text]", commandName, "returnText")) {
     	 		int column = MesquiteInteger.fromFirstToken(arguments, pos);
     	 		int row = MesquiteInteger.fromString(arguments, pos);
@@ -248,12 +248,12 @@ public abstract class EditorPanel extends MesquitePanel {
 			returningColumn = -2;
 			returningRow  = -2;
 			if (s !=null)
-    	 			textReturned(column, row, s, commandRec);
+    	 			textReturned(column, row, s);
     	 		redrawCell(column, row);
     	 		return null;
     	 	}
     	 	else
-    	 		return super.doCommand(commandName, arguments, commandRec, checker);
+    	 		return  super.doCommand(commandName, arguments, checker);
    	 }
 	/*...............................................................................................................*/
 	protected void prepareCell(Graphics g, int x, int y, int w, int h, boolean focused, boolean selected, boolean dimmed, boolean editable){

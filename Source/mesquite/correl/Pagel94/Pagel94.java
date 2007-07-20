@@ -62,7 +62,7 @@ public class Pagel94 extends Pagel94Calculator {
     private int numIterations = 10;
     
       
-   public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+   public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 	   model4 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);
 	   model8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);
 	   seed = new MesquiteLong(originalSeed);
@@ -116,7 +116,7 @@ public class Pagel94 extends Pagel94Calculator {
   	 	temp.addLine("setNumIterations " + numIterations);
  	 	return temp;
   	 }
-  public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+  public Object doCommand(String commandName, String arguments, CommandChecker checker) {
        if (checker.compare(this.getClass(), "Sets the random number seed to that passed", "[long integer seed]", commandName, "setSeed")) {
             long s = MesquiteLong.fromString(parser.getFirstToken(arguments));
             if (!MesquiteLong.isCombinable(s) && !MesquiteThread.isScripting()){
@@ -125,7 +125,7 @@ public class Pagel94 extends Pagel94Calculator {
             if (MesquiteLong.isCombinable(s)){
                 originalSeed = s;
                 seed.setValue(originalSeed);
-               if (!MesquiteThread.isScripting()) parametersChanged(null, commandRec); //?
+               if (!MesquiteThread.isScripting()) parametersChanged(); //?
             }
             return null;
         }
@@ -137,7 +137,7 @@ public class Pagel94 extends Pagel94Calculator {
     	 		if (newNum>0  && newNum!=numIterations) {
     	 			numIterations = newNum;
   				if (!MesquiteThread.isScripting()){
-					parametersChanged(null, commandRec);
+					parametersChanged();
 				}
     	 		}
     	 	}
@@ -148,7 +148,7 @@ public class Pagel94 extends Pagel94Calculator {
     	 		if (MesquiteInteger.isCombinable(sCount)){
     	 			setSimCount(sCount);
     	 			if (!MesquiteThread.isScripting())
-    	 				parametersChanged(null, commandRec);
+    	 				parametersChanged();
   	 		}
     	 		else 
     	 			setSimCount(0);
@@ -158,7 +158,7 @@ public class Pagel94 extends Pagel94Calculator {
   	 	else if (checker.compare(this.getClass(), "Sets whether or not P values are to be presented", "[on; off]", commandName, "togglePresentPValue")) {
     	 		presentPValue.toggleValue(parser.getFirstToken(arguments));
     	 		
-			if (commandRec != null && !MesquiteThread.isScripting()) {
+			if (!MesquiteThread.isScripting()) {
 
 				if (presentPValue.getValue()){
 					int sCount = MesquiteInteger.queryInteger(containerOfModule(),"Number of simulations", "Number of simulations to estimate p-value for Pagel 94 analysis", getSimCount(),0,10000,true);
@@ -166,7 +166,7 @@ public class Pagel94 extends Pagel94Calculator {
 		    	 			setSimCount(sCount);
 		    	 		else
 		    	 			presentPValue.setValue(false);
-						parametersChanged(null, commandRec);
+						parametersChanged();
 				}
 			}
     	 	}
@@ -174,12 +174,12 @@ public class Pagel94 extends Pagel94Calculator {
 //           return null;
 //        }
         else
-            return super.doCommand(commandName, arguments, commandRec, checker);
+            return  super.doCommand(commandName, arguments, checker);
        return null;
      }
 
 
-    public void initialize(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, CommandRecord commandRec) {
+    public void initialize(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2) {
         if (!(charStates1 instanceof CategoricalDistribution ||
              charStates2 instanceof CategoricalDistribution)) {
             if (!(charStates1 instanceof CategoricalDistribution))
@@ -223,7 +223,7 @@ public class Pagel94 extends Pagel94Calculator {
     
 
 
-    public void calculateNumber(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
+    public void calculateNumber(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, MesquiteNumber result, MesquiteString resultString) {
        	clearResultAndLastResult(result);
    		double result4;
     		double result8;
@@ -246,12 +246,12 @@ public class Pagel94 extends Pagel94Calculator {
         numIt.setValue(numIterations);
         logln("Pagel 94 analysis: Calculating likelihood for 4 parameter model");
        
-        model4.estimateParameters(tree,observedStates1,observedStates2,commandRec);
+        model4.estimateParameters(tree,observedStates1,observedStates2);
         result4 = model4.evaluate(model4.getParams(),null);
 
         logln("Pagel 94 analysis: Calculating likelihood for 8 parameter model (" + numIterations + " iterations)");
         model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
-        model8.estimateParameters(tree,observedStates1,observedStates2,commandRec);
+        model8.estimateParameters(tree,observedStates1,observedStates2);
         result8 = model8.evaluate(model8.getParams(),null);
 
         double score = result4-result8;
@@ -293,13 +293,13 @@ public class Pagel94 extends Pagel94Calculator {
 	            	    SimData[1] = new CategoricalAdjustable(observedStates2.getTaxa(),observedStates2.getNumNodes());
 	            	    evolvingStates[0] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
 	            	    evolvingStates[1] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
-	            	    getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed, commandRec);
+	            	    getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed);
 	            	    if (!eitherCharacterConstant(tree,SimData[0],SimData[1])) {
 	            	        if (progress.isAborted()){
 	            	            hasAborted = true;
 	            	        }
 	            	        if (!hasAborted){
-	            		        model4.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            		        model4.estimateParameters(tree,SimData[0],SimData[1]);
 	            		        independentScore = model4.evaluate(model4.getParams(),null);
 	            	        }
 	            	        if (progress.isAborted()){
@@ -307,7 +307,7 @@ public class Pagel94 extends Pagel94Calculator {
 	            	        }
 	            	        if (!hasAborted){
 	            	        	    model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
-	            	        	    model8.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            	        	    model8.estimateParameters(tree,SimData[0],SimData[1]);
 	            	        	    dependentScore= model8.evaluate(model8.getParams(),null);
 	            	        	    diffs[simNumber] = independentScore-dependentScore;
 	            	        }
@@ -322,17 +322,17 @@ public class Pagel94 extends Pagel94Calculator {
 	            	    	    		SimData[1] = new CategoricalAdjustable(observedStates2.getTaxa(),observedStates2.getNumNodes());
 	            	    	    		evolvingStates[0] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
 	            	    	    		evolvingStates[1] = new CategoricalHistory(tree.getTaxa(), tree.getNumNodeSpaces());
-	            	    	    		getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed, commandRec);
+	            	    	    		getSimulatedCharacters(SimData,tree, savedModel4, rootPriors, seed);
 	            	    	    		hasAborted = progress.isAborted();
 	            	    	    }
 	            	    	    if (!hasAborted){
-	            		        model4.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            		        model4.estimateParameters(tree,SimData[0],SimData[1]);
 	            		        independentScore = model4.evaluate(model4.getParams(),null);
 	            		        hasAborted = progress.isAborted();
 	            	    	    }
 	            	    	    if (!hasAborted){
 	            	    	        model8.setParametersFromSimplerModel(model4.getParams(),PagelMatrixModel.MODEL4PARAM);
-	            	    	        model8.estimateParameters(tree,SimData[0],SimData[1],commandRec);
+	            	    	        model8.estimateParameters(tree,SimData[0],SimData[1]);
 	            	    	        hasAborted = progress.isAborted();
 	            	    	    }
 	            	    	    if (!hasAborted){
@@ -415,7 +415,7 @@ public class Pagel94 extends Pagel94Calculator {
     		return count;
     }
     
-   	private CharacterDistribution[] getSimulatedCharacters(CategoricalAdjustable[] statesAtTips, Tree tree, PagelMatrixModel model, double[][] rootPriors, MesquiteLong seed, CommandRecord commandRec){
+   	private CharacterDistribution[] getSimulatedCharacters(CategoricalAdjustable[] statesAtTips, Tree tree, PagelMatrixModel model, double[][] rootPriors, MesquiteLong seed){
    		if (tree == null) {
    			MesquiteMessage.warnProgrammer("tree null in Pagel94 getSimulatedCharacters ");
    			return null;

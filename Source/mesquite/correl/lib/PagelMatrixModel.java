@@ -1128,7 +1128,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 
     static final boolean scaleRescale = true;  
  
-    public void estimateParameters(Tree originalTree, CategoricalDistribution observedStates1, CategoricalDistribution observedStates2, CommandRecord commandRec) {
+    public void estimateParameters(Tree originalTree, CategoricalDistribution observedStates1, CategoricalDistribution observedStates2) {
  //   	if (observedStates1==null || observedStates2==null)
  //   		return;
         this.observedStates1 = observedStates1;
@@ -1181,7 +1181,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				// first a model with changes in Y contingent on changes in X
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEY){
 				    model6_cy.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
-					model6_cy.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
+					model6_cy.estimateParameters(workingTree,observedStates1, observedStates2);
 					double[] m6_1Params = model6_cy.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m6_1Params[i];
@@ -1213,7 +1213,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				// now the other 6-parameter model (changes in X contingent on Y)
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEX){
 				    model6_cx.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
-					model6_cx.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
+					model6_cx.estimateParameters(workingTree,observedStates1, observedStates2);
 					double[] m6_2Params = model6_cx.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m6_2Params[i];
@@ -1243,7 +1243,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						b[i] = estParams[i];
 				}
 				//PETER: added these tick notifications to keep user informed of progress of search
-				if (commandRec != null) commandRec.tick("8 parameter model preliminary -ln likelihood: " + MesquiteDouble.toString(best));
+				CommandRecord.tick("8 parameter model preliminary -ln likelihood: " + MesquiteDouble.toString(best));
 				if (eightParameterExtraSearch.getValue() > 0) {
 					double [] m6_cy_Params = model6_cy.getParams();
 					double [] m6_cx_Params = model6_cx.getParams();
@@ -1266,7 +1266,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 							for (int m=0; m< estParams.length; m++)
 								b[m] = estParams[m];
 						}
-						if (commandRec != null) commandRec.tick("8 parameter model -ln likelihood after " + (i+1) + " searches: " + MesquiteDouble.toString(best));
+						CommandRecord.tick("8 parameter model -ln likelihood after " + (i+1) + " searches: " + MesquiteDouble.toString(best));
 					}
 				}
 		 		if (params == null ||params.length != 8)
@@ -1283,7 +1283,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					params = new double[6];
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL4PARAM) {
 					PagelMatrixModel model4 = new PagelMatrixModel("",CategoricalState.class,MODEL4PARAM);
-					model4.estimateParameters(workingTree,observedStates1, observedStates2, commandRec);
+					model4.estimateParameters(workingTree,observedStates1, observedStates2);
 					double [] m4Params = model4.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m4Params[i];
@@ -1379,7 +1379,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		 			params = new double[4];
 		 		for(int i=0;i<b.length;i++)
 		 			params[i]= b[i];
-				if (commandRec != null) commandRec.tick("4 parameter model -ln likelihood: " + MesquiteDouble.toString(best));
+				CommandRecord.tick("4 parameter model -ln likelihood: " + MesquiteDouble.toString(best));
 				break;
 			}
 			case MODEL2PARAM: {  // NO-OP FOR NOW, the model exists, the framework for using it doesn't

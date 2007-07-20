@@ -21,7 +21,7 @@ import mesquite.treefarm.lib.*;
 /** ======================================================================== */
 public class BranchLengthFromRoot extends NForTaxonWithTree {
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;  
 	}
 	/*.................................................................................................................*/
@@ -30,7 +30,7 @@ public class BranchLengthFromRoot extends NForTaxonWithTree {
 		return false;  
 	}
 	/*.................................................................................................................*/
-	public void calculateNumbers(Taxa taxa, Tree tree, NumberArray results, MesquiteString resultsString, CommandRecord commandRec){
+	public void calculateNumbers(Taxa taxa, Tree tree, NumberArray results, MesquiteString resultsString){
 		if (tree == null)
 			return;
 		clearResultAndLastResult(results);

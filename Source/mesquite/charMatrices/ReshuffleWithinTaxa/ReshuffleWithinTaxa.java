@@ -23,12 +23,12 @@ import mesquite.charMatrices.lib.*;
 /* ======================================================================== */
 public class ReshuffleWithinTaxa extends RandomMatrixModifier {
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
   	 	return true; 
   	 }
 
 	/*.................................................................................................................*/
-  	public void modifyMatrix(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng, CommandRecord commandRec){
+  	public void modifyMatrix(MCharactersDistribution matrix, MAdjustableDistribution modified, RandomBetween rng){
 		if (matrix==null || modified == null)
 			return;
 		int numTaxa = matrix.getNumTaxa();

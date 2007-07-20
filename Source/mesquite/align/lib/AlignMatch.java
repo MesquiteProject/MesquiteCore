@@ -33,7 +33,7 @@ public abstract class AlignMatch extends CategDataMatcher {
 	MesquiteCommand ptC;
 	protected MesquiteSubmenuSpec mss;
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
+	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 
 		mss = addSubmenu(null, getName());//getFileCoordinator().
   		addItemToSubmenu(null, mss,"Allowed Length Differences...", makeCommand("setMaxLengthDiff", this));
@@ -79,7 +79,7 @@ public abstract class AlignMatch extends CategDataMatcher {
 	
 	/*.................................................................................................................*/
    	/** Returns the match of the two long arrays*/
-	public double sequenceMatch(long[] originalArray, long[] candidateArray, CommandRecord commandRec){
+	public double sequenceMatch(long[] originalArray, long[] candidateArray){
  		if (candidateArray==null || aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
   		MesquiteNumber score = new MesquiteNumber();
@@ -89,14 +89,14 @@ public abstract class AlignMatch extends CategDataMatcher {
 	}
 
 	
-	public double getBestMatchValue(long[] originalArray,  CommandRecord commandRec){
+	public double getBestMatchValue(long[] originalArray){
 		if (aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
-  		MesquiteNumber score = aligner.getScoreOfIdenticalSequences(originalArray, commandRec);
+  		MesquiteNumber score = aligner.getScoreOfIdenticalSequences(originalArray);
    		return score.getDoubleValue();
 	}
 	
-	public double getApproximateWorstMatchValue(long[] originalArray, CommandRecord commandRec){
+	public double getApproximateWorstMatchValue(long[] originalArray){
 		if (aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
  		//CategoricalState state = ((CategoricalData)data).getNewState();
@@ -105,7 +105,7 @@ public abstract class AlignMatch extends CategDataMatcher {
 		int startLength = MesquiteInteger.maximum(1,originalArray.length-maxLengthDiff);
    		int endLength = MesquiteInteger.minimum(data.getNumChars(),originalArray.length+maxLengthDiff);
    		for (int length = startLength; length<=endLength; length++) {
-   	  		score = aligner.getVeryBadScore(originalArray, length, alphabetLength, commandRec);
+   	  		score = aligner.getVeryBadScore(originalArray, length, alphabetLength);
 
    	  		if (!MesquiteDouble.isCombinable(worstScore))
    	  			worstScore = score.getDoubleValue();
@@ -119,7 +119,7 @@ public abstract class AlignMatch extends CategDataMatcher {
 
 		
 		/** Returns whether candidate stretch of matrix matches the data contained in the long array*/
-   	public double sequenceMatch(long[] originalArray, int candidateTaxon, int candidateStartChar, MesquiteInteger candidateEndChar, CommandRecord commandRec){
+   	public double sequenceMatch(long[] originalArray, int candidateTaxon, int candidateStartChar, MesquiteInteger candidateEndChar){
    		if (data==null || aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
   		
@@ -153,18 +153,18 @@ public abstract class AlignMatch extends CategDataMatcher {
 	 
  		MesquiteInteger pos = new MesquiteInteger(0);
  		/*.................................................................................................................*/
- 		public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+ 		public Object doCommand(String commandName, String arguments, CommandChecker checker) {
   			if (checker.compare(this.getClass(), "Sets the maximum number of length differences between the two sequences", "[number]", commandName, "setMaxLengthDiff")) {
  				int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
  				if (!MesquiteInteger.isCombinable(newNum))
  					newNum = MesquiteInteger.queryInteger(containerOfModule(), "Set Allowed Length Differences", "Allowed Length Differences:", maxLengthDiff, 0, MesquiteInteger.infinite);
  				if (newNum>=0  && newNum!=maxLengthDiff) {
  					maxLengthDiff = newNum;
- 					parametersChanged(null, commandRec);
+ 					parametersChanged();
  				}
  			}
  			else
- 				return super.doCommand(commandName, arguments, commandRec, checker);
+ 				return  super.doCommand(commandName, arguments, checker);
  			return null;
  		}
 

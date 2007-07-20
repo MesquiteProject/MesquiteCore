@@ -41,10 +41,10 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	boolean[] selected;
 	boolean suspended = false;
 
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-		calcTask = (SpExtCategCharMLCalculator)hireEmployee(commandRec, SpExtCategCharMLCalculator.class, "Integrating Likelihood");
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		calcTask = (SpExtCategCharMLCalculator)hireEmployee(SpExtCategCharMLCalculator.class, "Integrating Likelihood");
 		if (calcTask == null)
-			return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
+			return sorry(getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 		double def = MesquiteDouble.unassigned;
 		//following is for the parameters explorer
 		s0 = new MesquiteParameter("s0", "Rate of speciation with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
@@ -78,7 +78,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		return ok;
 	}
 
-	public void initialize(Tree tree, CharacterDistribution charStates1, CommandRecord commandRec) {
+	public void initialize(Tree tree, CharacterDistribution charStates1) {
 		// TODO Auto-generated method stub
 
 	}
@@ -115,11 +115,11 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 
 	/*.................................................................................................................*/
 	/*  the main command handling method.  */
-	public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(getClass(), "Sets rate parameters", "[double double double double double double]", commandName, "setParameters")) {
 			if (StringUtil.blank(arguments)){
 				if (!MesquiteThread.isScripting() && showDialog())
-					parametersChanged(null, commandRec);
+					parametersChanged();
 			}
 			else {
 				parser.setString(arguments);
@@ -135,7 +135,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 				more = setParam(t10, params, parser);
 				changed = changed || more;
 				if (changed && !MesquiteThread.isScripting())
-					parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
 		else if (checker.compare(getClass(), "Suspends calculations", null, commandName, "suspend")) {
@@ -143,19 +143,19 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		}
 		else if (checker.compare(getClass(), "Resumes calculations", null, commandName, "resume")) {
 			suspended = false;
-			parametersChanged(null, commandRec);
+			parametersChanged();
 		}
 		else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
 			return calcTask;
 		}
 		else
-			return super.doCommand(commandName, arguments, commandRec, checker);
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 
 
     /*------------------------------------------------------------------------------------------*/
-	public void calculateNumber(Tree tree, CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
+	public void calculateNumber(Tree tree, CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString) {
 		if (result == null)
 			return;
 	   	clearResultAndLastResult(result);
@@ -166,7 +166,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		
 		paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
 
-		calcTask.calculateLogProbability(tree, charStates, paramsCopy, result, resultString, commandRec);
+		calcTask.calculateLogProbability(tree, charStates, paramsCopy, result, resultString);
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}

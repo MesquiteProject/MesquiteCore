@@ -25,28 +25,28 @@ public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incr
 	Taxa taxa;
 	long currentTree = 0;
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-	 	treeSourceTask = (TreeSource)hireEmployee(commandRec, TreeSource.class, "Source of trees (for Shared History distance for " + getEmployer().getName()  + ")");
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+	 	treeSourceTask = (TreeSource)hireEmployee(TreeSource.class, "Source of trees (for Shared History distance for " + getEmployer().getName()  + ")");
 	 	if (treeSourceTask == null) {
-	 		return sorry(commandRec, getName() + " couldn't start because no source of a tree was obtained.");
+	 		return sorry(getName() + " couldn't start because no source of a tree was obtained.");
 	 	}
 	 	return true;
 	}
 	/*.................................................................................................................*/
-	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification, CommandRecord commandRec) {
+	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 	 	if (employee != treeSourceTask || Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED)
-	 		super.employeeParametersChanged(employee, source, notification, commandRec);
+	 		super.employeeParametersChanged(employee, source, notification);
 	}
 	  	 
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
 	  happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-	public void initialize(Taxa taxa, CommandRecord commandRec){
+	public void initialize(Taxa taxa){
 		this.taxa = taxa;
-	   		treeSourceTask.initialize(taxa, commandRec);
+	   		treeSourceTask.initialize(taxa);
 	}
 
-	public TaxaDistance getTaxaDistance(Taxa taxa, CommandRecord commandRec){
-		Tree tree = treeSourceTask.getTree(taxa, (int)currentTree, commandRec);
+	public TaxaDistance getTaxaDistance(Taxa taxa){
+		Tree tree = treeSourceTask.getTree(taxa, (int)currentTree);
 		if (tree == null) {
 			MesquiteMessage.warnProgrammer("No tree in Shared History Distance " + currentTree + "  source " + treeSourceTask.getName());
 			return null;
@@ -55,20 +55,20 @@ public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incr
 	}
 
 	/*.................................................................................................................*/
-	public void setCurrent(long i, CommandRecord commandRec){  //SHOULD NOT notify (e.g., parametersChanged)
+	public void setCurrent(long i){  //SHOULD NOT notify (e.g., parametersChanged)
 	 	currentTree = i;
 	}
-	public long getCurrent(CommandRecord commandRec){
+	public long getCurrent(){
 	 	return currentTree;
 	}
 	public String getItemTypeName(){
 	 	return "Tree";
 	}
-	public long getMin(CommandRecord commandRec){
+	public long getMin(){
 		return 0;
 	}
-	public long getMax(CommandRecord commandRec){
-	 	long n = treeSourceTask.getNumberOfTrees(taxa, commandRec)-1;
+	public long getMax(){
+	 	long n = treeSourceTask.getNumberOfTrees(taxa)-1;
 		return n;
 	}
 	public long toInternal(long i){

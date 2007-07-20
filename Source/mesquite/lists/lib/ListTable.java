@@ -77,7 +77,7 @@ public class ListTable extends MesquiteTable {
 				}
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
-					 ((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "character moving", null);
+					 ((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "character moving");
 				}
 				
 				/*
@@ -375,16 +375,16 @@ public class ListTable extends MesquiteTable {
 			return window.getRowName(row);
 	}
 	/*...............................................................................................................*/
-	public void returnedRowNameText(int row, String s, CommandRecord commandRec){
+	public void returnedRowNameText(int row, String s){
 		if (s!=null && !s.equals(window.getRowName(row))) {
 			String oldName = window.getRowName(row);
-			window.setRowName(row, s, commandRec);
+			window.setRowName(row, s);
 			window.setUndoer(ownerModule.getSingleNameUndoInstructions(row,oldName, s));
 		}
 		
 	}
 	/*...............................................................................................................*/
-	public void returnedMatrixText(int column, int row, String s, CommandRecord commandRec){
+	public void returnedMatrixText(int column, int row, String s){
 		if (s!=null){
 			ListAssistant assistant = window.findAssistant(column);
 			if (assistant!=null)

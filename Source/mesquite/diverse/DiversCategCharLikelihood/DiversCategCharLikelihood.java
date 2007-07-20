@@ -39,10 +39,10 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
     boolean[] selected;
 
     /*.................................................................................................................*/
-    public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
-        calcTask = (DivCategCharMLCalculator)hireEmployee(commandRec, DivCategCharMLCalculator.class, "Integrating Likelihood");
+    public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+        calcTask = (DivCategCharMLCalculator)hireEmployee(DivCategCharMLCalculator.class, "Integrating Likelihood");
         if (calcTask == null)
-            return sorry(commandRec, getName() + " couldn't start because no integrating likelihood calculator module obtained.");
+            return sorry(getName() + " couldn't start because no integrating likelihood calculator module obtained.");
         final double def = MesquiteDouble.unassigned;
         //following is for the parameters explorer
         r0 = new MesquiteParameter("r0", "Rate of net diversification with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
@@ -71,7 +71,7 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
         return ok;
     }
     /*.................................................................................................................*/
-    public void initialize(Tree tree, CharacterDistribution charStates,CommandRecord commandRec) {
+    public void initialize(Tree tree, CharacterDistribution charStates) {
         // TODO Auto-generated method stub
     }
     
@@ -105,11 +105,11 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
 
     /*.................................................................................................................*/
     /*  the main command handling method.  */
-    public Object doCommand(String commandName, String arguments, CommandRecord commandRec, CommandChecker checker) {
+    public Object doCommand(String commandName, String arguments, CommandChecker checker) {
         if (checker.compare(getClass(), "Sets rate parameters", "[double double double double double double]", commandName, "setParameters")) {
             if (StringUtil.blank(arguments)){
                 if (!MesquiteThread.isScripting() && showDialog())
-                    parametersChanged(null, commandRec);
+                    parametersChanged();
             }
             else {
                 parser.setString(arguments);
@@ -125,20 +125,20 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
                 more = setParam(t10, params, parser);
                 changed = changed || more;
                 if (changed && !MesquiteThread.isScripting())
-                    parametersChanged(null, commandRec); //this tells employer module that things changed, and recalculation should be requested
+                    parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
             }
         }
         else if (checker.compare(getClass(), "Returns integrating module", null, commandName, "getIntegTask")) {
             return calcTask;
         }
         else
-            return super.doCommand(commandName, arguments, commandRec, checker);
+            return  super.doCommand(commandName, arguments, checker);
         return null;
     }
 
 
     
-    public void calculateNumber(Tree tree, CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString, CommandRecord commandRec) {
+    public void calculateNumber(Tree tree, CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString) {
         if (result == null)
             return;
        	clearResultAndLastResult(result);
@@ -146,7 +146,7 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
         if (tree == null || charStates == null)
             return;
         paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
-        calcTask.calculateLogProbability(tree, charStates, paramsCopy, result, resultString, commandRec);
+        calcTask.calculateLogProbability(tree, charStates, paramsCopy, result, resultString);
 		saveLastResult(result);
 		saveLastResultString(resultString);
    }

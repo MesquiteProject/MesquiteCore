@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
 /** A file interpreter for a NEXML file format.  */
 public class InterpretNEXML extends FileInterpreterI {	
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -58,7 +58,7 @@ public class InterpretNEXML extends FileInterpreterI {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments, CommandRecord commandRec) {
+	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator = new ProgressIndicator(mf,"Importing File "+ file.getName(), file.existingLength());
 		progIndicator.start();
@@ -70,7 +70,7 @@ public class InterpretNEXML extends FileInterpreterI {
 			LocalDomParser ldp = new LocalDomParser();
 			ldp.parse(file, mf);
 			
-			finishImport(progIndicator, file, abort, commandRec);
+			finishImport(progIndicator, file, abort);
 		}
 		decrementMenuResetSuppression();
 	}
@@ -100,7 +100,7 @@ public class InterpretNEXML extends FileInterpreterI {
 		return "";
 	}
 	/*.................................................................................................................*/
-	public void exportFile(MesquiteFile file, String arguments, CommandRecord commandRec) { //if file is null, consider whole project open to export
+	public void exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		// TODO xml writing goes here?
 	}
 	/*.................................................................................................................*/

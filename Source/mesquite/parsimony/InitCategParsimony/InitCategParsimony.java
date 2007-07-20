@@ -33,7 +33,7 @@ public class InitCategParsimony extends FileInit {
 	/*.................................................................................................................*/
 	CharacterModel unorderedModel,orderedModel,irreversibleModel, dolloModel;
 
-	public boolean startJob(String arguments, Object condition, CommandRecord commandRec, boolean hiredByName){
+	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 
 		unorderedModel = new UnorderedModel();
 		orderedModel = new OrderedModel();

@@ -99,8 +99,8 @@ public class RowNamesPanel extends EditorPanel  {
 	public int columnWidth(int column) { //todo: why does this not subtract grabbers, but ColumnNames does?
 		return width;
 	}
-	public void textReturned(int column, int row, String text, CommandRecord commandRec){
-		table.returnedRowNameText(row, text, commandRec);
+	public void textReturned(int column, int row, String text){
+		table.returnedRowNameText(row, text);
 	}
 	public String getText(int column, int row){
 		return table.getRowNameText(row);
