@@ -34,9 +34,13 @@ import org.xml.sax.SAXException;
 /** A file interpreter for a NEXML file format.  */
 public class InterpretNEXML extends FileInterpreterI {	
 	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+	public boolean startJob(String arguments, Object condition, CommandRecord commandrec, boolean hiredByName) {
 		return true;
 	}
+	/*.................................................................................................................*/
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		return true;
+	}	
 	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		return true;
@@ -145,11 +149,11 @@ class LocalDomParser {
 		Element nexml = dom.getDocumentElement();           // get root
 		
 		/* fetch taxa elements */
-		NodeList list = nexml.getElementsByTagName("otus"); // get all otus elements
+		NodeList list = nexml.getElementsByTagName("taxon"); // get all otus elements
 		if ( list != null && list.getLength() > 0 ) {
 			for ( int i = 0; i < list.getLength(); i++ ) {								
-				Element otus = (Element)list.item(i);       //get the otus element								
-				getTaxa( otus, project );                   //create the Taxa object			
+				Element taxa = (Element)list.item(i);       //get the otus element								
+				getTaxa( taxa, project );                   //create the Taxa object			
 			}
 		}
 		
@@ -166,17 +170,17 @@ class LocalDomParser {
 	}
 
 	/* process taxa blocks */
-	private void getTaxa(Element otusElement, MesquiteProject project) {
-		NodeList list = otusElement.getElementsByTagName("otu");
+	private void getTaxa(Element taxaElement, MesquiteProject project) {
+		NodeList list = taxaElement.getElementsByTagName("otu");
 		Taxa taxa = project.createTaxaBlock( list.getLength() );
-		taxa.setName( otusElement.getAttribute("label") );
-		taxa.setUniqueID( otusElement.getAttribute("id") );
+		taxa.setName( taxaElement.getAttribute("label") );
+		taxa.setUniqueID( taxaElement.getAttribute("id") );
 		if ( list != null && list.getLength() > 0 ) {
 			for ( int i = 0; i < list.getLength(); i++ ) {
-				Element otu = (Element)list.item(i);
+				Element taxonElement = (Element)list.item(i);
 				Taxon taxon = taxa.getTaxon(i);
-				taxon.setName( otu.getAttribute("label") );
-				taxon.setUniqueID( otu.getAttribute("id") );
+				taxon.setName( taxonElement.getAttribute("label") );
+				taxon.setUniqueID( taxonElement.getAttribute("id") );
 			}
 		}		
 	}
