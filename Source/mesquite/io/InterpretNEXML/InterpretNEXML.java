@@ -171,7 +171,7 @@ class LocalDomParser {
 
 	/* process taxa blocks */
 	private void getTaxa(Element taxaElement, MesquiteProject project) {
-		NodeList list = taxaElement.getElementsByTagName("otu");
+		NodeList list = taxaElement.getElementsByTagName("taxon");
 		Taxa taxa = project.createTaxaBlock( list.getLength() );
 		taxa.setName( taxaElement.getAttribute("label") );
 		taxa.setUniqueID( taxaElement.getAttribute("id") );
@@ -202,34 +202,5 @@ class LocalDomParser {
 		}		
 	}	
 	*/
-
-	/**
-	 * I take a xml element and the tag name, look for the tag and get
-	 * the text content 
-	 * i.e for <employee><name>John</name></employee> xml snippet if
-	 * the Element points to employee node and tagName is name I will return John  
-	 * @param ele
-	 * @param tagName
-	 * @return
-	 */
-	private String getTextValue(Element ele, String tagName) {
-		String textVal = null;
-		NodeList nl = ele.getElementsByTagName(tagName);
-		if(nl != null && nl.getLength() > 0) {
-			Element el = (Element)nl.item(0);
-			textVal = el.getFirstChild().getNodeValue();
-		}
-		return textVal;
-	}
-	
-	/**
-	 * Calls getTextValue and returns a int value
-	 * @param ele
-	 * @param tagName
-	 * @return
-	 */
-	private int getIntValue(Element ele, String tagName) {
-		return Integer.parseInt(getTextValue(ele,tagName));
-	}	
 
 }
