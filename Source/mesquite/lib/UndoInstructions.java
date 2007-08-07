@@ -2,88 +2,60 @@ package mesquite.lib;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 //import mesquite.charMatrices.lib.*;
 import mesquite.lib.table.*;
 
 /*
- * There are direct edits to the matrix via the table: cells, taxon names, char names, add row/column, delete row/column, reorder row/column.
+ Undo PARTS_MOVED:
+ 	SortChars and SortTaxa done
+ 	BasicDataWIndow done
+ 	TODO: simple character and taxon moving in editor
+ 	
+ 	- test to see if linked matrices works with parts moved
+ 		
+ 	search for PARTS_MOVED
 
- Ideal would be to have these events store a UndoInstructions object attached to the table or data editor module or window, or store null if can't undo.  
- I'd start in the editor in this direct way, but with the idea for the system to be transported to assistant modules later.
-
- This "UndoInstructions" wouldn't be a MesquiteCommand but rather a special object with whatever it needed to recover; 
- it might just have the old state at the cell; or it might have the whole matrix copied.
-
- Then we could later modify the alter data method of data alterers so that they had to return one of these UndoInstructions.
-
- If the system received notification of a substantive alteration in the matrix that was not represented by the latest UndoInstructions, 
- the UndoInstructions object would be set to null.
-
- from MacClade:
- const
- lastChangeCantUndo = -1;
- lastChangeDataCell = 0;
- lastChangeNameCell=1;
- lastChangeCellBlock = 2;
- lastChangeInsertCharAndCellBlock = 3;
- lastChangeAddCharacters = 4;
- lastChangeAddTaxa = 5;
- lastChangeInsertTaxaAndCellBlock = 6;
-
- lastChangeDestroyCharacters =7;
- lastChangeMoveCharacters = 8;
- lastChangeDestroyTaxa =9;
- lastChangeMoveTaxa = 10;
- lastChangeNameRow=11;
 
  * */
 
 public class UndoInstructions implements Undoer {
 	public static final int CANTUNDO = -1;
-
 	public static final int SINGLEDATACELL = 1;
-
 	public static final int SINGLETAXONNAME = 2;
-
 	public static final int SINGLECHARACTERNAME = 3;
-
 	public static final int EDITTEXTFIELD = 4;
-
 	public static final int ALLDATACELLS = 5;
-
 	public static final int ALLTAXONNAMES = 6;
-
 	public static final int ALLCHARACTERNAMES = 7;
+	public static final int PARTS_MOVED = 8;
+
+// ones below here are not yet supported
+	public static final int TAXA_ADDED = 9;
+	public static final int CHARACTERS_ADDED = 10;
+	public static final int TAXA_DELETED = 11;
+	public static final int CHARACTERS_DELETED = 12;
 
 	int changeClass;
-
+	
 	int itStart;
-
 	int itEnd;
-
 	int icStart;
-
 	int icEnd;
-
 	int row;
 
+	MesquiteModule ownerModule = null;
 	Object oldState;
-
 	Object newState;
-
 	CharacterData data;
-
 	CharacterData oldData;
-
 	CharacterData newData;
-
 	MesquiteTable table;
-
 	EditorTextField textField;
-
 	Taxa taxa;
-
+	Associable assoc;
 	String[] namesList;
+	int[] order = null;
 
 	/** This is the constructor for single-cell changes. */
 	public UndoInstructions(int changeClass, int ic, int it, Object oldState,
@@ -178,6 +150,56 @@ public class UndoInstructions implements Undoer {
 				namesList[i] = ((String[]) obj)[i];
 		}
 	}
+	
+	public UndoInstructions(int changeClass, Object obj, MesquiteModule ownerModule) {
+		if (obj == null)
+			return;
+		this.changeClass = changeClass;
+		this.ownerModule = ownerModule;
+		if (obj instanceof Associable) {
+			assoc = (Associable) obj;
+			if (changeClass==PARTS_MOVED && assoc!=null) {
+				recordCurrentOrder(assoc);
+			}
+		}
+	}
+
+	/** This is the constructor for changes to taxa. */
+	public UndoInstructions(int changeClass) {
+		this.changeClass = changeClass;
+	}
+
+	public void copyCurrentToPreviousOrder(Associable assoc) {
+		assoc.copyCurrentToPreviousOrder()	;
+		if (assoc instanceof CharacterData) {
+			CharacterData data = (CharacterData)assoc;
+			data.copyCurrentToPreviousOrderInLinked();
+		}
+			
+	}
+	public void restoreToPreviousOrder(Associable assoc) {
+		assoc.restoreToPreviousOrder()	;
+		if (assoc instanceof CharacterData) {
+			CharacterData data = (CharacterData)assoc;
+			data.restoreToPreviousOrderInLinked();
+		}
+			
+	}
+	public void recordCurrentOrder(Associable assoc) {
+		assoc.recordCurrentOrder()	;
+		if (assoc instanceof CharacterData) {
+			CharacterData data = (CharacterData)assoc;
+			data.recordCurrentOrderInLinked();
+		}
+			
+	}
+	public void recordPreviousOrder(Associable assoc) {
+		assoc.recordPreviousOrder()	;
+		if (assoc instanceof CharacterData) {
+			CharacterData data = (CharacterData)assoc;
+			data.recordPreviousOrderInLinked();
+		}
+	}
 
 	public void setNewState(Object newState) {
 		this.newState = newState;
@@ -268,7 +290,20 @@ public class UndoInstructions implements Undoer {
 			for (int i = 0; i < namesList.length && i < data.getNumChars(); i++)
 				data.setCharacterName(i, namesList[i]);
 			return new UndoInstructions(changeClass, oldNamesList, data);
+			
+		case PARTS_MOVED:
+			if (assoc == null)
+				return null;
+			UndoInstructions undoInstructions = new UndoInstructions(changeClass, assoc, ownerModule);
+			//undoInstructions.recordCurrentOrder(taxa);
+			recordCurrentOrder(assoc);
+			restoreToPreviousOrder(assoc);
+			//UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
+			assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
+			copyCurrentToPreviousOrder(assoc);
+			return undoInstructions;		
 		}
+		
 
 		return null;
 	}

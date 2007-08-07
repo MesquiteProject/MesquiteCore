@@ -57,6 +57,10 @@ public class ListTable extends MesquiteTable {
 				
 				int i = 0;
 				boolean asked = false;
+				UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,assoc, ownerModule);
+				undoInstructions.recordPreviousOrder(assoc);
+				UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
+
 				while (i<getNumRows()){
 					if (b.isBitOn(i)) {
 						if (assoc instanceof CharacterData && !asked && ((CharacterData)assoc).isMolecularSequence() && i!=after) {
@@ -87,7 +91,7 @@ public class ListTable extends MesquiteTable {
 					}
 				*/
 				synchronizeRowSelection(((Associable)window.getCurrentObject()));
-				((Associable)window.getCurrentObject()).notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
+				((Associable)window.getCurrentObject()).notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		 		repaintAll();
 	 		}
  		}
