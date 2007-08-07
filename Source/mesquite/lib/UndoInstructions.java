@@ -295,10 +295,8 @@ public class UndoInstructions implements Undoer {
 			if (assoc == null)
 				return null;
 			UndoInstructions undoInstructions = new UndoInstructions(changeClass, assoc, ownerModule);
-			//undoInstructions.recordCurrentOrder(taxa);
 			recordCurrentOrder(assoc);
 			restoreToPreviousOrder(assoc);
-			//UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
 			assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
 			copyCurrentToPreviousOrder(assoc);
 			return undoInstructions;		
