@@ -540,6 +540,9 @@ timer6.end();
 				row = table.findRowBeforeBetween(y);  //this was findColumnBeforeBetween
 			}
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
+			if (((TableTool)tool).getEmphasizeRowsOnMouseDown()){
+				table.emphasizeRow(-1,firstRowTouched, -1, false, Color.blue);
+			}
 			mouseDownInField = true;
 //			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
 //			table.emphasizeRow(-1,row, -1, false, Color.red);
@@ -573,6 +576,7 @@ timer6.end();
 	}
 	/*_________________________________________________*/
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
+		Debugg.println("not table tool mouseup");
 		if (!(tool instanceof TableTool))
 			return;
 		int column = findColumn(x);
@@ -582,6 +586,10 @@ timer6.end();
 
 		if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
 			table.redrawFullRow(previousRowDragged);
+			table.redrawFullRow(firstRowTouched);
+		}
+
+		if (((TableTool)tool).getEmphasizeRowsOnMouseDown()){
 			table.redrawFullRow(firstRowTouched);
 		}
 
