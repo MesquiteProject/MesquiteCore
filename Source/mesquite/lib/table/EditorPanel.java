@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.table;
 
 import java.awt.*;
@@ -27,7 +27,7 @@ public abstract class EditorPanel extends MesquitePanel {
 	protected int returningColumn = -2;
 	protected int returningRow  = -2;
 	Polygon dropDownTriangle;
-	
+
 	public EditorPanel (MesquiteTable table) {
 		super();
 		dropDownTriangle=MesquitePopup.getDropDownTriangle();
@@ -43,19 +43,19 @@ public abstract class EditorPanel extends MesquitePanel {
 		fillColor = toFill;
 	}
 	public int startOfColumn(int column) {
-			if (column<tb.firstColumnVisible)
-				return -1;
-			else if (column>tb.firstColumnVisible + tb.numColumnsTotal || column>=tb.numColumnsTotal)
-				return -1;
-			else {
-				int lineX = 0;
+		if (column<tb.firstColumnVisible)
+			return -1;
+		else if (column>tb.firstColumnVisible + tb.numColumnsTotal || column>=tb.numColumnsTotal)
+			return -1;
+		else {
+			int lineX = 0;
 			//	if (tb.showRowGrabbers)
 			//		lineX = tb.getRowGrabberWidth();
-				for (int c=tb.firstColumnVisible; (c<column); c++) {
-					lineX += tb.columnWidths[c];
-				}
-				return lineX;
+			for (int c=tb.firstColumnVisible; (c<column); c++) {
+				lineX += tb.columnWidths[c];
 			}
+			return lineX;
+		}
 	}
 	public int endOfColumn(int column) {
 		if (column<tb.firstColumnVisible)
@@ -66,26 +66,26 @@ public abstract class EditorPanel extends MesquitePanel {
 			return startOfColumn(column)+tb.columnWidths[column];
 	}
 	public int endOfLastColumn() {
-			int lastColumn = tb.getLastColumn();
-			if (lastColumn<0)
-				return 0;
-			else
-				return startOfColumn(lastColumn)+tb.columnWidths[lastColumn];
+		int lastColumn = tb.getLastColumn();
+		if (lastColumn<0)
+			return 0;
+		else
+			return startOfColumn(lastColumn)+tb.columnWidths[lastColumn];
 	}
 	public int startOfRow(int row) {
-			if (row<tb.firstRowVisible)
-				return -1;
-			else if (row>tb.firstRowVisible + tb.numRowsTotal)
-				return -1;
-			else {
-				int lineX = 0;
+		if (row<tb.firstRowVisible)
+			return -1;
+		else if (row>tb.firstRowVisible + tb.numRowsTotal)
+			return -1;
+		else {
+			int lineX = 0;
 			//	if (tb.showRowGrabbers)
 			//		lineX = tb.getRowGrabberWidth();
-				for (int c=tb.firstRowVisible; (c<row); c++) {
-					lineX += tb.rowHeights[c];
-				}
-				return lineX;
+			for (int c=tb.firstRowVisible; (c<row); c++) {
+				lineX += tb.rowHeights[c];
 			}
+			return lineX;
+		}
 	}
 	public int leftEdgeOfRow(int row) {
 		return startOfColumn(tb.firstColumnVisible);
@@ -102,13 +102,13 @@ public abstract class EditorPanel extends MesquitePanel {
 			return startOfRow(row)+tb.rowHeights[row];
 	}
 	public int endOfLastRow() {
-			int lastRow = tb.getLastRow();
-			if (lastRow<0)
-				return 0;
-			else
-				return startOfRow(lastRow)+tb.rowHeights[lastRow];
+		int lastRow = tb.getLastRow();
+		if (lastRow<0)
+			return 0;
+		else
+			return startOfRow(lastRow)+tb.rowHeights[lastRow];
 	}
-	
+
 	public abstract int findRegionInCellH(int x);
 	public abstract int findRegionInCellV(int y);
 	/*@@@...............................................................................................................*/
@@ -116,7 +116,7 @@ public abstract class EditorPanel extends MesquitePanel {
 	public abstract int findColumn(int x);
 	/** returns in which row y lies, -1 if above, -2 if below.*/
 	public abstract int findRow(int y);
-	
+
 	public MesquiteTable getTable(){
 		return tb;
 	}
@@ -142,7 +142,7 @@ public abstract class EditorPanel extends MesquitePanel {
 			return -1;
 		return tb.rowHeights[row];
 	}
-		
+
 	public boolean getEditing(){
 		return editField.getEditing();
 	}
@@ -150,7 +150,7 @@ public abstract class EditorPanel extends MesquitePanel {
 		if (!editField.getEditing())
 			return false;
 		return (editField.getSelectionStart()==0 && editField.getSelectionEnd()== editField.getText().length());
-		
+
 	}
 	public EditorTextField getEditField(){
 		return editField;
@@ -205,12 +205,12 @@ public abstract class EditorPanel extends MesquitePanel {
 		editColumn=-2;
 		editRow = -2;
 	}
-	
+
 	public void recordEdit(){  
 		editField.recordEdit();
 	}
 	public abstract void deselectCell(int column,int row);
-	
+
 	public void aboutToReturnText(int column, int row){
 		returningColumn = column;
 		returningRow  = row;
@@ -238,56 +238,56 @@ public abstract class EditorPanel extends MesquitePanel {
 		tb.setFocusedCell(column, row);
 	}
 	public abstract void redrawCell(int column, int row);
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(this.getClass(), "Indicates editing is complete and text is being passed back", "[column] [row] [tokenized text]", commandName, "returnText")) {
-    	 		int column = MesquiteInteger.fromFirstToken(arguments, pos);
-    	 		int row = MesquiteInteger.fromString(arguments, pos);
-    	 		String s  = ParseUtil.getToken(arguments, pos);
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Indicates editing is complete and text is being passed back", "[column] [row] [tokenized text]", commandName, "returnText")) {
+			int column = MesquiteInteger.fromFirstToken(arguments, pos);
+			int row = MesquiteInteger.fromString(arguments, pos);
+			String s  = ParseUtil.getToken(arguments, pos);
 			returningColumn = -2;
 			returningRow  = -2;
 			if (s !=null)
-    	 			textReturned(column, row, s);
-    	 		redrawCell(column, row);
-    	 		return null;
-    	 	}
-    	 	else
-    	 		return  super.doCommand(commandName, arguments, checker);
-   	 }
+				textReturned(column, row, s);
+			redrawCell(column, row);
+			return null;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+	}
 	/*...............................................................................................................*/
 	protected void prepareCell(Graphics g, int x, int y, int w, int h, boolean focused, boolean selected, boolean dimmed, boolean editable){
-			Color color;
-			if (selected) {
-				if (!MesquiteWindow.Java2Davailable)
-					color = Color.black;
-				else
-					color = Color.white;
-			}
-			else if (focused)
-				color = Color.lightGray;
-			else if (fillColor!=null)
-				color = fillColor;
-			else if (dimmed)
-				color = Color.lightGray;
-			else if (editable)
+		Color color;
+		if (selected) {
+			if (!MesquiteWindow.Java2Davailable)
+				color = Color.black;
+			else
 				color = Color.white;
-			else
-				color = ColorDistribution.uneditable;
-	//		color = Color.lightGray;  //
-			g.setColor(color);
-			g.fillRect(x,y,w,h);
-			if (selected)
-				GraphicsUtil.fillTransparentSelectionRectangle(g,x,y,w,h);
-			
-			Color textColor;
-			if (selected)
-				textColor = Color.white;
-			else if (dimmed)
-				textColor = Color.gray;
-			else
-				textColor = Color.black;
-			g.setColor(textColor);
+		}
+		else if (focused)
+			color = Color.lightGray;
+		else if (fillColor!=null)
+			color = fillColor;
+		else if (dimmed)
+			color = Color.lightGray;
+		else if (editable)
+			color = Color.white;
+		else
+			color = ColorDistribution.uneditable;
+		//		color = Color.lightGray;  //
+		g.setColor(color);
+		g.fillRect(x,y,w,h);
+		if (selected)
+			GraphicsUtil.fillTransparentSelectionRectangle(g,x,y,w,h);
+
+		Color textColor;
+		if (selected)
+			textColor = Color.white;
+		else if (dimmed)
+			textColor = Color.gray;
+		else
+			textColor = Color.black;
+		g.setColor(textColor);
 	}
 	public void enterPressed(KeyEvent e){
 		if (!getEditing()) {
@@ -299,29 +299,40 @@ public abstract class EditorPanel extends MesquitePanel {
 			e.consume();
 			editCell(editField.getColumn(), r+1);
 		}
+		else if (r+1 == tb.numRowsTotal){
+			e.consume();
+			offEdit();
+			tb.clickOutside();
+		}
 		else
 			e.consume();
-			
+
 	}
 
 	public void tabPressed(KeyEvent e){
 		if (!getEditing())
 			return;
 		int c = editField.getColumn();
+		
 		if (c+1<tb.numColumnsTotal) {
 			e.consume();
 			editCell(c+1, editField.getRow());
 		}
+		else if (c+1==tb.numColumnsTotal) {
+			e.consume();
+			offEdit();
+			tb.clickOutside();
+		}
 		else {
 			e.consume();
 		}
-		
+
 	}
 	public void downArrowPressed(KeyEvent e){
 		if (getEditing())
 			enterPressed(e);
 	}
-	
+
 	public void upArrowPressed(KeyEvent e){ //
 		if (!getEditing())
 			return;
@@ -330,10 +341,15 @@ public abstract class EditorPanel extends MesquitePanel {
 			e.consume();
 			editCell(editField.getColumn(), r-1);
 		}
+		else if (r-1<0) {
+			e.consume();
+			offEdit();
+			tb.clickOutside();
+		}
 		else
 			e.consume();
 	}
-	
+
 	public void rightArrowPressed(KeyEvent e){
 		if (getEditingAllSelected()) {
 			tabPressed(e);
@@ -348,6 +364,11 @@ public abstract class EditorPanel extends MesquitePanel {
 		if (c-1>=0) {
 			e.consume();
 			editCell(c-1, editField.getRow());
+		}
+		else if (c-1<0) {
+			e.consume();
+			offEdit();
+			tb.clickOutside();
 		}
 		else {
 			e.consume();
@@ -366,7 +387,7 @@ public abstract class EditorPanel extends MesquitePanel {
 		if ((editRow==-1) && tb.showColumnGrabbers)
 			top = tb.getColumnGrabberWidth();
 		Rectangle current = editField.getBounds();
-		
+
 		if (current.width != w || (current.height < rowHeight(editRow)+1 || current.height > rowHeight(editRow)+2)){ //1. 06 permit to be one off (strange behaviour in java 1.4)
 			editField.setBounds(left, top, w, rowHeight(editRow)+1);
 			return false;

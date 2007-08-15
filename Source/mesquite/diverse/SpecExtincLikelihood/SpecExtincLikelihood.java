@@ -21,7 +21,7 @@ import mesquite.lib.duties.*;
 public class SpecExtincLikelihood extends NumberForTree  {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(SpecExtincMLCalculator.class, getName() + "  needs a method to calculate likelihoods.",
-		"The method to calcualte likelihoods is arranged initially");
+		"The method to calculate likelihoods is arranged initially");
 	}
 	/*.................................................................................................................*/
 

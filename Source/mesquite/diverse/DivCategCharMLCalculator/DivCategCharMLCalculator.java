@@ -206,8 +206,9 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
             if (explorer == null)
                 return null;
+            explorer.makeMenu("Parameters");
             explorer.setExplorable(this);
-            return explorer;
+             return explorer;
         }
         else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
             intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));

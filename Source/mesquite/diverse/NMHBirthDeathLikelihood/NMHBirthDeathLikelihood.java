@@ -98,8 +98,9 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
             explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
             if (explorer == null)
                 return null;
-            explorer.setExplorable(this);
-            return explorer;
+            explorer.makeMenu("Parameters");
+           explorer.setExplorable(this);
+                       return explorer;
         }
         else
             return  super.doCommand(commandName, arguments, checker);

@@ -126,8 +126,9 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
 			if (explorer == null)
 				return null;
-			explorer.setExplorable(this);
-			return explorer;
+	           explorer.makeMenu("Parameters");
+	           			explorer.setExplorable(this);
+	          			return explorer;
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));

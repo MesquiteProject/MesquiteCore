@@ -181,11 +181,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	private Bits[] rowNamesSelected;
 
 	private boolean[] cornerSelected;
-	
 
-	
+
+
 	public static final int BETWEENLINEWIDTH = 4;
- 	private int startBetweenRowSelection = MesquiteInteger.unassigned;
+	private int startBetweenRowSelection = MesquiteInteger.unassigned;
 	private int endBetweenRowSelection = MesquiteInteger.unassigned;
 	private int startBetweenColumnSelection = MesquiteInteger.unassigned;
 	private int endBetweenColumnSelection = MesquiteInteger.unassigned;
@@ -648,29 +648,29 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return startBetweenRowSelection;
 	}
 	/* ................................................................................................................. */
-	
+
 	public boolean inBetweenSelectionRowColumns( int column, int row) {
-		 int buff = 2;
+		int buff = 2;
 		if (selectedBetweenRows())
 			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection()  && (row == getStartBetweenRowSelection()) ;
-		else if (selectedBetweenColumns())
-			return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (column == getStartBetweenColumnSelection()) ;
-		return false;
+			else if (selectedBetweenColumns())
+				return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (column == getStartBetweenColumnSelection()) ;
+				return false;
 	}
 	/* ................................................................................................................. */
-	
+
 	public boolean inBetweenSelection( int column, int row, int regionInCellH, int regionInCellV) {
-		 int buff = 2;
+		int buff = 2;
 		if (selectedBetweenRows())
 			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection() && (regionInCellV>80) && (row == getStartBetweenRowSelection()) ;
-		else if (selectedBetweenColumns())
-			return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (regionInCellH>80) && (column == getStartBetweenColumnSelection()) ;
-		return false;
+			else if (selectedBetweenColumns())
+				return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (regionInCellH>80) && (column == getStartBetweenColumnSelection()) ;
+				return false;
 	}
 	/* ................................................................................................................. */
-	
+
 	public boolean inBetweenSelection(int x, int y) {
-		 int buff = 2;
+		int buff = 2;
 		if (selectedBetweenRows())
 			return (x>= getColumnX(getStartBetweenColumnSelection()-buff)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff)) && (y>= getRowY(getStartBetweenRowSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (y<= getRowY(getEndBetweenRowSelection()+buff+MesquiteTable.BETWEENLINEWIDTH));
 		else if (selectedBetweenColumns())
@@ -1099,7 +1099,60 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void downArrowPressed(KeyEvent e) {
 		if (getEditing())
 			return;
-		if (singleTableCellSelected()) {
+		if (e.isShiftDown()){
+			if (anyRowSelected()){ //accumulateSelection
+				if (e.isAltDown()){ //select all the way to end
+					int first = firstRowSelected();
+					selectRows(first, getNumRows()-1);
+					repaintAll();
+				}
+				else {
+					for (int i = getNumRows()-1; i >=0; i--){
+						if (isRowSelected(i) && !isRowSelected(i+1))
+							selectRow(i+1);
+					}
+					repaintAll();
+				}
+			}
+			if (anyCellSelected()){
+				if (e.isAltDown()){
+					for (int column = 0; column< getNumColumns(); column++){
+						boolean doneColumn = false;
+						for (int row = 0; row< getNumRows() && !doneColumn; row++)
+							if (isCellSelected(column, row)){
+								selectBlock(column, row, column, getNumRows()-1);
+								doneColumn = true;
+							}
+					}
+					repaintAll();
+				}
+				else {
+					int firstRow = firstRowWithSelectedCell();
+					int lastRow = lastRowWithSelectedCell();
+					for (int row = lastRow; row>= firstRow; row--){
+						for (int column = 0; column< getNumColumns(); column++)
+							if (isCellSelected(column, row) && !isCellSelected(column, row+1))
+								selectCell(column, row+1);
+					}
+					repaintAll();
+				}
+			}
+			if (anyRowNameSelected()){
+				if (e.isAltDown()){ //select all the way to end
+					int first = firstRowNameSelected();
+					selectRowNames(first, getNumRows()-1);
+					repaintAll();
+				}
+				else {
+					for (int i = getNumRows()-1; i >=0; i--){
+						if (isRowNameSelected(i) && !isRowNameSelected(i+1))
+							selectRowName(i+1);
+					}
+					repaintAll();
+				}
+			}
+		}
+		else if (singleTableCellSelected()) {
 			Dimension sel = getFirstTableCellSelected();
 			if (sel.width >= -1 && sel.height >= -1) {
 				if (sel.height + 1 < numRowsTotal) {
@@ -1121,7 +1174,61 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void upArrowPressed(KeyEvent e) { //
 		if (getEditing())
 			return;
-		if (singleTableCellSelected()) {
+		if (e.isShiftDown()){
+			if (anyRowSelected()){ //accumulateSelection
+				if (e.isAltDown()){ //select all the way to end
+					int last = lastRowSelected();
+					selectRows(0, last);
+					repaintAll();
+				}
+				else {
+					for (int i = 1; i <getNumRows(); i++){
+						if (isRowSelected(i) && !isRowSelected(i-1))
+							selectRow(i-1);
+					}
+					repaintAll();
+				}
+			}
+			if (anyCellSelected()){
+				if (e.isAltDown()){
+					for (int column = 0; column< getNumColumns(); column++){
+						boolean doneColumn = false;
+						for (int row = getNumRows()-1; row>=0 && !doneColumn; row--)
+							if (isCellSelected(column, row)){
+								selectBlock(column, 0, column, row);
+								doneColumn = true;
+							}
+					}
+					repaintAll();
+				}
+				else {
+					int firstRow = firstRowWithSelectedCell();
+					int lastRow = lastRowWithSelectedCell();
+					for (int row = firstRow; row<= lastRow; row++){
+						if (row >0)
+							for (int column = 0; column< getNumColumns(); column++)
+								if (isCellSelected(column, row) && !isCellSelected(column, row-1))
+									selectCell(column, row-1);
+					}
+					repaintAll();
+				}
+			}
+			if (anyRowNameSelected()){
+				if (e.isAltDown()){ //select all the way to end
+					int last = lastRowNameSelected();
+					selectRowNames(0, last);
+					repaintAll();
+				}
+				else {
+					for (int i = 1; i <getNumRows(); i++){
+						if (isRowNameSelected(i) && !isRowNameSelected(i-1))
+							selectRowName(i-1);
+					}
+					repaintAll();
+				}
+			}
+		}
+		else if (singleTableCellSelected()) {
 			Dimension sel = getFirstTableCellSelected();
 			if (sel.width >= -1 && sel.height >= 0 && sel.height - 1 < numRowsTotal && (sel.width >= 0 || sel.height > 0)) {
 				deselectCell(sel.width, sel.height);
@@ -1139,7 +1246,60 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void rightArrowPressed(KeyEvent e) {
 		if (getEditing())
 			return;
-		if (singleTableCellSelected()) {
+		if (e.isShiftDown()){
+			if (anyColumnSelected()){ //accumulateSelection
+				if (e.isAltDown()){ //select all the way to end
+					int first = firstColumnSelected();
+					selectColumns(first, getNumColumns()-1);
+					repaintAll();
+				}
+				else {
+					for (int i = getNumColumns()-1; i >=0; i--){
+						if (isColumnSelected(i) && !isColumnSelected(i+1))
+							selectColumn(i+1);
+					}
+					repaintAll();
+				}
+			}
+			if (anyCellSelected()){
+				if (e.isAltDown()){
+					for (int row = 0; row< getNumRows(); row++){
+						boolean doneRow = false;
+						for (int column = 0; column< getNumColumns() && !doneRow; column++)
+							if (isCellSelected(column, row)){
+								selectBlock(column, row, getNumColumns()-1, row);
+								doneRow = true;
+							}
+					}
+					repaintAll();
+				}
+				else {
+					int firstColumn = firstColumnWithSelectedCell();
+					int lastColumn = lastColumnWithSelectedCell();
+					for (int column = lastColumn; column>= firstColumn; column--){
+						for (int row = 0; row< getNumRows(); row++)
+							if (isCellSelected(column, row) && !isCellSelected(column+1, row))
+								selectCell(column+1, row);
+					}
+					repaintAll();
+				}
+			}
+			if (anyColumnNameSelected()){
+				if (e.isAltDown()){ //select all the way to end
+					int first = firstColumnNameSelected();
+					selectColumnNames(first, getNumColumns()-1);
+					repaintAll();
+				}
+				else {
+					for (int i = getNumColumns()-1; i >=0; i--){
+						if (isColumnNameSelected(i) && !isColumnNameSelected(i+1))
+							selectColumnName(i+1);
+					}
+					repaintAll();
+				}
+			}
+		}
+		else if (singleTableCellSelected()) {
 			Dimension sel = getFirstTableCellSelected();
 			if (sel.width >= -1 && sel.height >= -1) {
 				if (sel.width + 1 < numColumnsTotal) {
@@ -1163,7 +1323,62 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void leftArrowPressed(KeyEvent e) {
 		if (getEditing())
 			return;
-		if (singleTableCellSelected()) {
+		if (e.isShiftDown()){
+
+			if (anyColumnSelected()){ //accumulateSelection
+				if (e.isAltDown()){ //select all the way to end
+					int last = lastColumnSelected();
+					selectColumns(0, last);
+					repaintAll();
+				}
+				else {
+					for (int i = 1; i <getNumColumns(); i++){
+						if (isColumnSelected(i) && !isColumnSelected(i-1))
+							selectColumn(i-1);
+					}
+					repaintAll();
+				}
+			}
+			if (anyCellSelected()){
+				if (e.isAltDown()){
+					for (int row = 0; row< getNumRows(); row++){
+						boolean doneRow = false;
+						for (int column = getNumColumns()-1; column>=0 && !doneRow; column--)
+							if (isCellSelected(column, row)){
+								selectBlock(0, row, column, row);
+								doneRow = true;
+							}
+					}
+					repaintAll();
+				}
+				else {
+					int firstColumn = firstColumnWithSelectedCell();
+					int lastColumn = lastColumnWithSelectedCell();
+					for (int column = firstColumn; column<= lastColumn; column++){
+						if (column >0)
+							for (int row = 0; row< getNumRows(); row++)
+								if (isCellSelected(column, row) && !isCellSelected(column-1, row))
+									selectCell(column-1, row);
+					}
+					repaintAll();
+				}
+			}
+			if (anyColumnNameSelected()){
+				if (e.isAltDown()){ //select all the way to end
+					int last = lastColumnNameSelected();
+					selectColumnNames(0, last);
+					repaintAll();
+				}
+				else {
+					for (int i = 1; i <getNumColumns(); i++){
+						if (isColumnNameSelected(i) && !isColumnNameSelected(i-1))
+							selectColumnName(i-1);
+					}
+					repaintAll();
+				}
+			}
+		}
+		else if (singleTableCellSelected()) {
 			Dimension sel = getFirstTableCellSelected();
 			if (sel.width >= 0 && sel.height >= -1 && sel.width - 1 < numColumnsTotal && (sel.width > 0 || sel.height >= 0)) {
 				deselectCell(sel.width, sel.height);
@@ -1724,9 +1939,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** repaints all components of the table */
 	public void repaintAll() {
 		// checkResetFont(getGraphics());
+		columnNames.repaint();
 		repaint();
 		rowNames.repaint();
-		columnNames.repaint();
 		cornerCell.repaint();
 		matrix.repaint();
 	}
@@ -2956,9 +3171,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void drawRowNameCell(Graphics g, int x, int y, int w, int h, int row) {
 		String supplied = getRowNameTextForDisplay(row);
 		if (supplied != null){
-		int svp = StringUtil.getStringVertPosition(g, y, h, null);
-		int xgnso = x + getNameStartOffset();
-		g.drawString(supplied, xgnso, svp);
+			int svp = StringUtil.getStringVertPosition(g, y, h, null);
+			int xgnso = x + getNameStartOffset();
+			g.drawString(supplied, xgnso, svp);
 		}
 		if (isAttachedNoteAvailable(-1, row)){
 			g.drawLine(x+w-3,y+1, x+w-3,y+3); //left
@@ -3742,6 +3957,26 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public boolean anyCellSelectedAnyWay() {
 		return (anyRowSelected() || anyColumnSelected() || anyCellSelected());
 	}
+	/* ............................................................................................................... */
+	/** returns whether any cell in central matrix in column is selected. */
+	public boolean anyCellSelectedInColumnAnyWay(int column) {
+		if (isColumnSelected(column))
+			return true;
+		for (int row = 0; row<getNumRows(); row++)
+			if (isCellSelected(column, row))
+				return true;
+		return false;
+	}
+	/* ............................................................................................................... */
+	/** returns whether any cell in central matrix in column is selected. */
+	public boolean anyCellSelectedInRowAnyWay(int row) {
+		if (isRowSelected(row))
+			return true;
+		for (int column = 0; column<getNumColumns(); column++)
+			if (isCellSelected(column, row))
+				return true;
+		return false;
+	}
 
 	/* ............................................................................................................... */
 	/** returns whether any row or column in matrix is selected. */
@@ -3787,10 +4022,20 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/** returns first row selected. */
+	public int firstRowNameSelected() {
+		return rowNamesSelected[0].firstBitOn();
+	}
+	/* ............................................................................................................... */
+	/** returns first row selected. */
 	public int firstRowSelected() {
 		return rowsSelected[0].firstBitOn();
 	}
 
+	/* ............................................................................................................... */
+	/** returns first column selected. */
+	public int firstColumnNameSelected() {
+		return columnNamesSelected[0].firstBitOn();
+	}
 	/* ............................................................................................................... */
 	/** returns first column selected. */
 	public int firstColumnSelected() {
@@ -4137,6 +4382,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				return i;
 		return -1;
 	}
+	/* ............................................................................................................... */
+	/** returns the last row selected. */
+	public int lastRowNameSelected() {
+		for (int i = numRowsTotal - 1; i >= 0; i--)
+			if (rowNamesSelected[0].isBitOn(i))
+				return i;
+		return -1;
+	}
 
 	/* ............................................................................................................... */
 	/** returns the start of the last contiguous block of rows selected. */
@@ -4158,6 +4411,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public int lastColumnSelected() {
 		for (int i = numColumnsTotal - 1; i >= 0; i--)
 			if (columnsSelected[0].isBitOn(i))
+				return i;
+		return -1;
+	}
+	/* ............................................................................................................... */
+	/** returns the last column selected. */
+	public int lastColumnNameSelected() {
+		for (int i = numColumnsTotal - 1; i >= 0; i--)
+			if (columnNamesSelected[0].isBitOn(i))
 				return i;
 		return -1;
 	}
@@ -4554,9 +4815,32 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** sets the value of the given scroll. */
 	public void setValue(TableScroll whichScroll, int value) {
 		if (whichScroll == vertScroll) {
+			/*if (matrix.hFloat < 0){
+				matrix.hFloat = matrix.getWidth() - 30;
+				matrix.vFloat = value*(matrix.getHeight()-20)/getNumRows();
+			}
+			Graphics g = matrix.getGraphics();
+			if (g != null){
+				g.setColor(ColorDistribution.paleGoldenRod);
+				g.fillRect(matrix.hFloat, matrix.vFloat, 40, 20);
+				g.setColor(Color.black);
+				g.drawRect(matrix.hFloat, matrix.vFloat, 40, 20);
+				g.drawString(Integer.toString(value), matrix.hFloat+3, matrix.vFloat + 16);
+				g.dispose();
+			}*/
+		/*	if (whichScroll.getValueIsAdjusting()){
+				matrix.hFloat = -1;
+				matrix.vFloat = -1;
+				matrix.repaint();
+			}
+			*/	
 			setFirstRowVisible(value);
 		}
 		else {
+		/*	if (matrix.hFloat < 0){
+				whichScroll.getValue();
+				
+			}*/
 			setFirstColumnVisible(value);
 
 		}

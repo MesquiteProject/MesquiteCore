@@ -206,6 +206,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
 			if (explorer == null)
 				return null;
+	           explorer.makeMenu("Parameters");
 			explorer.setExplorable(this);
 			return explorer;
 		}

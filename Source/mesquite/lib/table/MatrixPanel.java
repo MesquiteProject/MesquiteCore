@@ -25,6 +25,8 @@ import java.io.*;
 public class MatrixPanel extends EditorPanel {
 	MesquiteTable table;
 	public int width,  height;
+	int hFloat = -1;
+	int vFloat = -1;
 
 	public MatrixPanel (MesquiteTable table , int w, int h) {
 		super(table);
@@ -296,6 +298,8 @@ timer6.end();
 	/*...............................................................................................................*/
 	public void update(Graphics g){
 		paint(g);
+		hFloat = -1;
+		vFloat = -1;
 	}
 	public void repaint(){
 		checkEditFieldLocation();
