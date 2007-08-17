@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.diverse.SpExtCategCharLikelihood;
 
 
@@ -18,6 +18,8 @@ import mesquite.diverse.SpExtCategCharMLCalculator.SpExtCategCharMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
+import mesquite.stochchar.lib.MargLikeAncStForModel;
+import mesquite.stochchar.lib.MargLikelihoodForModel;
 
 public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -25,7 +27,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		"The method to calculate likelihoods is arranged initially");
 		e.setSuppressListing(true);
 	}
-	
+
 	SpExtCategCharMLCalculator calcTask;
 
 
@@ -40,6 +42,9 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	MesquiteParameter[] paramsCopy;
 	boolean[] selected;
 	boolean suspended = false;
+	MesquiteString reportModeName;
+	StringArray reportModes;
+	int reportMode = 0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		calcTask = (SpExtCategCharMLCalculator)hireEmployee(SpExtCategCharMLCalculator.class, "Integrating Likelihood");
@@ -54,12 +59,25 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
 		t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
 		params = new MesquiteParameter[]{s0, s1, e0, e1, t01, t10};
+		reportModes = new StringArray(7);  
+		reportModes.setValue(0, "Likelihood");  //the strings passed will be the menu item labels
+		reportModes.setValue(1, s0.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(2, s1.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(3, e0.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(4, e1.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(5, t01.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(6, t10.getName());  //the strings passed will be the menu item labels
+		reportModeName = new MesquiteString(reportModes.getValue(reportMode));  //this helps the menu keep track of checkmenuitems
+		MesquiteSubmenuSpec mss = addSubmenu(null, "Report BiSSE Results As", makeCommand("setReportMode", this), reportModes); 
+		mss.setSelected(reportModeName);
+
 		if (MesquiteThread.isScripting())
 			suspended = true;
 		if (!MesquiteThread.isScripting()){
 			showDialog();
 		}
 		addMenuItem("Set Parameters...", makeCommand("setParameters", this));
+		addMenuItem("Recalculate", makeCommand("resume", this));
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -72,9 +90,9 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		boolean ok = (dlog.query()==0);
 		if (ok) 
 			dlog.acceptParameters();
-	//	dlog.setInWizard(false);
+		//	dlog.setInWizard(false);
 		dlog.dispose();
-	
+
 		return ok;
 	}
 
@@ -90,6 +108,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		temp.addLine("suspend ");
 		if (!StringUtil.blank(pLine))
 			temp.addLine("setParameters " + pLine);
+		temp.addLine("setReportMode " + ParseUtil.tokenize(reportModes.getValue(reportMode)));
 
 		temp.addLine("getIntegTask ", calcTask);
 		temp.addLine("resume ");
@@ -138,6 +157,18 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
 			}
 		}
+		else if (checker.compare(getClass(), "Sets the report mode", null, commandName, "setReportMode")) {
+			if (getHiredAs() == MargLikelihoodForModel.class)
+				return null;
+			String name = parser.getFirstToken(arguments); //get argument passed of option chosen
+			int newMode = reportModes.indexOf(name); //see if the option is recognized by its name
+			if (newMode >=0 && newMode!=reportMode){
+				reportMode = newMode; //change mode
+				reportModeName.setValue(reportModes.getValue(reportMode)); //so that menu item knows to become checked
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested
+			}
+		}
 		else if (checker.compare(getClass(), "Suspends calculations", null, commandName, "suspend")) {
 			suspended = true;
 		}
@@ -154,27 +185,41 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	}
 
 
-    /*------------------------------------------------------------------------------------------*/
+	/*------------------------------------------------------------------------------------------*/
 	public void calculateNumber(Tree tree, CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString) {
 		if (result == null)
 			return;
-	   	clearResultAndLastResult(result);
+		clearResultAndLastResult(result);
 		if (suspended)
 			return;
 		if (tree == null || charStates == null)
 			return;
-		
+
 		paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
 
 		calcTask.calculateLogProbability(tree, charStates, paramsCopy, result, resultString);
+		if (reportMode >0) {
+			result.setValue(paramsCopy[reportMode-1].getValue());
+			if (resultString != null)
+				resultString.setValue(reportModeName.getValue() + ": " + paramsCopy[reportMode-1] + "; " + resultString);
+		}
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
 
+ 	public boolean returnsMultipleValues(){
+  		return true;
+  	}
 
 	/*------------------------------------------------------------------------------------------*/
 	public String getName() {
 		return "BiSSE Speciation/Extinction Likelihood";
+	}
+	
+	public String getVeryShortName(){
+		if (reportMode>0)
+			return "BiSSE Likelihood (" + reportModes.getValue(reportMode) + ")";
+		return "BiSSE Likelihood";
 	}
 
 	public String getAuthors() {
@@ -188,12 +233,12 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	public String getExplanation(){
 		return "Calculates likelihoods using a speciation/extinction model whose probabilities depend on the state of a single categorical character";
 	}
-	
+
 	/*.................................................................................................................*/
- 	/** returns keywords related to what the module does, for help-related searches. */ 
- 	public  String getKeywords()  {
- 		return "diversification birth death";
-   	 }
+	/** returns keywords related to what the module does, for help-related searches. */ 
+	public  String getKeywords()  {
+		return "diversification birth death";
+	}
 
 	public boolean isPrerelease(){
 		return true;
