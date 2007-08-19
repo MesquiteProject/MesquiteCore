@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.diverse.SpecExtincMLCalculator;
 
 import java.util.Vector;
@@ -126,9 +126,9 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
 			if (explorer == null)
 				return null;
-	           explorer.makeMenu("Parameters");
-	           			explorer.setExplorable(this);
-	          			return explorer;
+			// explorer.makeMenu("Parameters");
+			explorer.setExplorable(this);
+			return explorer;
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to condition by survival", "[on; off]", commandName, "conditionOnSurvival")) {
 			conditionOnSurvival.toggleValue(new Parser().getFirstToken(arguments));
@@ -483,7 +483,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	}
 
 	public String getExplanation(){
-		return "Calculates likelihood of a tree using an extinction/speciation model expressed as a system of differential equations.";
+		return "Calculates likelihood with a tree using an extinction/speciation model expressed as a system of differential equations.";
 	}
 
 	public boolean isPrerelease(){
@@ -516,8 +516,8 @@ class SpecExtincModel implements DESystem {
 	public String toString(){
 		return "Speciation/Extinction Model lambda=" + MesquiteDouble.toStringDigitsSpecified(s, 4) + " mu=" + MesquiteDouble.toStringDigitsSpecified(e, 4);
 	}
-    
-    /*.................................................................................................................*/
+
+	/*.................................................................................................................*/
 	public double[]calculateDerivative(double t,double probs[],double[] result){
 		// for clarity
 		final double extProb = probs[0];

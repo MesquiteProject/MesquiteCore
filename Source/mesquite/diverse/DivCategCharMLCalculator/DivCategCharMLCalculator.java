@@ -89,8 +89,8 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         solver = new RKF45Solver();  //new RK4Solver();
         rng = new RandomBetween(System.currentTimeMillis());
         //following is for the parameters explorer
-        r0p = new MesquiteParameter("r0", "Rate of diversification with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-        r1p = new MesquiteParameter("r1", "Rate of diversifiation with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+        r0p = new MesquiteParameter("r0", "Rate of net diversification with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+        r1p = new MesquiteParameter("r1", "Rate of net diversifiation with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
         a0p = new MesquiteParameter("a0", "Ratio of speciation to extinction in state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
         a1p = new MesquiteParameter("a1", "Rate of speciation to extinction in state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
         t01p = new MesquiteParameter("r01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
@@ -206,7 +206,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
             if (explorer == null)
                 return null;
-            explorer.makeMenu("Parameters");
+           // explorer.makeMenu("Parameters");
             explorer.setExplorable(this);
              return explorer;
         }
@@ -394,10 +394,10 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         return "0.1";
     }
 
-    public String getExplanation(){
-        return "Calculates likelihood of a tree and tip values using a BiSSE-based diversification model expressed as a system of differential equations.";
-    }
-
+	public String getExplanation(){
+		return "Calculates likelihood with a tree of a species diversification model whose rates (r = spec. - ext.; a = spec./ext.) depend on the state of a binary character (BiSSE model, Maddison, Midford & Otto, 2007).";
+	}
+ 
     public boolean isPrerelease(){
         return true;
     }

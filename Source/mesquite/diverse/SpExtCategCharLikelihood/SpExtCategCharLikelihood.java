@@ -231,7 +231,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	}
 
 	public String getExplanation(){
-		return "Calculates likelihoods using a speciation/extinction model whose probabilities depend on the state of a single categorical character";
+		return "Calculates likelihood with a tree of a species diversification model whose speciation and extinction rates depend on the state of a binary character (BiSSE model, Maddison, Midford & Otto, 2007).";
 	}
 
 	/*.................................................................................................................*/

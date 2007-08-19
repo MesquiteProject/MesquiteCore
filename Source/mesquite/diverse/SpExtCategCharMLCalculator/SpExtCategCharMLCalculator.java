@@ -206,7 +206,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 			explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
 			if (explorer == null)
 				return null;
-			explorer.makeMenu("Parameters");
+		//	explorer.makeMenu("Parameters");
 			explorer.setExplorable(this);
 			return explorer;
 		}
@@ -794,7 +794,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "BiSSE Likelihood Calculator";
+		return "BiSSE Speciation/Extinction Likelihood Calculator";
 	}
 	public String getAuthors() {
 		return "Peter E. Midford & Wayne P. Maddison";
@@ -805,7 +805,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 	}
 
 	public String getExplanation(){
-		return "Calculates likelihood of a tree and tip values using an extinction/speciation model expressed as a system of differential equations.";
+		return "Calculates likelihood with a tree of a species diversification model whose speciation and extinction rates depend on the state of a binary character (BiSSE model, Maddison, Midford & Otto, 2007).";
 	}
 
 	public boolean isPrerelease(){

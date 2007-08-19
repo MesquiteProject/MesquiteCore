@@ -167,7 +167,7 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
     }
 
     public String getExplanation(){
-        return "Calculates likelihoods using a diversification model (r,a) whose probabilities depend on the state of a single categorical character";
+		return "Calculates likelihood with a tree of a species diversification model whose rates (r = spec. - ext.; a = spec./ext.) depend on the state of a binary character (BiSSE model, Maddison, Midford & Otto, 2007).";
     }
 
     public boolean isPrerelease(){

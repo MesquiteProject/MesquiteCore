@@ -580,7 +580,6 @@ timer6.end();
 	}
 	/*_________________________________________________*/
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
-		Debugg.println("not table tool mouseup");
 		if (!(tool instanceof TableTool))
 			return;
 		int column = findColumn(x);

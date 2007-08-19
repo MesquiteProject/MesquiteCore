@@ -1,1 +1,1 @@
-java -Xmx400M -cp . mesquite.Mesquite
+java -Xmx400M -Djava.library.path=lib -cp . mesquite.Mesquite

@@ -1526,24 +1526,28 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			s = "GGGGG";
 		int max = fm.stringWidth(s);
 
-		// row names
 		int lengthString = 0;
-		for (int it = 0; it < getNumRows(); it++) {
-			s = getRowNameTextForDisplay(it);
-			lengthString = fm.stringWidth(s);
-			if (lengthString > max)
-				max = lengthString;
-		}
 		int tableWIDTHpart = (getTableWidth() - getRowNamesWidth()) / (contrainedMaxColumnNum + 1);
-		if (constrainMaxAutoRownames && max > tableWIDTHpart) // v. 1.01 e 81
-			max = tableWIDTHpart;
-		int newCW = max + 2 + MesquiteModule.textEdgeCompensationHeight;
-		int current = getRowNamesWidth();
-		if (newCW != current && (Math.abs(newCW - current) > 1)) {
-			setRowNamesWidth(newCW);
-			changed = true;
-		}
+		int newCW = 0;
+		int current = 0;
 
+		// row names
+		if (!rowNamesWidthAdjusted){
+			for (int it = 0; it < getNumRows(); it++) {
+				s = getRowNameTextForDisplay(it);
+				lengthString = fm.stringWidth(s);
+				if (lengthString > max)
+					max = lengthString;
+			}
+			if (constrainMaxAutoRownames && max > tableWIDTHpart) // v. 1.01 e 81
+				max = tableWIDTHpart;
+			newCW = max + 2 + MesquiteModule.textEdgeCompensationHeight;
+			current = getRowNamesWidth();
+			if (newCW != current && (Math.abs(newCW - current) > 1)) {
+				setRowNamesWidth(newCW);
+				changed = true;
+			}
+		}
 		// other columns
 		max = fm.stringWidth("G");
 		for (int ic = 0; ic < getNumColumns(); ic++) {
@@ -4828,18 +4832,18 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				g.drawString(Integer.toString(value), matrix.hFloat+3, matrix.vFloat + 16);
 				g.dispose();
 			}*/
-		/*	if (whichScroll.getValueIsAdjusting()){
+			/*	if (whichScroll.getValueIsAdjusting()){
 				matrix.hFloat = -1;
 				matrix.vFloat = -1;
 				matrix.repaint();
 			}
-			*/	
+			 */	
 			setFirstRowVisible(value);
 		}
 		else {
-		/*	if (matrix.hFloat < 0){
+			/*	if (matrix.hFloat < 0){
 				whichScroll.getValue();
-				
+
 			}*/
 			setFirstColumnVisible(value);
 

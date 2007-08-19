@@ -98,7 +98,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
             explorer = (ParametersExplorer)hireEmployee(ParametersExplorer.class, "Parameters explorer");
             if (explorer == null)
                 return null;
-            explorer.makeMenu("Parameters");
+         //   explorer.makeMenu("Parameters");
            explorer.setExplorable(this);
                        return explorer;
         }
@@ -201,7 +201,7 @@ public class NMHBirthDeathLikelihood extends NumberForTree implements Parameters
     }
 
     public String getExplanation(){
-        return "Calculates likelihood of tree using birth/death models described in Nee, May & Harvey 1994";
+        return "Calculates likelihood with a tree of birth/death models as described by Nee, May & Harvey 1994";
     }
 
     public boolean isPrerelease(){
