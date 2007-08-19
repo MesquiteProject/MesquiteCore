@@ -6,7 +6,9 @@ import mesquite.treefarm.lib.*;
 
 /** This module is basically a random tree modifier, but it works by hiring another one, and only invoking it on a tree with a particular probability */
 public class ProbRndTreeModifier extends RndTreeModifier {
-	Random rng = new Random(System.currentTimeMillis());
+	Random probModifyRNG ;
+	MesquiteLong seed;
+	long originalSeed=System.currentTimeMillis(); //0L;
 	RndTreeModifier modifierTask;
 	MesquiteString modifierName;
 	MesquiteCommand stC;
@@ -33,6 +35,11 @@ public class ProbRndTreeModifier extends RndTreeModifier {
 			mss.setSelected(modifierName);
 		}
   		addMenuItem("Set Probability of Random Tree Modification...", makeCommand("setProbability",  this));
+	 	seed = new MesquiteLong(1);
+ 	 	seed.setValue(originalSeed);
+ //Debugg.println("originalSeed: " + originalSeed);
+  		addMenuItem("Set Seed (Occasionally Modify Tree)...", makeCommand("setSeed",  this));
+  		probModifyRNG= new RandomBetween(originalSeed);
 		return true;
 	}
 
@@ -44,6 +51,7 @@ public class ProbRndTreeModifier extends RndTreeModifier {
   	 public Snapshot getSnapshot(MesquiteFile file) { 
    	 	Snapshot temp = super.getSnapshot(file);
   	 	temp.addLine("setProbability " + prob.getValue());
+  	 	temp.addLine("setSeed " + originalSeed);
   	 	temp.addLine("setModifier ", modifierTask); 
   	 	return temp;
   	 }
@@ -69,6 +77,17 @@ public class ProbRndTreeModifier extends RndTreeModifier {
 	 			 parametersChanged(); //?
 	 		 }
 	 	 }
+   	 	 else	if (checker.compare(this.getClass(), "Sets the random number seed", "[long integer seed]", commandName, "setSeed")) {
+	 		 long s = MesquiteLong.fromString(parser.getFirstToken(arguments));
+	 		 if (!MesquiteLong.isCombinable(s)){
+	 			 s = MesquiteLong.queryLong(containerOfModule(), "Random number seed", "Enter an integer value for the random number seed for probabily of randomly modifying the tree.", originalSeed);
+	 		 }
+	 		 if (MesquiteLong.isCombinable(s)){
+	 			originalSeed = s;
+	 			probModifyRNG.setSeed(originalSeed); 
+	 			 parametersChanged(); //?
+	 		 }
+	 	 }
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -77,7 +96,7 @@ public class ProbRndTreeModifier extends RndTreeModifier {
 	public void modifyTree(Tree tree, MesquiteTree modified, RandomBetween rng) {
 		if (modifierTask==null || tree==null)
 			return;
-		if (rng.nextDouble()<=prob.getValue())
+		if (probModifyRNG.nextDouble()<=prob.getValue())
 			modifierTask.modifyTree(tree,modified, rng);
 	}
 
