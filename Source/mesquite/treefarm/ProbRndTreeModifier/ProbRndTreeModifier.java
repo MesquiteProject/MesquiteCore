@@ -37,7 +37,6 @@ public class ProbRndTreeModifier extends RndTreeModifier {
   		addMenuItem("Set Probability of Random Tree Modification...", makeCommand("setProbability",  this));
 	 	seed = new MesquiteLong(1);
  	 	seed.setValue(originalSeed);
- //Debugg.println("originalSeed: " + originalSeed);
   		addMenuItem("Set Seed (Occasionally Modify Tree)...", makeCommand("setSeed",  this));
   		probModifyRNG= new RandomBetween(originalSeed);
 		return true;
