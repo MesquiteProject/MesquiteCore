@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:53:01 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:01:13 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895ec8fd89;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895ec92b0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -61,7 +60,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
+OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -77,11 +76,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895ec8fd89;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895ec92b0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -96,20 +95,19 @@ Begin MESQUITE;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
-					setSize 536 354;
-					setLocation 7 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 84;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 536 348;
+					setLocation 447 24;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.trees.SelectBranches.SelectToolExtra.SelectBranches;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -120,6 +118,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -130,6 +129,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -138,6 +138,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -148,6 +149,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Dark Gray;
+					removeColor on;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -155,11 +161,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Dark Gray;
-					removeColor on;
 				endTell;
 			endTell;
 		endTell;
@@ -169,15 +170,15 @@ Begin MESQUITE;
 			setPrevFileName '05-branchColorNames.nex';
 			getWindow;
 			tell It;
-					setSize 430 420;
-					setLocation 551 27;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 439 466;
+					setLocation 7 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
 				setExplanation 'This file shows some of the selection tools for tree branches.^n^nThe currently selected tool in the tool palette at left is the Select Branches tool.  Its purpose is to select branches.  When branches are selected, the other branches (those not selected) are dimmed, as shown here.  This can be useful to highlight branches both on trees and in other contexts such as Node Scattergram.  It also allows other modules to restrict calculations to only the selected branches, for example.^n^nIf you hold down the Control key as you touch on a branch, the selection will accumulate.  If you hold down the Shift key, the smallest clade containing the touched branch and those already selected will be selected.  If you touch on an already selected branch with no keys down, all branches will be unselected except the touched one.^n^nThe next tool is the select clade tool.  It selects the entire clade of the branch touched.  It responds to Shift and Control similarly to the Select Branches tool.^n^nThe next tool is the Select Taxa in Clade.  It selects the terminal taxa in the clade of the branch touched.  This selects terminal taxa throughout Mesquite, and thus if you have a data matrix open, you will notice the rows corresponding to the taxa are selected.  If you hold the Control key as you touch, selection will accumulate.  By holding down the Shift key, the taxa in the smallest clade containing the touched branch and those already selected will be selected.  ^n^nDepending on what Mesquite modules are installed, there may be tools in the tool palette other than those explained in these example files.  You can learn about these other tools by touching on their buttons in the tool palette and reading their explanations in the explanation area at the bottom of the Tree Window.  You can also select the Menu & Control Explanations menu item in the Windows menu of the Tree Window for a web page explaining the tools. ';
 				setTitle Selecting_branches;
 				toggleFileNames off;

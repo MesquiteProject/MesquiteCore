@@ -1,19 +1,18 @@
 #NEXUS
-[written Wed May 17 13:49:32 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:47:41 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE species;
 	DIMENSIONS NTAX=3;
 	TAXLABELS
 		A B C 
 	;
+	BLOCKID WM114891b71e550;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Little_data_matrix;
-	DIMENSIONS NCHAR=1;
+	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = CONTINUOUS ITEMS = (mean variance ) ;
 	MATRIX
 	A   (0.0 1.1)
@@ -21,6 +20,8 @@ BEGIN CHARACTERS;
 	C   (2.0 3.3)
 
 ;
+		BLOCKID WM114891b72140;
+
 
 END;
 BEGIN ASSUMPTIONS;
@@ -39,11 +40,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 4833122407699725302;
+			setID 0 4833122407699725302 WM114891b71e550;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 6095372519071501230;
+			setID 0 6095372519071501230 WM114891b72140;
 			checksum 0 3701101314;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -56,18 +57,19 @@ Begin MESQUITE;
 					tell It;
 						rowNamesWidth 201;
 					endTell;
-					setSize 492 235;
-					setLocation 25 22;
-					setFont SanSerif;
-					setFontSize 14;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 492 304;
+					setLocation 537 32;
+					setFont SanSerif;
+					setFontSize 14;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -91,6 +93,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -104,16 +110,14 @@ Begin MESQUITE;
 			setPrevFileName '12-continuous.nex';
 			getWindow;
 			tell It;
-					setSize 323 312;
-					setLocation 560 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setActive;
+					setSize 492 312;
+					setLocation 25 22;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'Continuous matrices in Mesquite are allowed to be three dimensional; that is, the matrix can be taxon X character X item, where the items might be mean, variance, sample size (for example).  If there is more than one item, each cell in the matrix would show more than one number.  ^n^nThis little file shows cells with two items each, a mean and a variance.  (The names of the items are shown toward the lower left of the data window).^n^nTo add, remove or rename items from the entire matrix, use the menu items under the Utilities submenu in the Matrix menu.^n^n(*Warning*: support for multiple items is minimal at present, and most modules just use the first item in their calculations.)';
 				setTitle Items;
 				toggleFileNames off;

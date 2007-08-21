@@ -1,19 +1,18 @@
 #NEXUS
-[written Wed May 17 13:50:44 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 09:43:45 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE species;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		taxon_0 taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 
 	;
+	BLOCKID WM1148920861360;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  measurements;
-	DIMENSIONS NCHAR=5;
+	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 length,
@@ -40,11 +39,11 @@ CHARSTATELABELS
 	taxon_15   7.604 5.438 2.809 37.69 -2.129
 
 ;
+		BLOCKID WM114892086260;
+
 
 END;
 BEGIN TREES;
-	Title stored_trees;
-	LINK Taxa = species;
 	TRANSLATE
 		1 taxon_0,
 		2 taxon_1,
@@ -86,11 +85,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 7557143514317563732;
+			setID 0 7557143514317563732 WM1148920861360;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 6377312818483312110;
+			setID 0 6377312818483312110 WM114892086260;
 			checksum 0 3542125815;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -105,15 +104,15 @@ Begin MESQUITE;
 				setAssignedID 4656.968738959275.4595870811122188564;
 				getTreeWindow;
 				tell It;
-					setSize 703 426;
-					setLocation 271 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 703 446;
+					setLocation 515 25;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -127,6 +126,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -138,6 +138,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -148,6 +149,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -165,6 +167,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 					tell It;
@@ -187,7 +190,7 @@ Begin MESQUITE;
 						tell It;
 							setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
 							tell It;
-								setDefaultModel 21;
+								setDefaultModel 13;
 							endTell;
 							getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 							tell It;
@@ -208,6 +211,11 @@ Begin MESQUITE;
 				endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -215,11 +223,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -229,15 +232,14 @@ Begin MESQUITE;
 			setPrevFileName '05-treeSearch.nex';
 			getWindow;
 			tell It;
-					setSize 377 231;
-					setLocation 18 369;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 497 413;
+					setLocation 7 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Characters for tracing and other purposes can come from simulations instead of data matrices.  Here, a character is simulated by Brownian motion evolution on the tree.  Scroll through other characters.  Note that the longer branches tend to show more change.^n^nYou can change branch lengths using the tool that looks like a vertical ruler, or by using the items in the "Branch lengths" submenu of the Tree menu of the tree window.  ^n^nYou can change the rate of the evolution by going to the Characters menu and selecting My Brownian under "Edit Character Model".  My Brownian is the model of evolution in use in the simulation.^n';
 				setTitle Simulations;

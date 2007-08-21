@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed May 17 12:54:18 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:51:31 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
@@ -8,15 +8,14 @@ Begin MESQUITE;
 		tell It;
 			getWindow;
 			tell It;
-					setSize 449 345;
-					setLocation 323 22;
-					setFont SanSerif;
-					setFontSize 14;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 455 391;
+					setLocation 421 23;
+					setFont SanSerif;
+					setFontSize 14;
 					setActive;
 				setExplanation 'Here are links to example files that serve as a guided tour to using Mesquite and the analyses it can perform. ^n^n';
 				setTitle Mesquite_Examples;
@@ -30,6 +29,7 @@ Begin MESQUITE;
 				addFileLink Character_Simulations  'Character_Simulations/00-introduction.nex';
 				addFileLink Multivariate_Continuous_Analyses  'Multivariate_Continuous/00-introduction.nex';
 				addFileLink Character_Correlation  'Correlation/00-introduction.nex';
+				addFileLink Species_Diversification  'Diversification/00-introduction.nex';
 			endTell;
 			showWindow;
 		endTell;

@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:52:56 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:00:48 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895e586787;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895e58770;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -61,7 +60,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                   unord PolyTcount =                   MINSTEPS;
+OPTIONS DEFTYPE =                    unord PolyTcount =                    MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -77,11 +76,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895e586787;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895e58770;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -96,20 +95,19 @@ Begin MESQUITE;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
-					setSize 536 354;
-					setLocation 7 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 536 396;
+					setLocation 457 25;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.trees.BranchLengthsAdjust.AdjustToolExtra.stretchAdjustor;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -120,6 +118,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -131,6 +130,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -139,6 +139,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -149,6 +150,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -156,11 +162,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -170,15 +171,15 @@ Begin MESQUITE;
 			setPrevFileName '03-editingTrees.nex';
 			getWindow;
 			tell It;
-					setSize 373 436;
-					setLocation 556 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 411 415;
+					setLocation 7 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
 				setExplanation 'The currently selected tool in the tool palette at left is the Stretch Branch tool.  The branches are drawn with length proportional to their stored lengths.  Thus, you''ll see the branches change as you stretch and shrink them.  Touch on a branch with the Stretch Branch tool, and drag up or down to change the branch length. (If you make a branch with zero length and can''t select it any more, you can always find it again by turning off the Branches Proportional to Length in the Tree window.)^n^nThe next tool, "Adjust Branch Length", is also for branch length adjustments, but it presents a little editable text area for that purpose.  With the tool, touch on a branch.  A rectangle for editing text should appear with a blue button to its left.  Enter the desired branch length and hit Return or the blue button.^n^nOther tools are explained in subsequent example files.';
 				setTitle Branch_lengths;
 				toggleFileNames off;

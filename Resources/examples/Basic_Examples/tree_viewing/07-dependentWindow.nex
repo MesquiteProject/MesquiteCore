@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:52:05 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 09:56:41 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895a54ef79;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895a54fd0;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 Growth_rate,
@@ -50,11 +52,11 @@ CHARSTATELABELS
 	Jotinupa     1.8506946108999534 0.6447107189708169
 
 ;
+		BLOCKID WM114895a550d0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -82,7 +84,7 @@ CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                  unord PolyTcount =                  MINSTEPS;
+OPTIONS DEFTYPE =                   unord PolyTcount =                   MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -100,13 +102,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895a54ef79;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895a54fd0;
 			checksum 0 4129971366;
-			setID 1 3539015483384763311;
+			setID 1 3539015483384763311 WM114895a550d0;
 			checksum 1 4236368331;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -121,15 +123,15 @@ Begin MESQUITE;
 				setAssignedID 556.983378650668.3313559907369500737;
 				getTreeWindow;
 				tell It;
-					setSize 467 309;
-					setLocation 6 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 526 400;
+					setLocation 594 41;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -143,6 +145,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -153,6 +156,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Blue;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -163,6 +167,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -176,6 +181,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 					tell It;
@@ -223,6 +229,7 @@ Begin MESQUITE;
 								stretchToggle off;
 								branchLengthsToggle on;
 								toggleScale on;
+								toggleBroadScale off;
 								toggleCenter on;
 								toggleEven on;
 								namesAngle ?;
@@ -231,6 +238,7 @@ Begin MESQUITE;
 						setBackground White;
 						setBranchColor Black;
 						showNodeNumbers off;
+						showBranchColors on;
 						labelBranchLengths off;
 						desuppress;
 						getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -239,30 +247,31 @@ Begin MESQUITE;
 							toggleColorPartition on;
 							toggleShadePartition off;
 							toggleNodeLabels on;
+							toggleCenterNodeNames off;
 							toggleShowNames on;
 						endTell;
 					endTell;
 					getWindow;
 					tell It;
-						setSize 458 373;
-						setLocation 490 22;
-						setFont SanSerif;
-						setFontSize 10;
-						onInfoBar;
+						popOut;
 						setExplanationSize 0;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
+						setSize 526 440;
+						setLocation 29 365;
+						setFont SanSerif;
+						setFontSize 10;
 						getToolPalette;
 						tell It;
 						endTell;
-						setActive;
 						newAssistant #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 					tell It;
 						suspend ;
 						setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 						tell It;
 							toggleLabels off;
+							toggleGray off;
 						endTell;
 						setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 						tell It;
@@ -298,6 +307,11 @@ Begin MESQUITE;
 				endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -305,11 +319,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -319,16 +328,16 @@ Begin MESQUITE;
 			setPrevFileName '06-printingTrees.nex';
 			getWindow;
 			tell It;
-					setSize 526 193;
-					setLocation 7 421;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'There are several special windows in which to view trees, in addition to the standard Tree Window.  At upper right is a Dependent Tree Window.  You can obtain one from the Tree menu of an existing Tree Window.^n^nA Dependent Tree Window shows the exact same tree as in the Tree Window from which it was called.  Thus, if you scroll to another tree, or edit the tree, in the Tree window at left, the tree in the Dependent window will change in concert.  (Try it!)^n^nThe purpose of a Dependent Tree Window is to give you an alternative view of a tree in the tree window.  This can be useful if you''re doing various analyses (such as tracing character evolution) and there''s no room to show more analyses graphically in the Tree Window itself.';
+					setSize 533 240;
+					setLocation 6 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'There are several special windows in which to view trees, in addition to the standard Tree Window.  Below is a Dependent Tree Window.  You can obtain one from the Tree menu of an existing Tree Window.^n^nA Dependent Tree Window shows the exact same tree as in the Tree Window from which it was called.  Thus, if you scroll to another tree, or edit the tree, in the Tree window at left, the tree in the Dependent window will change in concert.  (Try it!)^n^nThe purpose of a Dependent Tree Window is to give you an alternative view of a tree in the tree window.  This can be useful if you''re doing various analyses (such as tracing character evolution) and there''s no room to show more analyses graphically in the Tree Window itself.';
 				setTitle Dependent_tree_window;
 				toggleFileNames off;
 				setPrevButtonName Previous;

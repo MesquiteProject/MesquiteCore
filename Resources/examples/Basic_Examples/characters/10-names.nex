@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:49:15 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:44:24 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM1148916ba1844;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM1148916ba1f0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -60,7 +59,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                             unord PolyTcount =                             MINSTEPS;
+OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -76,11 +75,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM1148916ba1844;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM1148916ba1f0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -89,15 +88,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 420 280;
-					setLocation 10 26;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 631 234;
+					setLocation 523 27;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -124,23 +123,25 @@ Begin MESQUITE;
 				tell It;
 					makeWindow;
 					tell It;
-						setSize 661 189;
-						setLocation 7 413;
-						setFont SanSerif;
-						setFontSize 10;
-						onInfoBar;
+						popOut;
 						setExplanationSize 40;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
+						setSize 547 221;
+						setLocation 520 418;
+						setFont SanSerif;
+						setFontSize 10;
 						getToolPalette;
 						tell It;
 							setTool mesquite.categ.StateNamesEditor.StateNamesWindow.arrow;
 						endTell;
+						setActive;
 						rowsAreCharacters on;
 						toggleConstrainChar on;
 						toggleConstrainCharNum 3;
 						togglePanel off;
+						toggleSummaryPanel off;
 					endTell;
 					showWindow;
 				endTell;
@@ -151,6 +152,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
@@ -169,17 +174,15 @@ Begin MESQUITE;
 			setPrevFileName '09-copyPaste.nex';
 			getWindow;
 			tell It;
-					setSize 466 350;
-					setLocation 441 27;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setActive;
-				setExplanation 'Characters can be assigned names, for instance by editing the column heading in the Character Matrix editor, as shown at right.  ^n^nIf the matrix is Categorical data, there is a State Names Editor (shown below) that is available by choosing Edit State Names in the Matrix menu of the Character Matrix editor window.  The State Names Editor shows characters on one axis, and states on the other.  You can choose whether characters are rows or columns by hitting the double arrow at the top left of the matrix. In this window, you can edit the names of characters and their character states.  You can use copy and paste to use similar character state names in different characters.^n^nIf character state names are assigned, then they will by default appear in the Character Matrix Editor, as shown at left.  When editing the matrix, you can enter a character state either by its name (e.g., "red") or by its state symbol (e.g., "1").  Display of the state names in the Character Matrix Editor can be turned off by unchecking Show State Names of the Display submenu of the Matrix menu of the Characer Matrix Editor. ^n';
+					setSize 490 387;
+					setLocation 10 26;
+					setFont SanSerif;
+					setFontSize 10;
+				setExplanation 'Characters can be assigned names, for instance by editing the column heading in the Character Matrix editor.  ^n^nIf the matrix is Categorical data, there is a State Names Editor (shown below) that is available by choosing Edit State Names in the Matrix menu of the Character Matrix editor window.  The State Names Editor shows characters on one axis, and states on the other.  You can choose whether characters are rows or columns by hitting the double arrow at the top left of the matrix. In this window, you can edit the names of characters and their character states.  You can use copy and paste to use similar character state names in different characters.^n^nIf character state names are assigned, then they will by default appear in the Character Matrix Editor, as shown at left.  When editing the matrix, you can enter a character state either by its name (e.g., "red") or by its state symbol (e.g., "1").  Display of the state names in the Character Matrix Editor can be turned off by unchecking Show State Names of the Display submenu of the Matrix menu of the Characer Matrix Editor. ^n^nYou can attach footnotes and more complex annotations to the characters and character states.  For instance, you can request a panel for making annotations by selecting Show State Annotations in the State_Names menu of the State Names Editor.';
 				setTitle Character_&_state_names;
 				toggleFileNames off;
 				setPrevButtonName Previous;

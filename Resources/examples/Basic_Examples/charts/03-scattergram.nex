@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:54:12 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:42:56 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM1148984a9e0104;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM1148984aa0a0;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 toe_length,
@@ -52,11 +54,11 @@ CHARSTATELABELS
 	Jotinupa     3.12 45.96 160.0 0.0
 
 ;
+		BLOCKID WM1148984aa220;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -88,8 +90,8 @@ BEGIN NOTES;
 END;
 
 BEGIN LABELS;
-TAXAGROUPLABEL Fubonidiines COLOR = (RGB 0.031372553 0.411764749 1.0) ;
-TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.831372553 0.33725490) ;
+TAXAGROUPLABEL Fubonidiines COLOR = (RGB 0.03137255 0.41176471 1.0) ;
+TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.83137255 0.33725490) ;
 
 
 END;
@@ -100,7 +102,7 @@ TAXPARTITION * UNTITLED  =  Fubonidiines :  1 -  3 5, Jotinupiines :  4 6 -  9;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                             unord PolyTcount =                             MINSTEPS;
+OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -124,13 +126,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM1148984a9e0104;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM1148984aa0a0;
 			checksum 0 4129971366;
-			setID 1 1065345207404390442;
+			setID 1 1065345207404390442 WM1148984aa220;
 			checksum 1 2480804147;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -139,15 +141,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 420 280;
-					setLocation 13 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 495 247;
+					setLocation 10 475;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -162,6 +164,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 70;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -169,13 +172,13 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
@@ -211,15 +214,15 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
-					setSize 490 365;
-					setLocation 467 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 490 442;
+					setLocation 512 25;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -245,15 +248,14 @@ Begin MESQUITE;
 			setPrevFileName '02-histogram.nex';
 			getWindow;
 			tell It;
-					setSize 463 262;
-					setLocation 9 387;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 483 309;
+					setLocation 13 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Some of the scattergrams give you a choice of either showing the same type of value on both axes, or different types.  The former is useful if you want one axis to show the state in character 1, and the other axis to show the state in character 2 in the same matrix.  Both axes are showing states in characters, but they show it for different characters.  The latter is useful if you want to show completely different values, such as (for a Trees scattergram) the branch length depth of a tree versus its asymmetry.^n^nThe spots in the scattergram are  colored differently according to the current Taxa Partition colors.  This is useful for both taxa or characters, when the taxa or characters have been partitioned into groups and the groups have assigned colors.^n^nYou can select the spots in a scattergram by using the arrow tool to draw a box around the spots to be selected.   If you select a series of spots then choose Copy from the Edit menu, then the chart''s data for those points will be copied to the clipboard.';
 				setTitle Scattergrams;

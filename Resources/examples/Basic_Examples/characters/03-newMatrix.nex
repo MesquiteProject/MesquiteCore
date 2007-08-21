@@ -1,19 +1,17 @@
 #NEXUS
-[written Wed May 17 13:47:57 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:38:04 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM1148912a19b37;
 
 END;
 
 
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -39,7 +37,7 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM1148912a19b37;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -53,15 +51,15 @@ Begin MESQUITE;
 				setAssignedID 302.984374210140.1333751829709936555;
 				getTreeWindow;
 				tell It;
-					setSize 464 374;
-					setLocation 2 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 394;
+					setLocation 534 23;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -76,6 +74,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -86,6 +85,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -94,6 +94,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -104,6 +105,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -111,11 +117,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -125,15 +126,14 @@ Begin MESQUITE;
 			setPrevFileName '02-newMatrix.nex';
 			getWindow;
 			tell It;
-					setSize 393 364;
-					setLocation 476 27;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 402;
+					setLocation 2 22;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'Character matrices already filled with data can be created in various ways using the "Make New Matrix from" submenu in the Characters menu.  The options in the submenu depend on what modules are installed, but there should be at least two options:^n^n-- Stored Matrices: This will make a new matrix that is initially a copy of an existing matrix.  You can edit the new copy without changing the original, and both will be stored in the file.^n^n-- Simulated Matrices on Current Tree: This will make a new matrix that is obtained by simulating character evolution on a tree.  To use this, you should have a tree window open.  When you select this, you may be asked what simulator module to use.  Then you''ll be asked which model of evolution.  You may or may not be queried for parameters of the model of evolution. Then, Mesquite will tell you which "tree context" will be used -- that is, which tree window will be used to supply the tree for the simulation.  Then, you''ll be asked how many characters to evolve for the matrix.  ^n^n(If you want to try different models of evolution, you may have to create the models first, using the "New Character Model" submenu in the Characters menu.)';
 				toggleFileNames off;
 				setPrevButtonName Previous;

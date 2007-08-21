@@ -1,7 +1,6 @@
 #NEXUS
-[written Wed May 17 13:44:57 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Mon Aug 20 22:47:49 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -18,8 +17,16 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM11486f4fad20;
+
 
 END;
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 
@@ -27,12 +34,6 @@ END;
 
 BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
-END;
-
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
 END;
 
 

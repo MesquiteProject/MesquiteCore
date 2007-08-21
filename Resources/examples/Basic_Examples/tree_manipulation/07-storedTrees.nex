@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:53:05 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:02:16 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895ef84090;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895ef8710;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -61,7 +60,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -77,11 +76,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895ef84090;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895ef8710;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.trees.ManageTrees.ManageTrees;
@@ -97,19 +96,18 @@ Begin MESQUITE;
 					setValueTask  #mesquite.trees.NumberOfTaxa.NumberOfTaxa;
 					desuppress;
 				endTell;
-					setSize 340 198;
-					setLocation 456 382;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 344 196;
+					setLocation 540 257;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 				endTell;
 				showWindow;
 			endTell;
@@ -119,15 +117,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.TreeblocksListNumber.TreeblocksListNumber;
 					newAssistant  #mesquite.lists.TreeblocksListTaxa.TreeblocksListTaxa;
-					setSize 431 95;
-					setLocation 5 434;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 406 142;
+					setLocation 538 23;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -147,15 +145,15 @@ Begin MESQUITE;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
-					setSize 399 294;
-					setLocation 7 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 422;
+					setLocation 11 363;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -169,6 +167,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -179,6 +178,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -187,6 +187,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -196,6 +197,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Dark Gray;
+					removeColor on;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -203,11 +209,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Dark Gray;
-					removeColor on;
 				endTell;
 			endTell;
 		endTell;
@@ -217,16 +218,16 @@ Begin MESQUITE;
 			setPrevFileName '06-branchSelection.nex';
 			getWindow;
 			tell It;
-					setSize 387 311;
-					setLocation 422 32;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'Trees can be stored in files in groups of trees called "tree blocks".  The Tree Block window shown at right shows that there is a single tree block called "Basic Trees" in the file, containing 6 trees.  The Trees List window above right lists these 6 trees.^n^nYou can store a tree into the tree block by going to the Store Tree As... menu item of the Tree menu of the Tree window.  It will give you a dialog box by which you can indicate the name under which the tree is to be stored.  (If there were no tree blocks stored in the file, it would also ask you to give a name to the new tree block.)  Once you''ve stored a tree, it will appear in the Trees List window.^n^nYou can also replace an already stored tree by the one in the tree window, under the same name, by selecting Store Tree in the Tree menu.';
+					setSize 517 254;
+					setLocation 7 24;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'Trees can be stored in files in groups of trees called "tree blocks".  The Tree Block window shows that there is a single tree block called "Basic Trees" in the file, containing 6 trees.  The Trees List window lists these 6 trees.^n^nYou can store a tree into the tree block by going to the Store Tree As... menu item of the Tree menu of the Tree window.  It will give you a dialog box by which you can indicate the name under which the tree is to be stored.  (If there were no tree blocks stored in the file, it would also ask you to give a name to the new tree block.)  Once you''ve stored a tree, it will appear in the Trees List window.^n^nYou can also replace an already stored tree by the one in the tree window, under the same name, by selecting Store Tree in the Tree menu.';
 				setTitle Tree_blocks;
 				toggleFileNames off;
 				setPrevButtonName Previous;

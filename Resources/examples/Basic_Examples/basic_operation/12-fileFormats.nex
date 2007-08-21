@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed May 17 13:44:53 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:13:48 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
@@ -10,15 +10,14 @@ Begin MESQUITE;
 			setPrevFileName '11-newFile.nex';
 			getWindow;
 			tell It;
-					setSize 378 322;
-					setLocation 319 25;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 412 344;
+					setLocation 10 27;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'When Mesquite saves and reads files, its default file format currently is the NEXUS format (D. Maddison et al., Systematic Biology, 1997).  This is the format used if you choose the Save or Save As menu items.^n^nMesquite can import and export other formats as well.  If you choose the Export... menu item from the File menu, you are presented with a list of file formats that could be used to export some of the information in the file.  (Just what is in the list depends on the exporters installed and what information is in the file.)^n^nIf you choose Open to read a file that isn''t in NEXUS format, Mesquite will query you to choose the file format, so that Mesquite knows what importer to attempt to use.^n';
 				setTitle File_formats;

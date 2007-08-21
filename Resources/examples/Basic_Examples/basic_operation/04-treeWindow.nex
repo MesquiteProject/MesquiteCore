@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:44:16 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Mon Aug 20 21:58:31 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM11486199fff7;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM1148619a00b0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -55,14 +54,20 @@ END;
 
 BEGIN NOTES;
 
-	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
-
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+
+	TEXT TAXA =  Fubonidians TAXON =  5 TEXT =  Lives_deep_in_dark_caves;
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -72,23 +77,17 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11486199fff7;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM1148619a00b0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -103,15 +102,14 @@ Begin MESQUITE;
 				setAssignedID 908.983934835544.585850784873249678;
 				getTreeWindow;
 				tell It;
-					setSize 475 319;
-					setLocation 4 27;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 560 306;
+					setLocation 500 34;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -125,6 +123,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -135,6 +134,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -143,6 +143,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -152,6 +153,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -160,28 +166,23 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
-				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
-			setNextFileName '05-windowModes.nex';
+			setNextFileName '04a-windowTabs.nex';
 			setPrevFileName '03-characterMatrices.nex';
 			getWindow;
 			tell It;
-					setSize 365 293;
-					setLocation 487 45;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 480 375;
+					setLocation 8 27;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'This file shows the tree window in which trees can be viewed and edited.  At left is a tool palette, whose tools can be used for manipulating the tree.  There is also a control with blue arrows to scroll from one tree to another from the current source of trees.  ^n^nThe Tree Window has  a Tree menu in which you can control the trees appearance, and choose the source of trees.  There is also an Analysis menu from which you can initiate analyses with the tree.^n^nThe tree window also has an annotation and explanation area at the bottom for communicating with the user.^n^nFor more information about viewing and editing trees, follow the "Go" button below beside "Viewing trees".  For more information about manipulating trees, follow the "Go" button beside "Manipulating trees".  Otherwise, go to the next example via the Next button.';
 				setTitle Tree_window;

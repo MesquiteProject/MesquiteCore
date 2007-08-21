@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:46:19 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:14:44 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM11488fd3cf722;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM11488fd3cff0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -61,8 +60,14 @@ BEGIN NOTES;
 
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
+OPTIONS DEFTYPE =                           unord PolyTcount =                           MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -72,23 +77,17 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11488fd3cf722;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM11488fd3cff0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
@@ -100,15 +99,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 319 327;
-					setLocation 23 48;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 52;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 412 368;
+					setLocation 445 33;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -126,15 +125,14 @@ Begin MESQUITE;
 			setPrevFileName '../introduction.nex';
 			getWindow;
 			tell It;
-					setSize 412 399;
-					setLocation 354 49;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 412 408;
+					setLocation 8 28;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Taxa (which may represent species or gene sequences) are usually the central entities analyzed by Mesquite.  For instance, character matrices and information about host-parasite associations both relate to taxa. While a block of taxa can exist without a character matrix, a character matrix cannot exist without the taxa to which it refers.  Thus, data files typically have a block of taxa even if they have nothing else.  When you ask Mesquite to create a new file, it asks you about the block of taxa you''d like to put in it.^n^nOnce you have a block of taxa you can see the list of taxa by selecting the List of Taxa menu item (or items from the List of Taxa submenu if there is more than one taxa block) of the Taxa&Trees menu.  At left is a list of taxa.^n^nIn this list of taxa you can rename the taxa by selecting a name using the Edit (I-beam) tool, or by double clicking on the name with the arrow tool.  Type in the new name.  If you hit the "Return" key, Mesquite will move to the next taxon name down.  You can also edit the taxon names in a Character Matrix Editor window.^n^nThis list window also allows you to select taxa, save taxon sets, and view information about the taxa.  It also displays annotations for the taxa (note the asterisk in front of the name "Quidnubia".  Touch on Quidnubia to see the annotation appear in the annotation area at the bottom of the window).';
 				setTitle Taxa;

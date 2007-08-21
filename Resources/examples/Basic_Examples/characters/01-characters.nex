@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:47:50 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:37:27 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM1148911925e35;
 
 END;
 
@@ -29,6 +29,8 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM1148911928b0;
+
 
 END;
 BEGIN CHARACTERS;
@@ -58,12 +60,14 @@ BEGIN CHARACTERS;
 ;
 
 
+		BLOCKID WM114891192a20;
+
 
 END;
 
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 toe_length,
@@ -82,11 +86,11 @@ CHARSTATELABELS
 	Jotinupa     0.156 2.298 8.0 0.0
 
 ;
+		BLOCKID WM114891192bd0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -114,7 +118,7 @@ CODESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  universal:  1 -  19;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                unord PolyTcount =                MINSTEPS;
+OPTIONS DEFTYPE =                 unord PolyTcount =                 MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  unord:  1 -  19;
@@ -134,15 +138,15 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM1148911925e35;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM1148911928b0;
 			checksum 0 4129971366;
-			setID 1 7634018259203763187;
+			setID 1 7634018259203763187 WM114891192a20;
 			checksum 1 1838322636;
-			setID 2 3243446279249302787;
+			setID 2 3243446279249302787 WM114891192bd0;
 			checksum 2 2830407910;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -151,15 +155,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 419 252;
-					setLocation 468 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 465 302;
+					setLocation 5 364;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -190,6 +194,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -204,15 +212,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 440 257;
-					setLocation 6 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 580 264;
+					setLocation 491 24;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -243,6 +251,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -252,32 +264,34 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
+				tell It;
+					gapCosts 8 3 2 2;
+					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
+				endTell;
 				getEmployee #mesquite.molec.ColorByNumber.ColorByNumber;
 				tell It;
 					setNumberTask  #mesquite.molec.GCAsNumber.GCAsNumber;
 					setWindowWidth 1;
-				endTell;
-				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
-				tell It;
-					gapCosts 8 3;
 				endTell;
 			endTell;
 			showDataWindow #3243446279249302787 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 465 203;
-					setLocation 12 356;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 572 280;
+					setLocation 489 379;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -301,6 +315,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -314,16 +332,14 @@ Begin MESQUITE;
 			setPrevFileName '../introduction.nex';
 			getWindow;
 			tell It;
-					setSize 403 211;
-					setLocation 486 344;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setActive;
+					setSize 469 238;
+					setLocation 1 22;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'Mesquite supports data matrices of various kinds, including molecular sequences, categorical phenotypic data, and continuous-valued measurements.^n^nHere are three data matrices in a single file. (Mesquite allows more than one matrix per file).^n^nThe windows shown are Character Matrix Editors, which can be opened via the Characters menu.  ';
 				setTitle Character_Matrices;
 				toggleFileNames off;

@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:47:09 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:26:16 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM11489072c7525;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM11489072c9b0;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 toe_length,
@@ -52,11 +54,11 @@ CHARSTATELABELS
 	Jotinupa     0.156 2.298 8.0 0.0
 
 ;
+		BLOCKID WM11489072cb10;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -84,8 +86,8 @@ BEGIN NOTES;
 END;
 
 BEGIN LABELS;
-TAXAGROUPLABEL Fubonidiines COLOR = (RGB 0.031372553 0.411764749 1.0) ;
-TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.831372553 0.33725490) ;
+TAXAGROUPLABEL Fubonidiines COLOR = (RGB 0.03137255 0.41176471 1.0) ;
+TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.83137255 0.33725490) ;
 
 
 END;
@@ -96,7 +98,7 @@ TAXPARTITION * UNTITLED  =  Fubonidiines :  1 -  3 5, Jotinupiines :  4 6 -  9;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
+OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -120,13 +122,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11489072c7525;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM11489072c9b0;
 			checksum 0 4129971366;
-			setID 1 1065345207404390442;
+			setID 1 1065345207404390442 WM11489072cb10;
 			checksum 1 2830407910;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
@@ -138,15 +140,14 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 351 271;
-					setLocation 7 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 410;
+					setLocation 438 24;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -170,19 +171,17 @@ Begin MESQUITE;
 				setAssignedID 535.984012888567.5426059272482531248;
 				getTreeWindow;
 				tell It;
-					setSize 449 205;
-					setLocation 401 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 410;
+					setLocation 438 24;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -193,6 +192,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -203,6 +203,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -211,6 +212,7 @@ Begin MESQUITE;
 						toggleColorPartition off;
 						toggleShadePartition on;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -220,6 +222,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -227,11 +234,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -262,15 +264,15 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
-					setSize 495 332;
-					setLocation 401 302;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 543 419;
+					setLocation 17 324;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -295,16 +297,17 @@ Begin MESQUITE;
 			setPrevFileName '03-partitions.nex';
 			getWindow;
 			tell It;
-					setSize 380 242;
-					setLocation 9 402;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'When taxa are assigned to groups in a partition, as was shown in the last example file, any group colors will be used in other contexts.  Thus, the tree window highlights taxon names by the group color, as shown at upper right.  A scattergram of taxa, as shown at right, colors the spots by their taxon''s group color. ';
+					setSize 424 245;
+					setLocation 11 27;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'When taxa are assigned to groups in a partition, as was shown in the last example file, any group colors will be used in other contexts.  Thus, the tree window highlights taxon names by the group color.  A scattergram of taxa colors the spots by their taxon''s group color. ';
 				setTitle Group_colors;
 				toggleFileNames off;
 				setPrevButtonName Previous;

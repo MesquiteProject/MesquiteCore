@@ -1,19 +1,18 @@
 #NEXUS
-[written Wed May 17 13:50:57 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 09:45:36 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE species;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		taxon_0 taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 
 	;
+	BLOCKID WM114894fd56a63;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  measurements;
-	DIMENSIONS NCHAR=5;
+	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 length,
@@ -40,11 +39,11 @@ CHARSTATELABELS
 	taxon_15   7.604 5.438 2.809 37.69 -2.129
 
 ;
+		BLOCKID WM114894fd5950;
+
 
 END;
 BEGIN TREES;
-	Title stored_trees;
-	LINK Taxa = species;
 	TRANSLATE
 		1 taxon_0,
 		2 taxon_1,
@@ -89,11 +88,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 1742309196559577302;
+			setID 0 1742309196559577302 WM114894fd56a63;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 8484372108263586382;
+			setID 0 8484372108263586382 WM114894fd5950;
 			checksum 0 3542125815;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -108,15 +107,15 @@ Begin MESQUITE;
 				setAssignedID 464.967909619582.506440536801120907;
 				getTreeWindow;
 				tell It;
-					setSize 423 376;
-					setLocation 7 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 554 405;
+					setLocation 614 39;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -130,6 +129,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -140,6 +140,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -150,6 +151,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -190,7 +192,7 @@ Begin MESQUITE;
 									tell It;
 										setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
 										tell It;
-											setDefaultModel 21;
+											setDefaultModel 13;
 										endTell;
 										getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 										tell It;
@@ -213,6 +215,7 @@ Begin MESQUITE;
 						setBackground White;
 						setBranchColor Black;
 						showNodeNumbers off;
+						showBranchColors on;
 						labelBranchLengths off;
 						desuppress;
 						getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -223,29 +226,34 @@ Begin MESQUITE;
 							toggleColorPartition on;
 							toggleShadePartition off;
 							toggleNodeLabels on;
+							toggleCenterNodeNames off;
 							toggleShowNames on;
 						endTell;
 					endTell;
 					getWindow;
 					tell It;
-						setSize 510 405;
-						setLocation 453 22;
-						setFont SanSerif;
-						setFontSize 10;
-						onInfoBar;
+						popOut;
 						setExplanationSize 0;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
+						setSize 554 465;
+						setLocation 8 317;
+						setFont SanSerif;
+						setFontSize 10;
 						getToolPalette;
 						tell It;
 						endTell;
-						setActive;
 					endTell;
 					showWindow;
 				endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -253,11 +261,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -267,16 +270,16 @@ Begin MESQUITE;
 			setPrevFileName '08-plotTree.nex';
 			getWindow;
 			tell It;
-					setSize 554 187;
-					setLocation 7 484;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'Above left is a tree; above right is the same tree plotted into a space of characters evolving by Brownian motion simulations on the tree itself.  The clades are colored to make them distinguishable.  Note that the long branches tend to show up as outliers in character space.^n^nYou can scroll from simulated character to character using the blue arrows in the Plot Tree legend.';
+					setSize 548 161;
+					setLocation 7 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'Here are two windows; one with a tree, and the other with the same tree plotted into a space of characters evolving by Brownian motion simulations on the tree itself.  The clades are colored to make them distinguishable.  Note that the long branches tend to show up as outliers in character space.^n^nYou can scroll from simulated character to character using the blue arrows in the Plot Tree legend.';
 				setTitle Simulations;
 				toggleFileNames off;
 				setPrevButtonName Previous;

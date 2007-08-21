@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:48:40 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:39:59 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM11489146ef239;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM11489146f230;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -60,7 +59,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
+OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -76,11 +75,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11489146ef239;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM11489146f230;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -89,18 +88,19 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 420 280;
-					setLocation 9 32;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 40;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 420 328;
+					setLocation 460 34;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -128,6 +128,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -145,16 +149,14 @@ Begin MESQUITE;
 			setPrevFileName '04-characterLists.nex';
 			getWindow;
 			tell It;
-					setSize 393 356;
-					setLocation 440 38;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setActive;
+					setSize 420 356;
+					setLocation 9 32;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'Let''s look at a character matrix editor in more detail.  The editor shows taxa as rows, and characters as columns (currently, matrices can''t be transposed).^n^nAt left in the editor window is a tool palette.  The first tool, the arrow, allows you to select rows, columns, or cells of matrix.  By holding down the Shift key you can accumulate a larger selection.  Selecting is useful for copying and pasting, and using tools like the paint bucket, or menu items like those in the Alter/Transform submenu of the Matrix menu.^n^nThe second tool is the Edit tool (the I-Beam), by which you can edit character states in cells, and the names of taxa and characters.  You can also double click on a cell with the arrow cursor to go automatically into edit mode.^n^nCharacters can be reordered by selecting the character (touch on its number above its name) with the arrow tool and dragging the characters to a new place in the sequence.  Characters can be sorted in different orders using the Sort Characters tool.  Touch on a row with the sort tool to sort according to the values in that row.^n^n';
 				setTitle Matrix_Editor;
 				toggleFileNames off;

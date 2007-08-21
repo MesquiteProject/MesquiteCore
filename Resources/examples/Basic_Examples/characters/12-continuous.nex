@@ -1,19 +1,18 @@
 #NEXUS
-[written Wed May 17 13:49:28 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:47:27 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE species;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
 	;
+	BLOCKID WM114891b48ad49;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  measurements;
-	DIMENSIONS NCHAR=5;
+	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 length,
@@ -40,6 +39,8 @@ CHARSTATELABELS
 	Phoronibium    7.604 5.438 2.809 37.69 -2.129
 
 ;
+		BLOCKID WM114891b48d40;
+
 
 END;
 BEGIN NOTES;
@@ -63,11 +64,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 911995890865637530;
+			setID 0 911995890865637530 WM114891b48ad49;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 4132708679229515777;
+			setID 0 4132708679229515777 WM114891b48d40;
 			checksum 0 487214761;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -76,15 +77,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 470 429;
-					setLocation 11 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 470 476;
+					setLocation 496 26;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -111,6 +112,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -124,15 +129,14 @@ Begin MESQUITE;
 			setPrevFileName '11a-annotations.nex';
 			getWindow;
 			tell It;
-					setSize 439 484;
-					setLocation 489 23;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 470 484;
+					setLocation 11 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Continuous data can be edited using a spreadsheet as at left.  To edit a cell, touch on it with the I-beam tool and edit it.  If several cells (or a character, or a taxon) are selected, then you can use the items in the "Alter/Transform" submenu of the Matrix menu to alter or transform the data in those cells.  These items may or may not include:^n^nFill:  This fills the selected cells with a string typed by the user.^n^nRandom Fill (Gaussian): this fills the selected cells with random states selected from a Normal distribution.^n^nAdd Noise (Gaussian): this adds a normally-distributed value (mean 0, variance as chosen) to each of the selected cells. ^n^nLog Transform: Transforms the selected cells to contain the natural logarithm of their original values.^n^nAdd value, Multiply by value:  These multiply the selected cells by,  or add to them, a constant. ^n^n^n';
 				setTitle Continuous_data;

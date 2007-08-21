@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 14:22:50 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:59:50 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE swordtails;
 	DIMENSIONS NTAX=25;
 	TAXLABELS
 		X._multilineatus X._nigrensis X._cortezi X._malinche X._continens X._nezahualcoyti X._montezumae X._pygmaeus X._birchmanii X._couchianus X._gordoni X._meyeri X._xiphidium X._variatus X._evelynae X._clemenciae X._milleri X._maculatus X._andersi X._alvarezi X._helleri X._signum P._olmaceae P._interm P._compressa 
 	;
+	BLOCKID WM11489945b02123;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  phenotype;
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -45,11 +44,11 @@ BEGIN CHARACTERS;
 	P._compressa      0
 
 ;
+		BLOCKID WM11489945b3c0;
+
 
 END;
 BEGIN TREES;
-	Title trees;
-	LINK Taxa = swordtails;
 	TRANSLATE
 		1 X._multilineatus,
 		2 X._nigrensis,
@@ -102,11 +101,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8265138006560775301;
+			setID 0 8265138006560775301 WM11489945b02123;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 6115459465024062079;
+			setID 0 6115459465024062079 WM11489945b3c0;
 			checksum 0 3737896798;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -121,15 +120,15 @@ Begin MESQUITE;
 				setAssignedID 298.1019014879746.4115002201943536709;
 				getTreeWindow;
 				tell It;
-					setSize 733 522;
-					setLocation 300 29;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 733 542;
+					setLocation 553 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -148,6 +147,7 @@ Begin MESQUITE;
 							stretchToggle on;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -156,6 +156,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -164,6 +165,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -177,6 +179,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 					tell It;
@@ -212,6 +215,11 @@ Begin MESQUITE;
 				endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -219,11 +227,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -233,15 +236,14 @@ Begin MESQUITE;
 			setPrevFileName '10-PlotTree.nex';
 			getWindow;
 			tell It;
-					setSize 289 402;
-					setLocation 8 30;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 528 389;
+					setLocation 10 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Mesquite has the option to reconstruct ancestral states using likelihood.  Two models of evolution are available: a symmetrical one-parameter model (Lewis''s Markov k model, called here the Mk1 model) and an asymmetrical two parameter model, in which increases in state (e.g., 0 to 1) have a different rate from decreased (1 to 0).^n^nHere shown is an example from Figure 5 of Schluter et al., 1997 (Evolution 51:1699), of swordtail fish.^n^nThe reconstruction method focuses on each node separately, for each determining the likelihood of character states at that node.   This is equivalent to the "marginal" method of Swofford''s PAUP, or the Fossil Likelihood method of the Graphics window of Pagel''s Discrete.  If parameters need to be estimated, this is done in advance of the reconstruction.  This is equivalent to the "Global" option of Discrete.^n^nTo see the relatively likelihoods of different states, hold the cursor over a branch.  Information appears at the bottom of the Trace Character legend.^n^nTo select a different model, use the Probability Model submenu of the Trace menu of the tree window.';
 				setTitle Likelihood;

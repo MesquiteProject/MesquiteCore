@@ -1,19 +1,18 @@
 #NEXUS
-[written Wed May 17 13:49:58 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:48:27 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE species;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
 	;
+	BLOCKID WM114891babcf51;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  measurements;
-	DIMENSIONS NCHAR=5;
+	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 length,
@@ -40,6 +39,8 @@ CHARSTATELABELS
 	Phoronibium    7.604 5.438 2.809 37.69 -2.129
 
 ;
+		BLOCKID WM114891babdd0;
+
 
 END;
 BEGIN NOTES;
@@ -49,8 +50,8 @@ BEGIN NOTES;
 END;
 
 BEGIN LABELS;
-	CHARGROUPLABEL Morphology COLOR = (RGB 0.458823551 0.13725490 1.0) ;
-	CHARGROUPLABEL Physiology_&_Behavior COLOR = (RGB 0.749019649 1.0 0.031372553) ;
+	CHARGROUPLABEL Morphology COLOR = (RGB 0.45882353 0.13725490 1.0) ;
+	CHARGROUPLABEL Physiology_&_Behavior COLOR = (RGB 0.74901961 1.0 0.03137255) ;
 
 
 END;
@@ -76,48 +77,12 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 911995890865637530;
+			setID 0 911995890865637530 WM114891babcf51;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 4132708679229515777;
+			setID 0 4132708679229515777 WM114891babdd0;
 			checksum 0 487214761;
-		endTell;
-		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
-		tell It;
-			showCharacters #4132708679229515777 #mesquite.lists.CharacterList.CharacterList;
-			tell It;
-				setData 0;
-				getWindow;
-				tell It;
-					newAssistant  #mesquite.lists.CharListInclusion.CharListInclusion;
-					newAssistant  #mesquite.lists.CharacterStats.CharacterStats;
-					newAssistant  #mesquite.parsimony.CharListParsModels.CharListParsModels;
-					newAssistant  #mesquite.lists.CharListPartition.CharListPartition;
-					getTable;
-					tell It;
-						columnWidth 1 102;
-						columnWidth 3 150;
-					endTell;
-					setSize 619 185;
-					setLocation 482 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
-					setExplanationSize 20;
-					setAnnotationSize 20;
-					setFontIncAnnot 0;
-					setFontIncExp 0;
-					getToolPalette;
-					tell It;
-					endTell;
-				endTell;
-				showWindow;
-				getEmployee #mesquite.lists.CharListAnnotPanel.CharListAnnotPanel;
-				tell It;
-					togglePanel off;
-				endTell;
-			endTell;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -125,15 +90,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 448 222;
-					setLocation 6 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 532 446;
+					setLocation 546 360;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -160,10 +125,50 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
 					removeColor off;
+				endTell;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			showCharacters #4132708679229515777 #mesquite.lists.CharacterList.CharacterList;
+			tell It;
+				setData 0;
+				getWindow;
+				tell It;
+					newAssistant  #mesquite.lists.CharListInclusion.CharListInclusion;
+					newAssistant  #mesquite.lists.CharacterStats.CharacterStats;
+					newAssistant  #mesquite.parsimony.CharListParsModels.CharListParsModels;
+					newAssistant  #mesquite.lists.CharListPartition.CharListPartition;
+					getTable;
+					tell It;
+						columnWidth 1 102;
+						columnWidth 3 150;
+					endTell;
+					popOut;
+					setExplanationSize 20;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setSize 596 206;
+					setLocation 535 38;
+					setFont SanSerif;
+					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.lists.CharListAnnotPanel.CharListAnnotPanel;
+				tell It;
+					togglePanel off;
 				endTell;
 			endTell;
 		endTell;
@@ -208,15 +213,15 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 1;
-					setSize 524 317;
-					setLocation 2 314;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 512 343;
+					setLocation 17 463;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -241,15 +246,14 @@ Begin MESQUITE;
 			setPrevFileName '13-continuousItems.nex';
 			getWindow;
 			tell It;
-					setSize 455 343;
-					setLocation 531 311;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 476 340;
+					setLocation 0 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Just as with taxa, characters can be partitioned into assigned groups.  Thus, in this example, the first two characters are placed in the group "Morphology", while the second two characters are placed in the group "Physiology & Behavior".  Partitioning is useful for display (e.g., in these examples colors are associated with the groups).  In the future it will become more important as various modules perform analyses that compare results from characters belonging in different groups. ^n^nTo make a character partition, go to the List of Characters window (available in the Characters menu).  Use the Columns menu to choose Group Membership.  This will add a Groups column to the list.  Next, create the groups.  You can create a group by touching on the column heading "Groups".  A drop down menu will appear.  Select "New Group..." and enter the group name.  You can assign a color to the group by choosing Edit Group Color (from the drop down menu) and selecting a color.  Then, you can assign a character to the group by selecting the character''s row in the list window and choose the group designation from the Set Group submenu in the drop down menu.';
 				setTitle 'Character groups (partitions)';

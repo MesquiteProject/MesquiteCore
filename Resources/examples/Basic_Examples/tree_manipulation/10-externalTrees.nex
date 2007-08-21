@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:53:31 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:33:34 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114896111d693;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114896111fd0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -55,8 +54,6 @@ END;
 
 
 BEGIN TREES;
-	Title More_trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -79,7 +76,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                            unord PolyTcount =                            MINSTEPS;
+OPTIONS DEFTYPE =                             unord PolyTcount =                             MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -96,11 +93,11 @@ Begin MESQUITE;
 		linkFile '10-treeFile.nex';
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114896111d693;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114896111fd0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.trees.ManageTrees.ManageTrees;
@@ -111,15 +108,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.TreeblocksListNumber.TreeblocksListNumber;
 					newAssistant  #mesquite.lists.TreeblocksListTaxa.TreeblocksListTaxa;
-					setSize 409 148;
-					setLocation 4 415;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 528 257;
+					setLocation 555 28;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -139,15 +136,15 @@ Begin MESQUITE;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
-					setSize 461 272;
-					setLocation 313 26;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 400;
+					setLocation 622 334;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -161,6 +158,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -171,6 +169,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -179,6 +178,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -188,6 +188,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Dark Gray;
+					removeColor on;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -195,11 +200,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Dark Gray;
-					removeColor on;
 				endTell;
 			endTell;
 		endTell;
@@ -209,17 +209,16 @@ Begin MESQUITE;
 			setPrevFileName '09-treeBlocks.nex';
 			getWindow;
 			tell It;
-					setSize 415 399;
-					setLocation 444 231;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 476 376;
+					setLocation 13 510;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
-				setExplanation 'This file illustrates how trees can be obtained from an external tree file.^n^nMesquite can consider information from several files on disk when doing its calculations.  Once a file is open, other files can be linked or included within it, thus making their information available for calculations.  This information is not necessarily restricted to trees in external tree files (for further information see the example files on basic Mesquite operation), but for this example we will be focusing on external files containing trees.^n^nIn the Projects and Files window you''ll notice that there are two active files, "10-storedTrees.nex" (the main data file) and "10-treeFile.nex" (the external tree file).  The main data file contains two tree blocks (Basic Trees, More Trees) while the external tree file contains one tree block (SomeRandomTrees), as shown in the Tree Blocks list window at right.^n^nAn external tree file can be read in using the Link or Include menu items in the File menu, or using the Get File With Taxa&Trees menu items in the Taxa&Trees menu.  To Include a file is to incorporate its information into the current main file of the project.  The information is treated as part of the main file, and it saved within the main file.  In contrast, to Link a file is to read its information for use while remembering that it belongs within a distinct file on disk.  This linked file can be saved and re-read separately.  More information on including and linking is given in the basic Mesquite example files.^n^nThe reason the data file 10-storedTrees.nex opens up with the external tree file already linked is that when a main file of a project is stored, it remembers what other files are linked to it and opens them up automatically next time it is opened.';
+				setExplanation 'This file illustrates how trees can be obtained from an external tree file.^n^nMesquite can consider information from several files on disk when doing its calculations.  Once a file is open, other files can be linked or included within it, thus making their information available for calculations.  This information is not necessarily restricted to trees in external tree files (for further information see the example files on basic Mesquite operation), but for this example we will be focusing on external files containing trees.^n^nIn the Projects and Files panel of the main Mesquite module (above), you''ll notice that there are two active files, "10-storedTrees.nex" (the main data file) and "10-treeFile.nex" (the external tree file).  The main data file contains two tree blocks (Basic Trees, More Trees) while the external tree file contains one tree block (SomeRandomTrees), as shown in the Tree Blocks list window at right.^n^nAn external tree file can be read in using the Link or Include menu items in the File menu, or using the Get File With Taxa&Trees menu items in the Taxa&Trees menu.  To Include a file is to incorporate its information into the current main file of the project.  The information is treated as part of the main file, and it saved within the main file.  In contrast, to Link a file is to read its information for use while remembering that it belongs within a distinct file on disk.  This linked file can be saved and re-read separately.  More information on including and linking is given in the basic Mesquite example files.^n^nThe reason the data file 10-storedTrees.nex opens up with the external tree file already linked is that when a main file of a project is stored, it remembers what other files are linked to it and opens them up automatically next time it is opened.';
 				setTitle External_tree_files;
 				toggleFileNames off;
 				setPrevButtonName Previous;

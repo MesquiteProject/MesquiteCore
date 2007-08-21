@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:53:59 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:41:48 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114898249d0100;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114898249e60;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 toe_length,
@@ -52,11 +54,11 @@ CHARSTATELABELS
 	Jotinupa     3.12 45.96 160.0 0.0
 
 ;
+		BLOCKID WM11489824a040;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -78,18 +80,19 @@ END;
 
 BEGIN NOTES;
 
-	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
-
-	CHARACTERS = Structure_&_Color TAXA = Fubonidians;
+	CHARACTERS = Structure_&_Color TAXA = Untitled_Block_of_Taxa;
+	CHARACTERS = Measurements TAXA = Untitled_Block_of_Taxa;
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
-	CHARACTERS = Measurements TAXA = Fubonidians;
+	TEXT TAXA =  Fubonidians TAXON =  5 TEXT =  Lives_deep_in_dark_caves;
+	CHARACTERS =  Structure_&_Color TAXA =  Fubonidians;
+	CHARACTERS =  Measurements TAXA =  Fubonidians;
 
 END;
 
 BEGIN LABELS;
-TAXAGROUPLABEL Fubonidiines COLOR = (RGB 0.031372553 0.411764749 1.0) ;
-TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.831372553 0.33725490) ;
+TAXAGROUPLABEL Fubonidiines COLOR = (RGB 0.03137255 0.41176471 1.0) ;
+TAXAGROUPLABEL Jotinupiines COLOR = (RGB 1.0 0.83137255 0.33725490) ;
 
 
 END;
@@ -100,7 +103,7 @@ TAXPARTITION * UNTITLED  =  Fubonidiines :  1 -  3 5, Jotinupiines :  4 6 -  9;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
+OPTIONS DEFTYPE =                            unord PolyTcount =                            MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -124,13 +127,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114898249d0100;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114898249e60;
 			checksum 0 4129971366;
-			setID 1 1065345207404390442;
+			setID 1 1065345207404390442 WM11489824a040;
 			checksum 1 2480804147;
 		endTell;
 		newAssistant  #mesquite.charts.TaxaScattergram.TaxaScattergram;
@@ -160,15 +163,15 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
-					setSize 495 332;
-					setLocation 432 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 509 345;
+					setLocation 447 472;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -222,15 +225,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 409 353;
-					setLocation 6 28;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 523 307;
+					setLocation 449 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -262,17 +265,16 @@ Begin MESQUITE;
 			setPrevFileName '../introduction.nex';
 			getWindow;
 			tell It;
-					setSize 806 154;
-					setLocation 11 474;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 417 428;
+					setLocation -2 23;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
-				setExplanation 'Mesquite currently has charts, including bar & line charts and scattergrams.  Bar & line charts summarize a value for each of several objects; scattergrams summarize two values for each of several objects.  The objects may be trees, taxa, characters, or character matrices.^n^nWhat values can be shown depend on what modules are installed in Mesquite.  Thus, if you want to show a histogram for trees, any module calculating a number for a tree can be used as a source of information to be displayed.';
+				setExplanation 'Mesquite currently has charts, including bar & line charts and scattergrams.  Bar & line charts summarize a value for each of several objects; scattergrams summarize two values for each of several objects.  The objects may be trees, taxa, characters, or character matrices.^n^nWhat values can be shown depend on what modules are installed in Mesquite.  Thus, if you want to show a histogram for trees, any module calculating a number for a tree can be used as a source of information to be displayed.^n^nUnder the Analysis menu, a Chart Wizard can help you build a chart.  Or, you can request a chart using various other submenus under Analysis.';
 				setTitle Charts;
 				toggleFileNames off;
 				setPrevButtonName Return;

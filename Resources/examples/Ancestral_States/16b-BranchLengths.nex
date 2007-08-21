@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 14:27:01 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 11:07:38 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE species;
 	DIMENSIONS NTAX=8;
 	TAXLABELS
 		A B C D E F G H 
 	;
+	BLOCKID WM114899aa574133;
 
 END;
 
@@ -26,11 +26,13 @@ BEGIN CHARACTERS;
 	H  0
 
 ;
+		BLOCKID WM114899aa5890;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  continuous;
-	DIMENSIONS NCHAR=1;
+	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = CONTINUOUS;
 	MATRIX
 	A   -1.4606048803385268
@@ -43,11 +45,11 @@ BEGIN CHARACTERS;
 	H   0.2752307217126102
 
 ;
+		BLOCKID WM114899aa5a50;
+
 
 END;
 BEGIN TREES;
-	Title trees;
-	LINK Taxa = species;
 	TRANSLATE
 		1 A,
 		2 B,
@@ -85,13 +87,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 4887592468791851101;
+			setID 0 4887592468791851101 WM114899aa574133;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 5098131390805215500;
+			setID 0 5098131390805215500 WM114899aa5890;
 			checksum 0 193681281;
-			setID 1 6202394371766150871;
+			setID 1 6202394371766150871 WM114899aa5a50;
 			checksum 1 1560782452;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -109,15 +111,15 @@ Begin MESQUITE;
 				setAssignedID 502.1024954218635.3391073105798146224;
 				getTreeWindow;
 				tell It;
-					setSize 587 411;
-					setLocation 6 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 659 433;
+					setLocation 643 25;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.trees.BranchLengthsAdjust.AdjustToolExtra.stretchAdjustor;
@@ -132,6 +134,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -143,6 +146,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -151,6 +155,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -168,6 +173,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 					tell It;
@@ -192,8 +198,8 @@ Begin MESQUITE;
 					toggleShowLegend on;
 					toggleGray off;
 					toggleWeights on;
-					setInitialOffsetX -162;
-					setInitialOffsetY -322;
+					setInitialOffsetX -199;
+					setInitialOffsetY -377;
 					setLegendWidth 142;
 					setLegendHeight 305;
 					resume ;
@@ -215,6 +221,7 @@ Begin MESQUITE;
 								stretchToggle off;
 								branchLengthsToggle on;
 								toggleScale on;
+								toggleBroadScale off;
 								toggleCenter on;
 								toggleEven on;
 								namesAngle ?;
@@ -223,6 +230,7 @@ Begin MESQUITE;
 						setBackground White;
 						setBranchColor Black;
 						showNodeNumbers off;
+						showBranchColors on;
 						labelBranchLengths off;
 						desuppress;
 						getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -231,20 +239,21 @@ Begin MESQUITE;
 							toggleColorPartition on;
 							toggleShadePartition off;
 							toggleNodeLabels on;
+							toggleCenterNodeNames off;
 							toggleShowNames on;
 						endTell;
 					endTell;
 					getWindow;
 					tell It;
-						setSize 450 389;
-						setLocation 608 22;
-						setFont SanSerif;
-						setFontSize 10;
-						onInfoBar;
+						popOut;
 						setExplanationSize 0;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
+						setSize 587 471;
+						setLocation 15 416;
+						setFont SanSerif;
+						setFontSize 10;
 						getToolPalette;
 						tell It;
 						endTell;
@@ -254,6 +263,7 @@ Begin MESQUITE;
 						setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 						tell It;
 							toggleLabels off;
+							toggleGray off;
 						endTell;
 						setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 						tell It;
@@ -295,6 +305,11 @@ Begin MESQUITE;
 				endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -302,11 +317,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -316,17 +326,16 @@ Begin MESQUITE;
 			setPrevFileName '15b-estimatingParameters.nex';
 			getWindow;
 			tell It;
-					setSize 442 243;
-					setLocation 611 452;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 597 265;
+					setLocation 6 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
-				setExplanation 'Many calculations in Mesquite are branch length sensitive.  The tree window at left shows a continuous character reconstructed with squared changte parsimony, which depends on branch lengths.  The tree window at right shows a likelihood reconstruction for a categorical character.  Both reconstructions depend on branch lengths.^n^nYou can edit branch lengths by going to the tree on the left and touching on a branch with the ruler tool (currently selected) and stretching the branch up or down, or the other ruler tool and entering a new length.  There is also an alter/transform branch lengths submenu of the Tree menu of the tree window at left.^n^nNote that as you change branch lengths, reconstructions change.  The shorter the branch, the more an ancestor is interpreted to be like its descendants.';
+				setExplanation 'Many calculations in Mesquite are branch length sensitive.  The Tree Window shows a continuous character reconstructed with squared change parsimony, which depends on branch lengths.  The Dependent Tree Window shows a likelihood reconstruction for a categorical character.  Both reconstructions depend on branch lengths.^n^nYou can edit branch lengths by going to the tree with colored branches touching on a branch with the ruler tool (currently selected) and stretching the branch up or down, or the other ruler tool and entering a new length.  There is also an alter/transform branch lengths submenu of the Tree menu of the tree window.^n^nNote that as you change branch lengths, reconstructions change.  The shorter the branch, the more an ancestor is interpreted to be like its descendants.';
 				setTitle Branch_lengths;
 				toggleFileNames off;
 				setPrevButtonName Previous;

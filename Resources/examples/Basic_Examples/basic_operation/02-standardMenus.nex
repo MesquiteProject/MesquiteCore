@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:44:09 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Mon Aug 20 20:33:30 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM1148618b2783;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM1148618b2900;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -53,8 +52,14 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                    unord PolyTcount =                    MINSTEPS;
+OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -64,23 +69,17 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM1148618b2783;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM1148618b2900;
 			checksum 0 4129971366;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -89,15 +88,14 @@ Begin MESQUITE;
 			setPrevFileName '01-basics.nex';
 			getWindow;
 			tell It;
-					setSize 458 350;
-					setLocation 322 25;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 462 368;
+					setLocation 418 30;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Mesquite has several standard menus:^n^nFile - Making new files, open, saving, printing, and closing files, quitting.^n^nEdit - Copying, pasting, undoing, and some other basic features for editing.^n^nCharacters - Managing characters, character matrices, and associated information like assumptions about characters.^n^nTaxa&Trees - Managing trees and taxa, showing tree windows.^n^nAnalysis - Displaying charts for trees, taxa and characters, tracing characters, creating batch files for automated analyses, and doing various other analyes.^n^nWindows - Controlling the current window, displaying and managing other windows.^n^nHelp - Links to documentation.^n^nThe menus that are available at any one time depend upon which window is frontmost.  If you cannot find a menu item to do something you wish to do to the contents of a window, click on the window to make sure it is frontmost, and its menus will appear.^n^nTo learn more about Mesquite''s menus, use the button below.';
 				setTitle Standard_menus;

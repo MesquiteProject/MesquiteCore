@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:52:15 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 09:58:25 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895c2a6882;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895c2a990;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 Growth_rate,
@@ -50,11 +52,11 @@ CHARSTATELABELS
 	Jotinupa     1.8506946108999534 0.6447107189708169
 
 ;
+		BLOCKID WM114895c2aab0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -82,7 +84,7 @@ CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
+OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -100,13 +102,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895c2a6882;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895c2a990;
 			checksum 0 4129971366;
-			setID 1 3539015483384763311;
+			setID 1 3539015483384763311 WM114895c2aab0;
 			checksum 1 4236368331;
 		endTell;
 		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
@@ -159,6 +161,7 @@ Begin MESQUITE;
 				setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 				tell It;
 					toggleLabels off;
+					toggleGray off;
 				endTell;
 				setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 				tell It;
@@ -185,16 +188,15 @@ Begin MESQUITE;
 				toggleWeights on;
 				resume ;
 			endTell;
-				setSize 842 472;
-				setLocation 2 22;
-				setFont SanSerif;
-				setFontSize 10;
-				onInfoBar;
+				popOut;
 				setExplanationSize 0;
 				setAnnotationSize 0;
 				setFontIncAnnot 0;
 				setFontIncExp 0;
-				setActive;
+				setSize 842 482;
+				setLocation 428 22;
+				setFont SanSerif;
+				setFontSize 10;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 			tell It;
@@ -206,6 +208,7 @@ Begin MESQUITE;
 						stretchToggle on;
 						branchLengthsToggle off;
 						toggleScale on;
+						toggleBroadScale off;
 						toggleCenter off;
 						toggleEven off;
 						namesAngle ?;
@@ -216,6 +219,7 @@ Begin MESQUITE;
 				setBackground White;
 				setBranchColor Black;
 				showNodeNumbers off;
+				showBranchColors on;
 				labelBranchLengths off;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -224,6 +228,7 @@ Begin MESQUITE;
 					toggleColorPartition on;
 					toggleShadePartition off;
 					toggleNodeLabels on;
+					toggleCenterNodeNames off;
 					toggleShowNames on;
 				endTell;
 			endTell;
@@ -235,15 +240,15 @@ Begin MESQUITE;
 			setPrevFileName '09-multiTrees.nex';
 			getWindow;
 			tell It;
-					setSize 701 152;
-					setLocation 3 538;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 415 290;
+					setLocation 2 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
 				setExplanation 'This shows that analyses can be shown for each of the trees in the Multi-Tree Window.  A continuous-valued character is traced, and treelength is calculated for each of the trees.  These trees are stored in the file.^n';
 				setTitle 'Multi-tree analysis';
 				toggleFileNames off;

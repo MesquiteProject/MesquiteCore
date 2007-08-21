@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:49:00 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:41:02 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM11489150db942;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM11489150dca0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -60,7 +59,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -76,11 +75,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11489150db942;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM11489150dca0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -89,15 +88,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 420 280;
-					setLocation 10 30;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 420 286;
+					setLocation 452 30;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.charMatrices.AddDeleteData.AddDeleteData.addChars;
@@ -130,6 +129,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -147,15 +150,14 @@ Begin MESQUITE;
 			setPrevFileName '07-dataEditing.nex';
 			getWindow;
 			tell It;
-					setSize 417 326;
-					setLocation 438 31;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 420 326;
+					setLocation 10 30;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'Characters can be added to the end of an existing matrix by selecting Add Characters from the Matrix menu of the Character Matrix Editor window.  ^n^nIf you use the Add Characters tool (the one currently selected in the character matrix editor in this example), you can insert characters by touching on the column heading.  A dialog box will ask you how many characters to add; they will be added in front of the character touched.^n^nYou can delete characters by selecting them and choosing the Delete Selected menu item in the Matrix menu.^n^nTaxa can be added and deleted in similar fashions using menu items and tools in the Character Matrix editor.';
 				setTitle Adding_characters_&_taxa;
 				toggleFileNames off;

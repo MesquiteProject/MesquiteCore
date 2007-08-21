@@ -1,19 +1,18 @@
 #NEXUS
-[written Wed May 17 13:50:17 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:50:35 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE species;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
 	;
+	BLOCKID WM114891dc17a54;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  measurements;
-	DIMENSIONS NCHAR=5;
+	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 length,
@@ -40,11 +39,13 @@ CHARSTATELABELS
 	Phoronibium    7.604 5.438 2.809 37.09 -2.129
 
 ;
+		BLOCKID WM114891dc1ae0;
+
 
 END;
 BEGIN LABELS;
-	CHARGROUPLABEL Morphology COLOR = (RGB 0.458823551 0.13725490 1.0) ;
-	CHARGROUPLABEL Physiology_&_Behavior COLOR = (RGB 0.749019649 1.0 0.031372553) ;
+	CHARGROUPLABEL Morphology COLOR = (RGB 0.45882353 0.13725490 1.0) ;
+	CHARGROUPLABEL Physiology_&_Behavior COLOR = (RGB 0.74901961 1.0 0.03137255) ;
 
 
 END;
@@ -64,11 +65,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 911995890865637530;
+			setID 0 911995890865637530 WM114891dc17a54;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 4132708679229515777;
+			setID 0 4132708679229515777 WM114891dc1ae0;
 			checksum 0 1628742248;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -86,15 +87,15 @@ Begin MESQUITE;
 				setAssignedID 1878.984368778789.6090046772113142399;
 				getTreeWindow;
 				tell It;
-					setSize 482 352;
-					setLocation 11 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 40;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 541 355;
+					setLocation 559 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.trees.SelectTaxaInClade.SelectTaxaToolExtra.SelectTaxaInClade;
@@ -114,6 +115,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -122,6 +124,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Red;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -130,6 +133,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -140,6 +144,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -147,11 +156,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -190,19 +194,18 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
-					setSize 505 374;
-					setLocation 506 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 527 442;
+					setLocation 12 427;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 				endTell;
 				enableCalculations;
 				getEmployee #mesquite.charts.Scattergram.Scattergram;
@@ -224,16 +227,16 @@ Begin MESQUITE;
 			setPrevFileName '16-charSources.nex';
 			getWindow;
 			tell It;
-					setSize 527 260;
-					setLocation 11 462;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'Most of the previous examples concerned making, editing and using stored character matrices.  However, stored matrices aren''t the only matrices used in Mesquite''s calculations.  Most calculations using characters or matrices can use alternative sources of characters.  ^n^nFor example, at upper right is a scattergram of taxa, with the Y and X axes being the values of two characters that are simulated on demand.  These characters are not stored in any matrix; they are simulated on the tree in the tree window as the chart is being calculated.^n^nThe ability to substitute alternative sources of characters (e.g., Stored vs. Simulated) is a ubiquitous feature of Mesquite, and gives the flexibility to design custom statistical tests (for instance).  Likewise, alternative sources of trees can be used.^n^nThe particular scattergram shown above illustrates how apparent correlations among taxa can arise merely by phylogenetic relatedness.  You may find it illuminating to go to the tree window and highlight the taxa in one of the large clades using the Select Taxa In Clade tool, which will also highlight those taxa in the scattergram.  If you scroll thorough alternative characters you will see how close relatives contribute to the apparent correlations.  You can also try adusting the tree to see how it affects the results.';
+					setSize 537 309;
+					setLocation 11 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'Most of the previous examples concerned making, editing and using stored character matrices.  However, stored matrices aren''t the only matrices used in Mesquite''s calculations.  Most calculations using characters or matrices can use alternative sources of characters.  ^n^nFor example, here is a scattergram of taxa, with the Y and X axes being the values of two characters that are simulated on demand.  These characters are not stored in any matrix; they are simulated on the tree in the tree window as the chart is being calculated.^n^nThe ability to substitute alternative sources of characters (e.g., Stored vs. Simulated) is a ubiquitous feature of Mesquite, and gives the flexibility to design custom statistical tests (for instance).  Likewise, alternative sources of trees can be used.^n^nThe particular scattergram shown above illustrates how apparent correlations among taxa can arise merely by phylogenetic relatedness.  You may find it illuminating to go to the tree window and highlight the taxa in one of the large clades using the Select Taxa In Clade tool, which will also highlight those taxa in the scattergram.  If you scroll thorough alternative characters you will see how close relatives contribute to the apparent correlations.  You can also try adusting the tree to see how it affects the results.';
 				setTitle Character_sources;
 				toggleFileNames off;
 				setPrevButtonName Previous;

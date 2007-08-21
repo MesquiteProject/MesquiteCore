@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:49:18 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:46:50 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM1148919cac147;
 
 END;
 
@@ -29,6 +29,8 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM1148919cad60;
+
 
 END;
 BEGIN CHARACTERS;
@@ -58,12 +60,14 @@ BEGIN CHARACTERS;
 ;
 
 
+		BLOCKID WM1148919cae50;
+
 
 END;
 
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 toe_length,
@@ -82,11 +86,11 @@ CHARSTATELABELS
 	Jotinupa     0.156 2.298 8.0 0.0
 
 ;
+		BLOCKID WM1148919caf50;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -115,14 +119,6 @@ BEGIN NOTES;
 
 	CHARACTERS = 16epq_sequence TAXA = Fubonidians;
 
-OPTIONS DEFTYPE =                   unord PolyTcount =                   MINSTEPS;
-	TYPESET *  UNTITLED ( CHARACTERS =  Structure_&_Color ) =   unord :   1 -   2;
-TYPESET Current_Parsimony_Models ( CHARACTERS =  Structure_&_Color ) =   unord :   1 -   2;
-TYPESET *  UNTITLED ( CHARACTERS =  16epq_sequence ) =   unord :   1 -   19;
-TYPESET *  UNTITLED ( CHARACTERS =  Measurements ) =   Squared :   1 -   4;
-
-END;
-
 BEGIN CODONS;
 CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 CODESET * UNTITLED  (CHARACTERS = 16epq_sequence)  =  universal:  1 -  19;
@@ -149,15 +145,15 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM1148919cac147;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM1148919cad60;
 			checksum 0 4129971366;
-			setID 1 7634018259203763187;
+			setID 1 7634018259203763187 WM1148919cae50;
 			checksum 1 1838322636;
-			setID 2 3243446279249302787;
+			setID 2 3243446279249302787 WM1148919caf50;
 			checksum 2 2830407910;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -166,15 +162,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 533 265;
-					setLocation 468 22;
-					setFont Serif;
-					setFontSize 18;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 533 330;
+					setLocation -7 463;
+					setFont Serif;
+					setFontSize 18;
 					getToolPalette;
 					tell It;
 						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
@@ -211,6 +207,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
 				tell It;
 					autotabOff;
@@ -220,15 +220,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 440 257;
-					setLocation 6 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 533 330;
+					setLocation 555 485;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -259,6 +259,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -268,29 +272,30 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
+				tell It;
+					gapCosts 8 3 2 2;
+					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
+				endTell;
 				getEmployee #mesquite.molec.ColorByNumber.ColorByNumber;
 				tell It;
 					setNumberTask  #mesquite.molec.GCAsNumber.GCAsNumber;
 					setWindowWidth 1;
-				endTell;
-				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
-				tell It;
-					gapCosts 8 3;
 				endTell;
 			endTell;
 			showDataWindow #3243446279249302787 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 467 288;
-					setLocation 12 356;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 533 330;
+					setLocation 561 42;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -317,6 +322,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -330,17 +339,16 @@ Begin MESQUITE;
 			setPrevFileName '10-names.nex';
 			getWindow;
 			tell It;
-					setSize 479 313;
-					setLocation 493 359;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 533 338;
+					setLocation 10 28;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
-				setExplanation 'The Character Matrix editor has various options for display.  These example show:^n^n-- Cells can be colored in various ways using the Color Cells submenu of the Matrix menu.  For instance, they can be colored according to the character state, as shown in the sequence and continuous valued matrices at left, or they can be colored green if a footnote is present as shown in the categorical matrix above. Colors can be assigned to cells manually using the paintbrush tool; these will be displayed if "Assigned Color" is selected in the Color Cells submenu.  Also, the default background color of cells can be changed.  The matrix above has dark gray as its default background color.^n^n-- Text in cells can also be colored using the Color Text submenu of the Matrix menu.  For instance, they text in the matrix above uses color assigned by the paintbrush tool.  Yellow is assigned as the color to character 1 in Snorolopa.^n^n-- Columns with individually sized widths (This can be achieved by moving the arrow cursor between the character numbers in the column headings in the Character Matrix Editors.  When the cursor changes to a bar with two arrows, click and drag.)^n^n-- Fonts and font sizes can be adjusted. (This can be done via the Font and Font Size submenus in the Edit menu.)^n';
+				setExplanation 'The Character Matrix editor has various options for display.  These example show:^n^n-- Cells can be colored in various ways using the Color Cells submenu of the Matrix menu.  For instance, they can be colored according to the character state, as shown in the sequence and continuous valued matrices, or they can be colored green if a footnote is present as shown in the categorical matrix. Colors can be assigned to cells manually using the paintbrush tool; these will be displayed if "Assigned Color" is selected in the Color Cells submenu.  Also, the default background color of cells can be changed.  The matrix above has dark gray as its default background color.^n^n-- Text in cells can also be colored using the Color Text submenu of the Matrix menu.  For instance, the text in the categorical matrix uses color assigned by the paintbrush tool.  Yellow is assigned as the color to character 1 in Snorolopa.^n^n-- Columns with individually sized widths (This can be achieved by moving the arrow cursor between the character numbers in the column headings in the Character Matrix Editors.  When the cursor changes to a bar with two arrows, click and drag.)^n^n-- Fonts and font sizes can be adjusted. (This can be done via the Font and Font Size submenus in the Edit menu.)^n';
 				setTitle Editor_options;
 				toggleFileNames off;
 				setPrevButtonName Previous;

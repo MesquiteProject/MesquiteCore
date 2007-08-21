@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:48:51 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:40:10 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114891496a240;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114891496c90;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -60,7 +59,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
+OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -76,11 +75,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114891496a240;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114891496c90;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -89,15 +88,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 420 280;
-					setLocation 15 30;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 420 312;
+					setLocation 472 39;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.charMatrices.DataPainter.DataPainter.fill;
@@ -130,6 +129,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -147,15 +150,14 @@ Begin MESQUITE;
 			setPrevFileName '05-dataEditing.nex';
 			getWindow;
 			tell It;
-					setSize 333 352;
-					setLocation 440 33;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 420 352;
+					setLocation 15 30;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'The tool currently selected is the Fill tool (the paint bucket).  It changes the character state in cells that you touch.^n^nBefore you can fill states using the paint bucket, you need to fill the tool with a state.  You can do this either by touching on the button in the palette and holding down the mouse until a popup menu appears, or you can simply select the paint bucket and attempt to touch on the cell you want to change (a dialog box will appear requesting the states to be used).  You can also fill the paint bucket using the eyedropper tool -- if you touch the eyedropper on a cell, it remembers the character state for use by the paintbucket.^n^nThe paintbucket will alter the states in just the cells that you touch if the cells touched are not selected.  However, if there are several cells already selected, and you touch the paintbucket on one of the cells selected, then all of the selected cells will be filled with the state contained in the paintbucket.';
 				setTitle Fill_Tool;
 				toggleFileNames off;

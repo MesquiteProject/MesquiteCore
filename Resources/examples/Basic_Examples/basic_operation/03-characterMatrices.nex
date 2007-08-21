@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:44:12 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Mon Aug 20 22:11:56 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114861935156;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114861935490;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -55,14 +54,20 @@ END;
 
 BEGIN NOTES;
 
-	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
-
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+
+	TEXT TAXA =   Fubonidians TAXON =   5 TEXT =   Lives_deep_in_dark_caves;
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                   unord PolyTcount =                   MINSTEPS;
+OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -72,23 +77,17 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114861935156;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114861935490;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -97,15 +96,14 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 420 280;
-					setLocation 6 26;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 52;
 					setAnnotationSize 52;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 677 223;
+					setLocation 460 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -120,6 +118,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 16;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -127,10 +126,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;
@@ -138,6 +133,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
@@ -156,17 +155,17 @@ Begin MESQUITE;
 			setPrevFileName '02-standardMenus.nex';
 			getWindow;
 			tell It;
-					setSize 393 326;
-					setLocation 436 27;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 441 418;
+					setLocation 6 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
-				setExplanation 'This file shows the spreadsheet editor for character matrices.  At its left side is a tool palette with a selection tool (the arrow), an editing tool (the I-beam), and others. When you select a tool by touching its button, its explanation shows up in the explanation area at the bottom of the window.^n^nThe matrix editing window has a "Matrix" menu which controls many of its functions.  In it you can control appearance and operate utilities that alter the data.  You can also add and delete taxa and characters.^n^nWhen you touch a cell in the matrix that begins or ends with *, you may see an annotation (footnote) for that cell in the annotation area near the bottom of the window (the white area just above the yellowish explanation area). Currently annotation editing isn''t easy (select the cell to edit its contents, and then go down to the annotation area and type in it).^n^nTo see more details on the data editor, touch the button in the the blue window.  Otherwise, use the Next button to go to the next example.';
+				setExplanation 'This file shows the spreadsheet editor for character matrices.  At its left side is a tool palette with a selection tool (the arrow), an editing tool (the I-beam), and others. When you select a tool by touching its button, its explanation shows up in the explanation area at the bottom of the window.^n^nThe matrix editing window has a "Matrix" menu which controls many of its functions.  In it you can control appearance and operate utilities that alter the data.  You can also add and delete taxa and characters.^n^nWhen you touch a cell in the matrix that begins or ends with *, you may see an annotation (footnote) for that cell in the annotation area near the bottom of the window (the white area just above the yellowish explanation area). To edit an annotation, select the cell, and then go down to the annotation area and type in it.^n^nTo see more details on the data editor, touch the button in the the blue window.  Otherwise, use the Next button to go to the next example.';
 				setTitle Character_matrix_editor;
 				toggleFileNames off;
 				setPrevButtonName Previous;

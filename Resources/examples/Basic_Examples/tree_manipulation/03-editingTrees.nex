@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:52:53 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:00:28 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895d1c6f86;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895d1c8a0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -61,7 +60,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                unord PolyTcount =                MINSTEPS;
+OPTIONS DEFTYPE =                 unord PolyTcount =                 MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -77,11 +76,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895d1c6f86;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895d1c8a0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -96,20 +95,19 @@ Begin MESQUITE;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
-					setSize 536 354;
-					setLocation 7 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 536 409;
+					setLocation 477 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.collapse;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -120,6 +118,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -130,6 +129,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -138,6 +138,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -147,6 +148,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -154,11 +160,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -168,16 +169,16 @@ Begin MESQUITE;
 			setPrevFileName '02-editingTrees.nex';
 			getWindow;
 			tell It;
-					setSize 418 449;
-					setLocation 551 25;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'The currently selected tool in the tool palette at left is a collapse branch tool.  It is usually used to collapse a branch to create or enlarge a polytomy.  ^n^nThe next tool, at the start of the second row, is a collapse clade tool, which collapses all resolution in a clade to a single polytomous bush.  Holding down the Option/Alt key will cause all branches outside of the clade touched to be collapsed into a single polytomy.^n^nSome additional tools in the tool palette are as follows:^n^nReroot at branch (second row, middle tool) - Reroots the tree at the branch touched.^n^nPrune clade (second row, third tool) - Cuts the clade of the branch touched out of the tree (this does not cut the contained terminal taxa out of the data file -- it only cuts them out of the tree on the screen).^n^nDraw clade as triangle (third row, second tool) - Collapse the drawing of a clade to a single small triangle.  The phylogenetic structure of the tree is still retained within the triangle, but not visible.  This is useful if you have a large tree and want to collapse parts to make other parts more easily viewed.  This feature is somewhat inelegant at the moment.^n^nMagnify clade (third row, third tool) - Show only the clade of the branch selected.  The rest of the tree is still there, but not visible.  This is useful to work with large trees.  When this option is in use, there will be a small magnifying glass icon drawn over the drawn root of the clade. Touching on that small icon with the magnify clade tool will show the entire tree.^n^nBranch Info (sixth row, second tool) - Show information about a branch, including that given by the various calculations and analyses active for the tree.  Exactly what is shown depends on what analyses are being done. ^n^nOther tools are discussed in subsequent example files.';
+					setSize 458 481;
+					setLocation 7 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'The currently selected tool in the tool palette at left is a collapse branch tool.  It is usually used to collapse a branch to create or enlarge a polytomy.  ^n^nThe next tool, at the start of the second row, is a collapse clade tool, which collapses all resolution in a clade to a single polytomous bush.  Holding down the Option/Alt key will cause all branches outside of the clade touched to be collapsed into a single polytomy.^n^nSome additional tools in the tool palette are as follows:^n^nReroot at branch (second row, middle tool) - Reroots the tree at the branch touched.^n^nPrune clade (second row, third tool) - Cuts the clade of the branch touched out of the tree (this does not cut the contained terminal taxa out of the data file -- it only cuts them out of the tree on the screen).^n^nDraw clade as triangle (third row, second tool) - Collapse the drawing of a clade to a single small triangle.  The phylogenetic structure of the tree is still retained within the triangle, but not visible.  This is useful if you have a large tree and want to collapse parts to make other parts more easily viewed.  This feature is somewhat inelegant at the moment.^n^nMagnify clade (third row, third tool) - Show only the clade of the branch selected.  The rest of the tree is still there, but not visible.  This is useful to work with large trees.  When this option is in use, there will be a small magnifying glass icon drawn over the drawn root of the clade. Touching on that small icon with the magnify clade tool will show the entire tree.^n^nBranch Info (fourth row, second tool) - Show information about a branch, including that given by the various calculations and analyses active for the tree.  Exactly what is shown depends on what analyses are being done. ^n^nOther tools are discussed in subsequent example files.';
 				setTitle Editing_tools;
 				toggleFileNames off;
 				setPrevButtonName Previous;

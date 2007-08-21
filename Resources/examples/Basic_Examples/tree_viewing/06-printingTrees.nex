@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:52:01 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 09:56:10 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM1148954470478;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895447320;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 Growth_rate,
@@ -50,11 +52,11 @@ CHARSTATELABELS
 	Jotinupa     1.8506946108999534 0.6447107189708169
 
 ;
+		BLOCKID WM114895447420;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -82,7 +84,7 @@ CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                unord PolyTcount =                MINSTEPS;
+OPTIONS DEFTYPE =                 unord PolyTcount =                 MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -100,13 +102,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM1148954470478;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895447320;
 			checksum 0 4129971366;
-			setID 1 3539015483384763311;
+			setID 1 3539015483384763311 WM114895447420;
 			checksum 1 4236368331;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -121,19 +123,18 @@ Begin MESQUITE;
 				setAssignedID 556.983378650668.3313559907369500737;
 				getTreeWindow;
 				tell It;
-					setSize 476 354;
-					setLocation 6 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 374;
+					setLocation 540 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -149,6 +150,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale off;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -157,6 +159,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Blue;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -167,6 +170,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -176,6 +180,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -183,11 +192,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -197,16 +201,16 @@ Begin MESQUITE;
 			setPrevFileName '05-moreTreeForms.nex';
 			getWindow;
 			tell It;
-					setSize 363 298;
-					setLocation 489 28;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'Printing of trees and saving of graphics files is not yet complete.  To print or save a tree graphic, choose Print Tree from the File menu of the Tree window.  If the tree is shown in the Tree Window in Size To Window mode, then the tree will be resized to fit on the printed page.  If the Size To Window mode is turned off, the tree will be kept at its size according to the screen appearance, and it will be printed over more than one page if needed.^n^nTo save a graphics file, you need to save a postscript file and edit it either with a postscript editor (e.g., Adobe Illustrator) or save as a pdf file (e.g., using Adobe Acrobat).  You may be able to do this (depending on your operating system), by selecting Print Tree and indicating  that you want to send the output to a file instead of to the printer.';
+					setSize 520 382;
+					setLocation 6 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'To print a tree graphic, choose Print Tree or Print Tree to Fit from the File menu of the Tree window.  Print Tree to Fit will resize the tree to fit on the printed page.  Print Tree will keep the tree at its size according to the screen appearance, and it will be printed over more than one page if needed.^n^nTo save a graphics file, you can use Save Tree as PDF (in the File menu of the Tree window).  Occasionally the results of Save Tree as PDF might not be exactly as you want, in which case we suggest you use Print Tree or Print Tree to Fit, and request that the output be saved to a PDF or postscript file.  Exactly how you do this depends on your operating system.^n^nOnce you have saved a graphics file, you can edit it  with a postscript editor (e.g., Adobe Illustrator).';
 				setTitle Printing;
 				toggleFileNames off;
 				setPrevButtonName Previous;

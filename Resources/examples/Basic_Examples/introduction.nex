@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:53:55 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Mon Aug 20 18:45:16 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Untitled;
 	DIMENSIONS NTAX=3;
 	TAXLABELS
 		taxon_1 taxon_2 taxon_3 
 	;
+	BLOCKID WM114861837ad1;
 
 END;
 
@@ -17,21 +17,20 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 3143466173537330668;
+			setID 0 3143466173537330668 WM114861837ad1;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			getWindow;
 			tell It;
-					setSize 586 411;
-					setLocation 316 24;
-					setFont SanSerif;
-					setFontSize 14;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 586 389;
+					setLocation 413 24;
+					setFont SanSerif;
+					setFontSize 14;
 					setActive;
 				setExplanation 'Here are various Mesquite example files to introduce you to using Mesquite.  To navigate from one to another, use the buttons below.  ^nIf you''re new to Mesquite and want to learn what it can or might do, hit the "Show page" button in the blue-green panel.';
 				setTitle Introduction_to_Mesquite;

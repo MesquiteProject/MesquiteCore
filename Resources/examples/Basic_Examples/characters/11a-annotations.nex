@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:49:23 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:47:16 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=4;
 	TAXLABELS
 		Fubonidia Snorolopa Quidnubia Zorabynyx 
 	;
+	BLOCKID WM114891af2ea48;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -24,11 +23,11 @@ BEGIN CHARACTERS;
 	Zorabynyx  0101
 
 ;
+		BLOCKID WM114891af32d0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Fubonidia,
 		2 Snorolopa,
@@ -90,7 +89,7 @@ CODESET * UNTITLED   =  universal:  1 -  4;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                                unord PolyTcount =                                MINSTEPS;
+OPTIONS DEFTYPE =                                 unord PolyTcount =                                 MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  4;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  4;
 
@@ -106,11 +105,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114891af2ea48;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114891af32d0;
 			checksum 0 2110737444;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -119,19 +118,18 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 929 383;
-					setLocation 18 34;
-					setFont SanSerif;
-					setFontSize 14;
-					offInfoBar;
+					popOut;
 					setExplanationSize 40;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 942 383;
+					setLocation 430 28;
+					setFont SanSerif;
+					setFontSize 14;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -159,6 +157,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel on;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -176,15 +178,15 @@ Begin MESQUITE;
 			setPrevFileName '11-viewingStyles.nex';
 			getWindow;
 			tell It;
-					setSize 942 281;
-					setLocation 19 508;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 405 443;
+					setLocation 18 34;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
 				setExplanation 'Simple footnotes and more complex annotations can be used to illustrate a character matrix.  Footnotes to taxa, characters, cells of the matrix and character states can be assigned and viewed in the small white area the bottom of the Character Matrix Editor, the List windows, and the State Names Editor for categorical data.  For instance, in the matrix above the cell for character "knobble" in the taxon Fubonidia has a footnote, as indicated by the * in the cell of the matrix.  The footnote says "This striking dimple was first noticed by Snerp (1965)".  These simple footnotes are also understood by other NEXUS reading programs like MacClade.^n^nIn addition, there is now a separate system of more elaborate annotations which may include images.  Here, the annotations panel is visible (e.g. made so by touching on the third button at lower left).  You can see what annotations are avaliable for a cell by moving the mouse over a cell or by selecting a cell.  Annotations can be attached to any taxon, character or cell of a character matrix.  For instance, touch on the first cell of the matrix (the character "knobble" of the taxon Fubonidia) to see its annotatoins.  The annotation may have a comment, a reference, an image, and an author.  A new annotation can be made by clicking on the (+) button at the top of the window; more than one annotation can be attached to each taxon, character or cell.  An image can be attached to or deleted from the annotation by touching on the (+) or trash icons beside the word "image".  Labels may be created or edited by touching on the image with the I-beam tool.  Labels can be moved or resized using the arrow tool, or given different styles by control-clicking on the label.  The label''s pointer can be moved using the pointer tool.  ^n^nThe presence of an annotation is shown by a small mark in the upper left of the cell of the matrix.  The Annotations submenu of the Matrix menu contains other items to control it.';
 				setTitle Annotations;
 				toggleFileNames off;

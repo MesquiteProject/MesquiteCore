@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:53:23 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:02:30 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895fea9c91;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895feaa70;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -61,7 +60,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -77,11 +76,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895fea9c91;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895feaa70;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.trees.ManageTrees.ManageTrees;
@@ -97,15 +96,15 @@ Begin MESQUITE;
 					setValueTask  #mesquite.trees.NumberOfTaxa.NumberOfTaxa;
 					desuppress;
 				endTell;
-					setSize 340 257;
-					setLocation 7 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 451 320;
+					setLocation 499 24;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 						setTool mesquite.lists.TreesList.TreesListWindow.arrow;
@@ -120,15 +119,14 @@ Begin MESQUITE;
 			setPrevFileName '07-storedTrees.nex';
 			getWindow;
 			tell It;
-					setSize 469 426;
-					setLocation 362 30;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 469 426;
+					setLocation 7 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'In the Trees list window you can manage stored trees. ^n^nBy selecting the Edit tool (the I-beam) and touching on a tree''s name, you can edit its name. (If the arrow is the current cursor, you can also double click on the tree name to edit it.)^n^nBy selecting a row using the arrow tool (touch on the row number), and selecting "Delete selected trees" from the List menu of the Trees List window, you can delete trees.^n^nYou can add trees to the tree block using the Store Tree As... menu item in the Tree window.^n^nThis list window can also show information about each tree.  By default, it shows the number of terminal taxa in the tree as the first column in the table.  By selecting items in the Columns menu, you can add columns showing additional information.';
 				setTitle Stored_trees;

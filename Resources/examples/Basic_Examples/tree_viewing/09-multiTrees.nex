@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:52:12 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 09:58:10 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114895b6f3c81;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114895b6f530;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 Growth_rate,
@@ -50,11 +52,11 @@ CHARSTATELABELS
 	Jotinupa     1.8506946108999534 0.6447107189708169
 
 ;
+		BLOCKID WM114895b6f7b0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -82,7 +84,7 @@ CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
+OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -100,13 +102,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114895b6f3c81;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114895b6f530;
 			checksum 0 4129971366;
-			setID 1 3539015483384763311;
+			setID 1 3539015483384763311 WM114895b6f7b0;
 			checksum 1 4236368331;
 		endTell;
 		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
@@ -126,16 +128,15 @@ Begin MESQUITE;
 			setNamesVisible on;
 			getWindow;
 			tell It;
-				setSize 851 481;
-				setLocation 2 22;
-				setFont SanSerif;
-				setFontSize 10;
-				onInfoBar;
+				popOut;
 				setExplanationSize 0;
 				setAnnotationSize 0;
 				setFontIncAnnot 0;
 				setFontIncExp 0;
-				setActive;
+				setSize 851 491;
+				setLocation 403 22;
+				setFont SanSerif;
+				setFontSize 10;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 			tell It;
@@ -147,6 +148,7 @@ Begin MESQUITE;
 						stretchToggle off;
 						branchLengthsToggle off;
 						toggleScale on;
+						toggleBroadScale off;
 						toggleCenter on;
 						toggleEven on;
 						namesAngle ?;
@@ -157,6 +159,7 @@ Begin MESQUITE;
 				setBackground White;
 				setBranchColor Blue;
 				showNodeNumbers off;
+				showBranchColors on;
 				labelBranchLengths off;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -165,6 +168,7 @@ Begin MESQUITE;
 					toggleColorPartition on;
 					toggleShadePartition off;
 					toggleNodeLabels on;
+					toggleCenterNodeNames off;
 					toggleShowNames on;
 				endTell;
 			endTell;
@@ -176,15 +180,15 @@ Begin MESQUITE;
 			setPrevFileName '08-mirrorTree.nex';
 			getWindow;
 			tell It;
-					setSize 722 147;
-					setLocation 5 547;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 391 287;
+					setLocation 2 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
 				setExplanation 'This shows another tree-viewing window, the Multi-Tree Window.  It is available under the Taxa&Trees menu.  It shows a series of trees from a single source.  In this case, it is showing trees simulated by a random process of speciation.  You could also show trees stored in a file.^n^nYou can change the number of columns and rows of trees displayed by selecting Number of Rows or Number of Columns from the Multi-Tree menu.  You can scroll through the trees using the scroll-bar on the window''s right hand side.';
 				setTitle 'Multi-tree window';
 				toggleFileNames off;

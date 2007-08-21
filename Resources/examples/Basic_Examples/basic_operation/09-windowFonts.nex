@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:44:34 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:08:38 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM11486dc73da49;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM11486dc73e00;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -55,14 +54,20 @@ END;
 
 BEGIN NOTES;
 
-	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
-
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+
+	TEXT TAXA =  Fubonidians TAXON =  5 TEXT =  Lives_deep_in_dark_caves;
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
+OPTIONS DEFTYPE =                            unord PolyTcount =                            MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -72,23 +77,17 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11486dc73da49;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM11486dc73e00;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -101,15 +100,14 @@ Begin MESQUITE;
 					tell It;
 						rowNamesWidth 171;
 					endTell;
-					setSize 592 332;
-					setLocation 350 22;
-					setFont SansSerif;
-					setFontSize 18;
-					offInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 592 301;
+					setLocation 422 39;
+					setFont SansSerif;
+					setFontSize 18;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -140,6 +138,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -157,22 +159,22 @@ Begin MESQUITE;
 			setPrevFileName '08-logFile.nex';
 			getWindow;
 			tell It;
-					setSize 338 363;
-					setLocation 6 25;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 408 392;
+					setLocation 4 40;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
-				setExplanation 'The font of a window may be changed by selecting the menu items in the Edit window.  This changes the font of many parts of a window, but not necessarily all.  For instance, the names of taxa in the Tree Window are controlled separately, via menu items in the Drawing menu.^n^nWindows may be printed using the menu item in the File menu.  ^n^nTo see the Mesquite documentation on windows, use the button below.';
+				setExplanation 'The font of a window may be changed by selecting the menu items in the Edit window.  This changes the font of many parts of a window, but not necessarily all.  For instance, the names of taxa in the Tree Window are controlled separately, via menu items in the Drawing menu.^n^nWindows may be printed using the menu items in the File menu.  ^n^nTo see the Mesquite documentation on windows, use the button below.';
 				setTitle Fonts_&_printing;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Documentation  'mesquite:docs/mesquite/windows.html';
+				addWebLink Window_Documentation  'mesquite:docs/mesquite/windows.html';
 			endTell;
 			showWindow;
 		endTell;

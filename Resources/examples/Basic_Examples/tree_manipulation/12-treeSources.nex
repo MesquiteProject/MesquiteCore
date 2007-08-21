@@ -1,12 +1,12 @@
 #NEXUS
-[written Wed May 17 13:53:39 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 10:36:24 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM114897e1c2c95;
 
 END;
 
@@ -29,11 +29,13 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM114897e1c4a0;
+
 
 END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=2;
+	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 Growth_rate,
@@ -50,11 +52,11 @@ CHARSTATELABELS
 	Jotinupa     1.8506946108999534 0.6447107189708169
 
 ;
+		BLOCKID WM114897e1c5d0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -76,8 +78,6 @@ END;
 
 
 BEGIN TREES;
-	Title More_trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -100,7 +100,7 @@ CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                                  unord PolyTcount =                                  MINSTEPS;
+OPTIONS DEFTYPE =                                   unord PolyTcount =                                   MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -118,13 +118,13 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM114897e1c2c95;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM114897e1c4a0;
 			checksum 0 4129971366;
-			setID 1 2821694224149906583;
+			setID 1 2821694224149906583 WM114897e1c5d0;
 			checksum 1 4236368331;
 		endTell;
 		newAssistant  #mesquite.charts.TreeValuesChart.TreeValuesChart;
@@ -161,15 +161,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 476 332;
-					setLocation 5 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 520 347;
+					setLocation 468 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -232,15 +232,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 424 331;
-					setLocation 497 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 541 327;
+					setLocation 454 505;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -273,16 +273,15 @@ Begin MESQUITE;
 			setPrevFileName '11-treeSources.nex';
 			getWindow;
 			tell It;
-					setSize 644 204;
-					setLocation 9 465;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'This file shows that alternative sources of trees can be used in various contexts, including charts.  Shown above are two simple histograms showing the numbers of trees with different treelengths (parsimony scores, using a continuous-valued data matrix).  Above left is a window with Stored Trees as the source of trees; above right is a window with Simulated Trees, using a uniform speciation model, as a source of trees.  ^n^nTreelength is not the only statistic that can be so charted over trees from various sources; any statistic concerning trees that is available through a module can be charted in this way.^n^n';
+					setSize 447 347;
+					setLocation 5 22;
+					setFont SanSerif;
+					setFontSize 10;
+				setExplanation 'This file shows that alternative sources of trees can be used in various contexts, including charts.  Shown here are two simple histograms showing the numbers of trees with different treelengths (parsimony scores, using a continuous-valued data matrix).  Above is a window with Stored Trees as the source of trees; below is a window with Simulated Trees, using a uniform speciation model, as a source of trees.  ^n^nTreelength is not the only statistic that can be so charted over trees from various sources; any statistic concerning trees that is available through a module can be charted in this way.^n^n';
 				setTitle Tree_sources;
 				toggleFileNames off;
 				setPrevButtonName Previous;

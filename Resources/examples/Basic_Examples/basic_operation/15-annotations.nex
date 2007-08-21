@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:45:07 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Mon Aug 20 23:25:20 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=4;
 	TAXLABELS
 		Fubonidia Snorolopa Quidnubia Zorabynyx 
 	;
+	BLOCKID WM11486f6fc0d55;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -24,11 +23,11 @@ BEGIN CHARACTERS;
 	Zorabynyx  0101
 
 ;
+		BLOCKID WM11486f6fc1d0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Fubonidia,
 		2 Snorolopa,
@@ -51,7 +50,7 @@ BEGIN NOTES;
 
 	AN T = 2 C = 1  AU = _ DM = 2005.8.13.20.36.3 ID = 0105b30eea3634 I = 'fubonidianImages/snorolopaKnobble.gif' TF = (CM A_rather_shallow_dimple) ;
 
-	AN T = 3 C = 1  AU = _ DM = 2005.8.13.20.36.3 ID = 0105b30eea3635 I = 'fubonidianImages/quidnubiaKnobble.gif' TF = (CM Note_absence_of_dimple.) ;
+	AN T = 3 C = 1  AU = _ DM = 2007.8.20.22.48.46 ID = 0105b30eea3635 I = 'fubonidianImages/quidnubiaKnobble.gif' TF = (CM A_rather_shallow_dimple) ;
 
 	AN T = 4 C = 1  AU = _ DM = 2005.8.13.20.36.3 ID = 0105b30eea3736 I = 'fubonidianImages/zorabynyxKnobble.gif' TF = (CM 'Although Spuff (1978) claimed a dimple was present in Zorabynyx, all subsequent authors have agreed on its absence.') ;
 
@@ -81,8 +80,14 @@ BEGIN NOTES;
 
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  4;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
+OPTIONS DEFTYPE =                           unord PolyTcount =                           MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  4;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  4;
 
@@ -92,23 +97,17 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  4;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11486f6fc0d55;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM11486f6fc1d0;
 			checksum 0 2110737444;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -117,15 +116,14 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 838 406;
-					setLocation 18 34;
-					setFont SanSerif;
-					setFontSize 14;
-					offInfoBar;
 					setExplanationSize 40;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 899 374;
+					setLocation 459 28;
+					setFont SanSerif;
+					setFontSize 14;
 					getToolPalette;
 					tell It;
 						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
@@ -157,6 +155,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel on;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -174,15 +176,15 @@ Begin MESQUITE;
 			setPrevFileName '14-included.nex';
 			getWindow;
 			tell It;
-					setSize 899 249;
-					setLocation 19 540;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 447 473;
+					setLocation 7 28;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'Mesquite has two styles of annotations: simple footnotes and more complex annotations.  Footnotes to taxa, characters, cells of the matrix and character states can be assigned and viewed in the small white area the bottom of the Character Matrix Editor, the List windows, and the State Names Editor for categorical data.  For instance, in the matrix above the cell for character "knobble" in the taxon Fubonidia has a footnote, as indicated by the * in the cell of the matrix.  The footnote says "This striking dimple was first noticed by Snerp (1965)".  These simple footnotes are also understood by other NEXUS reading programs like MacClade.^n^nIn addition, there is now a separate system of more elaborate annotations which may include images.  These annotations can be seen and edited by requesting "Show Annotations Panel" in the Matrix menu of the Character Matrix Editor, the List of Taxa window, the List of Characters window, and the State Names Editor (for categorical data).  Annotations can be attached to any taxon, character, character state, or cell of a character matrix.  If the cursor is moved to the cell for the first taxon and first character, the annotation panel above will show the annotation attached to the character "knobble" of the taxon Fubonidia.  The annotation may have a comment, a reference, an image, and an author.  A new annotation can be made by clicking on the (+) button at the top of the window; more than one annotation can be attached to each taxon, character or cell.  An image can be attached to or deleted from the annotation by touching on the (+) or trash icons beside the word "image".  Labels may be created or edited by touching on the image with the I-beam tool.  Labels can be moved or resized using the arrow tool, or given different styles by control-clicking on the label.  The label''s pointer can be moved using the pointer tool.  ^n^nThe presence of an annotation is shown by a small mark in the upper right of the cell of the matrix. ';
 				setTitle Annotations;

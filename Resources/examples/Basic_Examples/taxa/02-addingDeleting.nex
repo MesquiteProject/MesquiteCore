@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:46:30 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 08:25:00 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Fubonidians;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
 	;
+	BLOCKID WM11488fdc25523;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Structure_&_Color;
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -29,11 +28,11 @@ BEGIN CHARACTERS;
 	Jotinupa    00
 
 ;
+		BLOCKID WM11488fdc25a0;
+
 
 END;
 BEGIN TREES;
-	Title Basic_Trees;
-	LINK Taxa = Fubonidians;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -61,8 +60,14 @@ BEGIN NOTES;
 
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
+OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -72,23 +77,17 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8476784597994698209;
+			setID 0 8476784597994698209 WM11488fdc25523;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 974864624972105434;
+			setID 0 974864624972105434 WM11488fdc25a0;
 			checksum 0 4129971366;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
@@ -100,15 +99,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 319 327;
-					setLocation 12 30;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 413 400;
+					setLocation 443 28;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -126,17 +125,16 @@ Begin MESQUITE;
 			setPrevFileName '01-taxa.nex';
 			getWindow;
 			tell It;
-					setSize 413 295;
-					setLocation 341 32;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 413 408;
+					setLocation 12 30;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
-				setExplanation 'After you''ve created a taxa block you can add or delete taxa using either the List of Taxa window (shown at left), or using the Character Matrix Editor window.^n^nTo delete taxa, select them (by touching on the number to the left of the taxon name) and choose Delete selected Taxa from the List menu of the list window.^n^nTo add taxa to the end, choose Add Taxa from the List menu.  There is a tool in the Character Matrix editor that allows you to insert taxa between existing ones.^n^nTaxa can be reordered by selecting one or more taxa (touch on their numbers to the left of their names) and dragging them to a new place in the sequence.  Taxa can be sorted in different orders using the Sort tool.  Touch on a column with the sort tool to sort according to the values in that column.^n^nTaxa can also be reordered in the Character Matrix Editor in similar fashions, both using drag and drop, as well as a Sort Taxa tool.^n^n';
+				setExplanation 'After you''ve created a taxa block you can add or delete taxa using either the List of Taxa window (shown at left), or using the Character Matrix Editor window.^n^nTo delete taxa, select them (by touching on the number to the left of the taxon name) and choose Delete selected Taxa from the List menu of the list window.^n^nTo add taxa to the end, choose Add Taxa from the List menu.  There is a tool in the Character Matrix editor that allows you to insert taxa between existing ones.^n^nTaxa can be reordered by selecting one or more taxa (touch on their numbers to the left of their names) and dragging them to a new place in the sequence.  Taxa can be sorted in different orders using the Sort tool.  Touch on a column with the sort tool to sort according to the values in that column.  The first column records the original (Default) order of taxa; sort on that column to return the order to the default.  (You can reset the current order as default by touching on the column heading "Default" and selecting the drop down menu item.)^n^nTaxa can also be reordered in the Character Matrix Editor in similar fashions, both using drag and drop, as well as a Sort Taxa tool.^n^n';
 				setTitle Managing_taxa;
 				toggleFileNames off;
 				setPrevButtonName Previous;
