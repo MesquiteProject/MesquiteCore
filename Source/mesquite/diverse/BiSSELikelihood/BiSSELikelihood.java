@@ -10,25 +10,25 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.diverse.SpExtCategCharLikelihood;
+package mesquite.diverse.BiSSELikelihood;
 
 
 import mesquite.diverse.lib.*;
-import mesquite.diverse.SpExtCategCharMLCalculator.SpExtCategCharMLCalculator;
+import mesquite.diverse.BiSSELikelihoodCalculator.BiSSELikelihoodCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
 import mesquite.stochchar.lib.MargLikeAncStForModel;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
 
-public class SpExtCategCharLikelihood extends NumberForCharAndTree {
+public class BiSSELikelihood extends NumberForCharAndTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(SpExtCategCharMLCalculator.class, getName() + "  needs a method to calculate likelihoods.",
+		EmployeeNeed e = registerEmployeeNeed(BiSSELikelihoodCalculator.class, getName() + "  needs a method to calculate likelihoods.",
 		"The method to calculate likelihoods is arranged initially");
 		e.setSuppressListing(true);
 	}
 
-	SpExtCategCharMLCalculator calcTask;
+	BiSSELikelihoodCalculator calcTask;
 
 
 	MesquiteParameter e0;   //user specified extinction rate in state 0
@@ -47,7 +47,7 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 	int reportMode = 0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		calcTask = (SpExtCategCharMLCalculator)hireEmployee(SpExtCategCharMLCalculator.class, "Integrating Likelihood");
+		calcTask = (BiSSELikelihoodCalculator)hireEmployee(BiSSELikelihoodCalculator.class, "Calculator for BiSSE Likelihood");
 		if (calcTask == null)
 			return sorry(getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 		double def = MesquiteDouble.unassigned;
@@ -85,6 +85,9 @@ public class SpExtCategCharLikelihood extends NumberForCharAndTree {
 		if (params == null)
 			return false;
 		ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", params, null, 2, 2, false);
+		dlog.appendToHelpString("Parameters for BiSSE model.  Indicate the rates of speciation when in state 0 (s0), speciation when in state 1 (s1), ");
+		dlog.appendToHelpString("rates of extinction when in state 0 (e0), extinction when in state 1 (e1), ");
+		dlog.appendToHelpString("rates of character change 0 to 1(r01), and rates of character change 1 to 0 (r10). ");
 		dlog.completeAndShowDialog(true);
 
 		boolean ok = (dlog.query()==0);

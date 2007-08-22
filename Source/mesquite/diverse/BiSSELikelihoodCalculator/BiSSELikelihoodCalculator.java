@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.diverse.SpExtCategCharMLCalculator;
+package mesquite.diverse.BiSSELikelihoodCalculator;
 
 import java.util.Vector;
 
@@ -21,7 +21,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.ParametersExplorer;
 
-public class SpExtCategCharMLCalculator extends MesquiteModule implements ParametersExplorable, Evaluator {
+public class BiSSELikelihoodCalculator extends MesquiteModule implements ParametersExplorable, Evaluator {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(ParametersExplorer.class, getName() + "  uses a Parameters Explorer to show likelihood surfaces.",
 		"The parameter explorer is arranged automatically");
@@ -789,7 +789,7 @@ public class SpExtCategCharMLCalculator extends MesquiteModule implements Parame
 
 	public Class getDutyClass() {
 		// TODO Auto-generated method stub
-		return SpExtCategCharMLCalculator.class;
+		return BiSSELikelihoodCalculator.class;
 	}
 
 	public String getName() {
