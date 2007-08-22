@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.diverse.BiSSELikelihood;
 
 
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.RequiresExactlyCategoricalData;
 import mesquite.diverse.lib.*;
 import mesquite.diverse.BiSSELikelihoodCalculator.BiSSELikelihoodCalculator;
 import mesquite.lib.*;
@@ -74,11 +76,16 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 		if (MesquiteThread.isScripting())
 			suspended = true;
 		if (!MesquiteThread.isScripting()){
-			showDialog();
+			if (!showDialog())
+				return sorry(getName() + " couldn't start because parameters not specified.");
 		}
 		addMenuItem("Set Parameters...", makeCommand("setParameters", this));
 		addMenuItem("Recalculate", makeCommand("resume", this));
+		
 		return true;
+	}
+ 	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresExactlyCategoricalData();
 	}
 	/*.................................................................................................................*/
 	boolean showDialog(){
@@ -197,6 +204,11 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 			return;
 		if (tree == null || charStates == null)
 			return;
+		if (!CategoricalDistribution.isBinary(charStates, tree)){
+			if (resultString!=null)
+				resultString.setValue(getName() + " unassigned the character is not binary");
+			return;
+		}
 
 		paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
 

@@ -12,6 +12,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.diverse.DiversCategCharLikelihood;
 
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.RequiresExactlyCategoricalData;
 import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
@@ -54,7 +56,8 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
         t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
         params = new MesquiteParameter[]{r0, r1, a0, a1, t01, t10};
         if (!MesquiteThread.isScripting()){
-            showDialog();
+			if (!showDialog())
+				return sorry(getName() + " couldn't start because parameters not specified.");
         }
         addMenuItem("Set Parameters...", makeCommand("setParameters", this));
         return true;
@@ -109,6 +112,9 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
         }
         return false;
     }
+ 	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresExactlyCategoricalData();
+	}
 
     /*.................................................................................................................*/
     /*  the main command handling method.  */
@@ -152,7 +158,12 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
 
         if (tree == null || charStates == null)
             return;
-        paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
+		if (!CategoricalDistribution.isBinary(charStates, tree)){
+			if (resultString!=null)
+				resultString.setValue(getName() + " unassigned the character is not binary");
+			return;
+		}
+      paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
         calcTask.calculateLogProbability(tree, charStates, paramsCopy, result, resultString);
 		saveLastResult(result);
 		saveLastResultString(resultString);

@@ -714,8 +714,13 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         }
         stepCount = currentStep;
 
-        if (prob!=null)
-            prob.setValue(negLogLikelihood);
+		if (prob!=null){
+			prob.setValue(negLogLikelihood);
+			prob.copyAuxiliaries(params);
+			prob.setName("BiSSE (Net Div) -lnLikelihood");
+		}
+
+		
         double likelihood = Math.exp(-negLogLikelihood);
         if (MesquiteDouble.isUnassigned(negLogLikelihood))
             likelihood = MesquiteDouble.unassigned;
