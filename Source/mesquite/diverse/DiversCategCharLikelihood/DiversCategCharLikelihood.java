@@ -16,8 +16,9 @@ import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
+import mesquite.diverse.lib.*;
 
-public class DiversCategCharLikelihood extends NumberForCharAndTree {
+public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
     public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
         EmployeeNeed e = registerEmployeeNeed(DivCategCharMLCalculator.class, getName() + "  needs a method to calculate likelihoods.",
         "The method to calculate likelihoods is arranged initially");
@@ -58,12 +59,18 @@ public class DiversCategCharLikelihood extends NumberForCharAndTree {
         addMenuItem("Set Parameters...", makeCommand("setParameters", this));
         return true;
     }
-    /*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return true;
+	}
+  /*.................................................................................................................*/
     boolean showDialog(){
         if (params == null)
             return false;
         ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", params, null, 2, 2, false);
-        dlog.completeAndShowDialog(true);
+		dlog.appendToHelpString("Parameters for BiSSE model., reparameterized as r = net diversification  (speciation-extinction) and a = speciation/extinction ratio.  Indicate the rates of net diversification when in state 0 (r0), and when in state 1 (r1), ");
+		dlog.appendToHelpString("speciation/extinction ratio when in state 0 (a0), ratio when in state 1 (a1), ");
+		dlog.appendToHelpString("rates of character change 0 to 1(r01), and rates of character change 1 to 0 (r10). ");
+      dlog.completeAndShowDialog(true);
         boolean ok = (dlog.query()==0);
         if (ok) 
             dlog.acceptParameters();

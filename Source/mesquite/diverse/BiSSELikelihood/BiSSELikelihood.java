@@ -21,7 +21,7 @@ import mesquite.lib.duties.NumberForCharAndTree;
 import mesquite.stochchar.lib.MargLikeAncStForModel;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
 
-public class BiSSELikelihood extends NumberForCharAndTree {
+public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(BiSSELikelihoodCalculator.class, getName() + "  needs a method to calculate likelihoods.",
 		"The method to calculate likelihoods is arranged initially");
