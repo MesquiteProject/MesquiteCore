@@ -165,7 +165,7 @@ public class SpecExtincLikelihood extends NumberForTreeDivers  {
 	}
 
 	public String getExplanation(){
-		return "Calculates likelihoods using a speciation/extinction model ";
+		return "Calculates likelihoods using a speciation/extinction model reduced from the BiSSE model (Maddison, Midford & Otto 2007) ";
 	}
 
 	public boolean isPrerelease(){

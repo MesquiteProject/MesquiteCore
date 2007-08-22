@@ -50,7 +50,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	MesquiteParameter ep = new MesquiteParameter();//used only for parameter exploration
 	MesquiteParameter[] parameters;
 	ParametersExplorer explorer;
-
+	MesquiteNumber[] paramsToReport = new MesquiteNumber[2];
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -82,7 +82,10 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		ep.setMaximumAllowed(MesquiteDouble.infinite);
 		ep.setValue(0.01);
 		parameters = new MesquiteParameter[]{sp, ep};
-
+		paramsToReport[0] = new MesquiteNumber();
+		paramsToReport[0].setName("lambda (sp. rate)");
+		paramsToReport[1] = new MesquiteNumber();
+		paramsToReport[1].setName("mu (ext. rate)");
 		return true;
 	}
 	public void employeeQuit(MesquiteModule employee){
@@ -454,9 +457,14 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		double negLogLikelihood = -(Math.log(likelihood) - logComp);
 		/*======*/
 
-		if (prob!=null)
+		if (prob!=null){
 			prob.setValue(negLogLikelihood);
-		double likelihood = Math.exp(-negLogLikelihood);
+			paramsToReport[0].setValue(lambda.getValue());
+			paramsToReport[1].setValue(mu.getValue());
+			prob.copyAuxiliaries(paramsToReport);
+			prob.setName("Speciation/Extinction -lnLikelihood");
+	}
+	double likelihood = Math.exp(-negLogLikelihood);
 		if (MesquiteDouble.isUnassigned(negLogLikelihood))
 			likelihood = MesquiteDouble.unassigned;
 		if (resultString!=null) {
@@ -483,7 +491,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	}
 
 	public String getExplanation(){
-		return "Calculates likelihood with a tree using an extinction/speciation model expressed as a system of differential equations.";
+		return "Calculates likelihoods using a speciation/extinction model reduced from the BiSSE model (Maddison, Midford & Otto 2007) ";
 	}
 
 	public boolean isPrerelease(){
