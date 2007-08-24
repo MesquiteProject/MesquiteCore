@@ -158,9 +158,9 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
 
         if (tree == null || charStates == null)
             return;
-		if (!CategoricalDistribution.isBinary(charStates, tree)){
+		if (!CategoricalDistribution.isBinaryNoMissing(charStates, tree)){
 			if (resultString!=null)
-				resultString.setValue(getName() + " unassigned the character is not binary");
+				resultString.setValue(getName() + " unassigned the character is not binary or has missing data");
 			return;
 		}
       paramsCopy = MesquiteParameter.cloneArray(params, paramsCopy);
