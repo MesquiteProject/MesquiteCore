@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Aug 23 11:25:25 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.2.4 (Wayne Maddison)]
+[written Fri Aug 24 08:40:06 PDT 2007 by Mesquite  version 2.0BETA3 (build i51) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=32;
@@ -51,7 +51,7 @@ BEGIN CHARACTERS;
 
 ;
 	IDS WM1148f4828fe0 ;
-	BLOCKID WM11493f8951d0;
+	BLOCKID WM114988797040;
 
 
 END;
@@ -120,7 +120,7 @@ Begin MESQUITE;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 444104661901299517 WM11493f8951d0;
+			setID 0 444104661901299517 WM114988797040;
 			checksum 0 909469476;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -334,12 +334,12 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 564 455;
+					setSize 564 433;
 					setLocation 58 458;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'To save BiSSE results (with parameter values) for multiple trees, you can either do a chart for Trees (indicating you want to save a results table) or you can set up a tree window as shown, with the BiSSE analysis running.  Then, go to the Window menu of the Tree window, and select Scripting>Send script.  In the dialog box, paste the following script.  It goes through the trees and saves the results in a file, which will be in the same directory as the data file.^n^n[===== script to tree window for BiSSE calculations =====]^n String.resultsFile ''results.txt'';^rsaveMessageToFile *String.resultsFile ''RESULTS with different trees'';^rappendReturnToFile *String.resultsFile;^rgetWindow;^rtell It;^r	getNumTrees;^r	Integer.numReps *It;^r	ifNotCombinable *Integer.numReps;^r		Integer.numReps 10; [in case indefinite number of trees]^r	endIf;^rendTell;^rdebug;^rInteger.count 0;^rfor *Integer.numReps;^r	increment.count;^r	getWindow;^r	tell It;^r		setTreeNumber *Integer.count;^r	endTell;^r	getEmployee #mesquite.diverse.CharAssocDivViewer.CharAssocDivViewer;^r	tell It;^r		doCounts; [because counts dont auto-update when scripting]^r	endTell;^r	getEmployee #mesquite.diverse.BiSSELikelihood.BiSSELikelihood;^r	tell It;^r		getLastResult;^r		String.result *It;^r		appendMessageToFile *String.resultsFile *String.result;^r		appendReturnToFile *String.resultsFile;^r	endTell;^rendFor;^r';
+				setExplanation 'To save BiSSE results (with parameter values) for multiple trees, you can either do a chart for Trees (indicating you want to save a results table) or you can set up a tree window as shown, with the BiSSE analysis running.  Then, go to the Window menu of the Tree window, and select Scripting>Send script.  In the dialog box, paste the following script.  It goes through the trees and saves the results in a file, which will be in the same directory as the data file.^n^n[===== script to tree window for BiSSE calculations =====]^n String.resultsFile ''results.txt'';^nsaveMessageToFile *String.resultsFile ''RESULTS with different trees'';^nappendReturnToFile *String.resultsFile;^ngetWindow;^ntell It;^n	getNumTrees;^n	Integer.numReps *It;^n	ifNotCombinable *Integer.numReps;^n		Integer.numReps 10; [in case indefinite number of trees]^n	endIf;^nendTell;^ndebug;^nInteger.count 0;^nfor *Integer.numReps;^n	increment.count;^n	getWindow;^n	tell It;^n		setTreeNumber *Integer.count;^n	endTell;^n	getEmployee #mesquite.diverse.CharAssocDivViewer.CharAssocDivViewer;^n	tell It;^n		doCounts; [because counts dont auto-update when scripting]^n	endTell;^n	getEmployee #mesquite.diverse.BiSSELikelihood.BiSSELikelihood;^n	tell It;^n		getLastResult;^n		String.result *It;^n		appendMessageToFile *String.resultsFile *String.result;^n		appendReturnToFile *String.resultsFile;^n	endTell;^nendFor;^n';
 				setTitle Results_from_Multiple_Trees;
 				toggleFileNames off;
 				setPrevButtonName Previous;

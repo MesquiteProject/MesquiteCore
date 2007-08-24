@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Aug 23 11:26:09 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.2.4 (Wayne Maddison)]
+[written Thu Aug 23 22:46:24 PDT 2007 by Mesquite  version 2.0BETA3 (build i51) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=140;
@@ -161,7 +161,7 @@ BEGIN CHARACTERS;
 
 ;
 	IDS WM11493f556a312 WM11493f556a313 WM11493f556a314 WM11493f556a315 WM11493f556a316 ;
-	BLOCKID WM11493f8ed940;
+	BLOCKID WM1149667c69b0;
 
 
 END;
@@ -341,7 +341,7 @@ Begin MESQUITE;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 7885352486418568017 WM11493f8ed940;
+			setID 0 7885352486418568017 WM1149667c69b0;
 			checksum 0 905627623;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -441,7 +441,7 @@ Begin MESQUITE;
 					setInitialOffsetX -162;
 					setInitialOffsetY -307;
 					setLegendWidth 142;
-					setLegendHeight 163;
+					setLegendHeight 161;
 					resume ;
 				endTell;
 				endTell;
@@ -523,6 +523,7 @@ Begin MESQUITE;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
+			setNextFileName '../Introduction.nex';
 			setPrevFileName '07-contTreeSim.nex';
 			getWindow;
 			tell It;
@@ -531,7 +532,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 524 183;
+					setSize 524 161;
 					setLocation 108 630;
 					setFont SanSerif;
 					setFontSize 10;
@@ -540,7 +541,7 @@ Begin MESQUITE;
 				setTitle Simulated_trees_&_characters;
 				toggleFileNames off;
 				setPrevButtonName Previous;
-				setNextButtonName Next;
+				setNextButtonName Return_to_main_Intro.;
 			endTell;
 			showWindow;
 		endTell;

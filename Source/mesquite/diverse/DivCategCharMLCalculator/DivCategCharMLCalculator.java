@@ -716,10 +716,8 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
 
 		if (prob!=null){
 			prob.setValue(negLogLikelihood);
-			Debugg.println("species model " + speciesModel);
 			tempParams = MesquiteParameter.cloneArray(params, tempParams);
 			tempParams = speciesModel.getCurrentParams(tempParams);
-			Debugg.println("PARAMS " + MesquiteParameter.toString(tempParams));
 			prob.copyAuxiliaries(tempParams);
 			prob.setName("BiSSE (Net Div) -lnLikelihood");
 		}
