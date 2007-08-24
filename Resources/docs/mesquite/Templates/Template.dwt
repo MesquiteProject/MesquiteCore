@@ -24,22 +24,22 @@
 			<td height="42" align="left" valign="top"></td>
 			<td height="42" align="left" valign="top"><font face="Trebuchet MS"><img src="../images/mesquiteLowerManual.gif"></font></td>
 		  </tr>
-		  <tr>
+<!--	  <tr>
   		    <td colspan="2" height="10"></td>
 		  </tr>
-		  <tr>
+	      <tr>
 		    <td colspan="2" height="15" align="center" valign="middle">
-			<!-- Google CSE Search Box Begins  -->
+			<!-- Google CSE Search Box Begins
 				<form id="searchbox_016202157087875381635:khljhzi-ps8" action="http://www.google.com/cse">
 					<input type="hidden" name="cx" value="016202157087875381635:khljhzi-ps8" />
 					<input type="hidden" name="cof" value="FORID:0" />
 					<input name="q" type="text" size="20" />
 					<input type="submit" name="sa" value="Search Mesquite" />
-				<!--<img src="http://www.google.com/coop/images/google_custom_search_smnar.gif" alt="Google Custom Search" />-->
+				<!--<img src="http://www.google.com/coop/images/google_custom_search_smnar.gif" alt="Google Custom Search" />
 		  		</form>
-			<!-- Google CSE Search Box Ends -->
+			<!-- Google CSE Search Box Ends
         		    </td>
-		  </tr>
+		  </tr> -->
         </table>
       </td>
 	<td>
