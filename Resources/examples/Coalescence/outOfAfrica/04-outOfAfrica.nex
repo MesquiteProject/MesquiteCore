@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 22:00:04 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed Aug 22 09:47:37 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE populations;
@@ -7,6 +7,7 @@ BEGIN TAXA;
 	TAXLABELS
 		Africa Eurasia chimpanzee 
 	;
+	BLOCKID WM1148e7859e85;
 
 END;
 
@@ -18,12 +19,12 @@ BEGIN TAXA;
 	TAXLABELS
 		A1 A2 A3 A4 A5 A6 A7 A8 A9 A10 E1 E2 E3 E4 E5 E6 E7 E8 E9 E10 C1 C2 C3 C4 C5 
 	;
+	BLOCKID WM1148e7859ff6;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  'Matrix in file "04-outOfAfrica.nex"';
 	LINK TAXA = genes_sampled;
 	DIMENSIONS  NCHAR=3;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
@@ -57,6 +58,8 @@ BEGIN CHARACTERS;
 	C5   ?10
 
 ;
+		BLOCKID WM1148e785a0c0;
+
 
 END;
 BEGIN TaxaAssociation;
@@ -74,7 +77,6 @@ END;
 
 
 BEGIN TREES;
-	Title 'Trees block 2 from 04-outOfAfrica.nex';
 	LINK Taxa = populations;
 	TRANSLATE
 		1 Africa,
@@ -89,7 +91,7 @@ END;
 
 BEGIN LABELS;
 TAXAGROUPLABEL Africa COLOR = (RGB 1.0 0.70196078 0.12941176) ;
-TAXAGROUPLABEL Eurasia COLOR = (RGB 0.058823551 1.0 0.603921555) ;
+TAXAGROUPLABEL Eurasia COLOR = (RGB 0.05882353 1.0 0.60392157) ;
 TAXAGROUPLABEL Chimp COLOR = (RGB 0.50980392 0.13725490 1.0) ;
 
 
@@ -121,12 +123,12 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 703462755303490792;
-			setID 1 2887061083080516111;
+			setID 0 703462755303490792 WM1148e7859e85;
+			setID 1 2887061083080516111 WM1148e7859ff6;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 7325247286052868622;
+			setID 0 7325247286052868622 WM1148e785a0c0;
 			checksum 0 1674843106;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -142,19 +144,18 @@ Begin MESQUITE;
 				setAssignedID 401.982328606974.8040224577453098533;
 				getTreeWindow;
 				tell It;
-					setSize 517 377;
-					setLocation 494 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 618 404;
+					setLocation 662 28;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -184,8 +185,7 @@ Begin MESQUITE;
 								tell It;
 									setContextID 401.982328606974.8040224577453098533;
 								endTell;
-								forgetAssociation ;
-								getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
+								setSimulator  #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 								tell It;
 									getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
 									tell It;
@@ -193,12 +193,13 @@ Begin MESQUITE;
 										toggleExponential on;
 									endTell;
 								endTell;
+								forgetAssociation ;
 							endTell;
 							setSeed 983165680400;
 						endTell;
 						setContained 1;
 						toggleScale on;
-						setInitialOffsetX -402;
+						setInitialOffsetX -384;
 						setInitialOffsetY -170;
 						desuppress ;
 						getEmployee #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
@@ -206,6 +207,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -214,6 +216,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Blue;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -222,6 +225,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -231,6 +235,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -238,11 +247,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -262,8 +266,7 @@ Begin MESQUITE;
 					tell It;
 						setContextID 401.982328606974.8040224577453098533;
 					endTell;
-					forgetAssociation ;
-					getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
+					setSimulator  #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 					tell It;
 						getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
 						tell It;
@@ -271,6 +274,7 @@ Begin MESQUITE;
 							toggleExponential on;
 						endTell;
 					endTell;
+					forgetAssociation ;
 				endTell;
 				setSeed 983165461875;
 			endTell;
@@ -294,18 +298,19 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 466 362;
-					setLocation 4 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 618 404;
+					setLocation 24 422;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					itemsByValues;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
@@ -334,16 +339,15 @@ Begin MESQUITE;
 			setPrevFileName '03-outOfAfrica.nex';
 			getWindow;
 			tell It;
-					setSize 618 231;
-					setLocation 37 496;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'At upper left is a chart showing the number of gene trees that show one more (+1), one less (-1), or the same (0) number of steps with the special character indicating Eurasian rooting than with that indicating African rooting.  (See the previous example file for explanation.) Thus, a +1 indicates the gene tree prefers to root in Africa, a -1 that it prefers to root in Eurasia. ^n^nThe gene trees of the chart are simulated by neutral coalescence within the population tree above.  If you scroll to another population tree using the blue arrows above the tool palette, you''ll get trees with stronger bottlenecks.  Note that at the strongest bottleneck, most of the gene trees show humans rooting in Africa.';
+					setSize 599 247;
+					setLocation 23 26;
+					setFont SanSerif;
+					setFontSize 10;
+				setExplanation 'The chart shows the number of gene trees that show one more (+1), one less (-1), or the same (0) number of steps with the special character indicating Eurasian rooting than with that indicating African rooting.  (See the previous example file for explanation.) Thus, a +1 indicates the gene tree prefers to root in Africa, a -1 that it prefers to root in Eurasia. ^n^nThe gene trees of the chart are simulated by neutral coalescence within the population tree in the tree window.  If you scroll to another population tree using the blue arrows above the tool palette, you''ll get trees with stronger bottlenecks.  Note that at the strongest bottleneck, most of the gene trees show humans rooting in Africa.';
 				setTitle Probability_of_African_root;
 				toggleFileNames off;
 				setPrevButtonName Previous;

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:59:53 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed Aug 22 09:11:28 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE populations;
@@ -7,6 +7,7 @@ BEGIN TAXA;
 	TAXLABELS
 		Africa Eurasia chimpanzee 
 	;
+	BLOCKID WM1148e575fb845;
 
 END;
 
@@ -18,12 +19,12 @@ BEGIN TAXA;
 	TAXLABELS
 		A1 A2 A3 A4 A5 A6 A7 A8 A9 A10 E1 E2 E3 E4 E5 E6 E7 E8 E9 E10 C1 C2 C3 C4 C5 
 	;
+	BLOCKID WM1148e575fd146;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  population_source;
 	LINK TAXA = genes_sampled;
 	DIMENSIONS  NCHAR=3;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
@@ -57,6 +58,8 @@ BEGIN CHARACTERS;
 	C5   ?10
 
 ;
+		BLOCKID WM1148e575feb0;
+
 
 END;
 BEGIN TaxaAssociation;
@@ -74,7 +77,6 @@ END;
 
 
 BEGIN TREES;
-	Title Population_trees;
 	LINK Taxa = populations;
 	TRANSLATE
 		1 Africa,
@@ -89,7 +91,7 @@ END;
 
 BEGIN LABELS;
 TAXAGROUPLABEL Africa COLOR = (RGB 1.0 0.70196078 0.12941176) ;
-TAXAGROUPLABEL Eurasia COLOR = (RGB 0.058823551 1.0 0.603921555) ;
+TAXAGROUPLABEL Eurasia COLOR = (RGB 0.05882353 1.0 0.60392157) ;
 TAXAGROUPLABEL Chimp COLOR = (RGB 0.50980392 0.13725490 1.0) ;
 
 
@@ -121,12 +123,12 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 703462755303490792;
-			setID 1 2887061083080516111;
+			setID 0 703462755303490792 WM1148e575fb845;
+			setID 1 2887061083080516111 WM1148e575fd146;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 7325247286052868622;
+			setID 0 7325247286052868622 WM1148e575feb0;
 			checksum 0 1674843106;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
@@ -138,15 +140,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 336 163;
-					setLocation 31 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 365 156;
+					setLocation 404 26;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -164,15 +166,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 355 616;
-					setLocation 387 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 355 658;
+					setLocation 781 29;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -190,15 +192,14 @@ Begin MESQUITE;
 			setPrevFileName '../11-geneInSpecies2.nex';
 			getWindow;
 			tell It;
-					setSize 355 348;
-					setLocation 21 289;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 358 269;
+					setLocation 31 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'This example shows how large population size can confuse estimations of ancestral localities in a gene tree.  For instance, consider the rooting of a human gene tree in Africa as evidence for the "Out of Africa" hypothesis.  An alternative interpretation is that Africa had a persistently larger population size than Eurasia.^n^nIn this ficticious data file there are three populations, Africa and Eurasia for humans and a third population, chimps.  A second block of taxa represents sampled genes, labeled A1-A10 (for African samples), E1-E10 (for Eurasian samples), and C1-C5 (for chimp samples).  The gene samples are placed in colored partitions to make it easier to see how they fall in the simulations.';
 				setTitle Out_of_Africa;

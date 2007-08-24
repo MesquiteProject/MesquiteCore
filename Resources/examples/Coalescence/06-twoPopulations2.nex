@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:59:30 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed Aug 22 09:07:26 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Populations;
@@ -7,6 +7,7 @@ BEGIN TAXA;
 	TAXLABELS
 		East West 
 	;
+	BLOCKID WM1148e5376f035;
 
 END;
 
@@ -18,13 +19,14 @@ BEGIN TAXA;
 	TAXLABELS
 		East1 East2 East3 East4 West1 West2 West3 West4 West5 
 	;
+	BLOCKID WM1148e5376fa36;
 
 END;
 
 
 BEGIN LABELS;
-TAXAGROUPLABEL Eastern_samples COLOR = (RGB 0.203921555 1.0 0.42745098) ;
-TAXAGROUPLABEL Western_Samples COLOR = (RGB 1.0 0.81568627 0.203921555) ;
+TAXAGROUPLABEL Eastern_samples COLOR = (RGB 0.20392157 1.0 0.42745098) ;
+TAXAGROUPLABEL Western_Samples COLOR = (RGB 1.0 0.81568627 0.20392157) ;
 
 
 END;
@@ -35,7 +37,6 @@ TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Eastern_samples :  1 -  4, We
 END;
 
 BEGIN TREES;
-	Title 'Trees block 2 from 06-twoPopulations2.nex';
 	LINK Taxa = Populations;
 	TRANSLATE
 		1 East,
@@ -73,8 +74,8 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 7114850956850836156;
-			setID 1 4791169349505029750;
+			setID 0 7114850956850836156 WM1148e5376f035;
+			setID 1 4791169349505029750 WM1148e5376fa36;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -89,19 +90,18 @@ Begin MESQUITE;
 				setAssignedID 1533.971300618301.6347497454875668222;
 				getTreeWindow;
 				tell It;
-					setSize 467 253;
-					setLocation 5 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 467 413;
+					setLocation 565 29;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -131,8 +131,7 @@ Begin MESQUITE;
 								tell It;
 									setContextID 1533.971300618301.6347497454875668222;
 								endTell;
-								forgetAssociation ;
-								getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
+								setSimulator  #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 								tell It;
 									getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
 									tell It;
@@ -140,6 +139,7 @@ Begin MESQUITE;
 										toggleExponential on;
 									endTell;
 								endTell;
+								forgetAssociation ;
 							endTell;
 							setSeed 984411288026;
 						endTell;
@@ -153,6 +153,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -161,6 +162,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Blue;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -171,6 +173,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -180,6 +183,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -187,11 +195,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -211,8 +214,7 @@ Begin MESQUITE;
 					tell It;
 						setContextID 1533.971300618301.6347497454875668222;
 					endTell;
-					forgetAssociation ;
-					getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
+					setSimulator  #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 					tell It;
 						getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
 						tell It;
@@ -220,6 +222,7 @@ Begin MESQUITE;
 							toggleExponential on;
 						endTell;
 					endTell;
+					forgetAssociation ;
 				endTell;
 				setSeed 984411288443;
 			endTell;
@@ -234,18 +237,19 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 462 259;
-					setLocation 13 357;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 513 323;
+					setLocation 10 515;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					itemsByValues;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
@@ -274,16 +278,15 @@ Begin MESQUITE;
 			setPrevFileName '05-twoPopulations.nex';
 			getWindow;
 			tell It;
-					setSize 400 421;
-					setLocation 482 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'The degree to which the gene tree is expected to show a clean separation of genes sampled in the West from those sampled in the East depends on the time since separation of the populations.  Slatkin and Maddison (1989) suggested using as a statistic the number of parsimony steps in a character for the genes whose states represent the source population of the genes (i.e., location sampled).  The time since separation can be estimated by measuring "s" on a reconstructed gene tree, and comparing it to the expected s values for gene trees that have undergone neutral coalescence in populations with varying times since separation.  (This assumes there has not been ongoing gene flow and that the two populations have maintained similar population sizes.).  ^n^nAt left is a chart of the s value for a sample of 100 gene trees simulated within the population tree by coalescence.  An "s" value of 1 would mean that at least one of the population''s sampled genes were monophyletic on the gene tree.  When the populations have been split for 0.5 generations times the effective population size (Ne = 100), as shown initially here, the most common s is 2.^n^nBy changing the branch lengths in the population tree, you can affect the value of s in the chart.  To change the branch lengths, go to the the "Assign All Branch Lengths" item in the Alter/Transform Branch Lengths submenu of the Tree menu of the tree window.^n^nTo duplicate the chart at left, choose Analysis>New Bar & Line Chart for>Trees, check Show Secondary Choices in the dialog box that appears, indicate s of Slatkin and Maddison as the value to be calculated, the tree source to be Simulate Tree, and the simulator to be Contained Coalescence.';
+					setSize 498 359;
+					setLocation 5 22;
+					setFont SanSerif;
+					setFontSize 10;
+				setExplanation 'The degree to which the gene tree is expected to show a clean separation of genes sampled in the West from those sampled in the East depends on the time since separation of the populations.  Slatkin and Maddison (1989) suggested using as a statistic the number of parsimony steps in a character for the genes whose states represent the source population of the genes (i.e., location sampled).  The time since separation can be estimated by measuring "s" on a reconstructed gene tree, and comparing it to the expected s values for gene trees that have undergone neutral coalescence in populations with varying times since separation.  (This assumes there has not been ongoing gene flow and that the two populations have maintained similar population sizes.).  ^n^nHere is a chart of the s value for a sample of 100 gene trees simulated within the population tree by coalescence.  An "s" value of 1 would mean that at least one of the population''s sampled genes were monophyletic on the gene tree.  When the populations have been split for 0.5 generations times the effective population size (Ne = 100), as shown initially here, the most common s is 2.^n^nBy changing the branch lengths in the population tree, you can affect the value of s in the chart.  To change the branch lengths, go to the the "Assign All Branch Lengths" item in the Alter/Transform Branch Lengths submenu of the Tree menu of the tree window.^n^nTo duplicate the chart, choose Analysis>New Bar & Line Chart for>Trees, check Show Secondary Choices in the dialog box that appears, indicate s of Slatkin and Maddison as the value to be calculated, the tree source to be Simulate Tree, and the simulator to be Contained Coalescence.';
 				setTitle Coalescence_depth;
 				toggleFileNames off;
 				setPrevButtonName Previous;

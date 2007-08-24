@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:56:09 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Tue Aug 21 23:06:43 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Species;
@@ -7,6 +7,7 @@ BEGIN TAXA;
 	TAXLABELS
 		speciesA speciesB speciesC 
 	;
+	BLOCKID WM1148c2dd53525;
 
 END;
 
@@ -18,6 +19,7 @@ BEGIN TAXA;
 	TAXLABELS
 		geneA1 geneA2 geneB geneC1 geneC2 
 	;
+	BLOCKID WM1148c2dd54126;
 
 END;
 
@@ -48,8 +50,8 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 2038936534183152982;
-			setID 1 2451688679550742169;
+			setID 0 2038936534183152982 WM1148c2dd53525;
+			setID 1 2451688679550742169 WM1148c2dd54126;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -60,15 +62,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 201 199;
-					setLocation 9 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 550 287;
+					setLocation 621 416;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -86,15 +88,15 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 201 204;
-					setLocation 9 239;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 550 287;
+					setLocation 23 411;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -112,15 +114,14 @@ Begin MESQUITE;
 			setPrevFileName '01-associationsHow1.nex';
 			getWindow;
 			tell It;
-					setSize 550 295;
-					setLocation 242 31;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 550 295;
+					setLocation 9 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'To indicate what genes belong to what species, you need to define a correspondence between taxa in the two taxa blocks (genes and species).^n^nI created this file as follows.  First, I chose "New" from the File menu.  I indicated the file name in the file dialog box.  Then, when the dialog box came up asking me about a set of taxa, I entered the name ("Species"), and how many taxa (3).  In the taxa list window (e.g., at left), I renamed the taxa (species A, B, C). Next, I made the second set of taxa (e.g., "Genes") by selecting the "New set of taxa" menu item in the Taxa&Trees menu.^n^nNext, I began to indicate how the one set of taxa fits into the other set of taxa.  To do this, I created an "TaxaAssociation" block in the data file.  I did this by selecting "New Association" in the Taxa&Trees menu.  I was asked to identify the two sets of taxa to be associated (usually it''s easier to choose species first), and presented with the List of Taxa window for Species.  ^n^nThe next example file shows how to edit the Taxa Association.';
 				setTitle Building_a_Taxa_Association;

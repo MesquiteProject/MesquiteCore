@@ -70,8 +70,8 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     MesquiteParameter r1p;
     MesquiteParameter a0p;
     MesquiteParameter a1p;
-    MesquiteParameter t01p;
-    MesquiteParameter t10p;
+    MesquiteParameter q01p;
+    MesquiteParameter q10p;
     MesquiteParameter[] paramsForExploration;
     MesquiteParameter[] previousParams;
     ParametersExplorer explorer;
@@ -93,10 +93,10 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         r1p = new MesquiteParameter("r1", "Rate of net diversifiation with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
         a0p = new MesquiteParameter("a0", "Ratio of speciation to extinction in state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
         a1p = new MesquiteParameter("a1", "Rate of speciation to extinction in state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-        t01p = new MesquiteParameter("r01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-        t10p = new MesquiteParameter("r10", "Rate of 1->0 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+        q01p = new MesquiteParameter("q01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+        q10p = new MesquiteParameter("q10", "Rate of 1->0 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
 
-        paramsForExploration= new MesquiteParameter[]{r0p, r1p, a0p, a1p, t01p, t10p};
+        paramsForExploration= new MesquiteParameter[]{r0p, r1p, a0p, a1p, q01p, q10p};
         speciesModel = new DiversificationCategModel();
         speciesModel.setParams(paramsForExploration);
 
@@ -425,21 +425,21 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             return MesquiteDouble.unassigned;
         final double d = model.getSRate(0)-model.getSRate(1)+model.getERate(1)-model.getERate(0);
         final double noise = (model.getSRate(0)+model.getSRate(1)+model.getERate(1)+model.getERate(0))*1E-14;
-        final double r01 = model.getCRate(0);
-        final double r10 = model.getCRate(1);
+        final double q01 = model.getCRate(0);
+        final double q10 = model.getCRate(1);
         if (Math.abs(d ) < noise){
-            if (r01 + r10 == 0)
+            if (q01 + q10 == 0)
                 return 0.5;
-            return r10/(r01+r10);
+            return q10/(q01+q10);
         }
-        double part = d - r01 - r10;
-        part = part*part + 4*d*r10;
+        double part = d - q01 - q10;
+        part = part*part + 4*d*q10;
         if (part >=0)
             part = Math.sqrt(part);
         else
             return MesquiteDouble.unassigned;
-        final double plus = (r01 + r10 - d + part) / (-2*d);
-        final double minus = (r01 + r10 - d - part) / (-2*d);            
+        final double plus = (q01 + q10 - d + part) / (-2*d);
+        final double minus = (q01 + q10 - d - part) / (-2*d);            
         if (minus < 0 || minus >1)
             return plus;
         else if (plus < 0 || plus >1)
@@ -452,7 +452,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     /*
      Options:
      1. calculation determined entirely by params.  Constraints etc. determined within params array which is contained in species model
-     2. predefined: constraint s0-e0 = s1-e1
+     2. predefined: constraint lambda0-mu0 = lambda1-mu1
     /*.................................................................................................................*/
     public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteParameter[] params, MesquiteNumber prob, MesquiteString resultString) {  
         if (speciesModel==null || obsStates==null || prob == null)
@@ -475,7 +475,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         else
             workingMaxState = observedStates.getMaxState()+1; 
         lastMaxState = workingMaxState;
-        speciesModel.getParams(previousParams);
+        previousParams = speciesModel.getOriginalParams(previousParams);
         speciesModel.setParams(params);
         double currentStep = stepCount;
 
@@ -716,7 +716,11 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
 
 		if (prob!=null){
 			prob.setValue(negLogLikelihood);
-			prob.copyAuxiliaries(params);
+			Debugg.println("species model " + speciesModel);
+			tempParams = MesquiteParameter.cloneArray(params, tempParams);
+			tempParams = speciesModel.getCurrentParams(tempParams);
+			Debugg.println("PARAMS " + MesquiteParameter.toString(tempParams));
+			prob.copyAuxiliaries(tempParams);
 			prob.setName("BiSSE (Net Div) -lnLikelihood");
 		}
 
@@ -732,7 +736,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         lastResultString = tree.getName() + "\t" + obsStates.getName() +"\t" + speciesModel.toStringForAnalysis() + "\t" + MesquiteDouble.toString(negLogLikelihood);
         speciesModel.setParams(previousParams);
     }
-
+    MesquiteParameter[] tempParams;
     int lastMaxState = 1;
     long count = 0;
 
@@ -867,15 +871,15 @@ class DiversificationCategModel implements DESystem  {
         double q01 = parameters[4].getValue();
         double q10 = parameters[5].getValue();
         
-        double s0 = r0/(1-a0);
-        double e0 = r0*a0/(1-a0);
-        double s1 = r1/(1-a1);
-        double e1 = r1*a1/(1-a1);
+        double lambda0 = r0/(1-a0);
+        double mu0 = r0*a0/(1-a0);
+        double lambda1 = r1/(1-a1);
+        double mu1 = r1*a1/(1-a1);
                 
-        result[0] = -(e0+q01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + q01*extProb1; 
-        result[1] = -(e1+q10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + q10*extProb0;            
-        result[2] = -(e0+q01+s0)*dataProb0 + 2*s0*extProb0*dataProb0 + q01*dataProb1;
-        result[3] = -(e1+q10+s1)*dataProb1 + 2*s1*extProb1*dataProb1 + q10*dataProb0;
+        result[0] = -(mu0+q01+lambda0)*extProb0 + lambda0*extProb0*extProb0 + mu0 + q01*extProb1; 
+        result[1] = -(mu1+q10+lambda1)*extProb1 + lambda1*extProb1*extProb1 + mu1 + q10*extProb0;            
+        result[2] = -(mu0+q01+lambda0)*dataProb0 + 2*lambda0*extProb0*dataProb0 + q01*dataProb1;
+        result[3] = -(mu1+q10+lambda1)*dataProb1 + 2*lambda1*extProb1*dataProb1 + q10*dataProb0;
         
         return result;
     }
@@ -960,11 +964,13 @@ class DiversificationCategModel implements DESystem  {
         return true;
     }
 
-    public void getParams(MesquiteParameter[] params){
-        if (params != null)
-            params = MesquiteParameter.cloneArray(original, params);
+    public MesquiteParameter[] getOriginalParams(MesquiteParameter[] params){
+        return MesquiteParameter.cloneArray(original, params);
     }
-    
+    public MesquiteParameter[] getCurrentParams(MesquiteParameter[] params){
+        return MesquiteParameter.cloneArray(parameters, params);
+    }
+   
     
     public double getR(int state){
         if (state == 0)

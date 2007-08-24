@@ -33,12 +33,12 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	BiSSELikelihoodCalculator calcTask;
 
 
-	MesquiteParameter e0;   //user specified extinction rate in state 0
-	MesquiteParameter s0;   //user specified speciation rate in state 0
-	MesquiteParameter e1;   //user specified extinction rate in state 1
-	MesquiteParameter s1;   //user specified speciation rate in state 1
-	MesquiteParameter t01;   //user specified transition rate from state 0 to state 1
-	MesquiteParameter t10;   //user specifiedtransition rate from state 1 to state 0
+	MesquiteParameter mu0;   //user specified extinction rate in state 0
+	MesquiteParameter lambda0;   //user specified speciation rate in state 0
+	MesquiteParameter mu1;   //user specified extinction rate in state 1
+	MesquiteParameter lambda1;   //user specified speciation rate in state 1
+	MesquiteParameter q01;   //user specified transition rate from state 0 to state 1
+	MesquiteParameter q10;   //user specifiedtransition rate from state 1 to state 0
 
 	MesquiteParameter[] params;
 	MesquiteParameter[] paramsCopy;
@@ -54,21 +54,21 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 			return sorry(getName() + " couldn't start because no integrating likelihood calculator module obtained.");
 		double def = MesquiteDouble.unassigned;
 		//following is for the parameters explorer
-		s0 = new MesquiteParameter("s0", "Rate of speciation with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
-		s1 = new MesquiteParameter("s1", "Rate of speciation with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
-		e0 = new MesquiteParameter("e0", "Rate of extinction with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
-		e1 = new MesquiteParameter("e1", "Rate of extinction with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
-		t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
-		t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
-		params = new MesquiteParameter[]{s0, s1, e0, e1, t01, t10};
+		lambda0 = new MesquiteParameter("lambda0", "Rate of speciation with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		lambda1 = new MesquiteParameter("lambda1", "Rate of speciation with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		mu0 = new MesquiteParameter("mu0", "Rate of extinction with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		mu1 = new MesquiteParameter("mu1", "Rate of extinction with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		q01 = new MesquiteParameter("q01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		q10 = new MesquiteParameter("q10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
+		params = new MesquiteParameter[]{lambda0, lambda1, mu0, mu1, q01, q10};
 		reportModes = new StringArray(7);  
 		reportModes.setValue(0, "Likelihood");  //the strings passed will be the menu item labels
-		reportModes.setValue(1, s0.getName());  //the strings passed will be the menu item labels
-		reportModes.setValue(2, s1.getName());  //the strings passed will be the menu item labels
-		reportModes.setValue(3, e0.getName());  //the strings passed will be the menu item labels
-		reportModes.setValue(4, e1.getName());  //the strings passed will be the menu item labels
-		reportModes.setValue(5, t01.getName());  //the strings passed will be the menu item labels
-		reportModes.setValue(6, t10.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(1, lambda0.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(2, lambda1.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(3, mu0.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(4, mu1.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(5, q01.getName());  //the strings passed will be the menu item labels
+		reportModes.setValue(6, q10.getName());  //the strings passed will be the menu item labels
 		reportModeName = new MesquiteString(reportModes.getValue(reportMode));  //this helps the menu keep track of checkmenuitems
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Report BiSSE Results As", makeCommand("setReportMode", this), reportModes); 
 		mss.setSelected(reportModeName);
@@ -92,9 +92,9 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 		if (params == null)
 			return false;
 		ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", params, null, 2, 2, false);
-		dlog.appendToHelpString("Parameters for BiSSE model.  Indicate the rates of speciation when in state 0 (s0), speciation when in state 1 (s1), ");
-		dlog.appendToHelpString("rates of extinction when in state 0 (e0), extinction when in state 1 (e1), ");
-		dlog.appendToHelpString("rates of character change 0 to 1(r01), and rates of character change 1 to 0 (r10). ");
+		dlog.appendToHelpString("Parameters for BiSSE model.  Indicate the rates of speciation when in state 0 (lambda0), speciation when in state 1 (lambda1), ");
+		dlog.appendToHelpString("rates of extinction when in state 0 (mu0), extinction when in state 1 (mu1), ");
+		dlog.appendToHelpString("rates of character change 0 to 1(q01), and rates of character change 1 to 0 (q10). ");
 		dlog.completeAndShowDialog(true);
 
 		boolean ok = (dlog.query()==0);
@@ -152,16 +152,16 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 			}
 			else {
 				parser.setString(arguments);
-				boolean changed =  setParam(s0, params, parser);
-				boolean more = setParam(s1, params, parser);
+				boolean changed =  setParam(lambda0, params, parser);
+				boolean more = setParam(lambda1, params, parser);
 				changed = changed || more;
-				more = setParam(e0, params, parser);
+				more = setParam(mu0, params, parser);
 				changed = changed || more;
-				more = setParam(e1, params, parser);
+				more = setParam(mu1, params, parser);
 				changed = changed || more;
-				more = setParam(t01, params, parser);
+				more = setParam(q01, params, parser);
 				changed = changed || more;
-				more = setParam(t10, params, parser);
+				more = setParam(q10, params, parser);
 				changed = changed || more;
 				if (changed && !MesquiteThread.isScripting())
 					parametersChanged(); //this tells employer module that things changed, and recalculation should be requested

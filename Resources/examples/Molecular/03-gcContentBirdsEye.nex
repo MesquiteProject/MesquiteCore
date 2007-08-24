@@ -1,18 +1,17 @@
 #NEXUS
-[written Wed May 17 13:40:56 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Tue Aug 21 19:49:30 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=101;
 	TAXLABELS
 		Sand_S127W Papacheus_093X Pshoshoensis_430Z Plongimanus_510Z ustul_RailX_211Z ustul_Mar_551Z cfsign_AV_570Z signat_684Z amicus_387Z alachua_527X cognatus_294W peckhami_382X elegans_213Z conjun_179AX geron_60Z doroth_LS_621Z huast_Chp_623X cfparat_88W venat_119Z carolin_134X cocker_108Z splend_525Z ocala_612Z pugill_459Z hallini_37Z cambrid_443Z fall_TX_288Z fallax_Chp_647X fallax_WComp_648W oregon_05Z icenog_196Z taras_643Z cftaras_554Z texanus_494X altan_AZ_124Z altan_Chih_325Z altan_Oax_645W cfsugill_Nay_281X cfpoch_Cham_639W cfpoch_LG_638W cfpoch_LY_608Z yucun_636Z banksi_104X amer_WM_316W amer_DG_345X bulb_Long_536Z waughi_129W cfsans_349W sans_368W kubai_540W tars_KR_377Z tars_Baja_591Z must_BRB_365X ophrys_SL_352X tuber_WP_464X kawini_592X notial_471X jucun_395Z calcalc_524Z virid_470X calmadd_16Z cfcalc_546W trim_559X orbus_27Z morat_485Z cfmor_ET_611W cfmor_LY_667W cfmor_Cham_662Z divar_563W caldiv_ES_600Z cyncity_468Z silvcty_285W doss_Chir_274W doss_Yec_531X veliv_LS_659X veliv_Teq_661Z fort_290Z aztec_218W cffest_517Z klaus_Heuco_502Z klaus_Bis_390Z zebra_442W tlax_674X virg_Pach_652W virg_Cat_167Z virg_Swiss_682Z mexic_496Z carp_LS_670Z boreal_130Z coec_96Z cusp_550Z coecgrp_Mag_580Z pyr_10Z ball_383X cfanep_576Z anep_LB_557Z anep_ITT_314Z ammo_556Z cfpyrr_578X brunn_543X schlin_160X 
 	;
+	BLOCKID WM1148b0538fb3;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  'Matrix in file "03-gcContentBirdsEye.nex"';
 	DIMENSIONS  NCHAR=716;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 CHARSTATELABELS 
@@ -224,11 +223,13 @@ CHARSTATELABELS
 ;
 
 
+		BLOCKID WM1148b0539570;
+
 
 END;
 
 BEGIN LABELS;
-	CHARGROUPLABEL introns COLOR = (RGB 0.886274549 0.003921555 0.286274549) ;
+	CHARGROUPLABEL introns COLOR = (RGB 0.88627451 0.00392157 0.28627451) ;
 
 
 END;
@@ -243,8 +244,6 @@ CHARPARTITION * UNTITLED  =  introns :  245 -  391 574 -  665;
 END;
 
 BEGIN TREES;
-	Title 'Trees from "03-gcContentBirdsEye.nex"';
-	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Sand_S127W,
 		2 Papacheus_093X,
@@ -381,11 +380,11 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 5362004184182154199;
+			setID 0 5362004184182154199 WM1148b0538fb3;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 5453088708553656046;
+			setID 0 5453088708553656046 WM1148b0539570;
 			checksum 0 2175300760;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -394,15 +393,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 913 468;
-					setLocation 1 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 913 488;
+					setLocation 459 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -437,6 +436,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -448,7 +451,8 @@ Begin MESQUITE;
 				endTell;
 				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
 				tell It;
-					gapCosts 8 3;
+					gapCosts 8 3 2 2;
+					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
 				endTell;
 			endTell;
 		endTell;
@@ -458,15 +462,14 @@ Begin MESQUITE;
 			setPrevFileName '02-gcContentMatrix.nex';
 			getWindow;
 			tell It;
-					setSize 288 158;
-					setLocation 298 539;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 449 379;
+					setLocation 1 22;
+					setFont SanSerif;
+					setFontSize 10;
 					setActive;
 				setExplanation 'In this "bird''s eye" view of the data matrix, the columns are made very narrow and the ^nstate names are suppressed.  The moving window for the GC bias coloring is 15 bases.';
 				setTitle GC_bias;

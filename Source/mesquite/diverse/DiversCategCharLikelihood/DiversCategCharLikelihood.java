@@ -34,8 +34,8 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
     MesquiteParameter a0;   //user specified extinction/speciation ratio in state 0
     MesquiteParameter r1;   //user specified diversification rate in state 1
     MesquiteParameter a1;   //user specified extinction/speciation ratio in state 1
-    MesquiteParameter t01;   //user specified transition rate from state 0 to state 1
-    MesquiteParameter t10;   //user specifiedtransition rate from state 1 to state 0
+    MesquiteParameter q01;   //user specified transition rate from state 0 to state 1
+    MesquiteParameter q10;   //user specifiedtransition rate from state 1 to state 0
 
     MesquiteParameter[] params;
     MesquiteParameter[] paramsCopy;
@@ -52,9 +52,9 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
         r1 = new MesquiteParameter("r1", "Rate of net diversification with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
         a0 = new MesquiteParameter("a0", "Extinction/Speciation ratio with state 0", def, 0, MesquiteDouble.infinite, 0.000, 1);
         a1 = new MesquiteParameter("a1", "Extinction/Speciation ratio with state 1", def, 0, MesquiteDouble.infinite, 0.000, 1);
-        t01 = new MesquiteParameter("r01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
-        t10 = new MesquiteParameter("r10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
-        params = new MesquiteParameter[]{r0, r1, a0, a1, t01, t10};
+        q01 = new MesquiteParameter("q01", "Rate of 0->1 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
+        q10 = new MesquiteParameter("q10", "Rate of 1->0 changes", def, 0, MesquiteDouble.infinite, 0.000, 1);
+        params = new MesquiteParameter[]{r0, r1, a0, a1, q01, q10};
         if (!MesquiteThread.isScripting()){
 			if (!showDialog())
 				return sorry(getName() + " couldn't start because parameters not specified.");
@@ -72,7 +72,7 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
         ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", params, null, 2, 2, false);
 		dlog.appendToHelpString("Parameters for BiSSE model., reparameterized as r = net diversification  (speciation-extinction) and a = speciation/extinction ratio.  Indicate the rates of net diversification when in state 0 (r0), and when in state 1 (r1), ");
 		dlog.appendToHelpString("speciation/extinction ratio when in state 0 (a0), ratio when in state 1 (a1), ");
-		dlog.appendToHelpString("rates of character change 0 to 1(r01), and rates of character change 1 to 0 (r10). ");
+		dlog.appendToHelpString("rates of character change 0 to 1(q01), and rates of character change 1 to 0 (q10). ");
       dlog.completeAndShowDialog(true);
         boolean ok = (dlog.query()==0);
         if (ok) 
@@ -133,9 +133,9 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
                 changed = changed || more;
                 more = setParam(a1, params, parser);
                 changed = changed || more;
-                more = setParam(t01, params, parser);
+                more = setParam(q01, params, parser);
                 changed = changed || more;
-                more = setParam(t10, params, parser);
+                more = setParam(q10, params, parser);
                 changed = changed || more;
                 if (changed && !MesquiteThread.isScripting())
                     parametersChanged(); //this tells employer module that things changed, and recalculation should be requested

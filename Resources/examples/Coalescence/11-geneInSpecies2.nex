@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat May 06 21:59:49 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Wed Aug 22 09:10:59 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE genes;
@@ -7,6 +7,7 @@ BEGIN TAXA;
 	TAXLABELS
 		g0 g1 g2 g3 g4 g5 g6 g7 g8 g9 g10 g11 g12 g13 g14 g15 
 	;
+	BLOCKID WM1148e56383f43;
 
 END;
 
@@ -18,6 +19,7 @@ BEGIN TAXA;
 	TAXLABELS
 		speciesA speciesB speciesC speciesD speciesE 
 	;
+	BLOCKID WM1148e56385444;
 
 END;
 
@@ -39,7 +41,6 @@ END;
 
 
 BEGIN CHARACTERS;
-	TITLE  'Matrix in file "11-geneInSpecies2.nex"';
 	LINK TAXA = genes;
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3 4";
@@ -62,10 +63,11 @@ BEGIN CHARACTERS;
 	g15  4
 
 ;
+		BLOCKID WM1148e5638680;
+
 
 END;
 BEGIN TREES;
-	Title 'Trees block 2 from 11-geneInSpecies2.nex';
 	LINK Taxa = genes;
 	TRANSLATE
 		1 g0,
@@ -90,7 +92,6 @@ END;
 
 
 BEGIN TREES;
-	Title 'Trees block 2 from 11-geneInSpecies2.nex';
 	LINK Taxa = species;
 	TRANSLATE
 		1 speciesA,
@@ -112,6 +113,12 @@ BEGIN NOTES;
 
 END;
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1;
 
@@ -121,24 +128,18 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 9111955463946540057;
-			setID 1 2657072223882610337;
+			setID 0 9111955463946540057 WM1148e56383f43;
+			setID 1 2657072223882610337 WM1148e56385444;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 5995841124927942431;
+			setID 0 5995841124927942431 WM1148e5638680;
 			checksum 0 392543930;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
@@ -154,19 +155,18 @@ Begin MESQUITE;
 				setAssignedID 1937.971300798628.1753245341533659733;
 				getTreeWindow;
 				tell It;
-					setSize 535 340;
-					setLocation 9 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 619 554;
+					setLocation 20 342;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -196,8 +196,7 @@ Begin MESQUITE;
 								tell It;
 									setContextID 1937.971300798628.1753245341533659733;
 								endTell;
-								forgetAssociation ;
-								getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
+								setSimulator  #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 								tell It;
 									getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
 									tell It;
@@ -205,6 +204,7 @@ Begin MESQUITE;
 										toggleExponential on;
 									endTell;
 								endTell;
+								forgetAssociation ;
 							endTell;
 							setSeed 984412357003;
 						endTell;
@@ -218,6 +218,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -226,6 +227,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Blue;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -236,6 +238,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -245,6 +248,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -252,11 +260,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -277,8 +280,7 @@ Begin MESQUITE;
 					tell It;
 						setContextID 1937.971300798628.1753245341533659733;
 					endTell;
-					forgetAssociation ;
-					getEmployee #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
+					setSimulator  #mesquite.coalesce.ContainedCoalescSim.ContainedCoalescSim;
 					tell It;
 						getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
 						tell It;
@@ -286,6 +288,7 @@ Begin MESQUITE;
 							toggleExponential on;
 						endTell;
 					endTell;
+					forgetAssociation ;
 				endTell;
 				setSeed 984412357678;
 			endTell;
@@ -299,6 +302,7 @@ Begin MESQUITE;
 				setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 				tell It;
 					toggleLabels off;
+					toggleGray off;
 				endTell;
 				setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
 				tell It;
@@ -322,15 +326,15 @@ Begin MESQUITE;
 				toggleWeights on;
 				resume ;
 			endTell;
-				setSize 415 606;
-				setLocation 557 22;
-				setFont SanSerif;
-				setFontSize 10;
-				onInfoBar;
+				popOut;
 				setExplanationSize 0;
 				setAnnotationSize 0;
 				setFontIncAnnot 0;
 				setFontIncExp 0;
+				setSize 535 638;
+				setLocation 718 51;
+				setFont SanSerif;
+				setFontSize 10;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 			tell It;
@@ -342,6 +346,7 @@ Begin MESQUITE;
 						stretchToggle off;
 						branchLengthsToggle off;
 						toggleScale on;
+						toggleBroadScale off;
 						toggleCenter off;
 						toggleEven off;
 						namesAngle ?;
@@ -352,6 +357,7 @@ Begin MESQUITE;
 				setBackground White;
 				setBranchColor Black;
 				showNodeNumbers off;
+				showBranchColors on;
 				labelBranchLengths off;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -362,6 +368,7 @@ Begin MESQUITE;
 					toggleColorPartition on;
 					toggleShadePartition off;
 					toggleNodeLabels on;
+					toggleCenterNodeNames off;
 					toggleShowNames on;
 				endTell;
 			endTell;
@@ -373,16 +380,16 @@ Begin MESQUITE;
 			setPrevFileName '10-speciesTreeSearch.nex';
 			getWindow;
 			tell It;
-					setSize 513 228;
-					setLocation 10 462;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'This file shows genes within a species tree.  Above left is the species tree, with a gene tree simulated by coalescence within it.  Note that the branches are 3 units long, where a unit is generations times the effective population size.  At this branch length, most of the time the gene copies coalesce within a species lineage before reaching an ancestor.^n^nAt right are gene trees simulated by coalescence within the species tree.  The character traced reflects the source species (e.g. genes g0, g1, g2, and g3 are assigned state 0 to indicate they are from speciesA).^n^nThere are several stored species trees of different branch lengths (300, 100, 50 and 10 generations).  Scroll through the trees in Tree Window 1 (using scroll at upper left corner of window) to see the effect on how mixed up are the trees at right.  When branch lengths are 0.1 units long, the genes from a single species rarely cluster together.  You can also change branch lengths individually using the ruler tool, or the "Alter/Transform Branch Lengths" submenu in the Tree menu.';
+					setSize 562 205;
+					setLocation 9 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'This file shows genes within a species tree.  In the window with a single tree is the species tree, with a gene tree simulated by coalescence within it.  Note that the branches are 3 units long, where a unit is generations times the effective population size.  At this branch length, most of the time the gene copies coalesce within a species lineage before reaching an ancestor.^n^nIn the multi-tree window are gene trees simulated by coalescence within the species tree.  The character traced reflects the source species (e.g. genes g0, g1, g2, and g3 are assigned state 0 to indicate they are from speciesA).^n^nThere are several stored species trees of different branch lengths (300, 100, 50 and 10 generations).  Scroll through the trees in single Tree Window (using scroll at upper left corner of window) to see the effect on how mixed up are the trees at right.  When branch lengths are 0.1 units long, the genes from a single species rarely cluster together.  You can also change branch lengths individually using the ruler tool, or the "Alter/Transform Branch Lengths" submenu in the Tree menu.';
 				setTitle Branch_lengths;
 				toggleFileNames off;
 				setPrevButtonName Previous;

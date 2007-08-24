@@ -65,10 +65,10 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	boolean[] deleted = null;
 	MesquiteParameter s0p;
 	MesquiteParameter s1p;
-	MesquiteParameter e0p;
-	MesquiteParameter e1p;
-	MesquiteParameter t01p;
-	MesquiteParameter t10p;
+	MesquiteParameter mu0p;
+	MesquiteParameter mu1p;
+	MesquiteParameter q01p;
+	MesquiteParameter q10p;
 //	MesquiteParameter[] parameters;
 	MesquiteParameter[] paramsForExploration;
 	MesquiteParameter[] previousParams;
@@ -88,15 +88,15 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		rng = new RandomBetween(System.currentTimeMillis());
 		//following is for the parameters explorer
 		double def = MesquiteDouble.unassigned;
-		s0p = new MesquiteParameter("s0", "Rate of speciation with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		s1p = new MesquiteParameter("s1", "Rate of speciation with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		e0p = new MesquiteParameter("e0", "Rate of extinction with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		e1p = new MesquiteParameter("e1", "Rate of extinction with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		t01p = new MesquiteParameter("r01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
-		t10p = new MesquiteParameter("r10", "Rate of 1->0 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		s0p = new MesquiteParameter("lambda0", "Rate of speciation with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		s1p = new MesquiteParameter("lambda1", "Rate of speciation with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		mu0p = new MesquiteParameter("mu0", "Rate of extinction with state 0", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		mu1p = new MesquiteParameter("mu1", "Rate of extinction with state 1", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		q01p = new MesquiteParameter("q01", "Rate of 0->1 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
+		q10p = new MesquiteParameter("q10", "Rate of 1->0 changes", 0.1, 0, MesquiteDouble.infinite, 0.000, 1);
 		if (MesquiteThread.isScripting())
 			suspended = true;
-		paramsForExploration= new MesquiteParameter[]{s0p, s1p, e0p, e1p, t01p, t10p};
+		paramsForExploration= new MesquiteParameter[]{s0p, s1p, mu0p, mu1p, q01p, q10p};
 		speciesModel = new SpecExtincCategModel();
 		speciesModel.setParams(paramsForExploration);
 
@@ -480,21 +480,21 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 			return MesquiteDouble.unassigned;
 		final double d = model.getSRate(0)-model.getSRate(1)+model.getERate(1)-model.getERate(0);
 		final double noise = (model.getSRate(0)+model.getSRate(1)+model.getERate(1)+model.getERate(0))*1E-14;
-		final double r01 = model.getCRate(0);
-		final double r10 = model.getCRate(1);
+		final double q01 = model.getCRate(0);
+		final double q10 = model.getCRate(1);
 		if (Math.abs(d ) < noise){
-			if (r01 + r10 == 0)
+			if (q01 + q10 == 0)
 				return 0.5;
-			return r10/(r01+r10);
+			return q10/(q01+q10);
 		}
-		double part = d - r01 - r10;
-		part = part*part + 4*d*r10;
+		double part = d - q01 - q10;
+		part = part*part + 4*d*q10;
 		if (part >=0)
 			part = Math.sqrt(part);
 		else
 			return MesquiteDouble.unassigned;
-		double plus = (r01 + r10 - d + part) / (-2*d);
-		double minus = (r01 + r10 - d - part) / (-2*d);
+		double plus = (q01 + q10 - d + part) / (-2*d);
+		double minus = (q01 + q10 - d - part) / (-2*d);
 		if (minus < 0 || minus >1)
 			return plus;
 		else if (plus < 0 || plus >1)
@@ -506,7 +506,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	/*
 	 Options:
 	 1. calculation determined entirely by params.  Constraints etc. determined within params array which is contained in species model
-	 2. predefined: constraint s0-e0 = s1-e1
+	 2. predefined: constraint lambda0-mu0 = lambda1-mu1
 	 Should return estimated values in the MesquiteParameter array that was input
 	/*.................................................................................................................*/
 	public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteParameter[] params, MesquiteNumber prob, MesquiteString resultString) {  
@@ -514,6 +514,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 			return;
 		lastTree = tree;
 		lastCharDistribution = obsStates;
+		boolean failed = false;
 		prob.setToUnassigned();
 		if (suspended)
 			return;
@@ -567,12 +568,12 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 				int bestS = -1;
 				String attemptName = "";
 				if (evaluate(suggestions1, bundle) < 1e99 && evaluate(suggestions2, bundle) < 1e99){
-					logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
-					logln("Sp/Ext Categ Char: Estimating all 6 parameters, phase 1: step count 100");
+					logln("BiSSE calculations: Tree " + tree.getName() + " and character " + obsStates.getName());
+					logln("BiSSE calculations: Estimating all 6 parameters, phase 1: step count 100");
 					double negLogLikelihood1 = opt.optimize(suggestions1, bundle);
-					logln("Sp/Ext Categ Char: neg. Log Likelihood first attempt:" + negLogLikelihood1);
+					logln("BiSSE calculations: neg. Log Likelihood first attempt:" + negLogLikelihood1);
 					double negLogLikelihood2 = opt.optimize(suggestions2, bundle);
-					logln("Sp/Ext Categ Char: neg. Log Likelihood second attempt:" + negLogLikelihood2);
+					logln("BiSSE calculations: neg. Log Likelihood second attempt:" + negLogLikelihood2);
 					if (negLogLikelihood1 < negLogLikelihood2) {
 						suggestions = suggestions1;
 						bestS = -1;
@@ -621,12 +622,12 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 				}
 				for (int i = 0; i< useIterations; i++){ // 0 to 10
 					if (evaluate(randomSuggestions[i], bundle) < 1e99){  //don't start if it hits surface in NaN-land
-						logln("Sp/Ext Categ Char: random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
+						logln("BiSSE calculations: random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
 						double nLL = opt.optimize(randomSuggestions[i], bundle);
 						stepCount = 1000;
 						nLL = evaluate(randomSuggestions[i], bundle);
 						stepCount = 100;
-						logln("Sp/Ext Categ Char: random attempt " + i + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
+						logln("BiSSE calculations: random attempt " + i + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
 						if (nLL < bestL){
 							bestS = i;
 							bestL = nLL;
@@ -634,20 +635,21 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 						}
 					}
 					else 
-						logln("Sp/Ext Categ Char: random attempt " + i + " failed because starting position had undefined likelihood");
+						logln("BiSSE calculations: random attempt " + i + " failed because starting position had undefined likelihood");
 				}
 				if (bestS>=0)
 					suggestions = randomSuggestions[bestS];
 				if (suggestions == null){
-					logln("Sp/Ext Categ Char: Estimating parameters failed");
+					logln("BiSSE calculations: Estimating parameters failed");
+					failed = true;
 				}
 				else {
-					logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 100; best so far " + evaluate(suggestions, bundle));
+					logln("BiSSE calculations: Estimating parameters, phase 2: step count 100; best so far " + evaluate(suggestions, bundle));
 					stepCount = 1000;
-					logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000; best so far " + evaluate(suggestions, bundle));
-					logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
+					logln("BiSSE calculations: Estimating parameters, phase 2: step count 1000; best so far " + evaluate(suggestions, bundle));
+					logln("BiSSE calculations: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
 					negLogLikelihood = opt.optimize(suggestions, bundle);
-					logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
+					logln("BiSSE calculations: neg. Log Likelihood final attempt:" + negLogLikelihood);
 
 					speciesModel.setParamValuesUsingConstraints(suggestions);
 					modelString  = speciesModel.toString() + " [est.]";
@@ -662,11 +664,11 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 				stepCount = 100;
 				int numParams = speciesModel.numberEffectiveParameters();
 				double[] suggestions1 = new double[numParams];
-				logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
-				logln("Sp/Ext Categ Char: Estimating " + numParams + " free parameters");
+				logln("BiSSE calculations: Tree " + tree.getName() + " and character " + obsStates.getName());
+				logln("BiSSE calculations: Estimating " + numParams + " free parameters");
 				for (int i=0; i < suggestions1.length; i++)
 					suggestions1[i] = 0.1*(i+1);
-				logln("Sp/Ext Categ Char: Estimating parameters, phase 1: step count 100");
+				logln("BiSSE calculations: Estimating parameters, phase 1: step count 100");
 				double bestL = MesquiteDouble.unassigned;
 				int bestS = -1;
 
@@ -690,37 +692,67 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 
 					}
 				}
+				int totalCount = 0;
 				for (int i = 0; i< iterations; i++){ // 0 to 10
+					totalCount++;
 					if (evaluate(randomSuggestions[i], bundle) < 1e99){  //don't start if it hits surface in NaN-land
-						logln("Sp/Ext Categ Char: random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
+						logln("BiSSE calculations: random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
 						double nLL = opt.optimize(randomSuggestions[i], bundle);
 						stepCount = 1000;
 						nLL = evaluate(randomSuggestions[i], bundle);
 						stepCount = 100;
-						logln("Sp/Ext Categ Char: attempt " + i + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
+						logln("BiSSE calculations: attempt " +totalCount + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
 						if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
 							bestS = i;
 							bestL = nLL;
 							attemptName = "random attempt " + i ;
 						}
 					}
-					else 
-						logln("Sp/Ext Categ Char: random attempt " + i + " failed because starting position had undefined likleihood");
+					else {
+						if (totalCount-iterations < 10){
+							logln("BiSSE calculations: random attempt " + totalCount + " failed because starting position had undefined likelihood");
+							i--;  //10 extra free
+						}
+					/*	else if (totalCount-iterations == 10){
+							logln("BiSSE calculations: previous attempt failed; trying suggestions all 0.1");
+							for (int k = 0; k<numParams; k++)
+								randomSuggestions[0][k] = 0.1;
+							i = 0;
+						}
+						else if (totalCount-iterations == 11){
+							logln("BiSSE calculations: previous attempt failed; trying suggestions all 1");
+							for (int k = 0; k<numParams; k++)
+								randomSuggestions[0][k] = 1;
+							i = 0;
+						}
+						else if (totalCount-iterations == 12){
+							logln("BiSSE calculations: previous attempt failed; trying suggestions all 10");
+							for (int k = 0; k<numParams; k++)
+								randomSuggestions[0][k] = 10;
+							i = 0;
+						}*/
+						else {
+							logln("BiSSE calculations: attempt failed because starting position had undefined likelihood");
+							i = iterations;
+						}
+					}
 				}
 				if (bestS>=0){
 					double[] suggestions = randomSuggestions[bestS];
-					logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 100; best so far " + evaluate(suggestions, bundle));
+					logln("BiSSE calculations: Estimating parameters, phase 2: step count 100; best so far " + evaluate(suggestions, bundle));
 					stepCount = 1000;
-					logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000; best so far " + evaluate(suggestions, bundle));
-					logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
+					logln("BiSSE calculations: Estimating parameters, phase 2: step count 1000; best so far " + evaluate(suggestions, bundle));
+					logln("BiSSE calculations: Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
 					negLogLikelihood = opt.optimize(suggestions, bundle);
-					logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
+					logln("BiSSE calculations: neg. Log Likelihood final attempt:" + negLogLikelihood);
 
 					speciesModel.setParamValuesUsingConstraints(suggestions);
 					modelString  = speciesModel.toString() + " [est.]";
 				}
-				else 
-					logln("Sp/Ext Categ Char: Estimating parameters failed");
+				else {
+					logln("BiSSE calculations: Estimating parameters failed");
+					failed = true;
+				}
 
 
 			}
@@ -730,16 +762,16 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 				Object[] bundle = new Object[] {tree, observedStates, speciesModel};
 				stepCount = 100;
 
-				logln("Sp/Ext Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
-				logln("Sp/Ext Categ Char: Estimating one free parameter");
-				logln("Sp/Ext Categ Char: Estimating parameter, phase 1: step count 100");
+				logln("BiSSE calculations: Tree " + tree.getName() + " and character " + obsStates.getName());
+				logln("BiSSE calculations: Estimating one free parameter");
+				logln("BiSSE calculations: Estimating parameter, phase 1: step count 100");
 				MesquiteDouble suggestion = new MesquiteDouble(1);
 				negLogLikelihood = opt.optimize(suggestion, 0, 100, bundle);
-				logln("Sp/Ext Categ Char: neg. Log Likelihood first attempt:" + negLogLikelihood);
+				logln("BiSSE calculations: neg. Log Likelihood first attempt:" + negLogLikelihood);
 				double bestL = negLogLikelihood;
 				double bestP = suggestion.getValue();
 				negLogLikelihood = opt.optimize(suggestion, 0.0, 10, bundle);
-				logln("Sp/Ext Categ Char: neg. Log Likelihood second attempt:" + negLogLikelihood);
+				logln("BiSSE calculations: neg. Log Likelihood second attempt:" + negLogLikelihood);
 				if (bestL < negLogLikelihood)
 					suggestion.setValue(bestP);
 				else{
@@ -747,7 +779,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 					bestL = negLogLikelihood;
 				}
 				negLogLikelihood = opt.optimize(suggestion, 0.0, 1, bundle);
-				logln("Sp/Ext Categ Char: neg. Log Likelihood third attempt:" + negLogLikelihood);
+				logln("BiSSE calculations: neg. Log Likelihood third attempt:" + negLogLikelihood);
 				if (bestL < negLogLikelihood)
 					suggestion.setValue(bestP);
 				else{
@@ -755,9 +787,9 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 					bestL = negLogLikelihood;
 				}
 				stepCount = 1000;
-				logln("Sp/Ext Categ Char: Estimating parameters, phase 2: step count 1000");
+				logln("BiSSE calculations: Estimating parameters, phase 2: step count 1000");
 				negLogLikelihood = opt.optimize(suggestion, suggestion.getValue() * 0.6, suggestion.getValue() * 1.4, bundle);
-				logln("Sp/Ext Categ Char: neg. Log Likelihood final attempt:" + negLogLikelihood);
+				logln("BiSSE calculations: neg. Log Likelihood final attempt:" + negLogLikelihood);
 
 				oneParam[0] = suggestion.getValue();
 				speciesModel.setParamValuesUsingConstraints(oneParam);
@@ -777,9 +809,15 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		if (MesquiteDouble.isUnassigned(negLogLikelihood))
 			likelihood = MesquiteDouble.unassigned;
 		if (resultString!=null) {
+			if (failed){
+				resultString.setValue("Estimation of BiSSE parameters failed");
+				prob.deassignAllValues();
+			}
+			else{
 			String s = "Sp/Ext Likelihood (Char. dep.) " + modelString + ";  -log L.:"+ MesquiteDouble.toString(negLogLikelihood) + " [L. "+ MesquiteDouble.toString(likelihood) + "]";
 			s += "  " + getParameters();
 			resultString.setValue(s);
+			}
 		}
 		lastResultString = tree.getName() + "\t" + obsStates.getName() +"\t" + speciesModel.toStringForAnalysis() + "\t" + MesquiteDouble.toString(negLogLikelihood);
 		speciesModel.setParams(previousParams);
@@ -847,17 +885,17 @@ class SpecExtincCategModel implements DESystem {
 		final double extProb1 = probs[1];
 		final double dataProb0 = probs[2];
 		final double dataProb1 = probs[3];
-		final double s0 = parameters[0].getValue();
-		final double s1 = parameters[1].getValue();
-		final double e0 = parameters[2].getValue();
-		final double e1 = parameters[3].getValue();
-		final double t01 = parameters[4].getValue();
-		final double t10 = parameters[5].getValue();
+		final double lambda0 = parameters[0].getValue();
+		final double lambda1 = parameters[1].getValue();
+		final double mu0 = parameters[2].getValue();
+		final double mu1 = parameters[3].getValue();
+		final double q01 = parameters[4].getValue();
+		final double q10 = parameters[5].getValue();
 
-		result[0] = -(e0+t01+s0)*extProb0 + s0*extProb0*extProb0 + e0 + t01*extProb1; 
-		result[1] = -(e1+t10+s1)*extProb1 + s1*extProb1*extProb1 + e1 + t10*extProb0;            
-		result[2] = -(e0+t01+s0)*dataProb0 + 2*s0*extProb0*dataProb0 + t01*dataProb1;
-		result[3] = -(e1+t10+s1)*dataProb1 + 2*s1*extProb1*dataProb1 + t10*dataProb0;
+		result[0] = -(mu0+q01+lambda0)*extProb0 + lambda0*extProb0*extProb0 + mu0 + q01*extProb1; 
+		result[1] = -(mu1+q10+lambda1)*extProb1 + lambda1*extProb1*extProb1 + mu1 + q10*extProb0;            
+		result[2] = -(mu0+q01+lambda0)*dataProb0 + 2*lambda0*extProb0*dataProb0 + q01*dataProb1;
+		result[3] = -(mu1+q10+lambda1)*dataProb1 + 2*lambda1*extProb1*dataProb1 + q10*dataProb0;
 		return result;
 	}
 

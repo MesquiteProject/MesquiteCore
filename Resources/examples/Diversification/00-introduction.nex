@@ -1,19 +1,19 @@
 #NEXUS
-[written Tue Aug 21 10:53:37 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Wed Aug 22 21:20:49 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
-			setNextFileName '01-diversification.nex';
+			setNextFileName '01-lineagesThroughTime.nex';
 			getWindow;
 			tell It;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 429 310;
+					setSize 429 288;
 					setLocation 7 29;
 					setFont SanSerif;
 					setFontSize 10;
