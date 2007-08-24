@@ -92,6 +92,8 @@ public class ProbRndTreeModifier extends RndTreeModifier {
 		return null;
 	}
 
+	int count=0;
+	
 	public void modifyTree(Tree tree, MesquiteTree modified, RandomBetween rng) {
 		if (modifierTask==null || tree==null)
 			return;
