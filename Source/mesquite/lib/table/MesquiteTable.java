@@ -3834,6 +3834,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		else if (columnLegal(column) && rowLegal(row))
 			cellsSelected[0].setBit(row * numColumnsTotal + column);
 	}
+	/* ............................................................................................................... */
+	/** Selects and redraws cell. */
+	public void selectAndRedrawCell(int column, int row) {
+		selectCell(column, row);
+		redrawCell(column,row);
+	}
 
 	/* ............................................................................................................... */
 	/** Selects row; DOES NOT UPDATE ASSOCIABLE */
