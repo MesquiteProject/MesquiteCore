@@ -1,5 +1,5 @@
 #NEXUS
-[written Mon Aug 20 18:45:16 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
+[written Mon Sep 03 09:20:45 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=3;
@@ -27,8 +27,8 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 586 389;
-					setLocation 413 24;
+					setSize 586 367;
+					setLocation 5 22;
 					setFont SanSerif;
 					setFontSize 14;
 					setActive;

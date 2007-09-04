@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed May 17 13:40:43 PDT 2006 by Mesquite  version 1.1 (build h59) at Yepoella.local/10.0.1.7]
+[written Mon Sep 03 09:20:31 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 BEGIN NOTES;
 
 	TEXT  FILE TEXT = 'Example files for coalescence calculations^n^nThe files linked to this one illustrate some of the coalescence calculations that can be done by the package of coalescence modules of the Mesquite system.  To learn more about this package, use the Coalescence Package menu item of the Help menu, or touch on the banner in the Mesquite Startup window. (It should take you to your web browser, perhaps after asking you to locate the browser.)^n^nTo go from one file to another, hit the "Go" button in the green window.';
@@ -15,15 +15,14 @@ Begin MESQUITE;
 			setNextFileName '01-gcContentChart.nex';
 			getWindow;
 			tell It;
-					setSize 561 349;
-					setLocation 381 22;
-					setFont SanSerif;
-					setFontSize 14;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 561 327;
+					setLocation 4 22;
+					setFont SanSerif;
+					setFontSize 14;
 					setActive;
 				setExplanation 'Example files for molecular evolution and phylogeny^n^nThe files linked to this one illustrate some of the calculations for DNA and protein sequence data that can be done by Mesquite.  These examples are incomplete.  More examples can be found in the Simulations folder, in connection with the Simulations & Randomizations section of the manual, and in the Coalescence folder.^n^nTo go to the first example, hit the "Next" button above.';
 				setTitle Molecular_Evolution_&_Phylogeny;

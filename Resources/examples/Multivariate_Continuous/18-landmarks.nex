@@ -1,19 +1,18 @@
 #NEXUS
-[written Sat May 06 22:05:53 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Mon Sep 03 09:12:45 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Boxes;
 	DIMENSIONS NTAX=4;
 	TAXLABELS
 		Box_1 Box_2 Box_3 Box_4 
 	;
+	BLOCKID WM114cc24fb5c32;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Landmark_positions;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS ITEMS = (x y ) ;
 	MATRIX
 	Box_1   (? ?) (? ?) (? ?) (? ?)
@@ -22,6 +21,8 @@ BEGIN CHARACTERS;
 	Box_4   (? ?) (? ?) (? ?) (? ?)
 
 ;
+		BLOCKID WM114cc24fb660;
+
 
 END;
 BEGIN ASSUMPTIONS;
@@ -39,12 +40,12 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 5420325524222062819;
+			setID 0 5420325524222062819 WM114cc24fb5c32;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 4430408865877702767;
-			checksum 0 3957422510;
+			setID 0 4430408865877702767 WM114cc24fb660;
+			checksum 0 3957422510 WM114cc24fb660;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -55,15 +56,14 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 294 195;
-					setLocation 16 23;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 538 300;
+					setLocation 16 23;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -81,18 +81,19 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 538 290;
-					setLocation 347 24;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 538 332;
+					setLocation 589 23;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -116,6 +117,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -129,16 +134,14 @@ Begin MESQUITE;
 			setPrevFileName '17-landmarks.nex';
 			getWindow;
 			tell It;
-					setSize 510 252;
-					setLocation 331 420;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setActive;
+					setSize 538 340;
+					setLocation 16 23;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'This file shows how to enter and use landmark data in Mesquite. ^n^nWe''ve made a new file with four taxa.  Next, "New Empty Matrix..." from the Characters menu was chosen.  The type of the matrix chosen was Continuous, and the number of characters is the number of landmarks (each landmark is represented by a character).^n^nContinuous matrices can be three dimensional (characters x taxa x items), where the third dimension (items) represents a series of values in each cell of the editor.  In this case we''re going to want to enter two items, one for the x position of the landmark, the other for the y position.^n^nFirst, we renamed the first item to "x" using the "Rename Item" menu item in the Utilities submenu of the Matrix menu of the Character Matrix editor window.^n^nNext, we added a new item using the "Add Item" menu item in the Utilities submenu of the Matrix menu of the Character Matrix editor window.  We named it "y".^n';
 				setTitle 'Landmarks how-to';
 				toggleFileNames off;

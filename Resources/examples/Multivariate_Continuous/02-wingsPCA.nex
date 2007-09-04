@@ -1,19 +1,18 @@
 #NEXUS
-[written Sat May 06 22:01:15 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Mon Sep 03 09:23:40 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE flies;
 	DIMENSIONS NTAX=48;
 	TAXLABELS
 		nig1 nig2 nig3 nig4 nig5 nig6 nig7 nig8 nig9 nig10 nig11 nig12 met1 met2 met3 met4 met5 met6 met7 met8 met9 met10 met11 met12 moj1 moj2 moj3 moj4 moj5 moj6 moj7 moj8 moj9 moj10 moj11 moj12 pac1 pac2 pac3 pac4 pac5 pac6 pac7 pac8 pac9 pac10 pac11 pac12 
 	;
+	BLOCKID WM114cbd522e46;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  wings;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 V1,
@@ -71,11 +70,11 @@ CHARSTATELABELS
 	pac12   1.465 1.621 0.0765 0.214
 
 ;
+		BLOCKID WM114cbd522f20;
+
 
 END;
 BEGIN TREES;
-	Title stored_trees;
-	LINK Taxa = flies;
 	TRANSLATE
 		1 nig1,
 		2 nig2,
@@ -131,10 +130,10 @@ END;
 
 
 BEGIN LABELS;
-TAXAGROUPLABEL nig COLOR = (RGB 1.0 0.031372553 0.258823551) ;
-TAXAGROUPLABEL met COLOR = (RGB 0.258823551 1.0 0.086274549) ;
-TAXAGROUPLABEL moj COLOR = (RGB 1.0 0.62745098 0.058823551) ;
-TAXAGROUPLABEL pac COLOR = (RGB 0.02745098 0.584313751 1.0) ;
+TAXAGROUPLABEL nig COLOR = (RGB 1.0 0.03137255 0.25882353) ;
+TAXAGROUPLABEL met COLOR = (RGB 0.25882353 1.0 0.08627451) ;
+TAXAGROUPLABEL moj COLOR = (RGB 1.0 0.62745098 0.05882353) ;
+TAXAGROUPLABEL pac COLOR = (RGB 0.02745098 0.58431373 1.0) ;
 
 
 END;
@@ -160,12 +159,12 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 208212565903807533;
+			setID 0 208212565903807533 WM114cbd522e46;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 124634251740354766;
-			checksum 0 578547273;
+			setID 0 124634251740354766 WM114cbd522f20;
+			checksum 0 578547273 WM114cbd522f20;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -173,15 +172,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 301 467;
-					setLocation 6 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 505 252;
+					setLocation 1 433;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -204,9 +203,14 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				hideWindow;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
@@ -244,18 +248,19 @@ Begin MESQUITE;
 							tell It;
 								getWindow;
 								tell It;
-									setSize 380 290;
-									setLocation 14 22;
-									setFont SanSerif;
-									setFontSize 10;
-									onInfoBar;
+									popOut;
 									setExplanationSize 20;
 									setAnnotationSize 20;
 									setFontIncAnnot 0;
 									setFontIncExp 0;
+									setSize 505 252;
+									setLocation 3 433;
+									setFont SanSerif;
+									setFontSize 10;
 									getToolPalette;
 									tell It;
 									endTell;
+									setActive;
 									valuesByItems;
 									setChartType  #mesquite.charts.Histogram.Histogram;
 								tell It;
@@ -289,19 +294,18 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
-					setSize 493 450;
-					setLocation 420 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 493 470;
+					setLocation 526 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 				endTell;
 				enableCalculations;
 				getEmployee #mesquite.charts.Scattergram.Scattergram;
@@ -323,16 +327,15 @@ Begin MESQUITE;
 			setPrevFileName '01-wingsPlot.nex';
 			getWindow;
 			tell It;
-					setSize 432 138;
-					setLocation 11 556;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'In the scatter plot at right, a Principal Components Analysis is shown of the Drosophila data from the previous example.  Above is a window of the character loadings on the different components.  Scroll with the blue arrows to see loadings on the other components.^n^n(This analysis is likewise phylogeny-free.)^n';
+					setSize 505 260;
+					setLocation 6 22;
+					setFont SanSerif;
+					setFontSize 10;
+				setExplanation 'In the scatter plot, a Principal Components Analysis is shown of the Drosophila data from the previous example.  The bar chart shows character loadings on the different components.  Scroll with the blue arrows to see loadings on the other components.^n^n(This analysis is likewise phylogeny-free.)^n';
 				setTitle Principal_Components;
 				toggleFileNames off;
 				setPrevButtonName Previous;

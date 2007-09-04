@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Aug 21 22:34:48 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Mon Sep 03 09:21:05 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 BEGIN NOTES;
 
 	TEXT  FILE TEXT = 'Example files for coalescence calculations^n^nThe files linked to this one illustrate some of the coalescence calculations that can be done by the package of coalescence modules of the Mesquite system.  To learn more about this package, use the Coalescence Package menu item of the Help menu, or touch on the banner in the Mesquite Startup window. (It should take you to your web browser, perhaps after asking you to locate the browser.)^n^nTo go from one file to another, hit the "Go" button in the green window.';
@@ -19,8 +19,8 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 415 338;
-					setLocation 311 26;
+					setSize 415 316;
+					setLocation 8 22;
 					setFont SanSerif;
 					setFontSize 14;
 					setActive;

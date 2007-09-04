@@ -1,19 +1,17 @@
 #NEXUS
-[written Sat May 06 22:02:29 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Mon Sep 03 09:05:52 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE flies;
 	DIMENSIONS NTAX=48;
 	TAXLABELS
 		A1 A2 A3 A4 A5 A6 A7 A8 A9 A10 A11 A12 B1 B2 B3 B4 B5 B6 B7 B8 B9 B10 B11 B12 C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 C11 C12 D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 
 	;
+	BLOCKID WM114cc1e74c719;
 
 END;
 
 
 BEGIN TREES;
-	Title stored_trees;
-	LINK Taxa = flies;
 	TRANSLATE
 		1 A1,
 		2 A2,
@@ -69,11 +67,11 @@ END;
 
 
 BEGIN LABELS;
-TAXAGROUPLABEL Red COLOR = (RGB 1.0 0.156862753 0.10980392) ;
-TAXAGROUPLABEL Orange COLOR = (RGB 1.0 0.611764749 0.156862753) ;
-TAXAGROUPLABEL Cyan COLOR = (RGB 0.286274549 1.0 0.858823551) ;
-TAXAGROUPLABEL Green COLOR = (RGB 0.211764749 1.0 0.184313751) ;
-TAXAGROUPLABEL Yellow COLOR = (RGB 0.88235294 1.0 0.172549050) ;
+TAXAGROUPLABEL Red COLOR = (RGB 1.0 0.15686275 0.10980392) ;
+TAXAGROUPLABEL Orange COLOR = (RGB 1.0 0.61176471 0.15686275) ;
+TAXAGROUPLABEL Cyan COLOR = (RGB 0.28627451 1.0 0.85882353) ;
+TAXAGROUPLABEL Green COLOR = (RGB 0.21176471 1.0 0.18431373) ;
+TAXAGROUPLABEL Yellow COLOR = (RGB 0.88235294 1.0 0.17254902) ;
 TAXAGROUPLABEL Goldenrod;
 
 
@@ -96,7 +94,7 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 6690059761767473967;
+			setID 0 6690059761767473967 WM114cc1e74c719;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -110,19 +108,18 @@ Begin MESQUITE;
 				setAssignedID 1836.967910171762.6568711385870313008;
 				getTreeWindow;
 				tell It;
-					setSize 477 392;
-					setLocation 9 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 512 494;
+					setLocation 11 351;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -133,6 +130,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle on;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
 							namesAngle ?;
@@ -144,6 +142,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -154,6 +153,7 @@ Begin MESQUITE;
 						toggleColorPartition off;
 						toggleShadePartition on;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -163,6 +163,11 @@ Begin MESQUITE;
 					toggleTextOnTree off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -170,11 +175,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -223,15 +223,15 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
-					setSize 512 452;
-					setLocation 486 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 512 494;
+					setLocation 557 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -256,16 +256,16 @@ Begin MESQUITE;
 			setPrevFileName '10-pcaLiveSim.nex';
 			getWindow;
 			tell It;
-					setSize 472 150;
-					setLocation 4 538;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'This file shows a Canonical Variates Analysis performed on a data set simulated "live" using Brownian motion evolution on the tree at left.  The partition of taxa used to define groups for the CVA represents the four major clades of the tree.  By changing the lengths of the colored branches in the tree, the characters simulated will do better or worse at distinguishing the clades via CVA.^n^nTo to ask to resimulate the data, select "Next Simulated matrix" from the "Scattergram" menu.';
+					setSize 528 231;
+					setLocation 9 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'This file shows a Canonical Variates Analysis performed on a data set simulated "live" using Brownian motion evolution on the tree at left.  The partition of taxa used to define groups for the CVA represents the four major clades of the tree.  By changing the lengths of the colored branches in the tree, the characters simulated will do better or worse at distinguishing the clades via CVA.^n^nTo to ask to resimulate the data, select "Next Simulated matrix" from the "Scattergram" menu of the scattergram window.';
 				setTitle 'Live Simulation -CVA';
 				toggleFileNames off;
 				setPrevButtonName Previous;

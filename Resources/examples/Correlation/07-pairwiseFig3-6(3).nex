@@ -1,18 +1,17 @@
 #NEXUS
-[written Sat May 06 22:06:35 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Mon Sep 03 09:19:45 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=7;
 	TAXLABELS
 		A B C D E F G 
 	;
+	BLOCKID WM114cc2b75d043;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  'Matrix in file "07-pairwiseFig3-6(3).nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	MATRIX
@@ -25,11 +24,11 @@ BEGIN CHARACTERS;
 	G  00
 
 ;
+		BLOCKID WM114cc2b75e10;
+
 
 END;
 BEGIN TREES;
-	Title 'Trees from "07-pairwiseFig3-6(3).nex"';
-	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 A,
 		2 B,
@@ -43,8 +42,14 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  2;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =        unord PolyTcount =        MINSTEPS;
+OPTIONS DEFTYPE =         unord PolyTcount =         MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -54,24 +59,18 @@ BEGIN MESQUITECHARMODELS;
 	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 2797435016968775186;
+			setID 0 2797435016968775186 WM114cc2b75d043;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 2027440424851978578;
-			checksum 0 2906558003;
+			setID 0 2027440424851978578 WM114cc2b75e10;
+			checksum 0 2906558003 WM114cc2b75e10;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -85,19 +84,18 @@ Begin MESQUITE;
 				setAssignedID 2913.962688975207.242157289790097838;
 				getTreeWindow;
 				tell It;
-					setSize 813 436;
-					setLocation 55 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 813 456;
+					setLocation 402 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -108,6 +106,7 @@ Begin MESQUITE;
 							stretchToggle off;
 							branchLengthsToggle off;
 							toggleScale on;
+							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
 							namesAngle ?;
@@ -118,6 +117,7 @@ Begin MESQUITE;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
+					showBranchColors on;
 					labelBranchLengths off;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
@@ -128,6 +128,7 @@ Begin MESQUITE;
 						toggleColorPartition on;
 						toggleShadePartition off;
 						toggleNodeLabels on;
+						toggleCenterNodeNames off;
 						toggleShowNames on;
 					endTell;
 				endTell;
@@ -166,6 +167,11 @@ Begin MESQUITE;
 				endTell;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
 					setAlwaysOn off;
@@ -173,11 +179,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
-				tell It;
-					setColor Red;
-					removeColor off;
 				endTell;
 			endTell;
 		endTell;
@@ -187,15 +188,15 @@ Begin MESQUITE;
 			setPrevFileName '06-pairwiseFig3-6(2).nex';
 			getWindow;
 			tell It;
-					setSize 372 164;
-					setLocation 55 565;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 389 221;
+					setLocation 0 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
 				setExplanation 'For Figures 3-6 of Maddison, W.P.  2000. Testing character correlation using pairwise comparisons on a phylogeny.  Journal of Theoretical Biology. 202: 195-204.^n^nThis shows pairs chosen to contrast the states of characters 1 and 2.';
 				setTitle Pairwise;
 				toggleFileNames off;

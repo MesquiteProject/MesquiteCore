@@ -1,19 +1,18 @@
 #NEXUS
-[written Sat May 06 22:05:56 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Mon Sep 03 09:12:55 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Boxes;
 	DIMENSIONS NTAX=4;
 	TAXLABELS
 		Box_1 Box_2 Box_3 Box_4 
 	;
+	BLOCKID WM114cc25476e33;
 
 END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Landmark_positions;
-	DIMENSIONS NCHAR=4;
+	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS ITEMS = (x y ) ;
 	MATRIX
 	Box_1   (0.0 0.0) (0.0 1.0) (1.0 0.0) (1.0 1.0)
@@ -22,6 +21,8 @@ BEGIN CHARACTERS;
 	Box_4   (0.0 0.0) (0.0 1.0) (1.0 0.0) (1.0 1.0)
 
 ;
+		BLOCKID WM114cc25478a0;
+
 
 END;
 BEGIN ASSUMPTIONS;
@@ -39,12 +40,12 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 5420325524222062819;
+			setID 0 5420325524222062819 WM114cc25476e33;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 4430408865877702767;
-			checksum 0 2803930463;
+			setID 0 4430408865877702767 WM114cc25478a0;
+			checksum 0 2803930463 WM114cc25478a0;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -55,15 +56,14 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					setSize 307 185;
-					setLocation 20 22;
-					setFont SanSerif;
-					setFontSize 10;
-					onInfoBar;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 545 300;
+					setLocation 20 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -81,15 +81,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 538 290;
-					setLocation 350 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 545 332;
+					setLocation 599 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -117,6 +117,10 @@ Begin MESQUITE;
 				tell It;
 					togglePanel off;
 				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -130,15 +134,14 @@ Begin MESQUITE;
 			setPrevFileName '18-landmarks.nex';
 			getWindow;
 			tell It;
-					setSize 545 222;
-					setLocation 336 413;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 545 340;
+					setLocation 20 22;
+					setFont SanSerif;
+					setFontSize 10;
 				setExplanation 'Here we''ve edited the matrix to place a series of (x,y) points in each cell.  Note that Box 1, 2 and 4 are simple boxes of landmarks; Box 3 has its corner punched in (0.8, 0.8 instead of 1.0, 1.0).  The format is "(x y)".^n^nRhetenor does not yet have analyses to adjust and scale points into alignment like Procrustes analyses, and so you''ll have to do that first, and enter the adjusted landmarks.^n';
 				setTitle 'Landmarks cont''d.';
 				toggleFileNames off;

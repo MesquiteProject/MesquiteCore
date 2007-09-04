@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Aug 21 22:34:57 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Mon Sep 03 09:21:19 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=9;
@@ -75,7 +75,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 4636206365576148138 WM1148c10e0900;
-			checksum 0 1947097330;
+			checksum 0 1947097330 WM1148c10e0900;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -101,7 +101,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 459 429;
+					setSize 459 407;
 					setLocation 490 22;
 					setFont SanSerif;
 					setFontSize 10;
@@ -169,13 +169,14 @@ Begin MESQUITE;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			setNextFileName '02-coalescence2.nex';
+			setPrevFileName '00-introduction.nex';
 			getWindow;
 			tell It;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 459 437;
+					setSize 459 415;
 					setLocation 10 22;
 					setFont SanSerif;
 					setFontSize 10;

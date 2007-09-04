@@ -1,19 +1,19 @@
 #NEXUS
-[written Sat May 06 22:01:22 PDT 2006 by Mesquite  version 1.1BETA (build h58) at Yepoella/169.254.212.151]
+[written Mon Sep 03 07:51:06 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
 
 BEGIN TAXA;
-	TITLE Anolis;
 	DIMENSIONS NTAX=30;
 	TAXLABELS
 		ahli aliniger alutaceus angusticeps bahorucoensis barahonae brevirostris coelestinus cristatellus cuvieri distichus equestris garmani grahami insolitus krugi lineatopus loysiana luteogularis marcanoi occultus olssoni ophiolepis paternus porcatus sagrei strahmi stratulus valencienni vanidicus 
 	;
+	BLOCKID WM114cbd648a88;
 
 END;
 
 
 BEGIN CHARACTERS;
 	TITLE  Measurements;
-	DIMENSIONS NCHAR=6;
+	DIMENSIONS  NCHAR=6;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
 		1 'snout-vent length',
@@ -55,6 +55,8 @@ CHARSTATELABELS
 	vanidicus       37.75 0.663 12.125 25.625 96.6 13.625
 
 ;
+		BLOCKID WM114cbd648dc0;
+
 
 END;
 BEGIN CHARACTERS;
@@ -96,6 +98,8 @@ BEGIN CHARACTERS;
 	vanidicus      2
 
 ;
+		BLOCKID WM114cbd649010;
+
 
 END;
 BEGIN CHARACTERS;
@@ -137,11 +141,11 @@ BEGIN CHARACTERS;
 	vanidicus      4
 
 ;
+		BLOCKID WM114cbd649140;
+
 
 END;
 BEGIN TREES;
-	Title Phylogeny;
-	LINK Taxa = Anolis;
 	TRANSLATE
 		23 ahli,
 		6 aliniger,
@@ -178,6 +182,13 @@ BEGIN TREES;
 END;
 
 
+BEGIN CODONS;
+CODESET * UNTITLED  (CHARACTERS = island)  =  universal:  1;
+CODESET * UNTITLED  (CHARACTERS = Ecomorph)  =  universal:  1;
+
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  6;
 TYPESET * UNTITLED  (CHARACTERS = island)  =  unord:  1;
@@ -191,29 +202,22 @@ ProbModelSet * UNTITLED  (CHARACTERS = island)  =  'Mk1 (est.)':  1;
 ProbModelSet * UNTITLED  (CHARACTERS = Ecomorph)  =  'Mk1 (est.)':  1;
 END;
 
-BEGIN CODONS;
-CODESET * UNTITLED  (CHARACTERS = island)  =  universal:  1;
-CODESET * UNTITLED  (CHARACTERS = Ecomorph)  =  universal:  1;
-
-
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 8853494381083195946;
+			setID 0 8853494381083195946 WM114cbd648a88;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 5443567030079148118;
-			checksum 0 737652128;
-			setID 1 2904659670370408267;
-			checksum 1 573928344;
-			setID 2 7285741872021222516;
-			checksum 2 1458690238;
+			setID 0 5443567030079148118 WM114cbd648dc0;
+			checksum 0 737652128 WM114cbd648dc0;
+			setID 1 2904659670370408267 WM114cbd649010;
+			checksum 1 573928344 WM114cbd649010;
+			setID 2 7285741872021222516 WM114cbd649140;
+			checksum 2 1458690238 WM114cbd649140;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -221,15 +225,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 369 389;
-					setLocation 4 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 342 491;
+					setLocation 413 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -244,6 +248,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 70;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -251,13 +256,13 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
@@ -269,19 +274,18 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 294 402;
-					setLocation 709 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 321 490;
+					setLocation 1071 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -293,6 +297,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 16;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -300,10 +305,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;
@@ -311,6 +312,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
@@ -326,15 +331,15 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					setSize 309 395;
-					setLocation 388 22;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
+					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
+					setSize 307 494;
+					setLocation 758 22;
+					setFont SanSerif;
+					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
@@ -349,6 +354,7 @@ Begin MESQUITE;
 					toggleAutoWCharNames on;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
+					setColumnWidth 16;
 					toggleBirdsEye off;
 					toggleColorsPanel off;
 					birdsEyeWidth 2;
@@ -356,10 +362,6 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
-				getWindow;
-				tell It;
-					forceAutosize;
-				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;
@@ -367,6 +369,10 @@ Begin MESQUITE;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
 				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
@@ -385,16 +391,16 @@ Begin MESQUITE;
 			setPrevFileName '03-wingsCVA.nex';
 			getWindow;
 			tell It;
-					setSize 600 180;
-					setLocation 3 515;
-					setFont SanSerif;
-					setFontSize 10;
-					offInfoBar;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-				setExplanation 'This file and the next several shows data and phylogenies from the work of Jonathan Losos and colleagues (Losos et al., Science, 1998 and Losos & de Queiroz, Biol. J. Linn. Soc., 1997) on Anolis lizards of the caribbean that looks at convergence in ecomorphs.  ^n^nThere are three matrices shown here, one on body measurements of the lizards, one categorizing the lizards by "ecomorph", and the final categorizing the lizards by the island from which they come.  In the following files analyses of the data will be shown in the light of a phylogeny of the species.^n^n(Thanks to Jonathan Losos for supplying the data)';
+					setSize 400 372;
+					setLocation 4 22;
+					setFont SanSerif;
+					setFontSize 10;
+					setActive;
+				setExplanation 'This file and the next several show data and phylogenies from the work of Jonathan Losos and colleagues (Losos et al., Science, 1998 and Losos & de Queiroz, Biol. J. Linn. Soc., 1997) on Anolis lizards of the caribbean that looks at convergence in ecomorphs.  ^n^nThere are three matrices shown here, one on body measurements of the lizards, one categorizing the lizards by "ecomorph", and the final categorizing the lizards by the island from which they come.  In the following files analyses of the data will be shown in the light of a phylogeny of the species.^n^n(Thanks to Jonathan Losos for supplying the data)';
 				setTitle Anole_example;
 				toggleFileNames off;
 				setPrevButtonName Previous;
