@@ -1,5 +1,5 @@
 #NEXUS
-[written Mon Sep 03 09:05:20 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Mon Sep 03 18:26:53 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=16;
@@ -60,7 +60,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 532 408;
+					setSize 532 386;
 					setLocation 4 352;
 					setFont SanSerif;
 					setFontSize 10;
@@ -196,7 +196,7 @@ Begin MESQUITE;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 590 570;
+						setSize 590 548;
 						setLocation 559 74;
 						setFont SanSerif;
 						setFontSize 10;
@@ -233,12 +233,12 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 524 208;
+					setSize 524 246;
 					setLocation 8 22;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'This file shows a "live" PCA on simulated data.  That is, a data set of 50 characters is evolved on the tree in the tree window at left via Brownian motion evolution, using the branch lengths in the tree.  Then, the resulting characters are subjected to PCA and the tree plotted in PC2 versus PC1 in the above window.  This is live in the sense that the characters are simulated on the fly just before the plot is made.  To request a new simulated data set, choose "Next Simulated matrix" from the Plot menu of the Dependent Tree Window.^n^nAlso, if you scroll to tree number 2,  the characters will evolve under a very different tree.  You can change the tree and its branch lengths, and see how it affects the simulations and the resulting PCA.^n';
+				setExplanation 'This file shows a "live" PCA on simulated data.  That is, a data set of 50 characters is evolved on the tree in the tree window below via Brownian motion evolution, using the branch lengths in the tree.  Then, the resulting characters are subjected to PCA and the tree plotted in PC2 versus PC1 in the window at right.  This is live in the sense that the characters are simulated on the fly just before the plot is made.  To request a new simulated data set, choose "Next Simulated matrix" from the Plot menu of the Dependent Tree Window.^n^nAlso, if you scroll to tree number 2 in the tree window below,  the characters will evolve under a very different tree.  You can change the tree and its branch lengths, and see how it affects the simulations and the resulting PCA.^n';
 				setTitle Live_simulation;
 				toggleFileNames off;
 				setPrevButtonName Previous;

@@ -1,5 +1,5 @@
 #NEXUS
-[written Mon Sep 03 09:05:52 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Mon Sep 03 18:31:34 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=48;
@@ -113,7 +113,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 512 494;
+					setSize 512 472;
 					setLocation 11 351;
 					setFont SanSerif;
 					setFontSize 10;
@@ -228,7 +228,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 512 494;
+					setSize 512 472;
 					setLocation 557 22;
 					setFont SanSerif;
 					setFontSize 10;
@@ -260,12 +260,12 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 528 231;
+					setSize 528 246;
 					setLocation 9 22;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'This file shows a Canonical Variates Analysis performed on a data set simulated "live" using Brownian motion evolution on the tree at left.  The partition of taxa used to define groups for the CVA represents the four major clades of the tree.  By changing the lengths of the colored branches in the tree, the characters simulated will do better or worse at distinguishing the clades via CVA.^n^nTo to ask to resimulate the data, select "Next Simulated matrix" from the "Scattergram" menu of the scattergram window.';
+				setExplanation 'This file shows a Canonical Variates Analysis performed on a data set simulated "live" using Brownian motion evolution on the tree below.  The partition of taxa used to define groups for the CVA represents the four major clades of the tree.  By changing the lengths of the colored branches in the tree, the characters simulated will do better or worse at distinguishing the clades via CVA.^n^nTo to ask to resimulate the data, select "Next Simulated matrix" from the "Scattergram" menu of the scattergram window.';
 				setTitle 'Live Simulation -CVA';
 				toggleFileNames off;
 				setPrevButtonName Previous;

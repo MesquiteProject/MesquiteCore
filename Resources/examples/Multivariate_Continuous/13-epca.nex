@@ -1,5 +1,5 @@
 #NEXUS
-[written Mon Sep 03 09:07:02 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Mon Sep 03 18:34:32 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE species;
@@ -115,7 +115,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 400 303;
+					setSize 400 281;
 					setLocation 450 452;
 					setFont SanSerif;
 					setFontSize 10;
@@ -288,7 +288,7 @@ Begin MESQUITE;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 400 343;
+						setSize 400 321;
 						setLocation 456 36;
 						setFont SanSerif;
 						setFontSize 10;
@@ -373,7 +373,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 400 303;
+					setSize 400 281;
 					setLocation 889 452;
 					setFont SanSerif;
 					setFontSize 10;
@@ -546,7 +546,7 @@ Begin MESQUITE;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 400 343;
+						setSize 400 321;
 						setLocation 882 29;
 						setFont SanSerif;
 						setFontSize 10;
@@ -631,7 +631,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 400 311;
+					setSize 400 289;
 					setLocation 11 22;
 					setFont SanSerif;
 					setFontSize 10;

@@ -1,5 +1,5 @@
 #NEXUS
-[written Mon Sep 03 09:11:24 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Mon Sep 03 18:36:08 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=16;
@@ -66,7 +66,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 472 363;
+					setSize 472 341;
 					setLocation 1 362;
 					setFont SanSerif;
 					setFontSize 10;
@@ -220,7 +220,7 @@ Begin MESQUITE;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 467 403;
+						setSize 467 381;
 						setLocation 978 30;
 						setFont SanSerif;
 						setFontSize 10;
@@ -332,7 +332,7 @@ Begin MESQUITE;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 470 404;
+						setSize 470 382;
 						setLocation 494 31;
 						setFont SanSerif;
 						setFontSize 10;
@@ -388,7 +388,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'This file shows a "live" EPCA on simulated data of 50 characters, to contrast to a PCA on simulated data.  Note that the EPCA doesn''t emphasize the distinctness of major clades nearly as much as does the PCA.  To request a new simulated data set, choose "Next Simulated matrix" from the Plot menu of each of the Dependent Tree Windows.^n^nAlso, if you scroll to tree number 2 in the tree window at upper left,  you will see characters evolved under a very different tree.^n';
+				setExplanation 'This file shows a "live" EPCA on simulated data of 50 characters, to contrast to a PCA on simulated data.  Note that the EPCA doesn''t emphasize the distinctness of major clades nearly as much as does the PCA.  To request a new simulated data set, choose "Next Simulated matrix" from the Plot menu of each of the Dependent Tree Windows.^n^nAlso, if you scroll to tree number 2 in the tree window below,  you will see characters evolved under a very different tree.^n';
 				setTitle 'Live sim. - EPCA';
 				toggleFileNames off;
 				setPrevButtonName Previous;
