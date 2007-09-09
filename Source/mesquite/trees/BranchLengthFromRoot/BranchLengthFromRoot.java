@@ -56,12 +56,12 @@ public class BranchLengthFromRoot extends NForTaxonWithTree {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "For each taxon calculates the sum of the branch lengths from that taxon to the root of the tree.";
+		return "For each taxon, calculates the sum of the branch lengths from that taxon to the root of the tree.";
 	}
 
 }

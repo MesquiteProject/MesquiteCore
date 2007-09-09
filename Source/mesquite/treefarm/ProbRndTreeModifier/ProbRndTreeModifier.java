@@ -6,8 +6,7 @@ import mesquite.treefarm.lib.*;
 
 /** This module is basically a random tree modifier, but it works by hiring another one, and only invoking it on a tree with a particular probability */
 public class ProbRndTreeModifier extends RndTreeModifier {
-	Random probModifyRNG ;
-	long originalSeed=System.currentTimeMillis(); //0L;
+	Random probModifyRNG = new RandomBetween(System.currentTimeMillis()); ;
 	RndTreeModifier modifierTask;
 	MesquiteString modifierName;
 	MesquiteCommand stC;
@@ -34,7 +33,12 @@ public class ProbRndTreeModifier extends RndTreeModifier {
 			mss.setSelected(modifierName);
 		}
   		addMenuItem("Set Probability of Random Tree Modification...", makeCommand("setProbability",  this));
-  		probModifyRNG= new RandomBetween(originalSeed);
+  		if (!MesquiteThread.isScripting()) {
+			double s = MesquiteDouble.queryDouble(containerOfModule(), "Random number seed", "Enter a value for the probability a tree will be randomly modified", prob.getValue());
+	 		 if (MesquiteDouble.isCombinable(s)){
+	 			 prob.setValue(s);
+	 		 }
+  		}
 		return true;
 	}
 
@@ -86,6 +90,10 @@ public class ProbRndTreeModifier extends RndTreeModifier {
 			modifierTask.modifyTree(tree,modified, rng);
 	}
 
+	public boolean isPrerelease(){
+		return false;
+	}
+	
 	public String getName() {
 		return "Occasionally Randomly Modify";
 	}
