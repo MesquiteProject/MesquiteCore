@@ -16,7 +16,7 @@ import org.tolweb.treegrow.main.XMLConstants;
  * @author dmandel
  *
  */
-public class XMLUtilities {
+public class MesquiteXMLUtilities {
 	private static String checkConnectionURL = "http://google.com";
 	public static String baseDatabaseURL = "http://btol.tolweb.org/onlinecontributors/app"; 	
 	//public static String baseDatabaseURL = "http://zissou.cals.arizona.edu/onlinecontributors/app";	
