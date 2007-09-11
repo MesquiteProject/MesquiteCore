@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Aug 21 09:58:25 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Mon Sep 10 21:54:21 EDT 2007 by Mesquite  version 2.0BETA3 (build i57) at Thrandina.local/10.71.1.127 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=9;
@@ -84,7 +84,7 @@ CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
+OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -107,34 +107,39 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114895c2a990;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114895c2a990;
 			setID 1 3539015483384763311 WM114895c2aab0;
-			checksum 1 4236368331;
+			checksum 1 4236368331 WM114895c2aab0;
 		endTell;
 		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
 		tell It;
 			setTaxa #8476784597994698209;
 			setNumColumns 3;
 			setNumRows 2;
-			setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
+			getTreeSource #mesquite.trees.DefiniteTreeSource.DefiniteTreeSource;
 			tell It;
-				setTreeBlock 1;
-				toggleUseWeights off;
+				setTreeSource #mesquite.trees.StoredTrees.StoredTrees;
+				tell It;
+					setTreeBlock 1;
+					toggleUseWeights off;
+				endTell;
+				assignNumTrees 6;
 			endTell;
 			makeWindow;
+			toggleLegendBotRight off;
 			setNamesVisible on;
 			getWindow;
 			tell It;
 				newAssistant  #mesquite.trees.TreeLegendMaker.TreeLegendMaker;
 			tell It;
-				setOffsetsX 61;
-				setOffsetsY -44;
+				setOffsetsX 4;
+				setOffsetsY 4;
 				getLegendsVector;
 				tell It;
 				distributeCommands;
-					setBounds 175 159 89 39;
-					setOffsetX 61;
-					setOffsetY -44;
+					setBounds 4 4 89 39;
+					setOffsetX 4;
+					setOffsetY 4;
 				endDistributeCommands;
 				endTell;
 				newLegendItem  #mesquite.parsimony.Treelength.Treelength;

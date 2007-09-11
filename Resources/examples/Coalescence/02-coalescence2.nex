@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Aug 21 22:43:07 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Mon Sep 10 21:53:06 EDT 2007 by Mesquite  version 2.0BETA3 (build i57) at Thrandina.local/10.71.1.127 (Wayne Maddison)]
 
 BEGIN TAXA;
 	DIMENSIONS NTAX=9;
@@ -75,26 +75,31 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 4972659033594616137 WM1148c1835cf0;
-			checksum 0 1947097330;
+			checksum 0 1947097330 WM1148c1835cf0;
 		endTell;
 		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
 		tell It;
 			setTaxa #4451700786596653131;
 			setNumColumns 4;
 			setNumRows 4;
-			setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
+			getTreeSource #mesquite.trees.DefiniteTreeSource.DefiniteTreeSource;
 			tell It;
-				setTreeSimulator  #mesquite.coalesce.CoalescentTrees.CoalescentTrees;
+				setTreeSource #mesquite.trees.SimulateTree.SimulateTree;
 				tell It;
-					getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+					setTreeSimulator  #mesquite.coalesce.CoalescentTrees.CoalescentTrees;
 					tell It;
-						setEffective 1000;
-						toggleExponential on;
+						getEmployee #mesquite.coalesce.NeutralCoalescence.NeutralCoalescence;
+						tell It;
+							setEffective 1000;
+							toggleExponential on;
+						endTell;
 					endTell;
+					setSeed 1189475568974;
 				endTell;
-				setSeed 983242335996;
+				assignNumTrees 100;
 			endTell;
 			makeWindow;
+			toggleLegendBotRight off;
 			setNamesVisible on;
 			getWindow;
 			tell It;
@@ -158,7 +163,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 420 241;
+					setSize 420 268;
 					setLocation 13 22;
 					setFont SanSerif;
 					setFontSize 10;
