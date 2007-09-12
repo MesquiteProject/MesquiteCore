@@ -149,7 +149,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
 			reportString.append(lineDelimiter);
 			}
 		if (reportString.length()>0)
-			saveExportedFileWithExtension(reportString, arguments, "dst");
+			saveExportedFileWithExtension(reportString, arguments, "dsc");
  		fireEmployee(distSource);
  		fireEmployee(treeTask);
 
