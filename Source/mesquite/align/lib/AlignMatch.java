@@ -83,8 +83,7 @@ public abstract class AlignMatch extends CategDataMatcher {
  		if (candidateArray==null || aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
   		MesquiteNumber score = new MesquiteNumber();
-  		//CategoricalState state = ((CategoricalData)data).getNewState();
-  		aligner.alignSequences(originalArray,candidateArray,false, score);
+   		aligner.alignSequences(originalArray,candidateArray,false, score);
    		return score.getDoubleValue();
 	}
 
@@ -99,8 +98,7 @@ public abstract class AlignMatch extends CategDataMatcher {
 	public double getApproximateWorstMatchValue(long[] originalArray){
 		if (aligner ==null || originalArray==null)
    			return MesquiteDouble.unassigned;
- 		//CategoricalState state = ((CategoricalData)data).getNewState();
-		MesquiteNumber score;
+ 		MesquiteNumber score;
 		double worstScore = MesquiteDouble.unassigned;
 		int startLength = MesquiteInteger.maximum(1,originalArray.length-maxLengthDiff);
    		int endLength = MesquiteInteger.minimum(data.getNumChars(),originalArray.length+maxLengthDiff);

@@ -25,7 +25,7 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 			extracted2[ic] = data.getState(ic, it2);
 		}
 		MesquiteNumber alignScore = new MesquiteNumber();
-  		CategoricalState state = data.getNewState();
+  		CategoricalState state = (CategoricalState)data.makeCharacterState();
 		aligner.alignSequences(extracted1, extracted2, false, alignScore);
 
 		for (int ic = firstSite; ic<=lastSite; ic++){
