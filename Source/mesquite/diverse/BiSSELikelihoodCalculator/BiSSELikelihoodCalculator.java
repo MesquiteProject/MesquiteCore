@@ -839,7 +839,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	}
 
 	public String getVersion() {
-		return "0.1";
+		return "1.0";
 	}
 
 	public String getExplanation(){

@@ -69,7 +69,7 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
     boolean showDialog(){
         if (params == null)
             return false;
-        ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", params, null, 2, 2, false);
+        ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", "BiSSE Parameters", params, null, 2, 2, false);
 		dlog.appendToHelpString("Parameters for BiSSE model., reparameterized as r = net diversification  (speciation-extinction) and a = speciation/extinction ratio.  Indicate the rates of net diversification when in state 0 (r0), and when in state 1 (r1), ");
 		dlog.appendToHelpString("speciation/extinction ratio when in state 0 (a0), ratio when in state 1 (a1), ");
 		dlog.appendToHelpString("rates of character change 0 to 1(q01), and rates of character change 1 to 0 (q10). ");
@@ -181,7 +181,7 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
     }
 
     public String getVersion() {
-        return "0.1";
+        return "1.0";
     }
 
     public String getExplanation(){

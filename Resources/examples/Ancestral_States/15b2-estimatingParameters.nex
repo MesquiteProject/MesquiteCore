@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 11:06:25 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Tue Sep 11 17:56:55 EDT 2007 by Mesquite  version 2.0BETA3 (build i58) at dyn-152-3-39-142.wireless.duke.edu/152.3.39.142 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=30;
 	TAXLABELS
 		A B C D E F G H I J K L M N O P Q R S T U V W X Y Z AA BB CC DD 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "15b2-estimatingParameters.nex"';
 	DIMENSIONS  NCHAR=100;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	MATRIX
@@ -84,7 +86,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 6717564632715537289 WM114899a08ca0;
-			checksum 0 631240850;
+			checksum 0 631240850 WM114899a08ca0;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -177,16 +179,14 @@ Begin MESQUITE;
 				tell It;
 					getWindow;
 					tell It;
-						popOut;
 						setExplanationSize 0;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 288 222;
+						setSize 476 345;
 						setLocation 155 537;
 						setFont SanSerif;
 						setFontSize 10;
-						setActive;
 					endTell;
 					showWindow;
 				endTell;
@@ -235,7 +235,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 544 364;
+					setSize 544 386;
 					setLocation 533 476;
 					setFont SanSerif;
 					setFontSize 10;
@@ -274,9 +274,10 @@ Begin MESQUITE;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setSize 476 328;
-					setLocation 15 22;
+					setLocation 155 537;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'Here a different model of character evolution is used in the simulation, one in which the rate of forward change (0 to 1) may be different from the rate of backward change (1 to 0).  Their ratio is the bias shown in the model editing window at right.  The chart shows the bias estimated from characters simulated on the tree shown.^n^nThe chart is shown with only 5 replicate simulations because the calculations take a while.  If you want, select Number of Characters in the Chart menu and increase the number.  If you increase it to 100 you''ll notice that the average bias is outrageously high because of a few outlier characters, but the median should stay close to the bias used in the simulation.';
 				setTitle Estimating_parameters;
 				toggleFileNames off;

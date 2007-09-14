@@ -33,18 +33,28 @@ public class BiSSELikelihoodRatio extends NumForCharAndTreeDivers {
 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		calcTask1 = (BiSSELikelihood)hireEmployee(BiSSELikelihood.class, "Calculator for BiSSE Likelihood");
+		calcTask1 = (BiSSELikelihood)hireEmployee(BiSSELikelihood.class, "Calculator for Unconstrained BiSSE Likelihood");
 		if (calcTask1 == null)
 			return sorry(getName() + " couldn't start because no likelihood calculator module obtained.");
-		calcTask2 = (BiSSELikelihood)hireEmployee(BiSSELikelihood.class, "Calculator for BiSSE Likelihood");
+		calcTask2 = (BiSSELikelihood)hireEmployee(BiSSELikelihood.class, "Calculator for Constrained BiSSE Likelihood");
 		if (calcTask2 == null)
 			return sorry(getName() + " couldn't start because no likelihood calculator module obtained.");
+		return true;
+	}
+	public boolean requestPrimaryChoice(){
 		return true;
 	}
  	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresExactlyCategoricalData();
 	}
+ 	public String purposeOfEmployee(MesquiteModule mb){
 
+ 		if (calcTask1 == null || mb == calcTask1)  //will be null when first started
+ 			return "Unconstrained calculation of BiSSE likelihood";
+		if (calcTask2 == null || mb == calcTask2)
+ 			return "Constrained calculation of BiSSE likelihood";
+		return "";
+ 	}
 	public void initialize(Tree tree, CharacterDistribution charStates1) {
 		// TODO Auto-generated method stub
 	}
@@ -87,8 +97,8 @@ public class BiSSELikelihoodRatio extends NumForCharAndTreeDivers {
 		calcTask1.calculateNumber(tree, charStates, num1, resultString);
 		calcTask2.calculateNumber(tree, charStates, num2, resultString);
 
-		result.setValue(num1);
-		result.subtract(num2);
+		result.setValue(num2);
+		result.subtract(num1);
 		result.setName("Ln Likelihood Difference");
 		result.copyAuxiliaries(new MesquiteNumber[]{num1, num2});
 		saveLastResult(result);
@@ -113,7 +123,7 @@ public class BiSSELikelihoodRatio extends NumForCharAndTreeDivers {
 	}
 
 	public String getVersion() {
-		return "0.1";
+		return "1.0";
 	}
 
 	public String getExplanation(){

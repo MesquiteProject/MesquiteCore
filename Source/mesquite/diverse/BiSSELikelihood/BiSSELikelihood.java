@@ -91,7 +91,12 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	boolean showDialog(){
 		if (params == null)
 			return false;
-		ParametersDialog dlog = new ParametersDialog(containerOfModule(), "Parameters", params, null, 2, 2, false);
+		String s = whatIsMyPurpose();
+		if (!StringUtil.blank(s))
+			s = "BiSSE Parameters for " + s;
+		else
+			s = "BiSSE Parameters";
+		ParametersDialog dlog = new ParametersDialog(containerOfModule(), "BiSSE Parameters", s, params, null, 2, 2, false);
 		dlog.appendToHelpString("Parameters for BiSSE model.  Indicate the rates of speciation when in state 0 (lambda0), speciation when in state 1 (lambda1), ");
 		dlog.appendToHelpString("rates of extinction when in state 0 (mu0), extinction when in state 1 (mu1), ");
 		dlog.appendToHelpString("rates of character change 0 to 1(q01), and rates of character change 1 to 0 (q10). ");
@@ -242,7 +247,7 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	}
 
 	public String getVersion() {
-		return "0.1";
+		return "1.0";
 	}
 
 	public String getExplanation(){

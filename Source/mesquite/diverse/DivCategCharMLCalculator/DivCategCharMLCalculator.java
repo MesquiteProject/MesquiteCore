@@ -391,7 +391,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     }
 
     public String getVersion() {
-        return "0.1";
+        return "1.0";
     }
 
 	public String getExplanation(){

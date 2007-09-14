@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 11:12:27 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Tue Sep 11 17:57:52 EDT 2007 by Mesquite  version 2.0BETA3 (build i58) at dyn-152-3-39-142.wireless.duke.edu/152.3.39.142 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=10;
 	TAXLABELS
 		A B C D E F G H I J 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "19-likelihoodTot.nex"';
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	MATRIX
@@ -32,6 +34,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "19-likelihoodTot.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 A,
 		2 B,
@@ -77,7 +81,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 5088788982642008211 WM114899d66950;
-			checksum 0 69473247;
+			checksum 0 69473247 WM114899d66950;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -238,12 +242,17 @@ Begin MESQUITE;
 			setTaxa #3096529116964699576;
 			setNumColumns 1;
 			setNumRows 4;
-			setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
+			getTreeSource #mesquite.trees.DefiniteTreeSource.DefiniteTreeSource;
 			tell It;
-				setTreeBlock 1;
-				toggleUseWeights off;
+				setTreeSource #mesquite.trees.StoredTrees.StoredTrees;
+				tell It;
+					setTreeBlock 1;
+					toggleUseWeights off;
+				endTell;
+				assignNumTrees 4;
 			endTell;
 			makeWindow;
+			toggleLegendBotRight off;
 			setNamesVisible on;
 			getWindow;
 			tell It;
