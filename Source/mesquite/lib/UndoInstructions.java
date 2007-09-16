@@ -2,7 +2,8 @@ package mesquite.lib;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.*;
+import mesquite.categ.lib.*;
 //import mesquite.charMatrices.lib.*;
 import mesquite.lib.table.*;
 
@@ -30,8 +31,6 @@ public class UndoInstructions implements Undoer {
 	public static final int PARTS_ADDED = 9;
 
 // ones below here are not yet supported
-	public static final int TAXA_ADDED = 9;
-	public static final int CHARACTERS_ADDED = 10;
 	public static final int TAXA_DELETED = 11;
 	public static final int CHARACTERS_DELETED = 12;
 
@@ -88,14 +87,6 @@ public class UndoInstructions implements Undoer {
 			taxa = (Taxa) obj;
 	}
 
-	/** This is the constructor for whole-matrix changes. */
-	public UndoInstructions(int changeClass, CharacterData oldData, CharacterData data) {
-
-		this.changeClass = changeClass;
-		this.data = data;
-		if (data != null)
-			this.oldData = oldData.cloneData();
-	}
 
 	/** This is the constructor for changes to a TextField. */
 	public UndoInstructions(int changeClass, Object oldState, Object newState, EditorTextField textField) {
@@ -126,23 +117,32 @@ public class UndoInstructions implements Undoer {
 		}
 	}
 
-	/** This is the constructor for changes to lists of character names. */
+	/** This is the constructor for whole-matrix changes or changes to lists of character names. */
 	public UndoInstructions(int changeClass, Object obj, CharacterData data) {
 		if (obj == null)
 			return;
 		this.changeClass = changeClass;
 		this.data = data;
-		namesList = null;
-		if (obj instanceof CharacterData) {
-			data = (CharacterData) obj;
-			namesList = new String[data.getNumChars()];
-			for (int i = 0; i < namesList.length; i++)
-				namesList[i] = data.getCharacterName(i);
 
-		} else if (obj instanceof String[]) {
-			namesList = new String[((String[]) obj).length];
-			for (int i = 0; i < namesList.length; i++)
-				namesList[i] = ((String[]) obj)[i];
+		if (changeClass==ALLDATACELLS) {
+			if (data != null && obj!=null)
+				if (obj instanceof CharacterData)
+					this.oldData = ((CharacterData)obj).cloneData();
+		} 
+		else if (changeClass == ALLCHARACTERNAMES) {
+
+			namesList = null;
+			if (obj instanceof CharacterData) {
+				data = (CharacterData) obj;
+				namesList = new String[data.getNumChars()];
+				for (int i = 0; i < namesList.length; i++)
+					namesList[i] = data.getCharacterName(i);
+
+			} else if (obj instanceof String[]) {
+				namesList = new String[((String[]) obj).length];
+				for (int i = 0; i < namesList.length; i++)
+					namesList[i] = ((String[]) obj)[i];
+			}
 		}
 	}
 	
@@ -269,7 +269,7 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, newData, data);
 
 		case ALLTAXONNAMES:
-			if (taxa == null)
+			if (taxa == null || namesList==null)
 				return null;
 			oldNamesList = null;
 			oldNamesList = new String[taxa.getNumTaxa()];
@@ -280,7 +280,7 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, oldNamesList, taxa);
 
 		case ALLCHARACTERNAMES:
-			if (data == null)
+			if (data == null || namesList==null)
 				return null;
 			oldNamesList = null;
 			oldNamesList = new String[data.getNumChars()];
