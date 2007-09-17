@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.basic.AuthorDefaults;
 
 import java.util.*;
@@ -26,29 +26,29 @@ public class AuthorDefaults extends DefaultsAssistant {
 		authorBlockDefault = new MesquiteBoolean(Author.addAuthorBlockByDefault);
 		loadPreferences();
 		addMenuItem( "Set Author...", makeCommand("setAuthor",  this));
- 		addCheckMenuItem(null, "Record Authors by Default", makeCommand("recordAuthors",  this), authorBlockDefault);
+		addCheckMenuItem(null, "Record Authors by Default", makeCommand("recordAuthors",  this), authorBlockDefault);
 		return true;
-  	 }
+	}
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
-				if ("&".equals(prefs[0])){
-					if (prefs.length > 1){
-						authorBlockDefault.setValue("recordAuthors".equalsIgnoreCase(prefs[1]));
-						if (prefs.length >2){
-							MesquiteModule.author.setName(prefs[2]);
-							if (prefs.length>3)
-								MesquiteModule.author.setCode(prefs[3]);
-		    	 			
-						}
+			if ("&".equals(prefs[0])){
+				if (prefs.length > 1){
+					authorBlockDefault.setValue("recordAuthors".equalsIgnoreCase(prefs[1]));
+					if (prefs.length >2){
+						MesquiteModule.author.setName(prefs[2]);
+						if (prefs.length>3)
+							MesquiteModule.author.setCode(prefs[3]);
+
+					}
 				}
-				}
-				else if ("-*".equals(prefs[0]))
-					;
-				else {
-					MesquiteModule.author.setName(prefs[0]);
-					if (prefs.length>1)
-						MesquiteModule.author.setCode(prefs[1]);
-    	 			}
+			}
+			else if ("-*".equals(prefs[0]))
+				;
+			else {
+				MesquiteModule.author.setName(prefs[0]);
+				if (prefs.length>1)
+					MesquiteModule.author.setCode(prefs[1]);
+			}
 		}
 	}
 	public void endJob(){
@@ -71,11 +71,11 @@ public class AuthorDefaults extends DefaultsAssistant {
 	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(MesquiteWindow.class, "Sets the author for this account and machine", null, commandName, "setAuthor")) {
-    	 		MesquiteBoolean answer = new MesquiteBoolean(false);
-    	 		MesquiteString resp1 = new MesquiteString(MesquiteModule.author.getName());
-    	 		MesquiteString resp2 = new MesquiteString(MesquiteModule.author.getCode());
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(MesquiteWindow.class, "Sets the author for this account and machine", null, commandName, "setAuthor")) {
+			MesquiteBoolean answer = new MesquiteBoolean(false);
+			MesquiteString resp1 = new MesquiteString(MesquiteModule.author.getName());
+			MesquiteString resp2 = new MesquiteString(MesquiteModule.author.getCode());
 			MesquiteString.queryTwoStrings(containerOfModule(), "Set Author", "Author", "Author code (do not use a number!)", answer, resp1, resp2, false);
 			if (answer.getValue()){
 				MesquiteModule.author.setName(resp1.getValue());
@@ -85,47 +85,54 @@ public class AuthorDefaults extends DefaultsAssistant {
 			setCurrentAllProjects();
 			return null;
 
-    	 	}
-    		else	if (checker.compare(this.getClass(), "Sets default to record authors", null, commandName, "recordAuthors")) {
-    			authorBlockDefault.toggleValue(parser.getFirstToken(arguments));
-    			Author.addAuthorBlockByDefault = authorBlockDefault.getValue();
-    	 		storePreferences();
-    	 		return null;
-    		}
-   	 	else
-    	 		return  super.doCommand(commandName, arguments, checker);
-   	 }
-  	 
-  	 protected void setCurrentAllProjects(){
-  	 //go through all projects changing current author or adding current author
-  	 	Projects p = MesquiteTrunk.mesquiteTrunk.getProjectList();
-  	 	for (int i=0; i<p.getNumProjects(); i++){
-  	 		MesquiteProject proj = p.getProject(i);
-  	 		ListableVector v = proj.getAuthors();
-  	 		boolean found = false;
-  	 		for (int ia = 0; ia< v.size(); ia++){
-  	 			Author au = (Author)v.elementAt(ia);
- 	 			if (au.isCurrent()) {
-  	 				au.setName(MesquiteModule.author.getName());
-  	 				au.setCode(MesquiteModule.author.getCode());
-  	 				found = true;
-  	 			}
-  	 		}
-  	 		if (!found){
+		}
+		else	if (checker.compare(this.getClass(), "Sets default to record authors", null, commandName, "recordAuthors")) {
+			authorBlockDefault.toggleValue(parser.getFirstToken(arguments));
+			Author.addAuthorBlockByDefault = authorBlockDefault.getValue();
+			storePreferences();
+			return null;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+	}
+
+	protected void setCurrentAllProjects(){
+		//go through all projects changing current author or adding current author
+		Projects p = MesquiteTrunk.mesquiteTrunk.getProjectList();
+		for (int i=0; i<p.getNumProjects(); i++){
+			MesquiteProject proj = p.getProject(i);
+			ListableVector v = proj.getAuthors();
+			boolean found = false;
+			for (int ia = 0; ia< v.size(); ia++){
+				Author au = (Author)v.elementAt(ia);
+				if (au.isCurrent()) {
+					au.setName(MesquiteModule.author.getName());
+					au.setCode(MesquiteModule.author.getCode());
+					found = true;
+				}
+			}
+			if (!found){
 				Author a = new Author();
 				a.setName(MesquiteModule.author.getName());
 				a.setCode(MesquiteModule.author.getCode());
 				a.setCurrent(true);
 				v.addElement(a, true);
-  	 		}
-  	 	}
-  	 }
+			}
+		}
+	}
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Set Author";
-   	 }
+	}
 	/*.................................................................................................................*/
-  	 public String getExplanation() {
+	public String getExplanation() {
 		return "Sets the author for this machine and account.";
-   	 }
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 200;  
+	}
 }

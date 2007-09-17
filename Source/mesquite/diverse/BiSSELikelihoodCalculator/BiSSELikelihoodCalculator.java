@@ -829,6 +829,13 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		// TODO Auto-generated method stub
 		return BiSSELikelihoodCalculator.class;
 	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 200;  
+	}
 
 	public String getName() {
 		// TODO Auto-generated method stub

@@ -93,7 +93,14 @@ public class NodeCountDist extends IncTaxaDistanceSource implements Incrementabl
         return "Node Count (Speciation Patristic) Distances implied by Tree";  
     }
      
-    public String getParameters() {
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 200;  
+	}
+   public String getParameters() {
         return "Node Count Distances among taxa implied by tree from : " + treeSourceTask.getName();
     }
     /*.................................................................................................................*/
