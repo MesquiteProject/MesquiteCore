@@ -80,7 +80,11 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     RandomBetween rng;
     int iterations = 2;
     boolean suspended = false;
-    
+	/*.................................................................................................................*/
+	public boolean showCitation(){
+		return true;
+	}
+  
     public boolean startJob(String arguments, Object condition, boolean hiredByName) {
         loadPreferences();
         probabilityValue = new MesquiteNumber();
@@ -406,7 +410,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
 	}
  
     public boolean isPrerelease(){
-        return true;
+        return false;
     }
     
     /*------------------------------------------------------------------------------------------*/

@@ -177,7 +177,7 @@ public class SpecExtincLikelihood extends NumberForTreeDivers  {
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 

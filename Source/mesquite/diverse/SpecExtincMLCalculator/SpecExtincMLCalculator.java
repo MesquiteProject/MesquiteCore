@@ -23,6 +23,10 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		EmployeeNeed e = registerEmployeeNeed(ParametersExplorer.class, getName() + "  uses a Parameters Explorer to show likelihood surfaces.",
 		"The parameter explorer is arranged automatically");
 	}
+	/*.................................................................................................................*/
+	public boolean showCitation(){
+		return true;
+	}
 
 	// bunch of stuff copied from zMargLikeCateg - need to prune!!
 
@@ -502,7 +506,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 

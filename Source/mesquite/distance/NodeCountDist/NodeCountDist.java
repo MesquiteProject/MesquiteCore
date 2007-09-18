@@ -111,7 +111,7 @@ public class NodeCountDist extends IncTaxaDistanceSource implements Incrementabl
     }
      
     public boolean isPrerelease(){
-        return true;
+        return false;
     }
     /*.................................................................................................................*/
     public boolean showCitation(){

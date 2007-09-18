@@ -27,6 +27,10 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		"The parameter explorer is arranged automatically");
 	}
 	/*.................................................................................................................*/
+	public boolean showCitation(){
+		return true;
+	}
+	/*.................................................................................................................*/
 
 	// bunch of stuff copied from zMargLikeCateg - need to prune!!
 
@@ -854,7 +858,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 }
 /*============================================================================*/

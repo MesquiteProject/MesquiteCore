@@ -105,7 +105,7 @@ public class SharedProportionalDistance extends IncTaxaDistanceSource implements
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isSubstantive(){
 		return true;

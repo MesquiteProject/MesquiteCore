@@ -48,6 +48,10 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	StringArray reportModes;
 	int reportMode = 0;
 
+	/*.................................................................................................................*/
+	public boolean showCitation(){
+		return true;
+	}
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		calcTask = (BiSSELikelihoodCalculator)hireEmployee(BiSSELikelihoodCalculator.class, "Calculator for BiSSE Likelihood");
 		if (calcTask == null)
@@ -268,7 +272,7 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 

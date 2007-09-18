@@ -196,7 +196,7 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
     }
 
     public boolean isPrerelease(){
-        return true;
+        return false;
     }
 
 

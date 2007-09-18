@@ -100,7 +100,7 @@ public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incr
     		return true;
     }
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
