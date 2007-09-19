@@ -45,7 +45,7 @@ public class StateFrequency extends NumberForCharacter {
     }
     /*.................................................................................................................*/
     public boolean isPrerelease(){
-        return true;
+        return false;
     }
     /*.................................................................................................................*/
     public boolean showCitation(){

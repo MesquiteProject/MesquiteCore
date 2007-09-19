@@ -308,10 +308,6 @@ timer6.end();
 
 	/*...............................................................................................................*/
 	public void paint(Graphics g) {
-	/*	Debugg.println("ready " + MesquiteWindow.isReadyToPaint(this) + " " + MesquiteWindow.windowOfItem (this));
-		if (!MesquiteWindow.isReadyToPaint(this) || MesquiteWindow.checkDoomed(this))
-			return;
-			*/
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		

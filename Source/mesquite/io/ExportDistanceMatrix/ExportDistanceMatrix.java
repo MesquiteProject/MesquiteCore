@@ -168,7 +168,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
     }
 
   	public boolean isPrerelease() {
-	    return true;
+	    return false;
    	}
 
   	public boolean isSubstantive(){
@@ -183,7 +183,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
 	}
   	
 	public String getName() {
-		return "Export Distance Matrix";
+		return "Export Distance Matrix (dsc)";
 	}
 	
 
