@@ -1,7 +1,8 @@
 #NEXUS
-[written Thu Aug 23 11:26:33 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.2.4 (Wayne Maddison)]
+[written Thu Sep 20 16:45:03 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=100;
 	TAXLABELS
 		taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 taxon_16 taxon_17 taxon_18 taxon_19 taxon_20 taxon_21 taxon_22 taxon_23 taxon_24 taxon_25 taxon_26 taxon_27 taxon_28 taxon_29 taxon_30 taxon_31 taxon_32 taxon_33 taxon_34 taxon_35 taxon_36 taxon_37 taxon_38 taxon_39 taxon_40 taxon_41 taxon_42 taxon_43 taxon_44 taxon_45 taxon_46 taxon_47 taxon_48 taxon_49 taxon_50 taxon_51 taxon_52 taxon_53 taxon_54 taxon_55 taxon_56 taxon_57 taxon_58 taxon_59 taxon_60 taxon_61 taxon_62 taxon_63 taxon_64 taxon_65 taxon_66 taxon_67 taxon_68 taxon_69 taxon_70 taxon_71 taxon_72 taxon_73 taxon_74 taxon_75 taxon_76 taxon_77 taxon_78 taxon_79 taxon_80 taxon_81 taxon_82 taxon_83 taxon_84 taxon_85 taxon_86 taxon_87 taxon_88 taxon_89 taxon_90 taxon_91 taxon_92 taxon_93 taxon_94 taxon_95 taxon_96 taxon_97 taxon_98 taxon_99 taxon_100 
@@ -13,6 +14,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "07-contTreeSim.nex"';
 	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
@@ -130,6 +132,8 @@ CHARSTATELABELS
 
 END;
 BEGIN TREES;
+	Title 'Trees from "07-contTreeSim.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 taxon_1,
 		2 taxon_2,
@@ -260,7 +264,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 2591902839263838224 WM11493f9adec0;
-			checksum 0 2295126586;
+			checksum 0 2295126586 WM11493f9adec0;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -286,6 +290,7 @@ Begin MESQUITE;
 					tell It;
 						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
 					endTell;
+					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -310,6 +315,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -446,7 +456,6 @@ Begin MESQUITE;
 					setLocation 108 630;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'This shows a tree and character simulated together. The character evolved by brownian motion; the tree speciated with a rate that is the value of the simulated character.^n^nA block of simulated trees and accompanying matrix (such that the i''th character was simulated with the i''th tree) was made by selecting Trees & Diversification Characters from the Taxa & Trees menu.  You can choose to simulate as shown (with a continuous character) or with the BiSSE model using a binary character.';
 				setTitle Simulated_trees_&_characters;
 				toggleFileNames off;

@@ -1,7 +1,8 @@
 #NEXUS
-[written Fri Aug 24 08:40:06 PDT 2007 by Mesquite  version 2.0BETA3 (build i51) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
+[written Thu Sep 20 16:44:52 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=32;
 	TAXLABELS
 		taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 taxon_16 taxon_17 taxon_18 taxon_19 taxon_20 taxon_21 taxon_22 taxon_23 taxon_24 taxon_25 taxon_26 taxon_27 taxon_28 taxon_29 taxon_30 taxon_31 taxon_32 
@@ -13,6 +14,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "06-BiSSEtrees.nex"';
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	MATRIX
@@ -62,6 +64,8 @@ CODESET * UNTITLED   =  universal:  1;
 END;
 
 BEGIN TREES;
+	Title 'Trees from "06-BiSSEtrees.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 taxon_1,
 		2 taxon_2,
@@ -121,7 +125,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 444104661901299517 WM114988797040;
-			checksum 0 909469476;
+			checksum 0 909469476 WM114988797040;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -147,6 +151,7 @@ Begin MESQUITE;
 					tell It;
 						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.interchange;
 					endTell;
+					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -170,6 +175,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -338,7 +348,6 @@ Begin MESQUITE;
 					setLocation 58 458;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'To save BiSSE results (with parameter values) for multiple trees, you can either do a chart for Trees (indicating you want to save a results table) or you can set up a tree window as shown, with the BiSSE analysis running.  Then, go to the Window menu of the Tree window, and select Scripting>Send script.  In the dialog box, paste the following script.  It goes through the trees and saves the results in a file, which will be in the same directory as the data file.^n^n[===== script to tree window for BiSSE calculations =====]^n String.resultsFile ''results.txt'';^nsaveMessageToFile *String.resultsFile ''RESULTS with different trees'';^nappendReturnToFile *String.resultsFile;^ngetWindow;^ntell It;^n	getNumTrees;^n	Integer.numReps *It;^n	ifNotCombinable *Integer.numReps;^n		Integer.numReps 10; [in case indefinite number of trees]^n	endIf;^nendTell;^ndebug;^nInteger.count 0;^nfor *Integer.numReps;^n	increment.count;^n	getWindow;^n	tell It;^n		setTreeNumber *Integer.count;^n	endTell;^n	getEmployee #mesquite.diverse.CharAssocDivViewer.CharAssocDivViewer;^n	tell It;^n		doCounts; [because counts dont auto-update when scripting]^n	endTell;^n	getEmployee #mesquite.diverse.BiSSELikelihood.BiSSELikelihood;^n	tell It;^n		getLastResult;^n		String.result *It;^n		appendMessageToFile *String.resultsFile *String.result;^n		appendReturnToFile *String.resultsFile;^n	endTell;^nendFor;^n';
 				setTitle Results_from_Multiple_Trees;
 				toggleFileNames off;

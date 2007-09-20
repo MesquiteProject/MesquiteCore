@@ -1,7 +1,8 @@
 #NEXUS
-[written Thu Aug 23 22:46:24 PDT 2007 by Mesquite  version 2.0BETA3 (build i51) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
+[written Thu Sep 20 16:45:10 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=140;
 	TAXLABELS
 		taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 taxon_16 taxon_17 taxon_18 taxon_19 taxon_20 taxon_21 taxon_22 taxon_23 taxon_24 taxon_25 taxon_26 taxon_27 taxon_28 taxon_29 taxon_30 taxon_31 taxon_32 taxon_33 taxon_34 taxon_35 taxon_36 taxon_37 taxon_38 taxon_39 taxon_40 taxon_41 taxon_42 taxon_43 taxon_44 taxon_45 taxon_46 taxon_47 taxon_48 taxon_49 taxon_50 taxon_51 taxon_52 taxon_53 taxon_54 taxon_55 taxon_56 taxon_57 taxon_58 taxon_59 taxon_60 taxon_61 taxon_62 taxon_63 taxon_64 taxon_65 taxon_66 taxon_67 taxon_68 taxon_69 taxon_70 taxon_71 taxon_72 taxon_73 taxon_74 taxon_75 taxon_76 taxon_77 taxon_78 taxon_79 taxon_80 taxon_81 taxon_82 taxon_83 taxon_84 taxon_85 taxon_86 taxon_87 taxon_88 taxon_89 taxon_90 taxon_91 taxon_92 taxon_93 taxon_94 taxon_95 taxon_96 taxon_97 taxon_98 taxon_99 taxon_100 taxon_101 taxon_102 taxon_103 taxon_104 taxon_105 taxon_106 taxon_107 taxon_108 taxon_109 taxon_110 taxon_111 taxon_112 taxon_113 taxon_114 taxon_115 taxon_116 taxon_117 taxon_118 taxon_119 taxon_120 taxon_121 taxon_122 taxon_123 taxon_124 taxon_125 taxon_126 taxon_127 taxon_128 taxon_129 taxon_130 taxon_131 taxon_132 taxon_133 taxon_134 taxon_135 taxon_136 taxon_137 taxon_138 taxon_139 taxon_140 
@@ -13,6 +14,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "08-binaryTreeSim.nex"';
 	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -172,6 +174,8 @@ CODESET * UNTITLED   =  universal:  1 -  5;
 END;
 
 BEGIN TREES;
+	Title 'Trees from "08-binaryTreeSim.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 taxon_1,
 		2 taxon_2,
@@ -342,7 +346,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 7885352486418568017 WM1149667c69b0;
-			checksum 0 905627623;
+			checksum 0 905627623 WM1149667c69b0;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -368,6 +372,7 @@ Begin MESQUITE;
 					tell It;
 						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
 					endTell;
+					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -392,6 +397,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -536,7 +546,6 @@ Begin MESQUITE;
 					setLocation 108 630;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'This shows a tree and character simulated together. The BiSSE model was used, with rate of speciation with state 0 = 0.1, with state 1 = 0.3, rate of extinction with state 0 = 0.05, with state 1 = 0.05, and rates of state change 0.005.^n^nA block of simulated trees and accompanying matrix (such that the i''th character was simulated with the i''th tree) was made by selecting Trees & Diversification Characters from the Taxa & Trees menu.  ';
 				setTitle Simulated_trees_&_characters;
 				toggleFileNames off;

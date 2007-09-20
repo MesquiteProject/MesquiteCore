@@ -1,7 +1,8 @@
 #NEXUS
-[written Thu Aug 23 10:26:31 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.2.4 (Wayne Maddison)]
+[written Thu Sep 20 16:44:38 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=32;
 	TAXLABELS
 		taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 taxon_16 taxon_17 taxon_18 taxon_19 taxon_20 taxon_21 taxon_22 taxon_23 taxon_24 taxon_25 taxon_26 taxon_27 taxon_28 taxon_29 taxon_30 taxon_31 taxon_32 
@@ -13,6 +14,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "05-BiSSENetViewer.nex"';
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	MATRIX
@@ -62,6 +64,8 @@ CODESET * UNTITLED   =  universal:  1;
 END;
 
 BEGIN TREES;
+	Title 'Trees from "05-BiSSENetViewer.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 taxon_1,
 		2 taxon_2,
@@ -120,7 +124,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 444104661901299517 WM11493c252d50;
-			checksum 0 909469476;
+			checksum 0 909469476 WM11493c252d50;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -146,6 +150,7 @@ Begin MESQUITE;
 					tell It;
 						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
 					endTell;
+					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -169,6 +174,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -334,7 +344,6 @@ Begin MESQUITE;
 					setLocation 17 725;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'Here a modified version of BiSSE likelihood calculations is given, which is reparameterized in terms of net diversification (r, speciation minus extinction) and the speciation/extinction ratio (a).';
 				setTitle BiSSE_Net_Diversification;
 				toggleFileNames off;
