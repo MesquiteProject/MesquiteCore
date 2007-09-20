@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:26:16 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Thu Sep 20 14:11:03 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -59,6 +60,8 @@ CHARSTATELABELS
 
 END;
 BEGIN TREES;
+	Title 'Trees from "04-partitions.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -76,12 +79,12 @@ END;
 
 BEGIN NOTES;
 
-	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
+	TEXT  TAXA = Untitled_Block_of_Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	CHARACTERS = Structure_&_Color TAXA = Fubonidians;
+	CHARACTERS = Structure_&_Color TAXA = Untitled_Block_of_Taxa;
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
-	CHARACTERS = Measurements TAXA = Fubonidians;
+	CHARACTERS = Measurements TAXA = Untitled_Block_of_Taxa;
 
 END;
 
@@ -98,7 +101,7 @@ TAXPARTITION * UNTITLED  =  Fubonidiines :  1 -  3 5, Jotinupiines :  4 6 -  9;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -127,9 +130,9 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM11489072c9b0;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM11489072c9b0;
 			setID 1 1065345207404390442 WM11489072cb10;
-			checksum 1 2830407910;
+			checksum 1 2830407910 WM11489072cb10;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -151,6 +154,7 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 				endTell;
 				showWindow;
 				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
@@ -205,6 +209,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -306,7 +315,6 @@ Begin MESQUITE;
 					setLocation 11 27;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'When taxa are assigned to groups in a partition, as was shown in the last example file, any group colors will be used in other contexts.  Thus, the tree window highlights taxon names by the group color.  A scattergram of taxa colors the spots by their taxon''s group color. ';
 				setTitle Group_colors;
 				toggleFileNames off;

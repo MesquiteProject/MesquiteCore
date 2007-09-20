@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Aug 20 22:18:44 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
+[written Thu Sep 20 14:09:20 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "06-helpMenu.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "06-helpMenu.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,9 +58,9 @@ END;
 
 BEGIN NOTES;
 
-	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+	TEXT  TAXA = Untitled_Block_of_Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	TEXT TAXA =   Fubonidians TAXON =   5 TEXT =   Lives_deep_in_dark_caves;
+	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
 END;
 
@@ -67,7 +71,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
+OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -88,7 +92,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114861b8d080;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114861b8d080;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -106,13 +110,14 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 520 411;
+					setSize 589 413;
 					setLocation 475 22;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -136,6 +141,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -183,7 +193,6 @@ Begin MESQUITE;
 					setLocation 3 25;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'An important first step in learning Mesquite is to discover where to find instructions and information.  Because Mesquite is modular, there are many challenges in providing documentation, since what options are available depend on what is installed.  Mesquite may also be confusing at times, since its interface changes with what is installed and what calculations are being done.  ^n^nTo overcome these challenges, there are various features designed to give you information and instructions, which are described in this example file and the next.^n^nHere are the primary tools to learn Mesquite:^n^n1. These example files.^n^n2. The manual.  Go to the Help menu and select Mesquite Manual.  (You may find other items in the Help menu helpful)^n^n3. The search system.  Note the little text box at the top of this window with "Search Features" or "Search Data" beside it.  If it says "Search Data", touch on the blue d until it says "Search Features".  Enter text in the box and hit return; it will find features that match that search string.^n^n4. See the Mesquite manual page on learning Mesquite (link below). ^n^n';
 				setTitle Help;
 				toggleFileNames off;

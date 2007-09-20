@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Aug 20 22:11:56 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
+[written Thu Sep 20 14:03:38 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "03-characterMatrices.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "03-characterMatrices.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,9 +58,9 @@ END;
 
 BEGIN NOTES;
 
-	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+	TEXT  TAXA = Untitled_Block_of_Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	TEXT TAXA =   Fubonidians TAXON =   5 TEXT =   Lives_deep_in_dark_caves;
+	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
 END;
 
@@ -67,7 +71,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -88,7 +92,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114861935490;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114861935490;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -107,6 +111,7 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -164,7 +169,6 @@ Begin MESQUITE;
 					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'This file shows the spreadsheet editor for character matrices.  At its left side is a tool palette with a selection tool (the arrow), an editing tool (the I-beam), and others. When you select a tool by touching its button, its explanation shows up in the explanation area at the bottom of the window.^n^nThe matrix editing window has a "Matrix" menu which controls many of its functions.  In it you can control appearance and operate utilities that alter the data.  You can also add and delete taxa and characters.^n^nWhen you touch a cell in the matrix that begins or ends with *, you may see an annotation (footnote) for that cell in the annotation area near the bottom of the window (the white area just above the yellowish explanation area). To edit an annotation, select the cell, and then go down to the annotation area and type in it.^n^nTo see more details on the data editor, touch the button in the the blue window.  Otherwise, use the Next button to go to the next example.';
 				setTitle Character_matrix_editor;
 				toggleFileNames off;

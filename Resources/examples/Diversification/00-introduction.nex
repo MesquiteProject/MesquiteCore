@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed Aug 22 21:20:49 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Thu Sep 20 14:35:29 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
@@ -18,7 +18,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'Phylogeny can be used to explore species diversification ? speciation and extinction.  Here are some example files of relevant Mesquite features.^n^nTo go from one file to another, hit the "Next" button';
+				setExplanation 'Phylogeny can be used to explore species diversification, speciation and extinction.  Here are some example files of relevant Mesquite features.^n^nTo go from one file to another, hit the "Next" button';
 				setTitle Species_Diversification;
 				toggleFileNames off;
 				setPrevButtonName Previous;

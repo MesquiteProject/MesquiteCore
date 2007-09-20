@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Aug 20 22:07:53 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
+[written Thu Sep 20 14:09:04 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "05-windowModes.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "05-windowModes.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,9 +58,9 @@ END;
 
 BEGIN NOTES;
 
-	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+	TEXT  TAXA = Untitled_Block_of_Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	TEXT TAXA =    Fubonidians TAXON =    5 TEXT =    Lives_deep_in_dark_caves;
+	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
 END;
 
@@ -67,7 +71,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
+OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -88,7 +92,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114861a64f80;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114861a64f80;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -137,6 +141,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -214,6 +223,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -291,6 +305,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -345,7 +364,6 @@ Begin MESQUITE;
 					tell It;
 					endTell;
 					showPage 3;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -369,6 +387,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -415,6 +438,7 @@ Begin MESQUITE;
 					setLocation 4 22;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'Most windows have several modes for viewing, controlled by the information bar at the top.  The information bar has five tabs, "Graphics", "Text", "Parameters", "Modules" and "Citations".  If the information bar does not appear at the top of a window, it may be turned on using the "Show Information Bar" menu item in the Windows menu.^n^nThe four windows shown here are all tree windows, being show in each of four different modes.  The "Graphics" mode is the standard mode in which you''re likely to work.  The "Text" mode gives an alternative, text-based view of the window.  The "Parameters" mode shows important parameter settings of the various modules participating in the window.  This can be useful to see what are the parameters values or assumptions for an analysis.  The "Modules" mode shows the hierarchy of Mesquite modules involved in making the window.  If you pass the cursor over the names of the modules, information about each module will appear in the explanation area at the bottom of the window.  Touching on the name of the module also gives information.  The "Citations" mode shows citations of any modules involved in the calculations that consider themselves citable in the sense of producing substantive results.';
 				setTitle Window_modes;
 				toggleFileNames off;

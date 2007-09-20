@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Aug 20 21:58:31 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.4 (Wayne Maddison)]
+[written Thu Sep 20 14:03:46 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "04-treeWindow.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "04-treeWindow.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,9 +58,9 @@ END;
 
 BEGIN NOTES;
 
-	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
+	TEXT  TAXA = Untitled_Block_of_Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	TEXT TAXA =  Fubonidians TAXON =  5 TEXT =  Lives_deep_in_dark_caves;
+	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
 END;
 
@@ -67,7 +71,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -88,7 +92,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM1148619a00b0;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM1148619a00b0;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -113,6 +117,7 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -136,6 +141,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -183,7 +193,6 @@ Begin MESQUITE;
 					setLocation 8 27;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'This file shows the tree window in which trees can be viewed and edited.  At left is a tool palette, whose tools can be used for manipulating the tree.  There is also a control with blue arrows to scroll from one tree to another from the current source of trees.  ^n^nThe Tree Window has  a Tree menu in which you can control the trees appearance, and choose the source of trees.  There is also an Analysis menu from which you can initiate analyses with the tree.^n^nThe tree window also has an annotation and explanation area at the bottom for communicating with the user.^n^nFor more information about viewing and editing trees, follow the "Go" button below beside "Viewing trees".  For more information about manipulating trees, follow the "Go" button beside "Manipulating trees".  Otherwise, go to the next example via the Next button.';
 				setTitle Tree_window;
 				toggleFileNames off;

@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:32:33 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Thu Sep 20 14:11:30 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -59,6 +60,8 @@ CHARSTATELABELS
 
 END;
 BEGIN TREES;
+	Title 'Trees from "06-selecting.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -76,12 +79,12 @@ END;
 
 BEGIN NOTES;
 
-	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
+	TEXT  TAXA = Untitled_Block_of_Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
-	CHARACTERS = Structure_&_Color TAXA = Fubonidians;
+	CHARACTERS = Structure_&_Color TAXA = Untitled_Block_of_Taxa;
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
-	CHARACTERS = Measurements TAXA = Fubonidians;
+	CHARACTERS = Measurements TAXA = Untitled_Block_of_Taxa;
 
 END;
 
@@ -99,7 +102,7 @@ CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                                unord PolyTcount =                                MINSTEPS;
+OPTIONS DEFTYPE =                                 unord PolyTcount =                                 MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  4;
@@ -126,9 +129,9 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114890bf6bd0;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114890bf6bd0;
 			setID 1 1065345207404390442 WM114890bf6dd0;
-			checksum 1 2830407910;
+			checksum 1 2830407910 WM114890bf6dd0;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -178,6 +181,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -227,6 +235,7 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
@@ -330,7 +339,6 @@ Begin MESQUITE;
 					setLocation 10 27;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'Taxa can also be selected in the Tree Window using the Select Taxa tool or the Select Taxa in Clade tool.^n^nThe Select Taxa in Clade tool is that currently in use in the tree window at upper right (the tool looks like a white triangle with small black squares above it).  When you touch on a branch, all the taxa in that clade are selected.  If you hold down the Shift or Control keys, you can accumulate selections.  ^n^nThe Select Taxa tool looks like a black rectangle with an arrow; with it you touch on the taxon names in the tree to select them, using Shift and Control to accumulate selections.  Click away from the tree but within the field of the tree to deselect taxa.^n^nSelecting taxa in these ways can be useful for various purposes.  For instance, it allows you to copy the information from a subset of the matrix or scattergram and paste it into another program.';
 				setTitle Selecting_Taxa;
 				toggleFileNames off;

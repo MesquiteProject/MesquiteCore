@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 22:34:22 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Thu Sep 20 14:26:58 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=46;
 	TAXLABELS
 		Lamprey Alligator Blue_Whale Fin_whale dog Carassi white_rhino Chrysem crow carp possum donkey horse cat chicken Halicho Hippo gibbon Kangaroo smooth_dog_fish Myoxus trout platypus sheep baboon Pelomed seal_vitulina Polypterus lung_fish Skate Rat Black_Rhino Salmon Scyliorhinus Spiny_dog_fish ostrich Pig Man Fly Frog cow mouse amphioxus Mosquito p_urchin S_urchin 
@@ -182,6 +183,8 @@ CODESET * UNTITLED  (CHARACTERS = Amino_acids)  =  universal:  1 -  382;
 END;
 
 BEGIN TREES;
+	Title 'Trees from "09-cytochromeBscatter.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Lamprey,
 		2 Alligator,
@@ -235,7 +238,7 @@ END;
 
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                            unord PolyTcount =                            MINSTEPS;
+OPTIONS DEFTYPE =                             unord PolyTcount =                             MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Amino_acids)  =  unord:  1 -  382;
 TYPESET * UNTITLED  (CHARACTERS = location)  =  Squared:  1 -  382;
 
@@ -257,9 +260,9 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 7273041429729163753 WM1148c0dd38d0;
-			checksum 0 2913214590;
+			checksum 0 2913214590 WM1148c0dd38d0;
 			setID 1 1052710308229948178 WM1148c0dd4740;
-			checksum 1 3995003137;
+			checksum 1 3995003137 WM1148c0dd4740;
 		endTell;
 		newAssistant  #mesquite.charts.CharsScattergram.CharsScattergram;
 		tell It;
@@ -322,6 +325,7 @@ Begin MESQUITE;
 					setLocation 8 23;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'Once the linked matrix of xyz amino acid positions is entered, they can be used to build the plot by using New Scattergram for Characters (Analysis menu).  Here are shown the scattergram in various stages of construction.^n^nIndicate you want the scattergram to be for stored characters, indicate same value for the two axes, choose "Mean Value of Character (Linked Matrix)".  Select the molecular sequence matrix as the matrix to be used.  This will result in the plot above.^n^nTo change the appearance of the plot, select Join the Dots in the Scattergram menu.^nThen select thick lines, don''t show dots, don''t join first to last, and marker size 8.  This will result in the plot at upper right.^n^nFinally, choose Color by Third Value from the Colors menu and choose the value by which to color the amino acids. To use a moving window, select "Moving Window for Colors" from the Colors menu and indicate the window size.';
 				setTitle Cytochrome_B;
 				toggleFileNames off;
@@ -360,7 +364,6 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 				endTell;
 				enableCalculations;
 				getEmployee #mesquite.charts.Scattergram.Scattergram;

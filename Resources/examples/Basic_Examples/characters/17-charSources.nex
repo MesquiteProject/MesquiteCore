@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:50:35 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Thu Sep 20 14:13:07 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "17-charSources.nex"';
 	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
@@ -70,7 +72,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 4132708679229515777 WM114891dc1ae0;
-			checksum 0 1628742248;
+			checksum 0 1628742248 WM114891dc1ae0;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -92,7 +94,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 541 355;
+					setSize 555 479;
 					setLocation 559 22;
 					setFont SanSerif;
 					setFontSize 10;
@@ -106,7 +108,7 @@ Begin MESQUITE;
 					setTreeDrawer  #mesquite.trees.BallsNSticks.BallsNSticks;
 					tell It;
 						setSpotDiameter 12;
-						setEdgeWidth 4;
+						setEdgeWidth 3;
 						orientUp;
 						useDiagonal;
 						toggleCosmic off;
@@ -126,6 +128,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;

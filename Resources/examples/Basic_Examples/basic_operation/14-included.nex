@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:14:08 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Thu Sep 20 14:10:21 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "14-included.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "14-included.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -78,7 +82,7 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 2018120398716524197 WM11486f66e5a0;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM11486f66e5a0;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -133,6 +137,7 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 				endTell;
 				showWindow;
 			endTell;
@@ -212,7 +217,6 @@ Begin MESQUITE;
 					setLocation 2 516;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'This example is exactly the same as the last, except this time the information from the three separate files has all been included in a single file.^n^nThis can be done by the "Include" menu item in the File menu.  When you have a main data file open and choose to include another file, the information from the secondary file is brought directly into the main data file.  The secondary file is not linked to the first.  Thus, when you save the main data file, this new information is written directly in it.';
 				setTitle Including_files;
 				toggleFileNames off;

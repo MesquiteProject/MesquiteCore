@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Sep 11 17:57:52 EDT 2007 by Mesquite  version 2.0BETA3 (build i58) at dyn-152-3-39-142.wireless.duke.edu/152.3.39.142 (Wayne Maddison)]
+[written Thu Sep 20 14:26:03 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -108,7 +108,6 @@ Begin MESQUITE;
 					tell It;
 						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -135,6 +134,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -229,6 +233,7 @@ Begin MESQUITE;
 					setLocation 10 24;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'Here are four trees with likelihood reconstructions of a character shown.  In the window with a single tree is the Trace Character Over Trees facility, summarizing these reconstructions.  ^n^nNote that the most recent common ancestor (MRCA) of E and C is shown as black in the Trace Over Trees image, because in each of the trees at left it is reconstructed with strong likelihood preference for state 1.  Hold the cursor over this node in the tree above; note the legend indicates that the node is present in 4 of 4 trees, and all show state 1. In contrast, the MRCA of ECDF is shown gray, because there are no uniquely best states in any trees.  Holding the cursor over this node gives the message "Node present in 3 of 4 trees", because the node is absent in tree 4 (the clade ECDF does not exist in the tree).^n^nOn tree 2 it would seem that state 0 is much preferred at the MRCA of ECDF.  Why is that state not shown on that node in the Trace Over Trees above?  Go to the next example for explanation.';
 				setTitle 'Trace over trees: likelihood';
 				toggleFileNames off;
@@ -298,7 +303,7 @@ Begin MESQUITE;
 				setFontIncAnnot 0;
 				setFontIncExp 0;
 				setSize 475 640;
-				setLocation 670 34;
+				setLocation 669 33;
 				setFont SanSerif;
 				setFontSize 10;
 			endTell;
@@ -328,6 +333,11 @@ Begin MESQUITE;
 				showNodeNumbers off;
 				showBranchColors on;
 				labelBranchLengths off;
+				centerBrLenLabels on;
+				showBrLensUnspecified on;
+				showBrLenLabelsOnTerminals on;
+				setBrLenLabelColor 0 0 255;
+				setNumBrLenDecimals 6;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
