@@ -45,6 +45,8 @@
 		<string>1.4*</string>
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
+        <key>VMOptions</key>
+        <string>-Djava.library.path=lib</string>
 	</dict>
 </dict>
 </plist>
