@@ -2,10 +2,16 @@ package mesquite.treefarm.ProbRndTreeModifier;
 
 import java.util.Random;
 import mesquite.lib.*;
+import mesquite.lib.duties.CharSourceCoordObed;
+import mesquite.lib.duties.NumberFor2CharAndTree;
 import mesquite.treefarm.lib.*;
 
 /** This module is basically a random tree modifier, but it works by hiring another one, and only invoking it on a tree with a particular probability */
 public class ProbRndTreeModifier extends RndTreeModifier {
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e = registerEmployeeNeed(RndTreeModifier.class, getName() + "  needs a method to modify trees.",
+		"The method to modify the tree can be selected initially or in the Random Modifier of Tree submenu");
+	}
 	Random probModifyRNG = new RandomBetween(System.currentTimeMillis()); ;
 	RndTreeModifier modifierTask;
 	MesquiteString modifierName;
