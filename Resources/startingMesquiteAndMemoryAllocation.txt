@@ -1,0 +1,48 @@
+To Run Mesquite
+
+To run Mesquite, you need Java installed.  Mesquite 2 runs only on Java 1.4 and higher.  We suggest Java 1.5 or higher.
+
+Once Mesquite_Folder is unzipped, you can start Mesquite as follows:
+
+==================
+Mac OS X
+There are 4 ways to start Mesquite under OS X:
+
+1. Default: Double click Mesquite OSX.app
+
+2. To run java 1.4: Double click Mesquite OSX (Java 1.4).app
+
+3. To run Mesquite with more memory: Double click Mesquite OSX (hi-mem).app  (Hint: if you want to adjust the memory allocated, right click on the application's icon, go to info.plist in Contents, and change Xmx512M to Xmx700M or higher)
+
+4. Or, to adjust how exactly Mesquite starts, including memory allocation:
+Run Mesquite by double clicking the file run_mesquiteOSX.command.  If double clicking this file does not start Mesquite, select the file in the Finder, choose Get Info, and change the "Open With" to "Terminal.app", which is in /Applications/Utilities/
+
+To give Mesquite even more memory, open the file with a text editor and edit the line:
+
+java  -Xmx400M -Djava.library.path=lib -cp . mesquite.Mesquite
+
+to raise the number 400 higher, but don't introduce any spaces!
+
+
+==================
+Windows
+
+There are 3 ways to start Mesquite under Windows:
+
+1. Default: use the installer and double click Mesquite.exe
+
+2. To run Mesquite with more memory: use the alternative high memory installer (available at mesquiteproject.org), reinstall Mesquite, and double click Mesquite.exe.
+
+3. Or, to adjust how exactly Mesquite starts, including memory allocation:
+Run Mesquite by double clicking the file run_mesquiteWindows.bat.  To give Mesquite even more memory, open the file with a text editor and edit the line:
+
+java  -Xmx400M -Djava.library.path=lib -cp . mesquite.Mesquite
+
+to raise the number 400 higher.
+
+
+==================
+Linux etc.
+
+Run Mesquite by double clicking run_mesquite.sh
+
