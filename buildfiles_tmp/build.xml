@@ -5,7 +5,7 @@
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<exclude name="${osxdirpath}" />
-				<exclude name="${osxdirpath1.3}" />				
+				<exclude name="${osxdirpathHM}" />				
 				<exclude name="${osxdirpath1.4}" />
 				<exclude name="${osxdirpath1.5}" />
 				<exclude name="${os9path}" />
@@ -59,20 +59,25 @@
 				<include name="${scriptfile}"/>
 			</fileset>
 		</delete>
+		<delete>
+			<fileset dir="${mesquitefolder.dir}">
+				<include name="${macscriptfile}"/>
+			</fileset>
+		</delete>
 		
 		<antcall target="callwindowsinstaller"/>
 		
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<include name="${osxdirpath}"/>
-				<include name="${osxdirpath1.3}"/>				
+				<include name="${osxdirpathHM}"/>				
 				<include name="${osxdirpath1.4}"/>
 				<include name="${osxdirpath1.5}" />
 			</fileset>
 		</copy>
 		
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirname}/Contents/MacOS/Mesquite'"/>
-		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1.3name}/Contents/MacOS/Mesquite'"/>		
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirHMname}/Contents/MacOS/Mesquite'"/>		
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1.4name}/Contents/MacOS/Mesquite'"/>
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1.5name}/Contents/MacOS/Mesquite'"/>
 		
@@ -186,8 +191,8 @@
 		<!-- assorted mac folders and files that need to be excluded for linux builds -->
 		<property name="osxdirname" value="Mesquite OSX.app" />		
 		<property name="osxdirpath" value="**/${osxdirname}/" />
-		<property name="osxdir1.3name" value="Mesquite OSX (Java 1.3).app" />				
-		<property name="osxdirpath1.3" value="**/${osxdir1.3name}/" />		
+		<property name="osxdirHMname" value="Mesquite OSX (hi-mem).app" />				
+		<property name="osxdirpathHM" value="**/${osxdirHMname}/" />		
 		<property name="osxdir1.4name" value="Mesquite OSX (Java 1.4).app" />				
 		<property name="osxdirpath1.4" value="**/${osxdir1.4name}/" />
 		<property name="osxdir1.5name" value="Mesquite OSX (Java 1.5).app" />		
@@ -210,6 +215,7 @@
 		
 		<property name="javadoc.dir" location="${dist.dir}/javadoc"/>
 		<property name="scriptfile" value="run_mesquite.sh"/>
+		<property name="macscriptfile" value="Run_Mesquite_OSX.command"/>
 		
 		<property file="${buildfiles.dir}/${os.name}.properties"/>
 		<property file="${buildfiles.dir}/build.properties"/>
