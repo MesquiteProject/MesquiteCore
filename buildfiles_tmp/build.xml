@@ -267,7 +267,9 @@
 			Calls the windows installer build script.  This only executes if the machine executing the build
 			is running windows.
 		</description>
-        <ant dir="${installer.dir}" target="makensis" inheritAll="true" />
+        <!-- <ant dir="${installer.dir}" target="makensis" inheritAll="true" /> -->
+		<!-- after consulting the documentation for Ant, I found that inheritAll is true by default -->
+		<ant dir="${installer.dir}" target="makensis" />
 	</target>
 	<!--
 	<target depends="packagedist,packagesrc" name="deployfiles">
