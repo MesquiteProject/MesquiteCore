@@ -216,6 +216,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	MesquiteCommand copyLiteralCommand = MesquiteModule.makeCommand("copyLiteral", this);
 
 	MesquiteCommand selectAllCommand = MesquiteModule.makeCommand("selectAll", this);
+	boolean showRowNames = true;
 
 	public static MesquiteTimer tableTime;
 
@@ -2806,7 +2807,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** Redraw (directly, without repaint()) the indicated row name */
 	public void redrawRowName(int row) {
-		if (rowLegal(row)) {
+		if (rowLegal(row) && showRowNames) {
 			Graphics g = rowNames.getGraphics();
 			if (g == null)
 				return;
@@ -3177,7 +3178,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (supplied != null){
 			int svp = StringUtil.getStringVertPosition(g, y, h, null);
 			int xgnso = x + getNameStartOffset();
-			g.drawString(supplied, xgnso, svp);
+			if (showRowNames)
+				g.drawString(supplied, xgnso, svp);
 		}
 		if (isAttachedNoteAvailable(-1, row)){
 			g.drawLine(x+w-3,y+1, x+w-3,y+3); //left
@@ -4963,7 +4965,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		Graphics rg = rowNames.getGraphics();
 		if (rg == null)
 			return;
-		rowNames.redrawName(rg, row);
+		if (showRowNames)
+			rowNames.redrawName(rg, row);
 		rg.dispose();
 	}
 
@@ -4991,7 +4994,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 			if (previousRow > -1) {
 				matrix.redrawRow(mg, previousRow);
-				rowNames.redrawName(rg, previousRow);
+				if (showRowNames)
+					rowNames.redrawName(rg, previousRow);
 			}
 			rg.dispose();
 			mg.dispose();

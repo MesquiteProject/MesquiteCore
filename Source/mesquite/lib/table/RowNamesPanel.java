@@ -116,7 +116,6 @@ public class RowNamesPanel extends EditorPanel  {
 		}
 	}
 	public void redrawName(Graphics g, int row) {
-
 		int top = table.getFirstRowVisible();
 
 		if (row<top) //TODO: should also fail to draw if to big
