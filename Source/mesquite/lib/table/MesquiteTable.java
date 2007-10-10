@@ -192,11 +192,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 
 	private int numSelectTypes = 3; // 0 = selection; 1 = dimming; 2 = dropdown menu
-
 	Bits rowWidthsAdjusted;
-
 	Bits columnWidthsAdjusted;
-
 	boolean rowNamesWidthAdjusted = false;
 
 	private Associable columnAssociable = null;
@@ -5032,6 +5029,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public void setStartBetweenRowSelection(int startBetweenRowSelection) {
 		this.startBetweenRowSelection = startBetweenRowSelection;
+	}
+	public boolean getShowRowNames() {
+		return showRowNames;
+	}
+	public void setShowRowNames(boolean showRowNames) {
+		this.showRowNames = showRowNames;
 	}
 }
 

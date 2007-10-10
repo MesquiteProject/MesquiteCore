@@ -427,7 +427,7 @@ public class RowNamesPanel extends EditorPanel  {
 				if (!(table.getUserMoveRow() && table.isRowSelected(row) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.controlKeyDown(modifiers))) {
 					if (!(table.editingAnything() || table.singleTableCellSelected())) {
 						String s = table.getRowComment(row);
-						if (s!=null)   
+						if (!StringUtil.blank(s))   
 							setWindowAnnotation(s, "Footnote above refers to " + table.getRowNameText(row));
 						else
 							setWindowAnnotation("", null);
