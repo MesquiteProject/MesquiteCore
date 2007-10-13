@@ -265,7 +265,7 @@ public class UndoInstructions implements Undoer {
 
 		case ALLDATACELLS:
 			newData = data.cloneData();
-			data.copyData(oldData);
+			data.copyData(oldData, true);
 			return new UndoInstructions(changeClass, newData, data);
 
 		case ALLTAXONNAMES:

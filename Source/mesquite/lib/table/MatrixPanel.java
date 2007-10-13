@@ -102,14 +102,15 @@ timer6.end();
 	public void redrawRow(Graphics g, int row) {
 		int lineX = 0;
 		int top = table.getTopOfRow(row);
-		for (int i = table.getFirstColumnVisible(); i<=table.getLastColumnVisible(); i++) {
-			lineX += table.columnWidths[i];
-			redrawCellOffset(g, i, row, 0, 0);
-			g.setColor(Color.gray);
+		for (int i = table.getFirstColumnVisible(); i<=table.getLastColumnVisible(); i++) 
+			if (i>=0 && i<table.getNumColumns()) {
+				lineX += table.columnWidths[i];
+				redrawCellOffset(g, i, row, 0, 0);
+				g.setColor(Color.gray);
 
-			g.drawLine(lineX,top, lineX, top+rowHeight(row));//matrixHeight + columnNamesRowHeight
-			g.drawLine(lineX,top+rowHeight(row), lineX+columnWidth(i), top+rowHeight(row));//matrixHeight + columnNamesRowHeight
-		}
+				g.drawLine(lineX,top, lineX, top+rowHeight(row));//matrixHeight + columnNamesRowHeight
+				g.drawLine(lineX,top+rowHeight(row), lineX+columnWidth(i), top+rowHeight(row));//matrixHeight + columnNamesRowHeight
+			}
 	}
 
 
