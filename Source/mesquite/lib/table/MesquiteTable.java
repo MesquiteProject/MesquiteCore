@@ -3121,10 +3121,36 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				nearZoneOnRight = getNearZone(columnWidths[column]);
 
 			columnBoundary += columnWidths[column];
-			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight)
+			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight){
 				return true;
+			}
 		}
 		return false;
+
+	}
+	/* ............................................................................................................... */
+	/** returns true if x is near the boundary of a column */
+	public int nearWhichColumnBoundary(int x) {
+		int columnBoundary = 0;
+		int nearZoneOnRight;
+		int nearZoneOnLeft;
+		// int lastEdge=0;
+		for (int column = firstColumnVisible; (column < numColumnsTotal) && (columnBoundary < x); column++) {
+			if (column==firstColumnVisible)
+				nearZoneOnLeft = 0;
+			else
+				nearZoneOnLeft = getNearZone(columnWidths[column]);
+			if (column==lastColumnVisible)
+				nearZoneOnRight = 0;
+			else
+				nearZoneOnRight = getNearZone(columnWidths[column]);
+
+			columnBoundary += columnWidths[column];
+			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight){
+				return column;
+			}
+		}
+		return -1;
 
 	}
 
