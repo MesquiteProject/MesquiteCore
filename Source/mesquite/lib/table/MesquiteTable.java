@@ -38,151 +38,94 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	protected MatrixPanel matrix;
 	protected CornerPanel cornerCell;
 	protected ControlStrip controlStrip;
+	
+	public TableMarchingAnts marchingAnts;
+
+	
 	public static final int LEFT = 0;
-
 	public static final int RIGHT = 1;
-
 	public static final int CENTERED = 2;
 
 	protected boolean columnNamesCopyPaste = true;
-
 	protected boolean rowNamesCopyPaste = true;
-
 	int baseRowHeight = 16;
-
 	int baseColumnWidth = 16;
-
 	int nameStartOffset = 5;
-
 	int focusColumn = -2;
-
 	int focusRow = -2;
 
 	int justification = CENTERED;
-
 	private Cursor handCursor;
-
 	private Cursor eastResizeCursor;
 
 	TableScroll horizScroll;
-
 	TableScroll vertScroll;
 
 	Rectangle messageBox; // just to left of horizScroll
 
 	int firstRowVisible = 0; // topmost row with current y scroll position
-
 	int firstColumnVisible = 0; // leftmost column with current horiz scroll position
-
 	int numRowsVisible = 0;
-
 	int numColumnsVisible = 0;
-
 	int lastRowVisible = 0; // bottom row visible, even if a partial row
-
 	int lastColumnVisible = 0; // rightmost column visible, even if partial column
 
 	public int numRowsTotal; // TODO: why is this used as if numRowsVisible?????
-
 	public int numColumnsTotal;
 
 	int columnGrabberWidth = 8;
-
 	int rowGrabberWidth = 8;
-
 	int columnNamesRowHeight = 20;
-
 	int rowNamesWidth = 50;
-
 	int matrixWidth;
-
 	int matrixHeight;
-
 	int[] columnWidths;
-
 	int[] rowHeights;
 
 	Font oldF = null;
-
 	Font boldFont = null;
-
 	public boolean frameRowNames = true;
-
 	public boolean frameColumnNames = true;
-
 	public boolean frameMatrixCells = true;
-
 	public boolean showRowGrabbers = false;
-
 	public boolean showColumnGrabbers = false;
-
 	public boolean showRowNumbers = false;
-
 	public boolean showColumnNumbers = false;
 
 	public boolean cornerIsHeading = false;
-
 	protected boolean autosizeColumns = false;
-
 	private boolean cellsAutoEditable = false;
-
 	private boolean rowNamesAutoEditable = false;
-
 	private boolean columnNamesAutoEditable = false;
-
 	private boolean cornerAutoEditable = false;
-
 	private boolean cellsEditable = false;
-
 	private boolean rowNamesEditable = false;
-
 	private boolean columnNamesEditable = false;
-
 	private boolean cornerEditable = false;
-
 	private boolean cellsSelectable = true;
-
 	private boolean rowNamesSelectable = true;
-
 	private boolean columnNamesSelectable = true;
-
 	private boolean rowsSelectable = true;
-
 	private boolean columnsSelectable = true;
-
 	private boolean cornerSelectable = false;
 
 	private boolean quickMode = false;
 
 	public static final int NOADJUST = 0; // these constants refer to column and row user-adjust -- INSERT or RESIZE if interstitial space pulled
-
 	public static final int RESIZE = 1;
-
 	public static final int INSERT = 2;
-
 	private int userAdjustColumn = NOADJUST;
-
 	private boolean userMoveColumn = false;
-
 	private int userAdjustRow = NOADJUST;
-
 	private boolean userMoveRow = false;
-
 	public boolean adjustingColumnWidth = false;
 
 	private Bits[] rowsSelected;
-
 	private Bits[] columnsSelected;
-
 	private Bits[] cellsSelected;
-
 	private Bits[] columnNamesSelected;
-
 	private Bits[] rowNamesSelected;
-
 	private boolean[] cornerSelected;
-
-
 
 	public static final int BETWEENLINEWIDTH = 4;
 	private int startBetweenRowSelection = MesquiteInteger.unassigned;
@@ -195,23 +138,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	Bits rowWidthsAdjusted;
 	Bits columnWidthsAdjusted;
 	boolean rowNamesWidthAdjusted = false;
-
 	private Associable columnAssociable = null;
-
 	private Associable rowAssociable = null;
-
 	protected int colorScheme;
-
+	
 	MesquiteCommand pasteCommand = MesquiteModule.makeCommand("paste", this);
-
 	MesquiteCommand cutCommand = MesquiteModule.makeCommand("cut", this);
-
 	MesquiteCommand clearCommand = MesquiteModule.makeCommand("clear", this);
-
 	MesquiteCommand copyCommand = MesquiteModule.makeCommand("copy", this);
-
 	MesquiteCommand copyLiteralCommand = MesquiteModule.makeCommand("copyLiteral", this);
-
 	MesquiteCommand selectAllCommand = MesquiteModule.makeCommand("selectAll", this);
 	boolean showRowNames = true;
 
@@ -325,6 +260,24 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return copied;
 	}
 
+	/* ................................................................................................................. */
+	public void adjustMarchingAnts(){
+		if (marchingAnts!=null)
+			marchingAnts.moveAnts();
+	}
+
+	/* ................................................................................................................. */
+	public void cancelMarchingAnts(){
+		if (marchingAnts!=null) {
+			marchingAnts.cancel();
+			marchingAnts=null;
+		}
+	}
+
+	/* ................................................................................................................. */
+	public void startMarchingAnts (int column1, int row1, int column2, int row2) {
+		marchingAnts = new TableMarchingAnts(this, getMatrixPanel().getGraphics(),  column1, row1, column2, row2);
+	}
 	/* ................................................................................................................. */
 	/**
 	 * A request for the MesquiteModule to perform a command. It is passed two strings, the name of the command and the arguments. This should be overridden by any module that wants to respond to a command.
@@ -651,7 +604,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int buff = 2;
 		if (selectedBetweenRows())
 			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection()  && (row == getStartBetweenRowSelection()) ;
-			else if (selectedBetweenColumns())
+		else if (selectedBetweenColumns())
 				return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (column == getStartBetweenColumnSelection()) ;
 				return false;
 	}
@@ -661,7 +614,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int buff = 2;
 		if (selectedBetweenRows())
 			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection() && (regionInCellV>80) && (row == getStartBetweenRowSelection()) ;
-			else if (selectedBetweenColumns())
+		else if (selectedBetweenColumns())
 				return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (regionInCellH>80) && (column == getStartBetweenColumnSelection()) ;
 				return false;
 	}

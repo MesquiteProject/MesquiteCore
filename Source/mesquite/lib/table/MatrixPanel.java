@@ -285,6 +285,8 @@ timer6.end();
 			int bottom = table.getRowY(table.getEndBetweenRowSelection());
 			g.setColor(Color.blue);
 			g.fillRect(x-MesquiteTable.BETWEENLINEWIDTH/2,top,MesquiteTable.BETWEENLINEWIDTH,bottom-top);
+			g.setColor(Color.yellow);
+			g.drawRect(x-MesquiteTable.BETWEENLINEWIDTH/2,top,MesquiteTable.BETWEENLINEWIDTH,bottom-top);
 		}
 		else
 			if (table.selectedBetweenRows()) {
@@ -293,6 +295,8 @@ timer6.end();
 				int top = table.getRowY(table.getStartBetweenRowSelection());
 				g.setColor(Color.blue);
 				g.fillRect(left,top-MesquiteTable.BETWEENLINEWIDTH/2, right-left,MesquiteTable.BETWEENLINEWIDTH);
+				g.setColor(Color.yellow);
+				g.drawRect(left,top-MesquiteTable.BETWEENLINEWIDTH/2, right-left,MesquiteTable.BETWEENLINEWIDTH);
 			}
 
 	}

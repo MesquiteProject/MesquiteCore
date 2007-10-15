@@ -1,0 +1,171 @@
+#NEXUS
+[written Sat Oct 13 09:50:16 MST 2007 by Mesquite  version 2.0+ (build j07) at dhcp-96875d2a.cals.arizona.edu/150.135.93.42 (David Maddison)]
+
+BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
+	DIMENSIONS NTAX=10;
+	TAXLABELS
+		Bemb_transversale_ID_2184 Bemb_transversale_NS_2158 Bemb_transversale_NS_2160 Bemb_transversale_UT_2183 Bemb_transversale_WY_2097 Bemb_transversale_ID_2164 Bemb_transversale_MT_2185 Bemb_transversale_UT_2251 Bemb_cf.transversale_CA_2321 Bemb_cf.transversale_CA_2318 
+	;
+
+END;
+
+
+BEGIN CHARACTERS;
+	TITLE  Untitled_Character_Matrix;
+	DIMENSIONS  NCHAR=73;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	Bemb_transversale_ID_2184     ctgaagcccgtggtcggaaacggctactgggcaatgtagtgtttgggagagcccgtctaacccgagtactgtt
+
+	Bemb_transversale_NS_2158     cccgtggtcggaaacggctactgggcaatgtagtgtttgggaGAGCccgtctaacccgagtactgtt------
+
+	Bemb_transversale_NS_2160     ctgaagcccgtggtcggaaAcggctactgggcaatgtagtgtttgggagagcccgtctaacccgagtactgtt
+
+	Bemb_transversale_UT_2183     ctgaagcccgtggtcggaaAcggctactgggcMatgtagtgtttgggagagcccgtctaacccgagtactgtt
+
+	Bemb_transversale_WY_2097     ctgaagcccgtggtcggaaacggctactgggcaatgtagtgtttgggagagcccgtctaacccgagtactgtt
+
+	Bemb_transversale_ID_2164     gcccgtctaacccgagtactgttagcgtgtccaagtccttcttgAAGGGGGCcactcg---------------
+
+	Bemb_transversale_MT_2185     gcccgtctaacccgagtactgttagcgtgtccaagtccttcttgaaGGGgGCcactcg---------------
+
+	Bemb_transversale_UT_2251     gcccgtctaacccgagtactgttagcgtgtccaagtccttcttgaaGGGGGCcactcg---------------
+
+	Bemb_cf.transversale_CA_2321  gCccgtctaacCCgagtattgttagcgtgtccaagtccttcttgAAGGGGGCcactcg---------------
+
+	Bemb_cf.transversale_CA_2318  GCccgtctaacCCgagtattgttagcGtgtccaagtcctTCTTGAAGGGGGCcactcg---------------
+
+
+;
+
+
+
+END;
+
+BEGIN CODONS;
+CODESET * UNTITLED   =  universal:  1 -  73;
+
+
+END;
+
+BEGIN ASSUMPTIONS;
+	TYPESET * UNTITLED   =  unord:  1 -  73;
+
+END;
+
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Jukes-Cantor':  1 -  73;
+END;
+
+Begin MESQUITE;
+		MESQUITESCRIPTVERSION 2;
+		TITLE AUTO;
+		tell ProjectCoordinator;
+		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
+		tell It;
+			setID 0 1931082895948101767;
+			tell It;
+				setSelected  6 -  10;
+				setDefaultOrder  14 18 19 20 22 13 17 21 8 5;
+				attachments ;
+			endTell;
+		endTell;
+		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
+		tell It;
+			setID 0 8552805928968270532;
+			checksum 0 3695288835 null;
+		endTell;
+		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+		tell It;
+			showDataWindow #8552805928968270532 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+			tell It;
+				getWindow;
+				tell It;
+					setExplanationSize 30;
+					setAnnotationSize 20;
+					setFontIncAnnot 0;
+					setFontIncExp 0;
+					setSize 1513 387;
+					setLocation 5 81;
+					setFont Arial;
+					setFontSize 10;
+					getToolPalette;
+					tell It;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					endTell;
+					setActive;
+					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
+					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					setBackground White;
+					toggleShowNames on;
+					toggleShowTaxonNames on;
+					toggleTight off;
+					toggleShowChanges off;
+					toggleSeparateLines off;
+					toggleShowStates on;
+					toggleAutoWCharNames off;
+					toggleShowDefaultCharNames off;
+					toggleConstrainCW on;
+					setColumnWidth 16;
+					toggleBirdsEye off;
+					toggleColorsPanel off;
+					birdsEyeWidth 2;
+					toggleLinkedScrolling on;
+					toggleScrollLinkedTables off;
+				endTell;
+				showWindow;
+				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
+				tell It;
+					togglePanel off;
+				endTell;
+				getEmployee #mesquite.charMatrices.CharReferenceStrip.CharReferenceStrip;
+				tell It;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
+				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
+				tell It;
+					autotabOff;
+				endTell;
+				getEmployee #mesquite.align.AlignToDropped.AlignToDropped;
+				tell It;
+					gapCosts 8 3 2 2;
+					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
+				endTell;
+				getEmployee #mesquite.chromaseq.ColorQuality.ColorQuality;
+				tell It;
+					toggleAmbiguities on;
+					toggleMarks on;
+				endTell;
+			endTell;
+		endTell;
+		newAssistant  #mesquite.basic.TextWindowMaker.TextWindowMaker;
+		tell It;
+			setText 'Pairwise aligner bug:^n^n	- drop taxa 6 through 10 on 5.  ^n^nNote the way the dragged sequences on the right are not aligned.';
+			getWindow;
+			tell It;
+				popOut;
+				setExplanationSize 0;
+				setAnnotationSize 0;
+				setFontIncAnnot 0;
+				setFontIncExp 0;
+				setSize 1041 290;
+				setLocation 76 636;
+				setFont Arial;
+				setFontSize 10;
+			endTell;
+			showWindow;
+		endTell;
+		endTell;
+end;
+
+
