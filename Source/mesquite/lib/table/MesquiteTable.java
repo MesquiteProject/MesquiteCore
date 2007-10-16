@@ -40,6 +40,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	protected ControlStrip controlStrip;
 	
 	public TableMarchingAnts marchingAnts;
+	static final int AUTOSCROLLBOUNDARY = 4;
 
 	
 	public static final int LEFT = 0;
@@ -4799,6 +4800,30 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		setLastColumnVisible(value, true);
 	}
 
+	/* ............................................................................................................... */
+	public boolean checkForAutoScroll(MesquitePanel panel, int x, int y) {
+		boolean scrolled = false;
+//Debugg.println("x : " + x + ", width: " + panel.getWidth() + ", y : " + y + ", height: " + panel.getHeight());
+		if (MesquiteInteger.isCombinable(y))
+			if (y<=AUTOSCROLLBOUNDARY && getFirstRowVisible()>0) {
+				setFirstRowVisible(getFirstRowVisible()-1);
+				scrolled = true;
+			}
+			else if (y>=(panel.getHeight()-AUTOSCROLLBOUNDARY) && getLastRowVisible()<getNumRows()) {
+				setFirstRowVisible(getFirstRowVisible()+1);
+				scrolled = true;
+			}
+		if (MesquiteInteger.isCombinable(x))
+			if (x<=AUTOSCROLLBOUNDARY && getFirstColumnVisible()>0) {
+				setFirstColumnVisible(getFirstColumnVisible()-1);
+				scrolled = true;
+			}
+			else if (x>=(panel.getWidth()-AUTOSCROLLBOUNDARY) && getLastColumnVisible()<getNumColumns()) {
+				setFirstColumnVisible(getFirstColumnVisible()+1);
+				scrolled = true;
+			}
+		return scrolled;
+	}
 	/* ............................................................................................................... */
 	/** sets the value of the given scroll. */
 	public void setValue(TableScroll whichScroll, int value) {

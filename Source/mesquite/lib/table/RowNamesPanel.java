@@ -356,8 +356,10 @@ public class RowNamesPanel extends EditorPanel  {
 					table.shimmerHorizontalOn(y);
 					lastY=y;
 				}
+				table.checkForAutoScroll(this, MesquiteInteger.unassigned,y);   // pass unassigned in x so it doesn't do anything in that direction
 			}
 			else if (((TableTool)tool).getWorksOnRowNames()) {
+				table.checkForAutoScroll(this, MesquiteInteger.unassigned,y);   // pass unassigned in x so it doesn't do anything in that direction
 				int dragRow = findRow(y);
 				int regionInCellH = findRegionInCellH(x);
 				int regionInCellV =findRegionInCellV(y);

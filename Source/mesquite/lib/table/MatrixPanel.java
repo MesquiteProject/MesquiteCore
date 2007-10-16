@@ -576,6 +576,7 @@ timer6.end();
 
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+			table.checkForAutoScroll(this,x,y);
 			table.cellDrag(column, row, regionInCellH,  regionInCellV,modifiers);
 			if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
 				table.emphasizeRow(previousRowDragged,row, firstRowTouched, false, Color.blue);
