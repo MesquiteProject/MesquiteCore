@@ -395,8 +395,9 @@ public class RowNamesPanel extends EditorPanel  {
 						int dropRow = table.findRowBeforeBetween(y);
 						if (dropRow == -2)
 							dropRow = table.getNumRows();
-						if (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow)) //don't move dropped on row included in selection
+						if (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow)) { //don't move dropped on row included in selection {
 							table.selectedRowsDropped(dropRow);
+						}
 					}
 					else if (table.getUserAdjustRow()==MesquiteTable.RESIZE)
 						;//table.shimmerVerticalOff(lastX);

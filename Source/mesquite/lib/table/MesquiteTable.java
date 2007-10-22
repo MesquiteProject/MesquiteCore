@@ -2265,10 +2265,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				break;
 			}
 		}
+		vertScroll.setBlockIncrement(getNumRows()-1);
 		if (numRowsVisible < 2)
 			vertScroll.setBlockIncrement(1);
 		else
 			vertScroll.setBlockIncrement(numRowsVisible - 1);
+		
 		lastRowVisible = firstRowVisible + numRowsVisible - 1;
 	}
 
@@ -3430,6 +3432,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	int firstSelectedColumn = 0;
 
 	int firstSelectedRow = 0;
+	
+	
+	/* ............................................................................................................... */
+	public void setFirstSelectedRow (int row) {
+		firstSelectedRow = row;
+	}
+	/* ............................................................................................................... */
+	public void setFirstSelectedColumn (int column) {
+		firstSelectedColumn = column;
+	}
 
 	/** Called if column is touched. Can be overridden in subclasses to change response to touch. */
 	/* ............................................................................................................... */
@@ -4349,18 +4361,30 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (a == null)
 			return;
 		rowsSelected[0].clearAllBits();
+		boolean first = true;
 		for (int i = 0; i < numRowsTotal && i < a.getNumberOfParts(); i++)
-			if (a.getSelected(i))
+			if (a.getSelected(i)) {
 				selectRow(i);
+				if (first) {
+					setFirstSelectedRow(i);
+					first=false;
+				}
+			}
 	}
 
 	public void synchronizeColumnSelection(Associable a) {
 		if (a == null)
 			return;
 		columnsSelected[0].clearAllBits();
+		boolean first = true;
 		for (int i = 0; i < numColumnsTotal && i < a.getNumberOfParts(); i++)
-			if (a.getSelected(i))
+			if (a.getSelected(i)) {
 				selectColumn(i);
+				if (first) {
+					setFirstSelectedColumn(i);
+					first=false;
+				}
+			}
 	}
 
 	/* ............................................................................................................... */

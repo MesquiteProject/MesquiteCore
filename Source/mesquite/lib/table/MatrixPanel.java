@@ -567,6 +567,7 @@ timer6.end();
 
 
 	}
+	int counter = 0;
 	/*_________________________________________________*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		int column = findColumn(x);
@@ -574,7 +575,7 @@ timer6.end();
 		int regionInCellH = findRegionInCellH(x);
 		int regionInCellV =  findRegionInCellV(y);
 
-
+//Debugg.println("mouseDrag " + counter++);
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			table.checkForAutoScroll(this,x,y);
 			table.cellDrag(column, row, regionInCellH,  regionInCellV,modifiers);
@@ -583,7 +584,8 @@ timer6.end();
 				previousRowDragged = row;
 			}
 
-		}
+		} else if (column>=table.numColumnsTotal || row>=table.numRowsTotal)
+			table.checkForAutoScroll(this,x,y);
 	}
 	/*_________________________________________________*/
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
