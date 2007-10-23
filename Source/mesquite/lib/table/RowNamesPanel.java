@@ -302,6 +302,7 @@ public class RowNamesPanel extends EditorPanel  {
 		boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
 
 		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
+			table.startAutoScrollThread(this);
 			if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 				touchY=y;
 				lastY = y;
@@ -372,6 +373,7 @@ public class RowNamesPanel extends EditorPanel  {
 	}
 	/*...............................................................................................................*/
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
+		table.stopAutoScrollThread();
 		if (touchRow>=0 && tool != null)
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (!table.anyRowSelected()) {
@@ -461,6 +463,7 @@ public class RowNamesPanel extends EditorPanel  {
 		int row = findRow(y);
 		setCurrentCursor(modifiers, x, row, tool);
 		table.mouseInCell(modifiers, -1, -1, row, -1, tool);
+		table.checkForAutoScroll(this, MesquiteInteger.unassigned,y);   // pass unassigned in x so it doesn't do anything in that direction
 	}
 	/*...............................................................................................................*/
 

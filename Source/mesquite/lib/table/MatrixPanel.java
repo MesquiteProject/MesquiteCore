@@ -545,6 +545,7 @@ timer6.end();
 		//((TableTool)tool).getWorksOnColumnNames();
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+			table.startAutoScrollThread(this);
 			if (((TableTool)tool).getIsBetweenRowColumnTool()) {
 				column = table.findColumnBeforeBetween(x);
 				row = table.findRowBeforeBetween(y);  //this was findColumnBeforeBetween
@@ -591,6 +592,7 @@ timer6.end();
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		if (!(tool instanceof TableTool))
 			return;
+		table.stopAutoScrollThread();
 		int column = findColumn(x);
 		int row = findRow(y);
 		int regionInCellH = findRegionInCellH(x);
