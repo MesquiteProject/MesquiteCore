@@ -30,7 +30,7 @@ public class aiTextIntro extends PackageIntro {
   	 }
  	/*.................................................................................................................*/
  	public String getExplanation() {
- 		return "iText is a package for save PDF files within Mesquite.";
+ 		return "iText is a package for saving PDF files within Mesquite.";
  	}
    
 	/*.................................................................................................................*/

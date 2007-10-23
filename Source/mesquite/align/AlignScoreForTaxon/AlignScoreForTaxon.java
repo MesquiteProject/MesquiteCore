@@ -35,11 +35,11 @@ public class AlignScoreForTaxon extends AlignScoreForTaxonGen {
    }
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Aligment Score To Ref.";  
+	return "Alignment Score To Ref.";  
 	 }
 	/*.................................................................................................................*/
 	 public String getScoreName() {
-	return "Aligment Score";  
+	return "Alignment Score";  
 	 }
   
 		/*.................................................................................................................*/
