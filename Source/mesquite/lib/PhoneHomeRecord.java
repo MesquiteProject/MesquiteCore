@@ -4,24 +4,37 @@ import mesquite.lib.*;
 
 public class PhoneHomeRecord implements Listable {
 	
+	private int lastVersionUsed = 0;
 	private int lastNotice = 0;
 	private int lastNoticeForMyVersion = 0;
 	private int lastVersionNoticed = 0;
+	private int lastNewerVersionReported = 0;
 	String message = null;
-	String moduleShortName;
+	String moduleName;
 
 	
-	public PhoneHomeRecord(String moduleShortName, int lastNotice, int lastNoticeForMyVersion, int lastVersionNoticed) {
+	public PhoneHomeRecord(String moduleName,int lastVersionUsed, int lastNotice, int lastNoticeForMyVersion, int lastVersionNoticed, int lastNewerVersionReported) {
+		this.lastVersionUsed = lastVersionUsed;
 		this.lastNotice = lastNotice;
 		this.lastNoticeForMyVersion = lastNoticeForMyVersion;
 		this.lastVersionNoticed = lastVersionNoticed;
-		this.moduleShortName = moduleShortName;
+		this.lastNewerVersionReported = lastNewerVersionReported;
+		this.moduleName = moduleName;
 	}
 
 	public PhoneHomeRecord(String moduleShortName) {
-		this.moduleShortName = moduleShortName;
+		this.moduleName = moduleShortName;
 	}
 
+	public void setCurrentValues(MesquiteModuleInfo mmi) {
+		if (mmi!=null) {
+			if (mmi.getIsPackageIntro()) {
+				lastVersionUsed = mmi.getPackageVersionInt();
+			}
+			else 
+				lastVersionUsed = mmi.getVersionInt();
+		}
+	}
 
 	public int getLastNotice() {
 		return lastNotice;
@@ -63,17 +76,33 @@ public class PhoneHomeRecord implements Listable {
 	}
 
 
-	public String getModuleShortName() {
-		return moduleShortName;
+	public String getModuleName() {
+		return moduleName;
 	}
 
 
-	public void setModuleShortName(String moduleShortName) {
-		this.moduleShortName = moduleShortName;
+	public void setModuleName(String moduleShortName) {
+		this.moduleName = moduleShortName;
 	}
 
 	public String getName(){
-		return getModuleShortName();
+		return getModuleName();
+	}
+
+	public int getLastVersionUsed() {
+		return lastVersionUsed;
+	}
+
+	public void setLastVersionUsed(int lastVersionUsed) {
+		this.lastVersionUsed = lastVersionUsed;
+	}
+
+	public int getLastNewerVersionReported() {
+		return lastNewerVersionReported;
+	}
+
+	public void setLastNewerVersionReported(int lastNewerVersionReported) {
+		this.lastNewerVersionReported = lastNewerVersionReported;
 	}
 
 

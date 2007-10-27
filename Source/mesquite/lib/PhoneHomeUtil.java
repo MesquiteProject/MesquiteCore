@@ -46,11 +46,16 @@ public class PhoneHomeUtil {
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
 				String moduleName = messageElement.getChildText("module");
+				MesquiteModuleInfo mmi = MesquiteTrunk.mesquiteModulesInfoVector.findModule(MesquiteModule.class, moduleName);
+				int lastVersionUsedInt = MesquiteInteger.fromString(messageElement.getChildText("lastVersionUsed"));
 				int lastNotice = MesquiteInteger.fromString(messageElement.getChildText("lastNotice"));
 				int lastNoticeForMyVersion = MesquiteInteger.fromString(messageElement.getChildText("lastNoticeForMyVersion"));
+				if (mmi!=null && lastVersionUsedInt != mmi.getVersionInt())
+					lastNoticeForMyVersion = 0;
 				int lastVersionNoticed = MesquiteInteger.fromString(messageElement.getChildText("lastVersionNoticed"));
+				int lastNewerVersionReported = MesquiteInteger.fromString(messageElement.getChildText("lastNewerVersionReported"));
 				
-				PhoneHomeRecord phoneRecord = new PhoneHomeRecord(moduleName, lastNotice,  lastNoticeForMyVersion,  lastVersionNoticed);
+				PhoneHomeRecord phoneRecord = new PhoneHomeRecord(moduleName, lastVersionUsedInt, lastNotice,  lastNoticeForMyVersion,  lastVersionNoticed, lastNewerVersionReported);
 				phoneRecords.addElement(phoneRecord, false);
 			}
 			
@@ -71,10 +76,13 @@ public class PhoneHomeUtil {
 			Element recordElement = new Element("record");
 			phoneRecordElement.addContent(recordElement);
 			PhoneHomeRecord phoneRecord = (PhoneHomeRecord)phoneRecords.elementAt(i);
-			recordElement.addContent(new Element("module").addContent(new CDATA(phoneRecord.getModuleShortName())));
+			recordElement.addContent(new Element("module").addContent(new CDATA(phoneRecord.getModuleName())));
+			MesquiteModuleInfo mmi = MesquiteTrunk.mesquiteModulesInfoVector.findModule(MesquiteModule.class, phoneRecord.getModuleName());
+			recordElement.addContent(new Element("lastVersionUsed").addContent(MesquiteInteger.toString(phoneRecord.getLastVersionUsed())));
 			recordElement.addContent(new Element("lastNotice").addContent(MesquiteInteger.toString(phoneRecord.getLastNotice())));
 			recordElement.addContent(new Element("lastNoticeForMyVersion").addContent(MesquiteInteger.toString(phoneRecord.getLastNoticeForMyVersion())));
 			recordElement.addContent(new Element("lastVersionNoticed").addContent(MesquiteInteger.toString(phoneRecord.getLastVersionNoticed())));
+			recordElement.addContent(new Element("lastNewerVersionReported").addContent(MesquiteInteger.toString(phoneRecord.getLastNewerVersionReported())));
 		}
 		String xml = BaseXMLWriter.getDocumentAsString(doc);
 		if (!StringUtil.blank(xml))
@@ -134,7 +142,7 @@ public class PhoneHomeUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static String retrieveMessagesFromHome(MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord) {
+	public static String retrieveMessagesFromHome(MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
 		String url = mmi.getHomePhoneNumber();
 		if (StringUtil.blank(url))
 			return null;
@@ -188,10 +196,14 @@ public class PhoneHomeUtil {
 			Element currentReleaseVersion = messagesFromHome.getChild("currentReleaseVersion");
 			if (currentReleaseVersion !=null) {
 				String releaseString = "";
+				String releaseStringHTML ="";
 				String versionString = currentReleaseVersion.getChildText("versionString");
 				String buildString = currentReleaseVersion.getChildText("build");
 				String downloadURL = currentReleaseVersion.getChildText("downloadURL");
 				int releaseVersionInt = MesquiteInteger.fromString(currentReleaseVersion.getChildText("version"));
+				int userVersionInt = mmi.getVersionInt();
+				if (mmi.getIsPackageIntro()) 
+					userVersionInt = mmi.getPackageVersionInt();
 				if (!StringUtil.blank(versionString))
 					releaseString+="The current release version of " + mmi.getName() + " is " + versionString;
 				if (!StringUtil.blank(buildString))
@@ -199,17 +211,25 @@ public class PhoneHomeUtil {
 				if (!StringUtil.blank(releaseString)) {
 					if (mmi.getIsPackageIntro()) {
 						if (!StringUtil.blank(mmi.getPackageVersion()))
-							releaseString+= " (the version you have installed is "+ mmi.getPackageVersion() + ")";
+							releaseString+= " (the version you have installed is "+ mmi.getPackageVersion() + ").";
 					}
 					else if (!StringUtil.blank(mmi.getVersion()))
-						releaseString+= " (the version you have installed is "+ mmi.getVersion() + ")";
-					if (!StringUtil.blank(downloadURL))
-						releaseString += " <a href=\"" + downloadURL + "\">Download page</a>";
-						
+						releaseString+= " (the version you have installed is "+ mmi.getVersion() + ").";
+					releaseStringHTML = releaseString;
+					if (!StringUtil.blank(downloadURL)) {
+						releaseStringHTML +=" <a href=\"" + downloadURL + "\">Download page</a>";
+						releaseString+=" The latest version is downloadable at: " + downloadURL;
+					}
 				}
 
-				if (MesquiteInteger.isCombinable(releaseVersionInt) && mmi.getVersionInt()<releaseVersionInt)
-					notices.append("\n" +releaseString);  // there is a newer version that has been released
+				if (MesquiteInteger.isCombinable(releaseVersionInt) && userVersionInt<releaseVersionInt) {
+					if (phoneHomeRecord.getLastNewerVersionReported()<releaseVersionInt) { // we've not reported on this new version yet
+						notices.append("\n" +releaseStringHTML);  // there is a newer version that has been released
+						phoneHomeRecord.setLastNewerVersionReported(releaseVersionInt);
+					}
+					if (logBuffer!=null)
+						logBuffer.append("\n" +releaseString);
+				}
 
 			}
 
