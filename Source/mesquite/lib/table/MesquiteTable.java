@@ -4828,6 +4828,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** Starts the thread for autoscrolling . */
 	public void startAutoScrollThread(MousePanel panel) {
+		stopAutoScrollThread();
 		scrollThread = new AutoScrollThread(this,panel);
 		scrollThread.start();
 	}
