@@ -37,6 +37,12 @@ public class ToLUtil {
 		}
 
 	}  
+	
+	/* Node Attributes
+	 *       <NODE EXTINCT="0" ID="8882" CONFIDENCE="0" PHYLESIS="0" LEAF="0" HASPAGE="1" ITALICIZENAME="0" INCOMPLETESUBGROUPS="0" SHOWAUTHORITY="0" SHOWAUTHORITYCONTAINING="0" IS_NEW_COMBINATION="0" COMBINATION_DATE="null">
+
+	 * 
+	 */
 	  /*--------------------------*/
 	static boolean isLeaf(Element element){
 		if (!isNode(element))

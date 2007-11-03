@@ -14,19 +14,21 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 
 import java.io.*;
 
 /* ======================================================================== */
 /** A panel for row headings in a MesquiteTable.*/
-public class RowNamesPanel extends EditorPanel  {
+public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	MesquiteTable table;
 	public int width,  height;
 
 	public RowNamesPanel (MesquiteTable table , int w, int h) {
 		super(table);
 		this.table=table;
+		addFocusListener(this);
 		//setBackground(ColorDistribution.medium[table.colorScheme]);
 		setBackground(Color.white);
 		setTableUnitSize(w, h);
@@ -416,6 +418,7 @@ public class RowNamesPanel extends EditorPanel  {
 
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
+		table.stopAutoScrollThread();
 		if (!(table.editingAnything() || table.singleTableCellSelected()) && tool != null && tool.isArrowTool())
 			setWindowAnnotation("", null);
 		setCursor(Cursor.getDefaultCursor());
@@ -475,5 +478,10 @@ public class RowNamesPanel extends EditorPanel  {
 			e.consume();
 			table.editMatrixCell(0, editField.getRow());
 		}
+	}
+	public void focusGained(FocusEvent arg0) {
+	}
+	public void focusLost(FocusEvent arg0) {
+		if (table!=null) table.stopAutoScrollThread();
 	}
 }

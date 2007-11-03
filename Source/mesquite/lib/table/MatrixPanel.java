@@ -14,6 +14,7 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.FileInterpreter;
 
@@ -22,7 +23,7 @@ import java.io.*;
 
 /* ======================================================================== */
 /** A panel for the main body of cells (i.e., excluding the column and row headings) of a MesquiteTable */
-public class MatrixPanel extends EditorPanel {
+public class MatrixPanel extends EditorPanel implements FocusListener {
 	MesquiteTable table;
 	public int width,  height;
 	int hFloat = -1;
@@ -33,6 +34,7 @@ public class MatrixPanel extends EditorPanel {
 		this.table=table;
 		this.width=w;
 		this.height=h;
+		addFocusListener(this);
 		//setBackground(ColorDistribution.medium[table.colorScheme]);
 		setBackground(Color.white);
 	}
@@ -629,6 +631,7 @@ timer6.end();
 	}
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
+		table.stopAutoScrollThread();
 		if (!table.editingAnything() && !table.singleTableCellSelected()) 
 			setWindowAnnotation("", null);
 		setCursor(Cursor.getDefaultCursor());
@@ -662,6 +665,11 @@ timer6.end();
 		setCurrentCursor(modifiers, column,  row, tool);
 		table.mouseInCell(modifiers, column,-1,  row, -1, tool);
 	}
-	
+	public void focusGained(FocusEvent arg0) {
+	}
+	public void focusLost(FocusEvent arg0) {
+		if (table!=null) table.stopAutoScrollThread();
+	}
+
 
 }
