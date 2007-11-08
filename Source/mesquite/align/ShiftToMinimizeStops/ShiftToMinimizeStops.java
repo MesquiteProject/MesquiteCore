@@ -90,11 +90,11 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Shift to Minimize Stops";
+		return "Shift to Minimize Stop Codons";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Shift to Minimize Stops";
+		return "Shift to Minimize Stop Codons";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

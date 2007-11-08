@@ -189,7 +189,7 @@ public class AllTrees extends TreeSource {
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Supplies all possible dichotomous rooted or unrooted trees.";
+		return "Supplies all possible dichotomous rooted or unrooted trees (only works if number of taxa is <=" + maxNumTaxa + ").";
 	}
 
 	/*.................................................................................................................*/
