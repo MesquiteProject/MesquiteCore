@@ -1,4 +1,4 @@
-package mesquite.lib;
+package mesquite.trees.lib;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
