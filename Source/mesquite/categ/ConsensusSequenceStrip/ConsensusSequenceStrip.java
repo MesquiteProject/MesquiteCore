@@ -31,7 +31,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	MesquiteString stateTaskName;
 	MesquiteCommand stC;
 	MesquiteSubmenuSpec stSubmenu;
-	MesquiteMenuItemSpec menuItem1, menuItem2, colorByAAMenuItem, closeMenuItem, lineMenuItem;
+	MesquiteMenuItemSpec menuItem1, menuItem2, colorByAAMenuItem, closeMenuItem, lineMenuItem, moveToMatrixItem;
 	MesquiteBoolean colorByAA = new MesquiteBoolean(false);
 	
 	boolean suspend = false;
@@ -85,10 +85,12 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	}
 	public void deleteRemoveMenuItem() {
 		deleteMenuItem(lineMenuItem);
+		deleteMenuItem(moveToMatrixItem);
 		deleteMenuItem(closeMenuItem);
 	}
 	public void addRemoveMenuItem() {
 		closeMenuItem= addMenuItem(null,"Remove Consensus Sequence", makeCommand("remove", this));
+		moveToMatrixItem= addMenuItem(null,"Move to Matrix", makeCommand("moveToMatrix", this));
 		lineMenuItem = addMenuLine();
 	}
 		
@@ -112,6 +114,29 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		checkMenuItems();
 		calculateSequence();
 	}
+	/*.................................................................................................................*/
+	 public String getShortParameters() {
+		 String s = "(";
+		 if (stateTask!=null)
+			 s+= stateTask.getShortParameters();
+		 s += ")";
+		 return s;
+	 }
+	/*.................................................................................................................*/
+	 public void moveToMatrix() {
+		Taxa taxa = data.getTaxa();
+		taxa.addTaxa(-1,1,true);
+		String name = taxa.getUniqueName("Consensus " + getShortParameters());
+		taxa.setTaxonName(0, name);
+		 for (int ic = 0; ic<data.getNumChars(); ic++){
+			 long s= CategoricalState.inapplicable;
+			 CategoricalState resultState = new CategoricalState();
+			 MesquiteString resultString = new MesquiteString();
+			 stateTask.calculateState( (CategoricalData)data,  ic,  table,  resultState,  resultString);
+			 s = resultState.getValue();
+			 ((CategoricalData)data).setState(ic, 0, s);
+		 }
+	 }
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -162,8 +187,11 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				}
 			}
 		}
-		else if (checker.compare(this.getClass(), "Removes the Info Strip", null, commandName, "remove")) {
+		else if (checker.compare(this.getClass(), "Removes the Consensus Strip", null, commandName, "remove")) {
 			iQuit();
+		}
+		else if (checker.compare(this.getClass(), "Moves consensus to be a new sequence in the matrix ", null, commandName, "moveToMatrix")) {
+			moveToMatrix();
 		}
 		else if (checker.compare(this.getClass(), "Suspends calculations", null, commandName, "suspend")) {
 			suspend = true;

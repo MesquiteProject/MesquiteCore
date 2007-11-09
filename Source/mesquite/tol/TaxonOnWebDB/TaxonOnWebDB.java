@@ -30,7 +30,7 @@ public class TaxonOnWebDB extends TreeDisplayAssistantI {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
 		if (arguments ==null)
-			URLTask = (TaxonOnWebServer)hireEmployee(TaxonOnWebServer.class, "Taxon on Web URL Provider");
+			URLTask = (TaxonOnWebServer)hireNamedEmployee(TaxonOnWebServer.class, "#ToLURLServer");
 		else {
 			URLTask = (TaxonOnWebServer)hireNamedEmployee(TaxonOnWebServer.class, arguments);
 			if (URLTask == null)
@@ -39,6 +39,8 @@ public class TaxonOnWebDB extends TreeDisplayAssistantI {
 		if (URLTask == null) {
 			return sorry(getName() + " couldn't start because providing of server URL could not be obtained.");
 		}
+		
+		loadPreferences();
 
 		return true;
 	} 
@@ -53,6 +55,18 @@ public class TaxonOnWebDB extends TreeDisplayAssistantI {
 	public TaxonOnWebServer getURLTask() {
 		return URLTask;
 	}
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		StringUtil.appendXMLTag(buffer, 2, "urlTask", "#" + URLTask.getClass().getName());
+		return buffer.toString();
+	}
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("urlTask".equalsIgnoreCase(tag)) {
+			String URLTaskName = StringUtil.cleanXMLEscapeCharacters(content);
+			URLTask = (TaxonOnWebServer)hireNamedEmployee(TaxonOnWebServer.class, URLTaskName);
+		}
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
 
@@ -62,6 +76,8 @@ public class TaxonOnWebDB extends TreeDisplayAssistantI {
 				URLTask= temp;
 			if (extra!=null && extra.getTreeTool()!=null)
 				extra.getTreeTool().setEnabled(URLTask!=null);
+			storePreferences();
+
 			return URLTask;
 		}
 		else if (checker.compare(this.getClass(), "Present the popup menu to select options for search web tool", null, commandName, "taxonOnWebToolOptions")) {

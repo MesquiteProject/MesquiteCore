@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.tol.lib; 
 
 import mesquite.lib.*;
@@ -25,13 +25,21 @@ public abstract class TaxonOnWebServer extends MesquiteModule  {
 		return true;
 	}
 	/*.................................................................................................................*/
-   	 public Class getDutyClass() {
-   	 	return TaxonOnWebServer.class;
-   	 }
- 	public String getDutyName() {
- 		return "Taxon On Web Server";
-   	 }
+	public Class getDutyClass() {
+		return TaxonOnWebServer.class;
+	}
+	public String getDutyName() {
+		return "Taxon On Web Server";
+	}
+  	 public String[] getDefaultModule() {
+    	 	return new String[] {"#ToLURLServer"};
+    	 }
+
+  	 
 	/*.................................................................................................................*/
-    	 public abstract  String getURL(String taxonName);
+	public abstract  String getURL(String taxonName);
+	
+	
+	
 }
 

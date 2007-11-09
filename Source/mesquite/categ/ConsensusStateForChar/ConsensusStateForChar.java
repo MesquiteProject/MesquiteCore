@@ -29,6 +29,14 @@ public class ConsensusStateForChar extends CategStateForCharacter {
 		return true;
 	}
 	/*.................................................................................................................*/
+	 public String getShortParameters() {
+		 String s = "";
+		 s += nonModalThreshold;
+		 if (showOnlyModal.getValue())
+			 s+=" Modal";
+		 return s;
+	 }
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 

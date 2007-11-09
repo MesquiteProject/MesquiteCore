@@ -1,4 +1,4 @@
-package mesquite.mb.MrBayesScore;
+package mesquite.externalTrees.MrBayesScore;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;

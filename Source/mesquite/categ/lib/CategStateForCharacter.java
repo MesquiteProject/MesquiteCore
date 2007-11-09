@@ -17,6 +17,11 @@ public abstract class CategStateForCharacter extends MesquiteModule {
 
 	public abstract void calculateState(CategoricalData data, int ic,  MesquiteTable table, CategoricalState resultState, MesquiteString resultString);
 
+	/*.................................................................................................................*/
+	 public String getShortParameters() {
+		 return "";
+	 }
+
 	public boolean getSelectedOnly() {
 		return selectedOnly;
 	}
