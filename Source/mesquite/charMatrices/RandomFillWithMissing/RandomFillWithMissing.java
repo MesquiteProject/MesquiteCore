@@ -82,16 +82,16 @@ public class RandomFillWithMissing extends CategDataAlterer {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Random Fill with Missing...";
+		return "Sprinkle Missing in Cells...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Random Fill with Missing";
+		return "Sprinkle Missing in Cells";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Fills cells with a missing data." ;
+		return "Fills cells with a missing data with a specified probability." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
