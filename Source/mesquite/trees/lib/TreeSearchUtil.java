@@ -33,7 +33,7 @@ public class TreeSearchUtil {
 	
 	
 	/*.................................................................................................................*/
-	public static boolean tryRearrangement(long i, MesquiteTimer timer, MesquiteNumber currentScore, MesquiteModule ownerModule, MesquiteTree swapTree, MesquiteTree tempTree, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, ProgressIndicator progIndicator, MesquiteLong count, MesquiteBoolean foundBetter, boolean smallerIsBetter, boolean liveUpdates, boolean notify) {
+	public static boolean tryRearrangement(long i, long total,MesquiteTimer timer, MesquiteNumber currentScore, MesquiteModule ownerModule, MesquiteTree swapTree, MesquiteTree tempTree, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, ProgressIndicator progIndicator, MesquiteLong count, MesquiteBoolean foundBetter, boolean smallerIsBetter, boolean liveUpdates, boolean notify) {
 		count.increment();
 		MesquiteNumber tempScore = new MesquiteNumber();
 		if (progIndicator != null && i % 20==0) {
@@ -48,7 +48,14 @@ public class TreeSearchUtil {
 		MesquiteString rs =new MesquiteString("");
 		swapTask.rearrange(tempTree, node, i);  //do the rearrangement!
 		numberTask.calculateNumber(tempTree, tempScore, rs);
-		if (i%100==0) MesquiteMessage.print(".");
+		if (i%100==0) {
+			MesquiteMessage.print(".");
+		}
+		if (total%20==0) {
+			CommandRecord.tick(numberTask.getName()+ ": " + currentScore.toString() + "   ("+total+" rearrangements)");
+			if (progIndicator!=null)
+				progIndicator.setText(numberTask.getName()+ ": " + currentScore.toString() + "   ("+total+" rearrangements)");
+		}
 		
 		if ((smallerIsBetter && tempScore.isLessThan(currentScore)) || (!smallerIsBetter && tempScore.isMoreThan(currentScore))){
 			currentScore.setValue(tempScore);
@@ -91,6 +98,8 @@ public class TreeSearchUtil {
 		}
 
 		MesquiteLong count = new MesquiteLong(0);
+		long total = 0;
+
 		
 		while(foundBetter.getValue()) {  // loop for improving tree
 			tempTree.setToClone(swapTree);
@@ -123,19 +132,23 @@ public class TreeSearchUtil {
 			}
 			*/
 
-			
+			CommandRecord.tick(numberTask.getName()+ ": " + currentScore.toString());
+			if (progIndicator!=null)
+				progIndicator.setText(numberTask.getName()+ ": " + currentScore.toString());
 			long boundary=rng.randomLongBetween(0, numRearrangements-1);
 			boolean downFirst  = rng.randomIntBetween(0, 1)>0;
 			
 			if (downFirst) {
 				for (long i=boundary; i<numRearrangements; i++) {
-					if (!tryRearrangement( i,  timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+					total++;
+					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
 						return false;
 					if (foundBetter.getValue()) break;
 				}
 				if (!foundBetter.getValue()){  // then let's try the other rearrangements
 					for (long i=boundary-1; i>=0; i--) {
-						if (!tryRearrangement( i,  timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+						total++;
+						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
 							return false;
 						if (foundBetter.getValue()) break;
 					}
@@ -143,13 +156,15 @@ public class TreeSearchUtil {
 			}
 			else {
 				for (long i=boundary-1; i>=0; i--) {
-					if (!tryRearrangement( i,  timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+					total++;
+					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
 						return false;
 					if (foundBetter.getValue()) break;
 				}
 				if (!foundBetter.getValue()){  // then let's try the other rearrangements
+					total++;
 					for (long i=boundary; i<numRearrangements; i++) {
-						if (!tryRearrangement( i,  timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
 							return false;
 						if (foundBetter.getValue()) break;
 					}

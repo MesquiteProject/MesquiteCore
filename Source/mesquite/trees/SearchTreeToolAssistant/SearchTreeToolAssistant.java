@@ -45,7 +45,8 @@ import java.awt.image.*;
 			setUseMenubar(false); //menu available by touching oning button
 			addCheckMenuItem(null, "Minimize Objective Function", makeCommand("smallerIsBetter",  this), smallerIsBetter);
 			addCheckMenuItem(null, "Live Updates", makeCommand("liveUpdates",  this), liveUpdates);
-			
+			swapTaskName = new MesquiteString();
+
 			
 			// TODO: have better protection here.
 			
@@ -70,7 +71,7 @@ import java.awt.image.*;
 				swapTask = (TreeSwapper)hireEmployee(TreeSwapper.class, "Tree Rearranger");		
 				if (swapTask==null)
 					return sorry(getName() + " couldn't search because no tree rearranging module was obtained");
-				swapTaskName = new MesquiteString(swapTask.getName());
+				swapTaskName.setValue(swapTask.getName());
 				swapTask.setHiringCommand(swapC);
 				treeSwapperSubmenu.setSelected(swapTaskName);
 			}
@@ -157,6 +158,14 @@ import java.awt.image.*;
 		public boolean getLiveUpdates(){
 			return liveUpdates.getValue();
 		}
+		/*.................................................................................................................*/
+		/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+		 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+		 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+		public int getVersionOfFirstRelease(){
+			return NEXTRELEASE;  
+		}
+
 	}
 
 	/* ======================================================================== */
@@ -213,6 +222,8 @@ import java.awt.image.*;
 			ownerModule.extras.removeElement(this);
 			super.turnOff();
 		}
+		
+
 	}
 
 
