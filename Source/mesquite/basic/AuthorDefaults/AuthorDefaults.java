@@ -69,6 +69,11 @@ public class AuthorDefaults extends DefaultsAssistant {
 		else
 			return (new String[] {"&", authorsRecDef});
 	}
+	
+	
+	
+	
+	
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {

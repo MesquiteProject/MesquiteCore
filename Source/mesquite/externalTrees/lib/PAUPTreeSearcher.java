@@ -31,15 +31,23 @@ public abstract class PAUPTreeSearcher extends TreeSearcher implements ActionLis
 		return true;
 	}
 
-	 public String getExtraTreeWindowCommands (){
-   		 
-   		String commands = "setSize 400 500; getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;\ntell It; ";
-   		commands += "setTreeDrawer  #mesquite.trees.SquareTree.SquareTree; tell It; orientRight; ";
-   		commands += "setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;";
-   		commands += " tell It; branchLengthsToggle on; endTell; ";
-   		commands += " setEdgeWidth 3; endTell; endTell;";
-   		return commands;
-   	 }
+	public String getExtraTreeWindowCommands (){
+
+		String commands = "setSize 400 500; getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;\ntell It; ";
+		commands += "setTreeDrawer  #mesquite.trees.SquareTree.SquareTree; tell It; orientRight; ";
+		commands += "setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;";
+		commands += " tell It; branchLengthsToggle on; endTell; ";
+		commands += " setEdgeWidth 3; endTell; endTell;";
+		return commands;
+	}
+	/*.................................................................................................................*/
+	public boolean showCitation() {
+		return true;
+	}
+	/*.................................................................................................................*/
+	public String getCitation()  {
+		return "Please remember to cite the version of PAUP* you used.";
+	}
 
 	/*.................................................................................................................*/
 	public Class getCharacterClass() {

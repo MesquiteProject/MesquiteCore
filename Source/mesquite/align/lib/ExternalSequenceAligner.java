@@ -66,10 +66,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("programPath".equalsIgnoreCase(tag)) {
 			programPath = StringUtil.cleanXMLEscapeCharacters(content);
-			if (!StringUtil.blank(programPath)) {
-				if (!programPath.endsWith(MesquiteFile.fileSeparator))
-					programPath+=MesquiteFile.fileSeparator;
-			}
 		}
 		else if ("programOptions".equalsIgnoreCase(tag))
 			programOptions = StringUtil.cleanXMLEscapeCharacters(content);
@@ -86,12 +82,17 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
+	public String getHelpString(){
+		return "";
+	}
+	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryFilesDialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryFilesDialog.addLabel(getProgramName() + " - File Locations & Options");
+		queryFilesDialog.appendToHelpString(getHelpString());
 
-		programPathField = queryFilesDialog.addTextField("Directory containing " + getProgramName() + ":", programPath, 40);
+		programPathField = queryFilesDialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
 		Button programBrowseButton = queryFilesDialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
 
@@ -233,7 +234,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		shellScript.append(getProgramCommand());
 		appendDefaultOptions(shellScript, fileName,  outFileName,  data);
 		
-		shellScript.append(programOptions + StringUtil.lineEnding());
+		shellScript.append(" " + programOptions + StringUtil.lineEnding());
 //		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
 
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
@@ -338,10 +339,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			programPath = MesquiteFile.chooseDirectory("Choose directory containing " + getProgramName()+ ": ");
+			programPath = MesquiteFile.chooseDirectory("Choose " + getProgramName()+ ": ");
 			if (!StringUtil.blank(programPath)) {
-				if (!programPath.endsWith(MesquiteFile.fileSeparator))
-					programPath+=MesquiteFile.fileSeparator;
 				programPathField.setText(programPath);
 			}
 		}

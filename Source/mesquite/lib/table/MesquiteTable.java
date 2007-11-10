@@ -4253,6 +4253,65 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public int numCellsSelected() {
 		return cellsSelected[0].numBitsOn();
 	}
+	/* ............................................................................................................... */
+	/** returns number of cells in central matrix are selected within a column. */
+	public int numCellsSelectedInColumn (int column) {
+		if (column == -1)
+			return 0;
+
+		int num = 0;
+		if (columnLegal(column)) {
+			for (int i = 0; i < numRowsTotal; i++)
+				if (isCellSelectedAnyWay(column, i))
+					num++;
+		}
+		return num;
+	}
+
+	/* ............................................................................................................... */
+	/** returns whether or not all cells are selected in a column. */
+	public boolean wholeColumnSelectedAnyWay(int column) {
+		if (isColumnSelected(column))
+			return true;
+		int num = numCellsSelectedInColumn(column);
+		if (num == numRowsTotal)
+			return true;
+		return false;
+	}
+
+	/* ............................................................................................................... */
+	/** returns whether or not all cells are selected in a column. */
+	public boolean contiguousColumnsSelected() {
+		boolean aWholeColumnSelected = false;
+		for (int i = 0; i < numColumnsTotal; i++) {
+			if (wholeColumnSelectedAnyWay(i)) {  // we've found the first selected one
+				aWholeColumnSelected = true;
+				for (int j = i; j < numColumnsTotal; j++) {
+					if (!wholeColumnSelectedAnyWay(j)) { 
+						// we've found the first unselected one after this
+						if (j==i+1)
+							return false;  // there's only one column selected
+						for (int  emptyColumn=0; emptyColumn < i-1; emptyColumn++) {  // now let's scan through the earlier parts to see if there is anything in there
+							for (int  emptyRow=0; emptyRow < numRowsTotal; emptyRow++) {
+								if (isCellSelectedAnyWay(emptyColumn, emptyRow))
+									return false;
+							}
+						}
+						for (int  emptyColumn=j; emptyColumn <numColumnsTotal; emptyColumn++) {  // now let's scan through the later parts to see if there is anything in there
+							for (int  emptyRow=0; emptyRow < numRowsTotal; emptyRow++) {
+								if (isCellSelectedAnyWay(emptyColumn, emptyRow))
+									return false;
+							}
+						}
+						return true;
+					}
+				}
+
+			}
+				
+		}
+		return aWholeColumnSelected;
+	}
 
 	/* ............................................................................................................... */
 	/** returns number of cells in central matrix are selected within a row. */

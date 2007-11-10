@@ -38,6 +38,10 @@ public class MuscleAlign extends ExternalSequenceAligner{
 		return true;
 	}
 	/*.................................................................................................................*/
+	public String getCitation()  {
+		return "Please remember to cite the version of Muscle you used.";
+	}
+	/*.................................................................................................................*/
 	public boolean isSubstantive(){
 		return true;
 	}
@@ -64,11 +68,18 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	 }
 	
 	/*.................................................................................................................*/
+	public String getHelpString() {
+	  String s =  " In the Muscle Options field, place any Muscle options you wish to use.  For example, if you wished to change the"
+		  + " gap opening cost to 3 and the gap extension cost to 8, the options would be \"-gapopen -8.0  -gapextend -3.0\".";
+	  return s;
+	}
+
+	/*.................................................................................................................*/
 	public String getProgramCommand(){
 		if (MesquiteTrunk.isWindows())
-			return StringUtil.protectForWindows(getProgramPath() + "muscle.exe");
+			return StringUtil.protectForWindows(getProgramPath());
 		else
-			return StringUtil.protectForUnix(getProgramPath() + "muscle");
+			return StringUtil.protectForUnix(getProgramPath());
 	}
 	/*.................................................................................................................*/
 	public String getDefaultProgramOptions(){
