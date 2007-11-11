@@ -25,8 +25,8 @@ public class AuthorDefaults extends DefaultsAssistant {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		authorBlockDefault = new MesquiteBoolean(Author.addAuthorBlockByDefault);
 		loadPreferences();
-		addMenuItem( "Set Author...", makeCommand("setAuthor",  this));
-		addCheckMenuItem(null, "Record Authors by Default", makeCommand("recordAuthors",  this), authorBlockDefault);
+		addMenuItemToDefaults( "Set Author...", makeCommand("setAuthor",  this));
+		addCheckMenuItemToDefaults(null, "Record Authors by Default", makeCommand("recordAuthors",  this), authorBlockDefault);
 		return true;
 	}
 	public void processPreferencesFromFile (String[] prefs) {
