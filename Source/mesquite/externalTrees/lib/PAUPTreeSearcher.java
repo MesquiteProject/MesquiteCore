@@ -8,6 +8,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.externalTrees.lib.*;
+import mesquite.externalTrees.PAUPRunner.*;
 
 public abstract class PAUPTreeSearcher extends TreeSearcher implements ActionListener, PAUPCommander {
 	PAUPRunner paupRunner;
@@ -25,9 +26,10 @@ public abstract class PAUPTreeSearcher extends TreeSearcher implements ActionLis
 
 		loadPreferences();
 
-		paupRunner = new PAUPRunner(this, PAUPPath, null);
+		paupRunner = (PAUPRunner)hireNamedEmployee(PAUPRunner.class, "#mesquite.externalTrees.PAUPRunner.PAUPRunner");
 		if (paupRunner ==null)
 			return false;
+		paupRunner.setPAUPPath(PAUPPath);
 		return true;
 	}
 
@@ -61,8 +63,8 @@ public abstract class PAUPTreeSearcher extends TreeSearcher implements ActionLis
 			if (observedStates ==null)
 				observedStates = matrixSourceTask.getCurrentMatrix(taxa);
 		}
-		if (paupRunner ==null)
-			paupRunner = new PAUPRunner(this, PAUPPath, null);
+		if (paupRunner !=null)
+			paupRunner.setPAUPPath(PAUPPath);
 	}
 
 	public boolean getPreferencesSet() {
@@ -155,7 +157,7 @@ public abstract class PAUPTreeSearcher extends TreeSearcher implements ActionLis
 
 		MesquiteDouble finalScore = new MesquiteDouble();
 
-		paupRunner.getTrees(trees, taxa, observedStates, rng.nextInt(), finalScore, this);
+		paupRunner.getTrees(trees, taxa, observedStates, rng.nextInt(), finalScore, getName(), this);
 
 		return trees;
 	}

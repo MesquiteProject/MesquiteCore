@@ -11,7 +11,7 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 
-package mesquite.externalTrees.lib;
+package mesquite.externalTrees.PAUPRunner;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,14 +21,14 @@ import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.externalTrees.lib.*;
 
 /* TODO:
  * 	- get it so that either the shell doesn't pop to the foreground, or the runs are all done in one shell script, rather than a shell script for each
  */
 
-public class PAUPRunner  implements OutputFileProcessor  {
+public class PAUPRunner extends MesquiteModule implements OutputFileProcessor  {
 	public static final String SCORENAME = "PAUPScore";
-	MesquiteModule ownerModule;
 	Random rng;
 	String PAUPPath;
 	String datafname = null;
@@ -38,13 +38,18 @@ public class PAUPRunner  implements OutputFileProcessor  {
 	String fileName = "";
 	String treeFileName = "";
 
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		rng = new Random(System.currentTimeMillis());
+		return true;
+	}
 
-	public PAUPRunner (MesquiteModule ownerModule, String PAUPPath, String datafname) {
+/*	public PAUPRunner (MesquiteModule ownerModule, String PAUPPath, String datafname) {
 		this.ownerModule= ownerModule;
 		rng = new Random(System.currentTimeMillis());
 		this.PAUPPath = PAUPPath;
 		this.datafname = datafname;
 	}
+	*/
 
  	/*.................................................................................................................*/
    	public void writeNEXUSFile(Taxa taxa, String dir, String fileName, String path, CategoricalData data) {
@@ -104,7 +109,7 @@ public class PAUPRunner  implements OutputFileProcessor  {
 	double finalValue = MesquiteDouble.unassigned;
 	
 	/*.................................................................................................................*/
-	public Tree getTrees(TreeVector trees, Taxa taxa, MCharactersDistribution matrix, long seed, MesquiteDouble finalScore, PAUPCommander paupCommander) {
+	public Tree getTrees(TreeVector trees, Taxa taxa, MCharactersDistribution matrix, long seed, MesquiteDouble finalScore, String searchName, PAUPCommander paupCommander) {
 		if (matrix==null || paupCommander==null)
 			return null;
 	/*
@@ -118,12 +123,12 @@ public class PAUPRunner  implements OutputFileProcessor  {
 		
 		CategoricalData data = (CategoricalData)matrix.getParentData();
 	
-		ownerModule.mesquiteTrunk.incrementProjectBrowserRefreshSuppression();
+		mesquiteTrunk.incrementProjectBrowserRefreshSuppression();
 
 		data.setEditorInhibition(true);
 		String unique = MesquiteTrunk.getUniqueIDBase() + Math.abs(rng.nextInt());
 
-		String rootDir = ownerModule.createSupportDirectory() + MesquiteFile.fileSeparator;  //replace this with current directory of file
+		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  //replace this with current directory of file
 
 		fileName = "tempData" + MesquiteFile.massageStringToFilePathSafe(unique) + ".nex";   //replace this with actual file name?
 		String filePath = rootDir +  fileName;
@@ -154,7 +159,7 @@ public class PAUPRunner  implements OutputFileProcessor  {
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 
 
-		progIndicator = new ProgressIndicator(ownerModule.getProject(),ownerModule.getName(), "PAUP Search", 0, false);
+		progIndicator = new ProgressIndicator(getProject(),searchName, "PAUP Search", 0, false);
 		if (progIndicator!=null){
 			count = 0;
 			progIndicator.start();
@@ -170,7 +175,7 @@ public class PAUPRunner  implements OutputFileProcessor  {
 		
 		if (success){
 			success = false;
-			FileCoordinator coord = ownerModule.getFileCoordinator();
+			FileCoordinator coord = getFileCoordinator();
 			MesquiteFile tempDataFile = null;
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord scr = new CommandRecord(true);
@@ -178,7 +183,7 @@ public class PAUPRunner  implements OutputFileProcessor  {
 			tempDataFile = (MesquiteFile)coord.doCommand("includeTreeFile", StringUtil.tokenize(treeFilePath) + " " + StringUtil.tokenize("#InterpretNEXUS") + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			MesquiteThread.setCurrentCommandRecord(oldCR);
 
-			TreesManager manager = (TreesManager)ownerModule.findElementManager(TreeVector.class);
+			TreesManager manager = (TreesManager)findElementManager(TreeVector.class);
 			Tree t =null;
 			int numTB = manager.getNumberTreeBlocks(taxa);
 			TreeVector tv = manager.getTreeBlock(taxa,numTB-1);
@@ -193,18 +198,18 @@ public class PAUPRunner  implements OutputFileProcessor  {
 			}
 			//int numTB = manager.getNumberTreeBlocks(taxa);
 			
-			ownerModule.mesquiteTrunk.decrementProjectBrowserRefreshSuppression();
+			mesquiteTrunk.decrementProjectBrowserRefreshSuppression();
 			if (tempDataFile!=null)
 				tempDataFile.close();
-			ownerModule.deleteSupportDirectory();
+			deleteSupportDirectory();
 			data.setEditorInhibition(false);
 			manager.deleteElement(tv);  // get rid of temporary tree block
 			if (success) 
 				return t;
 			return null;
 		}
-		ownerModule.deleteSupportDirectory();
-		ownerModule.mesquiteTrunk.decrementProjectBrowserRefreshSuppression();
+		deleteSupportDirectory();
+		mesquiteTrunk.decrementProjectBrowserRefreshSuppression();
 		data.setEditorInhibition(false);
 		return null;
 	}	
@@ -240,5 +245,14 @@ public class PAUPRunner  implements OutputFileProcessor  {
    	public void setPAUPPath(String PAUPPath){
    		this.PAUPPath = PAUPPath;
    	}
+
+	public Class getDutyClass() {
+		return PAUPRunner.class;
+	}
+
+	public String getName() {
+		return "PAUPRunner";
+	}
+
 
 }
