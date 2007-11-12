@@ -26,7 +26,7 @@ import mesquite.lib.duties.*;
  * 	- get it so that either the shell doesn't pop to the foreground, or the runs are all done in one shell script, rather than a shell script for each
  */
 
-public class PAUPRunner  implements LogFileProcessor  {
+public class PAUPRunner  implements OutputFileProcessor  {
 	public static final String SCORENAME = "PAUPScore";
 	MesquiteModule ownerModule;
 	Random rng;
@@ -141,7 +141,7 @@ public class PAUPRunner  implements LogFileProcessor  {
 		String commandFilePath = rootDir + commandFileName;
 		String treeFilePath = rootDir + treeFileName;
 		String logFileName = ofprefix+".log00.log";
-		String logFilePath = rootDir + logFileName;
+		String[] logFilePath = {rootDir + logFileName};
 
 		MesquiteFile.putFileContents(commandFilePath,getPAUPCommandFile(paupCommander, fileName, treeFileName), true);   // saving the PAUP command file
 		
@@ -221,22 +221,17 @@ public class PAUPRunner  implements LogFileProcessor  {
 	
 	/*.................................................................................................................*/
 
-	public void processLogFile(String logFilePath) {
-		if (!StringUtil.blank(logFilePath)) {
-			String s = MesquiteFile.getFileLastContents(logFilePath);
-			if (!StringUtil.blank(s))
-;
-			count++;
+	public void processOutputFile(String[] outputFilePaths, int fileNum) {
+		if (fileNum==0 && outputFilePaths.length>0 && !StringUtil.blank(outputFilePaths[0])) {
+		//	String s = MesquiteFile.getFileLastContents(outputFilePaths[0]);
+		//	if (!StringUtil.blank(s))
 		}
 		
 	}
 	/*.................................................................................................................*/
 
-	public void processCompletedLogFile(String logFilePath) {
-		if (!StringUtil.blank(logFilePath)) {
-			String s = MesquiteFile.getFileLastContents(logFilePath);
-			if (!StringUtil.blank(s)) {
-			}
+	public void processCompletedOutputFiles(String[] outputFilePaths) {
+		if ( outputFilePaths.length>0 && !StringUtil.blank(outputFilePaths[0])) {
 		}
 
 	}
