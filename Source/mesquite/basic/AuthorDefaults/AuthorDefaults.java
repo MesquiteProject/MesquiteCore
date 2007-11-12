@@ -29,6 +29,12 @@ public class AuthorDefaults extends DefaultsAssistant {
 		addCheckMenuItemToDefaults(null, "Record Authors by Default", makeCommand("recordAuthors",  this), authorBlockDefault);
 		return true;
 	}
+	public void endJob(){
+		super.endJob();
+		storePreferences();
+	}
+
+	
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
 			if ("&".equals(prefs[0])){
@@ -50,10 +56,6 @@ public class AuthorDefaults extends DefaultsAssistant {
 					MesquiteModule.author.setCode(prefs[1]);
 			}
 		}
-	}
-	public void endJob(){
-		super.endJob();
-		storePreferences();
 	}
 	/*.................................................................................................................*/
 	public String[] preparePreferencesForFile () {
