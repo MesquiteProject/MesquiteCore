@@ -27,7 +27,7 @@ import mesquite.externalTrees.lib.*;
  * 	- get it so that either the shell doesn't pop to the foreground, or the runs are all done in one shell script, rather than a shell script for each
  */
 
-public class PAUPRunner extends MesquiteModule implements OutputFileProcessor  {
+public class PAUPRunner extends MesquiteModule implements OutputFileProcessor , ShellScriptWatcher {
 	public static final String SCORENAME = "PAUPScore";
 	Random rng;
 	String PAUPPath;
@@ -165,7 +165,7 @@ public class PAUPRunner extends MesquiteModule implements OutputFileProcessor  {
 			progIndicator.start();
 		}
 
-		boolean success = ShellScriptUtil.executeLogAndWaitForShell(scriptPath, "PAUP", logFilePath, this);
+		boolean success = ShellScriptUtil.executeLogAndWaitForShell(scriptPath, "PAUP", logFilePath, this,this);
 		//executeAndWaitForPAUP(scriptPath, runningFilePath, outFilePath);
 
 
@@ -213,6 +213,11 @@ public class PAUPRunner extends MesquiteModule implements OutputFileProcessor  {
 		data.setEditorInhibition(false);
 		return null;
 	}	
+	
+	public boolean continueShellProcess(){
+		return true;
+	}
+
 
 	/*.................................................................................................................*/
 	String getPAUPCommand(){
