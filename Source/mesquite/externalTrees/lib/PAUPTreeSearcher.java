@@ -20,11 +20,12 @@ public abstract class PAUPTreeSearcher extends TreeSearcher implements ActionLis
 	boolean preferencesSet = false;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
+
 		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, getCharacterClass(), "Source of matrix (for " + getName() + ")");
 		if (matrixSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of matrix (for " + getName() + ") was obtained");
 
-		loadPreferences();
 
 		paupRunner = (PAUPRunner)hireNamedEmployee(PAUPRunner.class, "#mesquite.externalTrees.PAUPRunner.PAUPRunner");
 		if (paupRunner ==null)
