@@ -10,7 +10,7 @@ import mesquite.lib.duties.*;
 import mesquite.externalTrees.lib.*;
 import mesquite.externalTrees.PAUPRunner.*;
 
-public abstract class PAUPTreeSearcher extends TreeSearcher implements ActionListener, PAUPCommander {
+public abstract class PAUPTreeSearcher extends ExternalTreeSearcher implements ActionListener, PAUPCommander {
 	PAUPRunner paupRunner;
 	Taxa taxa;
 	private MatrixSourceCoord matrixSourceTask;
