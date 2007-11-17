@@ -110,8 +110,8 @@ public class PhoneHomeUtil {
 					for (int i=0; i<osVector.size() && !appliesToOSVersion; i++) {
 						String [] osStrings = (String[])osVector.get(i);
 						boolean osMatches =(StringUtil.blank(osStrings[OS])|| System.getProperty("os.name").startsWith(osStrings[OS]));
-						boolean osVersionMatches =(StringUtil.blank(osStrings[OSVERSION])|| System.getProperty("os.version").indexOf(osStrings[OSVERSION])>=0);
-						boolean javaMatches =(StringUtil.blank(osStrings[JAVAVERSION])|| MesquiteTrunk.getJavaVersionAsString().equals(osStrings[JAVAVERSION]));
+						boolean osVersionMatches =(StringUtil.blank(osStrings[OSVERSION])|| System.getProperty("os.version").startsWith(osStrings[OSVERSION]));
+						boolean javaMatches =(StringUtil.blank(osStrings[JAVAVERSION])|| MesquiteTrunk.getJavaVersionAsString().startsWith(osStrings[JAVAVERSION]));
 						if (osMatches && osVersionMatches && javaMatches) {
 							appliesToOSVersion=true;
 						}
@@ -135,7 +135,8 @@ public class PhoneHomeUtil {
 				// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
 				if (!seenBefore && appliesToOSVersion){  //relevant
 					if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
-						notices.append( countNotices.toString() + ". " + message + "\n");
+						//notices.append( countNotices.toString() + ". " + message + "<hr>\n");
+						notices.append(message + "<hr>\n");
 						countNotices.increment();
 					}
 					else
