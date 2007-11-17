@@ -214,7 +214,7 @@ public class PAUPRunner extends MesquiteModule implements OutputFileProcessor , 
 		return null;
 	}	
 	
-	public boolean continueShellProcess(){
+	public boolean continueShellProcess(Process proc){
 		return true;
 	}
 

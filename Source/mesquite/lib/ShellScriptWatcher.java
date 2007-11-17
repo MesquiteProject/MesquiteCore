@@ -2,6 +2,6 @@ package mesquite.lib;
 
 public interface ShellScriptWatcher {
 
-	public boolean continueShellProcess();
+	public boolean continueShellProcess(Process proc);
 
 }
