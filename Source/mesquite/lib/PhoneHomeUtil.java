@@ -10,6 +10,10 @@ import org.tolweb.base.xml.BaseXMLWriter;
 
 public class PhoneHomeUtil {	
 
+	static int OS = 0;
+	static int OSVERSION=1;
+	static int JAVAVERSION=2;
+
 	
 	/*.................................................................................................................*/
 	public static void readOldPhoneRecords(String path, ListableVector phoneRecords) {
@@ -96,9 +100,23 @@ public class PhoneHomeUtil {
 
 	
 	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int version, int notice, String noticeType, String message, PhoneHomeRecord phoneHomeRecord) {
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int version, int notice, String noticeType, String message, PhoneHomeRecord phoneHomeRecord, Vector osVector) {
 		if (MesquiteInteger.isCombinable(version)){
 			if (MesquiteInteger.isCombinable(notice)){
+
+				boolean appliesToOSVersion = true;
+				if (osVector!=null) {
+					appliesToOSVersion=false;
+					for (int i=0; i<osVector.size() && !appliesToOSVersion; i++) {
+						String [] osStrings = (String[])osVector.get(i);
+						boolean osMatches =(StringUtil.blank(osStrings[OS])|| System.getProperty("os.name").startsWith(osStrings[OS]));
+						boolean osVersionMatches =(StringUtil.blank(osStrings[OSVERSION])|| System.getProperty("os.version").indexOf(osStrings[OSVERSION])>=0);
+						boolean javaMatches =(StringUtil.blank(osStrings[JAVAVERSION])|| MesquiteTrunk.getJavaVersionAsString().equals(osStrings[JAVAVERSION]));
+						if (osMatches && osVersionMatches && javaMatches) {
+							appliesToOSVersion=true;
+						}
+					}
+				}
 
 				//suppose Mesquite is version 2.01
 
@@ -115,7 +133,7 @@ public class PhoneHomeUtil {
 				seenBefore = seenBefore || (mmi.getVersionInt()<version && phoneHomeRecord.getLastVersionNoticed() > version);  //e.g., notice is 2.02; 2.03 notices previously read
 
 				// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
-				if (!seenBefore){  //relevant
+				if (!seenBefore && appliesToOSVersion){  //relevant
 					if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
 						notices.append( countNotices.toString() + ". " + message + "\n");
 						countNotices.increment();
@@ -186,9 +204,21 @@ public class PhoneHomeUtil {
 				String messageType = messageElement.getChildText("messageType");
 				String message = messageElement.getChildText("message");
 				
+				Vector osVector = null;
+				List osList = messageElement.getChildren("forOS");
+				for (Iterator i = osList.iterator(); i.hasNext();) {   // this is going through all of the notices
+					if (osVector==null)
+						osVector = new Vector();
+					Element osElement = (Element) i.next();
+					String[] osStrings= new String[3];
+					osStrings[OS] = osElement.getChildText("OS");
+					osStrings[OSVERSION] = osElement.getChildText("OSVersion");
+					osStrings[JAVAVERSION]  = osElement.getChildText("JavaVersion");
+					osVector.addElement(osStrings);
+				}
 				// process other notice tags here if they are present
 				
-				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message, phoneHomeRecord);
+				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message, phoneHomeRecord, osVector);
 
 			}
 			
