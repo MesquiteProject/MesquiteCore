@@ -24,7 +24,10 @@ public abstract class TaxonOnWebServer extends MesquiteModule  {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
-	/*.................................................................................................................*/
+	public boolean isSubstantive(){
+		return false;
+	}   	 
+/*.................................................................................................................*/
 	public Class getDutyClass() {
 		return TaxonOnWebServer.class;
 	}

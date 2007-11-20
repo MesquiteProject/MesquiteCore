@@ -58,7 +58,7 @@ public class SearchForBetterTree extends TreeAlterer {
 	/*.................................................................................................................*/
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean requestPrimaryChoice(){
 		return true;

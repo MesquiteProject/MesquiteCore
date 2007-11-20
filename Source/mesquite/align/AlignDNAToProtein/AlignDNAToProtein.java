@@ -103,7 +103,7 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 }

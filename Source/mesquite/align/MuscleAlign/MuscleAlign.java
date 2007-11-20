@@ -47,7 +47,7 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
