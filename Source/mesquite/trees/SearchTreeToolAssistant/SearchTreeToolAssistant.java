@@ -96,7 +96,10 @@ import java.awt.image.*;
 					numberTask = temp;
 					numberTask.setHiringCommand(numberC);
 					//numberTask.initialize(tree, charStates);
-					numberTaskName.setValue(numberTask.getName());
+					if (numberTaskName==null)
+						numberTaskName = new MesquiteString(numberTask.getName());
+					else
+						numberTaskName.setValue(numberTask.getName());
 					parametersChanged();
 					return numberTask;
 				}
