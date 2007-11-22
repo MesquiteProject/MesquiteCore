@@ -113,7 +113,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (data==null)
 			return;
 
-		
 		runs++;
 		String path = createSupportDirectory() + MesquiteFile.fileSeparator + fileName;  // place files in support directory for module
 		incrementMenuResetSuppression();
@@ -243,7 +242,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
   
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
 
-
 		if (success){
 			FileCoordinator coord = getFileCoordinator();
 			MesquiteFile tempDataFile = null;
@@ -339,7 +337,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			programPath = MesquiteFile.chooseDirectory("Choose " + getProgramName()+ ": ");
+			
+			programPath = MesquiteFile.openFileDialog("Choose " + getProgramName()+ ": ", null, null);
 			if (!StringUtil.blank(programPath)) {
 				programPathField.setText(programPath);
 			}
