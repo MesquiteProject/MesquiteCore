@@ -57,7 +57,26 @@ public class AuthorDefaults extends DefaultsAssistant {
 			}
 		}
 	}
-	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("authorBlockDefault".equalsIgnoreCase(tag)){
+			authorBlockDefault.setValue(content);
+		
+		}
+		else if ("authorName".equalsIgnoreCase(tag)){
+			MesquiteModule.author.setName(content);
+		}
+		else if ("authorCode".equalsIgnoreCase(tag)){
+			MesquiteModule.author.setCode(content);
+		}
+	}
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		StringUtil.appendXMLTag(buffer, 2, "authorBlockDefault", authorBlockDefault);  
+		StringUtil.appendXMLTag(buffer, 2, "authorName", MesquiteModule.author.getName());
+		StringUtil.appendXMLTag(buffer, 2, "authorCode", MesquiteModule.author.getCode());    
+		return buffer.toString();
+	}
+	/*.................................................................................................................*
 	public String[] preparePreferencesForFile () {
 		String authorsRecDef = "recordAuthors";
 		if (!Author.addAuthorBlockByDefault)
@@ -71,7 +90,7 @@ public class AuthorDefaults extends DefaultsAssistant {
 		else
 			return (new String[] {"&", authorsRecDef});
 	}
-	
+	/**/
 	
 	
 	
@@ -79,7 +98,7 @@ public class AuthorDefaults extends DefaultsAssistant {
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(MesquiteWindow.class, "Sets the author for this account and machine", null, commandName, "setAuthor")) {
+		if (checker.compare(getClass(), "Sets the author for this account and machine", null, commandName, "setAuthor")) {
 			MesquiteBoolean answer = new MesquiteBoolean(false);
 			MesquiteString resp1 = new MesquiteString(MesquiteModule.author.getName());
 			MesquiteString resp2 = new MesquiteString(MesquiteModule.author.getCode());

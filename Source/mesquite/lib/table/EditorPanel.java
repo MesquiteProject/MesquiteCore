@@ -259,10 +259,7 @@ public abstract class EditorPanel extends MesquitePanel {
 	protected void prepareCell(Graphics g, int x, int y, int w, int h, boolean focused, boolean selected, boolean dimmed, boolean editable){
 		Color color;
 		if (selected) {
-			if (!MesquiteWindow.Java2Davailable)
-				color = Color.black;
-			else
-				color = Color.white;
+			color = Color.white;
 		}
 		else if (focused)
 			color = Color.lightGray;

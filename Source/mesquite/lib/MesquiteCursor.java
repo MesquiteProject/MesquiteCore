@@ -56,7 +56,7 @@ public class MesquiteCursor {
 	}
 	/*.................................................................................................................*/
 	public Cursor getCursor(){  
-		if (MesquiteWindow.Java2Davailable && MesquiteFile.fileExists(getImagePath())){
+		if (MesquiteFile.fileExists(getImagePath())){
 			Image im = getCursorImage();
 			if (im == null){
 				Dimension best = Toolkit.getDefaultToolkit().getBestCursorSize(16, 16);

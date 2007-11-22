@@ -304,7 +304,7 @@ public class DrawTreeUtil {
 			int ynM = y[nM];
 			boolean done = false;
 			try{
-				if (MesquiteWindow.Java2Davailable && g instanceof Graphics2D) {
+				if ( g instanceof Graphics2D) {
 					if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 						if (xnM>xN){ //leans left
 							xN += width/2+start;

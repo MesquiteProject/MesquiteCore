@@ -385,10 +385,7 @@ timer6.end();
 							Color color = table.getBackgroundColor(c, r, selected);
 							if (color == null){
 								if (selected) {
-									if (!MesquiteWindow.Java2Davailable)
-										color = Color.black;
-									else
-										color = Color.white;
+									color = Color.white;
 								}
 								else if (fillColor!=null)
 									color = fillColor;
