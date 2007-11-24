@@ -147,7 +147,7 @@ import java.awt.image.*;
 		/*.................................................................................................................*/
 		/** returns an explanation of what the module does.*/
 		public String getExplanation() {
-			return "Supplies a tool for tree windows that searches for a better branch arrangement within in clade touched." ;
+			return "Supplies a tool for tree windows that searches for a better branch arrangement within clade touched." ;
 		}
 		public boolean isSubstantive(){
 			return false;
