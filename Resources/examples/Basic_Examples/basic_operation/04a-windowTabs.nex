@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Sep 20 14:04:08 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
+[written Thu Nov 22 19:49:10 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -71,7 +71,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
+OPTIONS DEFTYPE =                           unord PolyTcount =                           MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -227,6 +227,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -280,7 +281,7 @@ Begin MESQUITE;
 					setLocation 8 27;
 					setFont SanSerif;
 					setFontSize 10;
-				setExplanation 'This file shows how Mesquite''s functional windows are grouped as tabs within a single window of your operating system.  At right is a window showing a list of taxa (the List of Taxa window).  If you touch on the tabs along the top of the window, you can see a Tree Window, and a Character Matrix Editor.  ^n^nThis system of tabs represents a change from version 1 of Mesquite.  You can pop out a window to be independent by touching on the little circled arrow in the tab for the window; after it''s independent you can pop it back in by touching the arrow at top right of the indepedent window.^n^nYou can revert to the old style of all independent windows if you deselect Open Windows as Tabs in the Defaults menu of the main Mesquite window.';
+				setExplanation 'This file shows how Mesquite''s functional windows are grouped as tabs within a single window of your operating system.  At right is a window showing a list of taxa (the List of Taxa window).  If you touch on the tabs along the top of the window, you can see a Tree Window, and a Character Matrix Editor.  ^n^nThis system of tabs represents a change from version 1 of Mesquite.  You can pop out a window to be independent by touching on the little circled arrow in the tab for the window; after it''s independent you can pop it back in by touching the arrow at top left of the indepedent window.^n^nYou can revert to the old style of all independent windows if you deselect Open Windows as Tabs in the Defaults submenu of the File menu.';
 				setTitle Window_Tabs;
 				toggleFileNames off;
 				setPrevButtonName Previous;

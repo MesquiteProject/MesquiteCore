@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 03 18:25:43 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
+[written Thu Nov 22 19:39:59 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		taxon_0 taxon_1 taxon_2 taxon_3 taxon_4 taxon_5 taxon_6 taxon_7 taxon_8 taxon_9 taxon_10 taxon_11 taxon_12 taxon_13 taxon_14 taxon_15 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "09-pcaSim.nex"';
 	DIMENSIONS  NCHAR=50;
 	FORMAT DATATYPE = CONTINUOUS;
 	MATRIX
@@ -38,6 +40,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "09-pcaSim.nex"';
+	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
 		1 taxon_0,
 		2 taxon_1,
@@ -130,6 +134,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -185,7 +194,6 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -242,6 +250,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -298,6 +311,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -326,37 +340,6 @@ Begin MESQUITE;
 					setColor Red;
 					removeColor off;
 				endTell;
-				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.AnnotSummary.AnnotSummary;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.CellImages.CellImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleAnnotations off;
-					toggleSums off;
-					toggleHistory off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateImages.StateImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleStateAnnotations off;
-					toggleCharAnnotations off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.aaManageImageIndices.aaManageImageIndices;
-				tell It;
-					setLocal;
-					setPrevIndexBase 'http://salticus.zoology.ubc.ca/ATOLSpiders/ATOLImages';
-					reset;
-				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -369,10 +352,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 429 246;
+					setSize 429 268;
 					setLocation 2 31;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'The tree at right was used to simulate evolution by Brownian motion to yield the data matrix shown below.  The same tree is plotted in PCA space calculated from the simulated characters, lower right.  Notice that the different clades stand out clearly on the plot.^n';
 				setTitle Simulated_data;
 				toggleFileNames off;

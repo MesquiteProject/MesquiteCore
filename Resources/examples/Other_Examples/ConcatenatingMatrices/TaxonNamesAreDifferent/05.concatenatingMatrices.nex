@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed Sep 12 14:50:55 EDT 2007 by Mesquite  version 2.0BETA3 (build i58) at user-152-3-181-145.wireless.duke.edu/152.3.181.145 (David Maddison)]
+[written Thu Nov 22 19:41:40 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE 28S_Taxa;
@@ -7,6 +7,7 @@ BEGIN TAXA;
 	TAXLABELS
 		Lodus_radians_CA_2076 Lodus_radians_UT_1431 Lodus_radians_WA_1285 'Lodus sierra CA:Cache Ck 2081' 'Lodus sierra CA:Putah Ck 1414' 'Lodus sierra CA:Cache Ck 2167' 'Lodus jucundum CA:Cache Ck 2077' 'Lodus jucundum CA:Cache Ck 2078' 'Lodus jucundum CA:Shively 1980' 'Lodus jucundum CA:Shively 2000' Lodus_nitidum_AZ_2121 'Lodus nitidum CA: Pine Valley 1972' 'Lodus nitidum NM: Gila 2122' 'Lodus nitidum NM: Gila 2123' 'Lodus nitidum NM: Largo Ck 1408' 'Lodus mundum CA: Cache Ck 2079' 'Lodus mundum CA: Cache Ck 2080' 'Lodus mundum CA: Kern R. 1973' 'Lodus mundum CA: Smith R. 1979' 'Lodus mundum NV: Weeks 1981' 'Lodus mundum OR: Nestucca R 2001' 'Lodus mundum WA: Nooksack R 1329' 'Lodus sp nr jucundum NM: Alma 1426' 'Lodus sp nr jucundum NM: Gila 2115' 'Lodus sp nr jucundum NM: Gila 2116' 'Lodus sp nr jucundum NM: Gila 2132' 'Lodus sp nr jucundum NM: Gila 2133' 'Lodus sp nr jucundum NM: Reserve 2120' 'Lodus sp nr jucundum AZ: Sedona 2171' 'Lodus sp nr jucundum AZ: Sedona 2170' 'Lodus sp nr jucundum AZ: Sedona 2169' 'Lodus sp nr jucundum AZ: Sedona 2172' 
 	;
+	BLOCKID WM1166a989c4314;
 
 END;
 
@@ -85,6 +86,8 @@ BEGIN CHARACTERS;
 ;
 
 
+		BLOCKID WM1166a989c7f0;
+
 
 END;
 
@@ -93,11 +96,11 @@ BEGIN MacClade;
 	LastModified -1076749792;
 	FileSettings editor '0' '0' '1' '1';
 	Singles 000;
-	Editor 00011001111111100100010111 '1' '12'            Geneva '9' '238' '1'            all;
+	Editor 00011001111111100100010111 '1' '12'             Geneva '9' '238' '1'             all;
 	EditorPosition '49' '221' '723' '909';
 	TreeWindowPosition '46' '6' '797' '1230';
-	ListWindow Characters closed Geneva '9' '50' '10' '129' '406'            000;
-	ListWindow Taxa closed Geneva '9' '50' '25' '225' '535'            000000010;
+	ListWindow Characters closed Geneva '9' '50' '10' '129' '406'             000;
+	ListWindow Taxa closed Geneva '9' '50' '25' '225' '535'             000000010;
 	ListWindow Trees closed Geneva '9' '50' '10' '276' '490';
 	ListWindow TypeSets closed Geneva '9' '50' '10' '276' '490';
 	ListWindow WtSets closed Geneva '9' '50' '10' '276' '490';
@@ -110,42 +113,42 @@ BEGIN MacClade;
 	ChartWindowPosition '52' '30' '772' '1220';
 	StateNamesSymbols closed Geneva '9' '10' '50' '30' '148' '220';
 	WindowOrder  Data;
-	OtherSymbols & /            00 ? -;
-	Correlation '0' '0' '1000' '0' '0'            10011010;
+	OtherSymbols & /             00 ? -;
+	Correlation '0' '0' '1000' '0' '0'             10011010;
 	Salmo 00000001;
 	EditorFile '4';
-	ExportHTML _ MOSS '100'            110000;
+	ExportHTML _ MOSS '100'             110000;
 	PrettyPrint 10;
 	EditorToolsPosition '611' '46' '115' '165';
 	TreeWindowProgram 10;
 	TreeWindow 0000;
-	Continuous '0' '3'            1;
+	Continuous '0' '3'             1;
 	Calculations 0000001;
-	SummaryMode '0' '0'            0;
-	Charts  Geneva '9' (           normal )            0010;
-	NexusOptions '0' '0' '50'            001011011;
+	SummaryMode '0' '0'             0;
+	Charts  Geneva '9' (            normal )             0010;
+	NexusOptions '0' '0' '50'             001011011;
 	TipLabel '1';
-	TreeFont  Geneva '9' (           normal );
+	TreeFont  Geneva '9' (            normal );
 	TreeShape  1.0 1.0 0100;
 	TraceLabels 0101;
-	ChartColors '0' '0' '65535' '9' '0'            1;
+	ChartColors '0' '0' '65535' '9' '0'             1;
 	ChartBiggestSpot 1;
 	ChartPercent 10;
-	ChartBarWidth '10'            1;
+	ChartBarWidth '10'             1;
 	ChartVerticalAxis 10101;
 	ChartMinMax '0';
-	TraceAllChangesDisplay '1'            1;
-	BarsOnBranchesDisplay '0' '0' '60000' '10000' '10000' '10000' '10000' '60000' '65000' '65000' '65000' '6' '1'            0000101;
+	TraceAllChangesDisplay '1'             1;
+	BarsOnBranchesDisplay '0' '0' '60000' '10000' '10000' '10000' '10000' '60000' '65000' '65000' '65000' '6' '1'             0000101;
 	ContinuousBranchLabels 0;
 	AllStatesBranchLabels 1;
-	IndexNotation '2'            1;
-	PrintTree  10.00 '2' '2' '2' '2' '2' '2' '2' '2' '2' '2' '2'            Geneva '9' (           normal )            Geneva '10' (           normal )            Geneva '9' (           normal )            Geneva '9' (           normal )            Geneva '9' (           bold )            Geneva '9' (           normal )            Geneva '9' (           normal ) '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '1' '1' '1' '1' '0' '15' '-39' '4' '-40' '0' '1' '2' '1' '8' '0' '0' '0' '2'            1000111000000000000100000111000;
+	IndexNotation '2'             1;
+	PrintTree  10.00 '2' '2' '2' '2' '2' '2' '2' '2' '2' '2' '2'             Geneva '9' (            normal )             Geneva '10' (            normal )             Geneva '9' (            normal )             Geneva '9' (            normal )             Geneva '9' (            bold )             Geneva '9' (            normal )             Geneva '9' (            normal ) '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '0' '1' '1' '1' '1' '0' '15' '-39' '4' '-40' '0' '1' '2' '1' '8' '0' '0' '0' '2'             1000111000000000000100000111000;
 	MatchChar 00 .;
 	EntryInterpretation 01;
 	ColorOptions 00;
-	TreeTools '0' '5' '4' '0' '10' '4' '0'            00100111111101110;
-	EditorTools '0' '0' '0' '1000' '0' '0' '6' '3' '1'            100010101110011;
-	PairAlign '2' '2' '3' '2' '1' '1' '2' '1' '3'            1010;
+	TreeTools '0' '5' '4' '0' '10' '4' '0'             00100111111101110;
+	EditorTools '0' '0' '0' '1000' '0' '0' '6' '3' '1'             100010101110011;
+	PairAlign '2' '2' '3' '2' '1' '1' '2' '1' '3'             1010;
 	BothTools '1';
 
 END;
@@ -160,6 +163,7 @@ BEGIN TAXA;
 	TAXLABELS
 		Lodus_radians_CA_2076 Lodus_radians_UT_1431 Lodus_radians_WA_1285 'Lodus darlingontielum CA:Cache Ck 2081' 'Lodus sierra CA:Putah Ck 1414' 'Lodus sierra CA:Cache Ck 2167' 'Lodus jucundum CA:Cache Ck 2077' 'Lodus jucundum CA:Cache Ck 2078' 'Lodus jucundum CA:Shively 1980' 'Lodus jucundum CA:Shively 2000' 'Lodus nitidum AZ: Safford 2121' 'Lodus nitidum CA: Pine Valley 1972' 'Lodus nitidum NM: Gila 2122' 'Lodus nitidum NM: Gila 2123' 'Lodus mundum CA:Cache Ck 2079' 'Lodus mundum CA:Cache Ck 2080' 'Lodus mundum CA:Kern R. 1973' 'Lodus mundum CA:Smith R. 1979' 'Lodus mundum NV:Weeks 1981' 'Lodus mundum OR:Nestucca R 2001' 'Lodus mundum WA:Nooksack R 1329' 'Lodus sp nr jucundum NM: Gila 2132' 'Lodus sp nr jucundum NM: Gila 2133' 'Lodus sp nr jucundum NM: Gila 2115' 'Lodus sp nr jucundum NM: Gila 2116' 'Lodus sp nr jucundum NM: Reserve 2120' 'Lodus sp nr jucundum NM: San Fran R. 1426' Lodus_sp_nr_jucundum_AZ_2172 Lodus_sp_nr_jucundum_AZ_2170 Lodus_sp_nr_jucundum_AZ_2171 
 	;
+	BLOCKID WM1166a989cd415;
 
 END;
 
@@ -234,6 +238,8 @@ BEGIN CHARACTERS;
 ;
 
 
+		BLOCKID WM1166a989cef0;
+
 
 END;
 
@@ -285,7 +291,7 @@ END;
 
 
 BEGIN ASSUMPTIONS;
-	OPTIONS  DEFTYPE =           unord PolyTcount =           MINSTEPS;
+	OPTIONS  DEFTYPE =            unord PolyTcount =            MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = 28S)  =  unord:  1 -  1013;
 TYPESET * UNTITLED  (CHARACTERS = COI_matrix)  =  unord:  1 -  1008;
 
@@ -305,15 +311,15 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 1706495900755261206;
-			setID 1 7930456106631574389;
+			setID 0 1706495900755261206 WM1166a989c4314;
+			setID 1 7930456106631574389 WM1166a989cd415;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 1716441836526165232;
-			checksum 0 2406567345 null;
-			setID 1 5612116444611320697;
-			checksum 1 1740396078 null;
+			setID 0 1716441836526165232 WM1166a989c7f0;
+			checksum 0 2406567345 WM1166a989c7f0;
+			setID 1 5612116444611320697 WM1166a989cef0;
+			checksum 1 1740396078 WM1166a989cef0;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -326,7 +332,7 @@ Begin MESQUITE;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
 					newAssistant  #mesquite.assoc.TaxonListAssoc.TaxonListAssoc;
 				tell It;
-					getAssociationsTask Stored Taxa Associations (id# 2311);
+					getAssociationsTask Stored Taxa Associations (id# 2305);
 					resetAssociation;
 					getEmployee #mesquite.assoc.StoredAssociations.StoredAssociations;
 					tell It;
@@ -379,6 +385,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges off;
 					toggleSeparateLines off;
@@ -419,46 +426,6 @@ Begin MESQUITE;
 				tell It;
 					gapCosts 8 3 2 2;
 					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
-				endTell;
-				getEmployee #mesquite.chromaseq.ColorQuality.ColorQuality;
-				tell It;
-					toggleAmbiguities on;
-					toggleMarks on;
-				endTell;
-				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.AnnotSummary.AnnotSummary;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.CellImages.CellImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleAnnotations off;
-					toggleSums off;
-					toggleHistory off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateImages.StateImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleStateAnnotations off;
-					toggleCharAnnotations off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateSorter.StateSorter;
-				tell It;
-					toggleWindow off;
-				endTell;
-				getEmployee #mesquite.silk.aaManageImageIndices.aaManageImageIndices;
-				tell It;
-					setLocal;
-					setPrevIndexBase 'http://salticus.zoology.ubc.ca/ATOLSpiders/ATOLImages';
-					reset;
 				endTell;
 			endTell;
 			showDataWindow #5612116444611320697 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -481,6 +448,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges off;
 					toggleSeparateLines off;
@@ -521,46 +489,6 @@ Begin MESQUITE;
 				tell It;
 					gapCosts 8 3 2 2;
 					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
-				endTell;
-				getEmployee #mesquite.chromaseq.ColorQuality.ColorQuality;
-				tell It;
-					toggleAmbiguities on;
-					toggleMarks on;
-				endTell;
-				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.AnnotSummary.AnnotSummary;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.CellImages.CellImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleAnnotations off;
-					toggleSums off;
-					toggleHistory off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateImages.StateImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleStateAnnotations off;
-					toggleCharAnnotations off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateSorter.StateSorter;
-				tell It;
-					toggleWindow off;
-				endTell;
-				getEmployee #mesquite.silk.aaManageImageIndices.aaManageImageIndices;
-				tell It;
-					setLocal;
-					setPrevIndexBase 'http://salticus.zoology.ubc.ca/ATOLSpiders/ATOLImages';
-					reset;
 				endTell;
 			endTell;
 		endTell;

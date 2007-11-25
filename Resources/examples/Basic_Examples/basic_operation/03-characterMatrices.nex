@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Sep 20 14:03:38 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
+[written Thu Nov 22 19:48:16 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -71,7 +71,7 @@ CODESET * UNTITLED   =  universal:  1 -  2;
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                        unord PolyTcount =                        MINSTEPS;
+OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -116,6 +116,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -169,7 +170,7 @@ Begin MESQUITE;
 					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;
-				setExplanation 'This file shows the spreadsheet editor for character matrices.  At its left side is a tool palette with a selection tool (the arrow), an editing tool (the I-beam), and others. When you select a tool by touching its button, its explanation shows up in the explanation area at the bottom of the window.^n^nThe matrix editing window has a "Matrix" menu which controls many of its functions.  In it you can control appearance and operate utilities that alter the data.  You can also add and delete taxa and characters.^n^nWhen you touch a cell in the matrix that begins or ends with *, you may see an annotation (footnote) for that cell in the annotation area near the bottom of the window (the white area just above the yellowish explanation area). To edit an annotation, select the cell, and then go down to the annotation area and type in it.^n^nTo see more details on the data editor, touch the button in the the blue window.  Otherwise, use the Next button to go to the next example.';
+				setExplanation 'This file shows the spreadsheet editor for character matrices.  At its left side is a tool palette with a selection tool (the arrow), an editing tool (the I-beam), and others. When you select a tool by touching its button, its explanation shows up in the explanation area at the bottom of the window.^n^nThe matrix editing window has a "Matrix" menu which controls many of its functions.  In it you can control appearance and operate utilities that alter the data.  You can also add and delete taxa and characters.^n^nWhen you touch a cell in the matrix that begins or ends with *, you may see an annotation (footnote) for that cell in the annotation area near the bottom of the window (the white area just above the yellowish explanation area). To edit an annotation, select the cell, and then go down to the annotation area and type in it.^n^nTo see more details on the data editor, touch the button in below.  Otherwise, use the Next button to go to the next example.';
 				setTitle Character_matrix_editor;
 				toggleFileNames off;
 				setPrevButtonName Previous;

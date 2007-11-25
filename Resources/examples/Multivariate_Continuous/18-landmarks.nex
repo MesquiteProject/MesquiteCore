@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 03 18:36:32 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/10.0.1.6 (Wayne Maddison)]
+[written Thu Nov 22 19:40:30 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Untitled_Block_of_Taxa;
 	DIMENSIONS NTAX=4;
 	TAXLABELS
 		Box_1 Box_2 Box_3 Box_4 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "18-landmarks.nex"';
 	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS ITEMS = (x y ) ;
 	MATRIX
@@ -65,11 +67,11 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -98,37 +100,6 @@ Begin MESQUITE;
 					setColor Red;
 					removeColor off;
 				endTell;
-				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.AnnotSummary.AnnotSummary;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.CellImages.CellImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleAnnotations off;
-					toggleSums off;
-					toggleHistory off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateImages.StateImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleStateAnnotations off;
-					toggleCharAnnotations off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.aaManageImageIndices.aaManageImageIndices;
-				tell It;
-					setLocal;
-					setPrevIndexBase 'http://salticus.zoology.ubc.ca/ATOLSpiders/ATOLImages';
-					reset;
-				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -145,6 +116,7 @@ Begin MESQUITE;
 					setLocation 16 23;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'This file shows how to enter and use landmark data in Mesquite. ^n^nWe''ve made a new file with four taxa.  Next, "New Empty Matrix..." from the Characters menu was chosen.  The type of the matrix chosen was Continuous, and the number of characters is the number of landmarks (each landmark is represented by a character).^n^nContinuous matrices can be three dimensional (characters x taxa x items), where the third dimension (items) represents a series of values in each cell of the editor.  In this case we''re going to want to enter two items, one for the x position of the landmark, the other for the y position.^n^nFirst, we renamed the first item to "x" using the "Rename Item" menu item in the Utilities submenu of the Matrix menu of the Character Matrix editor window.^n^nNext, we added a new item using the "Add Item" menu item in the Utilities submenu of the Matrix menu of the Character Matrix editor window.  We named it "y".^n';
 				setTitle 'Landmarks how-to';
 				toggleFileNames off;

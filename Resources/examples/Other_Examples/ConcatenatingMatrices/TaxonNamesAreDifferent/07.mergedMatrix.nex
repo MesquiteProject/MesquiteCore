@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Sep 18 10:20:33 MST 2007 by Mesquite  version 2.0BETA3 (build i63) at dhcp-96875d2a.cals.arizona.edu/150.135.93.42 (David Maddison)]
+[written Thu Nov 22 19:42:00 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Taxa_Block;
@@ -7,6 +7,7 @@ BEGIN TAXA;
 	TAXLABELS
 		Lodus_radians_CA_2076 Lodus_radians_UT_1431 Lodus_radians_WA_1285 'Lodus sierra CA:Cache Ck 2081' 'Lodus sierra CA:Putah Ck 1414' 'Lodus sierra CA:Cache Ck 2167' 'Lodus jucundum CA:Cache Ck 2077' 'Lodus jucundum CA:Cache Ck 2078' 'Lodus jucundum CA:Shively 1980' 'Lodus jucundum CA:Shively 2000' Lodus_nitidum_AZ_2121 'Lodus nitidum CA: Pine Valley 1972' 'Lodus nitidum NM: Gila 2122' 'Lodus nitidum NM: Gila 2123' 'Lodus nitidum NM: Largo Ck 1408' 'Lodus mundum CA: Cache Ck 2079' 'Lodus mundum CA: Cache Ck 2080' 'Lodus mundum CA: Kern R. 1973' 'Lodus mundum CA: Smith R. 1979' 'Lodus mundum NV: Weeks 1981' 'Lodus mundum OR: Nestucca R 2001' 'Lodus mundum WA: Nooksack R 1329' 'Lodus sp nr jucundum NM: Alma 1426' 'Lodus sp nr jucundum NM: Gila 2115' 'Lodus sp nr jucundum NM: Gila 2116' 'Lodus sp nr jucundum NM: Gila 2132' 'Lodus sp nr jucundum NM: Gila 2133' 'Lodus sp nr jucundum NM: Reserve 2120' 'Lodus sp nr jucundum AZ: Sedona 2171' 'Lodus sp nr jucundum AZ: Sedona 2170' 'Lodus sp nr jucundum AZ: Sedona 2169' 'Lodus sp nr jucundum AZ: Sedona 2172' 
 	;
+	BLOCKID WM1166a98e96b18;
 
 END;
 
@@ -116,22 +117,24 @@ agctttaggatttgtatttct
 ;
 
 
+		BLOCKID WM1166a98e9ab0;
+
 
 END;
 
 begin mrbayes;
-	charset 28S =   1 -1013;
-	charset COI_matrix =   1014 -2021;
-	charset COI_matrixNonCoding =    1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021;
-	charset COI_matrixCodonPos1 =    1015 -1978 \  3;
-	charset COI_matrixCodonPos2 =    1016 -1979 \  3;
-	charset COI_matrixCodonPos3 =    1014 -1980 \  3;
-	partition matrices =   2 :   28S ,   COI_matrix;
-	set partition =   matrices;
-	lset applyto = (  1 ,   2 )    nst =  6 rates =  invgamma;
-	unlink statefreq = (  all )   revmat = (  all )   shape = (  all )   pinvar = (  all );
-	prset applyto = (  all )   ratepr =  variable;
-	mcmcp ngen =   10000000 relburnin =  yes burninfrac =  0.5 printfreq =  1000  samplefreq =  1000 nchains =  4 savebrlens =  yes;
+	charset 28S =    1 -1013;
+	charset COI_matrix =    1014 -2021;
+	charset COI_matrixNonCoding =     1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021;
+	charset COI_matrixCodonPos1 =     1015 -1978 \   3;
+	charset COI_matrixCodonPos2 =     1016 -1979 \   3;
+	charset COI_matrixCodonPos3 =     1014 -1980 \   3;
+	partition matrices =    2 :    28S ,    COI_matrix;
+	set partition =    matrices;
+	lset applyto = (   1 ,    2 )     nst =   6 rates =   invgamma;
+	unlink statefreq = (   all )    revmat = (   all )    shape = (   all )    pinvar = (   all );
+	prset applyto = (   all )    ratepr =   variable;
+	mcmcp ngen =    10000000 relburnin =   yes burninfrac =   0.5 printfreq =   1000  samplefreq =   1000 nchains =   4 savebrlens =   yes;
 	mcmc;
 
 END;
@@ -172,12 +175,12 @@ Begin MESQUITE;
 		tell ProjectCoordinator;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
-			setID 0 3390976928178081870;
+			setID 0 3390976928178081870 WM1166a98e96b18;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
-			setID 0 6777793195415541253;
-			checksum 0 248462374 null;
+			setID 0 6777793195415541253 WM1166a98e9ab0;
+			checksum 0 248462374 WM1166a98e9ab0;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -202,6 +205,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges off;
 					toggleSeparateLines off;
@@ -242,46 +246,6 @@ Begin MESQUITE;
 				tell It;
 					gapCosts 8 3 2 2;
 					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
-				endTell;
-				getEmployee #mesquite.chromaseq.ColorQuality.ColorQuality;
-				tell It;
-					toggleAmbiguities on;
-					toggleMarks on;
-				endTell;
-				getEmployee #mesquite.collab.ChgHistoryInfo.ChgHistoryInfo;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.AnnotSummary.AnnotSummary;
-				tell It;
-					togglePanel off;
-				endTell;
-				getEmployee #mesquite.silk.CellImages.CellImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleAnnotations off;
-					toggleSums off;
-					toggleHistory off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateImages.StateImages;
-				tell It;
-					showColors off;
-					togglePanel off;
-					toggleStateAnnotations off;
-					toggleCharAnnotations off;
-					toggleLocations off;
-				endTell;
-				getEmployee #mesquite.silk.StateSorter.StateSorter;
-				tell It;
-					toggleWindow off;
-				endTell;
-				getEmployee #mesquite.silk.aaManageImageIndices.aaManageImageIndices;
-				tell It;
-					setLocal;
-					setPrevIndexBase 'http://salticus.zoology.ubc.ca/ATOLSpiders/ATOLImages';
-					reset;
 				endTell;
 			endTell;
 		endTell;
