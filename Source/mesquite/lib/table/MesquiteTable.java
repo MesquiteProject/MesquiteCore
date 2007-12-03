@@ -1461,7 +1461,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return constrainMaxAutoRownames;
 	}
 
-	int contrainedMaxColumnNum = 3;
+	protected int contrainedMaxColumnNum = 3;
 
 	/* ................................................................................................................. */
 	public boolean autoSizeColumns(Graphics g) {
