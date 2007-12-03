@@ -166,9 +166,9 @@
                 type of character, but a data file may contain more than one matrix.</p>
               <p>Characters can also exist outside of matrices. For instance, 
                 characters may be created by <a href="RandomSimul/simChars.html">simulations 
-                and randomizations</a> and used directly in calculations, without 
-                at any point being captured in a matrix and stored in a file.</p>
-              <p> 
+                and randomizations</a> or by <a href="continuous/continuous.html#ord">ordinations</a> and used directly in calculations, without 
+                at any point being captured in a matrix and stored in a file. Thus, the &quot;<strong><a name="source"></a>Source of Characters</strong>&quot; used for a calculation can be either matrices stored in the file, or characters generated on-the-fly by simulations or randomizations, or ordinations. For this reason, Mesquite by default asks you what  Source of Characters to use when characters or matrices are needed. Because some novice users may find this request confusing, you can set Mesquite to choose Stored Characters or Stored Matrices by default, without asking, by selecting the &quot;Use Stored Characters/Matrices by Default&quot; item in the Defaults submenu of the File menu. </p>
+              <p>Most of this manual page concerns characters/matrices stored in the data file.
               <ul>
                 <li><a href="#creating">Creating a character matrix</a></li>
                 <li><a href="#deleting">Deleting and renaming character matrices</a></li>
@@ -231,8 +231,7 @@
                 on the &quot;Character Matrix&quot; box: 
               <p align="center"><img src="images/project1.gif" width="305" height="139"> 
               <p>A drop-down menu will appear with the option to rename the matrix. 
-                You can also use this drop-down menu to delete a matrix.  
-              </font><h2><a name="editor"></a>The Character Matrix Editor</h2>
+                You can also use this drop-down menu to delete a matrix.              </font><h2><a name="editor"></a>The Character Matrix Editor</h2>
               <p><font face="Trebuchet MS">Once you have a character matrix, you 
                 may edit it using Mesquite's Character Matrix Editor, available 
                 at the top of the Characters menu. This is a spreadsheet editor, 
