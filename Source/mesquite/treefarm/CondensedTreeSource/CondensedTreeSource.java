@@ -194,7 +194,7 @@ public class CondensedTreeSource extends TreeSource {
 	/*.................................................................................................................*/
  	 
   	public boolean isPrerelease(){
-  		return true;
+  		return false;
   	}
 
 

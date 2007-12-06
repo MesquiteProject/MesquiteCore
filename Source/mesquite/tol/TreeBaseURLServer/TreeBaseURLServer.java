@@ -17,4 +17,8 @@ public class TreeBaseURLServer extends TaxonOnWebServer {
 		return "TreeBase";
 	}
 
+	public String getExplanation() {
+		return "Provides a URL to a taxon in TreeBase";
+	}
+
 }

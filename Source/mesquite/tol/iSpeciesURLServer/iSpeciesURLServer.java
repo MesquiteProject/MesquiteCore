@@ -14,5 +14,10 @@ public class iSpeciesURLServer extends TaxonOnWebServer {
 	public String getName() {
 		return "iSpecies";
 	}
+	
+	public String getExplanation() {
+		return "Provides a URL to a taxon in iSpecies";
+	}
+
 
 }

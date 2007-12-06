@@ -15,4 +15,8 @@ public class GenBankTaxonURLServer extends TaxonOnWebServer {
 		return "GenBank Taxon";
 	}
 
+	public String getExplanation() {
+		return "Provides a URL to a taxon in NCBI GenBank";
+	}
+
 }

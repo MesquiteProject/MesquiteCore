@@ -16,4 +16,8 @@ import mesquite.tol.lib.TaxonOnWebServer;
 			return "Catalogue of Life";
 		}
 
+		public String getExplanation() {
+			return "Provides a URL to a taxon in the Catalogue of Life";
+		}
+
 	}

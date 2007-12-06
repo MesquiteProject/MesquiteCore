@@ -15,4 +15,9 @@ public class uBioURLServer extends TaxonOnWebServer {
 		return "uBio";
 	}
 
+	
+	public String getExplanation() {
+		return "Provides a URL to a taxon in uBio";
+	}
+
 }
