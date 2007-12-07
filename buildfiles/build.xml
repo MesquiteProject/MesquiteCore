@@ -148,7 +148,7 @@
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-		<copy file="${workspacedistclasspath}" tofile="${workspaceproject.dir}/.classpath"/>
+		<!-- ANDREW: EXCLUDED BECAUSE ABSENT copy file="${workspacedistclasspath}" tofile="${workspaceproject.dir}/.classpath"/ -->
 		<zip destfile="${windowssrc}">
 			<fileset dir="${workspacedist.dir}" />
 		</zip>
@@ -158,7 +158,7 @@
 	<target name="init"> 
 		<property environment="env" />
 		<property name="dist.dir" location="../dist" />
-		<property name="mesquite.version" value="2.0" />
+		<property name="mesquite.version" value="2.01" />
 		<property name="release.dir" location="${dist.dir}/Mesquite ${mesquite.version}" />
 		<property name="mesquitefoldername" value="Mesquite_Folder"/>
 		<property name="mesquitefolder.dir" location="${release.dir}/${mesquitefoldername}" />
