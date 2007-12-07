@@ -271,16 +271,6 @@ public class PhoneHomeUtil {
 		return null;
 	}
 	
-	/*.................................................................................................................*
-	public static void displayMessagesFromHome(MesquiteModuleInfo module, PhoneHomeRecord phoneHomeRecord) {
-					
-		String notices = retrieveMessagesFromHome(module, phoneHomeRecord);
-		if (!StringUtil.blank(notices)){
-			module.discreetAlert("Notices from the Mesquite website:\n\n" + notices.toString() + "\n\n(You can ask Mesquite not to check its web site using the menu item in the Defaults menu of the Log window)");
-		}
-			
-			
-	}
-*/
+
 
 }
