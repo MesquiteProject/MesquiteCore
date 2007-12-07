@@ -196,12 +196,13 @@
                <h4><font face="Trebuchet MS">Bug Fixes</font></h4>
               <ul>
                 <li>Various bugs concerning behavior of windows and dialogs under Linux and Mac OS X were fixed.</li>
+			    <li>(<img src="images/prerelease.gif" alt="" width="14" height="14">) Deep coalescences were miscounted if a species or population lacked any containing genes. Such a species or population would contribute -1 to the deep coalescence count in such a circumstance (it should have contributed 0). This could, for instance, result in a deep coalescence score of a negative number, but it could also simply lower the total. This bug did not affect relative scores among trees (as long as they contained the same set of populations and genes) and so many analyses, such as searching for optimal species trees, would be unaffected. This bug was fixed in build j28 of version 2.01. The very first build of 2.01, j27, released for a few hours, has this bug.</li>
 			    <li>(<img src="images/prerelease.gif" width="14" height="14">)  The Number of Stops in a taxon in some 
 				circumstances was underestimated if there were some characters whose codon positions were not specified.</li>
               </ul> 
 
  
-               <hr>
+              <hr>
               <h3><font face="Trebuchet MS">Version 2.0</font></h3>
               <h4><font face="Trebuchet MS">New Features</font></h4>
               <font face="Trebuchet MS"> </font> 
