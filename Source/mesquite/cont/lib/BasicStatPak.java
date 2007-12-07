@@ -1,5 +1,5 @@
 /* Mesquite source code.  Copyright 1997-2007 W. Maddison and D. Maddison.
-Version 2.0, September 2007.
+Version 2.01, December 2007.
 This file copyright 2006 P. Midford and W. Maddison
 
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 

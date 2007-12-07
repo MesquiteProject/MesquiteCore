@@ -1,1 +1,826 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><!-- #BeginTemplate "/Templates/Template.dwt" --><!-- DW6 --><head><!--LINK REL="SHORTCUT ICON" HREF="images/mesq.ico"--><!-- #BeginEditable "doctitle" --> <title>Phylogenetic Trees</title><!-- #EndEditable --><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></head><body bgcolor="#FFFFFF"><div id="Page" style="position:absolute; left:0px; top:0px; z-index:1; visibility: visible; width: 100%; height: 100%">   <table border="0" cellspacing="0" cellpadding="0" width="100%">    <tr> 	  <td align="left" valign="top" height="60">         <table border="0" cellspacing="0" cellpadding="0" height="60" width="300">          <tr>        		<td width="10" height="60" align="left" valign="top"> <font face="Trebuchet MS"><img src="images/pixel.gif" width="1" height="1" alt=" " border="0"></font></td>            <td bgcolor="#FFFFFF">               <div align="left"><font face="Trebuchet MS"><a href="manual.html"><img src="images/mesquitesmall.gif" width="268" height="92" border="0" alt="Mesquite"></a></font></div>            </td>          </tr>		  <tr>			<td height="42" align="left" valign="top"></td>			<td height="42" align="left" valign="top"><font face="Trebuchet MS"><a href="manual.html"><img src="images/mesquiteLowerManual.gif" border="0"></a></font></td>		  </tr><!--	  <tr>  		    <td colspan="2" height="10"></td>		  </tr>	      <tr>		    <td colspan="2" height="15" align="center" valign="middle">			<!-- Google CSE Search Box Begins				<form id="searchbox_016202157087875381635:khljhzi-ps8" action="http://www.google.com/cse">					<input type="hidden" name="cx" value="016202157087875381635:khljhzi-ps8" />					<input type="hidden" name="cof" value="FORID:0" />					<input name="q" type="text" size="20" />					<input type="submit" name="sa" value="Search Mesquite" />				<!--<img src="http://www.google.com/coop/images/google_custom_search_smnar.gif" alt="Google Custom Search" />		  		</form>			<!-- Google CSE Search Box Ends        		    </td>		  </tr> -->        </table>      </td>	<td>        <table border="0" cellspacing="0" cellpadding="0" height="134" width="550">          <tr valign="top" height="92">            	<td width="72" align="center"  height="92" valign="top" bgcolor="#FFFFFF"><font face="Trebuchet MS"><img src="images/fadeRight.gif" width="72" height="160"></font></td>			<td bgcolor="#99FF99"><img src="images/introduction.gif" valign="bottom"></td>			<td align="left" valign="top" height="92" width = "160" bgcolor="#99FF99">                 <p><font face="Trebuchet MS"><span class="smallplain"><a href="manual.html">                  Introduction</a><br>                  </span><a href="whyMesquite.html">Why?</a><br>                  <a href="publication.html#howToCite">How to Cite</a>                <br>                  <a href="publication.html">Publication</a><br>                  <a href="support.html">Support</a><br>                  <a href="credits.html">Credits</a> </font><br>                  <font face="Trebuchet MS"><span class="smallplain"><a href="help.html">Help</a></span></font><br>                  <a href="Help/MesquiteFAQ.html"><font face="Trebuchet MS">FAQ</font></a><br>                   <a href="http://mesquiteproject.org"><font face="Trebuchet MS">Web Site</font></a><br>			</td>      		<td bgcolor="#99FF99"><img src="images/basics.gif" valign="bottom"></td>			<td align="left" valign="top" height="92" width="220"  bgcolor="#99FF99">               <p><font face="Trebuchet MS"><span class="smallplain"><a href="help.html"></a>                <a href="managingFiles.html">Files</a></span> <br>                <span class="smallplain"><a href="menus.html">Menus</a><br>                <a href="windows.html">Windows</a><br>				<a href="charts.html">Charts</a><br>                <a href="scripting.html">Scripts/Macros</a> <br>                <a href="modules.html">Modules</a><br>				<a href="howMesquiteWorks.html">How</a></span></font>              </td>      		<td bgcolor="#99FF99"><img src="images/objects.gif" valign="bottom"></td>			<td align="left" valign="top" height="92" width="260"  bgcolor="#99FF99">				<p><font face="Trebuchet MS">                <span class="smallplain"><a href="characters.html">Characters</a></span></font><font face="Trebuchet MS"><span class="smallplain"><a href="Taxa.html"><br>                Taxa<br>                </a></span></font><font face="Trebuchet MS"><a href="trees.html">Trees</a><br>                <a href="glossary.html">Glossary</a> </font></p>              <p><font face="Trebuchet MS"><em><font face="Trebuchet MS"><a href="changes.html">New</a><br>                &nbsp;&nbsp;<a href="changes.html">Features</a></font></em></font></p>              </td>      		<td align="left" valign="top" height="92" width="92"><font face="Trebuchet MS"><img src="images/fadeLeft.gif" width="92" height="160"></font></td>		</tr>    	<tr>		    <td width="72" height="20"></td>		<td></td>		    <td>&nbsp;</td>            <td>&nbsp;</td>            <td>&nbsp;</td>		</tr>		</table>		</td>	</tr>  </table>  <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%">    <tr>       <td valign="top" align="left" width="110" height="100%">         <table border="0" cellspacing="0" cellpadding="0" width="142">          <tr> 			<td colspan="3" bgcolor="#99FF99"><p><font face="Trebuchet MS"><img src="images/fadeDown.gif" width="100%" height="95" valign "top" border="0" alt=" "></font></p></td>		  </tr>          <tr>             <td width="6" bgcolor="#99FF99" height="35"></td>			<td colspan="2" bgcolor="99FF99" valign="top" height="35"><p><font face="Trebuchet MS"><a href="toc.html">Table of</a><br> 			   &nbsp; &nbsp; <a href="toc.html">Contents</a></font></p></td>		  </tr>		  <tr>            <td width="6" bgcolor="#99FF99" height="35"></td>            <td colspan="2" bgcolor="#99FF99" height="35"><p><font face="Trebuchet MS"><img src="images/analyses.gif"></font></p>              </td>          </tr>          <tr bgcolor="#99FF99">             <td height="35" align="left" valign="middle" bgcolor="#99FF99">&nbsp;</td>            <td width="131" height="35" align="left" valign="middle"><p>			  <font face="Trebuchet MS">			  <a href="CharacterEvolution/charEvolution.html">Character</a><br>			    &nbsp; <a href="CharacterEvolution/charEvolution.html">Evolution</a> <br> <br>			  <a href="Diversification/diversification.html">Diversification</a><br><br>			  <a href="molecular/molecular.html">Molecular</a><br>			    &nbsp; <a href="molecular/molecular.html">Data</a><br><br>			  <a href="popGen/popGen.html">Gene trees</a> <br>  <br>			  <a href="RandomSimul/RandomSimul.html">Simulations &amp;</a><br>			    &nbsp; <a href="RandomSimul/RandomSimul.html">Randomizations</a> <br> <br>			  <a href="continuous/continuous.html">Continuous</a><br>			    &nbsp; <a href="continuous/continuous.html">Characters</a><br> <br>			  <a href="otherPrograms.html">Use with</a><br>			    &nbsp; <a href="otherPrograms.html">Other Programs</a> <br><br>			  <a href="studies/index.html">Studies</a> </font></p></td>            <td width="5" height="35" align="left" valign="middle">&nbsp;</td>          </tr>          <tr bgcolor="#99FF99">             <td height="35" align="left" valign="middle">&nbsp;</td>            <td height="35" align="left" valign="middle">&nbsp;</td>            <td height="35" align="left" valign="middle">&nbsp;</td>          </tr>          <tr>             <td height="35" align="left" valign="middle"><font face="Trebuchet MS"><img src="images/fadeUp.gif" width="5" height="92"></font></td>            <td height="35" align="left" valign="middle" colspan="2"><font face="Trebuchet MS"><img src="images/fadeUp.gif" width="100%" height="92"></font></td>          </tr>        </table>      </td>      <td valign="top" width="100%" height="100%">         <table width="700" border="0" cellpadding="10" cellspacing="0">          <tr>             <td><font face="Trebuchet MS"><!-- #BeginEditable "body" -->               <h2>Phylogenetic trees</h2>              <p>Phylogenetic trees represent the branching history of descent                 linking taxa, whether these taxa are species or genes. In Mesquite,                 a tree refers to the taxa in a particular <a href="taxa.html">taxa                 block</a> and once created cannot be transfered to refer a different                 taxa block. (As explained in the page on <a href="taxa.html">taxa</a>,                 &quot;taxon&quot; here is used as shorthand for &quot;terminal                 taxon&quot; or &quot;OTU&quot;.)</p>              <h3> <a name="characteristics"></a>Characteristics of trees</h3>              <p>Mesquite typically treats trees as rooted, although it is possible                 to de-root trees. Trees may contain polytomies (multifurcations)                 and also unbranched internal nodes. A tree in Mesqite does not                 need to contain all of the taxa in the taxa block, and indeed                 can contain as few as one taxon. Unlike MacClade, Mesquite does                 not support trees with observed taxa fixed in ancestral position.                 Mesquite can read, edit and write branch lengths in trees. In                 addition to length, a branch may have various other attributes                 such as width (e.g. for effective population size in population                 genetics) and color (for display purposes).</p>              <p>Polytomies in trees are interpreted either as &quot;soft&quot;                 (uncertainty in resolution) or &quot;hard&quot; (simultaneous                 divergence). The default interpetation is specified in the Defaults                 submenu of the File menu. A change in this default applies to all projects and                 files. Individual trees can be marked as using a specific assumption,                 thus overriding the default (e.g., by using the Set Polytomy Assumption                 menu items in the Alter/Transform Tree submenu of the Tree menu                 of the Tree Window). The appropriate assumption for most phylogenetic                 studies is &quot;soft&quot;, but calculations using soft polytomies                 are extremely difficult, and most Mesquite calculations yield                 results only with dichotomous trees and those with hard polytomies.</p>              <h3> <a name="analyzing"></a>Analyzing trees</h3>              <p>Trees can be visualized in various tree windows, and statistics                 about them presented in <a href="#treewindow">tree windows</a>,                 the <a href="#listoftrees">List of Trees</a> window, and in <a href="charts.html">charts</a>.                 We will not attempt to summarize all of the options here, which                 are discussed elsewhere, in particular in the analysis links at                 left. </p>              <p><strong>Tree comparison methods</strong> include the following:</p>              <ul>                <li> <a name="treeToTree"></a><strong>Tree to tree similarity measures</strong> &#8212;                   The Shared Partitions module measures the number of partitions                   between taxa shared by two trees. The separately-available <a href="http://comet.lehman.cuny.edu/treeviz/">TSV</a>                   package includes other measures such as the Robinson-Foulds                   metric.</li>                <li> <a name="consensus"></a><strong>Consensus trees</strong> &#8212; This is not available                   standardly in Mesquite, but can be added with the TSV package,                   which includes strict consensus trees.</li>                <li> <a name="fitTrees"></a><strong>Fits of trees into trees</strong> &#8212; The fit                   of a contained tree (e.g. gene or parasite) into a containing                   tree (e.g. species or host) can be measured by <a href="popGen/popGen.html#deep">Deep                   Coalescence</a> in the coalesce package.</li>                <li> <a name="instability"></a><strong>Taxon instability among trees</strong> &#8212; This                   module measures for each taxon how variable are its relationships                   among a set of trees. Taxa that are particulary unstable, i.e.                   whose placement is especially variable from tree to tree, score                   high on this index. Taxon instability calculations are illustrated                   in the example file at Mesquite_Folder/examples/Basic_Examples/tree_manipulation/13-instability.nex</li>              </ul>              <h3> <a name="storedTrees"></a>Stored trees and tree blocks<font face="Trebuchet MS"> </font></h3>              <font face="Trebuchet MS">               <p>Trees may exist within <strong>tree blocks</strong> that are                 stored in the data file. A tree block is a collection of trees                 stored as a unit. A single data file may contain more than one                 tree block, each containing from one to many trees.</p>              <p>Mesquite calculations can use trees other than those stored in                 tree blocks in a data file. Most calculations can use trees that                 are temporarily created using simulations or randomizations specifically                 for the purpose of the calculation and then discarded. Also, a                 recently edited tree in the Tree Window might not be stored in                 the file if the user has not explicitly stored it in the file                 using &quot;Store Tree&quot; or &quot;Store Tree As&quot;. More                 details on storing trees in tree blocks in the file are given                 <a href="#storing">below</a>. </p>              </font>               <p>To create a new, empty tree block into which to store trees,                 select <font size="-1"><u>Taxa&amp;Trees&gt;New Empty Block of                 Trees...</u></font> A new block of trees is automatically created                 if you ask in the Tree Window to store a tree and no block has                 yet been created to receive trees.</p>              <p>It is also possible to create tree blocks that are already filled                 with trees. For instance, if you want to make a duplicate of an                 existing tree block, select <font size="-1"><u>Taxa&amp;Trees&gt;Make                 New Trees Block from&gt;Stored Trees</u></font>. Other choices                 under <u><font size="-1">Taxa&amp;Trees&gt;Make New Trees Block                 from&gt;</font></u> allow you to create tree blocks filled with                 trees resulting from simulations or randomizations, or other tree                 sources.</p>              <p><a name="listoftrees"></a>Trees stored in a tree block can be                 renamed or deleted in the <strong>List of Trees window</strong>                 (available in the Taxa&amp;Trees menu). To rename, edit the tree's                 name in the list directly. To delete a tree, select the tree's                 row in the list window and choose <font size="-1"><u>List&gt;Delete                 Selected Trees</u></font>. Statistics about trees can also be                 viewed in the List of Trees window by adding the appropriate columns                 using the List menu.</p>              <font face="Trebuchet MS">               <p>Tree blocks stored in a file can be renamed or deleted in the                 List of Tree Blocks window (available in the Taxa&amp;Trees menu).                 To rename, edit the tree block's name in the list directly. To                 delete a tree block, select the tree block's row in the list window                 and choose <font size="-1"><u>List&gt;Delete Selected Tree Blocks</u></font>.</p>              <p>For tree files with too many trees to be held in memory simultaneously,                 Mesquite can read the trees in directly from the file, one at                 a time, and discard each from memory after it is used (for instance,                 in charts or in the Tree Window). To do this use Trees Directly                 from File as your tree source.</p>              <h3><a name="treesources"></a>Tree Sources</h3>              <p>Trees for viewing and analysis can come from various sources,                 including tree blocks in the current file, or <a href="RandomSimul/simTrees.html">simulations</a>.                 Some tree sources modify other trees, such as <strong>Randomly                 Modify Current Tree</strong>. <strong>Trees Directly From File</strong>                 is useful for large treefiles. Although slow at times, it does                 not store all the trees in Mesquite's memory, but instead gets                 them from the file one at a time as needed. Another tree source,                 <a href="otherPrograms.html#mrbayestrees">MrBayes Trees</a>, obtains                 trees directly from a tree file stored by MrBayes. Mesquite can                 updated its calculations as new trees come in from MrBayes.</p>              <h3><a name="filtering"></a>Filtering Trees</h3>              <p>Trees used in charts, the tree window or to make a new tree block                 can be filtered. To do this, select Filter Trees from Other source                 as your source of trees. You will be asked for the original source                 of trees, and the filtering method. There are currently three                 filtering methods:</p>              <p>               <ul>                <li>Selected Taxa Form Clade - retains only those trees in which                   the currently selected set of taxa form a clade on the tree</li>                <li>Selected Taxa Convex in Tree - retains only those trees in                   which the currently selected set of taxa can be form a clade                   by rerooting the tree</li>                <li>Tree Value Satisfies Criterion - retains only those trees                   whose value is greater than, less than or equal to a particular                   target value. For &quot;value&quot;, one can use any of the                   available calculations that assign numbers to trees, such as                   treelength, tree depth, likelihood in character, tree asymmetry,                   and so on. The user is also asked what is the target value,                   and whether the criterion is to be greater than, less than or                   equal to the target.</li>              </ul></p>              <h3><a name="modifying"></a>Modifying trees automatically</h3>              <p>Trees can be edited by hand, as described <a href="#treewindow">below</a>,                 or the user can request Mesquite to automatically modify trees                 using the &quot;Alter/Transform&quot; modules. These modules can                 be used:</p>              <p>               <ul>                <li>in the Tree menu of the Tree Window, under the Alter/Transform                   Tree submenu, or the Alter/Tranform Branch Lengths submenu.                   Selecting an item in these submenus performs the transformation                   on the tree in the Tree Window.</li>                <li>in the List menu of the List of Trees window, in the Utilities                   submenu, in the Alter Trees or Alter Branch Lengths submenus.                   Selecting an item in these submenus performs the transformation                   on all selected trees, or on all trees if none is selected.                 </li>                <li>to transform trees on the fly that are being supplied for                   a chart or tree window or making a new tree block for a file.                   To do this, select &quot;Transform Trees from Other Source&quot;                   whenever a source of trees is required. You will be asked for                   a source of trees to be transformed or filtered, and then for                   a means by which to transform the trees.</li>              </ul></p>              <p>The Alter/Transform modules include:</p>              <p>               <ul>                <li>Root tree with selected taxa as outgroup</li>                <li>Resolve Polytomies (to 0-length branches)</li>                <li>Collapse Zero-length Branches</li>                <li>Convert Negative Branch Lengths to Zero</li>                <li>All Branch Lengths to 1</li>                <li>Scale All Branch Lengths</li>                <li>Ultrametricize</li>              </ul></p>              <p>To use &quot;Root tree with selected taxa as outgroup&quot;,                 you first must select the outgroup taxa in, for example, the Taxa                 List window. Then, choose the menu item &quot;Root tree with selected                 taxa as outgroup&quot; in the Alter/Transform Tree submenu of                 the Tree menu of the tree window, and in the Alter Trees submenu                 of the Utilities submenu of the List menu of the List of Trees                 window. This module will reroot the taxa in between the selected                 outgroups and the remaining taxa, if this is possible. If the                 tree cannot be rerooted so that the remaining taxa form a clade,                 then the tree will not be rerooted, and a warning will be given                 (perhaps visible only in the log). If the tree can be rerooted,                 then both the outgroup and ingroup will be monophyletic on the                 rerooted tree. In addition, if the tree has branch lengths specified,                 the root will be positioned at the midway point along the branch                 on which it is placed. That is, the length of the branch from                 the root to the ingroup will be equal to the length of the branch                 from the root to the outgroup. Future versions may allow user-choice                 of the branch length distribution. Adjusting of the length of                 the two basal branches is NOT done if the tree is already rooted                 between the chosen outgroups and ingroup.</p>              </font>               <h3><a name="treewindow"></a>Editing trees: The Basic Tree Window</h3>              <p>The Tree Window shows a tree that can be edited and used in analyses.                 A new Tree Window can be requested by selecting <font size="-1"><u>Taxa&amp;Trees&gt;New                 Tree Window</u></font>. (Mesquite allows multple tree windows,                 and so if you select this menu item a second time, you'll get                 a new tree window.) Many of the Tree Window's fundamental functions                 are controlled by its Tree menu. This menu contains items to select                 the tree source, store trees, and alter the tree. A second important                 menu is the Drawing menu, which controls the appearance of the                 tree. Additional menu items related to the Tree Window are found                 in the Analysis menu.               <h4> <a name="source"></a>Tree source</h4>              <p>The Tree Window shows trees from a particular source (although                 the tree being shown could differ from those in the tree source,                 if you've recently modified the tree using the tools). The source                 of trees might be a tree block in the data file. In this case,                 as you used the blue arrows at the upper portion of the tool palette,                 you would be browsing through the stored trees, scrolling from                 one stored tree to another. Alternatively, the source of trees                 might be a coalescent simulation, in which case you would be browsing                 through gene trees representing replicate simulations of the coalescent                 process. Other tree sources may be available, and can be selected                 when you request the Tree Window for the first time or by using                 the submenu <font size="-1"><u>Tree&gt;Tree Source&gt;</u></font>.                 One tree source, &quot;Default Trees&quot;, offers a simple pectinate                 tree (&quot;Default Ladder&quot;), a full polytomy (&quot;Default                 Bush&quot;), and a symmetrical tree. It is available merely as                 a last resort, in case other tree sources are unavailable.               <p>We expect a common confusion will be that users will be unable                 to find the trees that they recently stored in the file. For example,                 when a new file is created, there are no stored trees, and hence                 the Tree Window would be forced to use another tree source (for                 example, &quot;Default Trees&quot;). If a user then stores a tree                 in the file (see next section), he or she might hit the blue scroll                 arrows of the Tree Window expecting to browse the stored trees,                 only to be shown one of the Default Trees. The problem is that                 the Tree Window is using Default Trees as the tree source, not                 Stored Trees. To see the trees stored in the file, select <u><font size="-1">Tree&gt;Tree                 Source&gt;Stored Trees</font></u> to change the tree source to                 Stored Trees.               <h4> <a name="moving"></a>Moving from Tree to Tree</h4>              <p>To select which tree to view, use the tree scroll at the upper                 left of the Tree Window:               <p align="center"><img src="images/treeScroll.jpg" width="163" height="93" align="middle">               <p>The left and right blue arrows take you to the previous and next                 trees, respectively, in the tree source. The Go To button takes                 you to the tree whose number is entered in the text area. The                 Recent Editings button offers you a drop down menu by which you                 can return to recently edited trees. The menu lists only trees                 that you have edited; it does not list the trees that came directly                 from the tree source, and is therefore not a complete history                 of recent trees. The number of little white triangles in the button                 indicates the number of recently edited trees stored.               <h4><a name="storing"></a>Storing trees</h4>              <p>Although the Tree Window can be used merely to browse existing                 trees, it will commonly be used as a tree editor, allowing the                 user to build a tree according to some prior hypothesis, or to                 modify trees to explore the effect of changes in the tree.               <p>Once a tree has been edited, the user may want to store this                 new tree in the file. Exactly how that is done depends on the                 tree source being used by the Tree Window:               <ul>                <li>If the tree source is Stored Trees, then two menu items are                   available in the Tree menu to store trees, &quot;Store Tree&quot;                   and &quot;Store Tree As...&quot;. For instance, imagine that                   you scroll through the stored trees until you get to tree number                   5. If you edit it using the tools of the tool palette, then                   you select Store Tree, your newly modified tree will replace                   the original tree number 5 in the tree block. If instead you                   choose Store Tree As, you will add your modified tree as a new                   tree at the end of the tree block, leaving the original tree                   number 5 untouched. Thus, Mesquite assumes that you are potentially                   editing the original tree in the tree block whenever you edit                   the tree. However, the original copy is not replaced by your                   edited version until you select &quot;Store Tree&quot;. Until                   you select this, your modified tree is maintained as a temporary                   tree associated with the tree window, and not stored in the                   tree block.                 <li>If the tree source is not Stored Trees then you can't modify                   the original trees, because they are merely temporary trees,                   produced by something like a simulation. Thus, in this case                   there is no Store Tree menu item available. Instead, there is                   a &quot;Store Copy of Tree As&quot; menu item. This acts more                   or less like Store Tree As, in that the tree is added to a tree                   block.               </ul>              <p>You can tell that a tree has been edited to be different from                 that in the tree source when a black diamond appears in the message                 area at the lower left side of the Tree Window. The message area                 turns green when the tree is an unsaved, edited tree and the tree                 source is not Stored Trees.               <h4> <a name="tools"></a>Tools</h4>              <p>At the left side of the Tree Window is a <strong>tool palette</strong>,                 containing tools that you can use to interact with the tree. Exactly                 which tools are available will depend on the modules installed                 and loaded. In the description of tools below, it will be assumed                 that a basic set of modules is installed and loaded.               <p>Some tools act when they are touched on a branch of the tree;                 others act when a branch is touched then dragged and dropped.                 Some tools behave differently if a key such as shift or control                 is held down when the tool is used. These details are explained                 below. Some explanation of the tool is also given in the window's                 Explanation Area when the tool is selected in the palette. The                 currently selected tool has its button darker than the rest in                 the tool palette.<p>Some tools have options that can be set. If so, then the button                 for the tool in the tool palette will have a small black triangle                 indicating the availability of a drop down menu. If you touch                 the button and hold down the mouse for a moment, the menu will                 appear to allow you to make choices.               <p>The following tools <strong>change the topology</strong> of the                 tree (the fundamental relationships among taxa implied by the                 tree). Some of these tools might not be available if their controlling                 modules are not installed or loaded. <font face="Trebuchet MS">               <table width="75%" border="0" cellspacing="0" cellpadding="4">                <tr>                   <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>                  <td><b><font face="Trebuchet MS">Tool</font></b></td>                  <td><font face="Trebuchet MS"><b>Action</b></font></td>                </tr>                <tr>                   <td> <div align="center"><img src="images/arrow.gif" width="26" height="26"></div></td>                  <td><font face="Trebuchet MS">Arrow</font></td>                  <td><font face="Trebuchet MS">If touched on a branch, dragged                     and dropped on another branch, the former branch is reattached                     to the latter. Also can be used to select taxa.</font></td>                </tr>                <tr>                   <td> <div align="center"><font face="Trebuchet MS"><img src="images/treeTools/interchangeBranches.gif" width="26" height="26"></font></div></td>                  <td><font face="Trebuchet MS">Interchange branches</font></td>                  <td>If touched on a branch, dragged and dropped on another branch,                     the two branches exchange positions. Can be used to rearrange                     a polytomy<font face="Trebuchet MS">, but can also be used                     for branches distant on the tree.</font></td>                </tr>                <tr>                   <td> <div align="center"><font face="Trebuchet MS"><img src="images/treeTools/collapseBranch.gif" width="26" height="26"></font></div></td>                  <td><font face="Trebuchet MS">Collapse branch</font></td>                  <td><font face="Trebuchet MS">Collapses branches to yield polytomy.                     Also removes unbranched internal nodes.</font></td>                </tr>                <tr>                   <td> <div align="center"><font face="Trebuchet MS"><img src="images/treeTools/collapseAllBranches.gif" width="26" height="26"></font></div></td>                  <td><font face="Trebuchet MS">Collapse all</font></td>                  <td><font face="Trebuchet MS">Collapses all branches in clade.                     If option or ALT is held down, collapses all branches below                     node touched.</font></td>                </tr>                <tr>                   <td><img src="images/treeTools/rerootAtBranch.gif" width="26" height="26"></td>                  <td>Reroot</td>                  <td>Reroots tree at branch touched.</td>                </tr>                <tr>                   <td><img src="images/treeTools/pruneClade.gif" width="26" height="26"></td>                  <td>Prune clade</td>                  <td>Cuts clade out of tree. Taxa cut out remain within the data                     file, but are not included in<font face="Trebuchet MS"> this                     particular tree.</font></td>                </tr>                <tr>                   <td><img src="images/treeTools/insertUnbranchedNode.gif" width="26" height="26"></td>                  <td>Insert unbranched <font face="Trebuchet MS">node</font></td>                  <td>Inserts node along branch. <font face="Trebuchet MS">Currently                     used primarily in combination with assigned lineage widths                     to indicate population fluctuations for coalescent simulations.</font></td>                </tr>                <tr>                   <td><img src="images/treeTools/searchBetterTool.gif" width="26" height="26"></td>                  <td>Search <font face="Trebuchet MS">within clade</font></td>                  <td>Rearranges the branches above the node touched looking for a better tree. 				  The objective function used (e.g., treelength, or something else) is chosen using the 				  Objective Function submenu of the tool's popup menu.  You can also choose the nature of the 				  branch rearrangements used, and whether the tool looks for trees with higher or lower 				  values of the objective function.				  </td>                </tr>              </table>              </font>               <p>The following tools change the <strong>branch lengths or widths</strong>                 of the tree. <font face="Trebuchet MS"><font face="Trebuchet MS">               <table width="75%" border="0" cellspacing="0" cellpadding="4">                <tr>                   <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>                  <td><b><font face="Trebuchet MS">Tool</font></b></td>                  <td><font face="Trebuchet MS"><b>Action</b></font></td>                </tr>                <tr>                   <td><img src="images/treeTools/adjustBranchLength.gif" width="26" height="26"></td>                  <td>Assi<font face="Trebuchet MS">gn branch length</font></td>                  <td>Brings up a small editable area in which to enter a branch                     <font face="Trebuchet MS">length.</font> </td>                </tr>                <tr>                   <td><img src="images/treeTools/stretchBranch.gif" width="26" height="26"></td>                  <td>Stretch branch</td>                  <td><font face="Trebuchet MS">Click and drag on branch to stretch                     its length.</font></td>                </tr>                <tr>                   <td><img src="images/treeTools/adjustNodePosition.gif" width="26" height="26"></td>                  <td>Adjust node position</td>                  <td>Stretches branch lengths above and below node to allow node                     to change position without changing positions of other nodes.</td>                </tr>                <tr>                   <td><img src="images/treeTools/assignLineageWidth.gif" width="26" height="26"></td>                  <td>Assign lineage width</td>                  <td>Assigns a <font face="Trebuchet MS">width to the branch.                     Currently used to assign effective population sizes for population                     genetics calculations.</font></td>                </tr>              </table>              </font></font>               <p>               <p>The following tools affect the <strong>appearance</strong> of                 the tree, or change attributes of its branches, but do not change                 the topology or branch lengths. Thus the changes these tools make                 will not affect most calculations. <font face="Trebuchet MS"><font face="Trebuchet MS">               <table width="75%" border="0" cellspacing="0" cellpadding="4">                <tr>                   <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>                  <td><b><font face="Trebuchet MS">Tool</font></b></td>                  <td><font face="Trebuchet MS"><b>Action</b></font></td>                </tr>                <tr>                   <td><img src="images/treeTools/ladderizeClade.gif" width="26" height="26"></td>                  <td>Ladderize</td>                  <td>Rotates nodes to bring the largest clades on the right side                     of the tree. Does not affect topology of tree. If option or                     ALT key held down, ladderizes to left.</td>                </tr>                <tr>                   <td><img src="images/treeTools/drawAsTriangle.gif" width="26" height="26"></td>                  <td>Draw <font face="Trebuchet MS">clade as triangle</font></td>                  <td><font face="Trebuchet MS">Draws clade as small triangle                     to save space in drawing the tree. The full relationships                     within the clade remain, but are hidden. Clicking again will                     expand the clade to be viewed again. This drawing mode may                     have bugs.</font></td>                </tr>                <tr>                   <td><img src="images/treeTools/magnifyClade.gif" width="26" height="26"></td>                  <td>Magnify clade</td>                  <td>Magnifies the image of the tree so that only the clade touched                     is shown. Touching again on the node shows the whole tree</td>                </tr>                <tr>                   <td><img src="images/treeTools/branchInfo.gif" width="26" height="26"></td>                  <td>Branch info</td>                  <td>Shows available information about the branch and calculations                     concerning it.</td>                </tr>                <tr>                   <td><img src="images/treeTools/colorBranch.gif" width="26" height="26"></td>                  <td>Color branch</td>                  <td>Colors the branch. <font face="Trebuchet MS">Control</font>-click                     colors clade. Repeat click erases. <font face="Trebuchet MS">Shift</font>-click                     shrink wraps color. Touch and hold the button to obtain a                     menu to select color used. This is not equivalent to the Fix                     States tool of MacClade.</td>                </tr>                <tr>                   <td><img src="images/treeTools/nameNode.gif" width="26" height="26"></td>                  <td>Name node</td>                  <td>Gives a name to the node. This name must be unique, and                     different from the names of terminal taxa.</td>                </tr>                <tr>                   <td><img src="images/treeTools/selectBranch.gif" width="26" height="26"></td>                  <td>Select branch</td>                  <td>Selects a branch. <font face="Trebuchet MS">Control</font>-click                     extends selection. <font face="Trebuchet MS">Shift</font>-click                     shrink wraps selection.</td>                </tr>                <tr>                   <td><img src="images/treeTools/selectBranchesInClade.gif" width="26" height="26"></td>                  <td>Select branches in clade</td>                  <td>Selects all the branches in a clade. Control-click extends                     selection. Shift-click shrink wraps selection.</td>                </tr>                <tr>                   <td><img src="images/treeTools/selectTaxaInClade.gif" width="26" height="26"></td>                  <td>Select taxa in clade</td>                  <td>Selects all the taxa in a clade. Control-click extends selection.                     Shift-click shrink wraps selection.</td>                </tr>                <tr>                   <td><img src="images/treeTools/annotateNode.gif" width="26" height="26"></td>                  <td>Annotate node</td>                  <td>Attaches a note to a node. An asterisk appears over the                     node. The note can be seen by passing the Annotate cursor                     over the branch, or by turning on &quot;Show Notes On Tree&quot;                     using the menu that drops down from the Annotate node button                     in the tool palette.</td>                </tr>                <tr>                   <td><img src="images/treeTools/showPicture.gif" width="26" height="26"></td>                  <td>Show picture</td>                  <td>Shows image attached to taxon. Click again to hide. Control-click                     to attach picture.</td>                </tr>                <tr>                   <td><img src="images/treeTools/hyperlink.gif" width="26" height="26"></td>                  <td>Hyperlink</td>                  <td>Shows web page or another data file. Shift click to enter                     link explicitly. Control-click to select local file. </td>                </tr>                <tr>                   <td><img src="images/treeTools/searchTaxonInDBTool.gif" width="26" height="26"></td>                  <td>Search for Taxon in Database</td>                  <td>Searches a taxonomic database for the taxon name that is touched.  The database searched				  (e.g., Tree of Life Web Project, iSpecies, Catalogue of Life, GenBank) can be chosen				  in the tool's popup menu. </td>                </tr>												              </table>              </font></font>               <h4> <a name="alterT"></a>Alter/Transform menu items</h4>              <p>In the Tree menu of the Tree Window are two submenus by which                 you can change the tree, &quot;Alter/Transform Tree&quot; and                 &quot;Alter/Transform Branch Lengths&quot;. These provide various                 utilities to change the tree, including its branch lengths. Some,                 such as "Scale All Branch Lengths", affect all branches of the                 tree simultaneously. See the section on <a href="#modifying">automatic                 modification</a> for more details.               <h4> <a name="analyses"></a>Analyses</h4>              <p>The Tree Window has, in its <strong>Analysis</strong> menu, menu                 items that yield analyses using the current tree in the Tree Window.                 Which analyses are available depends on what modules are installed                 and loaded. Typically the following will be available at least:               <ul>                <li>Trace Character History - Illustrates a history of character                   evolution on the tree. Described in detail in the chapter on                   <a href="CharacterEvolution/AncestralStates.html">reconstructing                   ancestral states</a>.</li>                <li>Tree Legend - adds a small legend to the Tree Window. The                   legend can describe information about the tree, including the                   results of calculations done using the tree. When the legend                   is in the Tree Window, an additional menu appears, the Legend                   menu, by which you can choose to show or hide lines of information.                 </li>                <li>Values at Nodes - shows values associated with nodes, either                   by coloring the nodes or labeling them. These values describe                   information about the nodes, such as a statistic calculated                   over the clade above the node. At the moment there are few such                   values available (notably, the reconstructed character state                   in a continuous character, also available through Trace Character                   History).</li>              </ul></p>              <h3> <a name="drawing"></a>How trees are drawn</h3>              <p>There are many options for the appearance of trees as drawn in                 the Tree Window and other windows displaying trees. Trees may                 have diagonal, square or circular branches; they may be drawn                 black on white or green on blue; they may be drawn so that apparent                 branch length is proportional to assigned branch length. These                 options are controlled by the Drawing menu.               <p>Some of the menu items in the Drawing menu are:               <ul>                <li>Tree Form - Chooses general form of the tree. Some are merely                   graphical, others involve analyses such as PlotTree and PlotTree3D                   (which plot the tree in a 2D or 3D space) and Contained Gene (or Other) Trees                   (which shows gene trees within species trees, or parasites within                   hosts).</li>                <li>Set Current Form As Default - Sets as default the tree drawing                   style currently in use (e.g. Diagonal Tree, Balls &amp; Sticks                   etc.). It does not capture all of the current parameters chosen                   for that drawing form (background color, spot sizes, etc.).</li>                <li>Background Color - Sets the color of the field on which the                   tree is shown.</li>                <li>Branch Color - Sets the color of the branches. These color                   are not retained with the tree, but are for graphical purposes                   only. In this regard it is different from the Color Branch tool,                   whose colors are retained with the tree.</li>                <li>Size to Window (Only in the basic Tree Window) - Shrinks the                   tree to fit into the window. If this is turned off, then the                   tree exists in a panel that may be much bigger than the tree                   window itself. To see various parts of this panel, you can use                   the scroll bars or the Bird's Eye View box that appears at the                   lower left corner of the Tree Window.</li>                <li>Drawing Size (Only in the basic Tree Window) - When Size to                   Window is turned off, this item allows you to set the size of                   the panel in which the tree is drawn.</li>                <li>Float Legends (Only in the basic Tree Window) - When Size                   to Window is turned off, this item allows you to choose whether                   the legends such as the Tree Legend and Trace Character Legend                   are anchored to the panel in which the tree is drawn or, anchored                   to the window itself.</li>                <li>Font, Font Size, Font Color - Sets the font characteristics                   of the taxon names and node names.</li>                <li>Names - Determines what names are shown and whether taxon                   names are colored by the <a href="taxa.html#groups">taxon group</a>.</li>                <li>Orientation (Only for some tree forms) - Chooses whether the                   root to terminal orientation is up (classic phylogeneticist                   or paleontologist), to the right (molecular evolutionist), bottom                   (population geneticist or mathematician) or left (?)</li>                <li>Branches Proportional to Length - Determines if the drawn                   lengths of branches are proportional to their assigned lengths.                   Otherwise, the tree drawing routine chooses node positions at                   its own convenience. </li>                <li>Save Macro for Tree Drawing - Saves the current tree drawing                   specifications (form, color, orientation, etc.) as a macro.                   The macro will then appear under the Macros For Tree Drawing                   submenu, and can be used later to set other tree windows to                   use the same specifications.</li>              </ul>              <h3> <a name="printing"></a>Printing trees and saving graphics files</h3>              Mesquite's Tree Window offers two menu items for printing trees:               Print Tree and Print Tree to Fit Page. The former prints the tree               in its current size, even if that requires it to be placed over               multiple pages. The latter automatically reduces or enlarges to               tree image to fit a single printed page. It attempts to choose landscape               or portrait mode to maximize the size of the fitted image.               <p>You can also use Save Tree As PDF in the file menu to save the                 tree image to a PDF file. This works well except that legends                 (such as the character trace legend) are not included in the image                 because of an apparent bug in the library we are using.               <p>An alternative way to generate image files is to ask to print the tree image, then use                 your operating system's Print dialog box to direct the output                 to a file (e.g., postscript or PDF) instead of a printer. Printing                 to a PDF file is built into the Print Dialog box of Mac OS X and                 therefore is easy to do. On Windows, printing to a pdf or postscript                 file is not so straighforward. To do this, use a postscript printer                 and print to file. The &quot;.prn&quot; file created might in                 fact be a &quot;.ps&quot; postscript file on the inside. If you                 are using Windows but don't have a postscript printer then you                 can add a virtual printer via the Control Panel. Choose a postscript                 printer driver (e.g. a Laserjet marked as &quot;PS&quot;). Postscript                 and pdf files are editable by programs such as Adobe Illustrator.               <h3> <a name="dependent"></a>Dependent Tree Window</h3>              This window shows the same tree as in the Tree Window (hence it               is "dependent"). It is available in the <strong>Tree</strong> menu               of the Tree Window. It is useful when analyses or graphics are desired               for the Tree Window, but which would conflict visually with currently               running analyses or graphics. Thus, the Dependent Tree Window gives               additional space on which to display graphics and analyses. As the               tree in the Tree Window is changed, the tree in the Dependent Tree               Window is also changed. Note: If the Tree Window is closed, the               Dependent Tree Window will close also.               <p>Users may find the menus of the Tree Window and Dependent Tree                 Window somewhat confusing when the latter is in use, as both windows                 include some menus of the other. This is a consequence of Mesquite's                 automatic menu arrangement; we realize it is not optimal in this                 case.</p>              <h3> <a name="mirror"></a>Mirror Tree Window</h3>              This window, like the Dependent Tree Window, shows the same tree               as in the Tree Window. However, the Mirror Tree Window shows it               twice, in mirror image. This allows you to compare, for instance,               two different traced characters visually, as in <a href="CharacterEvolution/ProcessCharEvol.html#mirror">this               example</a>. The analysis shown on the left side is controlled by               the Left side submenu; that on the right by the Right side submenu.               <p>Users may find menus confusing when this window is in use; see                 comments under Dependent Tree Window.</p>              <h3> <a name="multi"></a>Multi Tree Window</h3>              This window, available in the <strong>Taxa &amp; Trees</strong>               menu, shows multiple trees simultaneously. It is not dependent on               a Tree Window, but gets its trees from an available tree source.               <p>               <p>&nbsp;</p>              <!-- #EndEditable --></font></td>          </tr>        </table>        <table border="0" cellspacing="0" cellpadding="5" width="100%">          <tr>             <td align="left" valign="top">               <hr>              <p align="center"><font face="Trebuchet MS"><span class="smallplain"><a href="http://mesquiteproject.org"><font size="2">Mesquite              Home Page</font></a><font size="2"> | <a href="manual.html">Mesquite              Manual</a></font></span></font></p>              <p><font face="Trebuchet MS"><span class="smallplain">Copyright                 &copy; 2002-2007 by <a href="http://salticidae.org/wpm/home.html">Wayne                 P. Maddison</a> and <a href="http://david.bembidion.org">David                 R. Maddison</a>.<br>&nbsp;All rights reserved.</span></font></p></td>          </tr>        </table>      </td>    </tr>  </table></div><font face="Trebuchet MS"> </font></body><!-- #EndTemplate --></html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><!-- #BeginTemplate "/Templates/Template.dwt" --><!-- DW6 -->
+<head>
+<!--LINK REL="SHORTCUT ICON" HREF="images/mesq.ico"-->
+<!-- #BeginEditable "doctitle" --> 
+<title>Phylogenetic Trees</title>
+<!-- #EndEditable -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<div id="Page" style="position:absolute; left:0px; top:0px; z-index:1; visibility: visible; width: 100%; height: 100%"> 
+  <table border="0" cellspacing="0" cellpadding="0" width="100%">
+    <tr> 
+	  <td align="left" valign="top" height="60"> 
+        <table border="0" cellspacing="0" cellpadding="0" height="60" width="300">
+          <tr> 
+       		<td width="10" height="60" align="left" valign="top"> <font face="Trebuchet MS"><img src="images/pixel.gif" width="1" height="1" alt=" " border="0"></font></td>
+            <td bgcolor="#FFFFFF"> 
+              <div align="left"><font face="Trebuchet MS"><a href="manual.html"><img src="images/mesquitesmall.gif" width="268" height="92" border="0" alt="Mesquite"></a></font></div>
+            </td>
+          </tr>
+		  <tr>
+			<td height="42" align="left" valign="top"></td>
+			<td height="42" align="left" valign="top"><font face="Trebuchet MS"><a href="manual.html"><img src="images/mesquiteLowerManual.gif" border="0"></a></font></td>
+		  </tr>
+<!--	  <tr>
+  		    <td colspan="2" height="10"></td>
+		  </tr>
+	      <tr>
+		    <td colspan="2" height="15" align="center" valign="middle">
+			<!-- Google CSE Search Box Begins
+				<form id="searchbox_016202157087875381635:khljhzi-ps8" action="http://www.google.com/cse">
+					<input type="hidden" name="cx" value="016202157087875381635:khljhzi-ps8" />
+					<input type="hidden" name="cof" value="FORID:0" />
+					<input name="q" type="text" size="20" />
+					<input type="submit" name="sa" value="Search Mesquite" />
+				<!--<img src="http://www.google.com/coop/images/google_custom_search_smnar.gif" alt="Google Custom Search" />
+		  		</form>
+			<!-- Google CSE Search Box Ends
+        		    </td>
+		  </tr> -->
+        </table>
+      </td>
+	<td>
+        <table border="0" cellspacing="0" cellpadding="0" height="134" width="550">
+          <tr valign="top" height="92"> 
+           	<td width="72" align="center"  height="92" valign="top" bgcolor="#FFFFFF"><font face="Trebuchet MS"><img src="images/fadeRight.gif" width="72" height="160"></font></td>
+			<td bgcolor="#99FF99"><img src="images/introduction.gif" valign="bottom"></td>
+			<td align="left" valign="top" height="92" width = "160" bgcolor="#99FF99"> 
+                <p><font face="Trebuchet MS"><span class="smallplain"><a href="manual.html">
+                  Introduction</a><br>
+                  </span><a href="whyMesquite.html">Why?</a><br>
+                  <a href="publication.html#howToCite">How to Cite</a>                <br>
+                  <a href="publication.html">Publication</a><br>
+                  <a href="support.html">Support</a><br>
+                  <a href="credits.html">Credits</a> </font><br>
+                  <font face="Trebuchet MS"><span class="smallplain"><a href="help.html">Help</a></span></font><br>
+                  <a href="Help/MesquiteFAQ.html"><font face="Trebuchet MS">FAQ</font></a><br> 
+                  <a href="http://mesquiteproject.org"><font face="Trebuchet MS">Web Site</font></a><br>
+			</td>
+      		<td bgcolor="#99FF99"><img src="images/basics.gif" valign="bottom"></td>
+			<td align="left" valign="top" height="92" width="220"  bgcolor="#99FF99"> 
+              <p><font face="Trebuchet MS"><span class="smallplain"><a href="help.html"></a>
+                <a href="managingFiles.html">Files</a></span> <br>
+                <span class="smallplain"><a href="menus.html">Menus</a><br>
+                <a href="windows.html">Windows</a><br>
+				<a href="charts.html">Charts</a><br>
+                <a href="scripting.html">Scripts/Macros</a> <br>
+                <a href="modules.html">Modules</a><br>
+				<a href="howMesquiteWorks.html">How</a></span></font>
+              </td>
+      		<td bgcolor="#99FF99"><img src="images/objects.gif" valign="bottom"></td>
+			<td align="left" valign="top" height="92" width="260"  bgcolor="#99FF99">
+				<p><font face="Trebuchet MS">
+                <span class="smallplain"><a href="characters.html">Characters</a></span></font><font face="Trebuchet MS"><span class="smallplain"><a href="Taxa.html"><br>
+                Taxa<br>
+                </a></span></font><font face="Trebuchet MS"><a href="trees.html">Trees</a><br>
+                <a href="glossary.html">Glossary</a> </font></p>
+              <p><font face="Trebuchet MS"><em><font face="Trebuchet MS"><a href="changes.html">New</a><br>
+                &nbsp;&nbsp;<a href="changes.html">Features</a></font></em></font></p>
+              </td>
+      		<td align="left" valign="top" height="92" width="92"><font face="Trebuchet MS"><img src="images/fadeLeft.gif" width="92" height="160"></font></td>
+		</tr>
+    	<tr>
+		    <td width="72" height="20"></td>
+		<td></td>
+		    <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+  </table>
+  <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%">
+    <tr> 
+      <td valign="top" align="left" width="110" height="100%"> 
+        <table border="0" cellspacing="0" cellpadding="0" width="142">
+          <tr> 
+			<td colspan="3" bgcolor="#99FF99"><p><font face="Trebuchet MS"><img src="images/fadeDown.gif" width="100%" height="95" valign "top" border="0" alt=" "></font></p></td>
+		  </tr>
+          <tr> 
+            <td width="6" bgcolor="#99FF99" height="35"></td>
+			<td colspan="2" bgcolor="99FF99" valign="top" height="35"><p><font face="Trebuchet MS"><a href="toc.html">Table of</a><br> 
+			   &nbsp; &nbsp; <a href="toc.html">Contents</a></font></p></td>
+		  </tr>
+		  <tr>
+            <td width="6" bgcolor="#99FF99" height="35"></td>
+            <td colspan="2" bgcolor="#99FF99" height="35"><p><font face="Trebuchet MS"><img src="images/analyses.gif"></font></p>
+              </td>
+          </tr>
+          <tr bgcolor="#99FF99"> 
+            <td height="35" align="left" valign="middle" bgcolor="#99FF99">&nbsp;</td>
+            <td width="131" height="35" align="left" valign="middle"><p>
+			  <font face="Trebuchet MS">
+			  <a href="CharacterEvolution/charEvolution.html">Character</a><br>
+			    &nbsp; <a href="CharacterEvolution/charEvolution.html">Evolution</a> <br> <br>
+			  <a href="Diversification/diversification.html">Diversification</a><br><br>
+			  <a href="molecular/molecular.html">Molecular</a><br>
+			    &nbsp; <a href="molecular/molecular.html">Data</a><br><br>
+			  <a href="popGen/popGen.html">Gene trees</a> <br>  <br>
+			  <a href="RandomSimul/RandomSimul.html">Simulations &amp;</a><br>
+			    &nbsp; <a href="RandomSimul/RandomSimul.html">Randomizations</a> <br> <br>
+			  <a href="continuous/continuous.html">Continuous</a><br>
+			    &nbsp; <a href="continuous/continuous.html">Characters</a><br> <br>
+			  <a href="otherPrograms.html">Use with</a><br>
+			    &nbsp; <a href="otherPrograms.html">Other Programs</a> <br><br>
+			  <a href="studies/index.html">Studies</a> </font></p></td>
+            <td width="5" height="35" align="left" valign="middle">&nbsp;</td>
+          </tr>
+          <tr bgcolor="#99FF99"> 
+            <td height="35" align="left" valign="middle">&nbsp;</td>
+            <td height="35" align="left" valign="middle">&nbsp;</td>
+            <td height="35" align="left" valign="middle">&nbsp;</td>
+          </tr>
+          <tr> 
+            <td height="35" align="left" valign="middle"><font face="Trebuchet MS"><img src="images/fadeUp.gif" width="5" height="92"></font></td>
+            <td height="35" align="left" valign="middle" colspan="2"><font face="Trebuchet MS"><img src="images/fadeUp.gif" width="100%" height="92"></font></td>
+          </tr>
+        </table>
+      </td>
+      <td valign="top" width="100%" height="100%"> 
+        <table width="700" border="0" cellpadding="10" cellspacing="0">
+          <tr> 
+            <td><font face="Trebuchet MS"><!-- #BeginEditable "body" --> 
+              <h2>Phylogenetic trees</h2>
+              <p>Phylogenetic trees represent the branching history of descent 
+                linking taxa, whether these taxa are species or genes. In Mesquite, 
+                a tree refers to the taxa in a particular <a href="taxa.html">taxa 
+                block</a> and once created cannot be transfered to refer a different 
+                taxa block. (As explained in the page on <a href="taxa.html">taxa</a>, 
+                &quot;taxon&quot; here is used as shorthand for &quot;terminal 
+                taxon&quot; or &quot;OTU&quot;.)</p>
+              <h3> <a name="characteristics"></a>Characteristics of trees</h3>
+              <p>Mesquite typically treats trees as rooted, although it is possible 
+                to de-root trees. Trees may contain polytomies (multifurcations) 
+                and also unbranched internal nodes. A tree in Mesqite does not 
+                need to contain all of the taxa in the taxa block, and indeed 
+                can contain as few as one taxon. Unlike MacClade, Mesquite does 
+                not support trees with observed taxa fixed in ancestral position. 
+                Mesquite can read, edit and write branch lengths in trees. In 
+                addition to length, a branch may have various other attributes 
+                such as width (e.g. for effective population size in population 
+                genetics) and color (for display purposes).</p>
+              <p>Polytomies in trees are interpreted either as &quot;soft&quot; 
+                (uncertainty in resolution) or &quot;hard&quot; (simultaneous 
+                divergence). The default interpetation is specified in the Defaults 
+                submenu of the File menu. A change in this default applies to all projects and 
+                files. Individual trees can be marked as using a specific assumption, 
+                thus overriding the default (e.g., by using the Set Polytomy Assumption 
+                menu items in the Alter/Transform Tree submenu of the Tree menu 
+                of the Tree Window). The appropriate assumption for most phylogenetic 
+                studies is &quot;soft&quot;, but calculations using soft polytomies 
+                are extremely difficult, and most Mesquite calculations yield 
+                results only with dichotomous trees and those with hard polytomies.</p>
+              <h3> <a name="analyzing"></a>Analyzing trees</h3>
+              <p>Trees can be visualized in various tree windows, and statistics 
+                about them presented in <a href="#treewindow">tree windows</a>, 
+                the <a href="#listoftrees">List of Trees</a> window, and in <a href="charts.html">charts</a>. 
+                We will not attempt to summarize all of the options here, which 
+                are discussed elsewhere, in particular in the analysis links at 
+                left. </p>
+              <p><strong>Tree comparison methods</strong> include the following:</p>
+              <ul>
+                <li> <a name="treeToTree"></a><strong>Tree to tree similarity measures</strong> &#8212; 
+                  The Shared Partitions module measures the number of partitions 
+                  between taxa shared by two trees. The separately-available <a href="http://comet.lehman.cuny.edu/treeviz/">TSV</a> 
+                  package includes other measures such as the Robinson-Foulds 
+                  metric.</li>
+                <li> <a name="consensus"></a><strong>Consensus trees</strong> &#8212; This is not available 
+                  standardly in Mesquite, but can be added with the TSV package, 
+                  which includes strict consensus trees.</li>
+                <li> <a name="fitTrees"></a><strong>Fits of trees into trees</strong> &#8212; The fit 
+                  of a contained tree (e.g. gene or parasite) into a containing 
+                  tree (e.g. species or host) can be measured by <a href="popGen/popGen.html#deep">Deep 
+                  Coalescence</a> in the coalesce package.</li>
+                <li> <a name="instability"></a><strong>Taxon instability among trees</strong> &#8212; This 
+                  module measures for each taxon how variable are its relationships 
+                  among a set of trees. Taxa that are particulary unstable, i.e. 
+                  whose placement is especially variable from tree to tree, score 
+                  high on this index. Taxon instability calculations are illustrated 
+                  in the example file at Mesquite_Folder/examples/Basic_Examples/tree_manipulation/13-instability.nex</li>
+              </ul>
+              <h3> <a name="storedTrees"></a>Stored trees and tree blocks<font face="Trebuchet MS"> </font></h3>
+              <font face="Trebuchet MS"> 
+              <p>Trees may exist within <strong>tree blocks</strong> that are 
+                stored in the data file. A tree block is a collection of trees 
+                stored as a unit. A single data file may contain more than one 
+                tree block, each containing from one to many trees.</p>
+              <p>Mesquite calculations can use trees other than those stored in 
+                tree blocks in a data file. Most calculations can use trees that 
+                are temporarily created using simulations or randomizations specifically 
+                for the purpose of the calculation and then discarded. Also, a 
+                recently edited tree in the Tree Window might not be stored in 
+                the file if the user has not explicitly stored it in the file 
+                using &quot;Store Tree&quot; or &quot;Store Tree As&quot;. More 
+                details on storing trees in tree blocks in the file are given 
+                <a href="#storing">below</a>. </p>
+              </font> 
+              <p>To create a new, empty tree block into which to store trees, 
+                select <font size="-1"><u>Taxa&amp;Trees&gt;New Empty Block of 
+                Trees...</u></font> A new block of trees is automatically created 
+                if you ask in the Tree Window to store a tree and no block has 
+                yet been created to receive trees.</p>
+              <p>It is also possible to create tree blocks that are already filled 
+                with trees. For instance, if you want to make a duplicate of an 
+                existing tree block, select <font size="-1"><u>Taxa&amp;Trees&gt;Make 
+                New Trees Block from&gt;Stored Trees</u></font>. Other choices 
+                under <u><font size="-1">Taxa&amp;Trees&gt;Make New Trees Block 
+                from&gt;</font></u> allow you to create tree blocks filled with 
+                trees resulting from simulations or randomizations, or other tree 
+                sources.</p>
+              <p><a name="listoftrees"></a>Trees stored in a tree block can be 
+                renamed or deleted in the <strong>List of Trees window</strong> 
+                (available in the Taxa&amp;Trees menu). To rename, edit the tree's 
+                name in the list directly. To delete a tree, select the tree's 
+                row in the list window and choose <font size="-1"><u>List&gt;Delete 
+                Selected Trees</u></font>. Statistics about trees can also be 
+                viewed in the List of Trees window by adding the appropriate columns 
+                using the List menu.</p>
+              <font face="Trebuchet MS"> 
+              <p>Tree blocks stored in a file can be renamed or deleted in the 
+                List of Tree Blocks window (available in the Taxa&amp;Trees menu). 
+                To rename, edit the tree block's name in the list directly. To 
+                delete a tree block, select the tree block's row in the list window 
+                and choose <font size="-1"><u>List&gt;Delete Selected Tree Blocks</u></font>.</p>
+              <p>For tree files with too many trees to be held in memory simultaneously, 
+                Mesquite can read the trees in directly from the file, one at 
+                a time, and discard each from memory after it is used (for instance, 
+                in charts or in the Tree Window). To do this use &quot;Use Trees from Separate File&quot; as your tree source.</p>
+              <h3><a name="treesources"></a>Tree Sources</h3>
+              <p>Trees for viewing and analysis can come from various sources, 
+                including tree blocks in the current file, or <a href="RandomSimul/simTrees.html">simulations</a>. 
+                Some tree sources modify other trees, such as <strong>Randomly 
+                Modify Current Tree</strong>. <strong>Use Trees from Separate File</strong> 
+                is useful for large treefiles. Although slow at times, it does 
+                not store all the trees in Mesquite's memory, but instead gets 
+                them from the file one at a time as needed. Another tree source, 
+                <a href="otherPrograms.html#mrbayestrees">MrBayes Trees</a>, obtains 
+                trees directly from a tree file stored by MrBayes. Mesquite can 
+                updated its calculations as new trees come in from MrBayes.</p>
+              <h3><a name="filtering"></a>Filtering Trees</h3>
+              <p>Trees used in charts, the tree window or to make a new tree block 
+                can be filtered. To do this, select Filter Trees from Other source 
+                as your source of trees. You will be asked for the original source 
+                of trees, and the filtering method. There are currently three 
+                filtering methods:</p>
+              <p> 
+              <ul>
+                <li>Selected Taxa Form Clade - retains only those trees in which 
+                  the currently selected set of taxa form a clade on the tree</li>
+                <li>Selected Taxa Convex in Tree - retains only those trees in 
+                  which the currently selected set of taxa can be form a clade 
+                  by rerooting the tree</li>
+                <li>Tree Value Satisfies Criterion - retains only those trees 
+                  whose value is greater than, less than or equal to a particular 
+                  target value. For &quot;value&quot;, one can use any of the 
+                  available calculations that assign numbers to trees, such as 
+                  treelength, tree depth, likelihood in character, tree asymmetry, 
+                  and so on. The user is also asked what is the target value, 
+                  and whether the criterion is to be greater than, less than or 
+                  equal to the target.</li>
+              </ul></p>
+              <h3><a name="modifying"></a>Modifying trees automatically</h3>
+              <p>Trees can be edited by hand, as described <a href="#treewindow">below</a>, 
+                or the user can request Mesquite to automatically modify trees 
+                using the &quot;Alter/Transform&quot; modules. These modules can 
+                be used:</p>
+              <p> 
+              <ul>
+                <li>in the Tree menu of the Tree Window, under the Alter/Transform 
+                  Tree submenu, or the Alter/Tranform Branch Lengths submenu. 
+                  Selecting an item in these submenus performs the transformation 
+                  on the tree in the Tree Window.</li>
+                <li>in the List menu of the List of Trees window, in the Utilities 
+                  submenu, in the Alter Trees or Alter Branch Lengths submenus. 
+                  Selecting an item in these submenus performs the transformation 
+                  on all selected trees, or on all trees if none is selected. 
+                </li>
+                <li>to transform trees on the fly that are being supplied for 
+                  a chart or tree window or making a new tree block for a file. 
+                  To do this, select &quot;Transform Trees from Other Source&quot; 
+                  whenever a source of trees is required. You will be asked for 
+                  a source of trees to be transformed or filtered, and then for 
+                  a means by which to transform the trees.</li>
+              </ul></p>
+              <p>The Alter/Transform modules include:</p>
+              <p> 
+              <ul>
+                <li>Root tree with selected taxa as outgroup</li>
+                <li>Resolve Polytomies (to 0-length branches)</li>
+                <li>Collapse Zero-length Branches</li>
+                <li>Convert Negative Branch Lengths to Zero</li>
+                <li>All Branch Lengths to 1</li>
+                <li>Scale All Branch Lengths</li>
+                <li>Ultrametricize</li>
+              </ul></p>
+              <p>To use &quot;Root tree with selected taxa as outgroup&quot;, 
+                you first must select the outgroup taxa in, for example, the Taxa 
+                List window. Then, choose the menu item &quot;Root tree with selected 
+                taxa as outgroup&quot; in the Alter/Transform Tree submenu of 
+                the Tree menu of the tree window, and in the Alter Trees submenu 
+                of the Utilities submenu of the List menu of the List of Trees 
+                window. This module will reroot the taxa in between the selected 
+                outgroups and the remaining taxa, if this is possible. If the 
+                tree cannot be rerooted so that the remaining taxa form a clade, 
+                then the tree will not be rerooted, and a warning will be given 
+                (perhaps visible only in the log). If the tree can be rerooted, 
+                then both the outgroup and ingroup will be monophyletic on the 
+                rerooted tree. In addition, if the tree has branch lengths specified, 
+                the root will be positioned at the midway point along the branch 
+                on which it is placed. That is, the length of the branch from 
+                the root to the ingroup will be equal to the length of the branch 
+                from the root to the outgroup. Future versions may allow user-choice 
+                of the branch length distribution. Adjusting of the length of 
+                the two basal branches is NOT done if the tree is already rooted 
+                between the chosen outgroups and ingroup.</p>
+              </font> 
+              <h3><a name="treewindow"></a>Editing trees: The Basic Tree Window</h3>
+              <p>The Tree Window shows a tree that can be edited and used in analyses. 
+                A new Tree Window can be requested by selecting <font size="-1"><u>Taxa&amp;Trees&gt;New 
+                Tree Window</u></font>. (Mesquite allows multple tree windows, 
+                and so if you select this menu item a second time, you'll get 
+                a new tree window.) Many of the Tree Window's fundamental functions 
+                are controlled by its Tree menu. This menu contains items to select 
+                the tree source, store trees, and alter the tree. A second important 
+                menu is the Drawing menu, which controls the appearance of the 
+                tree. Additional menu items related to the Tree Window are found 
+                in the Analysis menu. 
+              <h4> <a name="source"></a>Tree source</h4>
+              <p>The Tree Window shows trees from a particular source (although 
+                the tree being shown could differ from those in the tree source, 
+                if you've recently modified the tree using the tools). The source 
+                of trees might be a tree block in the data file. In this case, 
+                as you used the blue arrows at the upper portion of the tool palette, 
+                you would be browsing through the stored trees, scrolling from 
+                one stored tree to another. Alternatively, the source of trees 
+                might be a coalescent simulation, in which case you would be browsing 
+                through gene trees representing replicate simulations of the coalescent 
+                process. Other tree sources may be available, and can be selected 
+                when you request the Tree Window for the first time or by using 
+                the submenu <font size="-1"><u>Tree&gt;Tree Source&gt;</u></font>. 
+                One tree source, &quot;Default Trees&quot;, offers a simple pectinate 
+                tree (&quot;Default Ladder&quot;), a full polytomy (&quot;Default 
+                Bush&quot;), and a symmetrical tree. It is available merely as 
+                a last resort, in case other tree sources are unavailable. 
+              <p>We expect a common confusion will be that users will be unable 
+                to find the trees that they recently stored in the file. For example, 
+                when a new file is created, there are no stored trees, and hence 
+                the Tree Window would be forced to use another tree source (for 
+                example, &quot;Default Trees&quot;). If a user then stores a tree 
+                in the file (see next section), he or she might hit the blue scroll 
+                arrows of the Tree Window expecting to browse the stored trees, 
+                only to be shown one of the Default Trees. The problem is that 
+                the Tree Window is using Default Trees as the tree source, not 
+                Stored Trees. To see the trees stored in the file, select <u><font size="-1">Tree&gt;Tree 
+                Source&gt;Stored Trees</font></u> to change the tree source to 
+                Stored Trees. 
+              <h4> <a name="moving"></a>Moving from Tree to Tree</h4>
+              <p>To select which tree to view, use the tree scroll at the upper 
+                left of the Tree Window: 
+              <p align="center"><img src="images/treeScroll.jpg" width="163" height="93" align="middle"> 
+              <p>The left and right blue arrows take you to the previous and next 
+                trees, respectively, in the tree source. The Go To button takes 
+                you to the tree whose number is entered in the text area. The 
+                Recent Editings button offers you a drop down menu by which you 
+                can return to recently edited trees. The menu lists only trees 
+                that you have edited; it does not list the trees that came directly 
+                from the tree source, and is therefore not a complete history 
+                of recent trees. The number of little white triangles in the button 
+                indicates the number of recently edited trees stored. 
+              <h4><a name="storing"></a>Storing trees</h4>
+              <p>Although the Tree Window can be used merely to browse existing 
+                trees, it will commonly be used as a tree editor, allowing the 
+                user to build a tree according to some prior hypothesis, or to 
+                modify trees to explore the effect of changes in the tree. 
+              <p>Once a tree has been edited, the user may want to store this 
+                new tree in the file. Exactly how that is done depends on the 
+                tree source being used by the Tree Window: 
+              <ul>
+                <li>If the tree source is Stored Trees, then two menu items are 
+                  available in the Tree menu to store trees, &quot;Store Tree&quot; 
+                  and &quot;Store Tree As...&quot;. For instance, imagine that 
+                  you scroll through the stored trees until you get to tree number 
+                  5. If you edit it using the tools of the tool palette, then 
+                  you select Store Tree, your newly modified tree will replace 
+                  the original tree number 5 in the tree block. If instead you 
+                  choose Store Tree As, you will add your modified tree as a new 
+                  tree at the end of the tree block, leaving the original tree 
+                  number 5 untouched. Thus, Mesquite assumes that you are potentially 
+                  editing the original tree in the tree block whenever you edit 
+                  the tree. However, the original copy is not replaced by your 
+                  edited version until you select &quot;Store Tree&quot;. Until 
+                  you select this, your modified tree is maintained as a temporary 
+                  tree associated with the tree window, and not stored in the 
+                  tree block. 
+                <li>If the tree source is not Stored Trees then you can't modify 
+                  the original trees, because they are merely temporary trees, 
+                  produced by something like a simulation. Thus, in this case 
+                  there is no Store Tree menu item available. Instead, there is 
+                  a &quot;Store Copy of Tree As&quot; menu item. This acts more 
+                  or less like Store Tree As, in that the tree is added to a tree 
+                  block. 
+              </ul>
+              <p>You can tell that a tree has been edited to be different from 
+                that in the tree source when a black diamond appears in the message 
+                area at the lower left side of the Tree Window. The message area 
+                turns green when the tree is an unsaved, edited tree and the tree 
+                source is not Stored Trees. 
+              <h4> <a name="tools"></a>Tools</h4>
+              <p>At the left side of the Tree Window is a <strong>tool palette</strong>, 
+                containing tools that you can use to interact with the tree. Exactly 
+                which tools are available will depend on the modules installed 
+                and loaded. In the description of tools below, it will be assumed 
+                that a basic set of modules is installed and loaded. 
+              <p>Some tools act when they are touched on a branch of the tree; 
+                others act when a branch is touched then dragged and dropped. 
+                Some tools behave differently if a key such as shift or control 
+                is held down when the tool is used. These details are explained 
+                below. Some explanation of the tool is also given in the window's 
+                Explanation Area when the tool is selected in the palette. The 
+                currently selected tool has its button darker than the rest in 
+                the tool palette.
+<p>Some tools have options that can be set. If so, then the button 
+                for the tool in the tool palette will have a small black triangle 
+                indicating the availability of a drop down menu. If you touch 
+                the button and hold down the mouse for a moment, the menu will 
+                appear to allow you to make choices. 
+              <p>The following tools <strong>change the topology</strong> of the 
+                tree (the fundamental relationships among taxa implied by the 
+                tree). Some of these tools might not be available if their controlling 
+                modules are not installed or loaded. <font face="Trebuchet MS"> 
+              <table width="75%" border="0" cellspacing="0" cellpadding="4">
+                <tr> 
+                  <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>
+                  <td><b><font face="Trebuchet MS">Tool</font></b></td>
+                  <td><font face="Trebuchet MS"><b>Action</b></font></td>
+                </tr>
+                <tr> 
+                  <td> <div align="center"><img src="images/arrow.gif" width="26" height="26"></div></td>
+                  <td><font face="Trebuchet MS">Arrow</font></td>
+                  <td><font face="Trebuchet MS">If touched on a branch, dragged 
+                    and dropped on another branch, the former branch is reattached 
+                    to the latter. Also can be used to select taxa.</font></td>
+                </tr>
+                <tr> 
+                  <td> <div align="center"><font face="Trebuchet MS"><img src="images/treeTools/interchangeBranches.gif" width="26" height="26"></font></div></td>
+                  <td><font face="Trebuchet MS">Interchange branches</font></td>
+                  <td>If touched on a branch, dragged and dropped on another branch, 
+                    the two branches exchange positions. Can be used to rearrange 
+                    a polytomy<font face="Trebuchet MS">, but can also be used 
+                    for branches distant on the tree.</font></td>
+                </tr>
+                <tr> 
+                  <td> <div align="center"><font face="Trebuchet MS"><img src="images/treeTools/collapseBranch.gif" width="26" height="26"></font></div></td>
+                  <td><font face="Trebuchet MS">Collapse branch</font></td>
+                  <td><font face="Trebuchet MS">Collapses branches to yield polytomy. 
+                    Also removes unbranched internal nodes.</font></td>
+                </tr>
+                <tr> 
+                  <td> <div align="center"><font face="Trebuchet MS"><img src="images/treeTools/collapseAllBranches.gif" width="26" height="26"></font></div></td>
+                  <td><font face="Trebuchet MS">Collapse all</font></td>
+                  <td><font face="Trebuchet MS">Collapses all branches in clade. 
+                    If option or ALT is held down, collapses all branches below 
+                    node touched.</font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/rerootAtBranch.gif" width="26" height="26"></td>
+                  <td>Reroot</td>
+                  <td>Reroots tree at branch touched.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/pruneClade.gif" width="26" height="26"></td>
+                  <td>Prune clade</td>
+                  <td>Cuts clade out of tree. Taxa cut out remain within the data 
+                    file, but are not included in<font face="Trebuchet MS"> this 
+                    particular tree.</font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/insertUnbranchedNode.gif" width="26" height="26"></td>
+                  <td>Insert unbranched <font face="Trebuchet MS">node</font></td>
+                  <td>Inserts node along branch. <font face="Trebuchet MS">Currently 
+                    used primarily in combination with assigned lineage widths 
+                    to indicate population fluctuations for coalescent simulations.</font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/searchBetterTool.gif" width="26" height="26"></td>
+                  <td>Search <font face="Trebuchet MS">within clade</font></td>
+                  <td>Rearranges the branches above the node touched looking for a better tree. 
+				  The objective function used (e.g., treelength, or something else) is chosen using the 
+				  Objective Function submenu of the tool's popup menu.  You can also choose the nature of the 
+				  branch rearrangements used, and whether the tool looks for trees with higher or lower 
+				  values of the objective function.
+				  </td>
+                </tr>
+              </table>
+              </font> 
+              <p>The following tools change the <strong>branch lengths or widths</strong> 
+                of the tree. <font face="Trebuchet MS"><font face="Trebuchet MS"> 
+              <table width="75%" border="0" cellspacing="0" cellpadding="4">
+                <tr> 
+                  <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>
+                  <td><b><font face="Trebuchet MS">Tool</font></b></td>
+                  <td><font face="Trebuchet MS"><b>Action</b></font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/adjustBranchLength.gif" width="26" height="26"></td>
+                  <td>Assi<font face="Trebuchet MS">gn branch length</font></td>
+                  <td>Brings up a small editable area in which to enter a branch 
+                    <font face="Trebuchet MS">length.</font> </td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/stretchBranch.gif" width="26" height="26"></td>
+                  <td>Stretch branch</td>
+                  <td><font face="Trebuchet MS">Click and drag on branch to stretch 
+                    its length.</font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/adjustNodePosition.gif" width="26" height="26"></td>
+                  <td>Adjust node position</td>
+                  <td>Stretches branch lengths above and below node to allow node 
+                    to change position without changing positions of other nodes.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/assignLineageWidth.gif" width="26" height="26"></td>
+                  <td>Assign lineage width</td>
+                  <td>Assigns a <font face="Trebuchet MS">width to the branch. 
+                    Currently used to assign effective population sizes for population 
+                    genetics calculations.</font></td>
+                </tr>
+              </table>
+              </font></font> 
+              <p> 
+              <p>The following tools affect the <strong>appearance</strong> of 
+                the tree, or change attributes of its branches, but do not change 
+                the topology or branch lengths. Thus the changes these tools make 
+                will not affect most calculations. <font face="Trebuchet MS"><font face="Trebuchet MS"> 
+              <table width="75%" border="0" cellspacing="0" cellpadding="4">
+                <tr> 
+                  <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>
+                  <td><b><font face="Trebuchet MS">Tool</font></b></td>
+                  <td><font face="Trebuchet MS"><b>Action</b></font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/ladderizeClade.gif" width="26" height="26"></td>
+                  <td>Ladderize</td>
+                  <td>Rotates nodes to bring the largest clades on the right side 
+                    of the tree. Does not affect topology of tree. If option or 
+                    ALT key held down, ladderizes to left.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/drawAsTriangle.gif" width="26" height="26"></td>
+                  <td>Draw <font face="Trebuchet MS">clade as triangle</font></td>
+                  <td><font face="Trebuchet MS">Draws clade as small triangle 
+                    to save space in drawing the tree. The full relationships 
+                    within the clade remain, but are hidden. Clicking again will 
+                    expand the clade to be viewed again. This drawing mode may 
+                    have bugs.</font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/magnifyClade.gif" width="26" height="26"></td>
+                  <td>Magnify clade</td>
+                  <td>Magnifies the image of the tree so that only the clade touched 
+                    is shown. Touching again on the node shows the whole tree</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/branchInfo.gif" width="26" height="26"></td>
+                  <td>Branch info</td>
+                  <td>Shows available information about the branch and calculations 
+                    concerning it.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/colorBranch.gif" width="26" height="26"></td>
+                  <td>Color branch</td>
+                  <td>Colors the branch. <font face="Trebuchet MS">Control</font>-click 
+                    colors clade. Repeat click erases. <font face="Trebuchet MS">Shift</font>-click 
+                    shrink wraps color. Touch and hold the button to obtain a 
+                    menu to select color used. This is not equivalent to the Fix 
+                    States tool of MacClade.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/nameNode.gif" width="26" height="26"></td>
+                  <td>Name node</td>
+                  <td>Gives a name to the node. This name must be unique, and 
+                    different from the names of terminal taxa.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/selectBranch.gif" width="26" height="26"></td>
+                  <td>Select branch</td>
+                  <td>Selects a branch. <font face="Trebuchet MS">Control</font>-click 
+                    extends selection. <font face="Trebuchet MS">Shift</font>-click 
+                    shrink wraps selection.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/selectBranchesInClade.gif" width="26" height="26"></td>
+                  <td>Select branches in clade</td>
+                  <td>Selects all the branches in a clade. Control-click extends 
+                    selection. Shift-click shrink wraps selection.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/selectTaxaInClade.gif" width="26" height="26"></td>
+                  <td>Select taxa in clade</td>
+                  <td>Selects all the taxa in a clade. Control-click extends selection. 
+                    Shift-click shrink wraps selection.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/annotateNode.gif" width="26" height="26"></td>
+                  <td>Annotate node</td>
+                  <td>Attaches a note to a node. An asterisk appears over the 
+                    node. The note can be seen by passing the Annotate cursor 
+                    over the branch, or by turning on &quot;Show Notes On Tree&quot; 
+                    using the menu that drops down from the Annotate node button 
+                    in the tool palette.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/showPicture.gif" width="26" height="26"></td>
+                  <td>Show picture</td>
+                  <td>Shows image attached to taxon. Click again to hide. Control-click 
+                    to attach picture.</td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/hyperlink.gif" width="26" height="26"></td>
+                  <td>Hyperlink</td>
+                  <td>Shows web page or another data file. Shift click to enter 
+                    link explicitly. Control-click to select local file. </td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/searchTaxonInDBTool.gif" width="26" height="26"></td>
+                  <td>Search for Taxon in Database</td>
+                  <td>Searches a taxonomic database for the taxon name that is touched.  The database searched
+				  (e.g., Tree of Life Web Project, iSpecies, Catalogue of Life, GenBank) can be chosen
+				  in the tool's popup menu. </td>
+                </tr>
+				
+				
+				
+              </table>
+              </font></font> 
+              <h4> <a name="alterT"></a>Alter/Transform menu items</h4>
+              <p>In the Tree menu of the Tree Window are two submenus by which 
+                you can change the tree, &quot;Alter/Transform Tree&quot; and 
+                &quot;Alter/Transform Branch Lengths&quot;. These provide various 
+                utilities to change the tree, including its branch lengths. Some, 
+                such as "Scale All Branch Lengths", affect all branches of the 
+                tree simultaneously. See the section on <a href="#modifying">automatic 
+                modification</a> for more details. 
+              <h4> <a name="analyses"></a>Analyses</h4>
+              <p>The Tree Window has, in its <strong>Analysis</strong> menu, menu 
+                items that yield analyses using the current tree in the Tree Window. 
+                Which analyses are available depends on what modules are installed 
+                and loaded. Typically the following will be available at least: 
+              <ul>
+                <li>Trace Character History - Illustrates a history of character 
+                  evolution on the tree. Described in detail in the chapter on 
+                  <a href="CharacterEvolution/AncestralStates.html">reconstructing 
+                  ancestral states</a>.</li>
+                <li>Tree Legend - adds a small legend to the Tree Window. The 
+                  legend can describe information about the tree, including the 
+                  results of calculations done using the tree. When the legend 
+                  is in the Tree Window, an additional menu appears, the Legend 
+                  menu, by which you can choose to show or hide lines of information. 
+                </li>
+                <li>Values at Nodes - shows values associated with nodes, either 
+                  by coloring the nodes or labeling them. These values describe 
+                  information about the nodes, such as a statistic calculated 
+                  over the clade above the node. At the moment there are few such 
+                  values available (notably, the reconstructed character state 
+                  in a continuous character, also available through Trace Character 
+                  History).</li>
+              </ul></p>
+              <h3> <a name="drawing"></a>How trees are drawn</h3>
+              <p>There are many options for the appearance of trees as drawn in 
+                the Tree Window and other windows displaying trees. Trees may 
+                have diagonal, square or circular branches; they may be drawn 
+                black on white or green on blue; they may be drawn so that apparent 
+                branch length is proportional to assigned branch length. These 
+                options are controlled by the Drawing menu. 
+              <p>Some of the menu items in the Drawing menu are: 
+              <ul>
+                <li>Tree Form - Chooses general form of the tree. Some are merely 
+                  graphical, others involve analyses such as PlotTree and PlotTree3D 
+                  (which plot the tree in a 2D or 3D space) and Contained Gene (or Other) Trees 
+                  (which shows gene trees within species trees, or parasites within 
+                  hosts).</li>
+                <li>Set Current Form As Default - Sets as default the tree drawing 
+                  style currently in use (e.g. Diagonal Tree, Balls &amp; Sticks 
+                  etc.). It does not capture all of the current parameters chosen 
+                  for that drawing form (background color, spot sizes, etc.).</li>
+                <li>Background Color - Sets the color of the field on which the 
+                  tree is shown.</li>
+                <li>Branch Color - Sets the color of the branches. These color 
+                  are not retained with the tree, but are for graphical purposes 
+                  only. In this regard it is different from the Color Branch tool, 
+                  whose colors are retained with the tree.</li>
+                <li>Size to Window (Only in the basic Tree Window) - Shrinks the 
+                  tree to fit into the window. If this is turned off, then the 
+                  tree exists in a panel that may be much bigger than the tree 
+                  window itself. To see various parts of this panel, you can use 
+                  the scroll bars or the Bird's Eye View box that appears at the 
+                  lower left corner of the Tree Window.</li>
+                <li>Drawing Size (Only in the basic Tree Window) - When Size to 
+                  Window is turned off, this item allows you to set the size of 
+                  the panel in which the tree is drawn.</li>
+                <li>Float Legends (Only in the basic Tree Window) - When Size 
+                  to Window is turned off, this item allows you to choose whether 
+                  the legends such as the Tree Legend and Trace Character Legend 
+                  are anchored to the panel in which the tree is drawn or, anchored 
+                  to the window itself.</li>
+                <li>Font, Font Size, Font Color - Sets the font characteristics 
+                  of the taxon names and node names.</li>
+                <li>Names - Determines what names are shown and whether taxon 
+                  names are colored by the <a href="taxa.html#groups">taxon group</a>.</li>
+                <li>Orientation (Only for some tree forms) - Chooses whether the 
+                  root to terminal orientation is up (classic phylogeneticist 
+                  or paleontologist), to the right (molecular evolutionist), bottom 
+                  (population geneticist or mathematician) or left (?)</li>
+                <li>Branches Proportional to Length - Determines if the drawn 
+                  lengths of branches are proportional to their assigned lengths. 
+                  Otherwise, the tree drawing routine chooses node positions at 
+                  its own convenience. </li>
+                <li>Save Macro for Tree Drawing - Saves the current tree drawing 
+                  specifications (form, color, orientation, etc.) as a macro. 
+                  The macro will then appear under the Macros For Tree Drawing 
+                  submenu, and can be used later to set other tree windows to 
+                  use the same specifications.</li>
+              </ul>
+              <h3> <a name="printing"></a>Printing trees and saving graphics files</h3>
+              Mesquite's Tree Window offers two menu items for printing trees: 
+              Print Tree and Print Tree to Fit Page. The former prints the tree 
+              in its current size, even if that requires it to be placed over 
+              multiple pages. The latter automatically reduces or enlarges to 
+              tree image to fit a single printed page. It attempts to choose landscape 
+              or portrait mode to maximize the size of the fitted image. 
+              <p>You can also use Save Tree As PDF in the file menu to save the 
+                tree image to a PDF file. This works well except that legends 
+                (such as the character trace legend) are not included in the image 
+                because of an apparent bug in the library we are using. 
+              <p>An alternative way to generate image files is to ask to print the tree image, then use 
+                your operating system's Print dialog box to direct the output 
+                to a file (e.g., postscript or PDF) instead of a printer. Printing 
+                to a PDF file is built into the Print Dialog box of Mac OS X and 
+                therefore is easy to do. On Windows, printing to a pdf or postscript 
+                file is not so straighforward. To do this, use a postscript printer 
+                and print to file. The &quot;.prn&quot; file created might in 
+                fact be a &quot;.ps&quot; postscript file on the inside. If you 
+                are using Windows but don't have a postscript printer then you 
+                can add a virtual printer via the Control Panel. Choose a postscript 
+                printer driver (e.g. a Laserjet marked as &quot;PS&quot;). Postscript 
+                and pdf files are editable by programs such as Adobe Illustrator. 
+              <h3> <a name="dependent"></a>Dependent Tree Window</h3>
+              This window shows the same tree as in the Tree Window (hence it 
+              is "dependent"). It is available in the <strong>Tree</strong> menu 
+              of the Tree Window. It is useful when analyses or graphics are desired 
+              for the Tree Window, but which would conflict visually with currently 
+              running analyses or graphics. Thus, the Dependent Tree Window gives 
+              additional space on which to display graphics and analyses. As the 
+              tree in the Tree Window is changed, the tree in the Dependent Tree 
+              Window is also changed. Note: If the Tree Window is closed, the 
+              Dependent Tree Window will close also. 
+              <p>Users may find the menus of the Tree Window and Dependent Tree 
+                Window somewhat confusing when the latter is in use, as both windows 
+                include some menus of the other. This is a consequence of Mesquite's 
+                automatic menu arrangement; we realize it is not optimal in this 
+                case.</p>
+              <h3> <a name="mirror"></a>Mirror Tree Window</h3>
+              This window, like the Dependent Tree Window, shows the same tree 
+              as in the Tree Window. However, the Mirror Tree Window shows it 
+              twice, in mirror image. This allows you to compare, for instance, 
+              two different traced characters visually, as in <a href="CharacterEvolution/ProcessCharEvol.html#mirror">this 
+              example</a>. The analysis shown on the left side is controlled by 
+              the Left side submenu; that on the right by the Right side submenu. 
+              <p>Users may find menus confusing when this window is in use; see 
+                comments under Dependent Tree Window.</p>
+              <h3> <a name="multi"></a>Multi Tree Window</h3>
+              This window, available in the <strong>Taxa &amp; Trees</strong> 
+              menu, shows multiple trees simultaneously. It is not dependent on 
+              a Tree Window, but gets its trees from an available tree source. 
+              <p> 
+              <p>&nbsp;</p>
+              <!-- #EndEditable --></font></td>
+          </tr>
+        </table>
+        <table border="0" cellspacing="0" cellpadding="5" width="100%">
+          <tr> 
+            <td align="left" valign="top"> 
+              <hr>
+              <p align="center"><font face="Trebuchet MS"><span class="smallplain"><a href="http://mesquiteproject.org"><font size="2">Mesquite
+              Home Page</font></a><font size="2"> | <a href="manual.html">Mesquite
+              Manual</a></font></span></font></p>
+              <p><font face="Trebuchet MS"><span class="smallplain">Copyright 
+                &copy; 2002-2007 by <a href="http://salticidae.org/wpm/home.html">Wayne 
+                P. Maddison</a> and <a href="http://david.bembidion.org">David 
+                R. Maddison</a>.<br>
+&nbsp;All rights reserved.</span></font></p></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<font face="Trebuchet MS"> 
+</font>
+</body>
+<!-- #EndTemplate --></html>

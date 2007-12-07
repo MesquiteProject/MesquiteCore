@@ -7,7 +7,7 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 
 	/*.................................................................................................................*/
 	protected boolean additionStartJobItems(){
-		addMenuItem("File for Sample Trees Directly...", makeCommand("setFilePath",  this));
+		addMenuItem("File for Sample Trees From Separate...", makeCommand("setFilePath",  this));
 		addMenuItem("Number of Trees to Sample...", makeCommand("setNumTreesToSample",  this));
 		if (!MesquiteThread.isScripting()){
 			if (numTreesInTreeBlock>0 && MesquiteInteger.isCombinable(numTreesInTreeBlock)) {
@@ -96,7 +96,7 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 	}
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Sample Trees Directly From File";
+	return "Sample Trees from Separate File";
 	 }
 		/*.................................................................................................................*/
 		/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -107,7 +107,7 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 		}
 /*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Sample Trees Directly From File...";
+	return "Sample Trees from Separate File...";
 	 }
 	 
 /*.................................................................................................................*/
