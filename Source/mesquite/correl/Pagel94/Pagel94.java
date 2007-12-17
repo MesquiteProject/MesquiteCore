@@ -99,7 +99,10 @@ public class Pagel94 extends Pagel94Calculator {
 		}
 		return true;
    }
-   
+	public boolean requestPrimaryChoice(){
+		return true;
+	}
+
    public void setLogger(CLogger logger){
 	   this.logger = logger;
    }

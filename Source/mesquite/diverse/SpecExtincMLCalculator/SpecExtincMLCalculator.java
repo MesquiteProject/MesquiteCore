@@ -252,7 +252,9 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 					MesquiteMessage.println("");
 				MesquiteMessage.println("At start, y is " + DoubleArray.toString(yStart));
 			}
-			integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());        
+			integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());    
+			if (integrationResults == null)
+				return MesquiteDouble.unassigned;
 			double[] yEnd = (double[])integrationResults.lastElement();
 			if (yEnd.length == 2){
 
