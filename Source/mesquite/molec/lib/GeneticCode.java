@@ -73,6 +73,18 @@ public abstract class GeneticCode implements Listable {
  	  					value =MesquiteInteger.maximum(value, code[c1][c2][c3]);
  	 		return value;
 		}
+ 		/*.................................................................................................................*/
+ 		public int getDegeneracy (int aa) {
+ 			int count = 0;
+ 			for (int c1=0; c1<4; c1++) 
+ 				for (int c2=0; c2<4; c2++) 
+ 					for (int c3=0; c3<4; c3++) {
+ 						if (code[c1][c2][c3]==aa) {  //we've found the first aa
+ 							count++;
+ 						}
+ 					}
+ 			return count;
+ 		}
 	/*.................................................................................................................*/
 	public boolean[] getNearAAs (int aa) {
 		int numAAs = getMaxAA();

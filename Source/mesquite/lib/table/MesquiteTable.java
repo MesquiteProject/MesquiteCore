@@ -1126,7 +1126,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void upArrowPressed(KeyEvent e) { //
 		if (getEditing())
 			return;
-		if (e.isShiftDown()){
+		if (e!=null && e.isShiftDown()){
 			if (anyRowSelected()){ //accumulateSelection
 				if (e.isAltDown()){ //select all the way to end
 					int last = lastRowSelected();
@@ -1198,7 +1198,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void rightArrowPressed(KeyEvent e) {
 		if (getEditing())
 			return;
-		if (e.isShiftDown()){
+		if (e!=null && e.isShiftDown()){
 			if (anyColumnSelected()){ //accumulateSelection
 				if (e.isAltDown()){ //select all the way to end
 					int first = firstColumnSelected();
