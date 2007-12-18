@@ -1921,13 +1921,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/** returns color of row or number box. */
-	public Color getRowNumberBoxColor(boolean isRow, int number) {
+	public Color getRCNumberBoxColor(boolean isRow, int number) {
 		return ColorDistribution.medium[colorScheme];
 	}
 
 	/* ............................................................................................................... */
 	/** returns color of row or number box. */
-	public Color getRowNumberBoxDarkColor(boolean isRow, int number) {
+	public Color getRCNumberBoxDarkColor(boolean isRow, int number) {
 		return ColorDistribution.dark[colorScheme];
 	}
 
@@ -1943,7 +1943,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void drawRowColumnNumberBox(Graphics g, int number, boolean isRow, int left, int top, int width, int height) {
 		Color oldColor = g.getColor();
 		// g.setColor(Color.lightGray);
-		g.setColor(getRowNumberBoxColor(isRow, number));
+		g.setColor(getRCNumberBoxColor(isRow, number));
 		g.fillRect(left, top, width, height);
 		g.setColor(Color.white);
 		int newTop;
@@ -1959,7 +1959,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		g.drawLine(newLeft, newTop, left + width - 1, newTop);
 		g.drawLine(newLeft, newTop, newLeft, top + height - 1);
 		// g.setColor(Color.darkGray);
-		g.setColor(getRowNumberBoxDarkColor(isRow, number));
+		g.setColor(getRCNumberBoxDarkColor(isRow, number));
 		g.drawLine(left, top + height, left + width, top + height);
 		g.drawLine(left + width, top + height, left + width, top);
 		g.setColor(oldColor);
