@@ -2,11 +2,7 @@ package mesquite.lib;
 
 import java.util.*;
 
-import org.jdom.CDATA;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.tolweb.base.xml.BaseXMLReader;
-import org.tolweb.base.xml.BaseXMLWriter;
+import org.dom4j.*;
 
 public class PhoneHomeUtil {	
 
@@ -27,37 +23,31 @@ public class PhoneHomeUtil {
 		}
 		if (StringUtil.blank(oldPhoneRecords))
 			return;
-		Document doc = null;
-		try { doc = BaseXMLReader.getDocumentFromString(oldPhoneRecords); 
-		} catch (Exception e) {
-			return ;
-		}
-
-		if (doc == null || doc.getRootElement() == null) {
-			return ;
-		} else if (!doc.getRootElement().getName().equals("mesquite")) {
-			return ;
-		}
-		Element messagesFromHome = doc.getRootElement().getChild("phoneRecords");
+		
+		Element root = XMLUtil.getRootXMLElementFromString(oldPhoneRecords);
+		if (root==null)
+			return;
+		
+		Element messagesFromHome = root.element("phoneRecords");
 		if (messagesFromHome != null) {
-			Element versionElement = messagesFromHome.getChild("version");
+			Element versionElement = messagesFromHome.element("version");
 			if (versionElement == null || !versionElement.getText().equals("1")) {
 				return ;
 			}
 
 //let's get the phone records
-			List noticesFromHomeList = messagesFromHome.getChildren("record");
+			List noticesFromHomeList = messagesFromHome.elements("record");
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
-				String moduleName = messageElement.getChildText("module");
+				String moduleName = messageElement.elementText("module");
 				MesquiteModuleInfo mmi = MesquiteTrunk.mesquiteModulesInfoVector.findModule(MesquiteModule.class, moduleName);
-				int lastVersionUsedInt = MesquiteInteger.fromString(messageElement.getChildText("lastVersionUsed"));
-				int lastNotice = MesquiteInteger.fromString(messageElement.getChildText("lastNotice"));
-				int lastNoticeForMyVersion = MesquiteInteger.fromString(messageElement.getChildText("lastNoticeForMyVersion"));
+				int lastVersionUsedInt = MesquiteInteger.fromString(messageElement.elementText("lastVersionUsed"));
+				int lastNotice = MesquiteInteger.fromString(messageElement.elementText("lastNotice"));
+				int lastNoticeForMyVersion = MesquiteInteger.fromString(messageElement.elementText("lastNoticeForMyVersion"));
 				if (mmi!=null && lastVersionUsedInt != mmi.getVersionInt())
 					lastNoticeForMyVersion = 0;
-				int lastVersionNoticed = MesquiteInteger.fromString(messageElement.getChildText("lastVersionNoticed"));
-				int lastNewerVersionReported = MesquiteInteger.fromString(messageElement.getChildText("lastNewerVersionReported"));
+				int lastVersionNoticed = MesquiteInteger.fromString(messageElement.elementText("lastVersionNoticed"));
+				int lastNewerVersionReported = MesquiteInteger.fromString(messageElement.elementText("lastNewerVersionReported"));
 				
 				PhoneHomeRecord phoneRecord = new PhoneHomeRecord(moduleName, lastVersionUsedInt, lastNotice,  lastNoticeForMyVersion,  lastVersionNoticed, lastNewerVersionReported);
 				phoneRecords.addElement(phoneRecord, false);
@@ -69,26 +59,29 @@ public class PhoneHomeUtil {
 	public static void writePhoneRecords(String path, ListableVector phoneRecords) {
 		if (StringUtil.blank(path))
 			return ;
-		Element mesquiteElement = new Element("mesquite");
-		Document doc = new Document(mesquiteElement);
-		Element phoneRecordElement = new Element("phoneRecords");
-		mesquiteElement.addContent(phoneRecordElement);
-		Element versionElement = new Element("version").addContent("1");
-		phoneRecordElement.addContent(versionElement);
+		Element mesquiteElement = DocumentHelper.createElement("mesquite");
+		Document doc = DocumentHelper.createDocument(mesquiteElement);
+		Element phoneRecordElement = DocumentHelper.createElement("phoneRecords");
+		mesquiteElement.add(phoneRecordElement);
+		Element versionElement = DocumentHelper.createElement("version");
+		versionElement.addText("1");
+		phoneRecordElement.add(versionElement);
 
 		for (int i= 0; i<phoneRecords.size(); i++){
-			Element recordElement = new Element("record");
-			phoneRecordElement.addContent(recordElement);
+			Element recordElement = DocumentHelper.createElement("record");
+			phoneRecordElement.add(recordElement);
 			PhoneHomeRecord phoneRecord = (PhoneHomeRecord)phoneRecords.elementAt(i);
-			recordElement.addContent(new Element("module").addContent(new CDATA(phoneRecord.getModuleName())));
+			Element element = DocumentHelper.createElement("module");
+			element.add(DocumentHelper.createCDATA(phoneRecord.getModuleName()));
+			recordElement.add(element);
 			MesquiteModuleInfo mmi = MesquiteTrunk.mesquiteModulesInfoVector.findModule(MesquiteModule.class, phoneRecord.getModuleName());
-			recordElement.addContent(new Element("lastVersionUsed").addContent(MesquiteInteger.toString(phoneRecord.getLastVersionUsed())));
-			recordElement.addContent(new Element("lastNotice").addContent(MesquiteInteger.toString(phoneRecord.getLastNotice())));
-			recordElement.addContent(new Element("lastNoticeForMyVersion").addContent(MesquiteInteger.toString(phoneRecord.getLastNoticeForMyVersion())));
-			recordElement.addContent(new Element("lastVersionNoticed").addContent(MesquiteInteger.toString(phoneRecord.getLastVersionNoticed())));
-			recordElement.addContent(new Element("lastNewerVersionReported").addContent(MesquiteInteger.toString(phoneRecord.getLastNewerVersionReported())));
+			XMLUtil.addFilledElement(recordElement, "lastVersionUsed",MesquiteInteger.toString(phoneRecord.getLastVersionUsed()));
+			XMLUtil.addFilledElement(recordElement, "lastNotice",MesquiteInteger.toString(phoneRecord.getLastNotice()));
+			XMLUtil.addFilledElement(recordElement, "lastNoticeForMyVersion",MesquiteInteger.toString(phoneRecord.getLastNoticeForMyVersion()));
+			XMLUtil.addFilledElement(recordElement, "lastVersionNoticed",MesquiteInteger.toString(phoneRecord.getLastVersionNoticed()));
+			XMLUtil.addFilledElement(recordElement, "lastNewerVersionReported",MesquiteInteger.toString(phoneRecord.getLastNewerVersionReported()));
 		}
-		String xml = BaseXMLWriter.getDocumentAsString(doc);
+		String xml = XMLUtil.getDocumentAsXMLString(doc);
 		if (!StringUtil.blank(xml))
 			MesquiteFile.putFileContents(path, xml, true);
 
@@ -171,22 +164,14 @@ public class PhoneHomeUtil {
 		} catch (Exception e) {
 			return null;
 		}
-		Document doc = null;
 		if (StringUtil.blank(noticesFromHome))
 			return null;
-		try { doc = BaseXMLReader.getDocumentFromString(noticesFromHome); 
-		} catch (Exception e) {
+		Element root = XMLUtil.getRootXMLElementFromString(noticesFromHome);
+		if (root==null)
 			return null;
-		}
-
-		if (doc == null || doc.getRootElement() == null) {
-			return null;
-		} else if (!doc.getRootElement().getName().equals("mesquite")) {
-			return null;
-		}
-		Element messagesFromHome = doc.getRootElement().getChild("MessagesFromHome");
+		Element messagesFromHome = root.element("MessagesFromHome");
 		if (messagesFromHome != null) {
-			Element versionElement = messagesFromHome.getChild("version");
+			Element versionElement = messagesFromHome.element("version");
 			if (versionElement == null || !versionElement.getText().equals("1")) { 
 				return null;
 			}
@@ -197,24 +182,24 @@ public class PhoneHomeUtil {
 			MesquiteInteger countNotices = new MesquiteInteger(1);
 
 //let's get the notices
-			List noticesFromHomeList = messagesFromHome.getChildren("notice");
+			List noticesFromHomeList = messagesFromHome.elements("notice");
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
-				int version = MesquiteInteger.fromString(messageElement.getChildText("forVersion"));
-				int noticeNumber = MesquiteInteger.fromString(messageElement.getChildText("noticeNumber"));
-				String messageType = messageElement.getChildText("messageType");
-				String message = messageElement.getChildText("message");
+				int version = MesquiteInteger.fromString(messageElement.elementText("forVersion"));
+				int noticeNumber = MesquiteInteger.fromString(messageElement.elementText("noticeNumber"));
+				String messageType = messageElement.elementText("messageType");
+				String message = messageElement.elementText("message");
 				
 				Vector osVector = null;
-				List osList = messageElement.getChildren("forOS");
+				List osList = messageElement.elements("forOS");
 				for (Iterator i = osList.iterator(); i.hasNext();) {   // this is going through all of the notices
 					if (osVector==null)
 						osVector = new Vector();
 					Element osElement = (Element) i.next();
 					String[] osStrings= new String[3];
-					osStrings[OS] = osElement.getChildText("OS");
-					osStrings[OSVERSION] = osElement.getChildText("OSVersion");
-					osStrings[JAVAVERSION]  = osElement.getChildText("JavaVersion");
+					osStrings[OS] = osElement.elementText("OS");
+					osStrings[OSVERSION] = osElement.elementText("OSVersion");
+					osStrings[JAVAVERSION]  = osElement.elementText("JavaVersion");
 					osVector.addElement(osStrings);
 				}
 				// process other notice tags here if they are present
@@ -224,14 +209,14 @@ public class PhoneHomeUtil {
 			}
 			
 // now see if there is a tag for the current release version
-			Element currentReleaseVersion = messagesFromHome.getChild("currentReleaseVersion");
+			Element currentReleaseVersion = messagesFromHome.element("currentReleaseVersion");
 			if (currentReleaseVersion !=null) {
 				String releaseString = "";
 				String releaseStringHTML ="";
-				String versionString = currentReleaseVersion.getChildText("versionString");
-				String buildString = currentReleaseVersion.getChildText("build");
-				String downloadURL = currentReleaseVersion.getChildText("downloadURL");
-				int releaseVersionInt = MesquiteInteger.fromString(currentReleaseVersion.getChildText("version"));
+				String versionString = currentReleaseVersion.elementText("versionString");
+				String buildString = currentReleaseVersion.elementText("build");
+				String downloadURL = currentReleaseVersion.elementText("downloadURL");
+				int releaseVersionInt = MesquiteInteger.fromString(currentReleaseVersion.elementText("version"));
 				int userVersionInt = mmi.getVersionInt();
 				if (mmi.getIsPackageIntro()) 
 					userVersionInt = mmi.getPackageVersionInt();

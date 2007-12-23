@@ -5,5 +5,7 @@ public interface OutputFileProcessor {
 	public void processOutputFile(String[] outputFilePaths, int fileNum);
 	
 	public void processCompletedOutputFiles(String[] outputFilePaths);
+	
+	public String[] modifyOutputPaths(String[] outputFilePaths); 
 
 }

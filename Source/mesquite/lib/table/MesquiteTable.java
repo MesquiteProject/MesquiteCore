@@ -1544,9 +1544,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int lengthString = 0;
 		for (int it = 0; it < getNumRows(); it++) {
 			s = getRowNameTextForDisplay(it);
-			lengthString = fm.stringWidth(s);
-			if (lengthString > max)
-				max = lengthString;
+			if (!StringUtil.blank(s)) {
+				lengthString = fm.stringWidth(s);
+				if (lengthString > max)
+					max = lengthString;
+			}
 		}
 		int tableWIDTHpart = (getTableWidth() - getRowNamesWidth()) / (contrainedMaxColumnNum + 1);
 		if (constrainMaxAutoRownames && max > tableWIDTHpart) // v. 1.01 e 81
