@@ -9,6 +9,19 @@ import org.dom4j.io.*;
 public class XMLUtil {
 	
 	/*.................................................................................................................*/
+	public static void addFilledElement(Element containingElement, String name, String content) {
+		Element element = DocumentHelper.createElement(name);
+		element.addText(content);
+		containingElement.add(element);
+	}
+	/*.................................................................................................................*/
+	public static void addFilledElement(Element containingElement, String name, CDATA cdata) {
+		Element element = DocumentHelper.createElement(name);
+		element.add(cdata);
+		containingElement.add(element);
+	}
+
+	/*.................................................................................................................*/
 
 	public static String getDocumentAsXMLString(Document doc)
 	{
@@ -30,14 +43,7 @@ public class XMLUtil {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public static void addFilledElement(Element containingElement, String name, String content) {
-		Element element = DocumentHelper.createElement(name);
-		element.addText(content);
-		containingElement.add(element);
-	}
-
-	/*.................................................................................................................*/
-	public static Element getRootXMLElementFromString(String rootElementName, String contents) {
+	public static Document getDocumentFromString(String rootElementName, String contents) {
 		Document doc = null;
 		try { 
 			doc = DocumentHelper.parseText(contents); 
@@ -47,15 +53,25 @@ public class XMLUtil {
 
 		if (doc == null || doc.getRootElement() == null) {
 			return  null;
-		} else if (!StringUtil.blank(rootElementName) && !doc.getRootElement().getName().equals("mesquite")) {
+		} else if (!StringUtil.blank(rootElementName) && !doc.getRootElement().getName().equals(rootElementName)) {
 			return null;
 		}
-		Element root = doc.getRootElement();
-		return root;
+		return doc;
+	}
+	/*.................................................................................................................*/
+	public static Document getDocumentFromString(String contents) {
+		return getDocumentFromString("",contents);
+	}
+	/*.................................................................................................................*/
+	public static Element getRootXMLElementFromString(String rootElementName, String contents) {
+		Document doc = getDocumentFromString(rootElementName, contents);
+		if (doc==null)
+			return null;
+		return doc.getRootElement();
 	}
 	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromString(String contents) {
-		return getRootXMLElementFromString("mesquite",contents);
+		return getRootXMLElementFromString("",contents);
 	}
 	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromURL(String rootElementName, String url) {
@@ -69,7 +85,7 @@ public class XMLUtil {
 
 		if (doc == null || doc.getRootElement() == null) {
 			return  null;
-		} else if (!StringUtil.blank(rootElementName) && !doc.getRootElement().getName().equals("mesquite")) {
+		} else if (!StringUtil.blank(rootElementName) && !doc.getRootElement().getName().equals(rootElementName)) {
 			return null;
 		}
 		Element root = doc.getRootElement();
@@ -77,12 +93,12 @@ public class XMLUtil {
 	}
 	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromURL(String url) {
-		return getRootXMLElementFromString("mesquite",url);
+		return getRootXMLElementFromString("",url);
 	}
 
 	/*.................................................................................................................*/
 	public static void readXMLPreferences(MesquiteModule module, String contents) {
-		Element root = getRootXMLElementFromString(contents);
+		Element root = getRootXMLElementFromString("mesquite",contents);
 		if (root==null)
 			return;
 		Element element = root.element(module.getXMLModuleName());

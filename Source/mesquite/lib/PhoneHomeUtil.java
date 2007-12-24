@@ -24,7 +24,7 @@ public class PhoneHomeUtil {
 		if (StringUtil.blank(oldPhoneRecords))
 			return;
 		
-		Element root = XMLUtil.getRootXMLElementFromString(oldPhoneRecords);
+		Element root = XMLUtil.getRootXMLElementFromString("mesquite", oldPhoneRecords);
 		if (root==null)
 			return;
 		
@@ -166,7 +166,7 @@ public class PhoneHomeUtil {
 		}
 		if (StringUtil.blank(noticesFromHome))
 			return null;
-		Element root = XMLUtil.getRootXMLElementFromString(noticesFromHome);
+		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;
 		Element messagesFromHome = root.element("MessagesFromHome");

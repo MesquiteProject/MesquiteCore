@@ -8,17 +8,14 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTree;
 import mesquite.lib.Taxa;
 
-import org.jdom.Attribute;
-import org.jdom.CDATA;
-import org.jdom.Element;
-import org.tolweb.treegrow.main.XMLConstants;
+import org.dom4j.*;
 
 public class ToLUtil {
 
 	/*--------------------------*/
 	public static int countTerminals(Element element, String spacer) {
 		boolean isNode = isNode(element);
-		List children = element.getContent();
+		List children = element.content();
 		Iterator iterator = children.iterator();
 		int terms = 0;
 		while (iterator.hasNext()) {
@@ -47,9 +44,9 @@ public class ToLUtil {
 	public static boolean isLeaf(Element element){
 		if (!isNode(element))
 			return false;
-		Attribute leafAttribute = element.getAttribute("LEAF");
+		Attribute leafAttribute = element.attribute("LEAF");
 		try { 
-			return leafAttribute.getIntValue() == 1; 
+			return leafAttribute.getValue().equals("1");
 		}
 		catch (Exception e) {
 			return false;
@@ -59,9 +56,9 @@ public class ToLUtil {
 	public static boolean hasChildren(Element element){
 		if (!isNode(element))
 			return false;
-		Attribute childcountAttribute = element.getAttribute("CHILDCOUNT");
+		Attribute childcountAttribute = element.attribute("CHILDCOUNT");
 		try { 
-			return childcountAttribute.getIntValue() > 0; 
+			return MesquiteInteger.fromString(childcountAttribute.getValue()) > 0; 
 		}
 		catch (Exception e) {
 			return false;
@@ -78,13 +75,14 @@ public class ToLUtil {
 		return "TREE".equalsIgnoreCase(element.getName())|| "NAME".equalsIgnoreCase(element.getName()) || "NODES".equalsIgnoreCase(element.getName()) || "NODE".equalsIgnoreCase(element.getName());
 	}
 	static boolean isName(Element element) {
-		return XMLConstants.NAME.equalsIgnoreCase(element.getName());
+		//return XMLConstants.NAME.equalsIgnoreCase(element.getName());
+		return "Name".equalsIgnoreCase(element.getName());
 	}
 	/*--------------------------*/
 	public static int getTerminals(Element element, String[] names, boolean[] leaves, boolean[] hasChildren, MesquiteString termName, MesquiteInteger c) {
 		boolean isNode = isNode(element);
 		boolean isName = "Name".equalsIgnoreCase(element.getName());
-		List children = element.getContent();
+		List children = element.content();
 		Iterator iterator = children.iterator();
 		int terms = 0;
 		while (iterator.hasNext()) {
@@ -126,7 +124,7 @@ public class ToLUtil {
 			c.increment();
 		}
 		else {
-			List children = element.getContent();
+			List children = element.content();
 			Iterator iterator = children.iterator();
 			while (iterator.hasNext()) {
 				Object o = iterator.next();

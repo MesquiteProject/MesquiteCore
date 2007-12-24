@@ -16,11 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.hivemind.util.PropertyUtils;
-import org.jdom.CDATA;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.tolweb.base.xml.BaseXMLReader;
-import org.tolweb.base.xml.BaseXMLWriter;
+import org.dom4j.*;
 
 
 /**
@@ -46,30 +42,30 @@ public abstract class MesquiteXMLPreferencesModule extends MesquiteModule implem
 	 */
 	public static String preparePreferencesForXML (PropertyNamesProvider provider, int versionInt) {
 		String[] propertyNames = provider.getPreferencePropertyNames();
-		Document preferencesDoc = new Document();
-		Element rootElement = new Element("mesquite");
+		Element rootElement = DocumentHelper.createElement("mesquite");
+		Document preferencesDoc = DocumentHelper.createDocument(rootElement);
 		preferencesDoc.setRootElement(rootElement);
-		Element classElement = new Element(getShortClassName(provider.getClass()));
-		rootElement.addContent(classElement);
-		Element versionElement = new Element(VERSION);
+		Element classElement = DocumentHelper.createElement(getShortClassName(provider.getClass()));
+		rootElement.add(classElement);
+		Element versionElement = DocumentHelper.createElement(VERSION);
 		versionElement.setText("" + versionInt);
-		classElement.addContent(versionElement);
+		classElement.add(versionElement);
 		for (int i = 0; i < propertyNames.length; i++) {
 			String currentPropertyName = propertyNames[i];
 			try {
 				Object prefsContent = PropertyUtils.read(provider, currentPropertyName);
 				if (prefsContent != null) {
-					Element nextPrefsElement = new Element(PREFERENCE);
-					nextPrefsElement.setAttribute(KEY, currentPropertyName);
-					nextPrefsElement.addContent(new CDATA(prefsContent.toString()));
-					classElement.addContent(nextPrefsElement);
+					Element nextPrefsElement = DocumentHelper.createElement(PREFERENCE);
+					nextPrefsElement.addAttribute(KEY, currentPropertyName);
+					nextPrefsElement.add(DocumentHelper.createCDATA(prefsContent.toString()));
+					classElement.add(nextPrefsElement);
 				}
 			} catch (Exception e) {
 				MesquiteMessage.warnProgrammer("Could not read property value " + currentPropertyName + " for writing xml preferences on module: " + provider);
 			}
 			//nextPrefsElement.addContent(new CDATA())
 		}
-		return BaseXMLWriter.getDocumentAsString(preferencesDoc);
+		return XMLUtil.getDocumentAsXMLString(preferencesDoc);
 	}
 	/**
 	 * delegate to the static method
@@ -89,23 +85,23 @@ public abstract class MesquiteXMLPreferencesModule extends MesquiteModule implem
 	 */
 	public static boolean parseFullXMLDocument(String prefsXML, PropertyNamesProvider provider, 
 			int version, boolean versionsMustMatch) {
-		Document doc = BaseXMLReader.getDocumentFromString(prefsXML);
+		Document doc = XMLUtil.getDocumentFromString(prefsXML);
 		if (doc == null) {
 			// not xml -- can't parse it
 			return false;
 		}
 		Element rootElement = doc.getRootElement();
 		String shortClassName = getShortClassName(provider.getClass());
-		Element classElement = rootElement.getChild(shortClassName);
+		Element classElement = rootElement.element(shortClassName);
 		if (classElement != null) {
-			String versionString = classElement.getChildText(VERSION);
+			String versionString = classElement.elementText(VERSION);
 			int versionInXml = MesquiteInteger.fromString(versionString);
 			boolean acceptableVersion = (versionInXml == version || !versionsMustMatch);
 			if (isCorrectRootTag(classElement.getName(), provider.getClass()) && acceptableVersion) {
-				List prefsChildren = classElement.getChildren(PREFERENCE);
+				List prefsChildren = classElement.elements(PREFERENCE);
 				for (Iterator iter = prefsChildren.iterator(); iter.hasNext();) {
 					Element nextPreferenceElement = (Element) iter.next();
-					String key = nextPreferenceElement.getAttributeValue(KEY);
+					String key = nextPreferenceElement.attributeValue(KEY);
 					String value = nextPreferenceElement.getText();
 					try {
 						PropertyUtils.smartWrite(provider, key, value);
