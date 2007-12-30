@@ -117,7 +117,7 @@ public class CondensedTreeSource extends TreeSource {
 
 		for (int i=0; i<numOriginalTrees; i++)
 			if (identities[i]==itree) {
-				Tree tree =  treeSourceTask.getTree(taxa, i);
+				Tree tree =  treeSourceTask.getTree(taxa, i).cloneTree();
 				if (tree instanceof AdjustableTree)
 					((AdjustableTree)tree).setName("tree " + (i+1) + " (" + count + ")");
 				if (tree instanceof Attachable){
