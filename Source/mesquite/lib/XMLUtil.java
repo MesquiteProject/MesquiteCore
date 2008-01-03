@@ -93,7 +93,7 @@ public class XMLUtil {
 	}
 	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromURL(String url) {
-		return getRootXMLElementFromString("",url);
+		return getRootXMLElementFromURL("",url);
 	}
 
 	/*.................................................................................................................*/

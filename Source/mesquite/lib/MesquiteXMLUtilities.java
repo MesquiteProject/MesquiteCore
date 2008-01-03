@@ -15,10 +15,10 @@ package mesquite.lib;
 import java.util.Map;
 
 
-import org.jdom.Document;
-import org.tolweb.base.http.BaseHttpRequestMaker;
-import org.tolweb.base.xml.BaseXMLReader;
-import org.tolweb.treegrow.main.XMLConstants;
+import org.dom4j.*;
+import mesquite.tol.lib.*;
+
+import mesquite.tol.lib.XMLConstants;
 
 /**
  * Class used for xml communication over http
@@ -80,7 +80,7 @@ public class MesquiteXMLUtilities {
 	}
 	
 	public static Document getDocumentFromString(String docString) {
-		return BaseXMLReader.getDocumentFromString(docString);		
+		return XMLUtil.getDocumentFromString(docString);		
 	}
 	
 	public static Document getDocumentFromFilePath(String path) {

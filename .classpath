@@ -7,7 +7,8 @@
 	<classpathentry exported="true" kind="lib" path="jars/JSci.zip"/>
 	<classpathentry exported="true" kind="lib" path="jars/MRJToolkitStubs.zip"/>
 	<classpathentry exported="true" kind="lib" path="jars/pal.zip"/>
-	<classpathentry exported="true" kind="lib" path="jars/ToLBaseClasses.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/commons-httpclient-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/dom4j-1.6.1.jar"/>
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry excluding="mesquite/treefarm/ConsensusTree/|mesquite/diverse/lib/SpecExtincRatioDiffCategModel.java|mesquite/diverse/DiversificationLikeCategChar/DiversificationLikeCategChar.java" kind="src" path="Source"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
