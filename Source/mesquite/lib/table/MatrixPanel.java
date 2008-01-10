@@ -490,13 +490,16 @@ timer6.end();
 	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
 	public int findRegionInCellH(int x) {
+		int count = 0;
 		if (x<=0)
-			return 50;
+			return 50;  //column<=table.lastColumnVisible &&
 		int cx = 0;
-		for (int column=table.firstColumnVisible; (column<table.numColumnsTotal) && (cx<x); column++) {
+		for (int column=table.firstColumnVisible;  (column<table.numColumnsTotal) && (cx<x); column++) {
+			count++;
 			cx += table.columnWidths[column];
-			if (column>= table.numColumnsTotal)
+			if (column>= table.numColumnsTotal) {
 				return 50;
+			}
 			else if (cx>=x) {
 				int dXR = cx-x; //distance from right edge to 
 				int dXL = x - (cx-table.columnWidths[column]); //distance from left edge to 
@@ -512,7 +515,7 @@ timer6.end();
 			return 50;
 
 		int ry = 0;
-		for (int row=table.firstRowVisible; (row<table.numRowsTotal) && (ry<y); row++) {
+		for (int row=table.firstRowVisible;  (row<table.numRowsTotal) && (ry<y); row++) {
 			ry += table.rowHeights[row];
 			if (row>= table.numRowsTotal)
 				return 50;
@@ -660,6 +663,7 @@ timer6.end();
 		int row = findRow(y);
 		setCurrentCursor(modifiers, column,  row, tool);
 		table.mouseInCell(modifiers, column,-1,  row, -1, tool);
+
 	}
 	public void focusGained(FocusEvent arg0) {
 	}
