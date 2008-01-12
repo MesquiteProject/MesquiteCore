@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Project Window</title>
+<style type="text/css">
+<!--
+.style2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	margin-bottom: 2px;
+	margin-top: 10px;
+
+}
+-->
+</style>
+<style type="text/css">
+<!--
+.style3 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+-->
+</style>
+</head>
+
+<body>
+<p class="style3">Project with home file @HOMEFILENAME</p>
+<p class="style2">Location: in directory <a href = "showDirectory:">@HOMEDIRECTORYPATH</a></p>
+
+<!-- START of TAXA BLOCK SECTION -->
+<table width="100%" border="0" cellpadding="0" cellspacing="4" bgcolor="#777777">
+  <tr>
+    <td bgcolor="#dddddd"><table width="100%">
+      <tr><td><p class="style2"><em>Block of Taxa</em></p></td>
+      </tr><tr>
+        <td bgcolor="#EEEEEE" width="200"><table width="100%">
+          <tr>
+            
+            <td width="78%"><p class="style2">
+                <strong>@TAXABLOCKNAME</strong><br />
+            @NUMBEROFTAXA<br />
+            <br /><a href="renameTaxa:@TAXABLOCKID"><img src="rename.gif" /></a> <a href="deleteTaxa:@TAXABLOCKID"><img src="delete.gif" /></p>
+              </td>
+          </tr>
+        </table></td>
+        <td><table width="320">
+          <tr>
+            <td width="40"><a href="listTaxa:@TAXABLOCKID"><img src="list.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="listTaxa:@TAXABLOCKID"><p class="style2">List &amp;
+            Manage<br />Taxa</p></a>              </td>
+            <td width="40"><a href="chartTaxa:@TAXABLOCKID"><img src="chart.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="chartTaxa:@TAXABLOCKID"><p class="style2">Chart<br />
+            Taxa</p></a>              </td>
+          </tr>
+        </table></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td bgcolor="#dddddd"><table width="100%">
+      <!-- START of MATRIX SECTION -->
+      <tr><td><p class="style2"><em>Character Matrix</em></p></td>
+      </tr>
+      <tr>
+        <td bgcolor="#EEEEEE" width="200"><table width="100%">
+          <tr>
+            
+            <td width="78%"><p class="style2">
+            <strong>@MATRIXNAME</strong><br />
+            @NUMBEROFCHARACTERS<br />
+            @TYPEOFMATRIX<br />
+            <br /><a href="renameMatrix:@MATRIXID"><img src="rename.gif" /></a> <a href="deleteMatrix:@MATRIXID"><img src="delete.gif" /></p>
+              </td>
+          </tr>
+        </table></td>
+        <td><table width="480">
+          <tr>
+            <td width="40"><a href="showMatrix:@MATRIXID"><img src="matrixCateg.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="showMatrix:@MATRIXID"><p class="style2">View &amp;
+            Edit<br />Matrix</p></a>              </td>
+            
+            <td width="40"><a href="listMatrix:@MATRIXID"><img src="list.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="listMatrix:@MATRIXID"><p class="style2">List &amp;
+            Manage<br />Characters</p></a>              </td>
+            
+            <td width="40"><a href="chartCharacters:@MATRIXID"><img src="chart.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="chartCharacters:@MATRIXID"><p class="style2">Chart<br />
+            Characters</p></a>              </td>
+            
+          </tr>
+        </table></td>
+      </tr>
+      <!-- END of MATRIX SECTION -->
+      
+       
+      <!-- START of TREES BLOCK SECTION -->
+      <tr><td><p class="style2"><em>Block of Trees</em></p></td>
+      </tr>
+      <tr>
+        <td bgcolor="#EEEEEE" width="200"><table width="100%">
+          <tr>
+            
+            <td width="78%"><p class="style2">
+            <strong>@TREESBLOCKNAME</strong><br />
+            @NUMBEROFTREES<br />
+            <br /><a href="renameTrees:@TREESBLOCKID"><img src="rename.gif" /></a> <a href="deleteTrees:@TREESBLOCKID"><img src="delete.gif" /></p>
+              </td>
+          </tr>
+        </table></td>
+        <td><table width="480">
+          <tr>
+            <td width="40"><a href="viewTrees:@TREESBLOCKID"><img src="treeView.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="viewTrees:@TREESBLOCKID"><p class="style2">View, Explore &amp;<br />
+            Edit Trees</p></a>              </td>
+            
+            <td width="40"><a href="listTrees:@TREESBLOCKID"><img src="list.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="listTrees:@TREESBLOCKID"><p class="style2">List &amp;
+            Manage<br />Trees</p></a>              </td>
+            
+            <td width="40"><a href="chartTrees:@TREESBLOCKID"><img src="chart.gif" width="40" height="42" /></a></td>
+            <td width="120"><a href="chartTrees:@TREESBLOCKID"><p class="style2">Chart<br />
+            Trees</p></a>              </td>
+            
+          </tr>
+        </table></td>
+      </tr>
+      <!-- END of TREES BLOCK SECTION -->
+     
+      </table></td>
+  </tr>
+</table>
+<br />
+<!-- END of TAXA BLOCK SECTION -->
+
+
+</body>
+</html>
