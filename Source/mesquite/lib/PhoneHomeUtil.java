@@ -100,7 +100,14 @@ public class PhoneHomeUtil {
 			return mmi.getVersionInt();
 	}
 	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int notice, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector) {
+	public static boolean currentBuildGreaterThan(String buildLetter, int buildNumber) {
+		String currentBuildLetter = MesquiteModule.getBuildLetter();
+		int currentBuildNumber = MesquiteModule.getBuildNumber();
+		boolean greater = StringUtil.firstStringIsGreaterThan(currentBuildLetter,buildLetter);
+		return greater || (currentBuildLetter.equalsIgnoreCase(buildLetter)&&currentBuildNumber>buildNumber);
+	}
+	/*.................................................................................................................*/
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int notice, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, String forBuildLetter, int forBuildNumber) {
 		if (MesquiteInteger.isCombinable(noticeVersion)){
 			if (MesquiteInteger.isCombinable(notice)){
 
@@ -116,6 +123,11 @@ public class PhoneHomeUtil {
 							appliesToOSVersion=true;
 						}
 					}
+				}
+				
+				boolean appliesToBuild = true;
+				if (mmi.getName().equals("Mesquite") && !StringUtil.blank(forBuildLetter) && MesquiteInteger.isCombinable(forBuildNumber)) {
+					appliesToBuild = !currentBuildGreaterThan(forBuildLetter, forBuildNumber);
 				}
 
 				//suppose Mesquite is version 2.01
@@ -134,7 +146,7 @@ public class PhoneHomeUtil {
 				seenBefore = seenBefore || (currentVersion<noticeVersion && lastVersionNoticed> noticeVersion);  //e.g., notice is 2.02; 2.03 notices previously read
 
 				// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
-				if (!seenBefore && appliesToOSVersion){  //relevant
+				if (!seenBefore && appliesToOSVersion && appliesToBuild){  //relevant
 					if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
 						//notices.append( countNotices.toString() + ". " + message + "<hr>\n");
 						notices.append(message + "<hr>\n");
@@ -197,7 +209,8 @@ public class PhoneHomeUtil {
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
 				int version = MesquiteInteger.fromString(messageElement.elementText("forVersion"));  
-				String forBuild = messageElement.elementText("forBuild");
+				String forBuildLetter = messageElement.elementText("forBuildLetter");
+				int forBuildNumber = MesquiteInteger.fromString(messageElement.elementText("forBuildNumber"));
 				int noticeNumber = MesquiteInteger.fromString(messageElement.elementText("noticeNumber"));
 				String messageType = messageElement.elementText("messageType");
 				String message = messageElement.elementText("message");
@@ -216,7 +229,7 @@ public class PhoneHomeUtil {
 				}
 				// process other notice tags here if they are present
 				
-				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector);
+				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildLetter, forBuildNumber);
 
 			}
 			
@@ -227,6 +240,7 @@ public class PhoneHomeUtil {
 				String releaseStringHTML ="";
 				String versionString = currentReleaseVersion.elementText("versionString");
 				String buildString = currentReleaseVersion.elementText("build");
+				String URL = currentReleaseVersion.elementText("URL");
 				String downloadURL = currentReleaseVersion.elementText("downloadURL");
 				int releaseVersionInt = MesquiteInteger.fromString(currentReleaseVersion.elementText("version"));
 				int userVersionInt = getVersion(mmi);
@@ -242,9 +256,13 @@ public class PhoneHomeUtil {
 					else if (!StringUtil.blank(mmi.getVersion()))
 						releaseString+= " (the version you have installed is "+ mmi.getVersion() + ").";
 					releaseStringHTML = releaseString;
+					if (!StringUtil.blank(URL)) {
+						releaseStringHTML +=" <a href=\"" + URL + "\">Home page</a><BR>";
+						releaseString+=" The home page is: " + URL+ ". ";
+					}
 					if (!StringUtil.blank(downloadURL)) {
 						releaseStringHTML +=" <a href=\"" + downloadURL + "\">Download page</a>";
-						releaseString+=" The latest version is downloadable at: " + downloadURL;
+						releaseString+=" The latest version is downloadable at: " + downloadURL+ ". ";
 					}
 				}
 
