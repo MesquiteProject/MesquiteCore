@@ -66,9 +66,13 @@ public class StateFrequency extends NumberForCharacter {
         return 0;
     }
     public long getMax(){
-        if (cStates !=null)
-            return cStates.getMaxState();
-        return 0;
+       long max=0;
+    /*  if (cStates !=null)
+           	max = cStates.getMaxState();
+       if (max<0) max=0;
+       */
+       CategoricalData data = (CategoricalData)cStates.getParentData();
+      return data.getMaxPossibleState();
     }
     /*.................................................................................................................*/
      public Snapshot getSnapshot(MesquiteFile file) {
@@ -78,10 +82,10 @@ public class StateFrequency extends NumberForCharacter {
      }
     /*.................................................................................................................*/
      public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-         if (checker.compare(this.getClass(), "Sets the state to use (in a multi-item continuous data matrix)", "[item number]", commandName, "setItem")) {
+         if (checker.compare(this.getClass(), "Sets the state whose frequency should be calculated.", "[state number]", commandName, "setState")) {
              int ic = MesquiteInteger.fromString(arguments);
              if (!MesquiteInteger.isCombinable(ic) && cStates!=null){
-                 ic = MesquiteInteger.queryInteger(null, "Select State", "Enter the state for finding the frequency", "", ic, (int)getMin(), (int)getMax(), false);
+                 ic = MesquiteInteger.queryInteger(null, "Select State", "State whose frequency will be calculated", "", selectedState, (int)getMin(), (int)getMax(), false);
              }
              if (!MesquiteInteger.isCombinable(ic))
                  return null;
