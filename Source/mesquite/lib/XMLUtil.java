@@ -9,16 +9,18 @@ import org.dom4j.io.*;
 public class XMLUtil {
 	
 	/*.................................................................................................................*/
-	public static void addFilledElement(Element containingElement, String name, String content) {
+	public static Element addFilledElement(Element containingElement, String name, String content) {
 		Element element = DocumentHelper.createElement(name);
 		element.addText(content);
 		containingElement.add(element);
+		return element;
 	}
 	/*.................................................................................................................*/
-	public static void addFilledElement(Element containingElement, String name, CDATA cdata) {
+	public static Element addFilledElement(Element containingElement, String name, CDATA cdata) {
 		Element element = DocumentHelper.createElement(name);
 		element.add(cdata);
 		containingElement.add(element);
+		return element;
 	}
 
 	/*.................................................................................................................*/
