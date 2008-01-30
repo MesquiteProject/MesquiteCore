@@ -61,19 +61,28 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	}
 	/*.................................................................................................................*/
 	public void resetTreeNumber() {
-		 treeNumber=0;
+		treeNumber=0;
 	}
+	/*.................................................................................................................*/
+	public boolean isTNT() {
+		return false;
+	}
+
 	/*.................................................................................................................*/
 	public int getTreeNumber() {
 		return treeNumber;
 	}
 	/*.................................................................................................................*/
 	public void incrementTreeNumber() {
-		 treeNumber++;
+		treeNumber++;
 	}
 	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		return true;  //
+	}
+	/*.................................................................................................................*/
+	public boolean additiveIsDefault() {  
+		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean canExportProject(MesquiteProject project) {  
@@ -222,7 +231,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 					t.setName("Imported tree " + treeNumber);
 					return t;
 					//trees.addElement(t, false);
-				//	if (counter==1 && firstTree)
+					//	if (counter==1 && firstTree)
 					//	return trees;
 				}
 			}
@@ -345,20 +354,19 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		}
 		return exportTotalElements;
 	}
-	
 	/*.................................................................................................................*/
 	public StringBuffer getDataAsFileText(CharacterData data) {
 		Taxa taxa = data.getTaxa();
 		CategoricalData catData = (CategoricalData)data;
-		HennigXDREAD xread = (HennigXDREAD)availableCommands[0];
-		HennigXDREAD dread = (HennigXDREAD)availableCommands[1];
+		HennigXDREAD dread = (HennigXDREAD)availableCommands[0];
+		HennigXDREAD xread = (HennigXDREAD)availableCommands[1];
 
 		StringBuffer outputBuffer = new StringBuffer(taxa.getNumTaxa()*(20 + data.getNumChars()));
 		availableCommands[3].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //quote
-		if (data.getStateClass()==DNAData.class)
-			xread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
-		else
+		if (data.getStateClass()==DNAData.class && !isTNT())
 			dread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
+		else
+			xread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
 		if (catData.hasStateNames()|| data.characterNamesExist())
 			availableCommands[cnamesElement].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
 
@@ -389,7 +397,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		StringBuffer outputBuffer = getDataAsFileText(data);  //ccode
 		if (outputBuffer==null)
 			return;
-		
+
 		if (!args.parameterExists("noTrees"))
 			availableCommands[4].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //trees
 
@@ -400,13 +408,13 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		outputBuffer.append(getLineEnding());
 		availableCommands[5].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //comments
 		outputBuffer.append(getLineEnding());
-		
-		
-		
+
+
+
 
 		progIndicator.goAway();
 
-		saveExportedFileWithExtension(outputBuffer, arguments, "ss");
+		saveExportedFileWithExtension(outputBuffer, arguments, preferredDataFileExtension());
 	}
 
 
@@ -433,12 +441,12 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 
 /*========================================================*/
 abstract class HennigNonaCommand {
-	protected  MesquiteModule ownerModule;
+	protected  InterpretHennig86Base ownerModule;
 	public FileInterpreterI fileInterpreter;
 	public Parser parser;
 
 
-	public HennigNonaCommand(MesquiteModule ownerModule, Parser parser){
+	public HennigNonaCommand(InterpretHennig86Base ownerModule, Parser parser){
 		fileInterpreter = (FileInterpreterI)ownerModule;
 		this.ownerModule = ownerModule;
 		this.parser = parser;
@@ -487,7 +495,7 @@ class HennigCCODE extends HennigNonaCommand {
 	ParsimonyModelSet modelSet= null;
 	CharInclusionSet inclusionSet = null;
 
-	public HennigCCODE (MesquiteModule ownerModule, Parser parser){
+	public HennigCCODE (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -529,7 +537,10 @@ class HennigCCODE extends HennigNonaCommand {
 			//types
 			additive = ownerModule.getProject().getCharacterModel("ord");
 			nonadditive = ownerModule.getProject().getCharacterModel("unord");
-			modelSet= new ParsimonyModelSet("Imported Model Set", data.getNumChars(), additive,data);  // making a parsimony set
+			if (ownerModule.additiveIsDefault())
+				modelSet= new ParsimonyModelSet("Imported Model Set", data.getNumChars(), nonadditive,data);  // making a parsimony set
+			else
+				modelSet= new ParsimonyModelSet("Imported Model Set", data.getNumChars(), additive,data);  // making a parsimony set
 			modelSet.addToFile(ownerModule.getProject().getHomeFile(), ownerModule.getProject(), ownerModule.findElementManager(ParsimonyModelSet.class)); //attaching the type set to a file
 			data.setCurrentSpecsSet(modelSet, ParsimonyModelSet.class);  
 
@@ -692,19 +703,25 @@ class HennigCCODE extends HennigNonaCommand {
 //		now to write which characters are unordered (non-additive)
 		ParsimonyModelSet modelSet= (ParsimonyModelSet)data.getCurrentSpecsSet(ParsimonyModelSet.class);
 
+		String nonDefaultName = "ordered";
+		if (ownerModule.additiveIsDefault())
+			nonDefaultName="unordered";
 		boolean firstTime=true;
 		ic = 0;
 		counter = 0;
 		if (modelSet!=null)
 			while (ic<numChars) {
 				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
-					if ("unordered".equalsIgnoreCase(modelSet.getModel(ic).getName())) {
+					if (nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) {
 						if (firstTime) {
-							ccodePart+=" - ";
+							if (ownerModule.additiveIsDefault())
+								ccodePart+=" - ";
+							else
+								ccodePart+=" + ";
 							firstTime=false;
 						}
 						scopeStart=counter;
-						while (ic<numChars && (("unordered".equalsIgnoreCase(modelSet.getModel(ic).getName())) ||  (fileInterpreter.writeOnlySelectedData && (!data.getSelected(ic)))  )) {
+						while (ic<numChars && ((nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) ||  (fileInterpreter.writeOnlySelectedData && (!data.getSelected(ic)))  )) {
 							ic++;
 							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic)))
 								counter++;
@@ -770,7 +787,7 @@ class HennigCCODE extends HennigNonaCommand {
 
 /*.................................................................................................................*/
 class HennigQUOTE extends HennigNonaCommand {
-	public HennigQUOTE (MesquiteModule ownerModule, Parser parser){
+	public HennigQUOTE (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -805,7 +822,7 @@ class HennigQUOTE extends HennigNonaCommand {
 /*========================================================*/
 /*.................................................................................................................*/
 class HennigCNAMES extends HennigNonaCommand {
-	public HennigCNAMES (MesquiteModule ownerModule, Parser parser){
+	public HennigCNAMES (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -898,7 +915,7 @@ class HennigCNAMES extends HennigNonaCommand {
 /*========================================================*/
 /*.................................................................................................................*/
 class HennigCOMMENTS extends HennigNonaCommand {
-	public HennigCOMMENTS (MesquiteModule ownerModule, Parser parser){
+	public HennigCOMMENTS (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -981,7 +998,7 @@ class HennigCOMMENTS extends HennigNonaCommand {
 
 /*.................................................................................................................*/
 abstract class HennigXDREAD extends HennigNonaCommand {
-	public HennigXDREAD (MesquiteModule ownerModule, Parser parser){
+	public HennigXDREAD (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -1089,6 +1106,11 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 
+		if (ownerModule.isTNT())
+			if (charData instanceof DNAData) 
+				outputBuffer.append("nstates dna;"+fileInterpreter.getLineEnding());
+			else if (charData instanceof ProteinData) 
+				outputBuffer.append("nstates prot;"+fileInterpreter.getLineEnding());
 		outputBuffer.append(getCommandName()+fileInterpreter.getLineEnding());
 		int numCharWrite = data.numberSelected(fileInterpreter.writeOnlySelectedData);
 		int numTaxaWrite = taxa.numberSelected(fileInterpreter.writeOnlySelectedTaxa);
@@ -1116,7 +1138,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 
 /*.................................................................................................................*/
 class HennigDREAD extends HennigXDREAD {
-	public HennigDREAD (MesquiteModule ownerModule, Parser parser){
+	public HennigDREAD (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -1153,7 +1175,7 @@ class HennigDREAD extends HennigXDREAD {
 
 /*.................................................................................................................*/
 class HennigXREAD extends HennigXDREAD {
-	public HennigXREAD (MesquiteModule ownerModule, Parser parser){
+	public HennigXREAD (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -1166,7 +1188,10 @@ class HennigXREAD extends HennigXDREAD {
 	}
 	/*.................................................................................................................*/
 	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CategoricalData data){
-		outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']'));
+		if (ownerModule.isTNT())
+			data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+		else
+			outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']'));
 	}
 	/*.................................................................................................................*/
 	public CharacterData createData(CharactersManager charTask, Taxa taxa) {  
@@ -1220,7 +1245,7 @@ class HennigXREAD extends HennigXDREAD {
 
 /*.................................................................................................................*/
 class HennigTREAD extends HennigNonaCommand {
-	public HennigTREAD (MesquiteModule ownerModule, Parser parser){
+	public HennigTREAD (InterpretHennig86Base ownerModule, Parser parser){
 		super(ownerModule, parser);
 	}
 	/*.................................................................................................................*/
@@ -1232,7 +1257,7 @@ class HennigTREAD extends HennigNonaCommand {
 		return "tread";
 	}
 
-	
+
 	/*.................................................................................................................*/
 	public boolean readCommand(MesquiteProject mp, MesquiteFile file, ProgressIndicator progIndicator, CategoricalData data, Taxa taxa, String firstLine){
 		if (taxa == null)
@@ -1241,31 +1266,31 @@ class HennigTREAD extends HennigNonaCommand {
 			ownerModule.discreetAlert("Sorry, you cannot read the tree block in this file because no corresponding block of taxa can be found.  Make sure you are linking or including this with a file that includes the block of taxa");
 			return false;
 		}
-		
+
 		String content = firstLine.trim();
 		long totalLength = content.length();
 		String lowerLine = content.toLowerCase();
 		int treadpos = lowerLine.indexOf("tread"); //TODO: this is case sensitive!!!!
 		boolean startOfCommand = (treadpos>=0) ;
-			//line = line.substring(treadpos+5, line.length());
+		//line = line.substring(treadpos+5, line.length());
 		TreeVector trees = new TreeVector(taxa);
 		ProgressIndicator progress = null;
 		if (progIndicator==null) {
 			progress=new ProgressIndicator(mp,"Importing Trees "+ file.getName(), totalLength);
 			progress.start();
 		}
-		
-		
+
+
 		MesquiteTree tree = null;
 		MesquiteString quote = new MesquiteString();
-		
+
 		Parser parser = new Parser();
 		parser.setString(content);
 		parser.setLineEndString("*");
 		String line = "";
-		
+
 		((InterpretHennig86Base)ownerModule).resetTreeNumber();
-		
+
 		while (!parser.atEnd()) {
 			line = parser.getRawNextDarkLine();
 			tree = null;
@@ -1278,8 +1303,8 @@ class HennigTREAD extends HennigNonaCommand {
 				trees.addElement(tree, false);
 		}
 
-		
-/*		Parser treeParser;
+
+		/*		Parser treeParser;
 		treeParser =  new Parser();
 		treeParser.setQuoteCharacter((char)0);
 		String token;
@@ -1342,8 +1367,8 @@ class HennigTREAD extends HennigNonaCommand {
 				}
 			}
 		}
-		*/
-		
+		 */
+
 		if (trees != null) {
 			trees.setName("Imported trees");
 			if (quote != null)

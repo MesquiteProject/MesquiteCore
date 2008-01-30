@@ -16,9 +16,17 @@ public class InterpretTNT extends InterpretHennig86Base {
 		return "Imports and exports TNT files." ;
 	}
 	/*.................................................................................................................*/
-
 	public String preferredDataFileExtension() {
 		return "tnt";
+	}
+	/*.................................................................................................................*/
+	public boolean isTNT() {
+		return true;
+	}
+
+	/*.................................................................................................................*/
+	public boolean additiveIsDefault() {  
+		return false;
 	}
 
 }
