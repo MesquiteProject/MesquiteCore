@@ -19,26 +19,22 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public  class MultiBlockSplitter extends DataWindowAssistantI {
-	MesquiteTable table;
-	CharacterData  data;
+public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	protected MultiBlockTool moveTool;
-	CellBlock currentBlock = null;
 	CellBlock leftCellBlock =null;
 	CellBlock rightCellBlock =null;
-	boolean defaultCanExpand = true;
-	MesquiteBoolean canExpand =new MesquiteBoolean(defaultCanExpand);
 
 	boolean defaultMoveWholeSequenceOnOneSide = false;
 	MesquiteBoolean moveWholeSequenceOnOneSide =new MesquiteBoolean(defaultMoveWholeSequenceOnOneSide);
 
-	MesquiteBoolean warnCheckSum = new MesquiteBoolean(true);
+/*	MesquiteBoolean warnCheckSum = new MesquiteBoolean(true);
 	long originalCheckSum;
 	int edgePercent = 50;
 	int previousPercentHorizontal=0;
@@ -53,9 +49,17 @@ public  class MultiBlockSplitter extends DataWindowAssistantI {
 	boolean currentlyMoving = false;
 	boolean currentlyMovingRight=false;
 	boolean optionDown = false;
-	MesquiteBoolean liveUpdate;
+*/
+/*
+  	MesquiteBoolean liveUpdate;
 	boolean defaultLiveUpdate = false;
 	MesquiteBoolean dataChanged = new MesquiteBoolean(false);
+	boolean defaultCanExpand = true;
+	MesquiteBoolean canExpand =new MesquiteBoolean(defaultCanExpand);
+*/
+	
+	protected int endOfLeftBlockAtTouch = 0;
+	protected int startOfRightBlockAtTouch = 0;
 
 
 	public Class getDutyClass() {
@@ -78,41 +82,21 @@ public  class MultiBlockSplitter extends DataWindowAssistantI {
 		}
 		else return sorry(getName() + " couldn't start because the window with which it would be associated is not a tool container.");
 		//addPopUpMenuItems();
-		liveUpdate = new MesquiteBoolean(defaultLiveUpdate);
-		addCheckMenuItem(null, "Live update of analyses, etc.", makeCommand("toggleLiveUpdate",  this), liveUpdate);
+		addBasicMultiSequenceMenuItems();
 		addCheckMenuItem(null, "Move full sequences on each side", makeCommand("toggleAllOnSide",  this), moveWholeSequenceOnOneSide);
-		addCheckMenuItem(null, "Can expand matrix", makeCommand("toggleCanExpand",  this), canExpand);
 		return true;
 	}
 	/*.................................................................................................................*/
-	public Snapshot getSnapshot(MesquiteFile file) {
-		Snapshot temp = new Snapshot();
-		if (liveUpdate.getValue()!=defaultLiveUpdate)
-			temp.addLine("toggleLiveUpdate " + liveUpdate.toOffOnString());
-		if (canExpand.getValue()!=defaultCanExpand)
-			temp.addLine("toggleCanExpand " + canExpand.toOffOnString());
+	public void addExtraSnapshotItems(Snapshot temp) {
 		if (moveWholeSequenceOnOneSide.getValue()!=defaultMoveWholeSequenceOnOneSide)
 			temp.addLine("toggleAllOnSide " + moveWholeSequenceOnOneSide.toOffOnString());
-		return temp;
-	}
-	/*.................................................................................................................*/
-	public boolean isSubstantive(){
-		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;
 	}
-
-	/*.................................................................................................................*
-	public void addPopUpMenuItems(){
-	}
 	/*.................................................................................................................*/
 	public void setOptionTools(){
-	}
-	/*.................................................................................................................*
-	public boolean allowSplits(){
-		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean canMoveLeft(){
@@ -143,37 +127,19 @@ public  class MultiBlockSplitter extends DataWindowAssistantI {
 	public boolean wholeSequenceToRight(){
 		return moveWholeSequenceOnOneSide.getValue();
 	}
-	/*.................................................................................................................*/
-	public boolean getOptionDown(){
-		return optionDown;
-	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
 	}
-	/*.................................................................................................................*/
-	public void setTableAndData(MesquiteTable table, CharacterData data){
-		//David:  add compatibility check for CategoricalData
-		if (!(data instanceof CategoricalData))
-			return;
-		this.table = table;
-		this.data = data;
-		//cellBlock = new CellBlock((CategoricalData)data, table);
+	public void initialize(MesquiteTable table, CharacterData data) {
 		leftCellBlock = new CellBlock((CategoricalData)data, table);
 		leftCellBlock.setLeft(true);
 		rightCellBlock = new CellBlock((CategoricalData)data, table);
 		rightCellBlock.setRight(true);
+
 	}
 	/*.................................................................................................................*/
-	boolean choosingNewSelection = true;
-	int firstTouchPercentHorizontal;
-	int firstTouchPercentVertical;
-	int firstSequenceInBlock;
-	int lastSequenceInBlock;
-	int endOfLeftBlockAtTouch = 0;
-	int startOfRightBlockAtTouch = 0;
-	int currentMoveFromOriginal = 0;
 	/*.................................................................................................................*/
 	public void resetBetweenColumns(int column, int originalRow, int newRow) {
 		//	int oldTopRow = table.getStartBetweenRowSelection();
@@ -187,7 +153,7 @@ public  class MultiBlockSplitter extends DataWindowAssistantI {
 	}
 
 	/*.................................................................................................................*/
-	void stopMoving() {
+	protected void stopMoving() {
 		currentlyMoving = false;
 		table.clearBetweenColumnSelection();
 		table.repaintAll();
@@ -218,10 +184,14 @@ public  class MultiBlockSplitter extends DataWindowAssistantI {
 		currentMoveFromOriginal = 0;
 
 	}
-	///// *********************  section to be overridden
 	/*.................................................................................................................*/
-	public boolean canSwitchBlocks() {
-		return true;
+	public void checkSwitchBlocks(int moveFromOriginal) {
+			if (canMoveRight() && moveFromOriginal>0 &&  !currentlyMovingRight) {  //was dragging left, now switch to dragging right
+				switchBlocks(true);
+			}
+			else if (canMoveLeft() && moveFromOriginal<0 && currentlyMovingRight) {  //was dragging right, now switch to dragging left
+				switchBlocks(false);
+			}
 	}
 	/*.................................................................................................................*/
 	public void addCharactersToBlocks(int added, boolean toStart) {
@@ -274,94 +244,6 @@ public  class MultiBlockSplitter extends DataWindowAssistantI {
 		return true;
 	}
 
-	///// *************************************************************************************************************************************  
-
-	/*.................................................................................................................*/
-	public boolean prepareToMoveMultiSequences() {
-		currentMoveFromOriginal = 0;
-		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock);
-		resetBlocks();
-		previousPercentHorizontal = firstTouchPercentHorizontal;
-
-		if (!findBlocks())
-			return false;
-		
-
-		effectiveFirstColumnTouched = firstColumnTouched;
-		previousColumnDragged = effectiveFirstColumnTouched;
-		currentlyMoving = true;
-		return true;
-	}
-	/*.................................................................................................................*/
-	public boolean attemptBlockMove(int candidateMovement) {
-		if (currentBlock==null) 
-			return false;
-		if (candidateMovement !=0) {  // move it over from previous position by this amount; at least, that is the request
-			int distanceToMove = currentBlock.movementAllowed(candidateMovement, canExpand.getValue());
-
-			if (distanceToMove!=0) {
-				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, firstSequenceInBlock, lastSequenceInBlock, canExpand.getValue(), false, true, false,dataChanged);
-				if (added<0){ //now start adjusting all the values as we may have added taxa at the start of the matrix
-					firstColumnTouched -= added;
-					effectiveFirstColumnTouched -= added;
-					previousColumnDragged -= added;
-				} 
-				if (added!=0){  //we've added some characters
-					addCharactersToBlocks(Math.abs(added), added<0);
-				}
-				currentBlock.adjustToMove(distanceToMove);
-
-				if (added!=0 || liveUpdate.getValue()) {
-					data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-					data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
-				}
-
-				currentMoveFromOriginal += distanceToMove;
-
-				table.redrawBlock(MesquiteInteger.minimum(currentBlock.getPreviousFirstCharInBlock(),currentBlock.getCurrentFirstCharInBlock()) , firstSequenceInBlock, MesquiteInteger.maximum(currentBlock.getPreviousLastCharInBlock(),currentBlock.getCurrentLastCharInBlock()), lastSequenceInBlock);
-
-				currentBlock.transferCurrentToPrevious();
-			}
-		}
-
-		return true;
-	}
-	/*.................................................................................................................*/
-	public boolean dragMultiSequences(int percentHorizontal, int rowDragged, int columnDragged) {
-		if (currentBlock==null)
-			return false;
-
-		if (!table.rowLegal(rowDragged)|| !table.columnLegal(columnDragged) || (previousColumnDragged == columnDragged && previousPercentHorizontal == percentHorizontal))
-			return false;
-
-		double exactMoveFromOriginal = columnDragged-firstColumnTouched;
-		exactMoveFromOriginal+= 0.01*(percentHorizontal-firstTouchPercentHorizontal);
-		int moveFromOriginal = (int)exactMoveFromOriginal;
-		int candidateMovement =  moveFromOriginal - currentMoveFromOriginal;
-
-		previousColumnDragged = columnDragged;
-		previousPercentHorizontal = percentHorizontal;
-
-		if (canSwitchBlocks()) 
-			if (canMoveRight() && moveFromOriginal>0 &&  !currentlyMovingRight) {  //was dragging left, now switch to dragging right
-				switchBlocks(true);
-			}
-			else if (canMoveLeft() && moveFromOriginal<0 && currentlyMovingRight) {  //was dragging right, now switch to dragging left
-				switchBlocks(false);
-			}
-
-		return attemptBlockMove(candidateMovement);
-	}
-	/*.................................................................................................................*/
-	public boolean moveMultiSequences() {
-		((CategoricalData)data).examineCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock, "Bad checksum!", warnCheckSum, originalCheckSum);
-		if (dataChanged.getValue()) {
-			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-			data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
-		}
-		stopMoving();
-		return true;
-	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Touched.", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "moveTouchCell")) {
@@ -478,12 +360,6 @@ public  class MultiBlockSplitter extends DataWindowAssistantI {
 					moveMultiSequences();
 				} else stopMoving();
 			}
-		}
-		else if (checker.compare(this.getClass(), "Toggles whether live update is active", "[on = live update; off]", commandName, "toggleLiveUpdate")) {
-			liveUpdate.toggleValue(parser.getFirstToken(arguments));
-		}
-		else if (checker.compare(this.getClass(), "Toggles whether the matrix is allowed to expand if one attempts to move a block beyond the edges of the matrix.", "[on = canExpand; off]", commandName, "toggleCanExpand")) {
-			canExpand.toggleValue(parser.getFirstToken(arguments));
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether the entire sequences on one side are moved.", "[on = moveWholeSequenceOnOneSide; off]", commandName, "toggleAllOnSide")) {
 			moveWholeSequenceOnOneSide.toggleValue(parser.getFirstToken(arguments));
