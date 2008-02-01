@@ -283,7 +283,7 @@ timer6.end();
 	public void drawBetweenSelection(Graphics g){
 		if (table.selectedBetweenColumns()) {
 			int x = table.getColumnX(table.getStartBetweenColumnSelection());
-			int top = table.getRowY(table.getStartBetweenRowSelection());
+			int top = table.getRowY(table.getStartBetweenRowSelection()-1);
 			int bottom = table.getRowY(table.getEndBetweenRowSelection());
 			g.setColor(Color.blue);
 			g.fillRect(x-MesquiteTable.BETWEENLINEWIDTH/2,top,MesquiteTable.BETWEENLINEWIDTH,bottom-top);
@@ -292,7 +292,7 @@ timer6.end();
 		}
 		else
 			if (table.selectedBetweenRows()) {
-				int left = table.getColumnX(table.getStartBetweenColumnSelection());
+				int left = table.getColumnX(table.getStartBetweenColumnSelection()-1);
 				int right = table.getColumnX(table.getEndBetweenColumnSelection());
 				int top = table.getRowY(table.getStartBetweenRowSelection());
 				g.setColor(Color.blue);
@@ -317,7 +317,7 @@ timer6.end();
 	public void paint(Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		
+
 		try {
 			paints++;
 
@@ -469,7 +469,7 @@ timer6.end();
 			else if (cx>=x)
 				return column;
 		}
-		return -2;//past the last column
+		return BEYONDMATRIX;//past the last column
 	}
 	/*@@@...............................................................................................................*/
 	/** returns in which row y lies, -1 if above, -2 if below.*/
@@ -485,7 +485,7 @@ timer6.end();
 				return row;
 		}
 
-		return -2;//past the last row
+		return BEYONDMATRIX;//past the last row
 	}
 	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
@@ -608,7 +608,7 @@ timer6.end();
 			table.redrawFullRow(firstRowTouched);
 		}
 
-		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+		if (((TableTool)tool).acceptsOutsideDrops() || (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)) {
 			if (((TableTool)tool).getIsBetweenRowColumnTool())
 				column = table.findColumnBeforeBetween(x);
 			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);

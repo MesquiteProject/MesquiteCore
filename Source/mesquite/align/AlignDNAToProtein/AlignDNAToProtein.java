@@ -57,7 +57,7 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 				int toMove = dnaData.nextApplicable(it, posInDNA, true);
 				if (toMove>=0) {
 					int distance = toMove-posInDNA;
-					dnaData.moveCells(toMove,toMove, -distance, it, false, false, true,  false, dataChanged);
+					dnaData.moveCells(toMove,toMove, -distance, it,it, false, false, true,  false, dataChanged);
 					posInDNA++;
 				}
 			}

@@ -616,8 +616,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (selectedBetweenRows())
 			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection() && (regionInCellV>80) && (row == getStartBetweenRowSelection()) ;
 		else if (selectedBetweenColumns())
-				return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (regionInCellH>80) && (column == getStartBetweenColumnSelection()) ;
-				return false;
+				return (row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection()) && ((regionInCellH>80 && column == getStartBetweenColumnSelection()) || (regionInCellH<20 && column == getStartBetweenColumnSelection()+1)) ;
+		return false;
 	}
 	/* ................................................................................................................. */
 
@@ -2422,6 +2422,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public int getColumnX(int column) {
 		int lineX = 0;
+		if (column == firstColumnVisible-1)
+			return 0;
 		for (int c=firstColumnVisible; (c<numColumnsTotal) && c<lastColumnVisible; c++) {
 			lineX += columnWidths[c];
 			if (column==c)
@@ -2432,6 +2434,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 	public int getRowY(int row) {
 		int lineY = 0;
+		if (row == firstRowVisible-1)
+			return 0;
 		for (int c=firstRowVisible; (c<numRowsTotal) && c<lastRowVisible; c++) {
 			lineY += rowHeights[c];
 			if (row==c)
@@ -5100,6 +5104,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			rg.dispose();
 			mg.dispose();
 		}
+	}
+
+	public void clearBetweenColumnSelection() {
+		setStartBetweenColumnSelection(MesquiteInteger.unassigned);
+		setEndBetweenColumnSelection(MesquiteInteger.unassigned);
+	}
+	public void clearBetweenRowSelection() {
+		setStartBetweenRowSelection(MesquiteInteger.unassigned);
+		setEndBetweenRowSelection(MesquiteInteger.unassigned);
 	}
 
 	public int getEndBetweenColumnSelection() {

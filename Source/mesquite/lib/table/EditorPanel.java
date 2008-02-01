@@ -26,6 +26,7 @@ public abstract class EditorPanel extends MesquitePanel {
 	int editRow = -1;
 	protected int returningColumn = -2;
 	protected int returningRow  = -2;
+	public static final int BEYONDMATRIX = -2;
 	Polygon dropDownTriangle;
 
 	public EditorPanel (MesquiteTable table) {
@@ -56,6 +57,9 @@ public abstract class EditorPanel extends MesquitePanel {
 			}
 			return lineX;
 		}
+	}
+	/*...............................................................................................................*/
+	public void drawBetweenSelection(Graphics g){
 	}
 	public int endOfColumn(int column) {
 		if (column<tb.firstColumnVisible)
