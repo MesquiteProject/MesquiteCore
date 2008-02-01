@@ -194,7 +194,12 @@ public class MesquiteTool implements Listable, Explainable, ImageOwner, KeyListe
 		else
 			return explanation; 
 	}
+	/* override this to do cleanup with the tool is turned off */
+	public void turningOff(){
+	}
 	public void setInUse(boolean inUse){
+		if (this.inUse && !inUse)
+			turningOff();
 		this.inUse = inUse;
 	}
 	public boolean getInUse(){

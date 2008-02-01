@@ -4408,6 +4408,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return cellsSelected[0].isBitOn(row * numColumnsTotal + column);
 		return false;
 	}
+	/* ............................................................................................................... */
+	/** returns true if any cell in central matrix block is selected (does not return true if whole row or column is selected). */
+	public boolean isAnyCellSelectedInBlock(int columnStart, int columnEnd, int rowStart, int rowEnd) {
+		for (int column=columnStart; column<=columnEnd; column++)
+			for (int row=rowStart; row<=rowEnd; row++)
+				if (isCellSelected(column,row))
+						return true;
+		return false;
+	}
 
 	/* ............................................................................................................... */
 	/** returns whether cell in central matrix is selected. */
@@ -4579,6 +4588,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** deselects all cells, columns, etc etc. */
 	public void deselectAll() {
+		clearBetweenColumnSelection();
 		deselectAllCells(false);
 		deselectAllRows(false);
 		deselectAllColumns(false);
@@ -4589,6 +4599,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** deselects all cells, columns, etc etc. and notify any Associables linked to rows or columns */
 	public void deselectAllNotify() {
+		clearBetweenColumnSelection();
 		deselectAllCells(true);
 		deselectAllRows(true);
 		deselectAllColumns(true);
@@ -4599,6 +4610,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** deselects all cells, columns, etc etc. and notify any Associables linked to rows or columns */
 	public void deselectAllNotify(boolean redrawCells) {
+		clearBetweenColumnSelection();
 		deselectAllCells(redrawCells, true);
 		deselectAllRows(true);
 		deselectAllColumns(true);
