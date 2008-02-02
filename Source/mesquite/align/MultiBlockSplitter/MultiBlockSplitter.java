@@ -34,7 +34,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	boolean defaultMoveWholeSequenceOnOneSide = false;
 	MesquiteBoolean moveWholeSequenceOnOneSide =new MesquiteBoolean(defaultMoveWholeSequenceOnOneSide);
 
-/*	MesquiteBoolean warnCheckSum = new MesquiteBoolean(true);
+	/*	MesquiteBoolean warnCheckSum = new MesquiteBoolean(true);
 	long originalCheckSum;
 	int edgePercent = 50;
 	int previousPercentHorizontal=0;
@@ -49,15 +49,15 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	boolean currentlyMoving = false;
 	boolean currentlyMovingRight=false;
 	boolean optionDown = false;
-*/
-/*
+	 */
+	/*
   	MesquiteBoolean liveUpdate;
 	boolean defaultLiveUpdate = false;
 	MesquiteBoolean dataChanged = new MesquiteBoolean(false);
 	boolean defaultCanExpand = true;
 	MesquiteBoolean canExpand =new MesquiteBoolean(defaultCanExpand);
-*/
-	
+	 */
+
 	protected int endOfLeftBlockAtTouch = 0;
 	protected int startOfRightBlockAtTouch = 0;
 
@@ -135,8 +135,10 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	public void initialize(MesquiteTable table, CharacterData data) {
 		leftCellBlock = new CellBlock((CategoricalData)data, table);
 		leftCellBlock.setLeft(true);
+		leftCellBlock.setRight(false);
 		rightCellBlock = new CellBlock((CategoricalData)data, table);
 		rightCellBlock.setRight(true);
+		rightCellBlock.setLeft(false);
 
 	}
 	/*.................................................................................................................*/
@@ -186,12 +188,12 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	}
 	/*.................................................................................................................*/
 	public void checkSwitchBlocks(int moveFromOriginal) {
-			if (canMoveRight() && moveFromOriginal>0 &&  !currentlyMovingRight) {  //was dragging left, now switch to dragging right
-				switchBlocks(true);
-			}
-			else if (canMoveLeft() && moveFromOriginal<0 && currentlyMovingRight) {  //was dragging right, now switch to dragging left
-				switchBlocks(false);
-			}
+		if (canMoveRight() && moveFromOriginal>0 &&  !currentlyMovingRight) {  //was dragging left, now switch to dragging right
+			switchBlocks(true);
+		}
+		else if (canMoveLeft() && moveFromOriginal<0 && currentlyMovingRight) {  //was dragging right, now switch to dragging left
+			switchBlocks(false);
+		}
 	}
 	/*.................................................................................................................*/
 	public void addCharactersToBlocks(int added, boolean toStart) {
@@ -204,6 +206,11 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		leftCellBlock.reset();
 		rightCellBlock.reset();
 	}
+	public  void getFirstAndLastSequences(){
+		firstSequenceInBlock = table.getStartBetweenRowSelection();
+		lastSequenceInBlock = table.getEndBetweenRowSelection();
+	}
+
 	/*.................................................................................................................*/
 	public boolean findBlocks() {
 		MesquiteInteger firstInBlock= new MesquiteInteger();
@@ -214,9 +221,9 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		int startOfBlock = table.numColumnsTotal;
 		int endOfBlock = 0;
 
-		leftCellBlock.getCellBlock(endOfLeftBlockAtTouch, firstSequenceInBlock, lastSequenceInBlock, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
+		leftCellBlock.getCellBlock(endOfLeftBlockAtTouch, endOfLeftBlockAtTouch,firstSequenceInBlock, lastSequenceInBlock, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
 		startOfBlock = MesquiteInteger.minimum(startOfBlock,firstInBlock.getValue());
-		rightCellBlock.getCellBlock(startOfRightBlockAtTouch, firstSequenceInBlock, lastSequenceInBlock, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
+		rightCellBlock.getCellBlock(startOfRightBlockAtTouch,startOfRightBlockAtTouch, firstSequenceInBlock, lastSequenceInBlock, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
 		endOfBlock = MesquiteInteger.maximum(endOfBlock,lastInBlock.getValue());
 
 		if (rightIsInapplicable.getValue()&& leftIsInapplicable.getValue()) {
@@ -279,8 +286,6 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 
 				if (table.inBetweenSelectionRowColumns(firstColumnTouched, firstRowTouched)) {  //then we are in the selected part between columns, about to start a move, if possible
 					choosingNewSelection = false;
-					firstSequenceInBlock = table.getStartBetweenRowSelection();
-					lastSequenceInBlock = table.getEndBetweenRowSelection();
 					if (!prepareToMoveMultiSequences()){
 						currentlyMoving=false;
 						return null;
@@ -300,6 +305,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 
 				if (choosingNewSelection) {
 					//resetBetweenColumns(firstColumnTouched, firstRowTouched, rowDragged);
+					GraphicsUtil.shimmerVerticalOn(table.getGraphics(), table.getMatrixPanel(),  table.getRowY(firstRowTouched),  table.getRowY(rowDragged), table.getColumnX(firstColumnTouched));
 					previousRowDragged = rowDragged;
 
 				} else if (currentlyMoving) {
@@ -319,42 +325,42 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 				if (!table.rowLegal(rowDropped)|| !table.columnLegal(columnDropped))
 					return null;
 				if (choosingNewSelection) {
-					GraphicsUtil.shimmerVerticalOn(table.getGraphics(), table.getMatrixPanel(),  table.getRowY(firstRowTouched),  table.getRowY(rowDropped), table.getColumnX(firstColumnTouched));
-					if (rowDropped != firstRowTouched) {
-						table.setStartBetweenColumnSelection(firstColumnTouched);
-						table.setEndBetweenColumnSelection(firstColumnTouched);
+					//GraphicsUtil.shimmerVerticalOn(table.getGraphics(), table.getMatrixPanel(),  table.getRowY(firstRowTouched),  table.getRowY(rowDropped), table.getColumnX(firstColumnTouched));
 
-						int droppedPercentHorizontal= MesquiteInteger.fromString(arguments, io);
-						int droppedPercentVertical= MesquiteInteger.fromString(arguments, io);
+					table.setStartBetweenColumnSelection(firstColumnTouched);
+					table.setEndBetweenColumnSelection(firstColumnTouched);
 
-						int topRow = firstRowTouched;
-						int bottomRow = rowDropped;
-						if (firstRowTouched<rowDropped){ // we've gone down;
-							topRow = firstRowTouched;
-							bottomRow = rowDropped;
-							if (firstTouchPercentVertical>60)
-								topRow++;
-							if (droppedPercentVertical<40)
-								bottomRow--;
-						}
-						else if (firstRowTouched>rowDropped){ // we've gone down;
-							topRow = rowDropped;
-							bottomRow = firstRowTouched;
-							if (firstTouchPercentVertical<40)
-								bottomRow--;
-							if (droppedPercentVertical>60)
-								topRow++;
-						}
-						if (topRow<0)
-							topRow=0;
-						if (bottomRow>=table.numRowsTotal)
-							bottomRow=table.numRowsTotal-1;
-						if (topRow<=bottomRow) {
-							table.setStartBetweenRowSelection(topRow);
-							table.setEndBetweenRowSelection(bottomRow);
-							table.repaintAll();
-						}
+					int droppedPercentHorizontal= MesquiteInteger.fromString(arguments, io);
+					int droppedPercentVertical= MesquiteInteger.fromString(arguments, io);
+
+					int topRow = firstRowTouched;
+					int bottomRow = rowDropped;
+					if (firstRowTouched<rowDropped){ // we've gone down;
+						topRow = firstRowTouched;
+						bottomRow = rowDropped;
+						if (firstTouchPercentVertical>60)
+							topRow++;
+						if (droppedPercentVertical<40)
+							bottomRow--;
 					}
+					else if (firstRowTouched>rowDropped){ // we've gone down;
+						topRow = rowDropped;
+						bottomRow = firstRowTouched;
+						if (firstTouchPercentVertical<40)
+							bottomRow--;
+						if (droppedPercentVertical>60)
+							topRow++;
+					}
+					if (topRow<0)
+						topRow=0;
+					if (bottomRow>=table.numRowsTotal)
+						bottomRow=table.numRowsTotal-1;
+					if (topRow<=bottomRow) {
+						table.setStartBetweenRowSelection(topRow);
+						table.setEndBetweenRowSelection(bottomRow);
+						table.repaintAll();
+					}
+
 					choosingNewSelection=false;
 				} else if (currentlyMoving){
 					moveMultiSequences();

@@ -213,8 +213,8 @@ public class CellBlock {
 	public void shiftCurrentBlock(int shift){  
 		currentFirstCharInBlock+=shift;
 		currentLastCharInBlock+=shift;
-		currentFirstTaxonInBlock+=shift;
-		currentLastTaxonInBlock+=shift;
+		//currentFirstTaxonInBlock+=shift;
+		//currentLastTaxonInBlock+=shift;
 	}
 	/*.................................................................................................................*/
 	public int getCurrentFirstCharInBlock(){  
@@ -406,17 +406,17 @@ public class CellBlock {
 	}
 	/** Gets the cell block that contains the cells of character ic from itStart to itEnd */
 	/*.................................................................................................................*/
-	public void getCellBlock(int ic, int itStart, int itEnd, MesquiteInteger firstInBlock, MesquiteInteger lastInBlock, boolean wholeSelectedBlock, boolean wholeSequenceLeft, boolean wholeSequenceRight, MesquiteBoolean cellHasInapplicable, MesquiteBoolean leftIsInapplicable, MesquiteBoolean rightIsInapplicable){  // determines the block that was touched
+	public void getCellBlock(int icStart, int icEnd, int itStart, int itEnd, MesquiteInteger firstInBlock, MesquiteInteger lastInBlock, boolean wholeSelectedBlock, boolean wholeSequenceLeft, boolean wholeSequenceRight, MesquiteBoolean cellHasInapplicable, MesquiteBoolean leftIsInapplicable, MesquiteBoolean rightIsInapplicable){  // determines the block that was touched
 		cellHasInapplicable.setValue(false);
 		leftIsInapplicable.setValue(false);
 		rightIsInapplicable.setValue(false);
 		firstInBlock.setValue(0);
 		lastInBlock.setValue(data.getNumChars());
-		if (ic>0)
-			if (data.inapplicableBlock(ic-1, ic-1, itStart, itEnd))
+		if (icStart>0)
+			if (data.inapplicableBlock(icStart-1, icStart-1, itStart, itEnd))
 					leftIsInapplicable.setValue(true);
-		if (ic<data.getNumChars())
-			if (data.inapplicableBlock(ic+1, ic+1, itStart, itEnd))
+		if (icEnd<data.getNumChars())
+			if (data.inapplicableBlock(icEnd+1, icEnd+1, itStart, itEnd))
 				rightIsInapplicable.setValue(true);
 /*
  * 		if (data.isInapplicable(ic, it)) {
@@ -430,7 +430,7 @@ public class CellBlock {
 			firstInBlock.setValue(data.firstApplicable(itStart, itEnd));
 		} 
 		else if (wholeSelectedBlock) {
-			for (int i=ic; i>=0; i--) {   // find first unselected cell to the left of this point
+			for (int i=icStart; i>=0; i--) {   // find first unselected cell to the left of this point
 				if (!table.isAnyCellSelectedInBlock(i, i, itStart, itEnd)){ 
 					firstInBlock.setValue(i+1);
 					break;
@@ -438,11 +438,11 @@ public class CellBlock {
 			}
 		}
 		else {
-			for (int i=ic; i>=0; i--) {   // find first gap to the left of this point
+			for (int i=icStart; i>=0; i--) {   // find first gap to the left of this point
 				if (data.inapplicableBlock(i, i, itStart,itEnd)){  // should be isToolInapplicable
 					firstInBlock.setValue(i+1);
 					break;
-				} else if (i<ic&&!data.applicableInBothCharacters(i,i+1,itStart,itEnd)) {
+				} else if (i<icStart&&!data.applicableInBothCharacters(i,i+1,itStart,itEnd)) {
 					firstInBlock.setValue(i+1);
 					break;
 				}
@@ -454,7 +454,7 @@ public class CellBlock {
 			lastInBlock.setValue(data.lastApplicable(itStart, itEnd));
 		}
 		else if (wholeSelectedBlock) {
-			for (int i=ic; i<data.getNumChars(); i++) {  // find first unselected cell to the right of this point
+			for (int i=icEnd; i<data.getNumChars(); i++) {  // find first unselected cell to the right of this point
 				if (!table.isAnyCellSelectedInBlock(i, i, itStart, itEnd)){ 
 					lastInBlock.setValue(i-1);
 					return;
@@ -462,17 +462,26 @@ public class CellBlock {
 			}
 		}
 		else {
-			for (int i=ic; i<data.getNumChars(); i++) {  // find first gap to the right of this point
+			for (int i=icEnd; i<data.getNumChars(); i++) {  // find first gap to the right of this point
 				if (data.inapplicableBlock(i,i, itStart, itEnd)){  // should be isToolInapplicable
 					lastInBlock.setValue(i-1);
 					return;
-				} else if (i>ic &&!data.applicableInBothCharacters(i,i-1,itStart,itEnd)) {
+				} else if (i>icEnd &&!data.applicableInBothCharacters(i,i-1,itStart,itEnd)) {
 					lastInBlock.setValue(i-1);
 					return;
 				}
 			}
 		}
 	}
+	
+	/* ............................................................................................................... */
+	/** Select block of cells. */
+	public void deselectOthersAndSelectBlock() {
+			table.deSelectAndRedrawOutsideBlock(currentFirstCharInBlock, currentFirstTaxonInBlock, currentLastCharInBlock, currentLastTaxonInBlock);
+			table.selectBlock(currentFirstCharInBlock, currentFirstTaxonInBlock, currentLastCharInBlock, currentLastTaxonInBlock);
+		
+	}
+
 	public int getCurrentLeftMovement() {
 		return currentLeftMovement;
 	}
@@ -505,11 +514,9 @@ public class CellBlock {
 	}
 	public void setRight(boolean isRight) {
 		this.isRight = isRight;
-		isLeft = !isRight;
 	}
 	public void setLeft(boolean isLeft) {
 		this.isLeft = isLeft;
-		isRight = !isLeft;
 	}
 	public boolean isLocked() {
 		return locked;

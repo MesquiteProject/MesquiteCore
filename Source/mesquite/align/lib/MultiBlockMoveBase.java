@@ -131,8 +131,11 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public abstract boolean findBlocks();
 
+	public abstract void getFirstAndLastSequences();
+
 	/*.................................................................................................................*/
 	public boolean prepareToMoveMultiSequences() {
+		getFirstAndLastSequences();
 		currentMoveFromOriginal = 0;
 		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock);
 		resetBlocks();

@@ -637,7 +637,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		boolean inRange =  (startBetweenRowSelection>=0 && startBetweenRowSelection<=getNumRows()) &&  (endBetweenRowSelection>=0 && endBetweenRowSelection<=getNumRows()) &&  (startBetweenColumnSelection>=0 && startBetweenColumnSelection<=getNumColumns()) &&  (endBetweenColumnSelection>=0 && endBetweenColumnSelection<=getNumColumns());
 		if (!inRange)
 			return false;
-		return (Math.abs(startBetweenRowSelection-endBetweenRowSelection)>0 || Math.abs(startBetweenColumnSelection-endBetweenColumnSelection)>0);
+		return (Math.abs(startBetweenRowSelection-endBetweenRowSelection)>-0 || Math.abs(startBetweenColumnSelection-endBetweenColumnSelection)>=0);
 	}
 
 	// public static final int GRABBERS = 8;
@@ -3873,6 +3873,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				cellsSelected[0].setBit(j * numColumnsTotal + i);
 			}
 	}
+	
+
 
 	/* ............................................................................................................... */
 	/** Deselects all cells outside the specified block */
@@ -4175,30 +4177,31 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return true;
 		}
 		else {
-			boolean start = false;
-			boolean found = false;
+			boolean lastWasSelected = false;
+			boolean someSelected = false;
 			for (int j = 0; j < numColumnsTotal; j++) {
 				if (isColumnSelected(j) || isCellSelected(j, row)) {
-					if (!start && firstColumn != null)
+					if (!lastWasSelected && someSelected && j>0) {  //we are in a new section of selected
+						return false;
+					}
+					if (!someSelected && !lastWasSelected && firstColumn != null)
 						firstColumn.setValue(j);
-					start = true;
+					lastWasSelected = true;
+					someSelected=true;
 				}
-				else if (start) {// hit end of selection
+				else if (lastWasSelected) {// hit end of selection
 					if (lastColumn != null)
 						lastColumn.setValue(j - 1);
-					if (found)
-						return false; // more than one
-					found = true;
-					start = false;
+					lastWasSelected = false;
 				}
 
 			}
-			if (start && lastColumn != null)
+			if (lastWasSelected && lastColumn != null)
 				lastColumn.setValue(numColumnsTotal - 1);
-			if (start && found) {
-				return false; // second contig block selected at end;
-			}
-			return found;
+			//if (lastWasSelected && someSelected) {
+			//	return false; // second contig block selected at end;
+			//}
+			return someSelected;
 		}
 	}
 
