@@ -603,30 +603,30 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public boolean inBetweenSelectionRowColumns( int column, int row) {
 		int buff = 2;
-		if (selectedBetweenRows())
+		 if (selectedBetweenColumns())
+			return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (column == getStartBetweenColumnSelection()) ;
+			else if (selectedBetweenRows())
 			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection()  && (row == getStartBetweenRowSelection()) ;
-		else if (selectedBetweenColumns())
-				return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (column == getStartBetweenColumnSelection()) ;
 				return false;
 	}
 	/* ................................................................................................................. */
 
 	public boolean inBetweenSelection( int column, int row, int regionInCellH, int regionInCellV) {
 		int buff = 2;
-		if (selectedBetweenRows())
-			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection() && (regionInCellV>80) && (row == getStartBetweenRowSelection()) ;
-		else if (selectedBetweenColumns())
-				return (row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection()) && ((regionInCellH>80 && column == getStartBetweenColumnSelection()) || (regionInCellH<20 && column == getStartBetweenColumnSelection()+1)) ;
+		 if (selectedBetweenColumns())
+			return (row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection()) && ((regionInCellH>80 && column == getStartBetweenColumnSelection()) || (regionInCellH<20 && column == getStartBetweenColumnSelection()+1)) ;
+		else if (selectedBetweenRows())
+			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection() && (regionInCellV>80||regionInCellV<20) && (row == getStartBetweenRowSelection()) ;
 		return false;
 	}
 	/* ................................................................................................................. */
 
 	public boolean inBetweenSelection(int x, int y) {
 		int buff = 2;
-		if (selectedBetweenRows())
-			return (x>= getColumnX(getStartBetweenColumnSelection()-buff)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff)) && (y>= getRowY(getStartBetweenRowSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (y<= getRowY(getEndBetweenRowSelection()+buff+MesquiteTable.BETWEENLINEWIDTH));
-		else if (selectedBetweenColumns())
+		 if (selectedBetweenColumns())
 			return (x>= getColumnX(getStartBetweenColumnSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff + MesquiteTable.BETWEENLINEWIDTH)) && (y>= getRowY(getStartBetweenRowSelection()-buff)) && (y<= getRowY(getEndBetweenRowSelection()+buff));
+		 else if (selectedBetweenRows())
+			return (x>= getColumnX(getStartBetweenColumnSelection()-buff)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff)) && (y>= getRowY(getStartBetweenRowSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (y<= getRowY(getEndBetweenRowSelection()+buff+MesquiteTable.BETWEENLINEWIDTH));
 		return false;
 	}
 	/* ................................................................................................................. */
@@ -637,7 +637,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		boolean inRange =  (startBetweenRowSelection>=0 && startBetweenRowSelection<=getNumRows()) &&  (endBetweenRowSelection>=0 && endBetweenRowSelection<=getNumRows()) &&  (startBetweenColumnSelection>=0 && startBetweenColumnSelection<=getNumColumns()) &&  (endBetweenColumnSelection>=0 && endBetweenColumnSelection<=getNumColumns());
 		if (!inRange)
 			return false;
-		return (Math.abs(startBetweenRowSelection-endBetweenRowSelection)>-0 || Math.abs(startBetweenColumnSelection-endBetweenColumnSelection)>=0);
+		return (Math.abs(startBetweenRowSelection-endBetweenRowSelection)>=0 || Math.abs(startBetweenColumnSelection-endBetweenColumnSelection)>=0);
 	}
 
 	// public static final int GRABBERS = 8;

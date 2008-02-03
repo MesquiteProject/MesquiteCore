@@ -34,30 +34,6 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	boolean defaultMoveWholeSequenceOnOneSide = false;
 	MesquiteBoolean moveWholeSequenceOnOneSide =new MesquiteBoolean(defaultMoveWholeSequenceOnOneSide);
 
-	/*	MesquiteBoolean warnCheckSum = new MesquiteBoolean(true);
-	long originalCheckSum;
-	int edgePercent = 50;
-	int previousPercentHorizontal=0;
-	int previousColumnDragged=-2;
-	int previousRowDragged = -2;
-	int firstColumnTouched = -2;
-	int effectiveFirstColumnTouched = -2;
-	int firstRowTouched = -2;
-	boolean betweenCells = false;
-	boolean leftEdge = false;
-	boolean rightEdge = false;
-	boolean currentlyMoving = false;
-	boolean currentlyMovingRight=false;
-	boolean optionDown = false;
-	 */
-	/*
-  	MesquiteBoolean liveUpdate;
-	boolean defaultLiveUpdate = false;
-	MesquiteBoolean dataChanged = new MesquiteBoolean(false);
-	boolean defaultCanExpand = true;
-	MesquiteBoolean canExpand =new MesquiteBoolean(defaultCanExpand);
-	 */
-
 	protected int endOfLeftBlockAtTouch = 0;
 	protected int startOfRightBlockAtTouch = 0;
 
@@ -250,6 +226,54 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			currentBlock = leftCellBlock;
 		return true;
 	}
+	/*.................................................................................................................*/
+
+	public void getSplitRows(MesquiteInteger top, MesquiteInteger bottom, int row, int percentVertical, boolean onDrop) {
+		if (row == table.getMatrixPanel().BEYONDMATRIX) row = table.numRowsTotal-1;
+		if (row<0) row=0;
+		int topRow = firstRowTouched;
+		int bottomRow = row;
+		if (firstRowTouched<row){ // we've gone down;
+			topRow = firstRowTouched;
+			bottomRow = row;
+			if (firstTouchPercentVertical>60)
+				topRow++;
+			if (percentVertical<40)
+				bottomRow--;
+		}
+		else if (firstRowTouched>row){ // we've gone up;
+			topRow = row;
+			bottomRow = firstRowTouched;
+			if (firstTouchPercentVertical<40)
+				bottomRow--;
+			if (percentVertical>60)
+				topRow++;
+		} 
+		else if (!onDrop)
+			if (firstTouchPercentVertical < percentVertical){
+				if (firstTouchPercentVertical>60)
+					topRow++;
+				if (percentVertical<40)
+					bottomRow--;
+			}
+			else if (firstTouchPercentVertical > percentVertical){
+				if (firstTouchPercentVertical<40)
+					bottomRow--;
+				if (percentVertical>60)
+					topRow++;
+			}
+		if (topRow<0)
+			topRow=0;
+		if (bottomRow>=table.numRowsTotal)
+			bottomRow=table.numRowsTotal-1;
+		if (top!=null)
+			top.setValue(topRow);
+		if (bottom!=null)
+			bottom.setValue(bottomRow);
+	}
+	int previousDrawTop =-1;
+	int previousDrawBottom=-1 ;
+
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -292,6 +316,8 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 					}
 				}	else {
 					choosingNewSelection = true;
+					previousDrawTop = -1;
+					previousDrawBottom = -1;
 				}
 
 			}
@@ -302,10 +328,36 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 				int columnDragged = MesquiteInteger.fromString(arguments, io);
 				int rowDragged= MesquiteInteger.fromString(arguments, io);
 				int percentHorizontal= MesquiteInteger.fromString(arguments, io);
+				int percentVertical= MesquiteInteger.fromString(arguments, io);
 
 				if (choosingNewSelection) {
-					//resetBetweenColumns(firstColumnTouched, firstRowTouched, rowDragged);
-					GraphicsUtil.shimmerVerticalOn(table.getGraphics(), table.getMatrixPanel(),  table.getRowY(firstRowTouched),  table.getRowY(rowDragged), table.getColumnX(firstColumnTouched));
+					MesquiteInteger topRow = new MesquiteInteger();
+					MesquiteInteger bottomRow = new MesquiteInteger();
+					getSplitRows(topRow, bottomRow, rowDragged, percentVertical, false);
+
+					if (topRow.isCombinable() && bottomRow.isCombinable()) {
+						if (previousDrawTop>0 && previousDrawBottom>0) {
+							if (previousDrawTop<topRow.getValue())
+								table.redrawBlock(firstColumnTouched, previousDrawTop, firstColumnTouched+1, topRow.getValue()-1);
+							if (previousDrawBottom>bottomRow.getValue())
+								table.redrawBlock(firstColumnTouched, bottomRow.getValue()+1, firstColumnTouched+1, previousDrawBottom);
+						}
+						Graphics g = table.getMatrixPanel().getGraphics();
+
+						int x = table.getColumnX(firstColumnTouched)-MesquiteTable.BETWEENLINEWIDTH/2;
+						int y = table.getRowY(topRow.getValue()-1)+1;
+
+						int width = MesquiteTable.BETWEENLINEWIDTH;
+						int height =  table.getRowY(bottomRow.getValue()) - y-2;
+
+						g.setColor(Color.black);
+						g.fillRect(x, y, width, height);
+						//g.setColor(Color.yellow);
+						//g.drawRect(x, y, width, height);
+						previousDrawTop = topRow.getValue();
+						previousDrawBottom = bottomRow.getValue();
+						
+					}
 					previousRowDragged = rowDragged;
 
 				} else if (currentlyMoving) {
@@ -325,39 +377,19 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 				if (!table.rowLegal(rowDropped)|| !table.columnLegal(columnDropped))
 					return null;
 				if (choosingNewSelection) {
-					//GraphicsUtil.shimmerVerticalOn(table.getGraphics(), table.getMatrixPanel(),  table.getRowY(firstRowTouched),  table.getRowY(rowDropped), table.getColumnX(firstColumnTouched));
-
 					table.setStartBetweenColumnSelection(firstColumnTouched);
 					table.setEndBetweenColumnSelection(firstColumnTouched);
 
 					int droppedPercentHorizontal= MesquiteInteger.fromString(arguments, io);
 					int droppedPercentVertical= MesquiteInteger.fromString(arguments, io);
 
-					int topRow = firstRowTouched;
-					int bottomRow = rowDropped;
-					if (firstRowTouched<rowDropped){ // we've gone down;
-						topRow = firstRowTouched;
-						bottomRow = rowDropped;
-						if (firstTouchPercentVertical>60)
-							topRow++;
-						if (droppedPercentVertical<40)
-							bottomRow--;
-					}
-					else if (firstRowTouched>rowDropped){ // we've gone down;
-						topRow = rowDropped;
-						bottomRow = firstRowTouched;
-						if (firstTouchPercentVertical<40)
-							bottomRow--;
-						if (droppedPercentVertical>60)
-							topRow++;
-					}
-					if (topRow<0)
-						topRow=0;
-					if (bottomRow>=table.numRowsTotal)
-						bottomRow=table.numRowsTotal-1;
-					if (topRow<=bottomRow) {
-						table.setStartBetweenRowSelection(topRow);
-						table.setEndBetweenRowSelection(bottomRow);
+					MesquiteInteger topRow = new MesquiteInteger();
+					MesquiteInteger bottomRow = new MesquiteInteger();
+					getSplitRows(topRow, bottomRow, rowDropped, droppedPercentVertical, true);
+
+					if (topRow.isCombinable() && bottomRow.isCombinable() && topRow.getValue()<=bottomRow.getValue()) {
+						table.setStartBetweenRowSelection(topRow.getValue());
+						table.setEndBetweenRowSelection(bottomRow.getValue());
 						table.repaintAll();
 					}
 

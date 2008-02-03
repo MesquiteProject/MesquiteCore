@@ -169,7 +169,7 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 					}
 				}	else {
 					choosingNewSelection = true;
-					table.deselectAllCells(false);
+					table.deselectAll();
 					table.selectCell(firstColumnTouched, firstRowTouched);
 				}
 

@@ -290,16 +290,15 @@ timer6.end();
 			g.setColor(Color.yellow);
 			g.drawRect(x-MesquiteTable.BETWEENLINEWIDTH/2,top,MesquiteTable.BETWEENLINEWIDTH,bottom-top);
 		}
-		else
-			if (table.selectedBetweenRows()) {
-				int left = table.getColumnX(table.getStartBetweenColumnSelection()-1);
-				int right = table.getColumnX(table.getEndBetweenColumnSelection());
-				int top = table.getRowY(table.getStartBetweenRowSelection());
-				g.setColor(Color.blue);
-				g.fillRect(left,top-MesquiteTable.BETWEENLINEWIDTH/2, right-left,MesquiteTable.BETWEENLINEWIDTH);
-				g.setColor(Color.yellow);
-				g.drawRect(left,top-MesquiteTable.BETWEENLINEWIDTH/2, right-left,MesquiteTable.BETWEENLINEWIDTH);
-			}
+		else if (table.selectedBetweenRows()) {
+			int left = table.getColumnX(table.getStartBetweenColumnSelection()-1);
+			int right = table.getColumnX(table.getEndBetweenColumnSelection());
+			int top = table.getRowY(table.getStartBetweenRowSelection());
+			g.setColor(Color.blue);
+			g.fillRect(left,top-MesquiteTable.BETWEENLINEWIDTH/2, right-left,MesquiteTable.BETWEENLINEWIDTH);
+			g.setColor(Color.yellow);
+			g.drawRect(left,top-MesquiteTable.BETWEENLINEWIDTH/2, right-left,MesquiteTable.BETWEENLINEWIDTH);
+		}
 
 	}
 	/*...............................................................................................................*/
