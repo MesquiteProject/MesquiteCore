@@ -41,6 +41,7 @@ public class UndoInstructions implements Undoer {
 	public static final int ALLCHARACTERNAMES = 7;
 	public static final int PARTS_MOVED = 8;
 	public static final int PARTS_ADDED = 9;
+	public static final int DATABLOCK = 10;
 
 // ones below here are not yet supported
 	public static final int TAXA_DELETED = 11;
@@ -158,6 +159,25 @@ public class UndoInstructions implements Undoer {
 		}
 	}
 	
+	/** This is the constructor for a change to a block of the matrix. */
+	public UndoInstructions(int changeClass, Object obj, CharacterData data, int icStart, int icEnd, int itStart, int itEnd) {
+		if (obj == null)
+			return;
+		this.changeClass = changeClass;
+		this.data = data;
+
+		if (changeClass==DATABLOCK) {
+			if (data != null && obj!=null)
+				if (obj instanceof CharacterData) {
+					this.oldData = ((CharacterData)obj).cloneDataBlock(icStart,  icEnd,  itStart,  itEnd);
+					this.itStart = itStart;
+					this.itEnd = itEnd;
+					this.icStart = icStart;
+					this.icEnd = icEnd;
+				}
+		} 
+	}
+
 	public UndoInstructions(int changeClass, Object obj) {
 		if (obj == null)
 			return;
@@ -217,6 +237,9 @@ public class UndoInstructions implements Undoer {
 
 	public void setNewData(CharacterData data) {
 		this.newData = data.cloneData();
+	}
+	public void setNewDataBlock(CharacterData data,int icStart, int icEnd, int itStart, int itEnd) {
+		this.newData = data.cloneDataBlock( icStart,  icEnd,  itStart,  itEnd);
 	}
 
 	public void deleteJustAdded(Associable assoc) {
@@ -279,6 +302,11 @@ public class UndoInstructions implements Undoer {
 			newData = data.cloneData();
 			data.copyData(oldData, true);
 			return new UndoInstructions(changeClass, newData, data);
+
+		case DATABLOCK:
+			newData = data.cloneDataBlock(icStart, icEnd, itStart, itEnd);
+			data.copyDataBlock(oldData, icStart, icEnd, itStart, itEnd);
+			return new UndoInstructions(changeClass, newData, data, icStart, icEnd, itStart, itEnd);
 
 		case ALLTAXONNAMES:
 			if (taxa == null || namesList==null)

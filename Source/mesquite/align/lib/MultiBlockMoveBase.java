@@ -14,6 +14,9 @@ package mesquite.align.lib;
 	 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 
+import java.awt.Color;
+import java.awt.Graphics;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
@@ -43,7 +46,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	protected boolean currentlyMovingRight=false;
 	protected boolean optionDown = false;
 
-	protected boolean defaultCanExpand = true;
+	protected boolean defaultCanExpand = false;
 	protected MesquiteBoolean canExpand =new MesquiteBoolean(defaultCanExpand);
 
 	protected boolean defaultLiveUpdate = false;
@@ -59,6 +62,8 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	protected int firstSequenceInBlock;
 	protected int lastSequenceInBlock;
 	protected int currentMoveFromOriginal = 0;
+
+	protected long pendingCommandsIDLimit = 0;
 
 	/*.................................................................................................................*/
 	protected void addBasicMultiSequenceMenuItems() {
@@ -113,8 +118,8 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	protected void stopMoving() {
 		currentlyMoving = false;
-//		table.clearBetweenColumnSelection();
 		table.repaintAll();
+		undoReference = null;
 	}
 	/*.................................................................................................................*/
 	public void addCharactersToBlocks(int added, boolean toStart) {
@@ -135,13 +140,18 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 
 	/*.................................................................................................................*/
 	public boolean prepareToMoveMultiSequences() {
+
 		getFirstAndLastSequences();
 		currentMoveFromOriginal = 0;
 		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock);
+		if (!canExpand.getValue())
+			undoReference = new UndoReference(data,this,0,data.getNumChars(), firstSequenceInBlock,lastSequenceInBlock);
+		else
+			undoReference = new UndoReference(data,this);
 		resetBlocks();
 		previousPercentHorizontal = firstTouchPercentHorizontal;
 
-		if (!findBlocks())
+		if (!findBlocks()) 
 			return false;
 
 
@@ -151,12 +161,14 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		return true;
 	}
 	/*.................................................................................................................*/
+	protected void redrawTable() {
+	}
+	/*.................................................................................................................*/
 	public boolean attemptBlockMove(int candidateMovement) {
 		if (currentBlock==null) 
 			return false;
 		if (candidateMovement !=0) {  // move it over from previous position by this amount; at least, that is the request
 			int distanceToMove = currentBlock.movementAllowed(candidateMovement, canExpand.getValue());
-
 			if (distanceToMove!=0) {
 				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, firstSequenceInBlock, lastSequenceInBlock, canExpand.getValue(), false, true, false,dataChanged);
 				if (added<0){ //now start adjusting all the values as we may have added taxa at the start of the matrix
@@ -176,9 +188,11 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 
 				currentMoveFromOriginal += distanceToMove;
 
-				table.redrawBlock(MesquiteInteger.minimum(currentBlock.getPreviousFirstCharInBlock(),currentBlock.getCurrentFirstCharInBlock()) , firstSequenceInBlock, MesquiteInteger.maximum(currentBlock.getPreviousLastCharInBlock(),currentBlock.getCurrentLastCharInBlock()), lastSequenceInBlock);
+				redrawTable();
 
 				currentBlock.transferCurrentToPrevious();
+				pendingCommandsIDLimit = PendingCommand.numInstances;
+				MesquiteCommand.deleteSpecifiedCommands(0, pendingCommandsIDLimit, this, "moveDragCell");
 			}
 		}
 
@@ -207,19 +221,73 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	}
 	/*.................................................................................................................*/
 	public boolean moveMultiSequences() {
-		((CategoricalData)data).examineCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock, "Bad checksum!", warnCheckSum, originalCheckSum);
+		boolean success = ((CategoricalData)data).examineCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock, "WARNING! The data have been altered inappropriately by this tool! The changes you have made will be undone.", warnCheckSum, originalCheckSum);
 		if (dataChanged.getValue()) {
-			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-			data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
+			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, null, undoReference));
+			data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));  //TODO: have undo for linked?  or is this automatically taken care of?
+		}
+		if (!success){
+			if (undoReference!=null) {
+				Undoer undoer = undoReference.getUndoer();
+				if (undoer!=null)
+					undoer.undo();
+			}
 		}
 		stopMoving();
 		return true;
 	}
 
-
+	UndoReference undoReference = null;
+	/*.................................................................................................................*/
+	public abstract boolean mouseDown();
+	/*.................................................................................................................*/
+	public abstract boolean mouseDragged(int columnDragged, int rowDragged,	int percentHorizontal, int percentVertical);
+	/*.................................................................................................................*/
+	public abstract boolean mouseDropped(int columnDropped, int rowDropped,	int percentHorizontal, int percentVertical);
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Toggles whether live update is active", "[on = live update; off]", commandName, "toggleLiveUpdate")) {
+		if (checker.compare(this.getClass(), "Touched.", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "moveTouchCell")) {
+			if (table!=null && data !=null){
+				optionDown = arguments.indexOf("option")>=0;
+				MesquiteInteger io = new MesquiteInteger(0);
+				firstColumnTouched= MesquiteInteger.fromString(arguments, io);
+				firstRowTouched= MesquiteInteger.fromString(arguments, io);
+				firstTouchPercentHorizontal= MesquiteInteger.fromString(arguments, io);
+				firstTouchPercentVertical= MesquiteInteger.fromString(arguments, io);
+
+				if (!mouseDown())
+					return null;
+			}
+		}
+		else if (checker.compare(this.getClass(), "Dragging", "[column dragged] [row dragged] [percent horizontal] [percent vertical] [modifiers]", commandName, "moveDragCell")) {
+			if (table!=null && data !=null){
+				MesquiteInteger io = new MesquiteInteger(0);
+				int columnDragged = MesquiteInteger.fromString(arguments, io);
+				int rowDragged= MesquiteInteger.fromString(arguments, io);
+				int percentHorizontal= MesquiteInteger.fromString(arguments, io);
+				int percentVertical= MesquiteInteger.fromString(arguments, io);
+
+				if (!mouseDragged (columnDragged, rowDragged, percentHorizontal, percentVertical)) {
+					//undoReference = null;
+					return null;
+				}
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Dropping.", "[column dropped] [row dropped] [percent horizontal] [percent vertical] [modifiers]", commandName, "moveDropCell")) {
+			if (table!=null && data !=null && (firstColumnTouched>=0)&& (firstRowTouched>=0)){
+				MesquiteInteger io = new MesquiteInteger(0);
+				int columnDropped = MesquiteInteger.fromString(arguments, io);
+				int rowDropped= MesquiteInteger.fromString(arguments, io);
+				int droppedPercentHorizontal= MesquiteInteger.fromString(arguments, io);
+				int droppedPercentVertical= MesquiteInteger.fromString(arguments, io);
+				if (!mouseDropped (columnDropped, rowDropped, droppedPercentHorizontal, droppedPercentVertical))
+					//undoReference = null;
+				return null;
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Toggles whether live update is active", "[on = live update; off]", commandName, "toggleLiveUpdate")) {
 			liveUpdate.toggleValue(parser.getFirstToken(arguments));
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether the matrix is allowed to expand if one attempts to move a block beyond the edges of the matrix.", "[on = canExpand; off]", commandName, "toggleCanExpand")) {

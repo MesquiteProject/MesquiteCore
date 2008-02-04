@@ -12,6 +12,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
+import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
+
 public class UndoReference {
 	
 	Undoer undoer;
@@ -19,6 +22,21 @@ public class UndoReference {
 	
 	public UndoReference() {
 	}
+	
+	public UndoReference(CharacterData data, MesquiteModule responsibleModule) {
+		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+		undoInstructions.setNewData(data);
+		setUndoer(undoInstructions);
+		setResponsibleModule(responsibleModule);
+	}
+
+	public UndoReference(CharacterData data, MesquiteModule responsibleModule, int icStart, int icEnd, int itStart, int itEnd) {
+		UndoInstructions undoInstructions = new UndoInstructions (UndoInstructions.DATABLOCK, data, data, icStart,icEnd, itStart, itEnd);
+		//undoInstructions.setNewData(data);
+		setUndoer(undoInstructions);
+		setResponsibleModule(responsibleModule);
+	}
+
 
 	public UndoReference(Undoer undoer, MesquiteModule responsibleModule) {
 		this.undoer = undoer;

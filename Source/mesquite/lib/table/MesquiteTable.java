@@ -3897,6 +3897,53 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
+	/** returns true iff the column and row are within the bounds of the specified block */
+	public boolean cellInBlock(int column, int row, int firstColumn, int firstRow, int lastColumn, int lastRow) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || !rowLegal(firstRow) || !rowLegal(lastRow))
+			return false;
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		int r1 = MesquiteInteger.minimum(firstRow, lastRow);
+		int r2 = MesquiteInteger.maximum(firstRow, lastRow);
+		return ((column >= c1) && (column <=c2) && (row >= r1) && (row <= r2)) ;
+	}
+	/* ............................................................................................................... */
+	/** Redraws cells in old and new blocks */
+	public void redrawOldAndNewBlocks(int firstColumnOld, int firstRowOld, int lastColumnOld, int lastRowOld, int firstColumn, int firstRow, int lastColumn, int lastRow, boolean considerAndMoveSelection) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || !rowLegal(firstRow) || !rowLegal(lastRow))
+			return;
+		if (!columnLegal(firstColumnOld) || !columnLegal(lastColumnOld) || !rowLegal(firstRowOld) || !rowLegal(lastRowOld))
+			return;
+		int c1old = MesquiteInteger.minimum(firstColumnOld, lastColumnOld);
+		int c2old = MesquiteInteger.maximum(firstColumnOld, lastColumnOld);
+		int r1old = MesquiteInteger.minimum(firstRowOld, lastRowOld);
+		int r2old = MesquiteInteger.maximum(firstRowOld, lastRowOld);
+		
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		int r1 = MesquiteInteger.minimum(firstRow, lastRow);
+		int r2 = MesquiteInteger.maximum(firstRow, lastRow);
+		
+		for (int row = r1old; row <= r2old; row++)
+			for (int column = c1old; column <= c2old; column++) {
+				if ((column < c1) || (column > c2) || (row < r1) || (row > r2)) { // not in block
+					if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,r1,c2,r2)) {
+						if (considerAndMoveSelection)
+							deselectCell(column, row);
+						redrawCell(column, row);
+					}
+				}
+			}
+		for (int i = c1; i <= c2; i++)
+			for (int j = r1; j <= r2; j++) {
+				if (considerAndMoveSelection)
+					cellsSelected[0].setBit(j * numColumnsTotal + i);
+				redrawCell(i, j);
+
+			}
+	}
+
+	/* ............................................................................................................... */
 	/** Selects column.; DOES NOT UPDATE ASSOCIABLE */
 	public void selectColumn(int column) {
 		if (columnLegal(column))
@@ -4918,9 +4965,21 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (scrollThread !=null)
 			scrollThread.abortThread();
 	}
+	/* ............................................................................................................... */
+	public void suppressAutoscroll() {
+		if (scrollThread !=null)
+			scrollThread.setSuppressed(true);
+	}
+	/* ............................................................................................................... */
+	public void allowAutoscroll() {
+		if (scrollThread !=null)
+			scrollThread.setSuppressed(false);
+	}
 
 	/* ............................................................................................................... */
 	public boolean checkForAutoScroll(MousePanel panel, int x, int y) {
+		if (scrollThread ==null ||  !scrollThread.active())
+			return false;
 		boolean scrolled = false;
 		if (MesquiteInteger.isCombinable(y))
 			if (y<=AUTOSCROLLBOUNDARY && getFirstRowVisible()>0) {

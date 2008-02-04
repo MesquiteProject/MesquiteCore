@@ -112,7 +112,8 @@ public class CellBlock {
 				return candidateMovement;
 			if ((-candidateMovement)<=availableLeftMovement())  // it is acceptable
 				return candidateMovement;
-			return availableLeftMovement();
+//Debugg.println("  (in movementAllowed) availableLeftMovement(): " + availableLeftMovement()+ ", candidateMovement: " + candidateMovement );
+			return -availableLeftMovement();
 		}
 		if (candidateMovement>0){  // move to right
 			if (canExpand & isRight & atEdgeRight)
