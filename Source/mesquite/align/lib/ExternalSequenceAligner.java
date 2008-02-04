@@ -36,9 +36,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public static int runs = 0;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		loadPreferences();
 		rng = new Random(System.currentTimeMillis());
 		programOptions = getDefaultProgramOptions();
+		loadPreferences();
 		return true;
 	}
 	public abstract String getProgramCommand();
