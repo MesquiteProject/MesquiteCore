@@ -5037,6 +5037,18 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
+	/** Scrolls to the specified cell. */
+	public void scrollToColumn(int column) {
+		if (horizScroll != null  && (column<getFirstColumnVisible() || column>getLastColumnVisible()))
+			setFirstColumnVisible(column-1);
+	}
+	/* ............................................................................................................... */
+	/** Scrolls to the specified cell. */
+	public void scrollToRow(int row) {
+		if (vertScroll != null  && (row<getFirstRowVisible() || row>getLastRowVisible()))
+			setFirstRowVisible(row-1);
+	}
+	/* ............................................................................................................... */
 	/** resets the value of the horizontal scroll to be current value plus value. */
 	public void shiftHorizScroll(int value) {
 		if (horizScroll != null)

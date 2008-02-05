@@ -46,6 +46,8 @@ public class MesquiteTool implements Listable, Explainable, ImageOwner, KeyListe
 	protected Object initiator;
 	protected boolean enabled=true;
 	protected boolean onlyWorksWhereSpecified = false;
+	protected boolean hasTemporaryOptionCursor = false;
+	protected boolean hasTemporaryShiftCursor = true;
 	
 	public MesquiteTool (Object initiator, String name, String imageDirectoryPath, String imageFileName, int hotX, int hotY, String fullDescription, String explanation) {
 		if (initiator !=null)
@@ -313,5 +315,21 @@ public class MesquiteTool implements Listable, Explainable, ImageOwner, KeyListe
 
 	public void setOnlyWorksWhereSpecified(boolean onlyWorksWhereSpecified) {
 		this.onlyWorksWhereSpecified = onlyWorksWhereSpecified;
+	}
+
+	public boolean hasTemporaryOptionCursor() {
+		return hasTemporaryOptionCursor;
+	}
+
+	public void setHasTemporaryOptionCursor(boolean hasTemporaryOptionCursor) {
+		this.hasTemporaryOptionCursor = hasTemporaryOptionCursor;
+	}
+
+	public boolean hasTemporaryShiftCursor() {
+		return hasTemporaryShiftCursor;
+	}
+
+	public void setHasTemporaryShiftCursor(boolean hasTemporaryShiftCursor) {
+		this.hasTemporaryShiftCursor = hasTemporaryShiftCursor;
 	}
 }

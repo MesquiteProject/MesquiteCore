@@ -391,6 +391,8 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	public class MultiBlockTool extends TableTool {
 		MesquiteCursor crossHairCursor=null;
 		MesquiteCursor optionEdgeCursor=null;
+		MesquiteCursor shiftLeftCursor = null;
+		MesquiteCursor shiftRightCursor = null;
 
 
 		public MultiBlockTool (Object initiator, String name, String imageDirectoryPath, String imageFileName, int hotX, int hotY, String extraImageFileName, int extraHotX, int extraHotY, String fullDescription, String explanation, MesquiteCommand touchedCommand, MesquiteCommand dragCommand, MesquiteCommand droppedCommand) {
@@ -398,8 +400,12 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			this.initiator = initiator;
 			this.name = name;
 			setDeselectIfOutsideOfCells(true);
+			setHasTemporaryOptionCursor(true);
+			setHasTemporaryShiftCursor(true);
 
 			crossHairCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, extraImageFileName, extraHotX, extraHotY);
+			shiftLeftCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, "scrollerLeft.gif", extraHotX, extraHotY);
+			shiftRightCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, "scrollerRight.gif", extraHotX, extraHotY);
 		}
 		public void setOptionEdgeCursor(String extraImageFileName, int extraHotX, int extraHotY) {
 			optionEdgeCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, extraImageFileName, extraHotX, extraHotY);
@@ -409,7 +415,15 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		}
 
 		public void cursorInCell(int modifiers, int column, int row, int regionInCellH, int regionInCellV, EditorPanel panel){
-			if (table.inBetweenSelection(column, row, regionInCellH, regionInCellV))  {
+			if (MesquiteEvent.shiftKeyDown(modifiers)) {
+				if (MesquiteEvent.optionKeyDown(modifiers)) {
+					if (shiftLeftCursor!=null)
+						setCurrentOptionCursor(shiftLeftCursor);
+				}
+				if (shiftRightCursor!=null)
+					setCurrentStandardCursor(shiftRightCursor);
+			}
+			else if (table.inBetweenSelection(column, row, regionInCellH, regionInCellV))  {
 				setCurrentStandardCursor(null);
 				if (optionCursor!=null)
 					setCurrentOptionCursor(optionCursor);

@@ -244,23 +244,48 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	public abstract boolean mouseDragged(int columnDragged, int rowDragged,	int percentHorizontal, int percentVertical);
 	/*.................................................................................................................*/
 	public abstract boolean mouseDropped(int columnDropped, int rowDropped,	int percentHorizontal, int percentVertical);
+
+	boolean shiftingMatrix = false;
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Touched.", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "moveTouchCell")) {
 			if (table!=null && data !=null){
+				shiftingMatrix=false;
 				optionDown = arguments.indexOf("option")>=0;
+				boolean shiftDown = arguments.indexOf("shift")>=0;
 				MesquiteInteger io = new MesquiteInteger(0);
 				firstColumnTouched= MesquiteInteger.fromString(arguments, io);
 				firstRowTouched= MesquiteInteger.fromString(arguments, io);
 				firstTouchPercentHorizontal= MesquiteInteger.fromString(arguments, io);
 				firstTouchPercentVertical= MesquiteInteger.fromString(arguments, io);
 
-				if (!mouseDown())
+				if (shiftDown) {
+					if (data.isInapplicable(firstColumnTouched, firstRowTouched)) {
+						if (optionDown) {
+							for (int ic = firstColumnTouched-1; ic>=0; ic--) {
+								if (!data.isInapplicable(ic, firstRowTouched)) {
+									shiftingMatrix = true;
+									table.scrollToColumn(ic);
+									break;
+								}
+							}
+						} else {
+							for (int ic = firstColumnTouched+1; ic<table.numColumnsTotal; ic++) {
+								if (!data.isInapplicable(ic, firstRowTouched)) {
+									shiftingMatrix = true;
+									table.scrollToColumn(ic);
+									break;
+								}
+							}
+						}
+					}
+				}
+				else if (!mouseDown())
 					return null;
 			}
 		}
 		else if (checker.compare(this.getClass(), "Dragging", "[column dragged] [row dragged] [percent horizontal] [percent vertical] [modifiers]", commandName, "moveDragCell")) {
-			if (table!=null && data !=null){
+			if (table!=null && data !=null && !shiftingMatrix){
 				MesquiteInteger io = new MesquiteInteger(0);
 				int columnDragged = MesquiteInteger.fromString(arguments, io);
 				int rowDragged= MesquiteInteger.fromString(arguments, io);
@@ -275,7 +300,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Dropping.", "[column dropped] [row dropped] [percent horizontal] [percent vertical] [modifiers]", commandName, "moveDropCell")) {
-			if (table!=null && data !=null && (firstColumnTouched>=0)&& (firstRowTouched>=0)){
+			if (table!=null && data !=null && (firstColumnTouched>=0)&& (firstRowTouched>=0) && !shiftingMatrix){
 				MesquiteInteger io = new MesquiteInteger(0);
 				int columnDropped = MesquiteInteger.fromString(arguments, io);
 				int rowDropped= MesquiteInteger.fromString(arguments, io);
@@ -283,7 +308,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 				int droppedPercentVertical= MesquiteInteger.fromString(arguments, io);
 				if (!mouseDropped (columnDropped, rowDropped, droppedPercentHorizontal, droppedPercentVertical))
 					//undoReference = null;
-				return null;
+					return null;
 
 			}
 		}
