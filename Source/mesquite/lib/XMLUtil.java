@@ -99,7 +99,7 @@ public class XMLUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static void readXMLPreferences(MesquiteModule module, String contents) {
+	public static void readXMLPreferences(MesquiteModule module, XMLPreferencesProcessor xmlPrefProcessor, String contents) {
 		Element root = getRootXMLElementFromString("mesquite",contents);
 		if (root==null)
 			return;
@@ -112,7 +112,7 @@ public class XMLUtil {
 				int version = MesquiteInteger.fromString(element.elementText("version"));
 				boolean acceptableVersion = (module.getXMLPrefsVersion()==version || !module.xmlPrefsVersionMustMatch());
 				if (acceptableVersion) 
-					processPreferencesFromXML(module, element);
+					processPreferencesFromXML(xmlPrefProcessor, element);
 				else
 					return;
 			}
@@ -120,12 +120,12 @@ public class XMLUtil {
 	}
 	
 	/*.................................................................................................................*/
-	public static void processPreferencesFromXML ( MesquiteModule module, Element element) {
+	public static void processPreferencesFromXML ( XMLPreferencesProcessor xmlPrefProcessor, Element element) {
 
 		List prefElement = element.elements();
 		for (Iterator iter = prefElement.iterator(); iter.hasNext();) {   // this is going through all of the notices
 			Element messageElement = (Element) iter.next();
-			module.processSingleXMLPreference(messageElement.getName(), messageElement.getText());
+			xmlPrefProcessor.processSingleXMLPreference(messageElement.getName(), messageElement.getText());
 		}
 		
 	}
