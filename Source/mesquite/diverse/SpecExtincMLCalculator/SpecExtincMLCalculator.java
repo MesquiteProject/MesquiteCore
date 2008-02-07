@@ -322,20 +322,27 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 	MesquiteDouble tempMu = new MesquiteDouble();
 	long count = 0;
 	/*.................................................................................................................*/
-	boolean anyNegative(double[] params){
+	boolean anyNegativeOrUncombinable(double[] params){
 		if (params == null)
 			return false;
-		for (int i=0; i<params.length; i++)
+		for (int i=0; i<params.length; i++) {
 			if (params[i]<0)
 				return true;
+			else if (!MesquiteDouble.isCombinable(params[i]))
+					return true;
+		}
 		return false;
 	}
 	/*.................................................................................................................*/
 	public double evaluate(double[] params, Object bundle){
-		if (anyNegative(params))
+		if (anyNegativeOrUncombinable(params))
 			return 1e100;
-		if (params.length == 2)
-			return logLike((Tree)((Object[])bundle)[0], params[0], params[1]);
+		if (params.length == 2) {
+			double result = logLike((Tree)((Object[])bundle)[0], params[0], params[1]);
+			if (count++ % 10 == 0)
+				CommandRecord.tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + "  lambda " + params[0] + " mu " + params[1]);
+			return result;
+		}
 		final Object[] b = ((Object[])bundle);
 		Tree tree = (Tree)b[0];
 		MesquiteDouble lambda = (MesquiteDouble)b[1];
@@ -351,7 +358,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result > 1e100)
 			result = 1e100;
 		if (count++ % 10 == 0)
-			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + "  lambda " + lambda + " mu " + mu);
+			CommandRecord.tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + "  lambda " + lambda + " mu " + mu);
 		return result;
 	}
 	/*.................................................................................................................*/
@@ -362,6 +369,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		Tree tree = (Tree)b[0];
 		MesquiteDouble lambda = (MesquiteDouble)b[1];
 		MesquiteDouble mu = (MesquiteDouble)b[2];
+		
 		double result = 0;
 		if (lambda.isUnassigned())
 			result = logLike(tree, param.getValue(), mu.getValue());
@@ -372,7 +380,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 		if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result > 1e100)
 			result = 1e100;
 		if (count++ % 10 == 0)
-			CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + "  lambda " + lambda + " mu " + mu);
+			CommandRecord.tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + "  lambda " + lambda + " mu " + mu);
 		return result;
 	}
 
@@ -410,6 +418,7 @@ public class SpecExtincMLCalculator extends MesquiteModule implements Parameters
 			final Object[] bundle = new Object[] {tree, lambda, mu};
 			if (lambda.isUnassigned() && mu.isUnassigned()){ //both unassigned
 				double[] suggestions = new double[]{1, 1};
+				logln("Sp/Ext: Estimating parameters");
 				negLogLikelihood = opt.optimize(suggestions, bundle);
 				lambda.setValue(suggestions[0]);
 				mu.setValue(suggestions[1]);

@@ -773,7 +773,9 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result >= 1e100)
             result = 1e100 + 1e99*badCount++;
         if (count++ % 10 == 0)
-            CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + " params " + MesquiteParameter.toString(params));
+            CommandRecord.tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + " params " + MesquiteParameter.toString(params));
+        if (count % 1000 == 0)
+            logln("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + " param " + MesquiteParameter.toString(oneParam));
         return result;
     }
     /*.................................................................................................................*/
@@ -792,8 +794,10 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result > 1e100)
             result = 1e100 + 1e99*badCount++;
         if (count++ % 10 == 0)
-            CommandRecord.getRecSIfNull().tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + " param " + MesquiteParameter.toString(oneParam));
-        return result;
+            CommandRecord.tick("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + " param " + MesquiteParameter.toString(oneParam));
+        if (count % 1000 == 0)
+            logln("Evaluating: -log likelihood " + MesquiteDouble.toStringDigitsSpecified(result, 4) + " param " + MesquiteParameter.toString(oneParam));
+       return result;
     }
     /*.................................................................................................................*/
     double[] freq = new double[2];
