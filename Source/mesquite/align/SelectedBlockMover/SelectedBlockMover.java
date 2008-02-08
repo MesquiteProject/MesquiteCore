@@ -69,10 +69,6 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 			temp.addLine("toggleWholeSequences " + selectWholeSequences.toOffOnString());
 	}
 	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return true;
-	}
-	/*.................................................................................................................*/
 	public void setOptionTools(){
 	}
 	/*.................................................................................................................*/
@@ -218,6 +214,14 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Moves selected blocks of multiple sequences." ;
+	}
+	/*.................................................................................................................*/
+   	public boolean isPrerelease(){
+   		return true;  
+   	}
+	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
 	}
 
 

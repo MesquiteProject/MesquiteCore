@@ -67,10 +67,6 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			temp.addLine("toggleAllOnSide " + moveWholeSequenceOnOneSide.toOffOnString());
 	}
 	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return true;
-	}
-	/*.................................................................................................................*/
 	public void setOptionTools(){
 	}
 	/*.................................................................................................................*/
@@ -381,6 +377,14 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Splits blocks of multiple sequences." ;
+	}
+	/*.................................................................................................................*/
+   	public boolean isPrerelease(){
+   		return true;  
+   	}
+	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
 	}
 
 
