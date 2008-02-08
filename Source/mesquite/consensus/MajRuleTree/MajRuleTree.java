@@ -48,7 +48,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	}
 	/*.................................................................................................................*/
  	public double consensusFrequencyLimit() {
- 		return 0.5;
+ 		return 1.0;
  	}
 
 }

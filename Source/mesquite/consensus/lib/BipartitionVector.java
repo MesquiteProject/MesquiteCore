@@ -118,27 +118,25 @@ public class BipartitionVector extends Vector {
 		return bpv;
 	}
 
-	public boolean compatible(Bipartition bp, Bits bits){
-		bits1.setBits(bp.getBits());
-		bits2.setBits(bits);
-		bits1.andBits(bits2);
+	public boolean compatible(Bits a, Bits b){
+		bits1.setBits(a);
+		bits2.setBits(b);
+		bits1.andBits(bits2);   // intersection of bits1 and bits2
 		if (bits1.anyBitsOn()){   // intersection has something in it
-			bits1.setBits(bp.getBits());
+			bits1.setBits(a);
 			bits1.invertAllBits();
 			bits1.andBits(bits2);  // intersection of bits1 complement and bits2
-			if (bits1.anyBitsOn()){   // intersection has something in it
-				bits1.setBits(bp.getBits());
+			if (bits1.anyBitsOn()){   
+				bits1.setBits(a);
 				bits2.invertAllBits();
 				bits1.andBits(bits2);  // intersection of bits2 complement and bits1
 				if (bits1.anyBitsOn()){   // intersection has something in it
-					bits1.setBits(bp.getBits());
+					bits1.setBits(a);
 					bits1.invertAllBits();
-					bits2.invertAllBits();
 					bits1.andBits(bits2);  // intersection of bits2 complement and bits1 complement
-					if (bits1.anyBitsOn())   // intersection has something in it
-							return false;
+					if (bits1.anyBitsOn())  
+							return false;   // all 4 pattern exist, must be incompatible
 				}
-
 			}
 		}
 		return true;
@@ -158,7 +156,7 @@ public class BipartitionVector extends Vector {
 				int identical = -1;
 				for (int i=size()-1; i>=0; i--){
 					Bipartition stored = getBipart(i);
-					if (compatible(stored,bits)){ //then we are ok
+					if (compatible(stored.getBits(),bits)){ //then we are ok
 						if (stored.equals(bits, rooted))  // record this in case we need to delete it later
 							identical=i;
 					} else {
@@ -188,9 +186,6 @@ public class BipartitionVector extends Vector {
 			return null;
 		}
 	}
-
-
-
 
 	private void getPartitions(Tree tree, int node){
 		if (tree.nodeIsTerminal(node)){
