@@ -19,10 +19,9 @@ import mesquite.consensus.lib.*;
 
 
 /* ======================================================================== */
-/** Does tree consensus .*/
+/** Does majority rule consensus .*/
 
-public class MajRuleTree extends IncrementalConsenser   {
-	BipartitionVector bipartitions;
+public class MajRuleTree extends BasicTreeConsenser   {
 	public String getName() {
 		return "Majority Rules Consensus";
 	}
@@ -34,14 +33,15 @@ public class MajRuleTree extends IncrementalConsenser   {
 		bipartitions = new BipartitionVector();
 		return true;
 	}
-	/*.................................................................................................................*/
-  	public void reset(Taxa taxa){
-		bipartitions.removeAllElements();
-		bipartitions.setTaxa(taxa);
-	}
   	public void addTree(Tree t){
 		bipartitions.addTree(t);
 	}
+	/*.................................................................................................................*/
+ 	public void initialize() {
+ 		if (bipartitions!=null)
+ 			bipartitions.setMode(BipartitionVector.MAJRULEMODE);
+ 	}
+
  	public Tree getConsensus(){
 		Tree t = bipartitions.makeTree(consensusFrequencyLimit());
 		return t;
@@ -51,27 +51,4 @@ public class MajRuleTree extends IncrementalConsenser   {
  		return 0.5;
  	}
 
-	/*.................................................................................................................*/
-	//ASSUMES TREES HAVE ALL THE SAME TAXA
-	/*.................................................................................................................*/
-	public Tree consense(Trees list){
-		MesquiteTimer timer = new MesquiteTimer();
-		timer.start();
-		Taxa taxa = list.getTaxa();
-		// clean bipartition table
-		bipartitions.removeAllElements();
-		bipartitions.setTaxa(taxa);
-		for (int iTree = 0; iTree < list.size(); iTree++){
-			bipartitions.addTree(list.getTree(iTree));
-		}
-		bipartitions.dump();
-		
-		//First, go through the trees accumulating the bipartition table
-		Tree t = bipartitions.makeTree(consensusFrequencyLimit());
-		double time = 1.0*timer.timeSinceLast()/1000.0;
-		logln("" + list.size() + " trees processed in " + time + " seconds");
-		return t;
-	}
-
 }
-
