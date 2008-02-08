@@ -171,7 +171,7 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		if (choosingNewSelection) {
 			if (rowDropped == table.getMatrixPanel().BEYONDMATRIX) rowDropped = table.numRowsTotal-1;
 			if (rowDropped<0) rowDropped=0;
-		} else {
+		} else if (!currentlyMoving){
 			table.deselectAllNotify();
 		}
 		if (!table.rowLegal(rowDropped)|| !table.columnLegal(columnDropped))
@@ -186,9 +186,11 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 			int lastColumn = MesquiteInteger.maximum(firstColumnTouched, columnDropped);
 			int firstRow = MesquiteInteger.minimum(firstRowTouched, rowDropped);
 			int lastRow = MesquiteInteger.maximum(firstRowTouched, rowDropped);
-			currentBlock.getCellBlock(firstColumn, lastColumn, firstRow, lastRow, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequence(), wholeSequence(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
-			table.selectBlock(firstInBlock.getValue(),firstRowTouched, lastInBlock.getValue(), rowDropped);
-			table.repaintAll();
+			if (!data.isInapplicable(firstColumn, firstRow) && !data.isInapplicable(lastColumn, lastRow)) {
+				currentBlock.getCellBlock(firstColumn, lastColumn, firstRow, lastRow, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequence(), wholeSequence(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
+				table.selectBlock(firstInBlock.getValue(),firstRowTouched, lastInBlock.getValue(), rowDropped);
+				table.repaintAll();
+			}
 
 			choosingNewSelection=false;
 		} else if (currentlyMoving){
