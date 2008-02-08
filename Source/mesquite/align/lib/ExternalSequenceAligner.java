@@ -199,7 +199,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				programPath+=MesquiteFile.fileSeparator;
 			pleaseStorePref = true;
 		}
-		mesquiteTrunk.incrementProjectBrowserRefreshSuppression();
+		getProject().incrementProjectWindowSuppression();
 		if (pleaseStorePref)
 			storePreferences();
 		data.setEditorInhibition(true);
@@ -298,7 +298,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			}
 			if (tempDataFile!=null)
 				tempDataFile.close();
-			mesquiteTrunk.decrementProjectBrowserRefreshSuppression();
+			getProject().decrementProjectWindowSuppression();
 			if (runs == 1)
 				deleteSupportDirectory();
 			runs--;
@@ -310,14 +310,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (runs == 1)
 			deleteSupportDirectory();
 		runs--;
-		mesquiteTrunk.decrementProjectBrowserRefreshSuppression();
+		getProject().decrementProjectWindowSuppression();
 		data.setEditorInhibition(false);
 		return null;
 	}	
 
 	/*.................................................................................................................*/
 	public boolean recoverProgramResults(MolecularData data, String outFilePath){
-		mesquiteTrunk.incrementProjectBrowserRefreshSuppression();
 
 		//reading aligned file
 		FileCoordinator coord = getFileCoordinator();
