@@ -22,6 +22,7 @@ public class BipartitionVector extends Vector {
 	boolean rooted = true;
 	int numTaxa =  0;
 	int numTreesTotal = 0;
+	double weightedTreesTotal = 0.0;
 	Bits[] nodes;
 	int princess = 0;
 	Taxa taxa;
@@ -31,6 +32,8 @@ public class BipartitionVector extends Vector {
 	public static final int MAJRULEMODE = 0;
 	public static final int STRICTMODE = 1;
 	int mode = STRICTMODE;
+	double weight = 1.0;
+	boolean useWeights = false;
 
 	public void setTaxa(Taxa taxa){
 		numTreesTotal = 0;
@@ -46,10 +49,12 @@ public class BipartitionVector extends Vector {
 	}
 	public void zeroFrequencies(){
 		numTreesTotal = 0;
+		weight=1.0;
 		allTaxa.clearAllBits();
 		for (int i=0; i<size(); i++){
 			Bipartition b = getBipart(i);
 			b.freq = 0;
+			b.freqDouble=0.0;
 		}
 	}
 	public Bipartition getBipart(int i){
@@ -58,12 +63,19 @@ public class BipartitionVector extends Vector {
 		return null;
 	}
 
+	public double getDecimalFrequency (Bipartition bp) {
+		if (useWeights)
+			return bp.freqDouble*1.0/weightedTreesTotal;
+		else
+			return bp.freq*1.0/numTreesTotal;
+	}
+
 	public void dump(){
 		sort(true);
 		MesquiteMessage.println("\nBipartition frequencies");
 		for (int i=0; i<size(); i++){
 			Bipartition stored = getBipart(i);
-			double freq = stored.freq*1.0/numTreesTotal;
+			double freq = getDecimalFrequency(stored);
 			if (freq>0.05) {
 				String s = MesquiteDouble.toPrecisionSpecifiedString(freq,3);
 				MesquiteMessage.println(stored.bits.toAsteriskString() + "   " +s);
@@ -73,11 +85,15 @@ public class BipartitionVector extends Vector {
 	}
 	public void tradeValues(int i, int j){
 		long freq1 = ((Bipartition)elementAt(i)).getFreq();
+		double freqDouble1 = ((Bipartition)elementAt(i)).getFreqDouble();
 		Bits bits1 = ((Bipartition)elementAt(i)).getBits();
 		long freq2 = ((Bipartition)elementAt(j)).getFreq();
+		double freqDouble2 = ((Bipartition)elementAt(j)).getFreqDouble();
 		Bits bits2 = ((Bipartition)elementAt(j)).getBits();
 		((Bipartition)elementAt(i)).setFreq(freq2);
 		((Bipartition)elementAt(j)).setFreq(freq1);
+		((Bipartition)elementAt(i)).setFreqDouble(freqDouble2);
+		((Bipartition)elementAt(j)).setFreqDouble(freqDouble1);
 		((Bipartition)elementAt(i)).setBits(bits2);
 		((Bipartition)elementAt(j)).setBits(bits1);
 	}
@@ -85,33 +101,43 @@ public class BipartitionVector extends Vector {
 	public void sort(boolean descending){
 		for (int i=0; i<size(); i++) {
 			for (int j= i+1; j<size(); j++) {
-				long freq1 = ((Bipartition)elementAt(i)).getFreq();
-				long freq2 = ((Bipartition)elementAt(j)).getFreq();
-				if ((freq1<freq2 && descending) || (freq1>freq2 && !descending))
-					tradeValues(i,j);
+				if (useWeights) {
+					double freq1 = ((Bipartition)elementAt(i)).getFreqDouble();
+					double freq2 = ((Bipartition)elementAt(j)).getFreqDouble();
+					if ((freq1<freq2 && descending) || (freq1>freq2 && !descending))
+						tradeValues(i,j);
+				} else {
+					long freq1 = ((Bipartition)elementAt(i)).getFreq();
+					long freq2 = ((Bipartition)elementAt(j)).getFreq();
+					if ((freq1<freq2 && descending) || (freq1>freq2 && !descending))
+						tradeValues(i,j);
+				}
 			}
 		}
 	}
 
 	/** removes all bipartitions with frequencies lower that that specified */
-	public void removeBipartitions(int lowerFrequencyLimit) {
+	public void removeBipartitions(double lowerFrequencyLimit) {
 		for (int i=size()-1; i>=0; i--) {
-			if (((Bipartition)elementAt(i)).getFreq() < lowerFrequencyLimit)
+			double freq = getDecimalFrequency((Bipartition)elementAt(i));
+			if (freq< lowerFrequencyLimit)
 				remove(i);
 		}
 
 	}
 
 	/** Returns a new BipartitionVector that contains only those Bipartitions that are in a frequency greater than or equal to the lowerFrequencyLimit */
-	public BipartitionVector getFilteredBipartitions (int lowerFrequencyLimit) {
+	public BipartitionVector getFilteredBipartitions (double lowerFrequencyLimit) {
 		BipartitionVector bpv = new BipartitionVector();
 		bpv.setTaxa(taxa);
 		for (int i=0; i<size(); i++){
 			Bipartition bp = ((Bipartition)elementAt(i));
-			if (bp.getFreq() >= lowerFrequencyLimit) {
+			double freq = getDecimalFrequency(bp);
+			if (freq >= lowerFrequencyLimit) {
 				Bipartition newbp = new Bipartition(numTaxa);
 				newbp.bits.setBits(bp.getBits());
 				newbp.setFreq(bp.getFreq());
+				newbp.setFreqDouble(bp.getFreqDouble());
 				bpv.addElement(newbp);
 			}
 		}
@@ -131,15 +157,18 @@ public class BipartitionVector extends Vector {
 				bits2.invertAllBits();
 				bits1.andBits(bits2);  // intersection of bits2 complement and bits1
 				if (bits1.anyBitsOn()){   // intersection has something in it
+					if (rooted)   // if rooted we don't need to check for the last pattern
+						return false;
 					bits1.setBits(a);
 					bits1.invertAllBits();
 					bits1.andBits(bits2);  // intersection of bits2 complement and bits1 complement
 					if (bits1.anyBitsOn())  
-							return false;   // all 4 pattern exist, must be incompatible
+						return false;   // all 4 pattern exist, must be incompatible
 				}
 			}
 		}
 		return true;
+
 	}
 
 
@@ -173,13 +202,19 @@ public class BipartitionVector extends Vector {
 				Bipartition stored = getBipart(i);
 
 				if (stored.equals(bits, rooted)){
-					stored.increment();
+					if (useWeights)
+						stored.weightedIncrement(weight);
+					else
+						stored.increment();
 					return stored;
 				}
 			}
 			Bipartition bipart = new Bipartition(numTaxa);
 			bipart.bits.setBits(bits);
-			bipart.increment();
+			if (useWeights)
+				bipart.weightedIncrement(weight);
+			else
+				bipart.increment();
 			addElement(bipart);
 			return bipart;
 		default:
@@ -204,6 +239,8 @@ public class BipartitionVector extends Vector {
 	/** adds tree to existing */
 	public void addTree(Tree tree){
 		princess = tree.firstDaughterOfNode(tree.getRoot());
+		if (tree.nodeIsPolytomous(tree.getRoot()))
+			princess=-1;  // don't worry about princess if root is a polytomy
 		for (int i= 0; i<nodes.length; i++)
 			nodes[i].clearAllBits();
 		getPartitions(tree, tree.getRoot());
@@ -212,10 +249,10 @@ public class BipartitionVector extends Vector {
 	}
 
 	NameReference freqRef = NameReference.getNameReference("consensusFrequency");
-	private void resolveByBypartition(MesquiteTree tree, Bipartition stored){
+	private void resolveByBipartition(MesquiteTree tree, Bipartition stored){
 		int newNode = tree.makeClade(stored.bits);
 		if (mode==MAJRULEMODE) {
-			double prop = stored.freq*1.0/numTreesTotal;
+			double prop = getDecimalFrequency(stored);
 			tree.setAssociatedDouble(freqRef, newNode, prop);
 			tree.setNodeLabel(MesquiteDouble.toStringDigitsSpecified(prop, 3), newNode);
 		}
@@ -225,17 +262,18 @@ public class BipartitionVector extends Vector {
 		tree.setToDefaultBush(allTaxa.numBitsOn(), false);
 		for (int i=0; i<size(); i++){
 			Bipartition stored = getBipart(i);
-			if (!rooted)
-				stored.bits.standardizeComplement(0);
+			//	if (!rooted)
+			//		stored.bits.standardizeComplement(0);
 			if (mode==STRICTMODE) {
-				resolveByBypartition(tree, stored);
+				resolveByBipartition(tree, stored);
 			} else {
+				double prop = getDecimalFrequency(stored);
 				if (minFreq==0.5) {
-					if (stored.freq*1.0/numTreesTotal>minFreq)
-						resolveByBypartition(tree, stored);
+					if (prop>minFreq)
+						resolveByBipartition(tree, stored);
 				}
-				else	if (stored.freq*1.0/numTreesTotal>=minFreq){
-					resolveByBypartition(tree, stored);
+				else	if (prop>=minFreq){
+					resolveByBipartition(tree, stored);
 				}
 			}
 		}
@@ -251,5 +289,23 @@ public class BipartitionVector extends Vector {
 	}
 	public void setMode(int mode) {
 		this.mode = mode;
+	}
+	public double getWeight() {
+		return weight;
+	}
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
+	public boolean isUseWeights() {
+		return useWeights;
+	}
+	public void setUseWeights(boolean useWeights) {
+		this.useWeights = useWeights;
+	}
+	public boolean isRooted() {
+		return rooted;
+	}
+	public void setRooted(boolean rooted) {
+		this.rooted = rooted;
 	}
 }

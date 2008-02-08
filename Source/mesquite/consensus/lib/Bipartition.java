@@ -15,20 +15,27 @@ package mesquite.consensus.lib;
 
 import mesquite.consensus.lib.Bipartition;
 import mesquite.lib.Bits;
+import mesquite.lib.MesquiteDouble;
 
 public class Bipartition {
 	 Bits bits;
+	 double freqDouble;
 	 long freq;
 	 
 	public Bipartition(int numTaxa){
 		bits = new Bits(numTaxa);
 		freq = 0;
+		freqDouble = 0.0;
 	}
 	void reset(){
 		freq = 0;
 	}
 	void increment(){
 		freq++;
+	}
+	void weightedIncrement(double weight){
+		if (MesquiteDouble.isCombinable(weight))
+			freqDouble+=weight;
 	}
 	public long getFreq(){
 		return freq;
@@ -56,5 +63,11 @@ public class Bipartition {
 			return bits.equals(b);
 
 		return bits.equals(b) || bits.equalsComplement(b);
+	}
+	public double getFreqDouble() {
+		return freqDouble;
+	}
+	public void setFreqDouble(double freqDouble) {
+		this.freqDouble = freqDouble;
 	}
 }

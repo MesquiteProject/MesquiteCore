@@ -22,6 +22,9 @@ import mesquite.consensus.lib.*;
 /** Does majority rule consensus .*/
 
 public class MajRuleTree extends BasicTreeConsenser   {
+	double frequencyLimit = 0.5;
+	MesquiteBoolean useWeights = new MesquiteBoolean(true);
+	
 	public String getName() {
 		return "Majority Rules Consensus";
 	}
@@ -33,22 +36,39 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		bipartitions = new BipartitionVector();
 		return true;
 	}
-  	public void addTree(Tree t){
+	public void addTree(Tree t){
+		if (useWeights.getValue()) {
+			MesquiteDouble md = (MesquiteDouble)((Attachable)t).getAttachment(TreesManager.WEIGHT);
+			if (md != null) {
+				if (md.isCombinable())
+					bipartitions.setWeight(md.getValue());
+				else
+					bipartitions.setWeight(1.0);
+			} else
+				bipartitions.setWeight(1.0);
+
+		}
 		bipartitions.addTree(t);
 	}
 	/*.................................................................................................................*/
- 	public void initialize() {
- 		if (bipartitions!=null)
- 			bipartitions.setMode(BipartitionVector.MAJRULEMODE);
- 	}
+	public void initialize() {
+		if (bipartitions!=null) {
+			bipartitions.setMode(BipartitionVector.MAJRULEMODE);
+		}
+	}
 
- 	public Tree getConsensus(){
+	public Tree getConsensus(){
 		Tree t = bipartitions.makeTree(consensusFrequencyLimit());
 		return t;
 	}
 	/*.................................................................................................................*/
- 	public double consensusFrequencyLimit() {
- 		return 1.0;
- 	}
+	public boolean useWeights() {
+		return useWeights.getValue();
+	}
+
+	/*.................................................................................................................*/
+	public double consensusFrequencyLimit() {
+		return frequencyLimit;
+	}
 
 }
