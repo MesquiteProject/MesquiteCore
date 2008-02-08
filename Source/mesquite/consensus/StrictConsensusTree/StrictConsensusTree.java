@@ -26,4 +26,18 @@ public class StrictConsensusTree extends BasicTreeConsenser   {
 		Tree t = bipartitions.makeTree();
 		return t;
 	}
+ 	
+	/*.................................................................................................................*/
+   	public boolean isPrerelease(){
+   		return true;  
+   	}
+	/*.................................................................................................................*/
+	public boolean isSubstantive(){
+		return true;
+	}   	 
+	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
+	}
+
 }

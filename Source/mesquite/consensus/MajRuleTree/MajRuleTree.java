@@ -70,5 +70,17 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	public double consensusFrequencyLimit() {
 		return frequencyLimit;
 	}
+	/*.................................................................................................................*/
+   	public boolean isPrerelease(){
+   		return true;  
+   	}
+	/*.................................................................................................................*/
+	public boolean isSubstantive(){
+		return true;
+	}   	 
+	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return NEXTRELEASE;  
+	}
 
 }

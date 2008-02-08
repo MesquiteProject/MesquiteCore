@@ -36,6 +36,8 @@ public class BipartitionVector extends Vector {
 	int mode = STRICTMODE;
 	double weight = 1.0;
 
+	
+
 	public void setTaxa(Taxa taxa){
 		numTreesTotal = 0;
 		this.taxa = taxa;
@@ -172,6 +174,27 @@ public class BipartitionVector extends Vector {
 
 	}
 
+/** creates and adds to the vector a Bipartition from the Bits */
+	private Bipartition simpleAddBipartition(Bits bits){
+		Bipartition bipart = new Bipartition(numTaxa);
+		bipart.bits.setBits(bits);
+		addElement(bipart);
+		return bipart;
+	}
+	/** Goes through the tree and adds all a Bipartition to the vector for each split found */
+	private void simpleGetPartitions(Tree tree, int node){
+		if (tree.nodeIsTerminal(node)){
+			nodes[node].setBit(tree.taxonNumberOfNode(node));
+			return;
+		}
+		nodes[node].clearAllBits();
+		for (int daughter=tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter) ) {
+			getPartitions(tree, daughter);
+			nodes[node].orBits(nodes[daughter]);
+		}
+		if (node != princess || rooted)
+			simpleAddBipartition(nodes[node]);
+	}
 
 	private Bipartition addBipart(Bits bits){
 		switch (mode) {
@@ -248,6 +271,22 @@ public class BipartitionVector extends Vector {
 		numTreesTotal++;
 		allTaxa.orBits(nodes[tree.getRoot()]);
 	}
+	
+	/** returns a new bipartitionVector for just for the tree passed. */
+	public static BipartitionVector getBipartitionVector(Tree tree){
+		if (tree==null)
+			return null;
+		BipartitionVector bpv = new BipartitionVector();
+		bpv.setTaxa(tree.getTaxa());
+		bpv.setRooted(tree.getRooted());
+		int princess = tree.firstDaughterOfNode(tree.getRoot());
+		if (tree.nodeIsPolytomous(tree.getRoot()))
+			princess=-1;  // don't worry about princess if root is a polytomy
+		bpv.setPrincess(princess);
+		bpv.simpleGetPartitions(tree, tree.getRoot());
+		return bpv;
+	}
+
 
 	NameReference freqRef = NameReference.getNameReference("consensusFrequency");
 	private void resolveByBipartition(MesquiteTree tree, Bipartition stored){
@@ -308,5 +347,11 @@ public class BipartitionVector extends Vector {
 	}
 	public void setRooted(boolean rooted) {
 		this.rooted = rooted;
+	}
+	public int getPrincess() {
+		return princess;
+	}
+	public void setPrincess(int princess) {
+		this.princess = princess;
 	}
 }
