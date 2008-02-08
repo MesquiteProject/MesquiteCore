@@ -20,6 +20,8 @@ import mesquite.lib.*;
 
 public class BipartitionVector extends Vector {
 	boolean rooted = true;
+	boolean useWeights = false;
+
 	int numTaxa =  0;
 	int numTreesTotal = 0;
 	double weightedTreesTotal = 0.0;
@@ -33,7 +35,6 @@ public class BipartitionVector extends Vector {
 	public static final int STRICTMODE = 1;
 	int mode = STRICTMODE;
 	double weight = 1.0;
-	boolean useWeights = false;
 
 	public void setTaxa(Taxa taxa){
 		numTreesTotal = 0;
