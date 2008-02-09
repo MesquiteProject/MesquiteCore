@@ -30,7 +30,7 @@ public class MPRProcessor {
 				assignMPRNumberArray(tree,d);
 				for (int ist = 0; ist<= CategoricalState.maxCategoricalState; ist++){
 					if (CategoricalState.isElement(nodeSet,ist)) {   // ist is in the MPR set
-						long daughterMPR = ((CategoricalHistory)history).getConditionalMPRSet(d,ist);
+						long daughterMPR = ((CategoricalHistory)history).getConditionalStateSet(d,ist);
 						long fixedNum = 0;
 						for (int e = 0; e<= CategoricalState.maxCategoricalState; e++){
 							if (CategoricalState.isElement(daughterMPR,e)) {   // e is in the MPR set
@@ -60,7 +60,7 @@ public class MPRProcessor {
 	public long getNumResolutions(Tree tree) {
 		checkArrayIntegrity(tree);
 		Long2DArray.zeroArray(numMPRsForStates);
-		if (((CategoricalHistory)history).hasConditionalMPRSets()) {
+		if (((CategoricalHistory)history).hasConditionalStateSets()) {
 			return numMPRsForNode(tree, tree.getRoot());
 		}
 		return MesquiteInteger.unassigned;
@@ -91,7 +91,7 @@ public class MPRProcessor {
 		if (node!=tree.getRoot()) {
 			long motherNodeSet = results.getState(tree.motherOfNode(node));
 			int motherNodeState = CategoricalState.getOnlyElement(motherNodeSet);
-			nodeSet = ((CategoricalHistory)history).getConditionalMPRSet(node,motherNodeState);
+			nodeSet = ((CategoricalHistory)history).getConditionalStateSet(node,motherNodeState);
 		} else
 			nodeSet = results.getState(node);
 
@@ -128,7 +128,7 @@ public class MPRProcessor {
 		long totalMPRsPerMPRInNode = totalMPRsInCladeIfFixed;
 		if (!tree.nodeIsTerminal(node)){
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-				long daughterNodeSet = ((CategoricalHistory)history).getConditionalMPRSet(d,stateOfNode);
+				long daughterNodeSet = ((CategoricalHistory)history).getConditionalStateSet(d,stateOfNode);
 				long mprsInDaughter = totalMPRsAtNodeGivenMPRSet(d,daughterNodeSet);
 
 				totalMPRsPerMPRInNode = totalMPRsPerMPRInNode/mprsInDaughter;
