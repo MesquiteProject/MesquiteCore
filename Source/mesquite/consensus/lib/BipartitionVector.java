@@ -269,6 +269,8 @@ public class BipartitionVector extends Vector {
 			nodes[i].clearAllBits();
 		getPartitions(tree, tree.getRoot());
 		numTreesTotal++;
+		if (useWeights)
+			weightedTreesTotal += getWeight();
 		allTaxa.orBits(nodes[tree.getRoot()]);
 	}
 	
