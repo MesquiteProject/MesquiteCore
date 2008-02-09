@@ -142,16 +142,17 @@ public class MPRProcessor {
 		} 
 	}
 	
+	/** Returns in results the character history that is the resolution "resolutionNumber" */
 	/*.................................................................................................................*/
-	public CharacterHistory getResolution(Tree tree, CharacterHistory results, long num) {
-		if (tree==null || num<0) 
+	public CharacterHistory getResolution(Tree tree, CharacterHistory results, long resolutionNumber) {
+		if (tree==null || resolutionNumber<0) 
 			return null;
 		long numMPRs = getNumResolutions(tree);
-		if (num>=numMPRs)
+		if (resolutionNumber>=numMPRs)
 			return null;
 		results=((CategoricalHistory)history).adjustHistorySize(tree,results);
 		history.clone(results);
-		setMPR(tree, (CategoricalHistory)results,num+1, numMPRs, tree.getRoot());
+		setMPR(tree, (CategoricalHistory)results,resolutionNumber+1, numMPRs, tree.getRoot());
 		return results;
 
 	}
