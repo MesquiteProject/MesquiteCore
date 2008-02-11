@@ -10,12 +10,14 @@ public class StrictConsensusTree extends BasicTreeConsenser   {
 	public String getName() {
 		return "Strict Consensus";
 	}
+	
 	public String getExplanation() {
 		return "Calculates the strict consensus tree." ;
 	}
   	public void addTree(Tree t){
 		bipartitions.addTree(t);
 	}
+  	
 	/*.................................................................................................................*/
  	public void initialize() {
  		if (bipartitions!=null)

@@ -1186,10 +1186,12 @@ class HennigXREAD extends HennigXDREAD {
 	public boolean readStartXDREAD(Parser parser){
 		return true;
 	}
+	
+
 	/*.................................................................................................................*/
 	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CategoricalData data){
 		if (ownerModule.isTNT())
-			data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+			data.statesIntoStringBuffer(ic, it, outputBuffer, " ", "[", "]");
 		else
 			outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']'));
 	}

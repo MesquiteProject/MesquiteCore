@@ -138,7 +138,7 @@ public class BipartitionVector extends Vector {
 			double freq = getDecimalFrequency(bp);
 			if (freq >= lowerFrequencyLimit) {
 				Bipartition newbp = new Bipartition(numTaxa);
-				newbp.bits.setBits(bp.getBits());
+				newbp.copyIntoBits(bp.getBits());
 				newbp.setFreq(bp.getFreq());
 				newbp.setFreqDouble(bp.getFreqDouble());
 				bpv.addElement(newbp);
@@ -177,7 +177,7 @@ public class BipartitionVector extends Vector {
 /** creates and adds to the vector a Bipartition from the Bits */
 	private Bipartition simpleAddBipartition(Bits bits){
 		Bipartition bipart = new Bipartition(numTaxa);
-		bipart.bits.setBits(bits);
+		bipart.copyIntoBits(bits);
 		addElement(bipart);
 		return bipart;
 	}
@@ -195,54 +195,54 @@ public class BipartitionVector extends Vector {
 		if (node != princess || rooted)
 			simpleAddBipartition(nodes[node]);
 	}
-
 	private Bipartition addBipart(Bits bits){
 		switch (mode) {
-		case STRICTMODE: 
-			if (numTreesTotal==0) {  // first tree; just add it
-				Bipartition bipart = new Bipartition(numTaxa);
-				bipart.bits.setBits(bits);
-				addElement(bipart);
-				return bipart;
-			} else {
-				boolean foundConflict = false;
-				int identical = -1;
-				for (int i=size()-1; i>=0; i--){
+			case STRICTMODE: 
+				if (numTreesTotal==0) {  // first tree; just add it
+					Bipartition bipart = new Bipartition(numTaxa);
+					bipart.copyIntoBits(bits);
+					addElement(bipart);
+					return bipart;
+				} else {
+					boolean foundConflict = false;
+					int identical = -1;
+					for (int i=size()-1; i>=0; i--){
+						Bipartition stored = getBipart(i);
+						if (compatible(stored.getBits(),bits)){ //then we are ok
+							if (stored.equals(bits, rooted))  // record this in case we need to delete it later
+								identical=i;
+						} else {
+							foundConflict=true;
+							remove(i);
+						}
+					}
+					if (foundConflict && identical>0)
+						remove(identical);
+				}
+				return null;
+				
+			case MAJRULEMODE: 
+				for (int i=0; i<size(); i++){
 					Bipartition stored = getBipart(i);
-					if (compatible(stored.getBits(),bits)){ //then we are ok
-						if (stored.equals(bits, rooted))  // record this in case we need to delete it later
-							identical=i;
-					} else {
-						foundConflict=true;
-						remove(i);
+	
+					if ( stored.equals(bits, rooted)){  //stored.potentialMatch(numBits, rooted)&&
+						if (useWeights)
+							stored.weightedIncrement(weight);
+						else
+							stored.increment();
+						return stored;
 					}
 				}
-				if (foundConflict && identical>0)
-					remove(identical);
-			}
-			return null;
-		case MAJRULEMODE: 
-			for (int i=0; i<size(); i++){
-				Bipartition stored = getBipart(i);
-
-				if (stored.equals(bits, rooted)){
-					if (useWeights)
-						stored.weightedIncrement(weight);
-					else
-						stored.increment();
-					return stored;
-				}
-			}
-			Bipartition bipart = new Bipartition(numTaxa);
-			bipart.bits.setBits(bits);
-			if (useWeights)
-				bipart.weightedIncrement(weight);
-			else
-				bipart.increment();
-			addElement(bipart);
-			return bipart;
-		default:
-			return null;
+				Bipartition bipart = new Bipartition(numTaxa);
+				bipart.copyIntoBits(bits);
+				if (useWeights)
+					bipart.weightedIncrement(weight);
+				else
+					bipart.increment();
+				addElement(bipart);
+				return bipart;
+			default:
+				return null;
 		}
 	}
 

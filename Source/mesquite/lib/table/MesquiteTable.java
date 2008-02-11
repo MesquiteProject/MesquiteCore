@@ -280,6 +280,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		marchingAnts = new TableMarchingAnts(this, getMatrixPanel().getGraphics(),  column1, row1, column2, row2);
 	}
 	/* ................................................................................................................. */
+
+	/* ................................................................................................................. */
+	
 	/**
 	 * A request for the MesquiteModule to perform a command. It is passed two strings, the name of the command and the arguments. This should be overridden by any module that wants to respond to a command.
 	 */
@@ -305,7 +308,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			else {
 				StringBuffer sb = new StringBuffer(100);
-				copyIt(sb, false, true);
+				copyCells(sb, false);
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				StringSelection ss = new StringSelection(sb.toString());
 				clip.setContents(ss, ss);
@@ -332,7 +335,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			else {
 				StringBuffer sb = new StringBuffer(100);
-				copyIt(sb, true);
+				copyCells(sb, true);
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				StringSelection ss = new StringSelection(sb.toString());
 				clip.setContents(ss, ss);
@@ -361,7 +364,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			else {
 				StringBuffer sb = new StringBuffer(100);
-				copyIt(sb, false);
+				copyCells(sb, false);
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				StringSelection ss = new StringSelection(sb.toString());
 				clip.setContents(ss, ss);
@@ -744,11 +747,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ................................................................................................................. */
 	/* ................................................................................................................. */
 	public void copyIt(StringBuffer s, boolean literal) {
-		copyIt(s, literal, true);
+		copyIt(s, literal, true, true);
 	}
 
 	/* ................................................................................................................. */
-	public void copyIt(StringBuffer s, boolean literal, boolean copyInsertTabs) {
+	public void copyIt(StringBuffer s, boolean literal, boolean copyInsertTabs, boolean copyInsertReturns) {
 		if (s == null)
 			return;
 		int count = 0;
@@ -812,12 +815,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				else
 					allSelected = false;
 			}
-			if (!firstInLine && copyInsertTabs)
+			if (!firstInLine && copyInsertReturns)
 				s.append(StringUtil.lineEnding());
 		}
 		if (allSelected && copyInsertTabs) // absolutely everyting is selected; prepend tab for corner cell
 			s.insert(0, '\t');
 
+	}
+	/* ................................................................................................................. */
+	public void copyCells(StringBuffer s, boolean literal) {
+		copyIt(s,literal,true, true);
 	}
 
 	/* ................................................................................................................. */

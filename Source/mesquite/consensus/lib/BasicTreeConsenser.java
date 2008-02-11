@@ -13,17 +13,95 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.consensus.lib;
 
 
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Label;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 
 
 public abstract class BasicTreeConsenser extends IncrementalConsenser   {
+	protected static final int ASIS=0;
+	protected static final int ROOTED =1;
+	protected static final int UNROOTED=2;
+	protected int rooting = ASIS;   // controls and preferences and snapshot should be in subclass
+
 	protected BipartitionVector bipartitions=null;
+	protected int treeNumber = 0;
+	boolean preferencesSet = false;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		bipartitions = new BipartitionVector();
+		loadPreferences();
+		if (!MesquiteThread.isScripting()) 
+			queryOptions();
 		return true;
 	}
+
+	/*.................................................................................................................*/
+	public void processMorePreferences (String tag, String content) {
+	}
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("rooting".equalsIgnoreCase(tag))
+			rooting = MesquiteInteger.fromString(content);
+		processMorePreferences(tag, content);
+		preferencesSet = true;
+	}
+	/*.................................................................................................................*/
+	public String prepareMorePreferencesForXML () {
+		return "";
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "rooting", rooting);  
+		buffer.append(prepareMorePreferencesForXML());
+		preferencesSet = true;
+		return buffer.toString();
+	}
+	
+	public void queryOptionsSetup(ExtensibleDialog dialog) {
+	}
+	/*.................................................................................................................*/
+	public void queryOptionsProcess(ExtensibleDialog dialog) {
+	}
+
+	/*.................................................................................................................*/
+	public boolean queryOptions() {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getName() + " Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel(getName() + " Options");
+		String helpString = "Please choose the options for consensus trees. ";
+
+		dialog.appendToHelpString(helpString);
+
+		queryOptionsSetup(dialog);
+
+		
+		String[] rootingStrings = {"As specified in first tree", "Rooted", "Unrooted"};
+		Choice rootingChoice  = dialog.addPopUpMenu("Rooting:", rootingStrings, 0);
+
+
+		//TextArea PAUPOptionsField = queryFilesDialog.addTextArea(PAUPOptions, 20);
+
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			queryOptionsProcess(dialog);
+			int choiceValue = rootingChoice.getSelectedIndex();
+			if (choiceValue>=0)
+				rooting = choiceValue;
+			storePreferences();
+
+		}
+		dialog.dispose();
+		return (buttonPressed.getValue()==0);
+	}
+
+	/*.................................................................................................................*/
+
 	/*.................................................................................................................*/
   	public void reset(Taxa taxa){
   		if (bipartitions==null)
@@ -39,23 +117,57 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 	/*.................................................................................................................*/
  	public void initialize() {
  	}
+	/*.................................................................................................................*/
+ 	public void afterConsensus() {
+ 	}
 
 	/*.................................................................................................................*/
 	//ASSUMES TREES HAVE ALL THE SAME TAXA
 	/*.................................................................................................................*/
 	public Tree consense(Trees list){
-		MesquiteTimer timer = new MesquiteTimer();
-		timer.start();
 		Taxa taxa = list.getTaxa();
 		
 		reset(taxa);
-		for (int iTree = 0; iTree < list.size(); iTree++){
-			addTree(list.getTree(iTree));
+		ProgressIndicator progIndicator;
+		progIndicator = new ProgressIndicator(getProject(),getName(), "", list.size(), true);
+		if (progIndicator!=null){
+			progIndicator.start();
+		}
+	//	if (MesquiteTrunk.debugMode)
+	//		logln("\n Consensus Tree Calculations");
+		MesquiteTimer timer = new MesquiteTimer();
+		timer.start();
+		for (treeNumber = 0; treeNumber < list.size(); treeNumber++){
+			if (treeNumber==0) {
+				switch (rooting) {
+				case ASIS: 
+					bipartitions.setRooted(list.getTree(0).getRooted());
+					break;
+				case ROOTED: 
+					bipartitions.setRooted(true);
+					break;
+				case UNROOTED: 
+					bipartitions.setRooted(false);
+					break;
+				}
+			}
+			addTree(list.getTree(treeNumber));
+			if (progIndicator!=null) {
+				progIndicator.setText("Processing tree " + (treeNumber+1));
+				progIndicator.spin();		
+
+			}
+			if (progIndicator.isAborted())
+				break;
+	//		if (MesquiteTrunk.debugMode)
+	//			logln(" tree: " + (treeNumber+1)+ ", bipartitions: " + bipartitions.size() + ", memory: " + MesquiteTrunk.getMaxAvailableMemory());
 		}
 		Tree t = getConsensus();
 		double time = 1.0*timer.timeSinceLast()/1000.0;
-		bipartitions.dump();
-		logln("" + list.size() + " trees processed in " + time + " seconds");
+		if (progIndicator!=null)
+			progIndicator.goAway();
+		afterConsensus();
+		logln("\n" + list.size() + " trees processed in " + time + " seconds");
 		return t;
 	}
 

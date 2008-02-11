@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.consensus.MajRuleTree;
 
 
+import java.awt.Checkbox;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.consensus.lib.*;
@@ -24,7 +26,12 @@ import mesquite.consensus.lib.*;
 public class MajRuleTree extends BasicTreeConsenser   {
 	double frequencyLimit = 0.5;
 	MesquiteBoolean useWeights = new MesquiteBoolean(true);
-	
+	Checkbox useWeightsBox;
+	Checkbox dumpTableBox;
+	boolean dumpTable = false;
+	DoubleField frequencyField;
+
+
 	public String getName() {
 		return "Majority Rules Consensus";
 	}
@@ -34,11 +41,51 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		bipartitions = new BipartitionVector();
+		loadPreferences();
+		if (!MesquiteThread.isScripting()) 
+			queryOptions();
 		return true;
 	}
+	/*.................................................................................................................*/
+	public void processMorePreferences (String tag, String content) {
+		if ("useWeights".equalsIgnoreCase(tag))
+			useWeights.setFromTrueFalseString(content);
+		else if ("frequencyLimit".equalsIgnoreCase(tag))
+			frequencyLimit = MesquiteDouble.fromString(content);
+		else if ("dumpTable".equalsIgnoreCase(tag))
+			dumpTable = MesquiteBoolean.fromTrueFalseString(content);
+	}
+	/*.................................................................................................................*/
+	public String prepareMorePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "useWeights", useWeights);  
+		StringUtil.appendXMLTag(buffer, 2, "frequencyLimit", frequencyLimit);  
+		StringUtil.appendXMLTag(buffer, 2, "dumpTable", dumpTable);  
+		return buffer.toString();
+	}
+	/*.................................................................................................................*/
+	public void queryOptionsSetup(ExtensibleDialog dialog) {
+		String helpString = "\n";
+		dialog.appendToHelpString(helpString);
+
+		useWeightsBox = dialog.addCheckBox("consider tree weights", useWeights.getValue());
+		frequencyField = dialog.addDoubleField("required frequency of clades: ", frequencyLimit, 5, 0.50, 1.00);
+		dumpTableBox = dialog.addCheckBox("write group frequency list", dumpTable);
+	}
+
+	/*.................................................................................................................*/
+	public void queryOptionsProcess(ExtensibleDialog dialog) {
+		useWeights.setValue(useWeightsBox.getState());
+		double freq = frequencyField.getValue();
+		if (MesquiteDouble.isCombinable(freq))
+			frequencyLimit=freq;
+		dumpTable = dumpTableBox.getState();
+	}
+
+
 	public void addTree(Tree t){
 		if (useWeights.getValue()) {
-			bipartitions.setUseWeights(true);
+			bipartitions.setUseWeights(useWeights.getValue());
 			MesquiteDouble md = (MesquiteDouble)((Attachable)t).getAttachment(TreesManager.WEIGHT);
 			if (md != null) {
 				if (md.isCombinable())
@@ -57,6 +104,11 @@ public class MajRuleTree extends BasicTreeConsenser   {
 			bipartitions.setMode(BipartitionVector.MAJRULEMODE);
 		}
 	}
+	/*.................................................................................................................*/
+ 	public void afterConsensus() {
+		if (dumpTable)
+			bipartitions.dump();
+ 	}
 
 	public Tree getConsensus(){
 		Tree t = bipartitions.makeTree(consensusFrequencyLimit());
@@ -72,9 +124,9 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		return frequencyLimit;
 	}
 	/*.................................................................................................................*/
-   	public boolean isPrerelease(){
-   		return true;  
-   	}
+	public boolean isPrerelease(){
+		return true;  
+	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
 		return true;

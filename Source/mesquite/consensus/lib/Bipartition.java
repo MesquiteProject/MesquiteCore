@@ -14,8 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.consensus.lib;
 
 import mesquite.consensus.lib.Bipartition;
-import mesquite.lib.Bits;
-import mesquite.lib.MesquiteDouble;
+import mesquite.lib.*;
 
 public class Bipartition {
 	 Bits bits;
@@ -46,13 +45,19 @@ public class Bipartition {
 	public Bits getBits(){
 		return bits;
 	}
+	/*....................................................................*/
+	public void copyIntoBits(Bits bits){
+		this.bits.setBits(bits);
+	}
+	/*....................................................................*/
 	public void setBits(Bits bits){
 		this.bits=bits;
 	}
-
+	/*....................................................................*/
 	void add(Bipartition b){
 		bits.orBits(b.bits);
 	}
+
 	boolean equals(Bipartition b, boolean rooted){
 		if (rooted)
 			return bits.equals(b.bits);
@@ -61,7 +66,6 @@ public class Bipartition {
 	boolean equals(Bits b,  boolean rooted){
 		if (rooted)
 			return bits.equals(b);
-
 		return bits.equals(b) || bits.equalsComplement(b);
 	}
 	public double getFreqDouble() {
