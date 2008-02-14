@@ -50,6 +50,9 @@ public class BipartitionVector extends Vector {
 		bits1 = new Bits(numTaxa);
 		bits2 = new Bits(numTaxa);
 		branchLengths = new double[numTaxa];
+		for (int i=0; i<numTaxa; i++){
+			branchLengths[i] = MesquiteDouble.unassigned;
+		}
 
 	}
 	public void zeroFrequencies(){

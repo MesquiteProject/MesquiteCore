@@ -68,10 +68,12 @@ public class Bipartition {
 		}
 	}
 	public void avgSplitLength(boolean weighted){
-		if (!weighted)
-			splitLength=splitLength/freq[0];
-		else
-			splitLength=splitLength/freqDouble;
+		if (MesquiteDouble.isCombinable(splitLength)) {
+			if (!weighted)
+				splitLength=splitLength/freq[0];
+			else
+				splitLength=splitLength/freqDouble;
+		}
 	}
 
 
