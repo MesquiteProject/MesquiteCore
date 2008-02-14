@@ -1,7 +1,39 @@
+Consensus Tree
+	BitSet
+	snaphshots?
+	WAYNE: truly incremental with TreesDirectlyFromFile
+	WAYNE: if two tree blocks, and do ConsensusTrees>Stored Tree Blocks, doesn't query for which block
+	better storage for maj rule values on branches
+	for majrule, cycle get whole bipartition vector for each tree and compare all at once?
+	order bipartition vector based upon first integer in bits
 
-
-Consensus notes
-----------------
 
 Add AverageStandardDeviation of split frequencies method to BipartitionVector
+
+
+
+
+===========
+Our code, using Bits
+
+Bembidion 545 trees
+	majrule:  1.641 seconds
+	strict:  1.567 seconds
+
+100RandomTrees (200 taxa)
+	majrule: 33.002 seconds
+	strict: 0.312 seconds
+
+
+============
+
+TSV code
+
+Bembidion 545 trees
+	majrule:  
+	strict:  
+
+100RandomTrees (200 taxa)
+	majrule: 
+	strict: 
 
