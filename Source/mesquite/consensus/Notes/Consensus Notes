@@ -1,5 +1,4 @@
 Consensus Tree
-	BitSet
 	snaphshots?
 	WAYNE: truly incremental with TreesDirectlyFromFile
 	WAYNE: if two tree blocks, and do ConsensusTrees>Stored Tree Blocks, doesn't query for which block

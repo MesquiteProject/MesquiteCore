@@ -17,31 +17,64 @@ import mesquite.consensus.lib.Bipartition;
 import mesquite.lib.*;
 
 public class Bipartition {
-	 Bits bits;
-	 double freqDouble;
-	 long freq;
-	 
+	Bits bits;
+	double freqDouble;
+	static final int numFreqs = 2;
+	long[] freq;   // have more than one in case want to split at things like avg std dev split frequencies
+	double splitLength;   // for storing branch lengths
+
+
 	public Bipartition(int numTaxa){
 		bits = new Bits(numTaxa);
-		freq = 0;
-		freqDouble = 0.0;
+		freq = new long[numFreqs];
+		reset();
 	}
 	void reset(){
-		freq = 0;
-	}
-	void increment(){
-		freq++;
+		for (int i=0;i<numFreqs; i++)
+			freq[i]=0;
+		splitLength = MesquiteDouble.unassigned;
+		freqDouble = 0.0;
 	}
 	void weightedIncrement(double weight){
 		if (MesquiteDouble.isCombinable(weight))
 			freqDouble+=weight;
 	}
+	void increment(){
+		freq[0]++;
+	}
+	void increment(int whichFreq){
+		freq[whichFreq]++;
+	}
 	public long getFreq(){
-		return freq;
+		return freq[0];
+	}
+	public long getFreq(int whichFreq){
+		return freq[whichFreq];
 	}
 	public void setFreq(long freq){
-		this.freq=freq;
+		this.freq[0]=freq;
 	}
+	public void setFreq(long freq, int whichFreq){
+		this.freq[whichFreq]=freq;
+	}
+	public double getSplitLength(){
+		return splitLength;
+	}
+	public void addToSplitLength(double length){
+		if (MesquiteDouble.isCombinable(length)) {
+			if (!MesquiteDouble.isCombinable(splitLength))
+				splitLength =0.0;
+			splitLength+= length;
+		}
+	}
+	public void avgSplitLength(boolean weighted){
+		if (!weighted)
+			splitLength=splitLength/freq[0];
+		else
+			splitLength=splitLength/freqDouble;
+	}
+
+
 	public Bits getBits(){
 		return bits;
 	}

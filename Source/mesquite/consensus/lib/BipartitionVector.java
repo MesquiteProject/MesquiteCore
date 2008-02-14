@@ -26,6 +26,7 @@ public class BipartitionVector extends Vector {
 	int numTreesTotal = 0;
 	double weightedTreesTotal = 0.0;
 	Bits[] nodes;
+	double[] branchLengths;
 	int princess = 0;
 	Taxa taxa;
 	Bits allTaxa;
@@ -36,7 +37,7 @@ public class BipartitionVector extends Vector {
 	int mode = STRICTMODE;
 	double weight = 1.0;
 
-	
+
 
 	public void setTaxa(Taxa taxa){
 		numTreesTotal = 0;
@@ -48,6 +49,7 @@ public class BipartitionVector extends Vector {
 		allTaxa = new Bits(numTaxa);
 		bits1 = new Bits(numTaxa);
 		bits2 = new Bits(numTaxa);
+		branchLengths = new double[numTaxa];
 
 	}
 	public void zeroFrequencies(){
@@ -56,9 +58,13 @@ public class BipartitionVector extends Vector {
 		allTaxa.clearAllBits();
 		for (int i=0; i<size(); i++){
 			Bipartition b = getBipart(i);
-			b.freq = 0;
-			b.freqDouble=0.0;
+			b.setFreq(0);
+			b.setFreqDouble(0.0);
 		}
+		for (int i=0; i<numTaxa; i++){
+			branchLengths[i] = MesquiteDouble.unassigned;
+		}
+
 	}
 	public Bipartition getBipart(int i){
 		if (i<size() && i>=0)
@@ -70,7 +76,7 @@ public class BipartitionVector extends Vector {
 		if (useWeights)
 			return bp.freqDouble*1.0/weightedTreesTotal;
 		else
-			return bp.freq*1.0/numTreesTotal;
+			return bp.getFreq()*1.0/numTreesTotal;
 	}
 
 	public void dump(){
@@ -174,7 +180,7 @@ public class BipartitionVector extends Vector {
 
 	}
 
-/** creates and adds to the vector a Bipartition from the Bits */
+	/** creates and adds to the vector a Bipartition from the Bits */
 	private Bipartition simpleAddBipartition(Bits bits){
 		Bipartition bipart = new Bipartition(numTaxa);
 		bipart.copyIntoBits(bits);
@@ -185,6 +191,12 @@ public class BipartitionVector extends Vector {
 	private void simpleGetPartitions(Tree tree, int node){
 		if (tree.nodeIsTerminal(node)){
 			nodes[node].setBit(tree.taxonNumberOfNode(node));
+			double length = tree.getBranchLength(node);
+			if (MesquiteDouble.isCombinable(length)) {
+				if (!MesquiteDouble.isCombinable(branchLengths[tree.taxonNumberOfNode(node)]))
+					branchLengths[tree.taxonNumberOfNode(node)] =0.0;
+				branchLengths[tree.taxonNumberOfNode(node)] += length;
+			}
 			return;
 		}
 		nodes[node].clearAllBits();
@@ -192,63 +204,73 @@ public class BipartitionVector extends Vector {
 			getPartitions(tree, daughter);
 			nodes[node].orBits(nodes[daughter]);
 		}
-		if (node != princess || rooted)
-			simpleAddBipartition(nodes[node]);
+		if (node != princess || rooted) {
+			Bipartition bp = simpleAddBipartition(nodes[node]);
+			double length = tree.getBranchLength(node);
+			if (MesquiteDouble.isCombinable(length))
+				bp.addToSplitLength(length);
+		}
 	}
 	private Bipartition addBipart(Bits bits){
 		switch (mode) {
-			case STRICTMODE: 
-				if (numTreesTotal==0) {  // first tree; just add it
-					Bipartition bipart = new Bipartition(numTaxa);
-					bipart.copyIntoBits(bits);
-					addElement(bipart);
-					return bipart;
-				} else {
-					boolean foundConflict = false;
-					int identical = -1;
-					for (int i=size()-1; i>=0; i--){
-						Bipartition stored = getBipart(i);
-						if (compatible(stored.getBits(),bits)){ //then we are ok
-							if (stored.equals(bits, rooted))  // record this in case we need to delete it later
-								identical=i;
-						} else {
-							foundConflict=true;
-							remove(i);
-						}
-					}
-					if (foundConflict && identical>0)
-						remove(identical);
-				}
-				return null;
-				
-			case MAJRULEMODE: 
-				for (int i=0; i<size(); i++){
-					Bipartition stored = getBipart(i);
-	
-					if ( stored.equals(bits, rooted)){  //stored.potentialMatch(numBits, rooted)&&
-						if (useWeights)
-							stored.weightedIncrement(weight);
-						else
-							stored.increment();
-						return stored;
-					}
-				}
+		case STRICTMODE: 
+			if (numTreesTotal==0) {  // first tree; just add it
 				Bipartition bipart = new Bipartition(numTaxa);
 				bipart.copyIntoBits(bits);
-				if (useWeights)
-					bipart.weightedIncrement(weight);
-				else
-					bipart.increment();
 				addElement(bipart);
 				return bipart;
-			default:
-				return null;
+			} else {
+				boolean foundConflict = false;
+				int identical = -1;
+				for (int i=size()-1; i>=0; i--){
+					Bipartition stored = getBipart(i);
+					if (compatible(stored.getBits(),bits)){ //then we are ok
+						if (stored.equals(bits, rooted))  // record this in case we need to delete it later
+							identical=i;
+					} else {
+						foundConflict=true;
+						remove(i);
+					}
+				}
+				if (foundConflict && identical>0)
+					remove(identical);
+			}
+			return null;
+
+		case MAJRULEMODE: 
+			for (int i=0; i<size(); i++){
+				Bipartition stored = getBipart(i);
+
+				if ( stored.equals(bits, rooted)){  //stored.potentialMatch(numBits, rooted)&&
+					if (useWeights)
+						stored.weightedIncrement(weight);
+					else
+						stored.increment();
+					return stored;
+				}
+			}
+			Bipartition bipart = new Bipartition(numTaxa);
+			bipart.copyIntoBits(bits);
+			if (useWeights)
+				bipart.weightedIncrement(weight);
+			else
+				bipart.increment();
+			addElement(bipart);
+			return bipart;
+		default:
+			return null;
 		}
 	}
 
 	private void getPartitions(Tree tree, int node){
 		if (tree.nodeIsTerminal(node)){
 			nodes[node].setBit(tree.taxonNumberOfNode(node));
+			double length = tree.getBranchLength(node);
+			if (MesquiteDouble.isCombinable(length)) {
+				if (!MesquiteDouble.isCombinable(branchLengths[tree.taxonNumberOfNode(node)]))
+					branchLengths[tree.taxonNumberOfNode(node)] =0.0;
+				branchLengths[tree.taxonNumberOfNode(node)] += length;
+			}
 			return;
 		}
 		nodes[node].clearAllBits();
@@ -256,8 +278,13 @@ public class BipartitionVector extends Vector {
 			getPartitions(tree, daughter);
 			nodes[node].orBits(nodes[daughter]);
 		}
-		if (node != princess || rooted)
-			addBipart(nodes[node]);
+		if (node != princess || rooted) {
+			Bipartition bp = addBipart(nodes[node]);
+			double length = tree.getBranchLength(node);
+			if (bp!=null && MesquiteDouble.isCombinable(length))
+				bp.addToSplitLength(length);
+
+		}
 	}
 
 	/** adds tree to existing */
@@ -273,7 +300,7 @@ public class BipartitionVector extends Vector {
 			weightedTreesTotal += getWeight();
 		allTaxa.orBits(nodes[tree.getRoot()]);
 	}
-	
+
 	/** returns a new bipartitionVector for just for the tree passed. */
 	public static BipartitionVector getBipartitionVector(Tree tree){
 		if (tree==null)
@@ -297,13 +324,29 @@ public class BipartitionVector extends Vector {
 			double prop = getDecimalFrequency(stored);
 			tree.setAssociatedDouble(freqRef, newNode, prop);
 			tree.setNodeLabel(MesquiteDouble.toStringDigitsSpecified(prop, 3), newNode);
+			double length = stored.getSplitLength();
+			if (MesquiteDouble.isCombinable(length))
+				tree.setBranchLength(newNode, length, false);
 		}
 	}
 	public Tree makeTree(double minFreq){
 		MesquiteTree tree = new MesquiteTree(taxa);
 		tree.setToDefaultBush(allTaxa.numBitsOn(), false);
+		boolean setLengths = false;
+		for (int it=0; it<numTaxa; it++)
+			if (MesquiteDouble.isCombinable(branchLengths[it])) {
+				if (useWeights)
+					branchLengths[it]=branchLengths[it]/weightedTreesTotal;
+				else
+					branchLengths[it]=branchLengths[it]/numTreesTotal;
+				tree.setBranchLength(tree.nodeOfTaxonNumber(it), branchLengths[it], false);
+				setLengths = true;
+			}
+
+
 		for (int i=0; i<size(); i++){
 			Bipartition stored = getBipart(i);
+			stored.avgSplitLength(useWeights);
 			//	if (!rooted)
 			//		stored.bits.standardizeComplement(0);
 			if (mode==STRICTMODE) {
@@ -319,7 +362,9 @@ public class BipartitionVector extends Vector {
 				}
 			}
 		}
-
+		if (setLengths)
+			tree.setBranchLength(tree.getRoot(), 0.0, false);
+		tree.standardize(tree.getRoot(), false);
 		return tree;
 	}
 	public Tree makeTree(){
