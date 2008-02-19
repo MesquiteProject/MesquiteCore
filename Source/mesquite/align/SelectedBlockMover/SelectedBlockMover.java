@@ -25,6 +25,15 @@ import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
 import mesquite.align.lib.*;
 
+
+/*
+ * The block selector might be easier if it highlighted the block during
+the process of selection so that you can see more exactly which
+sequences you were including, but that's a very minor point and not
+critical.
+
+ * */
+
 /* ======================================================================== */
 public  class SelectedBlockMover extends MultiBlockMoveBase {
 	protected SelectedBlockTool moveTool;
