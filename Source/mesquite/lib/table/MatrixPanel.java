@@ -531,6 +531,7 @@ timer6.end();
 	boolean mouseDownInField = true;
 	/*...............................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		table.stopAutoScrollThread();
 		if (!(tool instanceof TableTool))
 			return;
 		int column = findColumn(x);

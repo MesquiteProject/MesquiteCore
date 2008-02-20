@@ -42,6 +42,16 @@ public class AutoScrollThread extends Thread implements MouseListener {
 		abort = true;
 		interrupt();
 	}
+	
+	/*.................................................................................................................*/
+	public boolean canAutoscrollHorizontally() {
+		return panel.canAutoscrollHorizontally();
+	}
+	/*.................................................................................................................*/
+	public boolean canAutoscrollVertically() {
+		return panel.canAutoscrollVertically();
+	}
+
 	public boolean active() {
 		return !abort && !suppressed;
 	}

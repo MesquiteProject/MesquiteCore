@@ -4982,13 +4982,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (scrollThread !=null)
 			scrollThread.setSuppressed(false);
 	}
+	/* ............................................................................................................... */
 
 	/* ............................................................................................................... */
 	public boolean checkForAutoScroll(MousePanel panel, int x, int y) {
 		if (scrollThread ==null ||  !scrollThread.active())
 			return false;
 		boolean scrolled = false;
-		if (MesquiteInteger.isCombinable(y))
+		if (MesquiteInteger.isCombinable(y) && scrollThread.canAutoscrollVertically())
 			if (y<=AUTOSCROLLBOUNDARY && getFirstRowVisible()>0) {
 				setFirstRowVisible(getFirstRowVisible()-1);
 				scrolled = true;
@@ -4997,7 +4998,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				setFirstRowVisible(getFirstRowVisible()+1);
 				scrolled = true;
 			}
-		if (MesquiteInteger.isCombinable(x))
+		if (MesquiteInteger.isCombinable(x) && scrollThread.canAutoscrollHorizontally())
 			if (x<=AUTOSCROLLBOUNDARY && getFirstColumnVisible()>0) {
 				setFirstColumnVisible(getFirstColumnVisible()-1);
 				scrolled = true;

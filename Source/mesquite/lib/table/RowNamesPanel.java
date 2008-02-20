@@ -30,6 +30,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		this.table=table;
 		addFocusListener(this);
 		//setBackground(ColorDistribution.medium[table.colorScheme]);
+		setAutoscrollDirection(AUTOSCROLLVERTICAL);
 		setBackground(Color.white);
 		setTableUnitSize(w, h);
 	}
@@ -294,6 +295,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	int previousRowDragged = -1;
 	/*...............................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		table.stopAutoScrollThread();
 		if (!(tool instanceof TableTool))
 			return;
 		touchY=-1;
