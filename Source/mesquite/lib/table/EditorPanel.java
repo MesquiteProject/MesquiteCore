@@ -117,10 +117,139 @@ public abstract class EditorPanel extends MesquitePanel {
 	public abstract int findRegionInCellV(int y);
 	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
-	public abstract int findColumn(int x);
+	public abstract int findColumn(int x, int y);
 	/** returns in which row y lies, -1 if above, -2 if below.*/
-	public abstract int findRow(int y);
+	public abstract int findRow(int x, int y);
 
+	/*@@@...............................................................................................................*/
+	/** Returns  the column immediately after the boundary between rows nearest to the y value, -1 if to the left of all columns, -2 if after all columns.*/
+	public int findColumnBeforeBetween(int x, int y) {
+		if (x<=0)
+			return -1;
+		int cx = 0;
+		int columnCenterX = 0;
+		int lastColumnCenterX=-1;
+		for (int column=tb.firstColumnVisible; (column<tb.numColumnsTotal); column++) {
+			cx += tb.columnWidths[column];
+			columnCenterX = cx - tb.columnWidths[column]/2;
+			if (column>= tb.numColumnsTotal)
+				return -1;
+			else if (x>lastColumnCenterX && x<= columnCenterX) {
+				return column-1;
+			} else if (columnCenterX>x)
+				return column;
+			lastColumnCenterX = columnCenterX;
+		}
+		return -2;//past the last column
+	}
+	/*@@@...............................................................................................................*/
+	/** Returns  the row immediately after the boundary between rows nearest to the y value, -1 if above all rows, -2 if below all rows.*/
+	public int findRowBeforeBetween(int x, int y) {
+		if (y<0)
+			return -1;
+		int ry = 0;
+		int rowCenterY = 0;
+		int lastRowCenterY = -1;
+		for (int row=tb.firstRowVisible; (row<tb.numRowsTotal); row++) {
+			ry += tb.rowHeights[row];
+			rowCenterY = ry-tb.rowHeights[row]/2;
+			if (row>= tb.numRowsTotal) {
+				return -2;
+			}
+			else if (y>lastRowCenterY && y<= rowCenterY) {
+				return row-1;
+			} else if (rowCenterY>y)
+				return row;
+			lastRowCenterY = rowCenterY;
+		}
+
+		return -2;//past the last row
+	}
+	/* ............................................................................................................... */
+	protected int getNearZone(int rowColSize) {
+		if (rowColSize<=2)
+			return 0;
+		else if (rowColSize<=4)
+			return 1;
+		else if (rowColSize<=10)
+			return 2;
+		return 3;
+	}
+	/* ............................................................................................................... */
+	/** returns true if x is near the boundary of a column */
+	public boolean nearColumnBoundary(int x, int y) {
+		int columnBoundary = 0;
+		int nearZoneOnRight;
+		int nearZoneOnLeft;
+		// int lastEdge=0;
+		for (int column = tb.firstColumnVisible; (column < tb.numColumnsTotal) && (columnBoundary < x); column++) {
+			if (column==tb.firstColumnVisible)
+				nearZoneOnLeft = 0;
+			else
+				nearZoneOnLeft = getNearZone(tb.columnWidths[column]);
+			if (column==tb.lastColumnVisible)
+				nearZoneOnRight = 0;
+			else
+				nearZoneOnRight = getNearZone(tb.columnWidths[column]);
+
+			columnBoundary += tb.columnWidths[column];
+			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight){
+				return true;
+			}
+		}
+		return false;
+
+	}
+	/* ............................................................................................................... */
+	/** returns true if x is near the boundary of a column */
+	public int nearWhichColumnBoundary(int x, int y) {
+		int columnBoundary = 0;
+		int nearZoneOnRight;
+		int nearZoneOnLeft;
+		// int lastEdge=0;
+		for (int column = tb.firstColumnVisible; (column < tb.numColumnsTotal) && (columnBoundary < x); column++) {
+			if (column==tb.firstColumnVisible)
+				nearZoneOnLeft = 0;
+			else
+				nearZoneOnLeft = getNearZone(tb.columnWidths[column]);
+			if (column==tb.lastColumnVisible)
+				nearZoneOnRight = 0;
+			else
+				nearZoneOnRight = getNearZone(tb.columnWidths[column]);
+
+			columnBoundary += tb.columnWidths[column];
+			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight){
+				return column;
+			}
+		}
+		return -1;
+
+	}
+
+	/* ............................................................................................................... */
+	/** returns true if y is near the boundary of a row */
+	public boolean nearRowBoundary(int x, int y) {
+		int rowBoundary = 0;
+		int nearZoneOnBottom;
+		int nearZoneOnTop;
+		// int lastEdge=0;
+		for (int row = tb.firstRowVisible; (row < tb.numRowsTotal); row++) {
+			if (row==tb.firstRowVisible)
+				nearZoneOnTop = 0;
+			else
+				nearZoneOnTop = getNearZone(tb.rowHeights[row]);
+			if (row==tb.lastRowVisible)
+				nearZoneOnBottom = 0;
+			else
+				nearZoneOnBottom = getNearZone(tb.rowHeights[row]);
+
+			rowBoundary += tb.rowHeights[row];
+			if (y>rowBoundary-nearZoneOnTop  && y<rowBoundary+nearZoneOnBottom)
+				return true;
+		}
+		return false;
+
+	}
 	public MesquiteTable getTable(){
 		return tb;
 	}

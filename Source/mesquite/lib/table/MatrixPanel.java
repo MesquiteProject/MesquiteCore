@@ -457,7 +457,7 @@ timer6.end();
 
 	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
-	public int findColumn(int x) {
+	public int findColumn(int x, int y) {
 		if (x<=0)
 			return -1;
 		int cx = 0;
@@ -472,7 +472,7 @@ timer6.end();
 	}
 	/*@@@...............................................................................................................*/
 	/** returns in which row y lies, -1 if above, -2 if below.*/
-	public int findRow(int y) {
+	public int findRow(int x, int y) {
 		if (y<=0)
 			return -1;
 		int ry = 0;
@@ -534,8 +534,8 @@ timer6.end();
 		table.stopAutoScrollThread();
 		if (!(tool instanceof TableTool))
 			return;
-		int column = findColumn(x);
-		int row = findRow(y);
+		int column = findColumn(x,y);
+		int row = findRow(x, y);
 		firstRowTouched = row;
 
 
@@ -549,8 +549,8 @@ timer6.end();
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 			table.startAutoScrollThread(this);
 			if (((TableTool)tool).getIsBetweenRowColumnTool()) {
-				column = table.findColumnBeforeBetween(x);
-				row = table.findRowBeforeBetween(y);  //this was findColumnBeforeBetween
+				column = findColumnBeforeBetween(x, y);
+				row = findRowBeforeBetween(x, y);  //this was findColumnBeforeBetween
 			}
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
 			if (((TableTool)tool).getEmphasizeRowsOnMouseDown()){
@@ -573,8 +573,8 @@ timer6.end();
 	int counter = 0;
 	/*_________________________________________________*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
-		int column = findColumn(x);
-		int row = findRow(y);
+		int column = findColumn(x, y);
+		int row = findRow(x, y);
 		int regionInCellH = findRegionInCellH(x);
 		int regionInCellV =  findRegionInCellV(y);
 
@@ -594,8 +594,8 @@ timer6.end();
 		if (!(tool instanceof TableTool))
 			return;
 		table.stopAutoScrollThread();
-		int column = findColumn(x);
-		int row = findRow(y);
+		int column = findColumn(x, y);
+		int row = findRow(x, y);
 		int regionInCellH = findRegionInCellH(x);
 		int regionInCellV =  findRegionInCellV(y);
 
@@ -610,7 +610,7 @@ timer6.end();
 
 		if (((TableTool)tool).acceptsOutsideDrops() || (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal)) {
 			if (((TableTool)tool).getIsBetweenRowColumnTool())
-				column = table.findColumnBeforeBetween(x);
+				column = findColumnBeforeBetween(x, y);
 			table.cellDropped(column, row, regionInCellH, regionInCellV,modifiers);
 		}
 		else if (column==-2 && ((TableTool)tool).getWorksBeyondLastColumn())
@@ -634,8 +634,8 @@ timer6.end();
 		if (!table.editingAnything() && !table.singleTableCellSelected()) 
 			setWindowAnnotation("", null);
 		setCursor(Cursor.getDefaultCursor());
-		int column = findColumn(x);
-		int row = findRow(y);
+		int column = findColumn(x, y);
+		int row = findRow(x, y);
 		table.mouseExitedCell(modifiers, column, -1, row, -1, tool);
 	}
 	/*...............................................................................................................*/
@@ -652,15 +652,15 @@ timer6.end();
 	}
 	/*...............................................................................................................*/
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
-		int column = findColumn(x);
-		int row = findRow(y);
+		int column = findColumn(x, y);
+		int row = findRow(x, y);
 		setCurrentCursor(modifiers, column, row, tool);
 		table.mouseInCell(modifiers, column,-1, row, -1,tool);
 	}
 	/*...............................................................................................................*/
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
-		int column = findColumn(x);
-		int row = findRow(y);
+		int column = findColumn(x, y);
+		int row = findRow(x, y);
 		setCurrentCursor(modifiers, column,  row, tool);
 		table.mouseInCell(modifiers, column,-1,  row, -1, tool);
 

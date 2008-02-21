@@ -45,12 +45,12 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	}
 	/*@@@...............................................................................................................*/
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
-	public int findColumn(int x) {
+	public int findColumn(int x, int y) {
 		return -1; //if left of grabbers?
 	}
 	/*@@@...............................................................................................................*/
 	/** returns in which row y lies, -1 if above all rows, -2 if below all rows.*/
-	public int findRow(int y) {
+	public int findRow(int x, int y) {
 		if (y<=0)
 			return -1;
 		int ry = 0;
@@ -300,7 +300,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			return;
 		touchY=-1;
 		touchRow=-1;
-		int possibleTouch = findRow(y);
+		int possibleTouch = findRow(x, y);
 		int regionInCellH = findRegionInCellH(x);
 		int regionInCellV =findRegionInCellV(y);
 		boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
@@ -315,7 +315,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			}
 			else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
-					possibleTouch = table.findRowBeforeBetween(y);
+					possibleTouch = findRowBeforeBetween(x, y);
 				table.rowTouched(isArrowEquivalent, possibleTouch,regionInCellH, regionInCellV,modifiers);
 				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchY=y;
@@ -330,7 +330,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			}
 			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool())
-					possibleTouch = table.findRowBeforeBetween(y);
+					possibleTouch = findRowBeforeBetween(x, y);
 				touchY=y;
 				lastY = y;
 				touchRow=possibleTouch;
@@ -365,7 +365,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			}
 			else if (((TableTool)tool).getWorksOnRowNames()) {
 				table.checkForAutoScroll(this, MesquiteInteger.unassigned,y);   // pass unassigned in x so it doesn't do anything in that direction
-				int dragRow = findRow(y);
+				int dragRow = findRow(x, y);
 				int regionInCellH = findRegionInCellH(x);
 				int regionInCellV =findRegionInCellV(y);
 				((TableTool)tool).cellDrag(-1,dragRow,regionInCellH,regionInCellV,modifiers);
@@ -398,7 +398,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 				else {
 					if (table.getUserMoveRow()) {
 						table.shimmerHorizontalOff(lastY);
-						int dropRow = table.findRowBeforeBetween(y);
+						int dropRow = findRowBeforeBetween(x, y);
 						if (dropRow == -2)
 							dropRow = table.getNumRows();
 						if (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow)) { //don't move dropped on row included in selection {
@@ -410,7 +410,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 				}
 			}
 			else if (((TableTool)tool).getWorksOnRowNames()) {
-				int dropRow = findRow(y);
+				int dropRow = findRow(x, y);
 				int regionInCellH = findRegionInCellH(x);
 				int regionInCellV =findRegionInCellV(y);
 				((TableTool)tool).cellDropped(-1,dropRow,regionInCellH,regionInCellV,modifiers);
@@ -424,7 +424,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		if (!(table.editingAnything() || table.singleTableCellSelected()) && tool != null && tool.isArrowTool())
 			setWindowAnnotation("", null);
 		setCursor(Cursor.getDefaultCursor());
-		int row = findRow(y);
+		int row = findRow(x, y);
 		table.mouseExitedCell(modifiers, -1, -1, row, -1, tool);
 	}
 	/*...............................................................................................................*/
@@ -459,13 +459,13 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		if (table == null)
 			return;
-		int row = findRow(y);
+		int row = findRow(x, y);
 		setCurrentCursor(modifiers, x, row, tool);
 		table.mouseInCell(modifiers, -1, -1, row, -1, tool);
 	}
 	/*...............................................................................................................*/
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
-		int row = findRow(y);
+		int row = findRow(x, y);
 		setCurrentCursor(modifiers, x, row, tool);
 		table.mouseInCell(modifiers, -1, -1, row, -1, tool);
 		table.checkForAutoScroll(this, MesquiteInteger.unassigned,y);   // pass unassigned in x so it doesn't do anything in that direction

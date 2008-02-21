@@ -653,7 +653,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void setRowGrabberWidth(int grabberWidth) {
 		this.rowGrabberWidth = grabberWidth;
 	}
-
+	public void setColumnNamesDiagonal(boolean diagonal){
+		columnNames.setDiagonal(diagonal);
+	}
 	/* ................................................................................................................. */
 	public void setColumnNamesCopyPaste(boolean copyPastable) {
 		this.columnNamesCopyPaste = copyPastable;
@@ -1478,7 +1480,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		FontMetrics fm = g.getFontMetrics(g.getFont());
 		int h = fm.getMaxAscent() + fm.getMaxDescent() + MesquiteModule.textEdgeCompensationHeight; // 2 + MesquiteString.riseOffset;
 		setRowHeightsUniform(h);
-		setColumnNamesRowHeight(h);
+		if (!columnNames.isDiagonal())
+			setColumnNamesRowHeight(h);
 		String s = getCornerText();
 		boolean changed = false;
 		if (StringUtil.blank(s))
@@ -1849,7 +1852,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				if (fm != null) {
 					int height = fm.getHeight();
 					setGrabberSize(fm);
-					setColumnNamesRowHeight(height + MesquiteModule.textEdgeCompensationHeight);
+					if (!columnNames.isDiagonal())
+						setColumnNamesRowHeight(height + MesquiteModule.textEdgeCompensationHeight);
 					for (int i = firstRowVisible; i < numRowsTotal; i++) {
 						if (rowHeights[i] < height + MesquiteModule.textEdgeCompensationHeight) {
 							setRowHeight(i, height + MesquiteModule.textEdgeCompensationHeight);
@@ -3062,91 +3066,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 	}
 
-	/* ............................................................................................................... */
-	int getNearZone(int rowColSize) {
-		if (rowColSize<=2)
-			return 0;
-		else if (rowColSize<=4)
-			return 1;
-		else if (rowColSize<=10)
-			return 2;
-		return 3;
-	}
-	/* ............................................................................................................... */
-	/** returns true if x is near the boundary of a column */
-	public boolean nearColumnBoundary(int x) {
-		int columnBoundary = 0;
-		int nearZoneOnRight;
-		int nearZoneOnLeft;
-		// int lastEdge=0;
-		for (int column = firstColumnVisible; (column < numColumnsTotal) && (columnBoundary < x); column++) {
-			if (column==firstColumnVisible)
-				nearZoneOnLeft = 0;
-			else
-				nearZoneOnLeft = getNearZone(columnWidths[column]);
-			if (column==lastColumnVisible)
-				nearZoneOnRight = 0;
-			else
-				nearZoneOnRight = getNearZone(columnWidths[column]);
-
-			columnBoundary += columnWidths[column];
-			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight){
-				return true;
-			}
-		}
-		return false;
-
-	}
-	/* ............................................................................................................... */
-	/** returns true if x is near the boundary of a column */
-	public int nearWhichColumnBoundary(int x) {
-		int columnBoundary = 0;
-		int nearZoneOnRight;
-		int nearZoneOnLeft;
-		// int lastEdge=0;
-		for (int column = firstColumnVisible; (column < numColumnsTotal) && (columnBoundary < x); column++) {
-			if (column==firstColumnVisible)
-				nearZoneOnLeft = 0;
-			else
-				nearZoneOnLeft = getNearZone(columnWidths[column]);
-			if (column==lastColumnVisible)
-				nearZoneOnRight = 0;
-			else
-				nearZoneOnRight = getNearZone(columnWidths[column]);
-
-			columnBoundary += columnWidths[column];
-			if (x>columnBoundary-nearZoneOnLeft  && x<columnBoundary+nearZoneOnRight){
-				return column;
-			}
-		}
-		return -1;
-
-	}
-
-	/* ............................................................................................................... */
-	/** returns true if y is near the boundary of a row */
-	public boolean nearRowBoundary(int y) {
-		int rowBoundary = 0;
-		int nearZoneOnBottom;
-		int nearZoneOnTop;
-		// int lastEdge=0;
-		for (int row = firstRowVisible; (row < numRowsTotal); row++) {
-			if (row==firstRowVisible)
-				nearZoneOnTop = 0;
-			else
-				nearZoneOnTop = getNearZone(rowHeights[row]);
-			if (row==lastRowVisible)
-				nearZoneOnBottom = 0;
-			else
-				nearZoneOnBottom = getNearZone(rowHeights[row]);
-
-			rowBoundary += rowHeights[row];
-			if (y>rowBoundary-nearZoneOnTop  && y<rowBoundary+nearZoneOnBottom)
-				return true;
-		}
-		return false;
-
-	}
 
 	/* ............................................................................................................... */
 	public int getNameStartOffset() {
@@ -5096,50 +5015,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	public void shimmerHorizontalOn(int y) {
 		GraphicsUtil.shimmerHorizontalOn(null,matrix,0,matrixWidth,y);
-	}
-	/*@@@...............................................................................................................*/
-	/** Returns  the column immediately after the boundary between rows nearest to the y value, -1 if to the left of all columns, -2 if after all columns.*/
-	public int findColumnBeforeBetween(int x) {
-		if (x<=0)
-			return -1;
-		int cx = 0;
-		int columnCenterX = 0;
-		int lastColumnCenterX=-1;
-		for (int column=firstColumnVisible; (column<numColumnsTotal); column++) {
-			cx += columnWidths[column];
-			columnCenterX = cx - columnWidths[column]/2;
-			if (column>= numColumnsTotal)
-				return -1;
-			else if (x>lastColumnCenterX && x<= columnCenterX) {
-				return column-1;
-			} else if (columnCenterX>x)
-				return column;
-			lastColumnCenterX = columnCenterX;
-		}
-		return -2;//past the last column
-	}
-	/*@@@...............................................................................................................*/
-	/** Returns  the row immediately after the boundary between rows nearest to the y value, -1 if above all rows, -2 if below all rows.*/
-	public int findRowBeforeBetween(int y) {
-		if (y<0)
-			return -1;
-		int ry = 0;
-		int rowCenterY = 0;
-		int lastRowCenterY = -1;
-		for (int row=firstRowVisible; (row<numRowsTotal); row++) {
-			ry += rowHeights[row];
-			rowCenterY = ry-rowHeights[row]/2;
-			if (row>= numRowsTotal) {
-				return -2;
-			}
-			else if (y>lastRowCenterY && y<= rowCenterY) {
-				return row-1;
-			} else if (rowCenterY>y)
-				return row;
-			lastRowCenterY = rowCenterY;
-		}
-
-		return -2;//past the last row
 	}
 	/* ............................................................................................................... */
 	public void deselectAndRedrawAllSelectedRows() {
