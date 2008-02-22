@@ -58,6 +58,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	int justification = CENTERED;
 	private Cursor handCursor;
 	private Cursor eastResizeCursor;
+	private Cursor northResizeCursor;
 
 	TableScroll horizScroll;
 	TableScroll vertScroll;
@@ -120,6 +121,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	private int userAdjustRow = NOADJUST;
 	private boolean userMoveRow = false;
 	public boolean adjustingColumnWidth = false;
+	public boolean adjustingColumnNamesHeight = false;
 
 	private Bits[] rowsSelected;
 	private Bits[] columnsSelected;
@@ -198,6 +200,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		setLayout(null);
 		handCursor = new Cursor(Cursor.HAND_CURSOR);
 		eastResizeCursor = new Cursor(Cursor.E_RESIZE_CURSOR);
+		northResizeCursor = new Cursor(Cursor.N_RESIZE_CURSOR);
 
 		rowNames = new RowNamesPanel(this, rowNamesWidth + rowGrabberWidth, matrixHeight);
 		add(rowNames);
@@ -1931,7 +1934,23 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return outputBuffer.toString();
 
 	}
-
+	public Color getColumnNameFillColor(int column, Color defaultFillColor, boolean focused, boolean selected, boolean dimmed, boolean editable){
+		Color color;
+		if (selected) {
+			color = Color.white;
+		}
+		else if (focused)
+			color = Color.lightGray;
+		else if (defaultFillColor!=null)
+			color = defaultFillColor;
+		else if (dimmed)
+			color = Color.lightGray;
+		else if (editable)
+			color = Color.white;
+		else
+			color = ColorDistribution.uneditable;
+		return color;
+	}
 	/* ............................................................................................................... */
 	/** returns color of row or number box. */
 	public Color getRCNumberBoxColor(boolean isRow, int number) {
@@ -2686,9 +2705,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** returns the current Hand cursor for dragging columns, etc. */
+	/** returns the current E resize cursor for widening columns, etc. */
 	public Cursor getEResizeCursor() {
 		return eastResizeCursor;
+	}
+	/* ............................................................................................................... */
+	/** returns the current N resize cursor for deepening column names, etc. */
+	public Cursor getNResizeCursor() {
+		return northResizeCursor;
 	}
 
 	/* ............................................................................................................... */
