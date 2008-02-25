@@ -52,6 +52,8 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			setOptionTools();
 			moveTool.setDeselectIfOutsideOfCells(false);
 			moveTool.setAcceptsOutsideDrops(true);
+			moveTool.setOptionImageFileName( "multiBlockSplitterOption.gif", 8, 8);
+
 			((MesquiteWindow)containerOfModule()).addTool(moveTool);
 			moveTool.setPopUpOwner(this);
 			setUseMenubar(false); //menu available by touching on button
@@ -162,20 +164,35 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 
 	/*.................................................................................................................*/
 	protected void redrawTable() {
-		table.redrawOldAndNewBlocks(currentBlock.getPreviousFirstCharInBlock(), firstSequenceInBlock, currentBlock.getPreviousLastCharInBlock(), lastSequenceInBlock, currentBlock.getCurrentFirstCharInBlock(), firstSequenceInBlock, currentBlock.getCurrentLastCharInBlock(), lastSequenceInBlock,false);
+		table.redrawOldAndNewBlocks(currentBlock.getPreviousFirstCharInBlock(), currentBlock.getPreviousLastCharInBlock(), currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), currentBlock.getWhichTaxa(),false);
 	}
 	/*.................................................................................................................*/
 	public void resetBlocks() {
 		leftCellBlock.reset();
 		rightCellBlock.reset();
 	}
-	public  void getFirstAndLastSequences(){
-		firstSequenceInBlock = table.getStartBetweenRowSelection();
-		lastSequenceInBlock = table.getEndBetweenRowSelection();
+	public  void getFirstAndLastSequences(boolean optionDown){
+		if (!optionDown) {
+			firstSequenceInBlock = table.getStartBetweenRowSelection();
+			lastSequenceInBlock = table.getEndBetweenRowSelection();
+		}
+		else {
+			firstSequenceInBlock = 0;
+			lastSequenceInBlock = data.getNumTaxa()-1;
+		}
+	}
+	public  Bits getWhichTaxa(boolean optionDown){
+		Bits whichTaxa = new Bits(data.getNumTaxa());
+		for (int it=table.getStartBetweenRowSelection(); it<=table.getEndBetweenRowSelection(); it++)
+			whichTaxa.setBit(it);
+		if (optionDown) 
+			whichTaxa.invertAllBits();
+		return whichTaxa;
+		
 	}
 
 	/*.................................................................................................................*/
-	public boolean findBlocks() {
+	public boolean findBlocks(boolean optionDown) {
 		MesquiteInteger firstInBlock= new MesquiteInteger();
 		MesquiteInteger lastInBlock= new MesquiteInteger();
 		MesquiteBoolean cellHasInapplicable = new MesquiteBoolean(false);
@@ -184,9 +201,15 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		int startOfBlock = table.numColumnsTotal;
 		int endOfBlock = 0;
 
-		leftCellBlock.getCellBlock(endOfLeftBlockAtTouch, endOfLeftBlockAtTouch,firstSequenceInBlock, lastSequenceInBlock, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
+		leftCellBlock.setWhichTaxa(table.getStartBetweenRowSelection(), table.getEndBetweenRowSelection());
+		if (optionDown)
+			leftCellBlock.reverseWhichTaxa();
+		leftCellBlock.getCellBlock(endOfLeftBlockAtTouch, endOfLeftBlockAtTouch, leftCellBlock.getWhichTaxa(), firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
 		startOfBlock = MesquiteInteger.minimum(startOfBlock,firstInBlock.getValue());
-		rightCellBlock.getCellBlock(startOfRightBlockAtTouch,startOfRightBlockAtTouch, firstSequenceInBlock, lastSequenceInBlock, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
+		rightCellBlock.setWhichTaxa(table.getStartBetweenRowSelection(), table.getEndBetweenRowSelection());
+		if (optionDown)
+			rightCellBlock.reverseWhichTaxa();
+		rightCellBlock.getCellBlock(startOfRightBlockAtTouch,startOfRightBlockAtTouch, rightCellBlock.getWhichTaxa(), firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequenceToLeft(), wholeSequenceToRight(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
 		endOfBlock = MesquiteInteger.maximum(endOfBlock,lastInBlock.getValue());
 
 		if (rightIsInapplicable.getValue()&& leftIsInapplicable.getValue()) {
@@ -262,7 +285,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	int previousDrawBottom=-1 ;
 
 	/*.................................................................................................................*/
-	public boolean mouseDown() {
+	public boolean mouseDown(boolean optionDown, boolean shiftDown) {
 		effectiveFirstColumnTouched = firstColumnTouched;
 		endOfLeftBlockAtTouch = firstColumnTouched;
 		startOfRightBlockAtTouch = firstColumnTouched;
@@ -285,7 +308,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 
 		if (table.inBetweenSelectionRowColumns(firstColumnTouched, firstRowTouched)) {  //then we are in the selected part between columns, about to start a move, if possible
 			choosingNewSelection = false;
-			if (!prepareToMoveMultiSequences()){
+			if (!prepareToMoveMultiSequences(optionDown)){
 				currentlyMoving=false;
 				return false;
 			}
@@ -379,9 +402,9 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		return "Splits blocks of multiple sequences." ;
 	}
 	/*.................................................................................................................*/
-   	public boolean isPrerelease(){
-   		return true;  
-   	}
+	public boolean isPrerelease(){
+		return true;  
+	}
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
 		return NEXTRELEASE;  
@@ -397,6 +420,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		MesquiteCursor optionEdgeCursor=null;
 		MesquiteCursor shiftLeftCursor = null;
 		MesquiteCursor shiftRightCursor = null;
+		MesquiteCursor optionBetweenSelectionCursor = null;
 
 
 		public MultiBlockTool (Object initiator, String name, String imageDirectoryPath, String imageFileName, int hotX, int hotY, String extraImageFileName, int extraHotX, int extraHotY, String fullDescription, String explanation, MesquiteCommand touchedCommand, MesquiteCommand dragCommand, MesquiteCommand droppedCommand) {
@@ -407,9 +431,12 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			setHasTemporaryOptionCursor(true);
 			setHasTemporaryShiftCursor(true);
 
+
 			crossHairCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, extraImageFileName, extraHotX, extraHotY);
 			shiftLeftCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, "scrollerLeft.gif", extraHotX, extraHotY);
 			shiftRightCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, "scrollerRight.gif", extraHotX, extraHotY);
+			optionBetweenSelectionCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, "multiBlockSplitterOption.gif", 8, 8);
+
 		}
 		public void setOptionEdgeCursor(String extraImageFileName, int extraHotX, int extraHotY) {
 			optionEdgeCursor = new MesquiteCursor(initiator, name, imageDirectoryPath, extraImageFileName, extraHotX, extraHotY);
@@ -429,13 +456,16 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			}
 			else if (table.inBetweenSelection(column, row, regionInCellH, regionInCellV))  {
 				setCurrentStandardCursor(null);
-				if (optionCursor!=null)
-					setCurrentOptionCursor(optionCursor);
+				if (optionBetweenSelectionCursor!=null && MesquiteEvent.optionKeyDown(modifiers)) {
+					setCurrentOptionCursor(optionBetweenSelectionCursor);
+				}
 			}
 			else {
+				setCurrentOptionCursor(crossHairCursor);
 				setCurrentStandardCursor(crossHairCursor);
-				if (optionEdgeCursor!=null)
+				if (optionEdgeCursor!=null) {
 					setCurrentOptionCursor(optionEdgeCursor);
+				}
 			}
 		}
 

@@ -134,16 +134,18 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	public void checkSwitchBlocks(int moveFromOriginal) {
 	}
 	/*.................................................................................................................*/
-	public abstract boolean findBlocks();
+	public abstract boolean findBlocks(boolean optionDown);
 
-	public abstract void getFirstAndLastSequences();
+	public abstract void getFirstAndLastSequences(boolean optionDown);
+	public  abstract Bits getWhichTaxa(boolean optionDown);
 
 	/*.................................................................................................................*/
-	public boolean prepareToMoveMultiSequences() {
+	public boolean prepareToMoveMultiSequences(boolean optionDown) {
 
-		getFirstAndLastSequences();
+		getFirstAndLastSequences(optionDown);
 		currentMoveFromOriginal = 0;
-		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock);
+		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),getWhichTaxa(optionDown));
+
 		if (!canExpand.getValue())
 			undoReference = new UndoReference(data,this,0,data.getNumChars(), firstSequenceInBlock,lastSequenceInBlock);
 		else
@@ -151,7 +153,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		resetBlocks();
 		previousPercentHorizontal = firstTouchPercentHorizontal;
 
-		if (!findBlocks()) 
+		if (!findBlocks(optionDown)) 
 			return false;
 
 
@@ -170,7 +172,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		if (candidateMovement !=0) {  // move it over from previous position by this amount; at least, that is the request
 			int distanceToMove = currentBlock.movementAllowed(candidateMovement, canExpand.getValue());
 			if (distanceToMove!=0) {
-				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, firstSequenceInBlock, lastSequenceInBlock, canExpand.getValue(), false, true, false,dataChanged);
+				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, currentBlock.getWhichTaxa(), canExpand.getValue(), false, true, false,dataChanged);
 				if (added<0){ //now start adjusting all the values as we may have added taxa at the start of the matrix
 					firstColumnTouched -= added;
 					effectiveFirstColumnTouched -= added;
@@ -221,7 +223,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	}
 	/*.................................................................................................................*/
 	public boolean moveMultiSequences() {
-		boolean success = ((CategoricalData)data).examineCheckSum(0, data.getNumChars(),firstSequenceInBlock, lastSequenceInBlock, "WARNING! The data have been altered inappropriately by this tool! The changes you have made will be undone.", warnCheckSum, originalCheckSum);
+		boolean success = ((CategoricalData)data).examineCheckSum(0, data.getNumChars(),currentBlock.getWhichTaxa(), "WARNING! The data have been altered inappropriately by this tool! The changes you have made will be undone.", warnCheckSum, originalCheckSum);
 		if (dataChanged.getValue()) {
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, null, undoReference));
 			data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));  //TODO: have undo for linked?  or is this automatically taken care of?
@@ -239,7 +241,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 
 	UndoReference undoReference = null;
 	/*.................................................................................................................*/
-	public abstract boolean mouseDown();
+	public abstract boolean mouseDown(boolean optionDown, boolean shiftDown);
 	/*.................................................................................................................*/
 	public abstract boolean mouseDragged(int columnDragged, int rowDragged,	int percentHorizontal, int percentVertical);
 	/*.................................................................................................................*/
@@ -280,7 +282,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 						}
 					}
 				}
-				else if (!mouseDown())
+				else if (!mouseDown(optionDown, shiftDown))
 					return null;
 			}
 		}

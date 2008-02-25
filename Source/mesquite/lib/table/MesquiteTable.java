@@ -2893,6 +2893,22 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					redrawCell(i, j, g);
 		g.dispose();
 	}
+	/* ............................................................................................................... */
+	/** Redraw block of cells. */
+	public void redrawBlock(int firstColumn, int lastColumn, Bits whichRows) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || whichRows==null)
+			return;
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		Graphics g = matrix.getGraphics();
+		if (g == null)
+			return;
+		for (int i = c1; i <= c2; i++)
+			for (int j = 0; j <= numRowsTotal; j++)
+				if (whichRows.isBitOn(j) && i < getNumColumns() && j < getNumRows())
+					redrawCell(i, j, g);
+		g.dispose();
+	}
 
 	/* ............................................................................................................... */
 	/** Redraw block of cells blank. */
@@ -3811,6 +3827,19 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/** Select block of cells. */
+	public void selectBlock(int firstColumn, int lastColumn, Bits whichRows) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || whichRows==null)
+			return;
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		for (int i = c1; i <= c2; i++)
+			for (int j =0; j <= numRowsTotal ; j++) 
+				if (whichRows.isBitOn(j)){
+					cellsSelected[0].setBit(j * numColumnsTotal + i);
+				}
+	}
+	/* ............................................................................................................... */
+	/** Select block of cells. */
 	public void selectBlock(int firstColumn, int firstRow, int lastColumn, int lastRow) {
 		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || !rowLegal(firstRow) || !rowLegal(lastRow))
 			return;
@@ -3825,6 +3854,23 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 	
 
+	/* ............................................................................................................... */
+	/** Deselects all cells outside the specified rows */
+	public void deSelectAndRedrawOutsideBlock(int firstColumn, int lastColumn, Bits whichRows) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || whichRows==null)
+			return;
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		for (int row = 0; row <= numRowsTotal; row++)
+			for (int column = 0; column <= numColumnsTotal; column++) {
+				if ((column < c1) || (column > c2) || (!whichRows.isBitOn(row))) { // not in block
+					if (isCellSelected(column, row)) {
+						deselectCell(column, row);
+						redrawCell(column, row);
+					}
+				}
+			}
+	}
 
 	/* ............................................................................................................... */
 	/** Deselects all cells outside the specified block */
@@ -3856,6 +3902,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int r1 = MesquiteInteger.minimum(firstRow, lastRow);
 		int r2 = MesquiteInteger.maximum(firstRow, lastRow);
 		return ((column >= c1) && (column <=c2) && (row >= r1) && (row <= r2)) ;
+	}
+	/* ............................................................................................................... */
+	/** returns true iff the column and row are within the bounds of the specified block */
+	public boolean cellInBlock(int column, int row, int firstColumn,int lastColumn, Bits whichRows) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || whichRows==null)
+			return false;
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		return ((column >= c1) && (column <=c2) && whichRows.isBitOn(row)) ;
 	}
 	/* ............................................................................................................... */
 	/** Redraws cells in old and new blocks */
@@ -3892,6 +3947,40 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 			}
 	}
+	
+	/* ............................................................................................................... */
+	/** Redraws cells in old and new blocks */
+	public void redrawOldAndNewBlocks(int firstColumnOld, int lastColumnOld, int firstColumn, int lastColumn, Bits whichRows, boolean considerAndMoveSelection) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || whichRows==null)
+			return;
+		if (!columnLegal(firstColumnOld) || !columnLegal(lastColumnOld))
+			return;
+		int c1old = MesquiteInteger.minimum(firstColumnOld, lastColumnOld);
+		int c2old = MesquiteInteger.maximum(firstColumnOld, lastColumnOld);
+		
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		
+		for (int row = 0; row <= numRowsTotal; row++)
+				for (int column = c1old; column <= c2old; column++) {
+					if ((column < c1) || (column > c2 || !whichRows.isBitOn(row))) { // not in block
+						if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,c2,whichRows)) {
+							if (considerAndMoveSelection)
+								deselectCell(column, row);
+							redrawCell(column, row);
+						}
+					}
+				}
+		for (int i = c1; i <= c2; i++)
+			for (int j = 0; j <= numRowsTotal; j++) 
+			if (whichRows.isBitOn(j)){
+				if (considerAndMoveSelection)
+					cellsSelected[0].setBit(j * numColumnsTotal + i);
+				redrawCell(i, j);
+
+			}
+	}
+
 
 	/* ............................................................................................................... */
 	/** Selects column.; DOES NOT UPDATE ASSOCIABLE */
@@ -4417,6 +4506,17 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						return true;
 		return false;
 	}
+	
+	/* ............................................................................................................... */
+	/** returns true if any cell in central matrix block is selected (does not return true if whole row or column is selected). */
+	public boolean isAnyCellSelectedInBlock(int columnStart, int columnEnd, Bits whichRows) {
+		for (int column=columnStart; column<=columnEnd; column++)
+			for (int row=0; row<numRowsTotal; row++)
+				if (whichRows.isBitOn(row) && isCellSelected(column,row))
+						return true;
+		return false;
+	}
+
 
 	/* ............................................................................................................... */
 	/** returns whether cell in central matrix is selected. */

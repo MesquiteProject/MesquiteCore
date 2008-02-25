@@ -101,7 +101,7 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		return selectWholeSequences.getValue();
 	}
 	/*.................................................................................................................*/
-	public  void getFirstAndLastSequences(){
+	public  void getFirstAndLastSequences(boolean optionDown){
 		MesquiteInteger firstRow = new MesquiteInteger();
 		MesquiteInteger lastRow = new MesquiteInteger();
 		MesquiteInteger firstColumn = new MesquiteInteger();
@@ -115,12 +115,21 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 
 		}
 	}
+	public  Bits getWhichTaxa(boolean optionDown){
+		Bits whichTaxa = new Bits(data.getNumTaxa());
+		getFirstAndLastSequences(optionDown);
+		for (int it=firstSequenceInBlock; it<=lastSequenceInBlock; it++)
+			whichTaxa.setBit(it);
+		return whichTaxa;
+
+	}
+
 	/*.................................................................................................................*/
 	protected void redrawTable() {
 		table.redrawOldAndNewBlocks(currentBlock.getPreviousFirstCharInBlock(), firstSequenceInBlock, currentBlock.getPreviousLastCharInBlock(), lastSequenceInBlock, currentBlock.getCurrentFirstCharInBlock(), firstSequenceInBlock, currentBlock.getCurrentLastCharInBlock(), lastSequenceInBlock,true);
 	}
 	/*.................................................................................................................*/
-	public boolean findBlocks() {
+	public boolean findBlocks(boolean optionDown) {
 		//get rectangular selected block of which firstRowTouched, firstColumnTouched is a part.
 
 		MesquiteInteger firstRow = new MesquiteInteger();
@@ -131,6 +140,8 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		if (table.singleCellBlockSelected( firstRow,  lastRow,  firstColumn,  lastColumn) ) {
 			if (firstColumnTouched>=firstColumn.getValue() && firstColumnTouched<=lastColumn.getValue() && firstRowTouched>=firstRow.getValue() && firstRowTouched<=lastRow.getValue()){
 				currentBlock.setAllBlocks(firstColumn.getValue() , lastColumn.getValue() , firstRow.getValue(), lastRow.getValue());
+				currentBlock.setWhichTaxa(firstRow.getValue(), lastRow.getValue());
+
 				currentBlock.setMaximumMovements();
 				return true;
 			}
@@ -139,14 +150,14 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		return false;
 	}
 	/*.................................................................................................................*/
-	public  boolean mouseDown(){
+	public  boolean mouseDown(boolean optionDown, boolean shiftDown){
 		betweenCells = false;
 		leftEdge = false;
 		rightEdge = false;
 
 		if (table.isCellSelected(firstColumnTouched, firstRowTouched)) {  //then we are in the selected part between columns, about to start a move, if possible
 			choosingNewSelection = false;
-			if (!prepareToMoveMultiSequences()){
+			if (!prepareToMoveMultiSequences(optionDown)){
 				currentlyMoving=false;
 				return false;
 			}
@@ -159,12 +170,27 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 
 	}
 	/*.................................................................................................................*/
+	public  void trackNewSelection(int column, int row){
+			MesquiteInteger firstInBlock= new MesquiteInteger();
+			MesquiteInteger lastInBlock= new MesquiteInteger();
+			MesquiteBoolean cellHasInapplicable = new MesquiteBoolean(false);
+			MesquiteBoolean leftIsInapplicable = new MesquiteBoolean(false);
+			MesquiteBoolean rightIsInapplicable = new MesquiteBoolean(false);
+			int firstColumn = MesquiteInteger.minimum(firstColumnTouched, column);
+			int lastColumn = MesquiteInteger.maximum(firstColumnTouched, column);
+			int firstRow = MesquiteInteger.minimum(firstRowTouched, row);
+			int lastRow = MesquiteInteger.maximum(firstRowTouched, row);
+			if (!data.isInapplicable(firstColumnTouched, firstRowTouched) && !data.isInapplicable(column, row)) {
+				currentBlock.getCellBlock(firstColumn, lastColumn, firstRow, lastRow, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequence(), wholeSequence(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
+				table.selectBlock(firstInBlock.getValue(),firstRow, lastInBlock.getValue(), lastRow);
+				table.repaintAll();
+			}
+	}
+
+	/*.................................................................................................................*/
 	public  boolean mouseDragged(int columnDragged, int rowDragged,	int percentHorizontal, int percentVertical){
 		if (choosingNewSelection) {
-			previousRowDragged = rowDragged;
-
-			table.deselectAllCells(false);
-			table.selectBlock(MesquiteInteger.minimum(firstColumnTouched, columnDragged), MesquiteInteger.minimum(firstRowTouched, rowDragged),MesquiteInteger.maximum(firstColumnTouched, columnDragged),MesquiteInteger.maximum(firstRowTouched, rowDragged));
+			trackNewSelection(columnDragged, rowDragged);
 
 		} else if (currentlyMoving) {
 			dragMultiSequences(percentHorizontal,  rowDragged,  columnDragged);
@@ -182,20 +208,7 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		if (!table.rowLegal(rowDropped)|| !table.columnLegal(columnDropped))
 			return false;
 		if (choosingNewSelection) {
-			MesquiteInteger firstInBlock= new MesquiteInteger();
-			MesquiteInteger lastInBlock= new MesquiteInteger();
-			MesquiteBoolean cellHasInapplicable = new MesquiteBoolean(false);
-			MesquiteBoolean leftIsInapplicable = new MesquiteBoolean(false);
-			MesquiteBoolean rightIsInapplicable = new MesquiteBoolean(false);
-			int firstColumn = MesquiteInteger.minimum(firstColumnTouched, columnDropped);
-			int lastColumn = MesquiteInteger.maximum(firstColumnTouched, columnDropped);
-			int firstRow = MesquiteInteger.minimum(firstRowTouched, rowDropped);
-			int lastRow = MesquiteInteger.maximum(firstRowTouched, rowDropped);
-			if (!data.isInapplicable(firstColumn, firstRow) && !data.isInapplicable(lastColumn, lastRow)) {
-				currentBlock.getCellBlock(firstColumn, lastColumn, firstRow, lastRow, firstInBlock, lastInBlock,  wholeSelectedBlock(), wholeSequence(), wholeSequence(), cellHasInapplicable, leftIsInapplicable, rightIsInapplicable);
-				table.selectBlock(firstInBlock.getValue(),firstRowTouched, lastInBlock.getValue(), rowDropped);
-				table.repaintAll();
-			}
+			trackNewSelection(columnDropped, rowDropped);
 
 			choosingNewSelection=false;
 		} else if (currentlyMoving){
@@ -225,9 +238,9 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		return "Moves selected blocks of multiple sequences." ;
 	}
 	/*.................................................................................................................*/
-   	public boolean isPrerelease(){
-   		return true;  
-   	}
+	public boolean isPrerelease(){
+		return true;  
+	}
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
 		return NEXTRELEASE;  

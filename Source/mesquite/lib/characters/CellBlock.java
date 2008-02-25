@@ -22,6 +22,8 @@ public class CellBlock {
 	CategoricalData data;
 	MesquiteTable table;
 
+	Bits whichTaxa;
+	Bits originalWhichTaxa;
 	MesquiteInteger firstCharInBlock;
 	MesquiteInteger lastCharInBlock;
 	int originalFirstCharInFullBlock;
@@ -35,14 +37,14 @@ public class CellBlock {
 
 	MesquiteInteger firstTaxonInBlock;
 	MesquiteInteger lastTaxonInBlock;
-	int originalFirstTaxonInFullBlock;
-	int originalLastTaxonInFullBlock;
+//	int originalFirstTaxonInFullBlock;
+//	int originalLastTaxonInFullBlock;
 	int originalFirstTaxonInBlock;
 	int originalLastTaxonInBlock;
 	int currentFirstTaxonInBlock = 0;
 	int currentLastTaxonInBlock = 0;
-	int previousFirstTaxonInBlock = 0;
-	int previousLastTaxonInBlock = 0;
+//	int previousFirstTaxonInBlock = 0;
+//	int previousLastTaxonInBlock = 0;
 
 	int maxLeftMovement=0;
 	int maxRightMovement=0;
@@ -54,12 +56,17 @@ public class CellBlock {
 	boolean atEdgeRight = false;
 	boolean isRight = false;
 	boolean isLeft = false;
-	
+
 	boolean locked = false;
+	boolean useWhichTaxaBits = false;
 
 	public CellBlock(CategoricalData data, MesquiteTable table) {
 		this.data = data;
 		this.table = table;
+		whichTaxa = new Bits(data.getNumTaxa());
+		whichTaxa.clearAllBits();
+		originalWhichTaxa = new Bits(data.getNumTaxa());
+		originalWhichTaxa.clearAllBits();
 	}
 	/*.................................................................................................................*/
 	public void reset(){    
@@ -72,9 +79,9 @@ public class CellBlock {
 	public void restoreCharBlock(MesquiteBoolean dataChanged){    // takes data that is currently at currentBlock location and move to original location
 		if (!(currentLeftMovement==0 && currentRightMovement==0)) {
 			int distanceToMove = originalFirstCharInBlock - previousFirstCharInBlock;
-			int added = data.moveCells(previousFirstCharInBlock,previousLastCharInBlock, distanceToMove, currentFirstTaxonInBlock, currentLastTaxonInBlock, true, false, true, false,dataChanged);
+			int added = data.moveCells(previousFirstCharInBlock,previousLastCharInBlock, distanceToMove, whichTaxa, true, false, true, false,dataChanged);
 
-			table.redrawBlock(MesquiteInteger.minimum(previousFirstCharInBlock, originalFirstCharInBlock), currentFirstTaxonInBlock, MesquiteInteger.maximum(previousLastCharInBlock, originalLastCharInBlock), currentLastTaxonInBlock);
+			table.redrawBlock(MesquiteInteger.minimum(previousFirstCharInBlock, originalFirstCharInBlock), MesquiteInteger.maximum(previousLastCharInBlock, originalLastCharInBlock), whichTaxa);
 			reset();
 		}
 	}
@@ -112,7 +119,7 @@ public class CellBlock {
 				return candidateMovement;
 			if ((-candidateMovement)<=availableLeftMovement())  // it is acceptable
 				return candidateMovement;
-//Debugg.println("  (in movementAllowed) availableLeftMovement(): " + availableLeftMovement()+ ", candidateMovement: " + candidateMovement );
+//			Debugg.println("  (in movementAllowed) availableLeftMovement(): " + availableLeftMovement()+ ", candidateMovement: " + candidateMovement );
 			return -availableLeftMovement();
 		}
 		if (candidateMovement>0){  // move to right
@@ -134,6 +141,48 @@ public class CellBlock {
 		previousLastCharInBlock=icEnd;
 	}
 	/*.................................................................................................................*/
+	public Bits getWhichTaxa() {
+		return whichTaxa;
+	}
+	/*.................................................................................................................*/
+	public void resetWhichTaxa() {
+		whichTaxa.clearAllBits();
+		for (int it=currentFirstTaxonInBlock; it<=currentLastTaxonInBlock; it++)
+			whichTaxa.setBit(it);
+	}
+	/*.................................................................................................................*/
+	public void setWhichTaxa(int itStart, int itEnd) {
+		whichTaxa.clearAllBits();
+		for (int it=itStart; it<=itEnd; it++)
+			whichTaxa.setBit(it);
+	}
+	/*.................................................................................................................*/
+	public String listWhichTaxa() {
+		StringBuffer sb = new StringBuffer();
+		for (int it=0; it<=whichTaxa.getSize(); it++)
+			if (whichTaxa.isBitOn(it))
+				sb.append(" " + it);
+		return sb.toString();
+				
+	}
+	/*.................................................................................................................*/
+	public void resetWhichTaxa(boolean reverse) {
+		whichTaxa.setAllBits();
+		for (int it=currentFirstTaxonInBlock; it<=currentLastTaxonInBlock; it++)
+			whichTaxa.clearBit(it);
+	}
+	/*.................................................................................................................*/
+	public void reverseWhichTaxa() {
+		whichTaxa.invertAllBits();
+	}
+
+	/*.................................................................................................................*/
+	public void setCurrentTaxa(int itStart,int itEnd) {
+		currentFirstTaxonInBlock=itStart;
+		currentLastTaxonInBlock=itEnd;
+		resetWhichTaxa();
+	}
+	/*.................................................................................................................*/
 	public void setAllBlocks(int icStart, int icEnd, int itStart, int itEnd){  
 		originalFirstCharInBlock=icStart;
 		originalLastCharInBlock=icEnd;
@@ -145,15 +194,30 @@ public class CellBlock {
 		currentLastTaxonInBlock=itEnd;
 		previousFirstCharInBlock=icStart;
 		previousLastCharInBlock=icEnd;
-		previousFirstTaxonInBlock=itStart;
-		previousLastTaxonInBlock=itEnd;
+	//	previousFirstTaxonInBlock=itStart;
+	//	previousLastTaxonInBlock=itEnd;
+
+	}
+	/*.................................................................................................................*/
+	public void setAllBlocks(int icStart, int icEnd, Bits whichTaxa){  
+		originalFirstCharInBlock=icStart;
+		originalLastCharInBlock=icEnd;
+		originalWhichTaxa = whichTaxa.cloneBits();
+		currentFirstCharInBlock=icStart;
+		currentLastCharInBlock=icEnd;
+		this.whichTaxa = whichTaxa.cloneBits();
+		previousFirstCharInBlock=icStart;
+		previousLastCharInBlock=icEnd;
+	//	previousFirstTaxonInBlock=itStart;
+	//	previousLastTaxonInBlock=itEnd;
+
 	}
 	/*.................................................................................................................*/
 	public void setOriginalFullBlockOnTouch(int icStart, int icEnd, int itStart, int itEnd){  
 		originalFirstCharInFullBlock=icStart;
 		originalLastCharInFullBlock=icEnd;
-		originalFirstTaxonInFullBlock=itStart;
-		originalLastTaxonInFullBlock=itEnd;
+		//originalFirstTaxonInFullBlock=itStart;
+		//originalLastTaxonInFullBlock=itEnd;
 	}
 	/*.................................................................................................................*/
 	public void setOriginalBlock(int icStart, int icEnd, int itStart, int itEnd){  
@@ -174,11 +238,11 @@ public class CellBlock {
 	public int getOriginalLastCharInBlock(){  
 		return originalLastCharInBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getOriginalFirstTaxonInBlock(){  
 		return originalFirstTaxonInBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getOriginalLastTaxonInBlock(){  
 		return originalLastTaxonInBlock;
 	}
@@ -190,11 +254,11 @@ public class CellBlock {
 	public int getOriginalLastCharInFullBlock(){  
 		return originalLastCharInFullBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getOriginalFirstTaxonInFullBlock(){  
 		return originalFirstTaxonInFullBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getOriginalLastTaxonInFullBlock(){  
 		return originalLastTaxonInFullBlock;
 	}
@@ -211,6 +275,12 @@ public class CellBlock {
 		currentLastTaxonInBlock=itEnd;
 	}
 	/*.................................................................................................................*/
+	public void setCurrentBlock(int icStart, int icEnd, Bits whichTaxa){  
+		currentFirstCharInBlock=icStart;
+		currentLastCharInBlock=icEnd;
+		this.whichTaxa = whichTaxa.cloneBits();
+	}
+	/*.................................................................................................................*/
 	public void shiftCurrentBlock(int shift){  
 		currentFirstCharInBlock+=shift;
 		currentLastCharInBlock+=shift;
@@ -225,11 +295,11 @@ public class CellBlock {
 	public int getCurrentLastCharInBlock(){  
 		return currentLastCharInBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getCurrentFirstTaxonInBlock(){  
 		return currentFirstTaxonInBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getCurrentLastTaxonInBlock(){  
 		return currentLastTaxonInBlock;
 	}
@@ -252,15 +322,15 @@ public class CellBlock {
 	public void transferCurrentToPrevious(){  
 		previousFirstCharInBlock=currentFirstCharInBlock;
 		previousLastCharInBlock=currentLastCharInBlock;
-		previousFirstTaxonInBlock=currentFirstTaxonInBlock;
-		previousLastTaxonInBlock=currentLastTaxonInBlock;
+		//previousFirstTaxonInBlock=currentFirstTaxonInBlock;
+		//previousLastTaxonInBlock=currentLastTaxonInBlock;
 	}
 	/*.................................................................................................................*/
 	public void setPreviousBlock(int icStart, int icEnd, int itStart, int itEnd){  
 		previousFirstCharInBlock=icStart;
 		previousLastCharInBlock=icEnd;
-		previousFirstTaxonInBlock=itStart;
-		previousLastTaxonInBlock=itEnd;
+		//previousFirstTaxonInBlock=itStart;
+		//previousLastTaxonInBlock=itEnd;
 	}
 	/*.................................................................................................................*/
 	public int getPreviousFirstCharInBlock(){  
@@ -270,14 +340,15 @@ public class CellBlock {
 	public int getPreviousLastCharInBlock(){  
 		return previousLastCharInBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getPreviousFirstTaxonInBlock(){  
 		return previousFirstTaxonInBlock;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public int getPreviousLastTaxonInBlock(){  
 		return previousLastTaxonInBlock;
 	}
+	/*.................................................................................................................*/
 	public void adjustToMove(int movement) {
 		if (movement<0){   //moving left
 			currentLeftMovement-=movement;
@@ -314,7 +385,7 @@ public class CellBlock {
 		}
 		int count = 0;
 		for (int ic = currentFirstCharInBlock-1; ic>=0; ic--) {
-			if (data.inapplicableBlock(ic, ic, currentFirstTaxonInBlock, currentLastTaxonInBlock)) {
+			if (data.inapplicableBlock(ic, ic, whichTaxa)) {
 				count++;
 				if (ic==0)
 					atEdgeLeft=true;
@@ -333,7 +404,7 @@ public class CellBlock {
 		}
 		int count = 0;
 		for (int ic = currentLastCharInBlock+1; ic<data.getNumChars(); ic++) {
-			if (data.inapplicableBlock(ic, ic, currentFirstTaxonInBlock, currentLastTaxonInBlock)){
+			if (data.inapplicableBlock(ic, ic, whichTaxa)){
 				count++;
 				if (ic==data.getNumChars()-1)
 					atEdgeRight=true;
@@ -356,14 +427,14 @@ public class CellBlock {
 		if (ic<data.getNumChars())
 			if (data.isInapplicable(ic+1, it))
 				rightIsInapplicable.setValue(true);
-/*
- * 		if (data.isInapplicable(ic, it)) {
+		/*
+		 * 		if (data.isInapplicable(ic, it)) {
 			firstInBlock.setValue(ic);
 			lastInBlock.setValue(-1);
 			cellHasInapplicable.setValue(true);
 			return;
 		}
-		*/
+		 */
 		if (wholeSequenceLeft) {
 			firstInBlock.setValue(data.firstApplicable(it));
 		} 
@@ -408,31 +479,31 @@ public class CellBlock {
 	/** Gets the cell block that contains the cells of character ic from itStart to itEnd */
 	/*.................................................................................................................*/
 	public void getCellBlock(int icStart, int icEnd, int itStart, int itEnd, MesquiteInteger firstInBlock, MesquiteInteger lastInBlock, boolean wholeSelectedBlock, boolean wholeSequenceLeft, boolean wholeSequenceRight, MesquiteBoolean cellHasInapplicable, MesquiteBoolean leftIsInapplicable, MesquiteBoolean rightIsInapplicable){  // determines the block that was touched
+		Bits whichTaxa = new Bits(data.getNumTaxa());
+		for (int it=itStart; it<=itEnd; it++)
+			whichTaxa.setBit(it);
+		getCellBlock( icStart,  icEnd, whichTaxa,  firstInBlock,  lastInBlock,  wholeSelectedBlock,  wholeSequenceLeft,  wholeSequenceRight,  cellHasInapplicable,  leftIsInapplicable,  rightIsInapplicable);  // determines the block that was touched
+
+	}
+	/*.................................................................................................................*/
+	public void getCellBlock(int icStart, int icEnd, Bits whichTaxa, MesquiteInteger firstInBlock, MesquiteInteger lastInBlock, boolean wholeSelectedBlock, boolean wholeSequenceLeft, boolean wholeSequenceRight, MesquiteBoolean cellHasInapplicable, MesquiteBoolean leftIsInapplicable, MesquiteBoolean rightIsInapplicable){  // determines the block that was touched
 		cellHasInapplicable.setValue(false);
 		leftIsInapplicable.setValue(false);
 		rightIsInapplicable.setValue(false);
 		firstInBlock.setValue(0);
 		lastInBlock.setValue(data.getNumChars());
 		if (icStart>0)
-			if (data.inapplicableBlock(icStart-1, icStart-1, itStart, itEnd))
-					leftIsInapplicable.setValue(true);
+			if (data.inapplicableBlock(icStart-1, icStart-1, whichTaxa))
+				leftIsInapplicable.setValue(true);
 		if (icEnd<data.getNumChars())
-			if (data.inapplicableBlock(icEnd+1, icEnd+1, itStart, itEnd))
+			if (data.inapplicableBlock(icEnd+1, icEnd+1, whichTaxa))
 				rightIsInapplicable.setValue(true);
-/*
- * 		if (data.isInapplicable(ic, it)) {
-			firstInBlock.setValue(ic);
-			lastInBlock.setValue(-1);
-			cellHasInapplicable.setValue(true);
-			return;
-		}
-		*/
 		if (wholeSequenceLeft) {
-			firstInBlock.setValue(data.firstApplicable(itStart, itEnd));
+			firstInBlock.setValue(data.firstApplicable(whichTaxa));
 		} 
 		else if (wholeSelectedBlock) {
 			for (int i=icStart; i>=0; i--) {   // find first unselected cell to the left of this point
-				if (!table.isAnyCellSelectedInBlock(i, i, itStart, itEnd)){ 
+				if (!table.isAnyCellSelectedInBlock(i, i, whichTaxa)){ 
 					firstInBlock.setValue(i+1);
 					break;
 				}
@@ -440,10 +511,10 @@ public class CellBlock {
 		}
 		else {
 			for (int i=icStart; i>=0; i--) {   // find first gap to the left of this point
-				if (data.inapplicableBlock(i, i, itStart,itEnd)){  // should be isToolInapplicable
+				if (data.inapplicableBlock(i, i, whichTaxa)){  // should be isToolInapplicable
 					firstInBlock.setValue(i+1);
 					break;
-				} else if (i<icStart&&!data.applicableInBothCharacters(i,i+1,itStart,itEnd)) {
+				} else if (i<icStart&&!data.applicableInBothCharacters(i,i+1,whichTaxa)) {
 					firstInBlock.setValue(i+1);
 					break;
 				}
@@ -452,11 +523,11 @@ public class CellBlock {
 
 
 		if (wholeSequenceRight) {
-			lastInBlock.setValue(data.lastApplicable(itStart, itEnd));
+			lastInBlock.setValue(data.lastApplicable(whichTaxa));
 		}
 		else if (wholeSelectedBlock) {
 			for (int i=icEnd; i<data.getNumChars(); i++) {  // find first unselected cell to the right of this point
-				if (!table.isAnyCellSelectedInBlock(i, i, itStart, itEnd)){ 
+				if (!table.isAnyCellSelectedInBlock(i, i, whichTaxa)){ 
 					lastInBlock.setValue(i-1);
 					return;
 				}
@@ -464,23 +535,23 @@ public class CellBlock {
 		}
 		else {
 			for (int i=icEnd; i<data.getNumChars(); i++) {  // find first gap to the right of this point
-				if (data.inapplicableBlock(i,i, itStart, itEnd)){  // should be isToolInapplicable
+				if (data.inapplicableBlock(i,i, whichTaxa)){  // should be isToolInapplicableú
 					lastInBlock.setValue(i-1);
 					return;
-				} else if (i>icEnd &&!data.applicableInBothCharacters(i,i-1,itStart,itEnd)) {
+				} else if (i>icEnd &&!data.applicableInBothCharacters(i,i-1,whichTaxa)) {
 					lastInBlock.setValue(i-1);
 					return;
 				}
 			}
 		}
 	}
-	
+
 	/* ............................................................................................................... */
 	/** Select block of cells. */
 	public void deselectOthersAndSelectBlock() {
-			table.deSelectAndRedrawOutsideBlock(currentFirstCharInBlock, currentFirstTaxonInBlock, currentLastCharInBlock, currentLastTaxonInBlock);
-			table.selectBlock(currentFirstCharInBlock, currentFirstTaxonInBlock, currentLastCharInBlock, currentLastTaxonInBlock);
-		
+		table.deSelectAndRedrawOutsideBlock(currentFirstCharInBlock, currentLastCharInBlock, whichTaxa);
+		table.selectBlock(currentFirstCharInBlock, currentLastCharInBlock, whichTaxa);
+
 	}
 
 	public int getCurrentLeftMovement() {
@@ -524,6 +595,12 @@ public class CellBlock {
 	}
 	public void setLocked(boolean locked) {
 		this.locked = locked;
+	}
+	public boolean isUseWhichTaxaBits() {
+		return useWhichTaxaBits;
+	}
+	public void setUseWhichTaxaBits(boolean useWhichTaxaBits) {
+		this.useWhichTaxaBits = useWhichTaxaBits;
 	}
 }
 
