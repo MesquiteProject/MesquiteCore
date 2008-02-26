@@ -128,8 +128,8 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 		Taxa taxa = list.getTaxa();
 		
 		reset(taxa);
-		ProgressIndicator progIndicator;
-		progIndicator = new ProgressIndicator(getProject(),getName(), "", list.size(), true);
+		ProgressIndicator progIndicator=null;
+		//progIndicator = new ProgressIndicator(getProject(),getName(), "", list.size(), true);
 		if (progIndicator!=null){
 			progIndicator.start();
 		}
@@ -155,10 +155,9 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 			if (progIndicator!=null) {
 				progIndicator.setText("Processing tree " + (treeNumber+1));
 				progIndicator.spin();		
-
+				if (progIndicator.isAborted())
+					break;
 			}
-			if (progIndicator.isAborted())
-				break;
 	//		if (MesquiteTrunk.debugMode)
 	//			logln(" tree: " + (treeNumber+1)+ ", bipartitions: " + bipartitions.size() + ", memory: " + MesquiteTrunk.getMaxAvailableMemory());
 		}
