@@ -26,23 +26,24 @@ import mesquite.tol.lib.XMLConstants;
  * Note that this class is currently NOT thread safe --
  * only one thread may use it at a time
  * @author dmandel
+ * 
+ * 25 Feb 2008:  made it thread safe by removing dependency on static Strings - DRM
  *
  */
 public class MesquiteXMLUtilities {
 	private static String checkConnectionURL = "http://google.com";
-	public static String baseDatabaseURL = "http://btol.tolweb.org/onlinecontributors/app"; 	
+	//public static String baseDatabaseURL = "http://btol.tolweb.org/onlinecontributors/app"; 	
 	//public static String baseDatabaseURL = "http://zissou.cals.arizona.edu/onlinecontributors/app";	
-	private static String databaseURL = baseDatabaseURL + "?page=";
+	//private static String databaseURL = baseDatabaseURL + "?page=";
 	/**
 	 * tapestry application name
 	 */
-	private static final String APP_URL = "onlinecontributors/app";
-	private static final String HTTP = "http://";
+	protected static final String HTTP = "http://";
 	
-	public static Document getDocumentFromTapestryPageName(String pageName, Map args) {
-		return getDocumentFromTapestryPageName(pageName, args, false);
+	public static Document getDocumentFromTapestryPageName(String url, String pageName, Map args) {
+		return getDocumentFromTapestryPageName(url, pageName, args, false);
 	}
-	public static Document getDocumentFromTapestryPageNameMultipart(String pageName, Map stringArgs, 
+	public static Document getDocumentFromTapestryPageNameMultipart(String databaseURL,String pageName, Map stringArgs, 
 			Map fileArgs) {
 		String url = databaseURL;
 		// need this here so tapestry will call the external service
@@ -58,11 +59,11 @@ public class MesquiteXMLUtilities {
 			return null;
 		}
 	}
-	public static Document getDocumentFromTapestryPageName(String pageName, Map args, boolean isPost) {
+	public static Document getDocumentFromTapestryPageName(String url, String pageName, Map args, boolean isPost) {
 		Document returnDoc = null;
 		args.put("service", "external");
 		if (checkConnection()) {
-			String url = getDatabaseURL();
+			//String url = getDatabaseURL();
 			try {
 				returnDoc = BaseHttpRequestMaker.getTap4ExternalUrlDocument(url, 
 						pageName, args, isPost);
@@ -99,6 +100,7 @@ public class MesquiteXMLUtilities {
 		return bytes != null;*/
 		return true;
 	}
+	/*
 	public static String getDatabaseURL() {
 		return databaseURL;
 	}
@@ -106,19 +108,9 @@ public class MesquiteXMLUtilities {
 	 * This needs to be called before any database communication can occur
 	 * @param URL
 	 */
-	public static void setDatabaseURL(String URL) {
-		// make sure it starts with the proper protocol
-		if (!URL.startsWith(HTTP)) {
-			URL = HTTP + URL; 
-		}
-		// check to see if it ends in a slash
-		if (!URL.endsWith("/")) {
-			URL += "/";
-		}
-		URL += APP_URL;
-		baseDatabaseURL = URL;
-		databaseURL = baseDatabaseURL + "?page=";
-	}
+	
+
+	
 	
 	public static boolean getIsError(Document doc) {
 		return doc == null || doc.getRootElement() == null ||
