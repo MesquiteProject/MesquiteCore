@@ -22,6 +22,7 @@ public class Bipartition {
 	static final int numFreqs = 2;
 	long[] freq;   // have more than one in case want to split at things like avg std dev split frequencies
 	double splitLength;   // for storing branch lengths
+	boolean present = false;
 
 
 	public Bipartition(int numTaxa){
@@ -108,5 +109,11 @@ public class Bipartition {
 	}
 	public void setFreqDouble(double freqDouble) {
 		this.freqDouble = freqDouble;
+	}
+	public boolean isPresent() {
+		return present;
+	}
+	public void setPresent(boolean present) {
+		this.present = present;
 	}
 }

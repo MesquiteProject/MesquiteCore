@@ -30,10 +30,12 @@ public class BipartitionVector extends Vector {
 	int princess = 0;
 	Taxa taxa;
 	Bits allTaxa;
+	Bits partitionPresent;
 	Bits bits1;
 	Bits bits2;
 	public static final int MAJRULEMODE = 0;
 	public static final int STRICTMODE = 1;
+	public static final int SEMISTRICTMODE = 2;
 	int mode = STRICTMODE;
 	double weight = 1.0;
 
@@ -44,6 +46,7 @@ public class BipartitionVector extends Vector {
 		this.taxa = taxa;
 		numTaxa = taxa.getNumTaxa();
 		nodes = new Bits[MesquiteTree.standardNumNodeSpaces(taxa)];
+		partitionPresent = new Bits(MesquiteTree.standardNumNodeSpaces(taxa));
 		for (int i= 0; i<nodes.length; i++)
 			nodes[i] = new Bits(numTaxa);
 		allTaxa = new Bits(numTaxa);
@@ -59,6 +62,7 @@ public class BipartitionVector extends Vector {
 		numTreesTotal = 0;
 		weight=1.0;
 		allTaxa.clearAllBits();
+		partitionPresent.clearAllBits();
 		for (int i=0; i<size(); i++){
 			Bipartition b = getBipart(i);
 			b.setFreq(0);
@@ -214,6 +218,7 @@ public class BipartitionVector extends Vector {
 				bp.addToSplitLength(length);
 		}
 	}
+
 	private Bipartition addBipart(Bits bits){
 		switch (mode) {
 		case STRICTMODE: 
@@ -225,12 +230,14 @@ public class BipartitionVector extends Vector {
 			} else {
 				boolean foundConflict = false;
 				int identical = -1;
-				for (int i=size()-1; i>=0; i--){
+				for (int i=size()-1; i>=0; i--){  // going through stored ones and see whether it matches the new bits
 					Bipartition stored = getBipart(i);
-					if (compatible(stored.getBits(),bits)){ //then we are ok
-						if (stored.equals(bits, rooted))  // record this in case we need to delete it later
+					if (compatible(stored.getBits(),bits)){ //the incoming is compatible with the ith stored bipartition
+						if (stored.equals(bits, rooted)){  // it's not only compatible, but they are the same
 							identical=i;
-					} else {
+							stored.setPresent(true);
+						}
+					} else { // 
 						foundConflict=true;
 						remove(i);
 					}
@@ -240,12 +247,13 @@ public class BipartitionVector extends Vector {
 			}
 			return null;
 
-		case MAJRULEMODE: 
+		case MAJRULEMODE:
+		case SEMISTRICTMODE:
 			for (int i=0; i<size(); i++){
 				Bipartition stored = getBipart(i);
 
 				if ( stored.equals(bits, rooted)){  //stored.potentialMatch(numBits, rooted)&&
-					if (useWeights)
+					if (useWeights && mode==MAJRULEMODE)
 						stored.weightedIncrement(weight);
 					else
 						stored.increment();
@@ -254,7 +262,7 @@ public class BipartitionVector extends Vector {
 			}
 			Bipartition bipart = new Bipartition(numTaxa);
 			bipart.copyIntoBits(bits);
-			if (useWeights)
+			if (useWeights&& mode==MAJRULEMODE)
 				bipart.weightedIncrement(weight);
 			else
 				bipart.increment();
@@ -297,7 +305,22 @@ public class BipartitionVector extends Vector {
 			princess=-1;  // don't worry about princess if root is a polytomy
 		for (int i= 0; i<nodes.length; i++)
 			nodes[i].clearAllBits();
+		if (numTreesTotal>0 && mode==STRICTMODE) 
+			for (int i=size()-1; i>=0; i--){ 
+				Bipartition stored = getBipart(i);
+				if (stored!=null)
+					stored.setPresent(false);
+			}
+
 		getPartitions(tree, tree.getRoot());
+
+		if (numTreesTotal>0 && mode==STRICTMODE) 
+			for (int i=size()-1; i>=0; i--){ 
+				Bipartition stored = getBipart(i);
+				if (stored!=null && !stored.isPresent())
+					remove(i);
+			}
+
 		numTreesTotal++;
 		if (useWeights)
 			weightedTreesTotal += getWeight();
@@ -346,13 +369,32 @@ public class BipartitionVector extends Vector {
 				setLengths = true;
 			}
 
+		if (mode==SEMISTRICTMODE){ // for this, need to go through and wipe out incompatible ones.
+			for (int i=0; i<size(); i++){
+				Bipartition stored = getBipart(i);
+				stored.setPresent(true); 
+				if (stored.getFreq()!=numTreesTotal) {
+					for (int j=0; j<size(); j++){
+						Bipartition comparison = getBipart(j);
+						if (!compatible(comparison.getBits(), stored.getBits()))
+							stored.setPresent(false);
+					}
+
+				}
+			}
+			for (int j=size()-1; j>=0; j--){
+				if (!getBipart(j).isPresent())
+					remove (j);
+			}
+
+		}
 
 		for (int i=0; i<size(); i++){
 			Bipartition stored = getBipart(i);
 			stored.avgSplitLength(useWeights);
 			//	if (!rooted)
 			//		stored.bits.standardizeComplement(0);
-			if (mode==STRICTMODE) {
+			if (mode==STRICTMODE || mode==SEMISTRICTMODE) {
 				resolveByBipartition(tree, stored);
 			} else {
 				double prop = getDecimalFrequency(stored);

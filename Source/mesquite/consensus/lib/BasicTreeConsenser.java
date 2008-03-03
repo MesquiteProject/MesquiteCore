@@ -36,7 +36,8 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 		bipartitions = new BipartitionVector();
 		loadPreferences();
 		if (!MesquiteThread.isScripting()) 
-			queryOptions();
+			if (!queryOptions())
+				return false;
 		return true;
 	}
 

@@ -43,7 +43,8 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		bipartitions = new BipartitionVector();
 		loadPreferences();
 		if (!MesquiteThread.isScripting()) 
-			queryOptions();
+			if (!queryOptions()) 
+				return false;
 		return true;
 	}
 	/*.................................................................................................................*/
