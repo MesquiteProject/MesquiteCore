@@ -491,12 +491,12 @@ public class CellBlock {
 		leftIsInapplicable.setValue(false);
 		rightIsInapplicable.setValue(false);
 		firstInBlock.setValue(0);
-		lastInBlock.setValue(data.getNumChars());
+		lastInBlock.setValue(data.getNumChars()-1);
 		if (icStart>0)
 			if (data.inapplicableBlock(icStart-1, icStart-1, whichTaxa))
 				leftIsInapplicable.setValue(true);
 		if (icEnd<data.getNumChars())
-			if (data.inapplicableBlock(icEnd+1, icEnd+1, whichTaxa))
+			if (data.inapplicableBlock(icEnd, icEnd, whichTaxa))
 				rightIsInapplicable.setValue(true);
 		if (wholeSequenceLeft) {
 			firstInBlock.setValue(data.firstApplicable(whichTaxa));
