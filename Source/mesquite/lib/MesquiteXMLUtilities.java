@@ -47,7 +47,6 @@ public class MesquiteXMLUtilities {
 			Map fileArgs) {
 		String url = databaseURL;
 		// need this here so tapestry will call the external service
-		stringArgs.put("service", "external");
 		stringArgs.put("page", pageName);
 		try {
 			Document returnDoc = BaseHttpRequestMaker.getTap4ExternalUrlDocumentMultipart(url, pageName, 

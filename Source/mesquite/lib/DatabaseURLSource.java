@@ -44,8 +44,6 @@ public abstract class DatabaseURLSource extends MesquiteModule {
 	}
 
   	
-  	public abstract String getURL(int urlType);
-  	
 	public String getBaseURL() {
 		return baseURL;
 	}
