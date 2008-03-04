@@ -8,7 +8,9 @@ public abstract class DatabaseURLSource extends MesquiteModule {
 	String baseURL;
 	String pageURL;
 	
-
+	public boolean needsKeyValuePairAuthorization() {
+		return false;
+	}
   	 public Class getDutyClass() {
     	 	return DatabaseURLSource.class;
     	 }
@@ -61,5 +63,8 @@ public abstract class DatabaseURLSource extends MesquiteModule {
 		return "";
 	}
 
+	public String getKey() {
+		return "";
+	}
 
 }

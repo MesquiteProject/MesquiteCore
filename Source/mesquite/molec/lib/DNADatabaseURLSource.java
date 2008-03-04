@@ -27,6 +27,8 @@ public abstract class DNADatabaseURLSource extends DatabaseURLSource {
 	
 	public static final int SEQUENCE_ELEMENT=1;
 	
-	
+	public boolean includeSampleCodePrefixInSampleCode() {
+		return false;
+	}
 
 }
