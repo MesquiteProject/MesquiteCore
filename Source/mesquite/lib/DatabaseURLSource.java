@@ -2,6 +2,7 @@ package mesquite.lib;
 
 import java.util.*;
 
+
 public abstract class DatabaseURLSource extends MesquiteModule {
 	Vector keyValuePairs;
 	String baseURL;
@@ -32,8 +33,16 @@ public abstract class DatabaseURLSource extends MesquiteModule {
   		}
   	}
 
+	public String getKeyString(int key) {
+		return "";
+	}
+
+	public String getElementName(int elementID) {
+		return "";
+	}
+
   	
-  	public abstract void getURL(int urlType);
+  	public abstract String getURL(int urlType);
   	
 	public String getBaseURL() {
 		return baseURL;

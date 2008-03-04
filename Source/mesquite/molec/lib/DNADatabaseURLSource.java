@@ -8,6 +8,11 @@ public abstract class DNADatabaseURLSource extends DatabaseURLSource {
 	public static final int EXTRACTION_CODE = 2;
 	public static final int PCR_REACTION_CODE = 3;
 	public static final int AUTHORIZATION_KEY = 4;
+	public static final int GENE = 5;
+	public static final int TAXON = 6;
+	public static final int NAME = 7;
+	public static final int EXTRACTION = 8;
+	
 	
 
 	
@@ -18,5 +23,9 @@ public abstract class DNADatabaseURLSource extends DatabaseURLSource {
 	public static final int SEQUENCE_UPLOAD_SERVICE = 5;
 	public static final int FASTA_UPLOAD_SERVICE = 6;
 	public static final int CHROMATOGRAM_BATCH_CREATION_SERVICE = 7;
+	
+	public static final int SEQUENCE_ELEMENT=1;
+	
+	
 
 }
