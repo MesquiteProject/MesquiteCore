@@ -89,8 +89,10 @@ public class MesquiteXMLUtilities {
 	}
 	
 	public static void outputRequestXMLError() {
-		String errorMessage = "A network error has occurred, this usually means one of two things:\n(1) You don't have an internet connection" + 
-			"\n(2)The server you are attempting to contact is having problems\nPlease make sure you have an internet connection and try again.";
+		String errorMessage = "A network error has occurred, this usually means one of three things:\n(1) You don't have an internet connection" + 
+		"\n(2) The server you are attempting to contact is having problems"+
+		"\n(3) The information sent from the server is not formatted in a way Mesquite can understand."+
+			"\nPlease make sure you have an internet connection and try again.";
 		MesquiteMessage.warnUser(errorMessage);
 	}
 	
