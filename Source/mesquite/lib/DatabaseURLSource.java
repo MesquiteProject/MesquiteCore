@@ -7,6 +7,7 @@ public abstract class DatabaseURLSource extends MesquiteModule {
 	Vector keyValuePairs;
 	String baseURL;
 	String pageURL;
+	static final String COUNT = "count";
 	
 	public boolean needsKeyValuePairAuthorization() {
 		return false;

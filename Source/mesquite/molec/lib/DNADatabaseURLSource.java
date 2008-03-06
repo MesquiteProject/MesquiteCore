@@ -1,5 +1,7 @@
 package mesquite.molec.lib;
 
+import java.util.Hashtable;
+
 import mesquite.lib.*;
 
 public abstract class DNADatabaseURLSource extends DatabaseURLSource {
@@ -24,11 +26,16 @@ public abstract class DNADatabaseURLSource extends DatabaseURLSource {
 	public static final int SEQUENCE_UPLOAD_SERVICE = 5;
 	public static final int FASTA_UPLOAD_SERVICE = 6;
 	public static final int CHROMATOGRAM_BATCH_CREATION_SERVICE = 7;
-	
+	public static final int CHROMATOGRAM_DOWNLOAD_SERVICE = 8;
+
 	public static final int SEQUENCE_ELEMENT=1;
 	
 	public boolean includeSampleCodePrefixInSampleCode() {
 		return false;
+	}
+	
+	public String getChromatogramDownloadURL(Hashtable args) {
+		return "";
 	}
 
 }
