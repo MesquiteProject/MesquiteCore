@@ -118,7 +118,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	protected void stopMoving() {
 		currentlyMoving = false;
-		table.repaintAll();
+		table.repaintCells(liveUpdate.getValue());
 		undoReference = null;
 	}
 	/*.................................................................................................................*/
@@ -144,7 +144,10 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 
 		getFirstAndLastSequences(optionDown);
 		currentMoveFromOriginal = 0;
-		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),getWhichTaxa(optionDown));
+		Bits whichTaxa = getWhichTaxa(optionDown);
+		if (whichTaxa==null)
+			return false;
+		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),whichTaxa);
 
 		if (!canExpand.getValue())
 			undoReference = new UndoReference(data,this,0,data.getNumChars(), firstSequenceInBlock,lastSequenceInBlock);

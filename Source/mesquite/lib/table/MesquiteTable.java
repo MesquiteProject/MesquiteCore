@@ -1917,6 +1917,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		cornerCell.repaint();
 		matrix.repaint();
 	}
+	/* ............................................................................................................... */
+	/** repaints all components of the table */
+	public void repaintCells(boolean repaintColumnNames) {
+		if (repaintColumnNames)
+			columnNames.repaint();
+		//repaint();
+		matrix.repaint();
+	}
+
 
 	/* ............................................................................................................... */
 	/** returns a tab delimited text version of the table */
@@ -4265,8 +4274,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		else {
 			boolean lastWasSelected = false;
 			boolean someSelected = false;
+			int startC = firstColumnSelected();
+			int lastC = lastColumnSelected();
 			for (int j = 0; j < numColumnsTotal; j++) {
-				if (isColumnSelected(j) || isCellSelected(j, row)) {
+				if ((j>=startC && j<=lastC && isColumnSelected(j)) || isCellSelected(j, row)) {
 					if (!lastWasSelected && someSelected && j>0) {  //we are in a new section of selected
 						return false;
 					}
@@ -4289,6 +4300,116 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			//}
 			return someSelected;
 		}
+	}
+	
+	/* ............................................................................................................... */
+	/** returns whether a single contiguous cell block in matrix is selected. Returns first contiguous block selected in matrix regardless if unique */
+	public boolean boundedBlockSelected(MesquiteInteger firstRow, MesquiteInteger lastRow, MesquiteInteger firstColumn, MesquiteInteger lastColumn) {
+		if (firstRow==null || !firstRow.isCombinable())
+			return false;
+		if (lastRow==null || !lastRow.isCombinable())
+			return false;
+		if (firstColumn==null || !firstColumn.isCombinable())
+			return false;
+		if (lastColumn==null || !lastColumn.isCombinable())
+			return false;
+
+		for (int column =firstColumn.getValue(); column <=lastColumn.getValue(); column++) {
+			if(isColumnSelected(column) && firstRow.getValue()!=0 && lastRow.getValue()!=numRowsTotal-1 )
+				return false;
+		}
+		if(lastColumn.getValue()<numColumnsTotal-1) {
+			if (isColumnSelected(lastColumn.getValue()+1))  // the column just after is selected
+				return false;
+			for (int row =firstRow.getValue(); row <=lastRow.getValue(); row++) 
+				if(isCellSelected(lastColumn.getValue()+1, row) )
+					return false;
+			
+		}
+
+		if(firstColumn.getValue()>0) {
+			if (isColumnSelected(firstColumn.getValue()-1))  // the column just after is selected
+				return false;
+			for (int row =firstRow.getValue(); row <=lastRow.getValue(); row++) 
+				if(isCellSelected(firstColumn.getValue()-1, row) )
+					return false;
+		}
+
+		for (int row =firstRow.getValue(); row <=lastRow.getValue(); row++) {
+			if(isRowSelected(row) && firstColumn.getValue()!=0 && lastColumn.getValue()!=numColumnsTotal-1 )
+				return false;
+		}
+
+		if(lastRow.getValue()<numRowsTotal-1) {
+			if (isRowSelected(lastRow.getValue()+1))  // the row just after is selected
+				return false;
+			for (int column =firstColumn.getValue(); column <=lastColumn.getValue(); column++) 
+				if(isCellSelected(column, lastRow.getValue()+1) )
+					return false;
+			
+		}
+		if(firstRow.getValue()>0) {
+			if ( isRowSelected(firstRow.getValue()-1))  // the row just after is selected
+				return false;
+			for (int column =firstColumn.getValue(); column <=lastColumn.getValue(); column++) 
+				if(isCellSelected(column, firstRow.getValue()-1) )
+					return false;
+			
+
+		}
+
+		for (int column =firstColumn.getValue(); column <=lastColumn.getValue(); column++) {
+			for (int row =firstRow.getValue(); row <=lastRow.getValue(); row++) { 
+				if(!isCellSelected(column, row) )
+					return false;
+			}
+		}
+
+
+
+		return true;
+	}
+
+
+		/* ............................................................................................................... */
+		/** Returns in the MesquiteIntegers the bounds of the selection growing out from the current cell */
+	public boolean findBlockSurroundingCell(int centerColumn, int centerRow, MesquiteInteger firstRow, MesquiteInteger lastRow, MesquiteInteger firstColumn, MesquiteInteger lastColumn) {
+		int firstR = centerRow;
+		int lastR = centerRow;
+		int firstC = centerColumn;
+		int lastC = centerColumn;
+		if (!isCellSelected(centerColumn, centerRow))
+			return false;
+
+		for (int row = centerRow; row < getNumRows(); row++) {
+			if (isCellSelected(centerColumn, row))
+				lastR = row;
+			else
+				break;
+		}
+		for (int row = centerRow; row >=0 ; row--) {
+			if (isCellSelected(centerColumn, row))
+				firstR = row;
+			else
+				break;
+		}
+		for (int column = centerColumn; column < getNumColumns(); column++) {
+			if (isCellSelected(column, centerRow))
+				lastC = column;
+			else
+				break;
+		}
+		for (int column = centerColumn; column >=0 ; column--) {
+			if (isCellSelected(column, centerRow))
+				firstC = column;
+			else
+				break;
+		}
+		firstRow.setValue(firstR);
+		lastRow.setValue(lastR);
+		firstColumn.setValue(firstC);
+		lastColumn.setValue(lastC);
+		return true;
 	}
 
 	/* ............................................................................................................... */
@@ -4596,10 +4717,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** returns the last column selected. */
 	public int lastColumnSelected() {
-		for (int i = numColumnsTotal - 1; i >= 0; i--)
-			if (columnsSelected[0].isBitOn(i))
-				return i;
-		return -1;
+		return columnsSelected[0].lastBitOn();
 	}
 	/* ............................................................................................................... */
 	/** returns the last column selected. */
@@ -4646,6 +4764,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return columnsSelected[0].isBitOn(column);
 		return false;
 	}
+	
 
 	/* ............................................................................................................... */
 	/** returns a Bits saying what rows are selected. */
