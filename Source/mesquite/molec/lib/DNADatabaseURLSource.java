@@ -15,6 +15,7 @@ public abstract class DNADatabaseURLSource extends DatabaseURLSource {
 	public static final int NAME = 7;
 	public static final int EXTRACTION = 8;
 	public static final int FASTA=9;
+	public static final int COUNT=10;
 	
 	
 
