@@ -136,5 +136,17 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	public int getVersionOfFirstRelease(){
 		return NEXTRELEASE;  
 	}
+	public double getFrequencyLimit() {
+		return frequencyLimit;
+	}
+	public void setFrequencyLimit(double frequencyLimit) {
+		this.frequencyLimit = frequencyLimit;
+	}
+	public boolean getUseWeights() {
+		return useWeights.getValue();
+	}
+	public void setUseWeights(boolean b) {
+		useWeights.setValue(b);
+	}
 
 }
