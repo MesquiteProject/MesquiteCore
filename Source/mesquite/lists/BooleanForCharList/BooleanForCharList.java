@@ -92,7 +92,16 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 		return null;
 	}
 	public void setTableAndData(MesquiteTable table, CharacterData data){
+		if (data != this.data){
+			if (this.data != null){
+				this.data.removeListener(this);
+				this.data.getTaxa().removeListener(this);
+			}
+			data.addListener(this);
+			data.getTaxa().addListener(this);
+	}
 		this.data = data;
+	
 		if (!suppressed)
 			doCalcs();
 		
@@ -112,8 +121,7 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 		return true;  //TODO: respond
 	}
 	public void changed(Object caller, Object obj, Notification notification){
-		if (Notification.appearsCosmetic(notification))
-			return;
+		
 		if (!suppressed){
 			outputInvalid();
 			doCalcs();
@@ -131,6 +139,8 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 	/*.................................................................................................................*/
 	IntegerArray booleanList = new IntegerArray(0);
 	StringArray explArray = new StringArray(0);
+	int totalYes = 0;
+	int totalNo = 0;
 	/*.................................................................................................................*/
 	public void doCalcs(){
 		if (suppressed || booleanTask==null)
@@ -140,23 +150,32 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 		explArray.resetSize(numChars);
 		MesquiteBoolean mb = new MesquiteBoolean();
 		MesquiteString expl = new MesquiteString();
+		totalYes = 0;
+		totalNo = 0;
 		for (int ic=0; ic<numChars; ic++) {
 			CommandRecord.tick("Boolean for character in tree list; examining character " + ic);
 			mb.setToUnassigned();
 			booleanTask.calculateBoolean(data, ic, mb, expl);
 			if (mb.isUnassigned())
 				booleanList.setValue(ic, -1);
-			else if (mb.getValue())
+			else if (mb.getValue()){
 				booleanList.setValue(ic, 1);
-			else 
+				totalYes++;
+			}
+			else {
+				totalNo++;
 				booleanList.setValue(ic, 0);
+			}
 			explArray.setValue(ic, expl.getValue());
 		}
 	}
 	public String getExplanationForRow(int ic){
 		if (explArray == null || explArray.getSize() <= ic)
 			return null;
-		return explArray.getValue(ic);
+		String s = explArray.getValue(ic);
+		if (StringUtil.blank(s))
+			s = getStringForCharacter(ic);
+		return s + " [Totals: Yes: " + totalYes + "; No: " + totalNo + "]";
 	}
 	public String getStringForCharacter(int ic){
 		if (booleanList==null)
