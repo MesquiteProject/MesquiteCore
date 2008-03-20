@@ -85,6 +85,8 @@ public class MajRuleTree extends BasicTreeConsenser   {
 
 
 	public void addTree(Tree t){
+		if (t==null)
+			return;
 		if (useWeights.getValue()) {
 			bipartitions.setUseWeights(useWeights.getValue());
 			MesquiteDouble md = (MesquiteDouble)((Attachable)t).getAttachment(TreesManager.WEIGHT);

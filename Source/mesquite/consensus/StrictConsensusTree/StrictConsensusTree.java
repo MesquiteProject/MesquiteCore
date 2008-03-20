@@ -15,6 +15,8 @@ public class StrictConsensusTree extends BasicTreeConsenser   {
 		return "Calculates the strict consensus tree." ;
 	}
   	public void addTree(Tree t){
+		if (t==null)
+			return;
 		bipartitions.addTree(t);
 	}
   	

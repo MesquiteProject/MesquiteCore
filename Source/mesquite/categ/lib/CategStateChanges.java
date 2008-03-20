@@ -3,11 +3,15 @@ package mesquite.categ.lib;
 import mesquite.lib.*;
 
 public class CategStateChanges {
-
+	static int maxChanges = 10;
 	int[][] min;
 	int[][] max;
 	double[][] avg;
 	double[][] total;
+	double[][][] fractionWithAmount;
+	double[][][] totalWithAmount;
+	double[][] totalChanges;
+
 	int numStates = 0;
 	long numMappings = 0;
 	long numHistories = 0;
@@ -17,7 +21,26 @@ public class CategStateChanges {
 		min = new int[numStates][numStates];
 		max = new int[numStates][numStates];
 		avg = new double[numStates][numStates];
+		total = new double[numStates][numStates];
+		totalChanges = new double[numStates][numStates];
+		fractionWithAmount = new double[numStates][numStates][maxChanges];
+		totalWithAmount = new double[numStates][numStates][maxChanges];
 		initializeArrays();
+	}
+	/*.................................................................................................................*/
+	public int getNumStates(){
+		return numStates;
+	}
+	/*.................................................................................................................*/
+	public void adjustNumStates(int numStatesNew){
+		min =Integer2DArray.cloneIncreaseSize(min,numStatesNew, numStatesNew);
+		max =Integer2DArray.cloneIncreaseSize(max,numStatesNew, numStatesNew);
+		avg =Double2DArray.cloneIncreaseSize(avg,numStatesNew, numStatesNew);
+		total =Double2DArray.cloneIncreaseSize(total,numStatesNew, numStatesNew);
+		totalChanges =Double2DArray.cloneIncreaseSize(totalChanges,numStatesNew, numStatesNew);
+		fractionWithAmount =Double2DArray.cloneIncreaseSize(fractionWithAmount,numStatesNew, numStatesNew, maxChanges);
+		totalWithAmount =Double2DArray.cloneIncreaseSize(totalWithAmount,numStatesNew, numStatesNew, maxChanges);
+		numStates = numStatesNew;
 	}
 	/*.................................................................................................................*/
 	public void initializeArrays() {
@@ -26,34 +49,69 @@ public class CategStateChanges {
 				min[i][j]= Integer.MAX_VALUE;
 				max[i][j]= 0;
 				avg[i][j]=0.0;
+				total[i][j]=0.0;
+				totalChanges[i][j]=0.0;
+				for (int k=0; k<maxChanges; k++) {
+					fractionWithAmount[i][j][k] = 0.0;
+					totalWithAmount[i][j][k] = 0.0;
+				}
 			}
 	}
 
 	/*.................................................................................................................*/
+	public void zeroTotals() {
+		for (int i=0; i<numStates; i++) 
+			for (int j=0; j<numStates; j++) {
+				total[i][j]=0.0;
+				totalChanges[i][j]=0.0;
+				for (int k=0; k<maxChanges; k++) {
+					totalWithAmount[i][j][k] = 0.0;
+				}
+			}
+	}
 
-	public void addOneMapping(Tree tree, CategoricalHistory history, int whichMapping) {
-		int[][] array =  history.harvestStateChanges(tree, null);
+
+	/*.................................................................................................................*/
+
+	public boolean addOneMapping(Tree tree, CategoricalHistory history, int node, boolean selectedNodesOnly, int whichMapping) {
+		if (!tree.nodeExists(node))
+			node = tree.getRoot();
+		int[][] array =  history.harvestStateChanges(tree, node, selectedNodesOnly,null);
 		if (array==null ||  array.length != numStates)
-			return;
-		addOneMapping(array,false);
+			return false;
+		return addOneMapping(array,false);
 
 	}
 	/*.................................................................................................................*/
+	public boolean acceptableMapping(int[][] array) {
+		//if (array[1][0]>0)
+		//	return false;
+		return true;
+	}
+	/*.................................................................................................................*/
 
-	public void addOneMapping(int[][] array, boolean useTotal) {
+	public boolean addOneMapping(int[][] array, boolean useTotal) {
 		if (array==null)
-			return;
-		for (int i=0; i<numStates; i++)
-			for (int j=0; j<numStates; j++){
+			return false;
+		if (!acceptableMapping(array))
+			return false;
+		numMappings++;
+		for (int i=0; i<numStates && i<array.length; i++)
+			for (int j=0; j<numStates &&j<array[i].length; j++)
+			{
 				min[i][j] = MesquiteInteger.minimum(min[i][j],array[i][j]);
 				max[i][j] = MesquiteInteger.maximum(max[i][j],array[i][j]);
 				if (useTotal)
 					total[i][j] = total[i][j]+array[i][j];
 				else
-					avg[i][j] = ((avg[i][j]*numMappings)+array[i][j])/numMappings;
+					avg[i][j] = ((avg[i][j]*numMappings-1)+array[i][j])/numMappings;
+				if (array[i][j]>=maxChanges)
+					totalWithAmount[i][j][maxChanges-1]++;
+				else
+					totalWithAmount[i][j][array[i][j]]++;
+				totalChanges[i][j]++;
 			}
-		numMappings++;
-
+		return true;
 	}
 	/*.................................................................................................................*/
 
@@ -62,34 +120,62 @@ public class CategStateChanges {
 	}
 	/*.................................................................................................................*/
 
-	public void addOneHistory(Tree tree, CategoricalHistory history, int samplingLimit) {
+	public void addOneHistory(Tree tree, CategoricalHistory history,int node,boolean selectedNodesOnly, int samplingLimit) {
 		CategoricalHistory resultStates=null;
-		numHistories++;
+		zeroTotals();
 		int[][] array;
+		int mappingsAdded=0;
 		if (!mappingsAvailable()) {
 			history.clone(resultStates);
 			if (resultStates instanceof mesquite.categ.lib.CategoricalHistory){
-				array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, null);
-				addOneMapping(array,true);
+				array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, selectedNodesOnly, null);
+				if (addOneMapping(array, true)) mappingsAdded++;
 			}
 		}
 		else {
 			long numMappings = history.getNumResolutions(tree);
-			if (numMappings<=samplingLimit) {
-				for (int i=0; i<numMappings; i++) {
+//	Debugg.println("numMappings " + numMappings);
+			if (numMappings == MesquiteLong.infinite) {
+				for (int i=0; i<samplingLimit; i++) {
 					resultStates = (CategoricalHistory)history.getResolution(tree, resultStates, i);
 					if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
-						array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, null);
-						addOneMapping(array,true);
+						array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, selectedNodesOnly,null);
+						if (addOneMapping(array, true)) mappingsAdded++;
 					}
 				}
 			}
+			else if (MesquiteLong.isCombinable(numMappings))
+				if (numMappings<=samplingLimit) {
+					for (int i=0; i<numMappings; i++) {
+						resultStates = (CategoricalHistory)history.getResolution(tree, resultStates, i);
+						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
+							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, selectedNodesOnly,null);
+							if (addOneMapping(array, true)) mappingsAdded++;
+						}
+					}
+				}
+				else {
+					for (int i=0; i<samplingLimit; i++) {
+						resultStates = (CategoricalHistory)history.getResolution(tree, resultStates, RandomBetween.getLong(0,numMappings-1));
+						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
+							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,selectedNodesOnly, null);
+							if (addOneMapping(array, true)) mappingsAdded++;
+						}
+					}
+				}
 
 		}
-		if (numMappings>0)
+		if (mappingsAdded>0)
+			numHistories++;
+		if (mappingsAdded>0)
 			for (int i=0; i<numStates; i++)
-				for (int j=0; j<numStates; j++){
-					avg[i][j] = avg[i][j]+total[i][j]/numMappings;
+				for (int j=0; j<numStates; j++)
+				{
+					avg[i][j] = avg[i][j]+total[i][j]/mappingsAdded;
+					if (totalChanges[i][j]>0 && i!=j)
+						for (int k=0; k<maxChanges; k++) {
+							fractionWithAmount[i][j][k] = fractionWithAmount[i][j][k]+totalWithAmount[i][j][k]/totalChanges[i][j];
+						}
 				}
 
 	}
@@ -97,13 +183,19 @@ public class CategStateChanges {
 	/*.................................................................................................................*/
 
 	public void cleanUp() {
-		if (numHistories>0)
-			for (int i=0; i<numStates; i++)
-				for (int j=0; j<numStates; j++){
+		for (int i=0; i<numStates; i++)
+			for (int j=0; j<numStates; j++) {
+				if (min[i][j]== Integer.MAX_VALUE)
+					min[i][j] = 0;
+				if (numHistories>0) {
 					avg[i][j] = avg[i][j]/numHistories;
+					if (i!=j) for (int k=0; k<maxChanges; k++) {
+						fractionWithAmount[i][j][k] = fractionWithAmount[i][j][k]/numHistories;
+					}
 				}
+			}
 	}
-	
+
 	/*.................................................................................................................*/
 	public int[][] getMin() {
 		return min;
@@ -116,6 +208,28 @@ public class CategStateChanges {
 	public double[][] getAvg() {
 		return avg;
 	}
+
+	/*.................................................................................................................*/
+	public String toVerboseString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("change\tmin\tmax\tavg\n");
+		for (int i=0; i<numStates; i++)
+			for (int j=0; j<numStates; j++){
+				sb.append(""+i+"->"+j+" \t"+min[i][j] +"\t"+max[i][j] +"\t"+avg[i][j]+"\n"); 
+			}
+		sb.append("\n\nchange\t#changes\tfraction\n");
+		for (int i=0; i<numStates; i++)
+			for (int j=0; j<numStates; j++)
+				if (i!=j) {
+					for (int k=0; k<maxChanges; k++) {
+						sb.append(""+i+"->"+j+" \t"+k +"\t"+fractionWithAmount[i][j][k]+"\n"); 
+					}
+					sb.append("\n");
+				}
+		return sb.toString();
+	}
+
+
 
 
 

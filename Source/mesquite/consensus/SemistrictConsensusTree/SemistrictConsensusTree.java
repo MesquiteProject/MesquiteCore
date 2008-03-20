@@ -15,6 +15,8 @@ import mesquite.lib.*;
 			return "Calculates the semistrict consensus tree." ;
 		}
 	  	public void addTree(Tree t){
+	  		if (t==null)
+	  			return;
 			bipartitions.addTree(t);
 		}
 	  	
