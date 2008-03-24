@@ -43,6 +43,8 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 	MesquiteMenuItemSpec numTreesItem = null;
 	private int numTrees = 100;
 	//not yet ready double minPercent = 0.0;
+	boolean[][] allowedChanges =null;
+	int maxState = CategoricalState.maxCategoricalState;
 
 
 	StringArray modes;
@@ -78,6 +80,8 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 		mm = addMenuItem( "Previous Character History", makeCommand("previousCharacter",  this));
 		mm.setShortcut(KeyEvent.VK_LEFT); //right
 		addMenuItem( "Choose Character History", makeCommand("chooseCharacter",  this));
+		addMenuItem( "Allowed Changes...", makeCommand("allowedChanges",  this));
+
 
 
 
@@ -100,6 +104,11 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 		addMenuItem( "Close Summarize Changes", makeCommand("closeSummarizeChanges",  this));
 		addMenuItem( "-", null);
 		resetContainingMenuBar();
+
+
+		allowedChanges = new boolean[CategoricalState.maxCategoricalState][CategoricalState.maxCategoricalState];
+		zeroAllowedChanges();
+
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -127,6 +136,12 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 		return newTrace;
 	}
 
+	/*.................................................................................................................*/
+	public void zeroAllowedChanges(){
+		for (int i=0; i<allowedChanges.length; i++)
+			for (int j=0; j<allowedChanges[i].length; j++)
+				allowedChanges[i][j]=true;
+	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
@@ -143,6 +158,34 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 	}
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
+
+	public boolean queryAllowedChanges(){
+		if (MesquiteThread.isScripting())
+			return true;
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Allowed Changes",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Allowed Changes");
+
+		int numStates = maxState+1;
+		String[] labels = new String[numStates];
+		for (int i=0; i<numStates; i++)
+			labels[i]=""+i;
+		Checkbox[][] changesAllowed = dialog.addCheckboxMatrix(numStates, numStates, labels, labels);
+
+		dialog.addHorizontalLine(1);
+
+
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			for (int i=0; i<numStates && i<allowedChanges.length; i++)
+				for (int j=0; j<numStates && j<allowedChanges[i].length; j++)
+					allowedChanges[j][i]=changesAllowed[i][j].getState();
+		}
+		dialog.dispose();
+		return (buttonPressed.getValue()==0) ;
+	}
+	
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Goes to next character history", null, commandName, "nextCharacter")) {
 			if (currentChar>=historyTask.getNumberOfHistories(currentTaxa)-1)
@@ -158,6 +201,10 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 			else
 				currentChar--;
 			recalcAllTraceOperators();
+		}
+		else if (checker.compare(this.getClass(), "Goes to previous character history", null, commandName, "allowedChanges")) {
+			if (queryAllowedChanges())
+				recalcAllTraceOperators();
 		}
 
 		else if (checker.compare(this.getClass(), "Queries user about which character history to use", null, commandName, "chooseCharacter")) {
@@ -255,21 +302,21 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 	}
 	/*.................................................................................................................*/
 
-	 /*.................................................................................................................*/
-	 /** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
-	 public void changed(Object caller, Object obj, Notification notification){
-		 int code = Notification.getCode(notification);
-		 if (obj instanceof Tree) {
-			 if (code==MesquiteListener.SELECTION_CHANGED ) {
-				 recalcAllTraceOperators();
-			 }
-		 }
-		 super.changed(caller, obj, notification);
-	 }
+	/*.................................................................................................................*/
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
+	public void changed(Object caller, Object obj, Notification notification){
+		int code = Notification.getCode(notification);
+		if (obj instanceof Tree) {
+			if (code==MesquiteListener.SELECTION_CHANGED ) {
+				recalcAllTraceOperators();
+			}
+		}
+		super.changed(caller, obj, notification);
+	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-	//	if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED)
-			recalcAllTraceOperators();
+		//	if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED)
+		recalcAllTraceOperators();
 	}
 	/*.................................................................................................................*/
 	public void recalcAllTraceOperators() {
@@ -355,22 +402,29 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 	public String getExplanation() {
 		return "Summarizes reconstructions of state changes of a character over a series of trees.  The summary is shown on the current tree; if you want to show it on a consensus of the trees, make sure that the current tree is that consensus.";
 	}
+	public int getMaxState() {
+		return maxState;
+	}
+	public void setMaxState(int maxState) {
+		this.maxState = maxState;
+	}
+	public void setAcceptableChanges(CategStateChanges stateChanges) {
+		if (stateChanges!=null)
+			for (int i=0; i<=maxState && i<allowedChanges.length; i++)
+				for (int j=0; j<=maxState && j<allowedChanges[i].length; j++)
+					stateChanges.setAcceptableChange(i, j,allowedChanges[i][j]);
+	}
 }
 
 /*======================================================================== */
 class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
+	int maxNumMappings = 50;
 	Tree myTree;
 	SummarizeChanges sumChangesModule;
-	//CategoricalHistory charStates;
 	int currentChar = 0;
 	Taxa taxa = null;
-//	long allStates = 0L;
-	int[] treeCounts;
-//	int[] apparentTrees;
-//	int[] validTrees;
 	int totalTrees =0;
 	MesquiteString resultString = new MesquiteString();
-//	int[] numEquivocal;
 	TextDisplayer displayer;
 	String currentText = "";
 
@@ -415,24 +469,8 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 
 			int drawnRoot = treeDisplay.getTreeDrawing().getDrawnRoot();
 
-	//		if (charStates != null)
-	//			charStates.deassignStates();
-
 			resultString.setValue("Please wait; calculating.");
 
-			if (treeCounts == null || treeCounts.length != myTree.getNumNodeSpaces())
-				treeCounts = new int[myTree.getNumNodeSpaces()];
-			IntegerArray.zeroArray(treeCounts);
-
-	/*		if (apparentTrees == null || apparentTrees.length != myTree.getNumNodeSpaces())
-				apparentTrees = new int[myTree.getNumNodeSpaces()];
-			IntegerArray.zeroArray(apparentTrees);
-
-			if (validTrees == null || validTrees.length != myTree.getNumNodeSpaces())
-				validTrees = new int[myTree.getNumNodeSpaces()];
-			IntegerArray.zeroArray(validTrees);
-*/
-			
 			int numTrees = sumChangesModule.treeSourceTask.getNumberOfTrees(taxa);
 			boolean en = !MesquiteInteger.isFinite(numTrees);
 			if (en)
@@ -446,16 +484,10 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 			if (!myTree.nodeExists(drawnRoot))
 				drawnRoot = myTree.getRoot();
 			CategoricalHistory tempCharStates = null;
-			//double[][] frequencies = new double[myTree.getNumNodeSpaces()][CategoricalState.maxCategoricalState+1];
-			//for (int i = 0; i<frequencies.length; i++)
-			//	DoubleArray.zeroArray(frequencies[i]);
-	//		if (numEquivocal == null || numEquivocal.length <= myTree.getNumNodeSpaces())
-	//			numEquivocal = new int[myTree.getNumNodeSpaces()];
-	//		IntegerArray.zeroArray(numEquivocal);
 
 			MesquiteTree tempTree = (MesquiteTree)sumChangesModule.treeSourceTask.getTree(taxa, 0);
 			int maxnum = sumChangesModule.historyTask.getNumberOfHistories(tempTree);
-			//allStates = 0L;
+
 			if (sumChangesModule.currentChar>= maxnum)
 				sumChangesModule.currentChar = maxnum-1;
 			if (sumChangesModule.currentChar<0)
@@ -466,7 +498,7 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 			else
 				resultString.setValue("Character " + CharacterStates.toExternal(sumChangesModule.currentChar) + "\n" + sumChangesModule.historyTask.getNameAndParameters() + " over trees (" + sumChangesModule.treeSourceTask.getName() + "; " + sumChangesModule.treeSourceTask.getParameters() + ").  " + modeString);
 			totalTrees = numTrees;
-//		IntegerArray.zeroArray(validTrees);
+//			IntegerArray.zeroArray(validTrees);
 			firstTreeHasAllTaxa = true;
 			boolean firstTree=true;
 
@@ -479,13 +511,7 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 			/* checking all trees .......... */
 			int it = 0;
 
-
 			CategStateChanges stateChanges=null;
-//			int changesNode = myTree.getFirstSelected(myTree.getRoot());
-//			if (changesNode<0)
-//				changesNode=myTree.getRoot();
-			
-
 
 			for (it = 0; it< numTrees && tempTree != null; it++){
 				if (progIndicator != null) {
@@ -503,39 +529,27 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 					CommandRecord.tick("Examining ancestral state reconstruction on tree " + it);
 				sumChangesModule.historyTask.prepareForMappings();
 				sumChangesModule.historyTask.prepareHistory(tempTree, sumChangesModule.currentChar);
-				
-//				CharacterHistory currentHistory = historyTask.getMapping(0, null, resultString);
+
 				tempCharStates = (CategoricalHistory)sumChangesModule.historyTask.getMapping(0, tempCharStates, null);
 				if (stateChanges==null) {
 					stateChanges = new CategStateChanges(tempCharStates.getMaxState()+1);
 				}
-				stateChanges.setAcceptableChange(1, 0, false);
+				sumChangesModule.setMaxState(tempCharStates.getMaxState());
+				sumChangesModule.setAcceptableChanges(stateChanges);
 
-				
+
 				Bits nodes = null;
-				if (myTree.anySelected())
+				if (myTree.anySelected()) {
 					nodes = new Bits(tempTree.getNumNodeSpaces());
-				markSelectedCommonClades(nodes, tempTree, myTree.getRoot(), myTree);
+					markSelectedCommonClades(nodes, tempTree, myTree.getRoot(), myTree);
+				}
 
+				stateChanges.addOneHistory(tempTree, sumChangesModule.historyTask, sumChangesModule.currentChar,tempTree.getRoot(), nodes, maxNumMappings);
 
-				//this tree has the relevant information to process it
-
-				//if (tempCharStates !=null)
-				//	charStates = (CategoricalHistory)tempCharStates.adjustHistorySize(myTree, charStates);
-
-				//if (tempCharStates !=null){
-						//int c = cladeInTree(tempTree, tempTree.getRoot(), taxaInChangesClade);
-						//if (c>0) stateChanges.addOneHistory(tempTree, tempCharStates, c, true, 500);
-						stateChanges.addOneHistory(tempTree, sumChangesModule.historyTask, sumChangesModule.currentChar,tempTree.getRoot(), nodes, 500);
-
-			//		allStates |= tempCharStates.getAllStates();
-					//survey original nodes to see if node is in tree, and if so record char reconstructed
-				//}				
 				if (it+1<numTrees)
 					tempTree = (MesquiteTree)sumChangesModule.treeSourceTask.getTree(taxa, it+1);
 
 			}
-
 
 
 			totalTrees = it;
@@ -546,7 +560,6 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 				stateChanges.cleanUp();
 				currentText = stateChanges.toVerboseString();
 				refresh();
-				//MesquiteFile.putFileContents("/summarizeChanges.txt", s, true);
 			}
 
 		}
@@ -570,7 +583,7 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 			myTreeRef = ((MesquiteTree)tree).getTreeReference(myTreeRef);
 			((MesquiteTree)tree).addListener(sumChangesModule);
 		}
-		
+
 		taxa = tree.getTaxa();
 		sumChangesModule.currentTaxa = taxa;
 		int numTrees = sumChangesModule.treeSourceTask.getNumberOfTrees(taxa);
