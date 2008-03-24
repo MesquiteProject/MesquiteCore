@@ -73,6 +73,8 @@ public class Pagel94 extends Pagel94Calculator {
 		addMenuItem("Likelihood Iterations (Pagel 94)...", makeCommand("setNumIterations", this));
 		addMenuItem("Set Seed (Pagel 94)...", makeCommand("setSeed", this));
 	   addMenuItem("Set Simulation Replicates...", makeCommand("setSimCount", this));
+	   if (getEmployer() instanceof CLogger)
+		   setLogger(((CLogger)getEmployer()));
 		if (!MesquiteThread.isScripting()){
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
 			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Pagel 94 parameters",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
