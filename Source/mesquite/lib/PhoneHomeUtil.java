@@ -152,8 +152,16 @@ public class PhoneHomeUtil {
 						notices.append(message + "<hr>\n");
 						countNotices.increment();
 					}
-					else
-						MesquiteMessage.println("NOTICE " + message);
+					else {
+						String fromWhom = null;
+							if (mmi.getModuleClass() == mesquite.Mesquite.class)
+								fromWhom = "Mesquite";
+							else if (!StringUtil.blank(mmi.getPackageName()))
+								fromWhom = mmi.getPackageName();
+							else
+								fromWhom = mmi.getName();
+						MesquiteMessage.println("\n\nNOTICE from " + fromWhom + ": " + message + "\n");
+					}
 					if (noticeVersion ==  currentVersion){  //version of note is this version of Mesquite
 						if (phoneHomeRecord.getLastNoticeForMyVersion() < notice)  // this is a later notice than we had seen before; record it
 							phoneHomeRecord.setLastNoticeForMyVersion(notice);
