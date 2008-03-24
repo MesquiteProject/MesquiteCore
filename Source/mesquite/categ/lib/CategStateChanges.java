@@ -1,6 +1,7 @@
 package mesquite.categ.lib;
 
 import mesquite.lib.*;
+import mesquite.lib.duties.CharHistorySource;
 
 public class CategStateChanges {
 	static int maxChanges = 10;
@@ -11,6 +12,7 @@ public class CategStateChanges {
 	double[][][] fractionWithAmount;
 	double[][][] totalWithAmount;
 	double[][] totalChanges;
+	boolean [][] acceptableChange;
 
 	int numStates = 0;
 	long numMappings = 0;
@@ -25,6 +27,7 @@ public class CategStateChanges {
 		totalChanges = new double[numStates][numStates];
 		fractionWithAmount = new double[numStates][numStates][maxChanges];
 		totalWithAmount = new double[numStates][numStates][maxChanges];
+		acceptableChange = new boolean[numStates][numStates];
 		initializeArrays();
 	}
 	/*.................................................................................................................*/
@@ -51,11 +54,18 @@ public class CategStateChanges {
 				avg[i][j]=0.0;
 				total[i][j]=0.0;
 				totalChanges[i][j]=0.0;
+				acceptableChange[i][j]=true;
 				for (int k=0; k<maxChanges; k++) {
 					fractionWithAmount[i][j][k] = 0.0;
 					totalWithAmount[i][j][k] = 0.0;
 				}
 			}
+	}
+	
+	/*.................................................................................................................*/
+	public void setAcceptableChange(int i, int j, boolean b) {
+		acceptableChange[i][j]=b;
+
 	}
 
 	/*.................................................................................................................*/
@@ -84,8 +94,10 @@ public class CategStateChanges {
 	}
 	/*.................................................................................................................*/
 	public boolean acceptableMapping(int[][] array) {
-		//if (array[1][0]>0)
-		//	return false;
+		for (int i=0; i<numStates && i<array.length; i++)
+			for (int j=0; j<numStates &&j<array[i].length; j++)
+				if (!acceptableChange[i][j] && array[i][j]>0)
+					return false;
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -118,6 +130,72 @@ public class CategStateChanges {
 	public boolean mappingsAvailable(){
 		return true;
 	}
+	/*.................................................................................................................*/
+
+	public void addOneHistory(Tree tree, CharHistorySource historySource,int ic, int node,Bits nodesToSample, int samplingLimit) {
+		CategoricalHistory resultStates=null;
+		CategoricalHistory history = null;
+		zeroTotals();
+		int[][] array;
+		int mappingsAdded=0;
+		if (!mappingsAvailable()) {
+			history = (CategoricalHistory)historySource.getMapping(0, history, null);
+			 if (history.getMaxState()+1>getNumStates())
+					adjustNumStates(history.getMaxState()+1);
+			history.clone(resultStates);
+			if (resultStates instanceof mesquite.categ.lib.CategoricalHistory){
+				array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, nodesToSample, null);
+				if (addOneMapping(array, true)) mappingsAdded++;
+			}
+		}
+		else {
+			long numMappings = historySource.getNumberOfMappings(tree, ic);
+//	Debugg.println("numMappings " + numMappings);
+			if (numMappings == MesquiteLong.infinite || !MesquiteLong.isCombinable(numMappings)) {
+				for (int i=0; i<samplingLimit; i++) {
+					resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
+					if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
+						array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, nodesToSample,null);
+						if (addOneMapping(array, true)) mappingsAdded++;
+					}
+				}
+			}
+			else 
+				if (numMappings<=samplingLimit) {
+					for (int i=0; i<numMappings; i++) {
+						resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
+						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
+							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, nodesToSample,null);
+							if (addOneMapping(array, true)) mappingsAdded++;
+						}
+					}
+				}
+				else {
+					for (int i=0; i<samplingLimit; i++) {
+						resultStates = (CategoricalHistory)historySource.getMapping(RandomBetween.getLong(0,numMappings-1),resultStates,null);
+						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
+							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,nodesToSample, null);
+							if (addOneMapping(array, true)) mappingsAdded++;
+						}
+					}
+				}
+
+		}
+		if (mappingsAdded>0)
+			numHistories++;
+		if (mappingsAdded>0)
+			for (int i=0; i<numStates; i++)
+				for (int j=0; j<numStates; j++)
+				{
+					avg[i][j] = avg[i][j]+total[i][j]/mappingsAdded;
+					if (totalChanges[i][j]>0 && i!=j)
+						for (int k=0; k<maxChanges; k++) {
+							fractionWithAmount[i][j][k] = fractionWithAmount[i][j][k]+totalWithAmount[i][j][k]/totalChanges[i][j];
+						}
+				}
+
+	}
+	
 	/*.................................................................................................................*/
 
 	public void addOneHistory(Tree tree, CategoricalHistory history,int node,boolean selectedNodesOnly, int samplingLimit) {
@@ -179,6 +257,7 @@ public class CategStateChanges {
 				}
 
 	}
+
 
 	/*.................................................................................................................*/
 

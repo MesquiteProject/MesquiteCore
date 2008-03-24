@@ -23,7 +23,11 @@ import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
 
-//TODO: ideally have it check to see if reconstructor generates frequencies before it lets user switch to average frequencies
+/* 
+ * 
+ * doesn't listen properly to changes
+ * 
+ * */
 
 /*======================================================================== */
 public class SummarizeChanges extends TreeDisplayAssistantA {
@@ -357,7 +361,7 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 	Tree myTree;
 	SummarizeChanges sumChangesModule;
-	CategoricalHistory charStates;
+	//CategoricalHistory charStates;
 	int currentChar = 0;
 	Taxa taxa = null;
 //	long allStates = 0L;
@@ -383,6 +387,21 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 	}
 
 	boolean firstTreeHasAllTaxa = true;
+	/*-----------------------------------------*/
+
+	private  void markSelectedCommonClades(Bits nodes, Tree treeToMark, int node, Tree sourceTree){
+		if (!sourceTree.nodeIsTerminal(node))
+			for (int d = sourceTree.firstDaughterOfNode(node); sourceTree.nodeExists(d); d = sourceTree.nextSisterOfNode(d)) {
+				markSelectedCommonClades(nodes, treeToMark,  d,  sourceTree);
+			}
+
+		if (sourceTree.getSelected(node)) {
+			int[] taxaInClade = sourceTree.getTerminalTaxa(node);
+			int c = cladeInTree(treeToMark, treeToMark.getRoot(), taxaInClade);
+			if (c>0)
+				nodes.setBit(c,true);
+		}
+	}
 	/*.................................................................................................................*/
 	public   void recalculate(){
 		totalTrees =0;
@@ -396,8 +415,8 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 
 			int drawnRoot = treeDisplay.getTreeDrawing().getDrawnRoot();
 
-			if (charStates != null)
-				charStates.deassignStates();
+	//		if (charStates != null)
+	//			charStates.deassignStates();
 
 			resultString.setValue("Please wait; calculating.");
 
@@ -434,7 +453,7 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 	//			numEquivocal = new int[myTree.getNumNodeSpaces()];
 	//		IntegerArray.zeroArray(numEquivocal);
 
-			Tree tempTree = sumChangesModule.treeSourceTask.getTree(taxa, 0);
+			MesquiteTree tempTree = (MesquiteTree)sumChangesModule.treeSourceTask.getTree(taxa, 0);
 			int maxnum = sumChangesModule.historyTask.getNumberOfHistories(tempTree);
 			//allStates = 0L;
 			if (sumChangesModule.currentChar>= maxnum)
@@ -462,10 +481,9 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 
 
 			CategStateChanges stateChanges=null;
-			int changesNode = myTree.getFirstSelected(myTree.getRoot());
-			if (changesNode<0)
-				changesNode=myTree.getRoot();
-			int[] taxaInChangesClade = myTree.getTerminalTaxa(changesNode);
+//			int changesNode = myTree.getFirstSelected(myTree.getRoot());
+//			if (changesNode<0)
+//				changesNode=myTree.getRoot();
 			
 
 
@@ -485,29 +503,36 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 					CommandRecord.tick("Examining ancestral state reconstruction on tree " + it);
 				sumChangesModule.historyTask.prepareForMappings();
 				sumChangesModule.historyTask.prepareHistory(tempTree, sumChangesModule.currentChar);
+				
 //				CharacterHistory currentHistory = historyTask.getMapping(0, null, resultString);
 				tempCharStates = (CategoricalHistory)sumChangesModule.historyTask.getMapping(0, tempCharStates, null);
-				if (stateChanges==null)
+				if (stateChanges==null) {
 					stateChanges = new CategStateChanges(tempCharStates.getMaxState()+1);
-				else if (tempCharStates.getMaxState()+1>stateChanges.getNumStates()) {
-					stateChanges.adjustNumStates(tempCharStates.getMaxState()+1);
 				}
+				stateChanges.setAcceptableChange(1, 0, false);
+
+				
+				Bits nodes = null;
+				if (myTree.anySelected())
+					nodes = new Bits(tempTree.getNumNodeSpaces());
+				markSelectedCommonClades(nodes, tempTree, myTree.getRoot(), myTree);
 
 
 				//this tree has the relevant information to process it
 
-				if (tempCharStates !=null)
-					charStates = (CategoricalHistory)tempCharStates.adjustHistorySize(myTree, charStates);
+				//if (tempCharStates !=null)
+				//	charStates = (CategoricalHistory)tempCharStates.adjustHistorySize(myTree, charStates);
 
-				if (tempCharStates !=null){
-						int c = cladeInTree(tempTree, tempTree.getRoot(), taxaInChangesClade);
-						if (c>0) stateChanges.addOneHistory(tempTree, tempCharStates, c, true, 500);
+				//if (tempCharStates !=null){
+						//int c = cladeInTree(tempTree, tempTree.getRoot(), taxaInChangesClade);
+						//if (c>0) stateChanges.addOneHistory(tempTree, tempCharStates, c, true, 500);
+						stateChanges.addOneHistory(tempTree, sumChangesModule.historyTask, sumChangesModule.currentChar,tempTree.getRoot(), nodes, 500);
 
 			//		allStates |= tempCharStates.getAllStates();
 					//survey original nodes to see if node is in tree, and if so record char reconstructed
-				}				
+				//}				
 				if (it+1<numTrees)
-					tempTree = sumChangesModule.treeSourceTask.getTree(taxa, it+1);
+					tempTree = (MesquiteTree)sumChangesModule.treeSourceTask.getTree(taxa, it+1);
 
 			}
 
