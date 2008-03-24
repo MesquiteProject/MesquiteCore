@@ -46,7 +46,7 @@
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
         <key>VMOptions</key>
-        <string>-Xmx512m -Djava.library.path=lib</string>
+        <string>-Xmx512m -Djava.library.path=lib   -Dapple.awt.graphics.UseQuartz=true</string>
 	</dict>
 </dict>
 </plist>
