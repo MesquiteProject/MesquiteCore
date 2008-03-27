@@ -168,7 +168,7 @@ public class ExportDistanceMatrix extends FileInterpreterI{
     }
 
   	public boolean isPrerelease() {
-	    return false;
+	    return true;
    	}
 
   	public boolean isSubstantive(){
