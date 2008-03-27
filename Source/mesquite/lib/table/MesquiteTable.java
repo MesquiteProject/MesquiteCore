@@ -3828,8 +3828,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			int r2 = MesquiteInteger.maximum(first, last);
 			for (int i = r1; i <= r2; i++) {
 				rowsSelected[0].setBit(i);
-				if (rowAssociable != null)
+				if (rowAssociable != null) {
 					rowAssociable.setSelected(i, true);
+				}
 			}
 		}
 	}
@@ -4602,6 +4603,22 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		firstCell = columnNamesSelected[0].firstBitOn();
 		if (firstCell >= 0)
 			return new Dimension(firstCell, -1);
+		return new Dimension(-2, -2);
+	}
+	/* ............................................................................................................... */
+	/** returns column and row of first cell selected (-2, -2 if none). */
+	public Dimension getLastTableCellSelected() {
+		if (numColumnsTotal == 0)
+			return new Dimension(-2, -2);
+		int lastCell = cellsSelected[0].lastBitOn();
+		if (lastCell >= 0)
+			return new Dimension(lastCell % numColumnsTotal, lastCell / numColumnsTotal);
+		lastCell = rowNamesSelected[0].lastBitOn();
+		if (lastCell >= 0)
+			return new Dimension(-1, lastCell);
+		lastCell = columnNamesSelected[0].lastBitOn();
+		if (lastCell >= 0)
+			return new Dimension(lastCell, -1);
 		return new Dimension(-2, -2);
 	}
 
