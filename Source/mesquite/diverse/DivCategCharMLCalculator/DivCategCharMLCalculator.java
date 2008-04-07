@@ -64,6 +64,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     MesquiteString rootModeName;
 
     MesquiteBoolean intermediatesToConsole = new MesquiteBoolean(false);
+    MesquiteBoolean getStartFromConstrainedModel = new MesquiteBoolean(false);
 
     boolean[] deleted = null;
     MesquiteParameter r0p;
@@ -157,6 +158,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         temp.addLine("setStepCount " + stepCount);
         temp.addLine("setIterations " + iterations);
         temp.addLine("conditionOnSurvival  " + conditionOnSurvival.toOffOnString());
+        temp.addLine("getStartFromConstrainedModel " + getStartFromConstrainedModel.toOffOnString());
         if (explorer != null)
             temp.addLine("showParamExplorer ", explorer);
         temp.addLine("resume ");
@@ -223,6 +225,9 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         }
         else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
             intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
+        }
+        else if (checker.compare(getClass(),"Sets whether to start searches for six parameter models from estimates of canonical five parameter models","[on; off]", commandName, "getStartFromConstrainedModel")){
+            getStartFromConstrainedModel.toggleValue(parser.getFirstToken(arguments));
         }
         else
             return  super.doCommand(commandName, arguments, checker);
@@ -515,34 +520,62 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
                 Object[] bundle = new Object[] {tree, observedStates, speciesModel};
                 stepCount = 100;
                 double useIterations = iterations;
-                double[] suggestions1 = new double[]{0.5, 0.3, 0.5, 0.4, 0.1, 0.05};  //TODO these may need more work
-                double[] suggestions2 = new double[]{0.3, 0.5, 0.4, 0.5, 0.05, 0.1};
+                double[] suggestions1;
+                double[] suggestions2;
+                double[] suggestions3;
+                if (getStartFromConstrainedModel.getValue()){
+                    suggestions1 = estimate5(tree,observedStates,1,new double[]{0.4, 0.5, 0.4, 0.1, 0.05});  //TODO these may need more work
+                    suggestions2 = estimate5(tree,observedStates,3,new double[]{0.3, 0.5, 0.45, 0.05, 0.1});
+                    suggestions3 = estimate5(tree,observedStates,5,new double[]{0.5,0.3,0.5,0.4,0.075});
+                }
+                else {
+                    suggestions1 = new double[]{0.3, 0.4, 0.5, 0.4, 0.1, 0.05};
+                    suggestions2 = new double[]{0.3, 0.5, 0.5, 0.4, 0.05, 0.1};
+                    suggestions3 = new double[]{0.5,0.3,0.5,0.4,0.05, 0.1};                    
+                }
                 double bestL = 1e101;
                 double[] suggestions = null;
                 int bestS = -1;
                 String attemptName = "";
-                if (evaluate(suggestions1, bundle) < 1e99 && evaluate(suggestions2, bundle) < 1e99){
+                double evs1 = MesquiteDouble.unassigned;
+                double evs2 = MesquiteDouble.unassigned;
+                double evs3 = MesquiteDouble.unassigned;
+                if (suggestions1 != null)
+                    evs1 = evaluate(suggestions1,bundle);
+                if (suggestions2 != null)
+                    evs2 = evaluate(suggestions2,bundle);
+                if (suggestions3 != null)
+                    evs3 = evaluate(suggestions3,bundle);
+                if (MesquiteDouble.isCombinable(evs1) && evs1 < 1e99 && MesquiteDouble.isCombinable(evs2) && evs2 < 1e99 && MesquiteDouble.isCombinable(evs3) && evs3 < 1e99){
                     logln("Diversification Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
                     logln("Diversification Categ Char: Estimating all 6 parameters, phase 1: step count 100");
                     double negLogLikelihood1 = opt.optimize(suggestions1, bundle);
                     logln("Diversification Categ Char: neg. Log Likelihood first attempt:" + negLogLikelihood1);
                     double negLogLikelihood2 = opt.optimize(suggestions2, bundle);
                     logln("Diversification Categ Char: neg. Log Likelihood second attempt:" + negLogLikelihood2);
-                    if (negLogLikelihood1 < negLogLikelihood2) {
+                    double negLogLikelihood3 = opt.optimize(suggestions3, bundle);
+                    logln("Diversification Categ Char: neg. Log Likelihood third attempt:" + negLogLikelihood3);
+                    if (negLogLikelihood1 < negLogLikelihood2 && negLogLikelihood1 < negLogLikelihood3) {
                         suggestions = suggestions1;
                         bestS = -1;
                         bestL = negLogLikelihood1;
                         attemptName = " first attempt" ;
                     }
-                    else {
+                    else if (negLogLikelihood2 < negLogLikelihood1 && negLogLikelihood2 < negLogLikelihood3) {
                         suggestions = suggestions2;
                         bestS = -2;
                         bestL = negLogLikelihood2;
                         attemptName = " second attempt" ;
                     }
+                    else {
+                        suggestions = suggestions3;
+                        bestS = -3;
+                        bestL = negLogLikelihood3;
+                        attemptName = " third attempt" ;                        
+                    }
                 }
                 else{
-                    useIterations = iterations + 2;
+                    useIterations = iterations + 3;
                 }
                 double[][] randomSuggestions = new double[(int)useIterations][6];  //prevent crash when evaluate fails?
 
@@ -618,12 +651,28 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
                 Optimizer opt = new Optimizer(this);
                 Object[] bundle = new Object[] {tree, observedStates, speciesModel};
                 stepCount = 100;
+                int looseParameter = -1;
                 int numParams = speciesModel.numberEffectiveParameters();
                 double[] suggestions1 = new double[numParams];
                 logln("Diversif Categ Char: Tree " + tree.getName() + " and character " + obsStates.getName());
                 logln("Diversif Categ Char: Estimating " + numParams + " free parameters");
-                for (int i=0; i < suggestions1.length; i++)
-                    suggestions1[i] = 0.1*(i+1);
+                if (getStartFromConstrainedModel.getValue() && (numParams == 4)){                    
+                    if (speciesModel.parameters[1].getConstrainedTo() == null)
+                        looseParameter = 1;
+                    else if (speciesModel.parameters[3].getConstrainedTo() == null)
+                        looseParameter = 3;
+                    else if (speciesModel.parameters[5].getConstrainedTo() == null)
+                        looseParameter = 5;
+                    for (int i=0; i < suggestions1.length; i++)
+                        suggestions1[i] = 0.1*(i+1);
+                    suggestions1 = estimate3(tree,observedStates,looseParameter,suggestions1);  //TODO these may need more work
+                    logln("Generating starting point for 4 parameter model from canonical 3 parameter model");
+                    logln("First random suggestion will be replaced by estimate from 3 parameter model");
+                }
+                else {
+                    for (int i=0; i < suggestions1.length; i++)
+                        suggestions1[i] = 0.1*(i+1);
+                }
                 logln("Diversif Categ Char: Estimating parameters, phase 1: step count 100");
                 double bestL = MesquiteDouble.unassigned;
                 int bestS = -1;
@@ -646,6 +695,13 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
                             for (int k = 0; k<numParams; k++)
                                 randomSuggestions[i][k] = rng.randomDoubleBetween(0, 1.0);
 
+                    }
+                }
+                if (getStartFromConstrainedModel.getValue() && (numParams == 4)){
+                    if (looseParameter != -1){
+                        logln("Setting first random suggestion to " + DoubleArray.toString(suggestions1));
+                        for(int i=0;i<suggestions1.length;i++)
+                            randomSuggestions[0][i]=suggestions1[i];
                     }
                 }
                 for (int i = 0; i< iterations; i++){ // 0 to 10
@@ -833,9 +889,209 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         double negLogLikelihood = -(Math.log(likelihood) - logComp);
         return negLogLikelihood;
     }
+    
+    int quickIterations;
+    private DiversificationCategModel localModel5 = new DiversificationCategModel();
+    public double[] estimate5(Tree tree, CategoricalDistribution observedStates,int toConstrain,double suggestions[]){
+        //some parameters are unassigned, and thus need to be estimated
+        //First, we need to go through the parameters array to construct a mapping between our local free parameters and the original
+        quickIterations = iterations/2;
+        MesquiteParameter [] localParams = new MesquiteParameter[6]; 
+        for(int i= 0; i<6;i++){
+            localParams[i] = new MesquiteParameter();
+            if (i == toConstrain)
+                localParams[i].setConstrainedTo(localParams[i-1], false);            
+        }
+        localModel5.setParams(localParams);
+        Optimizer opt = new Optimizer(this);
+        Object[] bundle = new Object[] {tree, observedStates, localModel5};
+        stepCount = 100;
+        int numParams = 5;
+        logln("Diversif Categ Char (5 parameter starting point): constraining parameter " + toConstrain + " to generate starting point for 6 parameter estimate");
+        logln("Diversif Categ Char (5 parameter starting point: Estimating parameters, phase 1: step count 100");
+        double bestL = MesquiteDouble.unassigned;
+        double nLL = MesquiteDouble.unassigned;
+        int bestS = -2;
+        if (evaluate(suggestions,bundle)<1e99){
+            logln("Trying initial suggestion :" + DoubleArray.toString(suggestions));
+            nLL = opt.optimize(suggestions,bundle);
+            stepCount = 1000;
+            nLL = evaluate(suggestions, bundle);
+            stepCount = 100;
+            logln("Diversif Categ Char 5 parameter reduced model starting suggestion: initial suggestion neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(suggestions));
+            if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
+                bestS = -1;
+                bestL = nLL;
+            }
+        }
+        String attemptName = "random attempt";
+        double[][] randomSuggestions = new double[quickIterations][numParams];
+        for (int i = 0; i< quickIterations; i++){  
+            if (i< quickIterations/2){//0 to 1 
+                for (int k = 0; k<numParams; k++){
+                    randomSuggestions[i][k] = rng.randomDoubleBetween(0, 1.0);
+                }
+            }
+            else { //00 to 10.0
+                double max =  rng.randomDoubleBetween(0, 10.0);
+                for (int k = 0; k<numParams; k++){
+                    randomSuggestions[i][k] = max - 0.5 + rng.randomDoubleBetween(0, 2.0);
+                }
+
+                if (evaluate(randomSuggestions[i], bundle) > 1e99) //likelihood bad; try a 0 to 1 one instead
+                    for (int k = 0; k<numParams; k++)
+                        randomSuggestions[i][k] = rng.randomDoubleBetween(0, 1.0);
+            }
+        }
+        for (int i = 0; i< quickIterations; i++){ // 0 to 10
+            if (evaluate(randomSuggestions[i], bundle) < 1e99){  //don't start if it hits surface in NaN-land
+                logln("Diversif Categ Char (5 parameter starting point): random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
+                nLL = opt.optimize(randomSuggestions[i], bundle);
+                stepCount = 1000;
+                nLL = evaluate(randomSuggestions[i], bundle);
+                stepCount = 100;
+                logln("Diversif Categ Char (5 parameter starting point): attempt " + i + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
+                if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
+                    bestS = i;
+                    bestL = nLL;
+                    attemptName = "random attempt " + i ;
+                }
+            }
+            else 
+                logln("Diversif Categ Char (5 parameter starting point): random attempt " + i + " failed because starting position had undefined likleihood");
+        }
+        if (bestS>=-1){
+            if (bestS > 0)
+                suggestions = randomSuggestions[bestS];
+            logln("Diversif Categ Char (5 parameter starting point): Estimating parameters, phase 2: step count 100; best so far " + evaluate(suggestions, bundle));
+            stepCount = 1000;
+            logln("Diversif Categ Char (5 parameter starting point): Estimating parameters, phase 2: step count 1000; best so far " + evaluate(suggestions, bundle));
+            logln("Diversif Categ Char 5 parameter starting point): Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
+            double negLogLikelihood = opt.optimize(suggestions, bundle);
+            logln("Diversif Categ Char (5 parameter starting point): neg. Log Likelihood final attempt:" + negLogLikelihood);
+
+            final double [] result = new double[6];
+            for(int i= 0;i<result.length;i++){
+                if(i<toConstrain)
+                    result[i] = suggestions[i];
+                else
+                    result[i] = suggestions[i-1];
+            }
+            return result;
+        }
+        logln("Diversif Categ Char (5 parameter starting point): Estimating parameters failed");
+        return null;
+    }
+
+
+
+private DiversificationCategModel localModel3 = new DiversificationCategModel();
+public double[] estimate3(Tree tree, CategoricalDistribution observedStates,int looseParameter, double suggestions[]){
+    //some parameters are unassigned, and thus need to be estimated
+    //First, we need to go through the parameters array to construct a mapping between our local free parameters and the original
+    quickIterations = iterations/2;
+    MesquiteParameter [] localParams = new MesquiteParameter[6]; 
+    for(int i= 0; i<6;i++){
+        localParams[i] = new MesquiteParameter();
+        if (i % 2 == 1) // get 1,3,5
+            localParams[i].setConstrainedTo(localParams[i-1], false);            
+    }
+    localModel3.setParams(localParams);
+    double [] localSuggestions = DoubleArray.copyIntoDifferentSize(suggestions, 3, MesquiteDouble.unassigned);
+    Optimizer opt = new Optimizer(this);
+    Object[] bundle = new Object[] {tree, observedStates, localModel3};
+    stepCount = 100;
+    int numParams = 3;
+    logln("Diversif Categ Char: constraining parameters 1,3,5 to generate starting point for 4 parameter estimate");
+    logln("Diversif Categ Char: Estimating three free parameters");
+    logln("Diversif Categ Char: Estimating parameters, phase 1: step count 100");
+    double bestL = MesquiteDouble.unassigned;
+    double nLL = MesquiteDouble.unassigned;
+    int bestS = -2;
+    if (evaluate(localSuggestions,bundle)<1e99){
+        logln("Trying initial suggestion (3 parameter starting point):" + DoubleArray.toString(localSuggestions));
+        nLL = opt.optimize(localSuggestions,bundle);
+        stepCount = 1000;
+        nLL = evaluate(localSuggestions, bundle);
+        stepCount = 100;
+        logln("Diversif Categ Char 3 parameter reduced model starting suggestion: initial suggestion neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(localSuggestions));
+        if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
+            bestS = -1;
+            bestL = nLL;
+        }
+    }
+    
+    String attemptName = "random attempt";
+    double[][] randomSuggestions = new double[quickIterations][numParams];
+    for (int i = 0; i< quickIterations; i++){  
+        if (i< quickIterations/2){//0 to 1 
+            for (int k = 0; k<numParams; k++){
+                randomSuggestions[i][k] = rng.randomDoubleBetween(0, 1.0);
+            }
+        }
+        else { //00 to 10.0
+            double max =  rng.randomDoubleBetween(0, 10.0);
+            for (int k = 0; k<numParams; k++){
+                randomSuggestions[i][k] = max - 0.5 + rng.randomDoubleBetween(0, 2.0);
+            }
+            
+            if (evaluate(randomSuggestions[i], bundle) > 1e99) //likelihood bad; try a 0 to 1 one instead
+                for (int k = 0; k<numParams; k++)
+                    randomSuggestions[i][k] = rng.randomDoubleBetween(0, 1.0);
+        }
+    }
+    for (int i = 0; i< quickIterations; i++){ // 0 to 10
+        if (evaluate(randomSuggestions[i], bundle) < 1e99){  //don't start if it hits surface in NaN-land
+            logln("Diversif Categ Char (3 parameter starting point): random suggestions " + i + " :" + DoubleArray.toString(randomSuggestions[i]));
+            nLL = opt.optimize(randomSuggestions[i], bundle);
+            stepCount = 1000;
+            nLL = evaluate(randomSuggestions[i], bundle);
+            stepCount = 100;
+            logln("Diversif Categ Char ((3 parameter starting point): attempt " + i + " neg. Log Likelihood:" + nLL + " : " + DoubleArray.toString(randomSuggestions[i]));
+            if (nLL < bestL || MesquiteDouble.isUnassigned(bestL)){
+                bestS = i;
+                bestL = nLL;
+                attemptName = "random attempt " + i ;
+            }
+        }
+        else 
+            logln("Diversif Categ Char (3 parameter starting point): random attempt " + i + " failed because starting position had undefined likleihood");
+    }
+    if (bestS>=-1){
+        if (bestS > 0)
+            localSuggestions = randomSuggestions[bestS];
+        logln("Diversif Categ Char (3 parameter starting point): Estimating parameters, phase 2: step count 100; best so far " + evaluate(localSuggestions, bundle));
+        stepCount = 1000;
+        logln("Diversif Categ Char (3 parameter starting point): Estimating parameters, phase 2: step count 1000; best so far " + evaluate(localSuggestions, bundle));
+        logln("Diversif Categ Char (3 parameter starting point): Estimating parameters, phase 2: step count 1000 starting from results of preliminary " + attemptName);
+        double negLogLikelihood = opt.optimize(localSuggestions, bundle);
+        logln("Diversif Categ Char (3 parameter starting point): neg. Log Likelihood final attempt:" + negLogLikelihood);
+        final double [] result = new double[4];
+        result[0] = localSuggestions[0];
+        if (looseParameter == 1){
+            result[1]=localSuggestions[0];
+            result[2]=localSuggestions[1];
+            result[3]=localSuggestions[2];
+        }
+        else if (looseParameter == 3){
+            result[1]=localSuggestions[1];
+            result[2]=localSuggestions[1];
+            result[3]=localSuggestions[2];
+        }
+        else if (looseParameter == 5){
+            result[1]=localSuggestions[1];
+            result[2]=localSuggestions[2];
+            result[3]=localSuggestions[2];                           
+        }
+
+        return result;
+    }
+    logln("Diversif Categ Char (3 parameter starting point): Estimating parameters failed");
+    return null;
+    }
+}
 
     
-}
 /*============================================================================*/
 class DiversificationCategModel implements DESystem  {
     
