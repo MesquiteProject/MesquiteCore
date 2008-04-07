@@ -226,7 +226,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
         else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
             intermediatesToConsole.toggleValue(parser.getFirstToken(arguments));
         }
-        else if (checker.compare(getClass(),"Sets whether to start searches for six parameter models from estimates of canonical five parameter models","[on; off]", commandName, "getStartFromConstrainedModel")){
+        else if (checker.compare(getClass(),"Sets whether to start searches for six parameter models from estimates of canonical five parameter models (and 4 parameter from 3)","[on; off]", commandName, "getStartFromConstrainedModel")){
             getStartFromConstrainedModel.toggleValue(parser.getFirstToken(arguments));
         }
         else
