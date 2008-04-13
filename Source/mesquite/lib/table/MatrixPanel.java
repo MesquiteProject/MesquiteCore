@@ -331,7 +331,7 @@ timer6.end();
 
 			if (table.frameMatrixCells) {
 				int columnHeight = 0;
-				for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (columnHeight<height); r++) {
+				for (int r=table.firstRowVisible; (r<table.numRowsTotal)  && r< table.rowHeights.length&& (columnHeight<height); r++) {
 					columnHeight += table.rowHeights[r];
 				}
 				if  (columnHeight>height)
@@ -339,7 +339,7 @@ timer6.end();
 
 				g.setColor(Color.gray);
 				lineX = 0;
-				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<width); c++) {
+				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<width) && c< table.columnWidths.length; c++) {
 					lineX += table.columnWidths[c];
 					g.drawLine(lineX, 0, lineX, columnHeight);//matrixHeight + columnNamesRowHeight
 				}
@@ -350,7 +350,7 @@ timer6.end();
 					rowLength = lineX;
 
 				lineY = 0;
-				for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<height); r++) {
+				for (int r=table.firstRowVisible; (r<table.numRowsTotal)  && r< table.rowHeights.length && (lineY<height); r++) {
 					lineY += table.rowHeights[r];
 					g.drawLine(0, lineY, rowLength, lineY);//rowNamesWidth+matrixWidth
 				}
@@ -364,12 +364,12 @@ timer6.end();
 			int numCells = 0;//еее
 			FontMetrics fm = g.getFontMetrics(g.getFont());
 			Shape clip = g.getClip();
-			for (int r=table.firstRowVisible; (r<table.numRowsTotal) && (lineY<resetHeight); r++) {
+			for (int r=table.firstRowVisible; (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
 				lineY += table.rowHeights[r];
 
 				lineX = 0;
 				int oldLineX=lineX;
-				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<resetWidth); c++) {
+				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && c< table.columnWidths.length && (lineX<resetWidth); c++) {
 					numCells++;
 					lineX += table.columnWidths[c];
 					if (c!= returningColumn || r != returningRow){ //don't draw if text about to be returned to cell, and will soon be redrawn anyway

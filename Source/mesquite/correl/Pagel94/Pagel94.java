@@ -192,6 +192,7 @@ public class Pagel94 extends Pagel94Calculator {
             else
                 MesquiteMessage.warnProgrammer("Quitting because the second character is not Categorical");
             iQuit();
+            return;
         }
         observedStates1 = (CategoricalDistribution)charStates1;
         observedStates2 = (CategoricalDistribution)charStates2;

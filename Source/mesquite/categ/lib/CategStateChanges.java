@@ -150,7 +150,6 @@ public class CategStateChanges {
 		}
 		else {
 			long numMappings = historySource.getNumberOfMappings(tree, ic);
-//	Debugg.println("numMappings " + numMappings);
 			if (numMappings == MesquiteLong.infinite || !MesquiteLong.isCombinable(numMappings)) {
 				for (int i=0; i<samplingLimit; i++) {
 					resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
@@ -212,7 +211,6 @@ public class CategStateChanges {
 		}
 		else {
 			long numMappings = history.getNumResolutions(tree);
-//	Debugg.println("numMappings " + numMappings);
 			if (numMappings == MesquiteLong.infinite) {
 				for (int i=0; i<samplingLimit; i++) {
 					resultStates = (CategoricalHistory)history.getResolution(tree, resultStates, i);

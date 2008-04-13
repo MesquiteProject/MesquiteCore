@@ -968,26 +968,28 @@ class HennigCOMMENTS extends HennigNonaCommand {
 		CategoricalData data = (CategoricalData)charData;
 		int numChars = data.getNumChars();
 		int numTaxa = taxa.getNumTaxa();
-		int counter = 0;
+		int charCounter = 0;
+		int totalCounter = 0;
 		int startPos = outputBuffer.length();
 
 		incrementAndUpdateProgIndicator(progIndicator,"Exporting comments");
 		for (int it = 0; it<numTaxa; it++){
-			counter = 0;
+			charCounter = 0;
 			for (int ic = 0; ic<numChars; ic++) {
 				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
 					String note = data.getAnnotation(ic, it);
 					if (note !=null){
-						outputBuffer.append("{"+it+" " + counter + " ");
+						outputBuffer.append("{"+it+" " + charCounter + " ");
 						outputBuffer.append(note);
 						outputBuffer.append(";" + fileInterpreter.getLineEnding());
+						totalCounter++;
 					}							
-					counter++;
+					charCounter++;
 				}
 			}
 		}
 
-		outputBuffer.insert(startPos, getCommandName()+ " " + counter + fileInterpreter.getLineEnding());
+		outputBuffer.insert(startPos, getCommandName()+ " " + totalCounter + fileInterpreter.getLineEnding());
 		outputBuffer.append(";"+ fileInterpreter.getLineEnding()+ fileInterpreter.getLineEnding());
 	}
 }
