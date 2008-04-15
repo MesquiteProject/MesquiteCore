@@ -1016,7 +1016,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		TaxaManager taxaTask = (TaxaManager)ownerModule.findElementManager(Taxa.class);
 		CharactersManager charTask = (CharactersManager)ownerModule.findElementManager(CharacterData.class);
 
-		Taxa taxa = taxaTask.makeNewTaxa("Untitled Taxa", 0, false);
+		Taxa taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
 		taxa.addToFile(file, ownerModule.getProject(), taxaTask);
 
 		InterpretHennig86Base interpretHN = (InterpretHennig86Base)ownerModule;
