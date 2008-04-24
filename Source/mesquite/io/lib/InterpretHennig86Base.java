@@ -17,6 +17,7 @@ package mesquite.io.lib;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
@@ -48,6 +49,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	Class[] acceptedClasses;
 	HennigNonaCommand[] availableCommands;
 	int treeNumber = 0;
+	boolean convertGapsToMissing = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		availableCommands = new HennigNonaCommand[numCommands];
@@ -99,6 +101,15 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	public boolean canImport() {  
 		return true;
 	}
+	/*.................................................................................................................*/
+	public void setConvertGapsToMissing(boolean convertGapsToMissing) {  
+		this.convertGapsToMissing = convertGapsToMissing;
+	}
+	/*.................................................................................................................*/
+	public boolean getConvertGapsToMissing() {  
+		return convertGapsToMissing;
+	}
+
 	/*.................................................................................................................*/
 	static final int numCommands = 7;   // number of available commands
 	static final int cnamesElement = 6;
@@ -326,10 +337,17 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		setLineDelimiter(WINDOWSDELIMITER);
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export TNT/Nona/Hennig86 Options", buttonPressed);
+		
+		Checkbox convertGapsBox = exportDialog.addCheckBox("convert gaps to missing", convertGapsToMissing);
+
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
 
 		boolean ok = (exportDialog.query(dataSelected, taxaSelected)==0);
+		if (ok)  {
+			convertGapsToMissing = convertGapsBox.getState();
+			//storePreferences();
+		}
 
 		exportDialog.dispose();
 		return ok;
@@ -1126,7 +1144,10 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 				outputBuffer.append(StringUtil.tokenize(taxa.getTaxonName(it),";") + "\t");
 				for (int ic = 0; ic<numChars; ic++) {
 					if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))){
-						appendStateToBuffer(ic, it, outputBuffer, data);
+						if (ownerModule.getConvertGapsToMissing() && data.isInapplicable(ic, it))
+							outputBuffer.append("?");
+						else
+							appendStateToBuffer(ic, it, outputBuffer, data);
 					}
 				}
 				outputBuffer.append(fileInterpreter.getLineEnding());
