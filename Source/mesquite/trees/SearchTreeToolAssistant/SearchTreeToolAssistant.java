@@ -43,7 +43,7 @@ import java.awt.image.*;
 		/*.................................................................................................................*/
 		public boolean startJob(String arguments, Object condition, boolean hiredByName){
 			setUseMenubar(false); //menu available by touching oning button
-			addCheckMenuItem(null, "Minimize Objective Function", makeCommand("smallerIsBetter",  this), smallerIsBetter);
+			addCheckMenuItem(null, "Minimize Criterion", makeCommand("smallerIsBetter",  this), smallerIsBetter);
 			addCheckMenuItem(null, "Live Updates", makeCommand("liveUpdates",  this), liveUpdates);
 			swapTaskName = new MesquiteString();
 
@@ -58,7 +58,7 @@ import java.awt.image.*;
 			
 			numberC = makeCommand("setNumberTask",  this);
 			if (numModulesAvailable(NumberForTree.class)>1) {
-				numberTaskSubmenu = addSubmenu(null, "Objection Function", numberC, NumberForTree.class);
+				numberTaskSubmenu = addSubmenu(null, "Criterion", numberC, NumberForTree.class);
 			}
 			
 			extras = new Vector();
@@ -77,7 +77,7 @@ import java.awt.image.*;
 			}
 
 			if (numberTask==null){
-				numberTask = (NumberForTree)hireEmployee(NumberForTree.class, "Objective Function used to judge trees");
+				numberTask = (NumberForTree)hireEmployee(NumberForTree.class, "Criterion used to judge trees");
 				if (numberTask == null)
 					return sorry(getName() + " couldn't search because no calculator module obtained.");
 				numberTaskName = new MesquiteString(numberTask.getName());

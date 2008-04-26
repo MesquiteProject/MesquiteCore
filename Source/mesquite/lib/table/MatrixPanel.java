@@ -421,12 +421,12 @@ timer6.end();
 			}
 			if ((endOfLastColumn()>=0) && (endOfLastColumn()<table.matrixWidth)) {
 				g.setClip(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
-				g.setColor(ColorDistribution.medium[table.colorScheme]);
+				g.setColor(ColorDistribution.light[table.colorScheme]);   //ggray
 				g.fillRect(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
 			}
 			if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
 				g.setClip(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
-				g.setColor(ColorDistribution.medium[table.colorScheme]);
+				g.setColor(ColorDistribution.light[table.colorScheme]);//ggray
 				g.fillRect(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
 			}
 			g.setClip(clip);

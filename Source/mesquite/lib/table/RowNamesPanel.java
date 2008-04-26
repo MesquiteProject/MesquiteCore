@@ -220,7 +220,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 					edit.repaint();
 			}
 			if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
-				g.setColor(ColorDistribution.medium[table.colorScheme]);
+				g.setColor(ColorDistribution.light[table.colorScheme]); //ggray
 				g.fillRect(0, endOfLastRow()+1, getBounds().width, getBounds().height);
 			}
 			g.setColor(Color.black);
