@@ -110,6 +110,7 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
   		else
   			bipartitions.removeAllElements();		// clean bipartition table
 		bipartitions.setTaxa(taxa);
+		bipartitions.zeroFrequencies();
 		initialize();
 	}
   	public abstract void addTree(Tree t);

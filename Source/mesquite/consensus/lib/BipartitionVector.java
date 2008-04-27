@@ -61,12 +61,12 @@ public class BipartitionVector extends Vector {
 	public void zeroFrequencies(){
 		numTreesTotal = 0;
 		weight=1.0;
+		weightedTreesTotal=0.0;
 		allTaxa.clearAllBits();
 		partitionPresent.clearAllBits();
 		for (int i=0; i<size(); i++){
 			Bipartition b = getBipart(i);
-			b.setFreq(0);
-			b.setFreqDouble(0.0);
+			b.reset();
 		}
 		for (int i=0; i<numTaxa; i++){
 			branchLengths[i] = MesquiteDouble.unassigned;
