@@ -1964,6 +1964,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** returns color of row or number box. */
 	public Color getRCNumberBoxColor(boolean isRow, int number) {
 		return ColorDistribution.medium[colorScheme];
+		
+
 	}
 
 	/* ............................................................................................................... */

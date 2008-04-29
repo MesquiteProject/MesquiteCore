@@ -419,7 +419,7 @@ public class CellBlock {
 		leftIsInapplicable.setValue(false);
 		rightIsInapplicable.setValue(false);
 		firstInBlock.setValue(0);
-		lastInBlock.setValue(data.getNumChars());
+		lastInBlock.setValue(data.getNumChars()-1);
 		if (ic>0)
 			if (data.isInapplicable(ic-1, it))
 				leftIsInapplicable.setValue(true);
