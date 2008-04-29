@@ -1963,15 +1963,17 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** returns color of row or number box. */
 	public Color getRCNumberBoxColor(boolean isRow, int number) {
-		return ColorDistribution.medium[colorScheme];
-		
+		//return ColorDistribution.medium[colorScheme];
+		return ColorDistribution.getContentElement();
 
 	}
 
 	/* ............................................................................................................... */
 	/** returns color of row or number box. */
 	public Color getRCNumberBoxDarkColor(boolean isRow, int number) {
-		return ColorDistribution.dark[colorScheme];
+		//return ColorDistribution.dark[colorScheme];
+		return ColorDistribution.getContentDarkElement();
+
 	}
 
 	/* ............................................................................................................... */
@@ -1988,7 +1990,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		// g.setColor(Color.lightGray);
 		g.setColor(getRCNumberBoxColor(isRow, number));
 		g.fillRect(left, top, width, height);
-		g.setColor(Color.white);
+		g.setColor(ColorDistribution.veryVeryLightGray);
 		int newTop;
 		if (isRow)
 			newTop = top;
