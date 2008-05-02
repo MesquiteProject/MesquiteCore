@@ -5421,7 +5421,7 @@ class ControlStrip extends MousePanel {
 		setLayout(null);
 		buttons = new Vector();
 		message = "";
-		setBackground(ColorDistribution.light[colorScheme]);
+		setBackground(ColorDistribution.projectLight[colorScheme]);
 
 	}
 
