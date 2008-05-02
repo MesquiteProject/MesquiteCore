@@ -122,6 +122,7 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 		TextDisplayer displayer = (TextDisplayer)hireEmployee(TextDisplayer.class, null);
 		if (displayer!=null) {
 			displayer.setWrap(false);
+			displayer.setPoppedOut(1);
 			displayer.showText("Summarize Changes", "Summarize Changes", true);
 		}
 		SummarizeChangesOperator newTrace = new SummarizeChangesOperator(this, treeDisplay, displayer);

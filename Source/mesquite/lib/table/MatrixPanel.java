@@ -631,6 +631,8 @@ timer6.end();
 	}
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		table.stopAutoScrollThread();
 		if (!table.editingAnything() && !table.singleTableCellSelected()) 
 			setWindowAnnotation("", null);
@@ -638,6 +640,7 @@ timer6.end();
 		int column = findColumn(x, y);
 		int row = findRow(x, y);
 		table.mouseExitedCell(modifiers, column, -1, row, -1, tool);
+		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*...............................................................................................................*/
 	public void setCurrentCursor(int modifiers, int column, int row, MesquiteTool tool) {
@@ -653,17 +656,23 @@ timer6.end();
 	}
 	/*...............................................................................................................*/
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		int column = findColumn(x, y);
 		int row = findRow(x, y);
 		setCurrentCursor(modifiers, column, row, tool);
 		table.mouseInCell(modifiers, column,-1, row, -1,tool);
+		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*...............................................................................................................*/
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		int column = findColumn(x, y);
 		int row = findRow(x, y);
 		setCurrentCursor(modifiers, column,  row, tool);
 		table.mouseInCell(modifiers, column,-1,  row, -1, tool);
+		MesquiteWindow.uncheckDoomed(this);
 
 	}
 	public void focusGained(FocusEvent arg0) {
