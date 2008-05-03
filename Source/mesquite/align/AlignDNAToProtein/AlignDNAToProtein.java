@@ -44,6 +44,7 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 		MesquiteBoolean dataChanged = new MesquiteBoolean();
 		if (numInDNA<numInProtein*3) {
 			dnaData.addCharacters(numInDNA, numInProtein*3-numInDNA, false);
+			dnaData.addInLinked(numInDNA, numInProtein*3-numInDNA, true);
 			dataChanged.setValue(true);
 		}
 		dnaData.collapseGapsInCellBlockRight(it, 0, dnaData.getNumChars()-1, false);   //move everything to right so we only need to shift them left
