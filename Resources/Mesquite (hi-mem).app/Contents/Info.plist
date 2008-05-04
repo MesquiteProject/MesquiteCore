@@ -28,7 +28,7 @@
 	<key>CFBundleIconFile</key>
 	<string>Mesquite.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.Mesquite</string>
+	<string>org.mesquiteproject.Mesquite</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -50,7 +50,7 @@
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
         <key>VMOptions</key>
-        <string>-Xmx512m -Djava.library.path=lib   -Dapple.awt.graphics.UseQuartz=true</string>
+        <string>-Xmx512m -Djava.library.path=lib  -Dapple.awt.graphics.UseQuartz=true</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
@@ -59,5 +59,3 @@
 	</dict>
 </dict>
 </plist>
-
-
