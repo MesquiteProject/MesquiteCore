@@ -421,17 +421,17 @@ timer6.end();
 			}
 			if ((endOfLastColumn()>=0) && (endOfLastColumn()<table.matrixWidth)) {
 				g.setClip(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
-				g.setColor(ColorDistribution.getContentBackgroundPale());   //ggray
+				g.setColor(ColorTheme.getContentBackgroundPale());   //ggray
 				g.fillRect(endOfLastColumn()+1, 0, table.matrixWidth-1, table.matrixHeight-1);
 			}
 			if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
 				g.setClip(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
-				g.setColor(ColorDistribution.getContentBackgroundPale());//ggray
+				g.setColor(ColorTheme.getContentBackgroundPale());//ggray
 				g.fillRect(0, endOfLastRow()+1, table.matrixWidth-1, table.matrixHeight-1);
 			}
 			g.setClip(clip);
 //			g.setColor(Color.black);
-			g.setColor(ColorDistribution.getContentEdgeDark());  //used to be light
+			g.setColor(ColorTheme.getContentEdgeDark());  //used to be light
 
 			g.drawRect(0, 0, resetWidth-1, resetHeight-1);
 		}

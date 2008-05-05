@@ -219,11 +219,11 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 					edit.repaint();
 			}
 			if ((endOfLastRow()>=0) && (endOfLastRow()<table.matrixHeight)) {
-				g.setColor(ColorDistribution.getContentBackgroundPale());
+				g.setColor(ColorTheme.getContentBackgroundPale());
 				g.fillRect(0, endOfLastRow()+1, getBounds().width, getBounds().height);
 			}
 			//g.setColor(Color.black);
-			g.setColor(ColorDistribution.getContentEdgeDark());  //used to be light
+			g.setColor(ColorTheme.getContentEdgeDark());  //used to be light
 			if (table.frameRowNames)
 				g.drawRect(0, 0, width, height-1);
 			g.drawLine(width-1, 0, width-1, height);

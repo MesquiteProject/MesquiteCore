@@ -1964,7 +1964,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** returns color of row or number box. */
 	public Color getRCNumberBoxColor(boolean isRow, int number) {
 		//return ColorDistribution.medium[colorScheme];
-		return ColorDistribution.getContentBackgroundPale();
+		return ColorTheme.getContentBackgroundPale();
 
 	}
 
@@ -1972,7 +1972,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** returns color of row or number box. */
 	public Color getRCNumberBoxDarkColor(boolean isRow, int number) {
 		//return ColorDistribution.dark[colorScheme];
-		return ColorDistribution.getContentDarkElement();
+		return ColorTheme.getContentDarkElement();
 
 	}
 
@@ -5421,7 +5421,7 @@ class ControlStrip extends MousePanel {
 		setLayout(null);
 		buttons = new Vector();
 		message = "";
-		setBackground(ColorDistribution.projectLight[colorScheme]);
+		setBackground(ColorTheme.getInterfaceBackground());
 
 	}
 

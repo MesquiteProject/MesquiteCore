@@ -36,7 +36,7 @@ public abstract class EditorPanel extends MesquitePanel {
 		editField = new EditorTextField(this, 0, 0);
 		add(editField);
 		editField.setVisible(false);
-		setBackground(ColorDistribution.projectLight[table.colorScheme]);
+		setBackground(ColorTheme.getInterfaceBackgroundPale());
 	}
 	public abstract void textReturned(int column, int row, String text);
 	public abstract String getText(int column, int row);
