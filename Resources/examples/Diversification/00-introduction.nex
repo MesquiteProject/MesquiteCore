@@ -1,9 +1,22 @@
 #NEXUS
-[written Thu Sep 20 14:35:29 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
+[written Sun May 04 16:20:41 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		getWindow;
+		tell It;
+			setResourcesState false true 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 553 359;
+			setLocation 7 29;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			setNextFileName '01-lineagesThroughTime.nex';
@@ -13,7 +26,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 429 288;
+					setSize 553 342;
 					setLocation 7 29;
 					setFont SanSerif;
 					setFontSize 10;

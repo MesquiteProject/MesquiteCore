@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:25:00 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sun May 04 15:07:37 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "02-addingDeleting.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -20,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "02-addingDeleting.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,20 +58,20 @@ END;
 
 BEGIN NOTES;
 
-	TEXT TAXA = Fubonidians TAXON = 5 TEXT = Lives_deep_in_dark_caves;
+	TEXT  TAXA = Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -88,7 +92,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM11488fdc25a0;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM11488fdc25a0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 979 484;
+			setLocation 12 30;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -99,18 +116,18 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
-					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 413 400;
-					setLocation 443 28;
+					setSize 479 427;
+					setLocation 12 30;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 				endTell;
 				showWindow;
 				getEmployee #mesquite.lists.TaxonListAnnotPanel.TaxonListAnnotPanel;
@@ -125,15 +142,16 @@ Begin MESQUITE;
 			setPrevFileName '01-taxa.nex';
 			getWindow;
 			tell It;
+					popAsTile true;
+					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 413 408;
+					setSize 394 467;
 					setLocation 12 30;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'After you''ve created a taxa block you can add or delete taxa using either the List of Taxa window (shown at left), or using the Character Matrix Editor window.^n^nTo delete taxa, select them (by touching on the number to the left of the taxon name) and choose Delete selected Taxa from the List menu of the list window.^n^nTo add taxa to the end, choose Add Taxa from the List menu.  There is a tool in the Character Matrix editor that allows you to insert taxa between existing ones.^n^nTaxa can be reordered by selecting one or more taxa (touch on their numbers to the left of their names) and dragging them to a new place in the sequence.  Taxa can be sorted in different orders using the Sort tool.  Touch on a column with the sort tool to sort according to the values in that column.  The first column records the original (Default) order of taxa; sort on that column to return the order to the default.  (You can reset the current order as default by touching on the column heading "Default" and selecting the drop down menu item.)^n^nTaxa can also be reordered in the Character Matrix Editor in similar fashions, both using drag and drop, as well as a Sort Taxa tool.^n^n';
 				setTitle Managing_taxa;
 				toggleFileNames off;

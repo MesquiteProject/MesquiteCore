@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Sep 20 14:10:28 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
+[written Sun May 04 14:39:54 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -85,13 +85,13 @@ BEGIN NOTES;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  4;
+	CODESET * UNTITLED   =  universal:  1 -  4;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                             unord PolyTcount =                             MINSTEPS;
+OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  4;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  4;
 
@@ -114,6 +114,19 @@ Begin MESQUITE;
 			setID 0 974864624972105434 WM11486f6fc1d0;
 			checksum 0 2110737444 WM11486f6fc1d0;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 999 464;
+			setLocation 459 28;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
 			showDataWindow #974864624972105434 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -124,7 +137,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 899 374;
+					setSize 899 387;
 					setLocation 459 28;
 					setFont SanSerif;
 					setFontSize 14;
@@ -137,6 +150,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -146,8 +160,10 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 16;
 					toggleBirdsEye off;
+					toggleAllowAutosize on;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
+					toggleDiagonal off;
+					setDiagonalHeight 80;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
@@ -173,6 +189,10 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
+				getEmployee #mesquite.categ.SmallStateNamesEditor.SmallStateNamesEditor;
+				tell It;
+					panelOpen true;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -181,6 +201,7 @@ Begin MESQUITE;
 			setPrevFileName '14-included.nex';
 			getWindow;
 			tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;

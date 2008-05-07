@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Sep 20 14:10:05 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
+[written Sun May 04 14:33:10 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "13-matrix.nex"';
 	DIMENSIONS  NCHAR=2;
@@ -10,7 +10,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -23,7 +23,7 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;

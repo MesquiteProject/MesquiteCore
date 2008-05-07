@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Sep 20 14:09:40 MST 2007 by Mesquite  version 2.0BETA4 (build i64) at Odontium.local/192.168.0.3 (David Maddison)]
+[written Sun May 04 14:34:09 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -22,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -65,13 +65,13 @@ BEGIN NOTES;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
+OPTIONS DEFTYPE =                               unord PolyTcount =                               MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -94,6 +94,19 @@ Begin MESQUITE;
 			setID 0 974864624972105434 WM11486dc73e00;
 			checksum 0 4129971366 WM11486dc73e00;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 1042 503;
+			setLocation 15 27;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
 			showDataWindow #974864624972105434 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
@@ -108,8 +121,8 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 592 301;
-					setLocation 422 39;
+					setSize 542 446;
+					setLocation 15 27;
 					setFont SansSerif;
 					setFontSize 18;
 					getToolPalette;
@@ -120,6 +133,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -129,8 +143,10 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 16;
 					toggleBirdsEye off;
+					toggleAllowAutosize on;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
+					toggleDiagonal off;
+					setDiagonalHeight 80;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
@@ -156,6 +172,10 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
+				getEmployee #mesquite.categ.SmallStateNamesEditor.SmallStateNamesEditor;
+				tell It;
+					panelOpen true;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -164,13 +184,14 @@ Begin MESQUITE;
 			setPrevFileName '08-logFile.nex';
 			getWindow;
 			tell It;
+					popAsTile true;
 					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 408 392;
-					setLocation 4 40;
+					setSize 394 486;
+					setLocation 15 27;
 					setFont SanSerif;
 					setFontSize 10;
 				setExplanation 'The font of a window may be changed by selecting the menu items in the Edit window.  This changes the font of many parts of a window, but not necessarily all.  For instance, the names of taxa in the Tree Window are controlled separately, via menu items in the Drawing menu.^n^nWindows may be printed using the menu items in the File menu.  ^n^nTo see the Mesquite documentation on windows, use the button below.';

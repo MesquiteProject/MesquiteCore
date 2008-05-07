@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 03 09:23:10 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Sun May 04 15:25:54 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=48;
 	TAXLABELS
 		nig1 nig2 nig3 nig4 nig5 nig6 nig7 nig8 nig9 nig10 nig11 nig12 met1 met2 met3 met4 met5 met6 met7 met8 met9 met10 met11 met12 moj1 moj2 moj3 moj4 moj5 moj6 moj7 moj8 moj9 moj10 moj11 moj12 pac1 pac2 pac3 pac4 pac5 pac6 pac7 pac8 pac9 pac10 pac11 pac12 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "01-wingsPlot.nex"';
 	DIMENSIONS  NCHAR=4;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
@@ -75,6 +77,8 @@ CHARSTATELABELS
 
 END;
 BEGIN TREES;
+	Title 'Trees from "01-wingsPlot.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 nig1,
 		2 nig2,
@@ -130,17 +134,17 @@ END;
 
 
 BEGIN LABELS;
-TAXAGROUPLABEL nig COLOR = (RGB 1.0 0.03137255 0.25882353) ;
-TAXAGROUPLABEL met COLOR = (RGB 0.25882353 1.0 0.08627451) ;
-TAXAGROUPLABEL moj COLOR = (RGB 1.0 0.62745098 0.05882353) ;
-TAXAGROUPLABEL pac COLOR = (RGB 0.02745098 0.58431373 1.0) ;
+	TAXAGROUPLABEL nig COLOR = (RGB 1.0 0.03137255 0.25882353) ;
+	TAXAGROUPLABEL met COLOR = (RGB 0.25882353 1.0 0.08627451) ;
+	TAXAGROUPLABEL moj COLOR = (RGB 1.0 0.62745098 0.05882353) ;
+	TAXAGROUPLABEL pac COLOR = (RGB 0.02745098 0.58431373 1.0) ;
 
 
 END;
 
 BEGIN SETS;
-TAXPARTITION * UNTITLED  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
-TAXPARTITION species  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
+	TAXPARTITION * UNTITLED  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
+	TAXPARTITION species  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
 
 END;
 
@@ -172,12 +176,26 @@ Begin MESQUITE;
 			setID 0 124634251740354766 WM114cbd3ad1e0;
 			checksum 0 578547273 WM114cbd3ad1e0;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false true 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 513 324;
+			setLocation 6 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
 			showDataWindow #124634251740354766 #mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -194,6 +212,7 @@ Begin MESQUITE;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -203,8 +222,8 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 70;
 					toggleBirdsEye off;
+					toggleAllowAutosize on;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
@@ -251,6 +270,7 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -288,7 +308,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 513 246;
+					setSize 513 307;
 					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;

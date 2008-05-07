@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:51:29 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sun May 04 15:10:29 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		A B C D E F G H I J K L M N O P 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "01-editContinuous.nex"';
 	DIMENSIONS  NCHAR=5;
 	FORMAT DATATYPE = CONTINUOUS;
 CHARSTATELABELS 
@@ -69,7 +71,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 8888556603099012391 WM114891ea2940;
-			checksum 0 487214761;
+			checksum 0 487214761 WM114891ea2940;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 100;
+			setPopoutState 343;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 1098 500;
+			setLocation 7 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -77,22 +92,23 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
-					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 459 443;
-					setLocation 522 22;
+					setSize 655 443;
+					setLocation 7 22;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
 					endTell;
+					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -102,8 +118,8 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 66;
 					toggleBirdsEye off;
+					toggleAllowAutosize on;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
@@ -129,15 +145,16 @@ Begin MESQUITE;
 			setPrevFileName '../introduction.nex';
 			getWindow;
 			tell It;
+					popAsTile true;
+					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 459 451;
+					setSize 337 483;
 					setLocation 7 22;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'Mesquite can handle continuous data as well as categorical.  In the spreadsheet window shown here are 5 characters for 16 taxa.^n^nMore details about editing data matrices, including continuous-valued, are in the introductory examples for characters.  ^n^nIn the following examples, some analyses of continuous valued data are shown.  The reader should keep in mind that other packages of modules with many more analyses have been under development, including Rhetenor by Dyreson and Maddison, which does basic multivariate analyses and geometric morphometrics.';
 				setTitle Continuous_data;
 				toggleFileNames off;

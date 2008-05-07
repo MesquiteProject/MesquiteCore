@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 03 09:20:45 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Sun May 04 14:32:21 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=3;
 	TAXLABELS
 		taxon_1 taxon_2 taxon_3 
@@ -19,6 +20,19 @@ Begin MESQUITE;
 		tell It;
 			setID 0 3143466173537330668 WM114861837ad1;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false true 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 700 464;
+			setLocation 16 25;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			getWindow;
@@ -27,8 +41,8 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 586 367;
-					setLocation 5 22;
+					setSize 700 447;
+					setLocation 16 25;
 					setFont SanSerif;
 					setFontSize 14;
 					setActive;

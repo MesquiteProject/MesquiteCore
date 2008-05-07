@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 10:59:50 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sun May 04 21:23:56 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=25;
 	TAXLABELS
 		X._multilineatus X._nigrensis X._cortezi X._malinche X._continens X._nezahualcoyti X._montezumae X._pygmaeus X._birchmanii X._couchianus X._gordoni X._meyeri X._xiphidium X._variatus X._evelynae X._clemenciae X._milleri X._maculatus X._andersi X._alvarezi X._helleri X._signum P._olmaceae P._interm P._compressa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "11-TraceCharMLE.nex"';
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -49,6 +51,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "11-TraceCharMLE.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 X._multilineatus,
 		2 X._nigrensis,
@@ -81,7 +85,7 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1;
+	CODESET * UNTITLED   =  universal:  1;
 
 
 END;
@@ -106,7 +110,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 6115459465024062079 WM11489945b3c0;
-			checksum 0 3737896798;
+			checksum 0 3737896798 WM11489945b3c0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 721 506;
+			setLocation 10 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -120,6 +137,7 @@ Begin MESQUITE;
 				setAssignedID 298.1019014879746.4115002201943536709;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -150,7 +168,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
-							namesAngle ?;
 						endTell;
 					endTell;
 					setBackground White;
@@ -158,6 +175,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -167,12 +189,14 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 				tell It;
 					suspend ;
@@ -210,11 +234,48 @@ Begin MESQUITE;
 					setInitialOffsetX -239;
 					setInitialOffsetY -178;
 					setLegendWidth 218;
-					setLegendHeight 161;
+					setLegendHeight 178;
 					resume ;
 				endTell;
+					newAssistant  #mesquite.stochchar.AsymmMkExplorer.AsymmMkExplorer;
+				tell It;
+					getCharacterSource  #mesquite.charMatrices.CharSrcCoordObed.CharSrcCoordObed;
+					tell It;
+						setCharacterSource #mesquite.charMatrices.StoredCharacters.StoredCharacters;
+						tell It;
+							setDataSet #6115459465024062079;
+						endTell;
+					endTell;
+					setCharacter 1;
+					toggleRateBias on;
+					getEmployee #mesquite.basic.BasicParametersExplorer.BasicParametersExplorer;
+					tell It;
+						suspend;
+						getWindow;
+						tell It;
+							setExplanationSize 0;
+							setAnnotationSize 0;
+							setFontIncAnnot 0;
+							setFontIncExp 0;
+							setSize 621 489;
+							setLocation 10 22;
+							setFont SanSerif;
+							setFontSize 10;
+							getToolPalette;
+							tell It;
+							endTell;
+							setActive;
+						endTell;
+						showWindow;
+						resume;
+					endTell;
+					getEmployee #mesquite.stochchar.zMargLikeCateg.zMargLikeCateg;
+					tell It;
+						setDecision 2.0;
+						setUnderflowCheckFreq 2;
+					endTell;
 				endTell;
-				showWindow;
+				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -228,6 +289,10 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -240,11 +305,10 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 528 389;
+					setSize 621 489;
 					setLocation 10 22;
 					setFont SanSerif;
 					setFontSize 10;
-					setActive;
 				setExplanation 'Mesquite has the option to reconstruct ancestral states using likelihood.  Two models of evolution are available: a symmetrical one-parameter model (Lewis''s Markov k model, called here the Mk1 model) and an asymmetrical two parameter model, in which increases in state (e.g., 0 to 1) have a different rate from decreased (1 to 0).^n^nHere shown is an example from Figure 5 of Schluter et al., 1997 (Evolution 51:1699), of swordtail fish.^n^nThe reconstruction method focuses on each node separately, for each determining the likelihood of character states at that node.   This is equivalent to the "marginal" method of Swofford''s PAUP, or the Fossil Likelihood method of the Graphics window of Pagel''s Discrete.  If parameters need to be estimated, this is done in advance of the reconstruction.  This is equivalent to the "Global" option of Discrete.^n^nTo see the relatively likelihoods of different states, hold the cursor over a branch.  Information appears at the bottom of the Trace Character legend.^n^nTo select a different model, use the Probability Model submenu of the Trace menu of the tree window.';
 				setTitle Likelihood;
 				toggleFileNames off;

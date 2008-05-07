@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Nov 22 19:49:10 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
+[written Sun May 04 14:36:52 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -22,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -65,13 +65,13 @@ BEGIN NOTES;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                           unord PolyTcount =                           MINSTEPS;
+OPTIONS DEFTYPE =                            unord PolyTcount =                            MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -94,6 +94,19 @@ Begin MESQUITE;
 			setID 0 974864624972105434 WM1148619a00b0;
 			checksum 0 4129971366 WM1148619a00b0;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 100;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 747 464;
+			setLocation 500 34;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			showTaxa #8476784597994698209 #mesquite.lists.TaxonList.TaxonList;
@@ -107,7 +120,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 647 380;
+					setSize 647 397;
 					setLocation 500 34;
 					setFont SanSerif;
 					setFontSize 10;
@@ -139,7 +152,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 647 358;
+					setSize 647 375;
 					setLocation 500 34;
 					setFont SanSerif;
 					setFontSize 10;
@@ -159,7 +172,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
-							namesAngle ?;
 						endTell;
 						setEdgeWidth 12;
 						orientUp;
@@ -183,14 +195,15 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 				endTell;
-				showWindow;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -204,6 +217,10 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -216,7 +233,7 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 647 380;
+					setSize 647 397;
 					setLocation 500 34;
 					setFont SanSerif;
 					setFontSize 10;
@@ -237,8 +254,10 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 16;
 					toggleBirdsEye off;
+					toggleAllowAutosize on;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
+					toggleDiagonal off;
+					setDiagonalHeight 80;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
@@ -264,6 +283,10 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
+				getEmployee #mesquite.categ.SmallStateNamesEditor.SmallStateNamesEditor;
+				tell It;
+					panelOpen true;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -272,6 +295,7 @@ Begin MESQUITE;
 			setPrevFileName '04-treeWindow.nex';
 			getWindow;
 			tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
@@ -281,7 +305,7 @@ Begin MESQUITE;
 					setLocation 8 27;
 					setFont SanSerif;
 					setFontSize 10;
-				setExplanation 'This file shows how Mesquite''s functional windows are grouped as tabs within a single window of your operating system.  At right is a window showing a list of taxa (the List of Taxa window).  If you touch on the tabs along the top of the window, you can see a Tree Window, and a Character Matrix Editor.  ^n^nThis system of tabs represents a change from version 1 of Mesquite.  You can pop out a window to be independent by touching on the little circled arrow in the tab for the window; after it''s independent you can pop it back in by touching the arrow at top left of the indepedent window.^n^nYou can revert to the old style of all independent windows if you deselect Open Windows as Tabs in the Defaults submenu of the File menu.';
+				setExplanation 'This file shows how Mesquite''s functional windows are grouped as tabs within a single window of your operating system.  At right is a window showing a list of taxa (the List of Taxa window).  If you touch on the tabs along the top of the window, you can see a Tree Window, and a Character Matrix Editor.  ^n^nThis system of tabs represents a change from version 1 of Mesquite.  You can pop out a window to be independent by touching on the little circled arrow in the tab for the window; after it''s independent you can pop it back in by touching the arrow at top left of the indepedent window.  There are two choices for popping out a window; as a separate window, or as a tile within the current window.^n^nYou can revert to the old style of all independent windows if you deselect Open Windows as Tabs in the Defaults submenu of the File menu.';
 				setTitle Window_Tabs;
 				toggleFileNames off;
 				setPrevButtonName Previous;
