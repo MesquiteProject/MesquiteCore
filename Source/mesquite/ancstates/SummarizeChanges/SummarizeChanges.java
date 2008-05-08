@@ -570,6 +570,10 @@ class SummarizeChangesOperator extends TreeDisplayDrawnExtra {
 			if (stateChanges!=null) {
 				stateChanges.cleanUp();
 				currentText = stateChanges.toVerboseString();
+				String leadText = "\nSummarizing changes in character " + (sumChangesModule.currentChar+1) + "\n";
+				leadText += "Source of Trees: " + sumChangesModule.treeSourceTask.getName() + "\n";
+				leadText += "Number of Trees: " + sumChangesModule.getNumTrees() + "\n\n";
+				currentText = leadText+currentText;
 				refresh();
 			}
 
