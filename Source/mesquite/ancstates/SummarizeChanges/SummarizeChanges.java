@@ -18,7 +18,6 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
@@ -116,6 +115,17 @@ public class SummarizeChanges extends TreeDisplayAssistantA {
 	public void employeeQuit(MesquiteModule employee) {
 		if (employee == historyTask)  
 			iQuit();
+		else if (employee instanceof TextDisplayer){
+ 			for (int i = 0; i<traces.size(); i++){
+ 				SummarizeChangesOperator tao = (SummarizeChangesOperator)traces.elementAt(i);
+ 				if (tao.displayer == employee){
+ 					tao.turnOff();
+ 					traces.removeElement(tao);
+ 				}
+ 			}
+ 			if (traces.size() == 0)
+ 				iQuit();
+ 		}
 	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
