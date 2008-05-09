@@ -1,6 +1,6 @@
 package mesquite.align.ScrollToData;
 
-import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataWindowAssistantI;
@@ -14,6 +14,7 @@ public class ScrollToData extends DataWindowAssistantI {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		getCompatibilityTest();
 		if (containerOfModule() instanceof MesquiteWindow) {
 			scrollTool = new ScrollToDataTool(this, "scrollerRight", getPath(), "scrollerRight.gif", 8,8,"Scrolls to next data cell","This tool scrolls to the next cell in the sequence with data.", MesquiteModule.makeCommand("scrollTouchCell",  this) , MesquiteModule.makeCommand("scrollDragCell",  this), MesquiteModule.makeCommand("scrollDropCell",  this));
 			scrollTool.setDeselectIfOutsideOfCells(false);
@@ -24,7 +25,9 @@ public class ScrollToData extends DataWindowAssistantI {
 		else return sorry(getName() + " couldn't start because the window with which it would be associated is not a tool container.");
 		return true;
 	}
-
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyMolecularData();
+	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		if (!(data instanceof CategoricalData))
