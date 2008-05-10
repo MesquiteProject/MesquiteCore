@@ -96,7 +96,7 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 	}
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Sample Trees from Separate File";
+	return "Sample Trees from Separate NEXUS File";
 	 }
 		/*.................................................................................................................*/
 		/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
