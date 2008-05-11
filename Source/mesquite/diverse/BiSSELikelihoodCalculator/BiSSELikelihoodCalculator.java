@@ -752,6 +752,12 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 
 					speciesModel.setParamValuesUsingConstraints(suggestions);
 					modelString  = speciesModel.toString() + " [est.]";
+					paramsForExploration[0].setValue(speciesModel.getSRate(0));
+					paramsForExploration[1].setValue(speciesModel.getSRate(1));
+					paramsForExploration[2].setValue(speciesModel.getERate(0));
+					paramsForExploration[3].setValue(speciesModel.getERate(1));
+					paramsForExploration[4].setValue(speciesModel.getCRate(0));
+					paramsForExploration[5].setValue(speciesModel.getCRate(1));
 				}
 				else {
 					logln("BiSSE calculations: Estimating parameters failed");
@@ -823,6 +829,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 			resultString.setValue(s);
 			}
 		}
+		
 		lastResultString = tree.getName() + "\t" + obsStates.getName() +"\t" + speciesModel.toStringForAnalysis() + "\t" + MesquiteDouble.toString(negLogLikelihood);
 		speciesModel.setParams(previousParams);
 	}
