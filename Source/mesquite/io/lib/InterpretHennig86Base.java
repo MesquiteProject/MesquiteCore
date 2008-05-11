@@ -50,6 +50,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	HennigNonaCommand[] availableCommands;
 	int treeNumber = 0;
 	boolean convertGapsToMissing = false;
+	boolean includeQuotes = true;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		availableCommands = new HennigNonaCommand[numCommands];
@@ -380,7 +381,8 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		HennigXDREAD xread = (HennigXDREAD)availableCommands[1];
 
 		StringBuffer outputBuffer = new StringBuffer(taxa.getNumTaxa()*(20 + data.getNumChars()));
-		availableCommands[3].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //quote
+		if (getIncludeQuotes())
+			availableCommands[3].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //quote
 		if (data.getStateClass()==DNAData.class && !isTNT())
 			dread.appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);
 		else
@@ -447,7 +449,12 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	public String getExplanation() {
 		return "Imports and exports TNT/NONA/Hennig86/PiWe/WinClada files." ;
 	}
-	/*.................................................................................................................*/
+	public boolean getIncludeQuotes() {
+		return includeQuotes;
+	}
+	public void setIncludeQuotes(boolean includeQuotes) {
+		this.includeQuotes = includeQuotes;
+	}
 
 
 
