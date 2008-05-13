@@ -31,7 +31,7 @@ public class UndoReference {
 	}
 
 	public UndoReference(CharacterData data, MesquiteModule responsibleModule, int icStart, int icEnd, int itStart, int itEnd) {
-		UndoInstructions undoInstructions = new UndoInstructions (UndoInstructions.DATABLOCK, data, data, icStart,icEnd, itStart, itEnd);
+		UndoInstructions undoInstructions = new UndoInstructions (UndoInstructions.DATABLOCK, data, data, icStart,icEnd, itStart, itEnd, icStart, icEnd, itStart, itEnd,true);
 		//undoInstructions.setNewData(data);
 		setUndoer(undoInstructions);
 		setResponsibleModule(responsibleModule);

@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import mesquite.lib.*;
@@ -23,9 +23,9 @@ import mesquite.lib.table.*;
  Undo PARTS_MOVED:
  	SortChars and SortTaxa done
  	BasicDataWIndow done
- 	
+
  	- test to see if linked matrices works with parts moved
- 		
+
 
 
  * */
@@ -43,12 +43,12 @@ public class UndoInstructions implements Undoer {
 	public static final int PARTS_ADDED = 9;
 	public static final int DATABLOCK = 10;
 
-// ones below here are not yet supported
+//	ones below here are not yet supported
 	public static final int TAXA_DELETED = 11;
 	public static final int CHARACTERS_DELETED = 12;
 
 	int changeClass;
-	
+
 	int itStart;
 	int itEnd;
 	int icStart;
@@ -158,9 +158,9 @@ public class UndoInstructions implements Undoer {
 			}
 		}
 	}
-	
+
 	/** This is the constructor for a change to a block of the matrix. */
-	public UndoInstructions(int changeClass, Object obj, CharacterData data, int icStart, int icEnd, int itStart, int itEnd) {
+	public UndoInstructions(int changeClass, Object obj, CharacterData data, int icStartStore, int icEndStore, int itStartStore, int itEndStore, int icStart, int icEnd, int itStart, int itEnd, boolean recordRange) {
 		if (obj == null)
 			return;
 		this.changeClass = changeClass;
@@ -169,11 +169,13 @@ public class UndoInstructions implements Undoer {
 		if (changeClass==DATABLOCK) {
 			if (data != null && obj!=null)
 				if (obj instanceof CharacterData) {
-					this.oldData = ((CharacterData)obj).cloneDataBlock(icStart,  icEnd,  itStart,  itEnd);
-					this.itStart = itStart;
-					this.itEnd = itEnd;
-					this.icStart = icStart;
-					this.icEnd = icEnd;
+					this.oldData = ((CharacterData)obj).cloneDataBlock(icStart,  icEnd,  itStart, itEnd);
+					if (recordRange) {
+						this.itStart = itStartStore;
+						this.itEnd = itEndStore;
+						this.icStart = icStartStore;
+						this.icEnd = icEndStore;
+					}
 				}
 		} 
 	}
@@ -190,7 +192,7 @@ public class UndoInstructions implements Undoer {
 				else if (changeClass==PARTS_ADDED){
 					assoc.resetJustAdded();
 				}
-					
+
 		}
 	}
 
@@ -205,7 +207,7 @@ public class UndoInstructions implements Undoer {
 			CharacterData data = (CharacterData)assoc;
 			data.copyCurrentToPreviousOrderInLinked();
 		}
-			
+
 	}
 	public void restoreToPreviousOrder(Associable assoc) {
 		assoc.restoreToPreviousOrder()	;
@@ -213,7 +215,7 @@ public class UndoInstructions implements Undoer {
 			CharacterData data = (CharacterData)assoc;
 			data.restoreToPreviousOrderInLinked();
 		}
-			
+
 	}
 	public void recordCurrentOrder(Associable assoc) {
 		assoc.recordCurrentOrder()	;
@@ -221,7 +223,7 @@ public class UndoInstructions implements Undoer {
 			CharacterData data = (CharacterData)assoc;
 			data.recordCurrentOrderInLinked();
 		}
-			
+
 	}
 	public void recordPreviousOrder(Associable assoc) {
 		assoc.recordPreviousOrder()	;
@@ -244,7 +246,7 @@ public class UndoInstructions implements Undoer {
 
 	public void deleteJustAdded(Associable assoc) {
 		if (assoc!=null)
-				assoc.deleteJustAdded();
+			assoc.deleteJustAdded();
 	}
 
 	public Undoer undo() {
@@ -258,7 +260,7 @@ public class UndoInstructions implements Undoer {
 				table.setFocusedCell(icStart, itStart, true);
 			}
 			data.setState(icStart, itStart, (CharacterState) oldState); // receive
-																		// errors?
+			// errors?
 			data.notifyListeners(this, new Notification(
 					MesquiteListener.DATA_CHANGED,
 					new int[] { icStart, itStart }));
@@ -270,13 +272,11 @@ public class UndoInstructions implements Undoer {
 				table.setFocusedCell(-1, itStart, true);
 			}
 			if (taxa != null) {
-				taxa.setTaxonName(itStart, ((MesquiteString) oldState)
-						.getValue());
+				taxa.setTaxonName(itStart, ((MesquiteString) oldState).getValue());
 				return new UndoInstructions(changeClass, itStart, newState,
 						oldState, taxa, table);
 			} else if (data != null) {
-				data.getTaxa().setTaxonName(itStart,
-						((MesquiteString) oldState).getValue());
+				data.getTaxa().setTaxonName(itStart, ((MesquiteString) oldState).getValue());
 				return new UndoInstructions(changeClass, -1, itStart, newState, oldState, data, table);
 			}
 			return null;
@@ -289,8 +289,7 @@ public class UndoInstructions implements Undoer {
 				table.setFocusedCell(icStart, -1, true);
 			}
 			if (data != null)
-				data.setCharacterName(icStart, ((MesquiteString) oldState)
-						.getValue());
+				data.setCharacterName(icStart, ((MesquiteString) oldState).getValue());
 			return new UndoInstructions(changeClass, icStart, -1, newState, oldState, data, table);
 
 		case EDITTEXTFIELD:
@@ -301,12 +300,14 @@ public class UndoInstructions implements Undoer {
 		case ALLDATACELLS:
 			newData = data.cloneData();
 			data.copyData(oldData, true);
+			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 			return new UndoInstructions(changeClass, newData, data);
 
 		case DATABLOCK:
-			newData = data.cloneDataBlock(icStart, icEnd, itStart, itEnd);
+			newData = data.cloneDataBlock(icStart, icEnd, itStart, itEnd); //this will be just the size of the block
 			data.copyDataBlock(oldData, icStart, icEnd, itStart, itEnd);
-			return new UndoInstructions(changeClass, newData, data, icStart, icEnd, itStart, itEnd);
+			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+			return new UndoInstructions(changeClass, newData, data, icStart, icEnd, itStart, itEnd, 0, icEnd-icStart, 0, itEnd-itStart, true);
 
 		case ALLTAXONNAMES:
 			if (taxa == null || namesList==null)
@@ -329,7 +330,7 @@ public class UndoInstructions implements Undoer {
 			for (int i = 0; i < namesList.length && i < data.getNumChars(); i++)
 				data.setCharacterName(i, namesList[i]);
 			return new UndoInstructions(changeClass, oldNamesList, data);
-			
+
 		case PARTS_MOVED:
 			if (assoc == null)
 				return null;
