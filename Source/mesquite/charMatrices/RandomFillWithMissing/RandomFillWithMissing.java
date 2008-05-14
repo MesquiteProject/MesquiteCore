@@ -58,8 +58,12 @@ public class RandomFillWithMissing extends CategDataAlterer {
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData data, int ic, int it){
 		double alterTest = rng.nextDouble();
-		if (alterTest<=probAlter)
+		if (alterTest<=probAlter) {
 			((CategoricalData)data).setState(ic,it,CategoricalState.unassigned);
+			if (!MesquiteLong.isCombinable(numCellsAltered))
+				numCellsAltered = 0;
+			numCellsAltered++;
+		}
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
