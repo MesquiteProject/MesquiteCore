@@ -530,6 +530,7 @@ timer6.end();
 	int previousRowDragged = -1;
 	int firstRowTouched = -1;
 	boolean mouseDownInField = true;
+	boolean mouseDownInPanel = false;
 	/*...............................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		table.stopAutoScrollThread();
@@ -541,6 +542,7 @@ timer6.end();
 
 
 		mouseDownInField = false;
+		mouseDownInPanel = true;
 
 		int regionInCellH = findRegionInCellH(x);
 		int regionInCellV = findRegionInCellV(y);
@@ -574,6 +576,8 @@ timer6.end();
 	int counter = 0;
 	/*_________________________________________________*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
+		if (!mouseDownInPanel)
+			return;
 		int column = findColumn(x, y);
 		int row = findRow(x, y);
 		int regionInCellH = findRegionInCellH(x);
@@ -628,6 +632,7 @@ timer6.end();
 			}
 		}
 		mouseDownInField = false;
+		mouseDownInPanel = false;
 	}
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {

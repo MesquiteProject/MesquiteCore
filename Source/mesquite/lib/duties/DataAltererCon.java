@@ -19,7 +19,7 @@ public abstract class DataAltererCon extends DataAlterer {
 	   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 	  			boolean did=false;
 	  			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
-	   	 		if (table==null && data!=null){
+	   	 		if ((table==null || !table.anyCellSelectedAnyWay()) && data!=null){
 	   	 				
 						for (int i=0; i<data.getNumTaxa(); i++)
 							alterBlockInTaxon(data, 0, data.getNumChars()-1, i);

@@ -42,27 +42,35 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 		int numInDNA = dnaData.getNumChars();
 		int numInProtein = proteinData.getNumChars();
 		MesquiteBoolean dataChanged = new MesquiteBoolean();
+		MesquiteInteger charAdded = new MesquiteInteger(0);
 		if (numInDNA<numInProtein*3) {
 			dnaData.addCharacters(numInDNA, numInProtein*3-numInDNA, false);
+			dnaData.assignCodonPositionsToTerminalChars(numInProtein*3-numInDNA);
 			dnaData.addInLinked(numInDNA, numInProtein*3-numInDNA, true);
 			dataChanged.setValue(true);
 		}
 		dnaData.collapseGapsInCellBlockRight(it, 0, dnaData.getNumChars()-1, false);   //move everything to right so we only need to shift them left
+		//note that this means it only works on whole sequences! with codon positions defined
 
-		int ic = 0;
-		while (ic<numInProtein) {   // now zip through the protein and find bases and move the nucleotides to correspond
-			ic = proteinData.nextApplicable(it, ic, true)	;
-			if (ic<0) break;
-			int posInDNA = ic*3;
+		int icProtein = 0;
+		int icDNA = 0;
+		
+		while (icProtein<numInProtein) {   // now zip through the protein and find bases and move the nucleotides to correspond
+			icProtein = proteinData.nextApplicable(it, icProtein, true)	;
+			if (icProtein<0) break;
+			int adjustedPosInDNA = icProtein*3; // new location
 			for (int codPos=0; codPos<=2; codPos++){
-				int toMove = dnaData.nextApplicable(it, posInDNA, true);
-				if (toMove>=0) {
-					int distance = toMove-posInDNA;
-					dnaData.moveCells(toMove,toMove, -distance, it,it, false, false, true,  false, dataChanged, null);
-					posInDNA++;
+				icDNA = dnaData.nextApplicable(it, icDNA, true);
+				if (icDNA>=0) {
+					int distance = icDNA-adjustedPosInDNA;
+					dnaData.moveCells(icDNA,icDNA, -distance, it,it, false, false, true,  false, dataChanged, charAdded);
+					if (charAdded.isCombinable() && charAdded.getValue()!=0) 
+						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
+					adjustedPosInDNA++;
+					icDNA++;
 				}
 			}
-			ic++;
+			icProtein++;
 		}
 		
 		
