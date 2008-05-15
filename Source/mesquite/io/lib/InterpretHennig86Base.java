@@ -685,7 +685,7 @@ class HennigCCODE extends HennigNonaCommand {
 			while (ic< numChars) {
 				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
 					icWeight = weightSet.getInt(ic);
-					if (icWeight!=1 && !processedSet.isSelected(ic)) {
+					if (icWeight!=1 && !processedSet.isBitOn(ic)) {
 						processedSet.setSelected(ic, true);   // marks this one as already chosen
 						ccodePart+=" /"+icWeight + " ";
 						scopeStart= counter;
@@ -693,7 +693,7 @@ class HennigCCODE extends HennigNonaCommand {
 						for (int icFollow=ic+1; icFollow<numChars; icFollow++) {
 							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(icFollow))) {
 								writeCounter++; 
-								if (weightSet.getInt(icFollow)==icWeight && !processedSet.isSelected(icFollow))  {
+								if (weightSet.getInt(icFollow)==icWeight && !processedSet.isBitOn(icFollow))  {
 									processedSet.setSelected(icFollow, true);
 									if (scopeStart==-1) {
 										scopeStart=counter;
@@ -777,13 +777,13 @@ class HennigCCODE extends HennigNonaCommand {
 		if (inclusionSet!=null)
 			while (ic<numChars) {
 				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
-					if (!inclusionSet.isSelected(ic)) {   // i.e, bit is off
+					if (!inclusionSet.isBitOn(ic)) {   // i.e, bit is off
 						if (firstTime) {
 							ccodePart+=" ] ";
 							firstTime=false;
 						}
 						scopeStart=counter;
-						while (ic<numChars && ((!inclusionSet.isSelected(ic)) ||  (fileInterpreter.writeOnlySelectedData && (!data.getSelected(ic)))  )) {
+						while (ic<numChars && ((!inclusionSet.isBitOn(ic)) ||  (fileInterpreter.writeOnlySelectedData && (!data.getSelected(ic)))  )) {
 							ic++;
 							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic)))
 								counter++;

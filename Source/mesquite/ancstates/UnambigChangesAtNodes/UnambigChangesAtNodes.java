@@ -64,7 +64,7 @@ public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 		tempTree = new MesquiteTree(tree.getTaxa());
 		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
 		for (int ic=0; ic<charsHistory.getNumChars(); ic++) {
-			if (incl == null || incl.isSelected(ic)) {
+			if (incl == null || incl.isBitOn(ic)) {
 				CharacterHistory cH = charsHistory.getCharacterHistory(ic);
 				visitNodes(tree.getRoot(), tree, cH, result);		
 			}

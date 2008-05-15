@@ -53,7 +53,7 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 				}
 			if (estimateAmbiguityDifferences)  // calculate pairings for unambiguous
 				for (int ic=0; ic< catStates.getNumChars(); ic++) {
-					if (incl == null || incl.isSelected(ic)){
+					if (incl == null || incl.isBitOn(ic)){
 						long one =catStates.getState(ic, taxon1) & CategoricalState.dataBitsMask;
 						long two = catStates.getState(ic, taxon2) & CategoricalState.dataBitsMask;
 						int oneState = CategoricalState.getOnlyElement(one);
@@ -81,7 +81,7 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 
 					
 			for (int ic=0; ic< catStates.getNumChars(); ic++) {
-				if (incl == null || incl.isSelected(ic)){
+				if (incl == null || incl.isBitOn(ic)){
 					count++;
 					countTotal++;
 					long oneAllBits =catStates.getState(ic, taxon1);
