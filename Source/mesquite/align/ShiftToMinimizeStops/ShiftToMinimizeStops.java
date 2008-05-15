@@ -37,22 +37,27 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
 
 		MesquiteBoolean dataChanged = new MesquiteBoolean();
+		MesquiteInteger charAdded = new MesquiteInteger(0);
 		int[] numStops= new int[3];
 		for (int it=0; it<dnaData.getNumTaxa(); it++) 
 			if (table.isRowSelected(it)) {
 				numStops[0]= dnaData.getAminoAcidNumbers(it,ProteinData.TER);
 				if (numStops[0]>0) {
-					int added = data.shiftSequence(1, it, true, true, false, dataChanged);
+					int added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
+					if (charAdded.isCombinable() && charAdded.getValue()!=0) 
+						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
 					numStops[1] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);
 					if (numStops[1]>0) {
-						added = data.shiftSequence(1, it, true, true, false, dataChanged);
+						added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
+						if (charAdded.isCombinable() && charAdded.getValue()!=0) 
+							dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
 						numStops[2] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);
 						if (numStops[0]<=numStops[1] && numStops[0]<=numStops[2] ) {  // no change is best, but have shifted by 2, need to shift back
-							added = data.shiftSequence(-2, it, true, true, false, dataChanged);
+							added = data.shiftAllCells(-2, it, true, true, false, dataChanged,charAdded);
 							dataChanged.setValue(false);
 						}
 						else if (numStops[1]<=numStops[0] && numStops[1]<=numStops[2] ) {  // one shift change is best, but have shifted by 1, need to shift back
-							added = data.shiftSequence(-1, it, true, true, false, dataChanged);							
+							added = data.shiftAllCells(-1, it, true, true, false, dataChanged,charAdded);							
 						}
 					}
 

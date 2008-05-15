@@ -109,9 +109,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 
 	/*.................................................................................................................*/
-	private void saveExportFile(MolecularData data, String directoryPath, String fileName, boolean[] taxaToAlign, int firstSite, int lastSite) {
+	private boolean saveExportFile(MolecularData data, String directoryPath, String fileName, boolean[] taxaToAlign, int firstSite, int lastSite) {
 		if (data==null)
-			return;
+			return false;
 
 		runs++;
 		String path = createSupportDirectory() + MesquiteFile.fileSeparator + fileName;  // place files in support directory for module
@@ -155,7 +155,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		newData.setName(data.getName());
 		newData.addToFile(tempDataFile, getProject(), null);
 
-
+		boolean success = false;
 		FileInterpreterI exporter=null;
 		if (data instanceof DNAData)
 			exporter = (FileInterpreterI)coord.findEmployeeWithName(getDNAExportInterpreter());
@@ -173,12 +173,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			//if (data.anySelected()) 
 			//	s += " writeOnlySelectedData";
 			s+= " usePrevious";
-			coord.export(exporter, tempDataFile, s);
+			success = coord.export(exporter, tempDataFile, s);
 		}
 
 		tempDataFile.close();
 
 		decrementMenuResetSuppression();
+		return success;
 	}
 	/*.................................................................................................................*/
 	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon) {
@@ -211,17 +212,23 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String fileName = "tempAlign" + MesquiteFile.massageStringToFilePathSafe(unique) + getExportExtension();   //replace this with actual file name?
 		String filePath = rootDir +  fileName;
 
+		boolean success = false;
+		
 		if (taxaToAlign!=null)
-			saveExportFile(data, rootDir, fileName, taxaToAlign, firstSite, lastSite);
+			success = saveExportFile(data, rootDir, fileName, taxaToAlign, firstSite, lastSite);
 		else if (!(firstTaxon==0 && lastTaxon==matrix.getNumTaxa())) {  // we are doing something other than all taxa.
 			boolean[] taxaToAlignLocal = new boolean[matrix.getNumTaxa()];
 			for (int it = 0; it<matrix.getNumTaxa(); it++)
 				taxaToAlignLocal[it] =  (it>=firstTaxon && it<= lastTaxon);
-			saveExportFile(data, rootDir, fileName, taxaToAlignLocal, firstSite, lastSite);
+			success = saveExportFile(data, rootDir, fileName, taxaToAlignLocal, firstSite, lastSite);
 		}
 		else
-			saveExportFile(data, rootDir, fileName, null, -1, -1);
+			success = saveExportFile(data, rootDir, fileName, null, -1, -1);
 
+		if (!success) {
+			data.setEditorInhibition(false);
+			return null;
+		}
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFileName = "alignedFile" + MesquiteFile.massageStringToFilePathSafe(unique) + getImportExtension();
 		String outFilePath = rootDir + outFileName;
@@ -240,7 +247,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 
   
-		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
+		 success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
 
 		if (success){
 			FileCoordinator coord = getFileCoordinator();

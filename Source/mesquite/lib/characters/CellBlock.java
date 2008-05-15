@@ -79,7 +79,7 @@ public class CellBlock {
 	public void restoreCharBlock(MesquiteBoolean dataChanged){    // takes data that is currently at currentBlock location and move to original location
 		if (!(currentLeftMovement==0 && currentRightMovement==0)) {
 			int distanceToMove = originalFirstCharInBlock - previousFirstCharInBlock;
-			int added = data.moveCells(previousFirstCharInBlock,previousLastCharInBlock, distanceToMove, whichTaxa, true, false, true, false,dataChanged);
+			int added = data.moveCells(previousFirstCharInBlock,previousLastCharInBlock, distanceToMove, whichTaxa, true, false, true, false,dataChanged,null);
 
 			table.redrawBlock(MesquiteInteger.minimum(previousFirstCharInBlock, originalFirstCharInBlock), MesquiteInteger.maximum(previousLastCharInBlock, originalLastCharInBlock), whichTaxa);
 			reset();

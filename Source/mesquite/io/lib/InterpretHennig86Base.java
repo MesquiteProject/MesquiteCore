@@ -394,7 +394,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		return outputBuffer;
 	}
 	/*.................................................................................................................*/
-	public void exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
+	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");
 
@@ -402,12 +402,12 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		if (data ==null) {
 			showLogWindow(true);
 			logln("WARNING: No suitable data available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
-			return;
+			return false;
 		}
 		Taxa taxa = data.getTaxa();
 		if (!MesquiteThread.isScripting() && !usePrevious)
 			if (!getExportOptions(data.anySelected(), taxa.anySelected())) {
-				return;
+				return false;
 			}
 		int totalProgressElements = getNumExportTotal(taxa, data);
 		progIndicator = new ProgressIndicator(getProject(),"Exporting File ", totalProgressElements, false);
@@ -416,7 +416,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 
 		StringBuffer outputBuffer = getDataAsFileText(data);  //ccode
 		if (outputBuffer==null)
-			return;
+			return false;
 
 		if (!args.parameterExists("noTrees"))
 			availableCommands[4].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //trees
@@ -435,6 +435,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		progIndicator.goAway();
 
 		saveExportedFileWithExtension(outputBuffer, arguments, preferredDataFileExtension());
+		return true;
 	}
 
 

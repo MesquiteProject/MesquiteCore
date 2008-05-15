@@ -175,7 +175,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		if (candidateMovement !=0) {  // move it over from previous position by this amount; at least, that is the request
 			int distanceToMove = currentBlock.movementAllowed(candidateMovement, canExpand.getValue());
 			if (distanceToMove!=0) {
-				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, currentBlock.getWhichTaxa(), canExpand.getValue(), false, true, false,dataChanged);
+				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, currentBlock.getWhichTaxa(), canExpand.getValue(), false, true, false,dataChanged,null);
 				if (added<0){ //now start adjusting all the values as we may have added taxa at the start of the matrix
 					firstColumnTouched -= added;
 					effectiveFirstColumnTouched -= added;

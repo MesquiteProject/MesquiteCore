@@ -3059,11 +3059,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void drawMatrixCellString(Graphics g, FontMetrics fm, int x, int y, int w, int h, int column, int row, String supplied) {
 		if (!StringUtil.blank(supplied)){
 			Shape clip = null;
+			boolean useClip=false;
 			if (fm == null && g.getFont() != null)
 				fm = g.getFontMetrics(g.getFont());
 			int svp = StringUtil.getStringVertPosition(fm, y, h, null);
 			if (fm == null) {
 				clip = g.getClip();
+				useClip=true;
 				g.setClip(x, y, w, h);
 				g.drawString(supplied, x + 2, svp);
 			}
@@ -3071,6 +3073,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				int length = fm.stringWidth(supplied);
 				if (length + 2 > w || svp > y + h) {
 					clip = g.getClip();
+					useClip=true;
 					g.setClip(x, y, w, h);
 				}
 				int useX;
@@ -3083,7 +3086,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				g.drawString(supplied, useX, svp);
 
 			}
-			if (clip != null)
+			if (useClip)
 				g.setClip(clip);
 		}
 		if (isAttachedNoteAvailable(column, row)){
