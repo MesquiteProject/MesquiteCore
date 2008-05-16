@@ -18,10 +18,12 @@ public class MesquiteTabbedPanel extends JPanel  {
 		add(tabbedPane);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 	}
-	public void addPanel(String title){
+	public void addPanel(String title, boolean setAsAddPanel){
 		JPanel panel = new JPanel();
 		tabbedPane.addTab(title, panel);
 		panel.setVisible(false);
+		if (setAsAddPanel && dialog!=null)
+			dialog.setAddJPanel(panel);
 		numPanels++;
 	}
 	public JPanel getTabPanel(int i) {
@@ -36,6 +38,7 @@ public class MesquiteTabbedPanel extends JPanel  {
 		tabbedPane.setSelectedIndex(0);
 		tabbedPane.doLayout();
 		tabbedPane.validate();
-		dialog.pack();
+		if (dialog!=null)
+			dialog.pack();
 	}
 }
