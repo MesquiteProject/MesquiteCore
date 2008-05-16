@@ -826,6 +826,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 			else{
 			String s = "Sp/Ext Likelihood (Char. dep.) " + modelString + ";  -log L.:"+ MesquiteDouble.toString(negLogLikelihood) + " [L. "+ MesquiteDouble.toString(likelihood) + "]";
 			s += "  " + getParameters();
+			s += "\nNote: reported are not likelihoods but rather values proportional to likelihoods";
 			resultString.setValue(s);
 			}
 		}
@@ -865,7 +866,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	}
 
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 }
 /*============================================================================*/
