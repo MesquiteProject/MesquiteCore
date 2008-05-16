@@ -10,11 +10,14 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 		addMenuItem("File for Sample Trees From Separate...", makeCommand("setFilePath",  this));
 		addMenuItem("Number of Trees to Sample...", makeCommand("setNumTreesToSample",  this));
 		if (!MesquiteThread.isScripting()){
+			int nt = numTreesToSample;
+			if (!MesquiteInteger.isCombinable(nt))
+				nt=100;
 			if (numTreesInTreeBlock>0 && MesquiteInteger.isCombinable(numTreesInTreeBlock)) {
-				numTreesToSample =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of Trees to Sample (out of " + numTreesInTreeBlock + " total trees) from file:", numTreesToSample, 0, numTreesInTreeBlock, true);
+				numTreesToSample =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of Trees to Sample (out of " + numTreesInTreeBlock + " total trees) from file:", nt, 0, numTreesInTreeBlock, true);
 			}
 			else {
-				numTreesToSample =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of trees to sample from file:", numTreesToSample, 0, MesquiteInteger.infinite, true);
+				numTreesToSample =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of trees to sample from file:",  nt, 0, MesquiteInteger.infinite, true);
 			}
 			if (!MesquiteInteger.isCombinable(numTreesToSample) || numTreesToSample==0)
 					return false;
@@ -48,11 +51,14 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
  			 pos.setValue(0);
  			 int num = MesquiteInteger.fromString(arguments, pos);
  			 if (!MesquiteInteger.isCombinable(num)&& !MesquiteThread.isScripting()){
- 				if (numTreesInTreeBlock>0 && MesquiteInteger.isCombinable(numTreesInTreeBlock)) {
- 					num =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of Trees to Sample (out of " + numTreesInTreeBlock + " total trees) from file:", numTreesToSample, 0, numTreesInTreeBlock, true);
+ 				int nt = numTreesToSample;
+				if (!MesquiteInteger.isCombinable(nt))
+					nt=100;
+				if (numTreesInTreeBlock>0 && MesquiteInteger.isCombinable(numTreesInTreeBlock)) {
+ 					num =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of Trees to Sample (out of " + numTreesInTreeBlock + " total trees) from file:", nt, 0, numTreesInTreeBlock, true);
  				}
  				else {
- 					num =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of trees to sample from file:", numTreesToSample, 0, MesquiteInteger.infinite, true);
+ 					num =MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees to Sample", "Number of trees to sample from file:", nt, 0, MesquiteInteger.infinite, true);
  				}
  			 }
  			 if (MesquiteInteger.isCombinable(num)) {

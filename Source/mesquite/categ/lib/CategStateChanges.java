@@ -289,22 +289,24 @@ public class CategStateChanges {
 	/*.................................................................................................................*/
 	public String toVerboseString(){
 		StringBuffer sb = new StringBuffer();
-		sb.append("Minimum, maximum, and average number of each sort across all trees\n");
+		sb.append("Minimum, maximum, and average number of each kind across all trees\n");
 		sb.append("------------------------------------\n");
 		sb.append("change\tmin\tmax\tavg\n");
 		for (int i=0; i<numStates; i++)
 			for (int j=0; j<numStates; j++){
-				sb.append(""+i+"->"+j+" \t"+min[i][j] +"\t"+max[i][j] +"\t"+avg[i][j]+"\n"); 
+				if (i!=j)
+					sb.append(""+i+"->"+j+" \t"+min[i][j] +"\t"+max[i][j] +"\t"+avg[i][j]+"\n"); 
 			}
-		sb.append("\n\n\nFraction of trees with specific number of changes of each sort\n");
+		sb.append("\n\n\nFraction of trees with specific number of changes of each kind\n");
 		sb.append("------------------------------------\n");
 		sb.append("change\t#changes\tfraction\n");
 		for (int i=0; i<numStates; i++)
 			for (int j=0; j<numStates; j++)
 				if (i!=j) {
-					for (int k=0; k<maxChanges; k++) {
+					for (int k=0; k<maxChanges-1; k++) {
 						sb.append(""+i+"->"+j+" \t"+k +"\t"+fractionWithAmount[i][j][k]+"\n"); 
 					}
+					sb.append(""+i+"->"+j+" \t"+(maxChanges-1) +"+\t"+fractionWithAmount[i][j][maxChanges-1]+"\n"); 
 					sb.append("\n");
 				}
 		return sb.toString();
