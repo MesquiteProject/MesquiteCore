@@ -38,11 +38,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	protected MatrixPanel matrix;
 	protected CornerPanel cornerCell;
 	protected ControlStrip controlStrip;
-	
+
 	public TableMarchingAnts marchingAnts;
 	static final int AUTOSCROLLBOUNDARY = 4;
 
-	
+
 	public static final int LEFT = 0;
 	public static final int RIGHT = 1;
 	public static final int CENTERED = 2;
@@ -144,7 +144,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	private Associable columnAssociable = null;
 	private Associable rowAssociable = null;
 	protected int colorScheme;
-	
+
 	MesquiteCommand pasteCommand = MesquiteModule.makeCommand("paste", this);
 	MesquiteCommand cutCommand = MesquiteModule.makeCommand("cut", this);
 	MesquiteCommand clearCommand = MesquiteModule.makeCommand("clear", this);
@@ -285,7 +285,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ................................................................................................................. */
 
 	/* ................................................................................................................. */
-	
+
 	/**
 	 * A request for the MesquiteModule to perform a command. It is passed two strings, the name of the command and the arguments. This should be overridden by any module that wants to respond to a command.
 	 */
@@ -609,29 +609,29 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public boolean inBetweenSelectionRowColumns( int column, int row) {
 		int buff = 2;
-		 if (selectedBetweenColumns())
+		if (selectedBetweenColumns())
 			return row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection() && (column == getStartBetweenColumnSelection()) ;
 			else if (selectedBetweenRows())
-			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection()  && (row == getStartBetweenRowSelection()) ;
+				return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection()  && (row == getStartBetweenRowSelection()) ;
 				return false;
 	}
 	/* ................................................................................................................. */
 
 	public boolean inBetweenSelection( int column, int row, int regionInCellH, int regionInCellV) {
 		int buff = 2;
-		 if (selectedBetweenColumns())
+		if (selectedBetweenColumns())
 			return (row>=getStartBetweenRowSelection() && row <= getEndBetweenRowSelection()) && ((regionInCellH>80 && column == getStartBetweenColumnSelection()) || (regionInCellH<20 && column == getStartBetweenColumnSelection()+1)) ;
 		else if (selectedBetweenRows())
 			return column>=getStartBetweenColumnSelection() && column <= getEndBetweenColumnSelection() && (regionInCellV>80||regionInCellV<20) && (row == getStartBetweenRowSelection()) ;
-		return false;
+			return false;
 	}
 	/* ................................................................................................................. */
 
 	public boolean inBetweenSelection(int x, int y) {
 		int buff = 2;
-		 if (selectedBetweenColumns())
+		if (selectedBetweenColumns())
 			return (x>= getColumnX(getStartBetweenColumnSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff + MesquiteTable.BETWEENLINEWIDTH)) && (y>= getRowY(getStartBetweenRowSelection()-buff)) && (y<= getRowY(getEndBetweenRowSelection()+buff));
-		 else if (selectedBetweenRows())
+		else if (selectedBetweenRows())
 			return (x>= getColumnX(getStartBetweenColumnSelection()-buff)) && (x<= getColumnX(getEndBetweenColumnSelection()+buff)) && (y>= getRowY(getStartBetweenRowSelection()-buff - MesquiteTable.BETWEENLINEWIDTH)) && (y<= getRowY(getEndBetweenRowSelection()+buff+MesquiteTable.BETWEENLINEWIDTH));
 		return false;
 	}
@@ -766,7 +766,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (columnNamesCopyPaste) {
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (nothingSelected || isColumnNameSelected(i) || isColumnSelected(i)) {
-					if (!firstInLine && copyInsertTabs)
+					if (!firstInLine)
 						s.append('\t');
 					firstInLine = false;
 					String t = null;
@@ -783,8 +783,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 		else
 			allSelected = false;
-		if (!firstInLine && copyInsertTabs)
+		if (!firstInLine)
 			s.append(StringUtil.lineEnding());
+		boolean previousWasRowName = false;
 		for (int j = 0; j < numRowsTotal; j++) {
 			firstInLine = true;
 			if (rowNamesCopyPaste) {
@@ -797,6 +798,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					if (t != null)
 						s.append(t);
 					firstInLine = false;
+					previousWasRowName = true;
 				}
 				else
 					allSelected = false;
@@ -806,8 +808,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (nothingSelected || isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
-					if (!firstInLine && copyInsertTabs)
+					if (previousWasRowName || (!firstInLine && copyInsertTabs)){
 						s.append('\t');
+						previousWasRowName = false;
+					}
 					firstInLine = false;
 					String t = null;
 					if (literal)
@@ -844,7 +848,48 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 		return true;
 	}
-
+	/* ................................................................................................................. */
+	protected Point getTopLeftSelected(){
+		if (anyColumnSelected() || anyRowSelected() || anyCellSelected()) {
+			int firstRow = firstRowSelected();
+			int firstColumn = firstColumnSelected();
+			int top = -1;
+			int left = -1;
+			boolean found = false;
+			for (int row = 0; row < numRowsTotal && !found; row++) { // row dominant choice of upper left
+				for (int column = 0; column < numColumnsTotal && !found; column++) {
+					if (isCellSelected(column, row)) {
+						top = row;
+						left = column;
+						found = true;
+					}
+				}
+			}
+			if (firstRow >= 0 && (firstRow < top || top < 0))
+				top = firstRow;
+			if (firstColumn >= 0 && (firstColumn < left || left < 0))
+				left = firstColumn;
+			if (top < 0 && left >= 0)
+				top = 0;
+			if (left < 0 && top >= 0)
+				left = 0;
+			if (anyColumnSelected())
+				top = -1;
+			if (anyRowSelected())
+				left = -1;
+			
+			return new Point(left, top);
+		}
+		else if (anyRowNameSelected()) {
+			int first = rowNamesSelected[0].firstBitOn();
+			return new Point(-1, first);
+		}
+		else if (anyColumnNameSelected()) {
+			int first = columnNamesSelected[0].firstBitOn();
+			return new Point(first, -1);
+		}
+		return new Point(-1, -1);
+	}
 	/* ................................................................................................................. */
 	public void setSelectionToShape(int[] lines) {
 		if (lines == null)
@@ -919,7 +964,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	int[] getSelectedSpaces() {
+	protected int[] getSelectedSpaces() {
 
 		// for each row, how many things are selected needs to be calculated
 		// first, figure out how many rows have selections in them.
@@ -961,7 +1006,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	boolean anyCellInRowSelected(int row) {
+	protected boolean anyCellInRowSelected(int row) {
 		if (!rowLegal(row))
 			return false;
 		for (int i = 0; i < numColumnsTotal; i++) {
@@ -1620,8 +1665,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	}
 
+	public int[] getTabbedLines(String s){
+		return getTabbedLinesCount(s);
+	}
 	/* ................................................................................................................. */
-	public static int[] getTabbedLines(String s) {
+	public static int[] getTabbedLinesCount(String s) {
 		if (s == null)
 			return null;
 		int lines = 0;
@@ -2315,7 +2363,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			vertScroll.setBlockIncrement(1);
 		else
 			vertScroll.setBlockIncrement(numRowsVisible - 1);
-		
+
 		lastRowVisible = firstRowVisible + numRowsVisible - 1;
 	}
 
@@ -3420,8 +3468,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	int firstSelectedColumn = 0;
 
 	int firstSelectedRow = 0;
-	
-	
+
+
 	/* ............................................................................................................... */
 	public void setFirstSelectedRow (int row) {
 		firstSelectedRow = row;
@@ -3869,7 +3917,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				cellsSelected[0].setBit(j * numColumnsTotal + i);
 			}
 	}
-	
+
 
 	/* ............................................................................................................... */
 	/** Deselects all cells outside the specified rows */
@@ -3940,12 +3988,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int c2old = MesquiteInteger.maximum(firstColumnOld, lastColumnOld);
 		int r1old = MesquiteInteger.minimum(firstRowOld, lastRowOld);
 		int r2old = MesquiteInteger.maximum(firstRowOld, lastRowOld);
-		
+
 		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
 		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
 		int r1 = MesquiteInteger.minimum(firstRow, lastRow);
 		int r2 = MesquiteInteger.maximum(firstRow, lastRow);
-		
+
 		for (int row = r1old; row <= r2old; row++)
 			for (int column = c1old; column <= c2old; column++) {
 				if ((column < c1) || (column > c2) || (row < r1) || (row > r2)) { // not in block
@@ -3964,7 +4012,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 			}
 	}
-	
+
 	/* ............................................................................................................... */
 	/** Redraws cells in old and new blocks */
 	public void redrawOldAndNewBlocks(int firstColumnOld, int lastColumnOld, int firstColumn, int lastColumn, Bits whichRows, boolean considerAndMoveSelection) {
@@ -3974,28 +4022,28 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return;
 		int c1old = MesquiteInteger.minimum(firstColumnOld, lastColumnOld);
 		int c2old = MesquiteInteger.maximum(firstColumnOld, lastColumnOld);
-		
+
 		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
 		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
-		
+
 		for (int row = 0; row <= numRowsTotal; row++)
-				for (int column = c1old; column <= c2old; column++) {
-					if ((column < c1) || (column > c2 || !whichRows.isBitOn(row))) { // not in block
-						if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,c2,whichRows)) {
-							if (considerAndMoveSelection)
-								deselectCell(column, row);
-							redrawCell(column, row);
-						}
+			for (int column = c1old; column <= c2old; column++) {
+				if ((column < c1) || (column > c2 || !whichRows.isBitOn(row))) { // not in block
+					if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,c2,whichRows)) {
+						if (considerAndMoveSelection)
+							deselectCell(column, row);
+						redrawCell(column, row);
 					}
 				}
+			}
 		for (int i = c1; i <= c2; i++)
 			for (int j = 0; j <= numRowsTotal; j++) 
-			if (whichRows.isBitOn(j)){
-				if (considerAndMoveSelection)
-					cellsSelected[0].setBit(j * numColumnsTotal + i);
-				redrawCell(i, j);
+				if (whichRows.isBitOn(j)){
+					if (considerAndMoveSelection)
+						cellsSelected[0].setBit(j * numColumnsTotal + i);
+					redrawCell(i, j);
 
-			}
+				}
 	}
 
 
@@ -4309,7 +4357,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return someSelected;
 		}
 	}
-	
+
 	/* ............................................................................................................... */
 	/** returns whether a single contiguous cell block in matrix is selected. Returns first contiguous block selected in matrix regardless if unique */
 	public boolean boundedBlockSelected(MesquiteInteger firstRow, MesquiteInteger lastRow, MesquiteInteger firstColumn, MesquiteInteger lastColumn) {
@@ -4332,7 +4380,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			for (int row =firstRow.getValue(); row <=lastRow.getValue(); row++) 
 				if(isCellSelected(lastColumn.getValue()+1, row) )
 					return false;
-			
+
 		}
 
 		if(firstColumn.getValue()>0) {
@@ -4354,7 +4402,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			for (int column =firstColumn.getValue(); column <=lastColumn.getValue(); column++) 
 				if(isCellSelected(column, lastRow.getValue()+1) )
 					return false;
-			
+
 		}
 		if(firstRow.getValue()>0) {
 			if ( isRowSelected(firstRow.getValue()-1))  // the row just after is selected
@@ -4362,7 +4410,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			for (int column =firstColumn.getValue(); column <=lastColumn.getValue(); column++) 
 				if(isCellSelected(column, firstRow.getValue()-1) )
 					return false;
-			
+
 
 		}
 
@@ -4379,8 +4427,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 
-		/* ............................................................................................................... */
-		/** Returns in the MesquiteIntegers the bounds of the selection growing out from the current cell */
+	/* ............................................................................................................... */
+	/** Returns in the MesquiteIntegers the bounds of the selection growing out from the current cell */
 	public boolean findBlockSurroundingCell(int centerColumn, int centerRow, MesquiteInteger firstRow, MesquiteInteger lastRow, MesquiteInteger firstColumn, MesquiteInteger lastColumn) {
 		int firstR = centerRow;
 		int lastR = centerRow;
@@ -4532,7 +4580,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				}
 
 			}
-				
+
 		}
 		return aWholeColumnSelected;
 	}
@@ -4648,17 +4696,17 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		for (int column=columnStart; column<=columnEnd; column++)
 			for (int row=rowStart; row<=rowEnd; row++)
 				if (isCellSelected(column,row))
-						return true;
+					return true;
 		return false;
 	}
-	
+
 	/* ............................................................................................................... */
 	/** returns true if any cell in central matrix block is selected (does not return true if whole row or column is selected). */
 	public boolean isAnyCellSelectedInBlock(int columnStart, int columnEnd, Bits whichRows) {
 		for (int column=columnStart; column<=columnEnd; column++)
 			for (int row=0; row<numRowsTotal; row++)
 				if (whichRows.isBitOn(row) && isCellSelected(column,row))
-						return true;
+					return true;
 		return false;
 	}
 
@@ -4788,7 +4836,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return columnsSelected[0].isBitOn(column);
 		return false;
 	}
-	
+
 
 	/* ............................................................................................................... */
 	/** returns a Bits saying what rows are selected. */
