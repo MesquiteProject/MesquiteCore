@@ -30,7 +30,11 @@ public class StrictConsensusTree extends BasicTreeConsenser   {
 		Tree t = bipartitions.makeTree();
 		return t;
 	}
- 	
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
+
 	/*.................................................................................................................*/
    	public boolean isPrerelease(){
    		return true;  

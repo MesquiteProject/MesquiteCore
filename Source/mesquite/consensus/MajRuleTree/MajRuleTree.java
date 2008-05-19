@@ -112,6 +112,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		if (dumpTable)
 			bipartitions.dump();
  	}
+ 
 
 	public Tree getConsensus(){
 		Tree t = bipartitions.makeTree(consensusFrequencyLimit());
@@ -125,6 +126,10 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	/*.................................................................................................................*/
 	public double consensusFrequencyLimit() {
 		return frequencyLimit;
+	}
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return true;  
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){

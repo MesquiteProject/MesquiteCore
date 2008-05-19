@@ -139,6 +139,7 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 	//		logln("\n Consensus Tree Calculations");
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
+		logln("");
 		for (treeNumber = 0; treeNumber < list.size(); treeNumber++){
 			if (treeNumber==0) {
 				switch (rooting) {
@@ -154,6 +155,8 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 				}
 			}
 			addTree(list.getTree(treeNumber));
+			if (treeNumber%100==0)
+				log(".");
 			if (progIndicator!=null) {
 				progIndicator.setText("Processing tree " + (treeNumber+1));
 				progIndicator.spin();		
