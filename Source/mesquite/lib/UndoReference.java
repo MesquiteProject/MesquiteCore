@@ -9,20 +9,21 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.*;
 
 public class UndoReference {
-	
+
 	Undoer undoer;
 	MesquiteModule responsibleModule;
-	
+
 	public UndoReference() {
 	}
-	
+
 	public UndoReference(CharacterData data, MesquiteModule responsibleModule) {
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
 		undoInstructions.setNewData(data);
@@ -58,8 +59,22 @@ public class UndoReference {
 	public void setUndoer(Undoer undoer) {
 		this.undoer = undoer;
 	}
-	
-	
+
+	public static UndoReference getUndoReferenceForMatrixSelection(CharacterData data, MesquiteTable table, MesquiteModule responsibleModule){
+		if (data!=null) 
+			if (table!=null) {
+				MesquiteInteger firstRow= new MesquiteInteger();
+				MesquiteInteger lastRow= new MesquiteInteger();
+				MesquiteInteger firstColumn= new MesquiteInteger();
+				MesquiteInteger lastColumn= new MesquiteInteger();
+				if (table.singleCellBlockSelected( firstRow,  lastRow,  firstColumn,  lastColumn))
+					return new UndoReference(data,responsibleModule,firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(),lastRow.getValue());
+			}
+			else
+				return new UndoReference(data,responsibleModule);
+		return null;
+	}
+
 
 }
 
