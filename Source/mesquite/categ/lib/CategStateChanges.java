@@ -83,10 +83,10 @@ public class CategStateChanges {
 
 	/*.................................................................................................................*/
 
-	public boolean addOneMapping(Tree tree, CategoricalHistory history, int node, boolean selectedNodesOnly, int whichMapping) {
+	public boolean addOneMapping(Tree tree, CategoricalHistory history, int node, int whichMapping) {
 		if (!tree.nodeExists(node))
 			node = tree.getRoot();
-		int[][] array =  history.harvestStateChanges(tree, node, selectedNodesOnly,null);
+		int[][] array =  history.harvestStateChanges(tree, node,null);
 		if (array==null ||  array.length != numStates)
 			return false;
 		return addOneMapping(array,false);
@@ -225,7 +225,7 @@ public class CategStateChanges {
 	
 	/*.................................................................................................................*/
 
-	public void addOneHistory(Tree tree, CategoricalHistory history,int node,boolean selectedNodesOnly, int samplingLimit) {
+	public void addOneHistory(Tree tree, CategoricalHistory history,int node, int samplingLimit) {
 		CategoricalHistory resultStates=null;
 		zeroTotals();
 		int[][] array;
@@ -233,7 +233,7 @@ public class CategStateChanges {
 		if (!mappingsAvailable()) {
 			history.clone(resultStates);
 			if (resultStates instanceof mesquite.categ.lib.CategoricalHistory){
-				array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, selectedNodesOnly, null);
+				array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, null);
 				if (addOneMapping(array, true)) mappingsAdded++;
 			}
 		}
@@ -243,7 +243,7 @@ public class CategStateChanges {
 				for (int i=0; i<samplingLimit; i++) {
 					resultStates = (CategoricalHistory)history.getResolution(tree, resultStates, i);
 					if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
-						array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, selectedNodesOnly,null);
+						array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,null);
 						if (addOneMapping(array, true)) mappingsAdded++;
 					}
 				}
@@ -253,7 +253,7 @@ public class CategStateChanges {
 					for (int i=0; i<numMappings; i++) {
 						resultStates = (CategoricalHistory)history.getResolution(tree, resultStates, i);
 						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
-							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, selectedNodesOnly,null);
+							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,null);
 							if (addOneMapping(array, true)) mappingsAdded++;
 						}
 					}
@@ -262,7 +262,7 @@ public class CategStateChanges {
 					for (int i=0; i<samplingLimit; i++) {
 						resultStates = (CategoricalHistory)history.getResolution(tree, resultStates, RandomBetween.getLong(0,numMappings-1));
 						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
-							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,selectedNodesOnly, null);
+							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, null);
 							if (addOneMapping(array, true)) mappingsAdded++;
 						}
 					}

@@ -474,7 +474,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 			/* preliminaries .......... */
 
 			if (branchesMode && (myTree == null || !myTree.anySelected())) {
-				String s = "No changes are summarized because no branches are selected in current tree in Tree Window.";
+				String s = "No changes are summarized because no branches are selected in current tree in Tree Window. Make sure only a single branch is selected, not an entire clade; use the Select Branch tool.";
 				resultString.setValue(s);
 				textWindow.setText(s);
 				return;
