@@ -202,7 +202,24 @@
                   high on this index. Taxon instability calculations are illustrated 
                   in the example file at Mesquite_Folder/examples/Basic_Examples/tree_manipulation/13-instability.nex</li>
               </ul>
-              <h3> <a name="storedTrees"></a>Stored trees and tree blocks<font face="Trebuchet MS"> </font></h3>
+              <h3> <a name="multiTrees"></a><font face="Trebuchet MS"> Calculations with multiple trees</font></h3>
+              <font face="Trebuchet MS"> 
+              <p>Often a biologist wants to perform an analysis with multiple trees, for example the many trees coming from a Bayesian analysis,
+              to see how the analytical results vary among the trees.  Mesquite offers several ways to explore analysis with multiple trees              </p>
+              <ul>
+                <li><strong>Tree Window</strong>: In the tree window you can do an analysis using various options in the Analysis menu such as Values for Trees, Trace Character History, and others. When such an analysis is active, you can explore how different trees affect the results as follows:
+                  <ul> <li>Scrolling from one tree to the next, or editing the tree, will cause the analysis to be updated to apply to the new tree</li>
+                    <li><a name="stepthroughtrees"></a>The <strong>Step Through Trees</strong> feature (in the Tree menu) will automatically scroll from tree to tree, writing the results of calculations into a text file that can be read into a spreadsheet or statistical program.</li>
+                    <li>Scripts can be sent to the tree window to scroll from tree to tree, harvesting information along the way. Examples of such scripts are given in on the <a href="scripting.html">scripting</a> page.</li>
+                  </ul>
+                </li>
+                <li><strong>Charts</strong>: Both <strong>Bar &amp; Line Charts</strong> and <strong>Scattergrams</strong> (available in the Analysis menu) can be used to summarize one or two values over a series of trees. Choose <strong>New Bar &amp; Line Chart for Trees</strong>, or <strong>New Scattergram for Trees</strong>. You can choose the source of trees, e.g. trees stored in the file, trees in a separate file, simulated trees.</li>
+                <li><strong>List of Trees window</strong>: For blocks of trees stored in the project, you can display the List of Trees window and choose special columns to display information about each tree. For instance, in this window go to the Columns menu and choose a Number For Tree from the submenu. A new column will appear listing each tree's value for that calculation.</li>
+                  <li><strong>Others</strong>: Several other functions in Mesquite offer the opportunity to repeat a calculation for each of many trees. For instance, the <a href="RandomSimul/simDNA.html#multisim">Batch Architect</a> can simulate sequence matrices on a series of trees and prepare a batch file for analysis of each.</li>
+              </ul>
+              </p>
+              </font>
+         <h3> <a name="storedTrees"></a>Stored trees and tree blocks<font face="Trebuchet MS"> </font></h3>
               <font face="Trebuchet MS"> 
               <p>Trees may exist within <strong>tree blocks</strong> that are 
                 stored in the data file. A tree block is a collection of trees 
@@ -248,25 +265,42 @@
               <p>For tree files with too many trees to be held in memory simultaneously, 
                 Mesquite can read the trees in directly from the file, one at 
                 a time, and discard each from memory after it is used (for instance, 
-                in charts or in the Tree Window). To do this use &quot;Use Trees from Separate File&quot; as your tree source.</p>
+                in charts or in the Tree Window). To do this use &quot;Use Trees from Separate NEXUS File&quot; as your tree source.</p>
               <h3><a name="treesources"></a>Tree Sources</h3>
               <p>Trees for viewing and analysis can come from various sources, 
                 including tree blocks in the current file, or <a href="RandomSimul/simTrees.html">simulations</a>. 
                 Some tree sources modify other trees, such as <strong>Randomly 
-                Modify Current Tree</strong>. <strong>Use Trees from Separate File</strong> 
-                is useful for large treefiles. Although slow at times, it does 
-                not store all the trees in Mesquite's memory, but instead gets 
-                them from the file one at a time as needed. Another tree source, 
-                <a href="otherPrograms.html#mrbayestrees">MrBayes Trees</a>, obtains 
-                trees directly from a tree file stored by MrBayes. Mesquite can 
-                updated its calculations as new trees come in from MrBayes.</p>
-              <h3><a name="filtering"></a>Filtering Trees</h3>
+                Modify Current Tree</strong>.</p>
+              <h3><a name="importingTrees"></a>Importing Trees</h3>
+              <p>Trees can be imported from other files in several ways:              </p>
+              <ul>
+                  <li><strong>Copy &amp; Paste</strong>: Open the other file in a text editor, select the tree descripting from the first parenthesis to the semicolon, and copy it into the clipboard. Then go to Mesquite's tree window and choose Paste Tree from the Edit menu. In doing this you should be careful that the taxon names are the same in the file as they are in your current project, or if the tree description uses numbers to refer to taxa, that the numbering is the same as in your current project.</li>
+                  <li><strong>Reading blocks of trees into memory from another file</strong>: The advantage of this is that the trees are all in memory, so that calculations that need to reference the trees repeatedly can retrieve the trees quickly. The disadvantage is that many trees could take up much memory. There are two ways to read blocks of trees into memory:
+                  <ul>
+                    <li><strong>Link File</strong> (in the File menu) &mdash; This reads the contents of the separate file. The separate file remains linked, and Mesquite remembers that its information belongs to this separate file. If you modify the contents and re-save, the linked file will be modified.</li>
+                    <li><strong>Include File</strong> (in the File menu) &mdash; This reads the contents of the other file and copies them into the current project file. The other file is then left untouched.</li>
+                    <li><strong>Import File with Trees</strong> (in the Taxa &amp; Trees menu) &mdash; This is a special version of Link or Include that specifically pulls out trees from the other file.</li>
+                  </ul>
+                  </li>
+                  
+                <li><strong>Reading trees individually from another file</strong>:                   
+                  The following options can read trees individually on demand from other files.  This means that at any give time only one of the trees is in memory, which permits use of large tree files without using up much memory. However, it means that some calculations are slower since the trees must be retrieved each time they are needed.
+                  <ul>
+                    <li><strong>Use Trees from Separate NEXUS file</strong> (where ever a tree source is chosen) &mdash; This is the basic version.</li>
+                    <li><strong>Sample Trees from Separate NEXUS file</strong> (where ever a tree source is chosen) &mdash; This samples trees either to avoid a burn-in or to avoid examining too many trees.</li>
+                    <li><strong><a href="otherPrograms.html#mrbayestrees">MrBayes Trees</a> from .t file </strong>(where ever a tree source is chosen) &mdash; This version reads both the .t file and the associated .p file to recover the tree scores.</li>
+                  </ul>
+                </li>
+              </ul>
+                 When you Link File or choose an option to read trees individually, and then you save your project file, Mesquite will remember what external file is to be read.  If you later separate the project file and tree file apart, Mesquite will no longer be able 
+                 to find the tree file.  Thus, if you ask to save a file that is using another tree file via Link File or an option to read trees individually, you should remember to keep both files 
+                 together.
+                 <h3><a name="filtering"></a>Filtering Trees</h3>
               <p>Trees used in charts, the tree window or to make a new tree block 
                 can be filtered. To do this, select Filter Trees from Other source 
                 as your source of trees. You will be asked for the original source 
                 of trees, and the filtering method. There are currently three 
-                filtering methods:</p>
-              <p> 
+                filtering methods:              </p>
               <ul>
                 <li>Selected Taxa Form Clade - retains only those trees in which 
                   the currently selected set of taxa form a clade on the tree</li>
@@ -286,8 +320,7 @@
               <p>Trees can be edited by hand, as described <a href="#treewindow">below</a>, 
                 or the user can request Mesquite to automatically modify trees 
                 using the &quot;Alter/Transform&quot; modules. These modules can 
-                be used:</p>
-              <p> 
+                be used:              </p>
               <ul>
                 <li>in the Tree menu of the Tree Window, under the Alter/Transform 
                   Tree submenu, or the Alter/Tranform Branch Lengths submenu. 
@@ -296,8 +329,7 @@
                 <li>in the List menu of the List of Trees window, in the Utilities 
                   submenu, in the Alter Trees or Alter Branch Lengths submenus. 
                   Selecting an item in these submenus performs the transformation 
-                  on all selected trees, or on all trees if none is selected. 
-                </li>
+                  on all selected trees, or on all trees if none is selected.                </li>
                 <li>to transform trees on the fly that are being supplied for 
                   a chart or tree window or making a new tree block for a file. 
                   To do this, select &quot;Transform Trees from Other Source&quot; 
@@ -305,8 +337,7 @@
                   a source of trees to be transformed or filtered, and then for 
                   a means by which to transform the trees.</li>
               </ul></p>
-              <p>The Alter/Transform modules include:</p>
-              <p> 
+              <p>The Alter/Transform modules include:              </p>
               <ul>
                 <li>Root tree with selected taxa as outgroup</li>
                 <li>Resolve Polytomies (to 0-length branches)</li>
@@ -511,8 +542,7 @@
 				  The objective function used (e.g., treelength, or something else) is chosen using the 
 				  Objective Function submenu of the tool's popup menu.  You can also choose the nature of the 
 				  branch rearrangements used, and whether the tool looks for trees with higher or lower 
-				  values of the objective function.
-				  </td>
+				  values of the objective function.				  </td>
                 </tr>
               </table>
               </font> 
@@ -652,9 +682,6 @@
 				  (e.g., Tree of Life Web Project, iSpecies, Catalogue of Life, GenBank) can be chosen
 				  in the tool's popup menu. </td>
                 </tr>
-				
-				
-				
               </table>
               </font></font> 
               <h4> <a name="alterT"></a>Alter/Transform menu items</h4>
@@ -679,8 +706,7 @@
                   legend can describe information about the tree, including the 
                   results of calculations done using the tree. When the legend 
                   is in the Tree Window, an additional menu appears, the Legend 
-                  menu, by which you can choose to show or hide lines of information. 
-                </li>
+                  menu, by which you can choose to show or hide lines of information.                </li>
                 <li>Values at Nodes - shows values associated with nodes, either 
                   by coloring the nodes or labeling them. These values describe 
                   information about the nodes, such as a statistic calculated 

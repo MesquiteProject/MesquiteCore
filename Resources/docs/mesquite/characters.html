@@ -148,13 +148,13 @@
               <p>Characters and their character states are means by which to describe 
                 the features of organisms. Mesquite supports characters whose 
                 states are <strong>categorical</strong> (discrete and not necessarily 
-                ordered) or <strong>continuous</strong>. Special versions of categorical 
+                ordered), <strong>continuous</strong> (decimal-valued measurements) or <strong>meristic</strong> (counts). Special versions of categorical 
                 characters exist for DNA, RNA and protein sequence data. For more 
                 details specific to those types of characters, see the pages on 
                 <a href="molecular/molecular.html">molecular</a> and <a href="continuous/continuous.html">continuous</a> 
                 characters. Categorical characters other than molecular characters 
                 can have 55 states (by default symbols 0 - 9, A - H, K - N, P 
-                - Z, a - h, k - n, p - z).</p>
+                - Z, a - h, k - n, p - z).  Meristic characters are not fully supported, and are primarily used for bookkeeping tasks rather than for analyses.</p>
               <p>Characters can exist within <strong>matrices</strong> that are 
                 stored in a data file. Thus, one matrix may store a series of 
                 categorical characters to describe phenotypic features. A separate 
@@ -218,7 +218,7 @@
                 renaming matrices</font></h3>
               <p>There are three places you can rename and delete character matrices: 
                 in the Character Matrix Editor, in the List of Character Matrices 
-                window, and in the Projects and Files window. 
+                window, and in the Project Panel. 
               <p>In the Character Matrix Editor the Current Matrix submenu at 
                 the top of the matrix menu has menu items for renaming or deleting 
                 the matrix shown in the window. 
@@ -227,11 +227,10 @@
                 delete matrices, select the rows corresponding to the matrices 
                 to be deleted, and select <u>List&gt;Delete Selected Character 
                 Matrices</u>. 
-              <p>To rename a matrix from the Projects and Files window, touch 
-                on the &quot;Character Matrix&quot; box: 
-              <p align="center"><img src="images/project1.gif" width="305" height="139"> 
-              <p>A drop-down menu will appear with the option to rename the matrix. 
-                You can also use this drop-down menu to delete a matrix.              </font><h2><a name="editor"></a>The Character Matrix Editor</h2>
+              <p>To rename a matrix from the Project Panel at the left side of your windows, touch on the name of the matrix until a drop down menu appears: 
+              <p align="center"><img src="images/renameDeleteMatrix.jpg" width="268" height="193"> 
+              <p>Choose Rename Matrix from this menu to rename the matrix. 
+                You can also use this drop-down menu to delete a matrix.                </font><h2><a name="editor"></a>The Character Matrix Editor</h2>
               <p><font face="Trebuchet MS">Once you have a character matrix, you 
                 may edit it using Mesquite's Character Matrix Editor, available 
                 at the top of the Characters menu. This is a spreadsheet editor, 
@@ -248,6 +247,7 @@
                 menus, and by the tools in the palette at left. The Matrix menu 
                 contains items to change column widths (the Display submenu), 
                 change cell coloring, and to alter the character data. 
+              <p>You can request a panel to show information about the matrix and its characters by touching on the blue &quot;i&quot; (<img src="images/showInfo.gif" width="16" height="12">) at upper right or lower left of the matrix.
               <p>You can have more than one Matrix Editor visible for working 
                 on the same matrix. To get a second Editor, choose Extra Matrix 
                 Editor from the Characters menu. This may be useful if you want 
@@ -260,13 +260,13 @@
                 <tr> 
                   <td><strong>The Character Matrix Editor showing <font face="Trebuchet MS">morphological 
                     data </font></strong></td>
-                  <td><img src="images/BembMatrix.gif" width="477" height="310"></td>
+                  <td><img src="images/BembMatrix.gif" width="702" height="394"></td>
                 </tr>
                 <tr> 
                   <td width="55%"><strong>The Character Matrix Editor showing 
                     DNA sequences</strong></td>
                   <td width="45%"><p> <font face="Trebuchet MS"></font></p>
-                    <p><img src="images/DNAMatrix.gif" width="437" height="200"></p></td>
+                    <p><img src="images/DNAMatrix.gif" width="664" height="354"></p></td>
                 </tr>
               </table>
               <p>There are buttons at the lower left of the Character Matrix Editor 
@@ -354,8 +354,8 @@
                     would any standard text.</font></td>
                 </tr>
                 <tr> 
-                  <td width="8%"> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"><img src="images/keySelector.gif" width="26" height="26"></font></font></div></td>
-                  <td width="13%"><font face="Trebuchet MS">Key Touch</font></td>
+                  <td width="8%"> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"><img src="images/keySelector.gif" width="27" height="26"></font></font></div></td>
+                  <td width="13%"><font face="Trebuchet MS">Select and Type</font></td>
                   <td width="79%"><font face="Trebuchet MS">If this tool is active, 
                     typing a key will cause that single value to be entered into 
                     all selected cells. Cells can be selected with this tool; 
@@ -518,7 +518,7 @@
                 example data file with annotations is at Mesquite_Folder/examples/Basic_Examples/characters/11a-annotations.nex</font> 
               <p>The annotations panel appears at the right side of the window, 
                 as follows: 
-              <p align="center"><img src="images/cellPictures.jpg" width="682" height="387"></p>
+              <p align="center"><img src="images/cellPictures.jpg" width="742" height="419"></p>
               <p>The annotations panel above shows the annotations (if any) associated 
                 with a given taxon, character or cell in the matrix (depending 
                 on what was selected with the annotation (pencil) tool). Notes 
@@ -588,14 +588,14 @@
                   Matrix) Matrix&gt;Alter/Transform&gt;Random Fill</font></u></li>
                 <li>Randomly reshuffle the states within a character among the 
                   selected taxa: Choose <u><font face="Arial, Helvetica, sans-serif" size="-1">(Character 
-                  Matrix) Matrix&gt;Alter/Transform&gt;Other Choices...&gt;Shuffle 
+                  Matrix) Matrix&gt;Alter/Transform&gt;Shuffle 
                   states among taxa</font></u></li>
                 <li>For nucleotide sequence data, convert the entries in each 
                   cell into their complement: Choose <u><font face="Arial, Helvetica, sans-serif" size="-1">(Character 
-                  Matrix) Matrix&gt;Alter/Transform&gt;Other Choices...&gt;Nucleotide 
+                  Matrix) Matrix&gt;Alter/Transform&gt;Nucleotide 
                   complement</font></u></li>
                 <li>Reversing a selected molecular sequence: Choose <u><font face="Arial, Helvetica, sans-serif" size="-1">(Character 
-                  Matrix) Matrix&gt;Alter/Transform&gt;Other Choices...&gt;Reverse 
+                  Matrix) Matrix&gt;Alter/Transform&gt;Reverse 
                   Sequence</font></u></li>
               </ul>
               <h3><a name="changing"></a>Changing the attributes of characters</h3>
@@ -606,7 +606,7 @@
                 These attributes are used in various calculations. They may be 
                 assigned in the List of Characters windows, available in the Characters 
                 menu. 
-              <p align="center"><img src="images/charList.jpg" width="428" height="306"> 
+              <p align="center"><img src="images/charList.jpg" width="463" height="388"> 
               <p>In the List of Characters window, columns refer to inclusion, 
                 parsimony model and probability model (for likelihood calculations). 
                 Other columns can be requested for Group Membership, Weight, and 
