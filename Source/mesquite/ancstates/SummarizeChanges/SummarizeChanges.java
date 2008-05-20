@@ -128,6 +128,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		currentTaxa = taxa;
 		this.poppedOut = poppedOut;
 		branchesMode = false;
+		
 		setup();
 		if (!MesquiteThread.isScripting() && textWindow == null) {
 			textWindow= new MesquiteTextWindow( this, "State Changes Over Trees", true, true, false);
@@ -136,6 +137,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 			if (poppedOut)
 				textWindow.popOut(true);
 			else textWindow.setVisible(true);
+			resetContainingMenuBar();
 			resetAllWindowsMenus();
 			recalculate();
 		}
@@ -637,7 +639,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	/*.................................................................................................................*/
 //	this is called if used by tree window assistant to show changes on branches
 	public   void setTree(Tree tree){
-		if (tree==null) return;
+		if (tree == null)
+			return;
 		currentTaxa = tree.getTaxa();
 		setup();
 		this.poppedOut = true;
@@ -649,6 +652,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 			if (poppedOut)
 				textWindow.popOut(true);
 			else textWindow.setVisible(true);
+			resetContainingMenuBar();
 			resetAllWindowsMenus();
 		}
 		if (textWindow != null)
