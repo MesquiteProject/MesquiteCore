@@ -132,7 +132,7 @@ public class CategStateChanges {
 	}
 	/*.................................................................................................................*/
 
-	public void addOneHistory(Tree tree, CharHistorySource historySource,int ic, int node,Bits nodesToSample, int samplingLimit) {
+	public void addOneHistory(Tree tree, CharHistorySource historySource,int ic, int node,Bits nodesToSample, MesquiteInteger numMappingsSampled, int samplingLimit, MesquiteInteger newSamplingLimit, boolean queryChangeSamplingLimit) {
 		CategoricalHistory resultStates=null;
 		CategoricalHistory history = null;
 		zeroTotals();
@@ -150,6 +150,11 @@ public class CategStateChanges {
 		}
 		else {
 			long numMappings = historySource.getNumberOfMappings(tree, ic);
+			if (queryChangeSamplingLimit && !MesquiteThread.isScripting() && newSamplingLimit!=null) {
+				int newLimit = MesquiteInteger.queryInteger(historySource.getModuleWindow(), "Maximum number of mappings to sample", "Maximum number of mappings to sample for the character on each tree",samplingLimit, 1, Integer.MAX_VALUE);
+				if (MesquiteInteger.isCombinable(newLimit))
+					newSamplingLimit.setValue(newLimit);
+			}
 			if (numMappings == MesquiteLong.infinite || !MesquiteLong.isCombinable(numMappings)) {
 				for (int i=0; i<samplingLimit; i++) {
 					resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
@@ -182,6 +187,8 @@ public class CategStateChanges {
 		}
 		if (mappingsAdded>0)
 			numHistories++;
+		if (numMappingsSampled!=null) numMappingsSampled.setValue(mappingsAdded);
+
 		if (mappingsAdded>0)
 			for (int i=0; i<numStates; i++)
 				for (int j=0; j<numStates; j++)

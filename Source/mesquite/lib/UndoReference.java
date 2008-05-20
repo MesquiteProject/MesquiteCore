@@ -18,7 +18,7 @@ import mesquite.lib.table.*;
 
 public class UndoReference {
 
-	Undoer undoer;
+	Undoer[] undoer;
 	MesquiteModule responsibleModule;
 
 	public UndoReference() {
@@ -27,20 +27,53 @@ public class UndoReference {
 	public UndoReference(CharacterData data, MesquiteModule responsibleModule) {
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
 		undoInstructions.setNewData(data);
-		setUndoer(undoInstructions);
+		setUndoer(new Undoer[] {undoInstructions});
 		setResponsibleModule(responsibleModule);
 	}
 
 	public UndoReference(CharacterData data, MesquiteModule responsibleModule, int icStart, int icEnd, int itStart, int itEnd) {
 		UndoInstructions undoInstructions = new UndoInstructions (UndoInstructions.DATABLOCK, data, data, icStart,icEnd, itStart, itEnd, icStart, icEnd, itStart, itEnd,true);
 		//undoInstructions.setNewData(data);
+		setUndoer(new Undoer[] {undoInstructions});
+		setResponsibleModule(responsibleModule);
+	}
+	
+	public static final int ALLCHARACTERNAMES = 7;
+
+	/** a constructor for an Undoreference that preserves both data and the taxon names */
+	public UndoReference(CharacterData data, MesquiteModule responsibleModule, int icStart, int icEnd, int itStart, int itEnd, int[] undoableObjects) {
+		if (undoableObjects==null) return;
+		UndoInstructions[] undoInstructions = new UndoInstructions[undoableObjects.length];
+		for (int i=0; i<undoableObjects.length; i++) {
+			switch(undoableObjects[i]) {
+			case UndoInstructions.ALLDATACELLS:
+				undoInstructions[i]= data.getUndoInstructionsAllData();
+				undoInstructions[i].setNewData(data);
+				break;
+			case UndoInstructions.DATABLOCK:
+				undoInstructions[i]= new UndoInstructions (UndoInstructions.DATABLOCK, data, data, icStart,icEnd, itStart, itEnd, icStart, icEnd, itStart, itEnd,true);
+				break;
+
+			case UndoInstructions.ALLTAXONNAMES:
+				if (data!=null)
+					undoInstructions[i]= new UndoInstructions(UndoInstructions.ALLTAXONNAMES,data.getTaxa(), data.getTaxa());
+				break;
+			case UndoInstructions.ALLCHARACTERNAMES:
+				undoInstructions[i] = new UndoInstructions(UndoInstructions.ALLCHARACTERNAMES,data, data);
+				break;
+			}
+		}
 		setUndoer(undoInstructions);
 		setResponsibleModule(responsibleModule);
 	}
 
-
-	public UndoReference(Undoer undoer, MesquiteModule responsibleModule) {
+	public UndoReference(Undoer[] undoer, MesquiteModule responsibleModule) {
 		this.undoer = undoer;
+		this.responsibleModule = responsibleModule;
+	}
+	
+	public UndoReference(Undoer undoer, MesquiteModule responsibleModule) {
+		this.undoer = new Undoer[] {undoer};
 		this.responsibleModule = responsibleModule;
 	}
 
@@ -52,12 +85,16 @@ public class UndoReference {
 		this.responsibleModule = responsibleModule;
 	}
 
-	public Undoer getUndoer() {
+	public Undoer[] getUndoer() {
 		return undoer;
 	}
 
-	public void setUndoer(Undoer undoer) {
+	public void setUndoer(Undoer[] undoer) {
 		this.undoer = undoer;
+	}
+
+	public void setUndoer(Undoer undoer) {
+		this.undoer = new Undoer[] {undoer};
 	}
 
 	public static UndoReference getUndoReferenceForMatrixSelection(CharacterData data, MesquiteTable table, MesquiteModule responsibleModule){
@@ -67,8 +104,12 @@ public class UndoReference {
 				MesquiteInteger lastRow= new MesquiteInteger();
 				MesquiteInteger firstColumn= new MesquiteInteger();
 				MesquiteInteger lastColumn= new MesquiteInteger();
-				if (table.singleCellBlockSelected( firstRow,  lastRow,  firstColumn,  lastColumn))
-					return new UndoReference(data,responsibleModule,firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(),lastRow.getValue());
+				if (table.singleCellBlockSelected( firstRow,  lastRow,  firstColumn,  lastColumn)) {
+					if (table.numRowNamesSelected()>0) 
+						return new UndoReference(data,responsibleModule,firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(),lastRow.getValue(), new int[] {UndoInstructions.DATABLOCK, UndoInstructions.ALLTAXONNAMES});
+					else
+						return new UndoReference(data,responsibleModule,firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(),lastRow.getValue(), new int[] {UndoInstructions.DATABLOCK});
+				}
 			}
 			else
 				return new UndoReference(data,responsibleModule);

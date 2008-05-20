@@ -259,7 +259,10 @@ public class UndoInstructions implements Undoer {
 				table.offAllEditingSelection();
 				table.setFocusedCell(icStart, itStart, true);
 			}
-			data.setState(icStart, itStart, (CharacterState) oldState); // receive
+			if (data instanceof CategoricalData)  
+				data.setState(icStart, itStart, (CategoricalState) oldState); // receive
+			else
+				data.setState(icStart, itStart, (CharacterState) oldState); // receive
 			// errors?
 			data.notifyListeners(this, new Notification(
 					MesquiteListener.DATA_CHANGED,

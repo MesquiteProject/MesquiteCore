@@ -233,9 +233,9 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		}
 		if (!success){
 			if (undoReference!=null) {
-				Undoer undoer = undoReference.getUndoer();
-				if (undoer!=null)
-					undoer.undo();
+				Undoer[] undoer = undoReference.getUndoer();
+				if (undoer!=null && undoer[0]!=null)
+					undoer[0].undo();
 			}
 		}
 		stopMoving();
