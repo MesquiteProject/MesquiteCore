@@ -290,6 +290,8 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	}
 	/*...............................................................................................................*/
 	int touchY = -1;
+	int touchX = -1;
+	int lastX = -1;
 	int lastY=-1;
 	int touchRow;
 	int previousRowDragged = -1;
@@ -305,6 +307,13 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		int regionInCellV =findRegionInCellV(y);
 		boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
 
+		touchX=-1;
+		if (x>getBounds().width-8) {
+			touchX=x;
+			lastX = x;
+			shimmerOn(x);
+		}
+		else
 		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
 			table.startAutoScrollThread(this);
 			if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
@@ -349,7 +358,12 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	}
 	/*...............................................................................................................*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
-		if (touchRow>=0 && tool != null)
+		if (touchX >=0) {
+			shimmerOff(lastX);
+			shimmerOn(x);
+			lastX=x;
+		}
+		else if (touchRow>=0 && tool != null)
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (table.getUserAdjustColumn()==MesquiteTable.RESIZE) {
 					table.shimmerHorizontalOff(lastY);
@@ -378,7 +392,19 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	/*...............................................................................................................*/
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		table.stopAutoScrollThread();
-		if (touchRow>=0 && tool != null)
+		if (touchX >=0) {
+			shimmerOff(lastX);
+			int newColumnWidth = getBounds().width + x-touchX-table.rowGrabberWidth;
+			if (newColumnWidth > 16) {
+				table.rowNamesWidthAdjusted = true;
+				table.setRowNamesWidth(newColumnWidth);
+				table.resetTableSize(false);
+				table.repaintAll();
+			}
+			touchX = -1;
+			lastX = -1;
+		}
+		else if (touchRow>=0 && tool != null)
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (!table.anyRowSelected()) {
 
@@ -417,6 +443,28 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			}
 
 	}
+	/*...............................................................................................................*/
+   	public void shimmerOff(int x) {
+		if (x<=getBounds().width) {
+			table.shimmerVerticalOff(this,x);
+			table.shimmerVerticalOff(table.rowNames,x);
+		}
+		else {
+			table.shimmerVerticalOff(table.columnNames,x-touchX);
+			table.shimmerVerticalOff(table.matrix,x-touchX);
+		}
+   	 }
+	/*...............................................................................................................*/
+   	public void shimmerOn(int x) {
+		if (x<=getBounds().width) {
+			table.shimmerVerticalOn(this,x);
+			table.shimmerVerticalOn(table.rowNames,x);
+		}
+		else {
+			table.shimmerVerticalOn(table.columnNames,x-touchX);
+			table.shimmerVerticalOn(table.matrix,x-touchX);
+		}
+   	 }
 
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
@@ -433,7 +481,11 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			setCursor(getDisabledCursor());
 		else if (row>=0 && row<table.numRowsTotal) {
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
-				setCursor(table.getHandCursor());
+					if (x>getBounds().width-8) 
+						setCursor(table.getEResizeCursor());
+					else
+						setCursor(table.getHandCursor());
+
 				if (!(table.getUserMoveRow() && table.isRowSelected(row) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.controlKeyDown(modifiers))) {
 					if (!(table.editingAnything() || table.singleTableCellSelected())) {
 						String s = table.getRowComment(row);
