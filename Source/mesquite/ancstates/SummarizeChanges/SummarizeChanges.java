@@ -41,7 +41,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	
 	static int maxNumMappings = 50;
 	static boolean queryLimits = true;
-
+	MesquiteBoolean saveDetailsToFile = new MesquiteBoolean(false);
 	
 	CharHistorySource historyTask;
 	MesquiteString treeSourceName;
@@ -108,6 +108,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 
 		numTreesItem = addMenuItem("Number of Trees...", makeCommand("setNumTrees", this));
 		numTreesItem.setEnabled(false);
+		addCheckMenuItem(null, "Save Details To File...", makeCommand("toggleSaveDetails", this), saveDetailsToFile);
+
 		addMenuItem( "Close Summarize Changes", makeCommand("closeSummarizeChanges",  this));
 		addMenuItem( "-", null);
 
@@ -149,8 +151,6 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	}
 	/*.................................................................................................................*/
 	public void checkNumTreesFromSource() {
-
-		Debugg.println("checkNumTreesFromSource");
 		if (treeSourceTask==null || currentTaxa==null)
 			return;
 		int nt = treeSourceTask.getNumberOfTrees(currentTaxa);
@@ -230,7 +230,10 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		dialog.dispose();
 		return (buttonPressed.getValue()==0) ;
 	}
-
+	/*.................................................................................................................*/
+	public boolean saveDetails(){
+		return saveDetailsToFile.getValue() && !MesquiteThread.isScripting();
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Makes but doesn't show the window", null, commandName, "makeWindow")) {
@@ -267,6 +270,11 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		}
 		else if (checker.compare(this.getClass(), "Goes to previous character history", null, commandName, "allowedChanges")) {
 			if (queryAllowedChanges())
+				recalculate();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to save all the calculation details to a file", "[on; off]", commandName, "toggleSaveDetails")) {
+			saveDetailsToFile.toggleValue(parser.getFirstToken(arguments));
+			if (saveDetails())
 				recalculate();
 		}
 		else if (checker.compare(this.getClass(), "Sets the maximum number of mappings", null, commandName, "setMaxNumMappings")) {
@@ -461,6 +469,19 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		}
 	}
 	/*.................................................................................................................*/
+
+	public void addFullDetailsHeader (int numStates, StringBuffer sb) {
+		if (sb==null)
+			return;
+		sb.append("tree\t");
+
+		for (int i=0; i<numStates; i++)
+			for (int j=0; j<numStates; j++)
+				if (i!=j)
+					sb.append(""+i+"->"+j+"\t");
+		sb.append("\n");
+	}
+	/*.................................................................................................................*/
 	public   void recalculate(){
 		totalTrees =0;
 		if (!suppress && (historyTask !=null)){ 
@@ -502,6 +523,10 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 				currentChar = maxnum-1;
 			if (currentChar<0)
 				currentChar = 0;
+			
+			StringBuffer fullDetails= new StringBuffer();
+
+			
 			String modeString = "Shown for each state at each node is the number of trees on which the reconstructed state set at the node";
 			if (MesquiteInteger.isCombinable(numTrees))
 				resultString.setValue("Character " + CharacterStates.toExternal(currentChar) + "\n" + historyTask.getNameAndParameters() + " over " + numTrees + " trees (" + treeSourceTask.getName() + "; " + treeSourceTask.getParameters() + ").  " + modeString);
@@ -547,6 +572,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 				tempCharStates = (CategoricalHistory)historyTask.getMapping(0, tempCharStates, null);
 				if (stateChanges==null) {
 					stateChanges = new CategStateChanges(tempCharStates.getMaxState()+1);
+					if (saveDetails())
+						addFullDetailsHeader(tempCharStates.getMaxState()+1,fullDetails);
 				}
 				setMaxState(tempCharStates.getMaxState());
 				setAcceptableChanges(stateChanges);
@@ -558,7 +585,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 					markSelectedCommonClades(nodes, tempTree, myTree.getRoot(), myTree);
 				}
 
-				stateChanges.addOneHistory(tempTree, historyTask, currentChar,tempTree.getRoot(), nodes, numMappingsSampled, maxNumMappings, newMaxMappings, queryLimits);
+				stateChanges.addOneHistory(tempTree, historyTask, currentChar,tempTree.getRoot(), nodes, numMappingsSampled, maxNumMappings, newMaxMappings, queryLimits, fullDetails, ""+(it+1));
 				if (newMaxMappings.isCombinable()) {
 					maxNumMappings=newMaxMappings.getValue();
 					queryLimits = false;
@@ -574,6 +601,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 
 				if (it+1<numTrees)
 					tempTree = (MesquiteTree)treeSourceTask.getTree(currentTaxa, it+1);
+				if (saveDetails())
+					fullDetails.append("\n");
 
 			}
 
@@ -599,6 +628,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 					leadText += "Number of mappings sampled per tree: " + minSampled + "-"+maxSampled+"\n";
 				currentText = leadText+"\n"+ currentText;
 				textWindow.setText(currentText);
+				if (saveDetails())
+					MesquiteFile.putFileContentsQuery("Save file with full details", fullDetails.toString(), true);
 			}
 			else
 				textWindow.setText("Sorry, changes not calculated");
