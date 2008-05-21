@@ -208,7 +208,7 @@
               <p> The following can be applied to all or the selected portions 
                 of a molecular sequence matrix in the Character Matrix Editor. 
                 These are available under the Alter/Transform submenu of the Matrix 
-                menu (some of these are available under &quot;Other Choices&quot;):</p>
+                menu (some of these may be under &quot;Other Choices&quot;):</p>
               <ul>
                 <li><strong>Reverse Complement</strong> (DNA matrix only) &#8212; 
                   reverses the order of contiguously selected blocks of sequence 
@@ -341,7 +341,7 @@
               </table>
               <p> 
               <ul>
-                <li><a name="includetaxafromfile"></a><strong>Include Taxa from 
+                <li><a name="includetaxafromfile"></a><strong>Merge Taxa &amp; Matrices  from 
                   File</strong>: In the Taxa&amp;Trees menu, this function reads 
                   in an external file and attempts to concatenate taxa from the 
                   file onto taxa blocks of the current file, and also to add their 
@@ -349,7 +349,15 @@
                   to an existing file. File formats that can be incorporated are 
                   NEXUS, NBRF, and FASTA. This incorporation will NOT preserve 
                   the associated information of the external NEXUS file such as 
-                  footnotes for the taxa and characters. </li>
+                  footnotes for the taxa and characters. The procedure for using this is:
+                  <ol> <li>Open the first file.</li>
+                    <li>Select Merge Taxa &amp;Matrices from File. It will ask you to which taxa block you want to fuse the taxa block being read. Select the taxa block to which the new sequences are to be added.</li>
+                    <li>If it warns you that there are duplicate taxon names, then you may be making a mistake. Note in the example above, the taxon names are all different in the two files. If there are some shared taxa between the two files but the sequences are of the same gene, then if you use this procedure you will overwrite the old sequences with the new. If you are dealing with two different genes, see the section on Adding Genes below.</li>
+                    <li>Then it will ask you to &quot;Select matrix with which to fuse the matrix being read.&quot; If the new matrix being read in concerns the same gene as the first file, then you will probably want to select that matrix in the first file and hit OK. (You would hit Cancel if the second file being read in contained a different gene; see Adding Genes below.)</li>
+                    <li>It should then append the new sequences to your matrix.</li>
+                  </ol>
+                </li>
+               
                 <li><a name="dragAndDrop" id="dragAndDrop"></a><strong>Drag and
                      Drop:</strong> If you drag FASTA, GenBank/GenPept, or NBRF
                      files onto a Character Matrix Editor showing sequence data,
@@ -360,9 +368,34 @@
                      you drag and drop in one operation must be of the the same
                      file format.</li>
               </ul>
-              <h3><a name="addingGenes"></a>Adding genes</h3>
-              <p>If you want to take two matrices and concatenate them horizontally, 
-                i.e. add new genes to an existing set of taxa, then how you do 
+               <h3><a name="addingGenes"></a>Adding genes</h3>
+              <p>There are two aspects to bringing together data from two separate genes: first, to bring the sequences from the two genes into the same file as two separate matrices, and second, to concatenate them into a single matrix. Here we will explain how to bring them into the same file; in the next section we will explain how to concatenate the matrices.</p>
+              <p>Our goal is to bring the two sequence matrices into a common file and belonging to a common block of taxa. That way, if you subsequently edit taxon names or add and delete taxa, these changes will affect both matrices synchronously.</p>
+              <p>If you have two files, each with sequences from a different gene but with identical blocks of taxa (i.e. the list of taxa is the same and with the exact same names), then you can open one file first, then use Include File  to bring the second matrix into the same file. This will result in both matrices belonging to the same taxa block.</p>
+              <p>If you have two files, each with sequences from a different gene but with blocks of taxa that are non-identical because taxon names are different, then the only mechanism in Mesquite to bring them together in Mesquite currently is to use Fused Matrix Export (NEXUS) described under Concatenating Genes.</p>
+              <p>If you have two files, each with sequences from a different gene but with blocks of taxa that are non-identical because of differing taxon inclusion, then you can use Merge Taxa &amp; Matrices from File to bring the two files together. This requires that any taxa that are shared between the two files have the exact same names. This is the procedure:              </p>
+              <ol>
+                  <li>First, open the one file. Then select <strong>Merge Taxa &amp; Matrices from File</strong> from the Taxa &amp; Trees menu, and choose the second file.</li>
+                  <li>You will be asked &quot;To which block of taxa do you want to fuse the taxa being read in?&quot;. In most cases you will have just one choice, the taxa block in your first file; choose it and hit OK.</li>
+                  <li>It may warn you that there are duplicate taxon names; click OK because you were expecting taxon names to be the same in the two files. </li>
+                  <li>Then it will ask you to &quot;Select matrix with which to fuse the matrix being read.&quot; If the new matrix being read in concerns a different gene, then you will probably want to hit Cancel so as to make a new matrix for these sequences. (You would hit OK if the second file being read in contained the same gene but new taxa; see Adding New Taxa/Sequences above.)</li>
+                  <li>You should now have a file with one taxa block and two matrices:</li>
+              </ol>
+              </p>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td><div align="center">
+                    File 1:<br><img src="images/gene1beforeConcat.jpg" width="72" height="58">
+                  </div></td>
+                  <td>File 2:<br>
+                  <div align="center"><img src="images/gene2beforeConcat.jpg" width="69" height="58"></div></td>
+                  <td><div align="center"><img src="images/becomesArrow.gif" width="44" height="14"></div></td>
+                  <td><div align="center"><font face="Trebuchet MS">Merged File:<br>
+                  </font><img src="images/genesAfterMerge.jpg" width="161" height="77"></div></td>
+                </tr>
+              </table>
+              <h3><a name="concatGenes"></a>Concatenating genes</h3>
+              <p>If you want to take two sequence matrices and concatenate them horizontally to make long sequences including both genes, then how you do 
                 this depends on whether your taxa have the exact same names in 
                 the two matrices, or not.</p>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -376,25 +409,9 @@
               <p> 
               <ul>
                 <li><a name="concatMatrices" id="concatMatrices"></a><strong>Concatenate 
-                  Matrices</strong>: If the corresponding taxa have the exact 
-                  same names in the two matrices (as shown in the example above 
-                  &#8212; taxon B has the exact same name in both matrices, as 
-                  does taxon C), then you can use the <font size="-1"><u>(Character 
+                  Matrices</strong>: After you have brought the two matrices into the same file and belonging to the same taxa block using the methods described above under Adding Genes, to concatenate the two matrices go to the Character Matrix editor of one of the matrices. Select <font size="-1"><u>(Character 
                   Matrix Editor)Matrix&gt;Utilities&gt;Concatenate Matrices</u></font> 
-                  command to fuse the matrices. If both matrices belong to the 
-                  same taxon block, then simply use the command to concatenate. 
-                  On the other hand, if the matrices have overlapping but not 
-                  identical taxon blocks, then you must bring both matrices along 
-                  with their respective taxon blocks into memory. Let's assume 
-                  you have two separate files, one for Gene 1 and one for Gene 
-                  2. Copy the first file (so as to save an original copy of gene 
-                  1 on its one), and give the copy a name like &quot;Fused.nex&quot;. 
-                  Then, open it in Mesquite. Next, use Link File in the edit menu 
-                  to read in the second file. Now, go to the Character Matrix 
-                  Editor for the Gene 1 Matrix, and select Concatenate Matrices 
-                  from the Utilities submenu. Later you can choose Close File 
-                  from the File menu to close the linked file for gene 2, and 
-                  save your fused file.</li>
+                  to fuse the second matrix into it. After concatenation, the first matrix will have the second matrix's sequences added terminally. The second matrix will still exist on its own; you may want to delete it or close its file (if it was in a linked file).</li>
                 <li><a name="fusedMatrices"></a><strong>Fused Matrix Export (NEXUS)</strong>: 
                   If the corresponding taxa have different names in the two matrices, 
                   then this is the easiest method to fuse, although it can also 
@@ -715,7 +732,7 @@
               Home Page</font></a><font size="2"> | <a href="../manual.html">Mesquite
               Manual</a></font></span></font></p>
               <p><font face="Trebuchet MS"><span class="smallplain">Copyright 
-                &copy; 2002-2007 by <a href="http://salticidae.org/wpm/home.html">Wayne 
+                &copy; 2002-2008 by <a href="http://salticidae.org/wpm/home.html">Wayne 
                 P. Maddison</a> and <a href="http://david.bembidion.org">David 
                 R. Maddison</a>.<br>
 &nbsp;All rights reserved.</span></font></p></td>
