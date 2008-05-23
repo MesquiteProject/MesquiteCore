@@ -58,6 +58,39 @@ public class PairwiseAligner  {
 		// not much to do here ???
 	}
 
+	public static PairwiseAligner getDefaultAligner(MolecularData data){
+		MesquiteInteger gapOpen = new MesquiteInteger();
+		MesquiteInteger gapExtend = new MesquiteInteger();
+		MesquiteInteger gapOpenTerminal = new MesquiteInteger();
+		MesquiteInteger gapExtendTerminal = new MesquiteInteger();
+		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);  
+		int alphabetLength = ((CategoricalState)data.makeCharacterState()).getMaxPossibleState()+1;	  
+		int subs[][] = AlignUtil.getDefaultSubstitutionCosts(alphabetLength);  
+		PairwiseAligner aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
+		aligner.setUseLowMem(true);
+		return aligner;
+	}
+	
+	
+	public long[][] getAlignment(MolecularData data1, int it1, MolecularData data2, int it2, MesquiteNumber alignScore) {
+		int[] firstSite = new int[] {0, 0};
+		int[] lastSite = new int[] {data1.getNumChars()-1, data2.getNumChars()-1};
+		int[] numChars = new int[] {lastSite[0] - firstSite[0]+1, lastSite[1] - firstSite[1]+1};
+		long[] extracted1 = new long[numChars[0]];
+		long[] extracted2 = new long[numChars[1]];
+		
+		for (int ic = firstSite[0]; ic<=lastSite[0]; ic++){
+			extracted1[ic] = data1.getState(ic, it1);
+		}
+		for (int ic = firstSite[1]; ic<=lastSite[1]; ic++){
+			extracted2[ic] = data2.getState(ic, it2);
+		}
+  		CategoricalState state = (CategoricalState)data1.makeCharacterState();
+		return alignSequences(extracted1, extracted2, true, alignScore);
+	}
+
+
+	
 	public long[][] stripEmptyBases(long[][] alignment, int minLength){
 		int numExtras = 0;
 		for (int i=alignment.length-1; i>=0; i--) {
