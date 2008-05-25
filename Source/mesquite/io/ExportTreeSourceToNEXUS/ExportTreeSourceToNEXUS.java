@@ -18,10 +18,10 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	Taxa currentTaxa = null;
 	boolean suspend = false;
 
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;  //make this depend on taxa reader being found?)
-  	 }
+	}
 
 	public boolean isPrerelease(){
 		return true;
@@ -29,46 +29,46 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	public boolean isSubstantive(){
 		return true;
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {
- 		return "nex";
-   	 }
-/*.................................................................................................................*/
+		return "nex";
+	}
+	/*.................................................................................................................*/
 	public boolean canExportEver() {  
-		 return true;  //
+		return true;  //
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public boolean canExportProject(MesquiteProject project) {  
-		 return (project.getNumberOfFileElements(TreeVector.class) > 0) ;
+		return (project.getNumberOfFileElements(TreeVector.class) > 0) ;
 	}
-	
-/*.................................................................................................................*/
+
+	/*.................................................................................................................*/
 	public boolean canExportData(Class dataClass) {  
 		return false;
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public boolean canImport() {  
-		 return false;
+		return false;
 	}
 
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 	}
- 	/*.................................................................................................................*/
- 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
- 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
- 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
- 	public int getVersionOfFirstRelease(){
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
 		return NEXTRELEASE;  
- 	}
+	}
 
 
-/* ============================  exporting ============================*/
+	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
 	boolean includeTaxaBlock = false;
 	String fileName = "untitledTrees.nex";
 	String addendum = "";
-	
+
 	public boolean getExportOptions(TreeVector trees){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export NEXUS Trees file", buttonPressed);
@@ -76,15 +76,15 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 		exportDialog.setDefaultButton(null);
 		Checkbox itCheckBox = exportDialog.addCheckBox("Include Taxa Block", includeTaxaBlock);
 		exportDialog.addLabel("Addendum: ");
-		
+
 		addendum = "";
-		
+
 		TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,16);
-				
+
 		exportDialog.completeAndShowDialog();
-			
+
 		boolean ok = (exportDialog.query()==0);
-		
+
 		includeTaxaBlock = itCheckBox.getState();
 
 		addendum = fsText.getText();
@@ -92,18 +92,18 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 		return ok;
 	}	
 	/*.................................................................................................................*/
-   	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from
+	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-   	public void initialize(Taxa taxa){
-   		setPreferredTaxa(taxa);
+	public void initialize(Taxa taxa){
+		setPreferredTaxa(taxa);
 		treeSourceTask = (TreeSourceDefinite)hireEmployee(TreeSourceDefinite.class, "Tree Source");
 		if (treeSourceTask == null)
 			return;
-  	}
+	}
 	public void endJob(){
 		if (currentTaxa!=null)
 			currentTaxa.removeListener(this);
-	  	 storePreferences();
+		storePreferences();
 		super.endJob();
 	}
 	/*.................................................................................................................*/
@@ -116,16 +116,16 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	}
 
 	/*.................................................................................................................*/
-  	 
-  	public void setPreferredTaxa(Taxa taxa){
-   		if (taxa !=currentTaxa) {
-	 		if (currentTaxa!=null)
-	  			currentTaxa.removeListener(this);
-	  		currentTaxa = taxa;
-  			currentTaxa.addListener(this);
-  		}
-  		
-  	}
+
+	public void setPreferredTaxa(Taxa taxa){
+		if (taxa !=currentTaxa) {
+			if (currentTaxa!=null)
+				currentTaxa.removeListener(this);
+			currentTaxa = taxa;
+			currentTaxa.addListener(this);
+		}
+
+	}
 
 	/** Get the translation table as a string. */
 	public String getTranslationTable(Taxa taxa) {
@@ -159,17 +159,25 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 				return false;
 			treeSourceTask.initialize(currentTaxa);
 		}
-		
-		
+
+
 		MesquiteString dir = new MesquiteString();
 		MesquiteString fn = new MesquiteString();
 		String suggested = fileName;
-		if (file !=null)
+		if (file !=null) {
 			suggested = file.getFileName();
+			if (StringUtil.getLastItem(suggested, ".").equalsIgnoreCase("NEX")) {
+				suggested = StringUtil.getAllButLastItem(suggested, ".") +".trees.nex";
+			} else if (StringUtil.getLastItem(suggested, ".").equalsIgnoreCase("NXS")) {
+				suggested = StringUtil.getAllButLastItem(suggested, ".") +".trees.nxs";
+			} else
+				suggested = suggested +".trees.nex";
+		}
+
 		MesquiteFile f;
 		if (!usePrevious){
 			if (!getExportOptions(null)) {
- 				treeSourceTask=null;
+				treeSourceTask=null;
 				return false;
 			}
 		}
@@ -183,23 +191,31 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 				f.writeLine("#NEXUS" + StringUtil.lineEnding());
 				if (includeTaxaBlock)
 					f.writeLine(((TaxaManager)findElementManager(Taxa.class)).getTaxaBlock(taxa, null, file));
-				
+
 				f.writeLine("begin TREES;" + StringUtil.lineEnding());
 				f.writeLine(getTranslationTable(taxa) + StringUtil.lineEnding());
+				int count=0;
+				String name;
 
 				for (int i=0; i<numOriginalTrees; i++) {
-						Tree tree =  treeSourceTask.getTree(taxa, i);
-						
-						if (tree !=null) {
-							if (tree instanceof AdjustableTree)
-								((AdjustableTree)tree).setName("tree " + (i+1));
-							f.writeLine("\tTREE tree"+ (i+1)+" = "+ tree.writeTree(Tree.BY_NUMBERS));
-						}
+					Tree tree =  treeSourceTask.getTree(taxa, i);
+
+					if (tree !=null) {
+						name = tree.getName();
+						if (StringUtil.notEmpty(name))
+							name = StringUtil.tokenize(name);
+						if (StringUtil.blank(name))
+							name = "tree " + (i+1);
+						f.writeLine("\tTREE "+ name +" = "+ tree.writeTree(Tree.BY_NUMBERS));
+						count++;
+						if (count %100 == 0)
+							logln("   Writing tree " + count);
 					}
-				
+				}
+
 				f.writeLine("end TREES;" + StringUtil.lineEnding());
 
-				
+
 				if (addendum != null)
 					f.writeLine(addendum);
 				f.closeWriting();
@@ -212,17 +228,22 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	}
 
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Export NEXUS Tree File from Tree Source";
-   	 }
+	}
 	/*.................................................................................................................*/
-   	 
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Exports NEXUS file with a tree block, and optionally a taxa block, based upon a source of trees." ;
-   	 }
+
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		String s =  "Exports NEXUS file with a tree block, and optionally a taxa block, based upon a source of trees.  " +
+			"One major advantage of this is that it allows a collection of trees to a file without having them all in memory at once. " +
+			"For example, if the Tree Source is \"Transform Trees From Other Source\", and the other source is "+
+			"\"Use Trees from Separate NEXUS file\", then Mesquite will read in a tree from the other NEXUS file, transform the  tree,"+
+			" and wrte it to the file, one at a tme." ;
+		return s;
+	}
 	/*.................................................................................................................*/
-   	 
-   	 
+
+
 }
-	
+
