@@ -813,7 +813,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		if (prob!=null){
 			prob.setValue(negLogLikelihood);
 			prob.copyAuxiliaries(params);
-			prob.setName("BiSSE -lnLikelihood");
+			prob.setName("BiSSE -lnLikelihood (prop.)");
 		}
 		double likelihood = Math.exp(-negLogLikelihood);
 		if (MesquiteDouble.isUnassigned(negLogLikelihood))
@@ -826,7 +826,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 			else{
 			String s = "Sp/Ext Likelihood (Char. dep.) " + modelString + ";  -log L.:"+ MesquiteDouble.toString(negLogLikelihood) + " [L. "+ MesquiteDouble.toString(likelihood) + "]";
 			s += "  " + getParameters();
-			s += "\nNote: reported are not likelihoods but rather values proportional to likelihoods";
+			s += "\nNOTE: reported are not likelihoods but rather values proportional to likelihoods";
 			resultString.setValue(s);
 			}
 		}
