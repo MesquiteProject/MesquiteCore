@@ -211,7 +211,11 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 			if (explorer == null)
 				return null;
 		//	explorer.makeMenu("Parameters");
-			explorer.setExplorable(this);
+			if (!explorer.setExplorable(this)){
+				explorer.iQuit();
+				return null;
+			}
+
 			return explorer;
 		}
 		else if (checker.compare(getClass(),"Sets whether to write intermediate branch values to console","[on; off]", commandName, "toggleIntermediatesToConsole")){
