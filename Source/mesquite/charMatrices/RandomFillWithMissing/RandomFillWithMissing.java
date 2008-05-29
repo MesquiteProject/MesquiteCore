@@ -45,7 +45,7 @@ public class RandomFillWithMissing extends CategDataAlterer {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Convert Some Cells to Missing",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Convert Some Cells to Missing");
-		DoubleField probAlterField = dialog.addDoubleField("Probabiility of converting a cell to missing data: ", probAlter, 6);
+		DoubleField probAlterField = dialog.addDoubleField("Probability of converting a cell to missing data: ", probAlter, 6);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {

@@ -83,7 +83,7 @@ public class ConvertToRY extends DNADataAlterer {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Converts nucleotide data to RY in selected region." ;
+		return "Converts nucleotide data to RY data in selected region." ;
 	}
 
 }
