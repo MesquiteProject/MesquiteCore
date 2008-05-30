@@ -62,7 +62,7 @@ public class SummarizeChgOnBranches extends TreeWindowAssistantA {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Summarize Changes On Selected Branches";
+		return "Summarize Changes In Selected Clade";
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
@@ -88,7 +88,7 @@ public class SummarizeChgOnBranches extends TreeWindowAssistantA {
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Summarizes reconstructions of state changes of a character on defined branches over a series of trees.  The branches defined are those selected on the tree in the tree window.";
+		return "Summarizes reconstructions of state changes of a character on descendants of selected branch, over a series of trees.  The branches defined are those that are the descendants of the single branch selected on the tree in the tree window.";
 	}
 	/*.................................................................................................................*/
 //	this is called if used by tree window assistant to show changes on branches
