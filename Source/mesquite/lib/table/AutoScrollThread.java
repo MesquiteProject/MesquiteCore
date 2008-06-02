@@ -63,7 +63,8 @@ public class AutoScrollThread extends Thread implements MouseListener {
 		while (!abort && !suppressed) {
 			try {
 				Thread.sleep(200);
-				table.checkForAutoScroll(panel, panel.getMouseX(), panel.getMouseY());
+				if (MesquiteInteger.isCombinable(panel.getMouseX()) && MesquiteInteger.isCombinable(panel.getMouseY()) )
+					table.checkForAutoScroll(panel, panel.getMouseX(), panel.getMouseY());
 			}
 			catch (InterruptedException e){
 				Thread.currentThread().interrupt();
