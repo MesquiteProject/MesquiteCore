@@ -13,6 +13,14 @@ public class ColorTheme {
 	public static final int MILKCHOCOLATE = 2;
 	public static final int SLATE = 3;
 
+	public static StringArray getColorThemes(){
+		StringArray themes = new StringArray(4);
+		themes.setValue(ORIGINAL, "Original");
+		themes.setValue(DARKCHOCOLATE, "Dark Chocolate");
+		themes.setValue(MILKCHOCOLATE, "Milk Chocolate");
+		themes.setValue(SLATE, "Slate");
+		return themes;
+	}
 	static Color ContentBackground = new Color(235,235,235);
 	static Color ContentBackgroundPale = new Color(240,240,240);
 	static Color ContentElement = new Color(225,225,225);
