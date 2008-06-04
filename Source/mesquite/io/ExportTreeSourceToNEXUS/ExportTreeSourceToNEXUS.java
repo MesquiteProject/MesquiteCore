@@ -39,7 +39,8 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	public boolean canExportProject(MesquiteProject project) {  
-		return (project.getNumberOfFileElements(TreeVector.class) > 0) ;
+		return true;
+		//return (project.getNumberOfFileElements(TreeVector.class) > 0) ;
 	}
 
 	/*.................................................................................................................*/
@@ -220,6 +221,7 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 					f.writeLine(addendum);
 				f.closeWriting();
 				treeSourceTask=null;
+				logln("    " + count + " trees written");
 				return true;
 			}
 		}
