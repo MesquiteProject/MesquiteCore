@@ -96,6 +96,16 @@ public class ListTable extends MesquiteTable {
 	 		}
  		}
 	}
+	/* ............................................................................................................... */
+	/** repaints all components of the table */
+	public void repaintAll() {
+		// checkResetFont(getGraphics());
+		columnNames.repaint();
+		repaint();
+		rowNames.repaint();
+		cornerCell.repaint();
+		matrix.repaint();
+	}
 	public String getCornerText(){  
 		if (getNumRows()==0)
 			return "No " + window.owner.getItemTypeNamePlural();

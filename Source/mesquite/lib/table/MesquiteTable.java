@@ -5156,6 +5156,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void setFirstColumnVisible(int value, boolean repaintPlease) {
 		if (value == firstColumnVisible)
 			return;
+		Debugg.printStackTrace();
 		if (value < getNumColumns() && value >= 0)
 			firstColumnVisible = value;
 		if (horizScroll != null)
