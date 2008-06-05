@@ -17,6 +17,10 @@ public abstract class DataAltererCon extends DataAlterer {
 
 	   	/** Called to alter data in those cells selected in table*/
 	   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+	   		if (data.getEditorInhibition()){
+	   			discreetAlert("This matrix is protected against editing");
+	   			return false;
+	   		}
 	  			boolean did=false;
 	  			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
 	   	 		if ((table==null || !table.anyCellSelectedAnyWay()) && data!=null){

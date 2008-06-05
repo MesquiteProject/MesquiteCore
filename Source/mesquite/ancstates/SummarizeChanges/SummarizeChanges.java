@@ -363,6 +363,9 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 				}
 				else if (checker.compare(this.getClass(), "Desuppresses calculations", null, commandName, "desuppress")) {
 					suppress = false;
+					if (textWindow != null)
+						textWindow.setVisible(true);
+
 					recalculate();
 				}
 				else if (checker.compare(this.getClass(), "Returns ancestral states calculating module", null, commandName, "getAncStSource")) {
