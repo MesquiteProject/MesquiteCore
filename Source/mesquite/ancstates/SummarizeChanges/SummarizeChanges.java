@@ -561,7 +561,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 						CommandRecord.tick("Examining ancestral state reconstruction on tree " + it + " of " + numTrees);
 					else 
 						CommandRecord.tick("Examining ancestral state reconstruction on tree " + it);
-					historyTask.prepareForMappings();
+					historyTask.prepareForMappings(true);
 					historyTask.prepareHistory(tempTree, currentChar);
 
 					tempCharStates = (CategoricalHistory)historyTask.getMapping(0, tempCharStates, null);
