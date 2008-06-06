@@ -1,3 +1,15 @@
+/* Mesquite source code.  Copyright 1997-2008 W. Maddison and D. Maddison.
+Version 2.5, June 2008.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+*/
 package mesquite.lib;
 
 import java.util.*;
@@ -130,14 +142,14 @@ public class PhoneHomeUtil {
 					appliesToBuild = !currentBuildGreaterThan(forBuildLetter, forBuildNumber);
 				}
 
-				//suppose Mesquite is version 2.01
+				//suppose Mesquite is version 2. 01
 				int currentVersion = getVersion(mmi);
 
 				//notice assumed to have been seen before if its version number is less than current
 				boolean seenBefore = noticeVersion < currentVersion;  //e.g., notice is version 2.0
 
 				//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
-				seenBefore = seenBefore || (noticeVersion ==  currentVersion && notice <= lastNoticeForMyVersion);  //e.g., notice is 2.01; notice number has already been seen
+				seenBefore = seenBefore || (noticeVersion ==  currentVersion && notice <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
 
 				//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
 				seenBefore = seenBefore || (currentVersion<noticeVersion && lastVersionNoticed == noticeVersion && notice <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
