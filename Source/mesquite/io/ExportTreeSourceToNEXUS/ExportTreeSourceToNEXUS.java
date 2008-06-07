@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.io.ExportTreeSourceToNEXUS;
 
 
@@ -24,7 +24,7 @@ import mesquite.categ.lib.*;
 
 
 public class ExportTreeSourceToNEXUS extends FileInterpreterI {
-	TreeSourceDefinite treeSourceTask;
+	TreeSource treeSourceTask;
 	MesquiteString treeSourceName;
 	MesquiteCommand tstC;
 	Taxa currentTaxa = null;
@@ -109,7 +109,7 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Taxa taxa){
 		setPreferredTaxa(taxa);
-		treeSourceTask = (TreeSourceDefinite)hireEmployee(TreeSourceDefinite.class, "Tree Source");
+		treeSourceTask = (TreeSource)hireEmployee(TreeSource.class, "Tree Source");
 		if (treeSourceTask == null)
 			return;
 	}
@@ -195,7 +195,10 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 			}
 		}
 		int numOriginalTrees = treeSourceTask.getNumberOfTrees(taxa);
-
+		if (numOriginalTrees == MesquiteInteger.infinite)
+			numOriginalTrees = MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees", "Number of trees to export", 100, 1, 99999, true); 
+		if (!MesquiteInteger.isCombinable(numOriginalTrees))
+			return false;
 		String path = getPathForExport(arguments, suggested, dir, fn);
 		if (path != null) {
 			f = MesquiteFile.newFile(dir.getValue(), fn.getValue());
@@ -250,10 +253,10 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		String s =  "Exports NEXUS file with a tree block, and optionally a taxa block, based upon a source of trees.  " +
-			"One major advantage of this is that it allows a collection of trees to a file without having them all in memory at once. " +
-			"For example, if the Tree Source is \"Transform Trees From Other Source\", and the other source is "+
-			"\"Use Trees from Separate NEXUS file\", then Mesquite will read in a tree from the other NEXUS file, transform the  tree,"+
-			" and wrte it to the file, one at a tme." ;
+		"One major advantage of this is that it allows a collection of trees to a file without having them all in memory at once. " +
+		"For example, if the Tree Source is \"Transform Trees From Other Source\", and the other source is "+
+		"\"Use Trees from Separate NEXUS file\", then Mesquite will read in a tree from the other NEXUS file, transform the  tree,"+
+		" and wrte it to the file, one at a tme." ;
 		return s;
 	}
 	/*.................................................................................................................*/

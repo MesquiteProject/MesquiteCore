@@ -43,7 +43,7 @@ public class RandomFillMeristic extends MeristicDataAlterer {
 			return false;
 		MesquiteBoolean answer = new MesquiteBoolean(true);
 		MesquiteInteger.queryTwoIntegers(containerOfModule(), "Random fill (Meristic Uniform)", "Minimum of filled states", "Maximum of filled states", answer, min, max, 0, MeristicState.infinite, 0, MeristicState.infinite, "");
-		if (!answer.getValue() && min.isCombinable() && (max.isCombinable()) && max.getValue()>=min.getValue())
+		if (!(answer.getValue() && min.isCombinable() && (max.isCombinable()) && max.getValue()>=min.getValue()))
 			return false;
 		MeristicData cData = (MeristicData)data;
 		return alterContentOfCells(data,table, undoReference);
@@ -66,7 +66,7 @@ public class RandomFillMeristic extends MeristicDataAlterer {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 250;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
@@ -79,7 +79,7 @@ public class RandomFillMeristic extends MeristicDataAlterer {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 }

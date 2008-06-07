@@ -24,6 +24,9 @@ public class CategVariable extends BooleanForCharacter {
 	public String getName() {
 		return "Variable (Mult. States)";
 	}
+	public String getExplanation() {
+		return "Indicates whether a character has multiple observed states.  If taxa are selected, only the selected taxa are examined.";
+	}
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -61,6 +64,7 @@ public class CategVariable extends BooleanForCharacter {
 	public void calculateBoolean(CharacterData data, int ic, MesquiteBoolean result, MesquiteString resultString) {
 		if (data==null || result==null)
 			return;
+		result.setToUnassigned();
 		if (!(data instanceof CategoricalData))
 			return;
 		Taxa taxa = data.getTaxa();
@@ -70,12 +74,10 @@ public class CategVariable extends BooleanForCharacter {
 			result.setValue(false);
 		else if (inform==1)
 			result.setValue(true);
-		else
-			result.setToUnassigned();
 	}
 
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 
