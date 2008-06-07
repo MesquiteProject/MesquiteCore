@@ -37,7 +37,7 @@ public class XMLUtil {
 
 	/*.................................................................................................................*/
 
-	public static String getDocumentAsXMLString(Document doc)
+	public static String getDocumentAsXMLString(Document doc, boolean escapeText)
 	{
 		try {
 			String encoding = doc.getXMLEncoding();
@@ -47,6 +47,34 @@ public class XMLUtil {
 
 			Writer osw = new StringWriter();
 			OutputFormat opf = new OutputFormat("  ", true, encoding);
+			XMLWriter writer = new XMLWriter(osw, opf);
+			writer.setEscapeText(escapeText);
+			writer.write(doc);
+			writer.close();
+			return osw.toString();
+		} catch (IOException e) {
+			MesquiteMessage.warnProgrammer("XML Document could not be returned as string.");
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+
+	public static String getDocumentAsXMLString(Document doc) {
+		return getDocumentAsXMLString(doc,true);
+	}
+
+	/*.................................................................................................................*/
+
+	public static String getDocumentAsXMLString2(Document doc)
+	{
+		try {
+			String encoding = doc.getXMLEncoding();
+
+			//if (encoding == null)
+			//	encoding = "UTF-8";
+
+			Writer osw = new StringWriter();
+			OutputFormat opf = new OutputFormat("  ", true);
 			XMLWriter writer = new XMLWriter(osw, opf);
 			writer.write(doc);
 			writer.close();
