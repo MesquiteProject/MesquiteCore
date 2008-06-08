@@ -1,5 +1,5 @@
 #NEXUS
-[written Thu Nov 22 19:42:00 PST 2007 by Mesquite  version 2.0+ (build j18a) at Thrandina.local/10.0.1.3 (Wayne Maddison)]
+[written Sun Jun 08 13:18:13 MST 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Odontium/192.168.0.3 (David Maddison)]
 
 BEGIN TAXA;
 	TITLE Untitled_Taxa_Block;
@@ -123,18 +123,18 @@ agctttaggatttgtatttct
 END;
 
 begin mrbayes;
-	charset 28S =    1 -1013;
-	charset COI_matrix =    1014 -2021;
-	charset COI_matrixNonCoding =     1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021;
-	charset COI_matrixCodonPos1 =     1015 -1978 \   3;
-	charset COI_matrixCodonPos2 =     1016 -1979 \   3;
-	charset COI_matrixCodonPos3 =     1014 -1980 \   3;
-	partition matrices =    2 :    28S ,    COI_matrix;
-	set partition =    matrices;
-	lset applyto = (   1 ,    2 )     nst =   6 rates =   invgamma;
-	unlink statefreq = (   all )    revmat = (   all )    shape = (   all )    pinvar = (   all );
-	prset applyto = (   all )    ratepr =   variable;
-	mcmcp ngen =    10000000 relburnin =   yes burninfrac =   0.5 printfreq =   1000  samplefreq =   1000 nchains =   4 savebrlens =   yes;
+	charset 28S =     1 -1013;
+	charset COI_matrix =     1014 -2021;
+	charset COI_matrixNonCoding =      1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021;
+	charset COI_matrixCodonPos1 =      1015 -1978 \    3;
+	charset COI_matrixCodonPos2 =      1016 -1979 \    3;
+	charset COI_matrixCodonPos3 =      1014 -1980 \    3;
+	partition matrices =     2 :     28S ,     COI_matrix;
+	set partition =     matrices;
+	lset applyto = (    1 ,     2 )      nst =    6 rates =    invgamma;
+	unlink statefreq = (    all )     revmat = (    all )     shape = (    all )     pinvar = (    all );
+	prset applyto = (    all )     ratepr =    variable;
+	mcmcp ngen =     10000000 relburnin =    yes burninfrac =    0.5 printfreq =    1000  samplefreq =    1000 nchains =    4 savebrlens =    yes;
 	mcmc;
 
 END;
@@ -146,11 +146,11 @@ BEGIN LABELS;
 END;
 
 BEGIN SETS;
-CHARSET 28S   =   1 -  1013;
-CHARSET COI_matrix   =   1014 -  2021;
+	CHARSET 28S   =   1 -  1013;
+	CHARSET COI_matrix   =   1014 -  2021;
 
-CHARPARTITION * UNTITLED  =  28S :  1 -  1013, COI_matrix :  1014 -  2021;
-CHARPARTITION matrices  =  28S :  1 -  1013, COI_matrix :  1014 -  2021;
+	CHARPARTITION * UNTITLED  =  28S :  1 -  1013, COI_matrix :  1014 -  2021;
+	CHARPARTITION matrices  =  28S :  1 -  1013, COI_matrix :  1014 -  2021;
 
 END;
 
@@ -160,7 +160,7 @@ BEGIN ASSUMPTIONS;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2021;
+	CODESET * UNTITLED   =  universal:  1 -  2021;
 
 
 END;
@@ -181,6 +181,19 @@ Begin MESQUITE;
 		tell It;
 			setID 0 6777793195415541253 WM1166a98e9ab0;
 			checksum 0 248462374 WM1166a98e9ab0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 261;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 991 475;
+			setLocation 8 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -203,6 +216,9 @@ Begin MESQUITE;
 					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					colorRowNames  #mesquite.charMatrices.TaxonGroupColor.TaxonGroupColor;
+					colorColumnNames  #mesquite.charMatrices.CharGroupColor.CharGroupColor;
+					colorText  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
 					toggleShowTaxonNames on;
@@ -215,12 +231,17 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 16;
 					toggleBirdsEye off;
+					toggleAllowAutosize off;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;
@@ -233,11 +254,6 @@ Begin MESQUITE;
 				tell It;
 					showStrip off;
 				endTell;
-				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
-				tell It;
-					setColor Red;
-					removeColor off;
-				endTell;
 				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
 				tell It;
 					autotabOff;
@@ -246,6 +262,14 @@ Begin MESQUITE;
 				tell It;
 					gapCosts 8 3 2 2;
 					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
+				endTell;
+				getEmployee #mesquite.molec.ColorByAA.ColorByAA;
+				tell It;
+					emphasizeDegeneracy off;
+				endTell;
+				getEmployee #mesquite.molec.SequenceInfoEditor.SequenceInfoEditor;
+				tell It;
+					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -284,6 +308,7 @@ Begin MESQUITE;
 			setPrevFileName 06.concatenatingMatrices.nex;
 			getWindow;
 			tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 0;
 					setAnnotationSize 0;
