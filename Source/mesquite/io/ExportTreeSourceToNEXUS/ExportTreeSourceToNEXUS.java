@@ -195,10 +195,11 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 			}
 		}
 		int numOriginalTrees = treeSourceTask.getNumberOfTrees(taxa);
-		if (numOriginalTrees == MesquiteInteger.infinite)
+		if (numOriginalTrees == MesquiteInteger.infinite){
 			numOriginalTrees = MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees", "Number of trees to export", 100, 1, 99999, true); 
-		if (!MesquiteInteger.isCombinable(numOriginalTrees))
-			return false;
+			if (!MesquiteInteger.isCombinable(numOriginalTrees))
+				return false;
+		}
 		String path = getPathForExport(arguments, suggested, dir, fn);
 		if (path != null) {
 			f = MesquiteFile.newFile(dir.getValue(), fn.getValue());
