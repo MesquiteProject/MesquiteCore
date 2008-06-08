@@ -83,7 +83,7 @@ public class BiSSELikelihoodRatio extends NumForCharAndTreeDivers {
 		if (checker.compare(getClass(), "Returns first likelihood calculator", null, commandName, "getCalc1")) {
 			return calcTask1;
 		}
-		else 		if (checker.compare(getClass(), "Returns first likelihood calculator", null, commandName, "getCalc2")) {
+		else if (checker.compare(getClass(), "Returns second likelihood calculator", null, commandName, "getCalc2")) {
 			return calcTask2;
 		}
 		else
