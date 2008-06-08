@@ -16,7 +16,6 @@ package mesquite.diverse.SpecExtincLikelihood;
 import mesquite.diverse.SpecExtincMLCalculator.SpecExtincMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
-import mesquite.lib.duties.*;
 import mesquite.diverse.lib.*;
 
 public class SpecExtincLikelihood extends NumberForTreeDivers  {
