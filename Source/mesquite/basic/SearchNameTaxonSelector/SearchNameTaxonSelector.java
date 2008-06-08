@@ -102,6 +102,10 @@ public class SearchNameTaxonSelector extends TaxonSelector {
 
 	}
 
+	public boolean isPrerelease() {
+		return false;
+	}
+
 	public String getName() {
 		return "Select Taxa from Name Search";
 	}

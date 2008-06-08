@@ -49,7 +49,7 @@ public class StrictConsensusTree extends BasicTreeConsenser   {
 
 	/*.................................................................................................................*/
    	public boolean isPrerelease(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){

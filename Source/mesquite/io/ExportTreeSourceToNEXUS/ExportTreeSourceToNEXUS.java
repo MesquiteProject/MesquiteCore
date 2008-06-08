@@ -36,7 +36,7 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isSubstantive(){
 		return true;

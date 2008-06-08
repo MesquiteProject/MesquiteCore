@@ -89,6 +89,7 @@ public class BipartitionVector extends Vector {
 	public void dump(){
 		sort(true);
 		MesquiteMessage.println("\nBipartition frequencies");
+		MesquiteInteger.logHorizIntegerList(numTaxa);
 		for (int i=0; i<size(); i++){
 			Bipartition stored = getBipart(i);
 			double freq = getDecimalFrequency(stored);
@@ -349,7 +350,7 @@ public class BipartitionVector extends Vector {
 		if (mode==MAJRULEMODE) {
 			double prop = getDecimalFrequency(stored);
 			tree.setAssociatedDouble(freqRef, newNode, prop);
-		//	tree.setNodeLabel(MesquiteDouble.toStringDigitsSpecified(prop, 3), newNode);
+			//	tree.setNodeLabel(MesquiteDouble.toStringDigitsSpecified(prop, 3), newNode);
 			double length = stored.getSplitLength();
 			if (MesquiteDouble.isCombinable(length))
 				tree.setBranchLength(newNode, length, false);

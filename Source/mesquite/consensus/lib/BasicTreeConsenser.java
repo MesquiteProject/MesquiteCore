@@ -83,7 +83,7 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 
 		
 		String[] rootingStrings = {"As specified in first tree", "Rooted", "Unrooted"};
-		Choice rootingChoice  = dialog.addPopUpMenu("Rooting:", rootingStrings, 0);
+		Choice rootingChoice  = dialog.addPopUpMenu("Treat trees as rooted or unrooted:", rootingStrings, 0);
 
 
 		//TextArea PAUPOptionsField = queryFilesDialog.addTextArea(PAUPOptions, 20);
@@ -170,7 +170,7 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 		double time = 1.0*timer.timeSinceLast()/1000.0;
 		if (progIndicator!=null)
 			progIndicator.goAway();
-		afterConsensus();
+	//	afterConsensus();
 		logln("\n" + list.size() + " trees processed in " + time + " seconds");
 		return t;
 	}

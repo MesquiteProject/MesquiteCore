@@ -40,6 +40,9 @@ public class ScrollToData extends DataWindowAssistantI {
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
 	}
+	public boolean isPrerelease() {
+		return false;
+	}
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
 		return 250;  

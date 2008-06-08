@@ -70,7 +70,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		dialog.appendToHelpString(helpString);
 
 		useWeightsBox = dialog.addCheckBox("consider tree weights", useWeights.getValue());
-		frequencyField = dialog.addDoubleField("required frequency of clades: ", frequencyLimit, 5, 0.50, 1.00);
+		frequencyField = dialog.addDoubleField("required frequency of clades: ", frequencyLimit, 5, 0.00, 1.00);
 		dumpTableBox = dialog.addCheckBox("write group frequency list", dumpTable);
 	}
 
@@ -79,7 +79,12 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		useWeights.setValue(useWeightsBox.getState());
 		double freq = frequencyField.getValue();
 		if (MesquiteDouble.isCombinable(freq))
-			frequencyLimit=freq;
+			if (freq<0.5) {
+				frequencyLimit=0.5;
+				logln("Required frequency must be ³0.5");
+			}
+			else
+				frequencyLimit=freq;
 		dumpTable = dumpTableBox.getState();
 	}
 
@@ -116,6 +121,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 
 	public Tree getConsensus(){
 		Tree t = bipartitions.makeTree(consensusFrequencyLimit());
+		afterConsensus();
 		return t;
 	}
 	/*.................................................................................................................*/
@@ -133,7 +139,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
