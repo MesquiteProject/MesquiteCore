@@ -38,6 +38,7 @@ public class SummarizeChgOverTrees extends FileAssistantT {
 		if (summarizerTask == null) {
 			return sorry(getName() + " couldn't start because no summarizer was obtained.");
 		}
+		summarizerTask.setSensitiveToBranchSelection(false);
 		Taxa taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to show a Multi-tree window?");
 		if (taxa == null)
 			return false;

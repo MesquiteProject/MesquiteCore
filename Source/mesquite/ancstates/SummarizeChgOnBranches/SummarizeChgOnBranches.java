@@ -38,6 +38,7 @@ public class SummarizeChgOnBranches extends TreeWindowAssistantA {
 		if (summarizerTask == null) {
 			return sorry(getName() + " couldn't start because no summarizer was obtained.");
 		}
+		summarizerTask.setSensitiveToBranchSelection(true);
 		return true;
 	}
 	/*.................................................................................................................*/

@@ -34,6 +34,7 @@ import mesquite.ancstates.lib.*;
 
 /*======================================================================== */
 public class SummarizeChanges extends ChgSummarizerMultTrees {
+	
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CharHistorySource.class, getName() + " needs a source of character histories.",
 		"The source of a traced history can be chosen using the Character History Source submenu");
@@ -403,7 +404,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	public void changed(Object caller, Object obj, Notification notification){
 		int code = Notification.getCode(notification);
 		if (obj instanceof Tree) {
-			if (code==MesquiteListener.SELECTION_CHANGED ) {
+			if (code!=MesquiteListener.SELECTION_CHANGED  || getSensitiveToBranchSelection()) {
 				recalculate();
 			}
 		}
@@ -411,8 +412,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		//	if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED)
-		recalculate();
+		if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED)
+			recalculate();
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -602,20 +603,22 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 						}
 
 
-						if (it+1<numTrees)
-							tempTree = (MesquiteTree)treeSourceTask.getTree(currentTaxa, it+1);
-						if (saveDetails())
-							fullDetails.append("\n");
 					} 
+					if (it+1<numTrees)
+						tempTree = (MesquiteTree)treeSourceTask.getTree(currentTaxa, it+1);
+					if (saveDetails())
+						fullDetails.append("\n");
+
 				}
 			}
 
-
+			logln(" " + processedTrees + " trees processed.");
+			
 			totalTrees = it;
 			if (progIndicator!=null) 
 				progIndicator.goAway();
 
-			if (stateChanges!=null) {
+			if (stateChanges!=null && processedTrees>0) {
 				stateChanges.cleanUp();
 				currentText = stateChanges.toVerboseString(); 
 				String leadText;
@@ -636,7 +639,13 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 					MesquiteFile.putFileContentsQuery("Save file with full details", fullDetails.toString(), true);
 			}
 			else
-				if (branchesMode)
+				if (processedTrees<=0) {
+					if (branchesMode)
+						textWindow.setText("Sorry, changes not calculated; none of the trees examined have the selected branch.");
+					else
+						textWindow.setText("Sorry, changes not calculated.  No trees were processed.");
+				}
+				else if (branchesMode)
 					textWindow.setText("Sorry, changes not calculated. Make sure only a single branch is selected, not an entire clade.  Use the Select Branch tool.");
 				else
 					textWindow.setText("Sorry, changes not calculated.");
