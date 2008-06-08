@@ -1,5 +1,5 @@
 #NEXUS
-[written Tue Aug 21 23:05:35 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Sat Jun 07 11:32:09 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Populations;
@@ -24,19 +24,8 @@ BEGIN TAXA;
 END;
 
 
-BEGIN LABELS;
-TAXAGROUPLABEL Eastern_samples COLOR = (RGB 0.20392157 1.0 0.42745098) ;
-TAXAGROUPLABEL Western_Samples COLOR = (RGB 1.0 0.81568627 0.20392157) ;
-
-
-END;
-
-BEGIN SETS;
-TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Eastern_samples :  1 -  4, Western_Samples :  5 -  9;
-
-END;
-
 BEGIN TREES;
+	Title 'Trees block 2 from 05-twoPopulations.nex';
 	LINK Taxa = Populations;
 	TRANSLATE
 		1 East,
@@ -62,6 +51,18 @@ ASSOCIATES
 END;
 
 
+BEGIN LABELS;
+	TAXAGROUPLABEL Eastern_samples COLOR = (RGB 0.20392157 1.0 0.42745098) ;
+	TAXAGROUPLABEL Western_Samples COLOR = (RGB 1.0 0.81568627 0.20392157) ;
+
+
+END;
+
+BEGIN SETS;
+	TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Eastern_samples :  1 -  4, Western_Samples :  5 -  9;
+
+END;
+
 BEGIN NOTES;
 
 	TEXT  FILE TEXT = 'Coalescence simulations can be blended with associations between containing and contained trees by simulating gene trees within a species tree.  In this file, the species tree is actually a population tree, and there are only two populations.^n^nThere are two sets of taxa, one representing populations (East and West) and the other representing genes sampled from those populations.  At left is a population tree within which is simulated a gene tree by coalescence.  The time since the populations split was 50 generations; the effective population size is 100 (you can change time divergence as described below; change Ne using the menu item in the Contained menu of the tree window).  Scroll through simulated gene trees by hitting the arrows under "Contained Tree" in the legend.^n^nThe degree to which the gene tree is expected to show a clean separation of genes sampled in the West from those sampled in the East depends on the time since separation of the populations.  To increase the time since separation of the populations, change the branch lengths of the species tree.  Do this in one of two ways: (1) use the ruler tool (to change both branches at once, select both branches using the branch select tool, holding down the shift key as you are selecting the second branch to accumulate the selection.  Then, once both branches are selected, apply the ruler tool to one of them), or (2) select "Set all branch lengths" from the "Branch lengths" submenu of the Tree menu of the tree window.^n^nNote that the longer are the branch lengths, the more completely the genes in each population have coalesced before they reach the ancestral populations.  You can see this clearly in the tree window showing a gene tree by itself.  Because there is a TaxaPartition stored in the data file that indicates the West samples are to be colored tan and the East samples to be colored green, their names in the gene tree window are colored accordingly.  This gene tree is simulated, and as you change the lengths of the branches of the population tree, you may see a change in the degree of mixing of the East and West samples in the gene tree.^n^nTo go to the next example, hit the button in the "Go To File" window at left.^n^nTo duplicate this file, create a file with two sets of taxa and an association block indicating how they are linked.  Ask to show a tree window for the populations.  Select "Contained Associates" for the tree form, selecting Simulate Tree and Contained Coalescence for the tree source.  Ask to show branch lengths.';
@@ -77,10 +78,24 @@ Begin MESQUITE;
 			setID 0 2717996828273828747 WM1148c2c4a0319;
 			setID 1 2319072353600653909 WM1148c2c4a1820;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 546 521;
+			setLocation 5 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #2717996828273828747  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTaxa #2717996828273828747;
@@ -90,6 +105,7 @@ Begin MESQUITE;
 				setAssignedID 1442.971300502392.3825508766828255405;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -156,7 +172,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
-							namesAngle ?;
 						endTell;
 					endTell;
 					setBackground White;
@@ -164,6 +179,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -175,6 +195,7 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
@@ -182,6 +203,7 @@ Begin MESQUITE;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 					newAssistant  #mesquite.trees.TreeNotesMaker.TreeNotesMaker;
 				tell It;
 					getNote;
@@ -197,7 +219,7 @@ Begin MESQUITE;
 					endTell;
 				endTell;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -211,9 +233,23 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 			makeTreeWindow #2319072353600653909  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
 				tell It;
 					setTreeSimulator  #mesquite.coalesce.ContainedCoalescence.ContainedCoalescence;
@@ -241,6 +277,7 @@ Begin MESQUITE;
 				setAssignedID 1471.971300503030.3721084600339604932;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -266,7 +303,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
-							namesAngle ?;
 						endTell;
 						setEdgeWidth 4;
 						orientUp;
@@ -276,6 +312,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -287,12 +328,14 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 					newAssistant  #mesquite.trees.TreeNotesMaker.TreeNotesMaker;
 				tell It;
 					getNote;
@@ -308,7 +351,7 @@ Begin MESQUITE;
 					endTell;
 				endTell;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -322,6 +365,19 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -334,7 +390,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 531 631;
+					setSize 474 504;
 					setLocation 5 22;
 					setFont SanSerif;
 					setFontSize 10;

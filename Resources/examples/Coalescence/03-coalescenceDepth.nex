@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 23:00:45 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Sat Jun 07 11:24:47 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		g1 g2 g3 g4 g5 g6 g7 g8 g9 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "03-coalescenceDepth.nex"';
 	DIMENSIONS  NCHAR=19;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
@@ -49,7 +51,7 @@ BEGIN NOTES;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  19;
+	CODESET * UNTITLED   =  universal:  1 -  19;
 
 
 END;
@@ -75,7 +77,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 5851865005210875165 WM1148c2865eb0;
-			checksum 0 1947097330;
+			checksum 0 1947097330 WM1148c2865eb0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 442 463;
+			setLocation 2 23;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		newAssistant  #mesquite.charts.TreeValuesChart.TreeValuesChart;
 		tell It;
@@ -98,6 +113,7 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -113,7 +129,9 @@ Begin MESQUITE;
 					itemsByValues;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
+					suspend;
 					showAverageToggle on;
+					showPercentToggle off;
 					setCumulativeMode 0;
 					showAsBarChartToggle on;
 					showRawToggle off;
@@ -121,6 +139,7 @@ Begin MESQUITE;
 					setIntervalSize 1.0;
 					setMovingWindowSize 5.0 1.0;
 					setMode 4;
+					resume;
 				endTell;
 					toggleColorItems off;
 					setNumberItems 100;
@@ -142,7 +161,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 443 434;
+					setSize 370 446;
 					setLocation 2 23;
 					setFont SanSerif;
 					setFontSize 10;

@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 10 21:54:21 EDT 2007 by Mesquite  version 2.0BETA3 (build i57) at Thrandina.local/10.71.1.127 (Wayne Maddison)]
+[written Sat Jun 07 11:22:56 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -21,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -36,7 +37,7 @@ END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS  NCHAR=2;
-	FORMAT DATATYPE = CONTINUOUS;
+	FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
 CHARSTATELABELS 
 		1 Growth_rate,
 		2 Q_index ; 
@@ -57,6 +58,8 @@ CHARSTATELABELS
 
 END;
 BEGIN TREES;
+	Title 'Trees from "10-multiTrees.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -78,13 +81,13 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+	CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -110,6 +113,19 @@ Begin MESQUITE;
 			checksum 0 4129971366 WM114895c2a990;
 			setID 1 3539015483384763311 WM114895c2aab0;
 			checksum 1 4236368331 WM114895c2aab0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 415 466;
+			setLocation 2 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
 		tell It;
@@ -142,7 +158,7 @@ Begin MESQUITE;
 					setOffsetY 4;
 				endDistributeCommands;
 				endTell;
-				newLegendItem  #mesquite.parsimony.Treelength.Treelength;
+				newLegendItemNoCalc  #mesquite.parsimony.Treelength.Treelength;
 				tell It;
 					getEmployee #mesquite.parsimony.TreelengthForMatrix.TreelengthForMatrix;
 					tell It;
@@ -159,6 +175,7 @@ Begin MESQUITE;
 						endTell;
 					endTell;
 				endTell;
+				calculate;
 			endTell;
 				newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 			tell It;
@@ -180,6 +197,7 @@ Begin MESQUITE;
 					setMethod  #mesquite.parsimony.ParsAncestralStates.ParsAncestralStates;
 					tell It;
 						setModelSource  #mesquite.parsimony.CurrentParsModels.CurrentParsModels;
+						toggleMPRsMode off;
 						getEmployee #mesquite.parsimony.ParsimonySquared.ParsimonySquared;
 						tell It;
 							toggleWeight on;
@@ -193,6 +211,7 @@ Begin MESQUITE;
 				toggleWeights on;
 				resume ;
 			endTell;
+				popAsTile false;
 				popOut;
 				setExplanationSize 0;
 				setAnnotationSize 0;
@@ -216,7 +235,6 @@ Begin MESQUITE;
 						toggleBroadScale off;
 						toggleCenter off;
 						toggleEven off;
-						namesAngle ?;
 					endTell;
 					setEdgeWidth 12;
 					orientUp;
@@ -226,6 +244,11 @@ Begin MESQUITE;
 				showNodeNumbers off;
 				showBranchColors on;
 				labelBranchLengths off;
+				centerBrLenLabels on;
+				showBrLensUnspecified on;
+				showBrLenLabelsOnTerminals on;
+				setBrLenLabelColor 0 0 255;
+				setNumBrLenDecimals 6;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
@@ -235,9 +258,23 @@ Begin MESQUITE;
 					toggleNodeLabels on;
 					toggleCenterNodeNames off;
 					toggleShowNames on;
+					namesAngle ?;
 				endTell;
 			endTell;
 			showWindow;
+			getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+			tell It;
+				colorByPartition off;
+			endTell;
+			getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+			tell It;
+				setOn on;
+				setDigits 4;
+				writeAsPercentage off;
+				toggleHorizontal on;
+				setFontSize 10;
+				setOffset 0  0;
+			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
@@ -249,7 +286,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 415 290;
+					setSize 343 449;
 					setLocation 2 22;
 					setFont SanSerif;
 					setFontSize 10;

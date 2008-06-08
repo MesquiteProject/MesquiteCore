@@ -1,9 +1,22 @@
 #NEXUS
-[written Mon Sep 03 09:22:06 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Sat Jun 07 11:32:36 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 700 464;
+			setLocation 5 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			setNextFileName '00a-FelsensteinsContrasts.nex';
@@ -13,10 +26,10 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 429 288;
+					setSize 628 447;
 					setLocation 5 22;
 					setFont SanSerif;
-					setFontSize 10;
+					setFontSize 12;
 					setActive;
 				setExplanation 'Phylogenetic tests of whether two characters have correlated evolution can be done in three ways using Mesquite:^n^n(1) Two continuous characters: Felsenstein''s independent contrasts^n^n(2) Two categorical two-state characters: Pagel''s 1994 method.^n^n(3) Two categorical or one categorical and one continuous character: pairwise comparisons.^n^nHere are example files for these various methods^n^nTo go from one file to another, hit the "Next" button';
 				setTitle Character_Correlation;

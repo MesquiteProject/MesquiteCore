@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 11:00:06 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 09:59:50 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=25;
 	TAXLABELS
 		X._multilineatus X._nigrensis X._cortezi X._malinche X._continens X._nezahualcoyti X._montezumae X._pygmaeus X._birchmanii X._couchianus X._gordoni X._meyeri X._xiphidium X._variatus X._evelynae X._clemenciae X._milleri X._maculatus X._andersi X._alvarezi X._helleri X._signum P._olmaceae P._interm P._compressa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "11b-TextView.nex"';
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -49,6 +51,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "11b-TextView.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 X._multilineatus,
 		2 X._nigrensis,
@@ -81,7 +85,7 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1;
+	CODESET * UNTITLED   =  universal:  1;
 
 
 END;
@@ -106,12 +110,26 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 6115459465024062079 WM11489949bd50;
-			checksum 0 3737896798;
+			checksum 0 3737896798 WM11489949bd50;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 410 414;
+			setLocation 11 25;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #8265138006560775301  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
@@ -120,6 +138,7 @@ Begin MESQUITE;
 				setAssignedID 298.1019014879746.4115002201943536709;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -133,7 +152,6 @@ Begin MESQUITE;
 					tell It;
 					endTell;
 					showPage 1;
-					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
 					suppress;
@@ -152,7 +170,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
-							namesAngle ?;
 						endTell;
 					endTell;
 					setBackground White;
@@ -160,6 +177,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -169,12 +191,14 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 				tell It;
 					suspend ;
@@ -212,11 +236,11 @@ Begin MESQUITE;
 					setInitialOffsetX -162;
 					setInitialOffsetY -159;
 					setLegendWidth 142;
-					setLegendHeight 129;
+					setLegendHeight 126;
 					resume ;
 				endTell;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -230,6 +254,19 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -242,10 +279,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 409 363;
+					setSize 338 397;
 					setLocation 11 25;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'You can also see details of the likelihood recontruction presented in text format by touching on the "Text" tab at the top of the tree window.  Scroll down to see a text version of the reconstruction.^n';
 				setTitle Likelihood;
 				toggleFileNames off;

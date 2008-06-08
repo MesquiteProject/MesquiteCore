@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 11:02:48 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 10:01:15 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=25;
 	TAXLABELS
 		X._multilineatus X._nigrensis X._cortezi X._malinche X._continens X._nezahualcoyti X._montezumae X._pygmaeus X._birchmanii X._couchianus X._gordoni X._meyeri X._xiphidium X._variatus X._evelynae X._clemenciae X._milleri X._maculatus X._andersi X._alvarezi X._helleri X._signum P._olmaceae P._interm P._compressa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "15aa-xiphLikelihood.nex"';
 	DIMENSIONS  NCHAR=1;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -49,6 +51,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "15aa-xiphLikelihood.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 X._multilineatus,
 		2 X._nigrensis,
@@ -81,7 +85,7 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1;
+	CODESET * UNTITLED   =  universal:  1;
 
 
 END;
@@ -111,12 +115,26 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 6115459465024062079 010a90b187b50;
-			checksum 0 3737896798;
+			checksum 0 3737896798 010a90b187b50;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 428 325;
+			setLocation 17 30;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #8265138006560775301  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
@@ -125,6 +143,7 @@ Begin MESQUITE;
 				setAssignedID 298.1019014879746.4115002201943536709;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -155,7 +174,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
-							namesAngle ?;
 						endTell;
 					endTell;
 					setBackground White;
@@ -163,6 +181,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -172,6 +195,7 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
@@ -179,6 +203,7 @@ Begin MESQUITE;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 				tell It;
 					suspend ;
@@ -219,11 +244,11 @@ Begin MESQUITE;
 					setInitialOffsetX 20;
 					setInitialOffsetY -163;
 					setLegendWidth 243;
-					setLegendHeight 161;
+					setLegendHeight 158;
 					resume ;
 				endTell;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -237,6 +262,19 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		getEmployee  #mesquite.charMatrices.ManageCharModels.ManageCharModels;
@@ -247,13 +285,14 @@ Begin MESQUITE;
 				tell It;
 					getWindow;
 					tell It;
+						popAsTile false;
 						popOut;
 						setExplanationSize 0;
 						setAnnotationSize 0;
 						setFontIncAnnot 0;
 						setFontIncExp 0;
-						setSize 343 315;
-						setLocation 82 497;
+						setSize 434 300;
+						setLocation 16 438;
 						setFont SanSerif;
 						setFontSize 10;
 					endTell;
@@ -271,8 +310,8 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 469 295;
-					setLocation 12 34;
+					setSize 356 308;
+					setLocation 17 30;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;

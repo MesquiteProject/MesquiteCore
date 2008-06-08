@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:37:51 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 10:42:12 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,8 @@ END;
 
 
 BEGIN TREES;
+	Title 'Trees from "02-newMatrix.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -39,6 +42,19 @@ Begin MESQUITE;
 		tell It;
 			setID 0 8476784597994698209 WM11489124ea136;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 700 464;
+			setLocation 6 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			setNextFileName '03-newMatrix.nex';
@@ -49,7 +65,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 415 337;
+					setSize 628 447;
 					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;

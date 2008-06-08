@@ -1,9 +1,22 @@
 #NEXUS
-[written Mon Sep 03 09:16:57 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Sat Jun 07 11:33:51 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 700 464;
+			setLocation 12 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			setNextFileName '01-pairwise.nex';
@@ -14,8 +27,8 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 429 310;
-					setLocation 318 26;
+					setSize 628 447;
+					setLocation 12 22;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;

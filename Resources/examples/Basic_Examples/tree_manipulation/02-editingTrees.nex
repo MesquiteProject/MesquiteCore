@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 09:59:11 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 10:48:53 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "02-editingTrees.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -20,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "02-editingTrees.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,13 +58,13 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =               unord PolyTcount =               MINSTEPS;
+OPTIONS DEFTYPE =                unord PolyTcount =                MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -81,12 +85,26 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114895cc5500;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114895cc5500;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 475 466;
+			setLocation 7 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #8476784597994698209  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
@@ -95,6 +113,7 @@ Begin MESQUITE;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
@@ -121,7 +140,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
-							namesAngle ?;
 						endTell;
 						setEdgeWidth 12;
 						orientUp;
@@ -131,6 +149,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -140,14 +163,16 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -161,6 +186,19 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -173,7 +211,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 478 443;
+					setSize 403 449;
 					setLocation 7 22;
 					setFont SanSerif;
 					setFontSize 10;

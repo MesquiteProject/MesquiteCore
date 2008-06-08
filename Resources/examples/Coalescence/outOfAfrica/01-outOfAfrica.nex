@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed Aug 22 09:11:28 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Sat Jun 07 11:30:21 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE populations;
@@ -25,6 +25,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "01-outOfAfrica.nex"';
 	LINK TAXA = genes_sampled;
 	DIMENSIONS  NCHAR=3;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
@@ -77,6 +78,7 @@ END;
 
 
 BEGIN TREES;
+	Title 'Trees block 2 from 01-outOfAfrica.nex';
 	LINK Taxa = populations;
 	TRANSLATE
 		1 Africa,
@@ -90,15 +92,15 @@ END;
 
 
 BEGIN LABELS;
-TAXAGROUPLABEL Africa COLOR = (RGB 1.0 0.70196078 0.12941176) ;
-TAXAGROUPLABEL Eurasia COLOR = (RGB 0.05882353 1.0 0.60392157) ;
-TAXAGROUPLABEL Chimp COLOR = (RGB 0.50980392 0.13725490 1.0) ;
+	TAXAGROUPLABEL Africa COLOR = (RGB 1.0 0.70196078 0.12941176) ;
+	TAXAGROUPLABEL Eurasia COLOR = (RGB 0.05882353 1.0 0.60392157) ;
+	TAXAGROUPLABEL Chimp COLOR = (RGB 0.50980392 0.13725490 1.0) ;
 
 
 END;
 
 BEGIN SETS;
-TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Africa :  1 -  10, Eurasia :  11 -  20, Chimp :  21 -  25;
+	TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Africa :  1 -  10, Eurasia :  11 -  20, Chimp :  21 -  25;
 
 END;
 
@@ -112,7 +114,7 @@ BEGIN MESQUITECHARMODELS;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  3;
+	CODESET * UNTITLED   =  universal:  1 -  3;
 
 
 END;
@@ -129,7 +131,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 7325247286052868622 WM1148e575feb0;
-			checksum 0 1674843106;
+			checksum 0 1674843106 WM1148e575feb0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 700 464;
+			setLocation 31 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
@@ -140,6 +155,7 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -166,6 +182,7 @@ Begin MESQUITE;
 				tell It;
 					newAssistant  #mesquite.lists.DefaultTaxaOrder.DefaultTaxaOrder;
 					newAssistant  #mesquite.lists.TaxonListCurrPartition.TaxonListCurrPartition;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -196,7 +213,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 358 269;
+					setSize 628 447;
 					setLocation 31 22;
 					setFont SanSerif;
 					setFontSize 10;

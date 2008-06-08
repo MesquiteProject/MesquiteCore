@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 10 21:53:06 EDT 2007 by Mesquite  version 2.0BETA3 (build i57) at Thrandina.local/10.71.1.127 (Wayne Maddison)]
+[written Sat Jun 07 11:24:31 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		g1 g2 g3 g4 g5 g6 g7 g8 g9 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "02-coalescence2.nex"';
 	DIMENSIONS  NCHAR=19;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
@@ -49,7 +51,7 @@ BEGIN NOTES;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  19;
+	CODESET * UNTITLED   =  universal:  1 -  19;
 
 
 END;
@@ -77,6 +79,19 @@ Begin MESQUITE;
 			setID 0 4972659033594616137 WM1148c1835cf0;
 			checksum 0 1947097330 WM1148c1835cf0;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 422 474;
+			setLocation 13 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
 		tell It;
 			setTaxa #4451700786596653131;
@@ -103,6 +118,7 @@ Begin MESQUITE;
 			setNamesVisible on;
 			getWindow;
 			tell It;
+				popAsTile false;
 				popOut;
 				setExplanationSize 0;
 				setAnnotationSize 0;
@@ -112,7 +128,6 @@ Begin MESQUITE;
 				setLocation 456 22;
 				setFont SanSerif;
 				setFontSize 10;
-				setActive;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 			tell It;
@@ -128,7 +143,6 @@ Begin MESQUITE;
 						toggleCenter on;
 						toggleEven on;
 						setFixedScaling 2500.0;
-						namesAngle ?;
 					endTell;
 					setEdgeWidth 3;
 					orientUp;
@@ -138,6 +152,11 @@ Begin MESQUITE;
 				showNodeNumbers off;
 				showBranchColors on;
 				labelBranchLengths off;
+				centerBrLenLabels on;
+				showBrLensUnspecified on;
+				showBrLenLabelsOnTerminals on;
+				setBrLenLabelColor 0 0 255;
+				setNumBrLenDecimals 6;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
@@ -149,9 +168,23 @@ Begin MESQUITE;
 					toggleNodeLabels on;
 					toggleCenterNodeNames off;
 					toggleShowNames on;
+					namesAngle ?;
 				endTell;
 			endTell;
 			showWindow;
+			getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+			tell It;
+				colorByPartition off;
+			endTell;
+			getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+			tell It;
+				setOn on;
+				setDigits 4;
+				writeAsPercentage off;
+				toggleHorizontal on;
+				setFontSize 10;
+				setOffset 0  0;
+			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
@@ -163,10 +196,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 420 268;
+					setSize 350 457;
 					setLocation 13 22;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'At left is a "Multi Tree Window" to show a series of gene trees simulated by coalescence within a population.  You can scroll down to see other such simulated trees.  Note that the root tends to be between 1000 and 2000 generations deep.^n^nThe effective population size is 1000 (haploid), and can be changed using the "Set Ne.." menu item in the Coalescent SImulation submenu of the Multi-Tree menu of the Trees window.';
 				setTitle Gene_trees;
 				toggleFileNames off;

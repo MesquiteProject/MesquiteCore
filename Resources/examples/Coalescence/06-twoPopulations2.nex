@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed Aug 22 09:07:26 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Sat Jun 07 11:25:29 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Populations;
@@ -24,19 +24,8 @@ BEGIN TAXA;
 END;
 
 
-BEGIN LABELS;
-TAXAGROUPLABEL Eastern_samples COLOR = (RGB 0.20392157 1.0 0.42745098) ;
-TAXAGROUPLABEL Western_Samples COLOR = (RGB 1.0 0.81568627 0.20392157) ;
-
-
-END;
-
-BEGIN SETS;
-TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Eastern_samples :  1 -  4, Western_Samples :  5 -  9;
-
-END;
-
 BEGIN TREES;
+	Title 'Trees block 2 from 06-twoPopulations2.nex';
 	LINK Taxa = Populations;
 	TRANSLATE
 		1 East,
@@ -48,6 +37,18 @@ BEGIN TREES;
 
 END;
 
+
+BEGIN LABELS;
+	TAXAGROUPLABEL Eastern_samples COLOR = (RGB 0.20392157 1.0 0.42745098) ;
+	TAXAGROUPLABEL Western_Samples COLOR = (RGB 1.0 0.81568627 0.20392157) ;
+
+
+END;
+
+BEGIN SETS;
+	TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Eastern_samples :  1 -  4, Western_Samples :  5 -  9;
+
+END;
 
 BEGIN TaxaAssociation;
 TITLE location;
@@ -77,10 +78,24 @@ Begin MESQUITE;
 			setID 0 7114850956850836156 WM1148e5376f035;
 			setID 1 4791169349505029750 WM1148e5376fa36;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 522 397;
+			setLocation 5 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #7114850956850836156  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTaxa #7114850956850836156;
@@ -90,6 +105,7 @@ Begin MESQUITE;
 				setAssignedID 1533.971300618301.6347497454875668222;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -156,7 +172,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
-							namesAngle ?;
 						endTell;
 					endTell;
 					setBackground White;
@@ -164,6 +179,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -175,14 +195,16 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 2;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -195,6 +217,19 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
+				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -237,6 +272,7 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -249,11 +285,12 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					itemsByValues;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
+					suspend;
 					showAverageToggle on;
+					showPercentToggle off;
 					setCumulativeMode 0;
 					showAsBarChartToggle on;
 					showRawToggle off;
@@ -261,6 +298,7 @@ Begin MESQUITE;
 					setIntervalSize 1.0;
 					setMovingWindowSize 5.0 1.0;
 					setMode 0;
+					resume;
 				endTell;
 					toggleColorItems off;
 					setNumberItems 100;
@@ -282,10 +320,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 498 359;
+					setSize 450 380;
 					setLocation 5 22;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'The degree to which the gene tree is expected to show a clean separation of genes sampled in the West from those sampled in the East depends on the time since separation of the populations.  Slatkin and Maddison (1989) suggested using as a statistic the number of parsimony steps in a character for the genes whose states represent the source population of the genes (i.e., location sampled).  The time since separation can be estimated by measuring "s" on a reconstructed gene tree, and comparing it to the expected s values for gene trees that have undergone neutral coalescence in populations with varying times since separation.  (This assumes there has not been ongoing gene flow and that the two populations have maintained similar population sizes.).  ^n^nHere is a chart of the s value for a sample of 100 gene trees simulated within the population tree by coalescence.  An "s" value of 1 would mean that at least one of the population''s sampled genes were monophyletic on the gene tree.  When the populations have been split for 0.5 generations times the effective population size (Ne = 100), as shown initially here, the most common s is 2.^n^nBy changing the branch lengths in the population tree, you can affect the value of s in the chart.  To change the branch lengths, go to the the "Assign All Branch Lengths" item in the Alter/Transform Branch Lengths submenu of the Tree menu of the tree window.^n^nTo duplicate the chart, choose Analysis>New Bar & Line Chart for>Trees, check Show Secondary Choices in the dialog box that appears, indicate s of Slatkin and Maddison as the value to be calculated, the tree source to be Simulate Tree, and the simulator to be Contained Coalescence.';
 				setTitle Coalescence_depth;
 				toggleFileNames off;

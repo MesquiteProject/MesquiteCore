@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 03 09:21:19 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Sat Jun 07 11:23:36 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		g1 g2 g3 g4 g5 g6 g7 g8 g9 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "01-coalescence.nex"';
 	DIMENSIONS  NCHAR=19;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 	MATRIX
@@ -49,7 +51,7 @@ BEGIN NOTES;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  19;
+	CODESET * UNTITLED   =  universal:  1 -  19;
 
 
 END;
@@ -77,10 +79,24 @@ Begin MESQUITE;
 			setID 0 4636206365576148138 WM1148c10e0900;
 			checksum 0 1947097330 WM1148c10e0900;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false true 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 452 430;
+			setLocation 10 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #1469954533384391314  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.SimulateTree.SimulateTree;
 				tell It;
 					setTreeSimulator  #mesquite.coalesce.CoalescentTrees.CoalescentTrees;
@@ -96,6 +112,7 @@ Begin MESQUITE;
 				setAssignedID 302.971276427933.7117688824995678366;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -122,7 +139,6 @@ Begin MESQUITE;
 							toggleCenter on;
 							toggleEven on;
 							setFixedScaling 30000.0;
-							namesAngle ?;
 						endTell;
 						setEdgeWidth 4;
 						orientUp;
@@ -132,6 +148,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -143,14 +164,16 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -164,6 +187,19 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -176,7 +212,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 459 415;
+					setSize 452 413;
 					setLocation 10 22;
 					setFont SanSerif;
 					setFontSize 10;

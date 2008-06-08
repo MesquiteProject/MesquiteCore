@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 10:01:13 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 11:13:19 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "06-branchSelection.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -20,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "06-branchSelection.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,13 +58,13 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                      unord PolyTcount =                      MINSTEPS;
+OPTIONS DEFTYPE =                       unord PolyTcount =                       MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -77,16 +81,34 @@ Begin MESQUITE;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209 WM114895ec8fd89;
+			tell It;
+				setSelected  2;
+				attachments ;
+			endTell;
 		endTell;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114895ec92b0;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114895ec92b0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 499 587;
+			setLocation 7 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #8476784597994698209  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
@@ -95,18 +117,18 @@ Begin MESQUITE;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 84;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setSize 536 348;
-					setLocation 447 24;
+					setLocation 545 31;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
-						setTool mesquite.trees.SelectBranches.SelectToolExtra.SelectBranches;
 					endTell;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 				tell It;
@@ -121,7 +143,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
-							namesAngle ?;
 						endTell;
 						setEdgeWidth 12;
 						orientUp;
@@ -131,6 +152,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -140,6 +166,7 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
@@ -147,8 +174,9 @@ Begin MESQUITE;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Dark Gray;
@@ -162,6 +190,19 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -174,13 +215,13 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 439 466;
+					setSize 427 570;
 					setLocation 7 22;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'This file shows some of the selection tools for tree branches.^n^nThe currently selected tool in the tool palette at left is the Select Branches tool.  Its purpose is to select branches.  When branches are selected, the other branches (those not selected) are dimmed, as shown here.  This can be useful to highlight branches both on trees and in other contexts such as Node Scattergram.  It also allows other modules to restrict calculations to only the selected branches, for example.^n^nIf you hold down the Control key as you touch on a branch, the selection will accumulate.  If you hold down the Shift key, the smallest clade containing the touched branch and those already selected will be selected.  If you touch on an already selected branch with no keys down, all branches will be unselected except the touched one.^n^nThe next tool is the select clade tool.  It selects the entire clade of the branch touched.  It responds to Shift and Control similarly to the Select Branches tool.^n^nThe next tool is the Select Taxa in Clade.  It selects the terminal taxa in the clade of the branch touched.  This selects terminal taxa throughout Mesquite, and thus if you have a data matrix open, you will notice the rows corresponding to the taxa are selected.  If you hold the Control key as you touch, selection will accumulate.  By holding down the Shift key, the taxa in the smallest clade containing the touched branch and those already selected will be selected.  ^n^nDepending on what Mesquite modules are installed, there may be tools in the tool palette other than those explained in these example files.  You can learn about these other tools by touching on their buttons in the tool palette and reading their explanations in the explanation area at the bottom of the Tree Window.  You can also select the Menu & Control Explanations menu item in the Windows menu of the Tree Window for a web page explaining the tools. ';
-				setTitle Selecting_branches;
+				setExplanation 'Selecting branches or taxa in the tree window can be done by the standard arrow tool, or by special tools for selecting clades.^n^nIf no branches are selected, then the entire tree looks normal.  However, when some branches are selected, the other branches (those not selected) are dimmed, as shown here.  This can be useful to highlight branches both on trees and in other contexts such as Node Scattergram.  It also allows other modules to restrict calculations to only the selected branches, for example.^n^nTaxon selection can be seen by the highlighting of a taxon name.  For instance, here Fubonidia is selected.^n^nTo select branches or taxa you can:^n--  with the standard arrow tool, click outside of any branches or taxon names and drag the selection rectangle to encompass the branches & taxa you want to select.  A branch is selected if the node at the descendant end of the branch is included in the rectangle. A taxon is selected if any part of its name is included in the rectangle.^n^n-- with the standard arrow tool, click directly on a branch or taxon name.^n^nIf you hold down the Control (or Command) key while selecting, the newly selected branches/taxa will be added to the set selected (unless the newly selected branches/taxa had been already selected, in which case they will be deselected).^n^nIf you hold down the Shift key while selecting, the selection will shrinkwrap by clade: all branches/taxa will be selected in the smallest clade including all selected branches/taxa.^n ^nAlternatively, you can use the Select Clade or Select Taxa in Clade tools, which appear as small arrows pointing to either a white clade or a dashed clade.  These select either all the branches in the clade, or all the terminal taxa in the clade.^n^nDepending on what Mesquite modules are installed, there may be tools in the tool palette other than those explained in these example files.  You can learn about these other tools by touching on their buttons in the tool palette and reading their explanations in the explanation area at the bottom of the Tree Window.  You can also select the Menu & Control Explanations menu item in the Windows menu of the Tree Window for a web page explaining the tools. ';
+				setTitle 'Selecting Taxa/Branches';
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;

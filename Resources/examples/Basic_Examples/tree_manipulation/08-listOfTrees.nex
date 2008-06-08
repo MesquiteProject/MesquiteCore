@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 10:02:30 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 11:16:49 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "08-listOfTrees.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -20,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "08-listOfTrees.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -54,13 +58,13 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
+OPTIONS DEFTYPE =                           unord PolyTcount =                           MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -81,7 +85,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114895feaa70;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM114895feaa70;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 463 375;
+			setLocation 7 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.trees.ManageTrees.ManageTrees;
 		tell It;
@@ -96,6 +113,7 @@ Begin MESQUITE;
 					setValueTask  #mesquite.trees.NumberOfTaxa.NumberOfTaxa;
 					desuppress;
 				endTell;
+					popAsTile false;
 					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
@@ -123,12 +141,12 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 469 426;
+					setSize 391 358;
 					setLocation 7 22;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'In the Trees list window you can manage stored trees. ^n^nBy selecting the Edit tool (the I-beam) and touching on a tree''s name, you can edit its name. (If the arrow is the current cursor, you can also double click on the tree name to edit it.)^n^nBy selecting a row using the arrow tool (touch on the row number), and selecting "Delete selected trees" from the List menu of the Trees List window, you can delete trees.^n^nYou can add trees to the tree block using the Store Tree As... menu item in the Tree window.^n^nThis list window can also show information about each tree.  By default, it shows the number of terminal taxa in the tree as the first column in the table.  By selecting items in the Columns menu, you can add columns showing additional information.';
+				setExplanation 'The stored blocks of trees are listed at left, in the Project Panel.  ^n^nIn the Trees list window you can manage stored trees.^n^nBy selecting the Edit tool (the I-beam) and touching on a tree''s name, you can edit its name. (If the arrow is the current cursor, you can also double click on the tree name to edit it.)^n^nBy selecting a row using the arrow tool (touch on the row number), and selecting "Delete selected trees" from the List menu of the Trees List window, you can delete trees.^n^nYou can add trees to the tree block using the Store Tree As... menu item in the Tree window.^n^nThis list window can also show information about each tree.  By default, it shows the number of terminal taxa in the tree as the first column in the table.  By selecting items in the Columns menu, you can add columns showing additional information.';
 				setTitle Stored_trees;
 				toggleFileNames off;
 				setPrevButtonName Previous;

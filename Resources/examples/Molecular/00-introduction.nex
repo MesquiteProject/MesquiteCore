@@ -1,5 +1,5 @@
 #NEXUS
-[written Mon Sep 03 09:20:31 PDT 2007 by Mesquite  version 2.0BETA3 (build i55) at Thrandina.local/127.0.0.1 (Wayne Maddison)]
+[written Sat Jun 07 12:28:17 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 BEGIN NOTES;
 
 	TEXT  FILE TEXT = 'Example files for coalescence calculations^n^nThe files linked to this one illustrate some of the coalescence calculations that can be done by the package of coalescence modules of the Mesquite system.  To learn more about this package, use the Coalescence Package menu item of the Help menu, or touch on the banner in the Mesquite Startup window. (It should take you to your web browser, perhaps after asking you to locate the browser.)^n^nTo go from one file to another, hit the "Go" button in the green window.';
@@ -10,6 +10,19 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		getWindow;
+		tell It;
+			setResourcesState false true 80;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 810 464;
+			setLocation 4 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
 			setNextFileName '01-gcContentChart.nex';
@@ -19,7 +32,7 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 561 327;
+					setSize 810 447;
 					setLocation 4 22;
 					setFont SanSerif;
 					setFontSize 14;

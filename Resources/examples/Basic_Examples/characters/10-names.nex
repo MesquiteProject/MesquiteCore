@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:44:24 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 10:44:23 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "10-names.nex"';
 	DIMENSIONS  NCHAR=2;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
@@ -20,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -33,6 +35,8 @@ BEGIN CHARACTERS;
 
 END;
 BEGIN TREES;
+	Title 'Trees from "10-names.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -53,13 +57,13 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  2;
+	CODESET * UNTITLED   =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                              unord PolyTcount =                              MINSTEPS;
+OPTIONS DEFTYPE =                               unord PolyTcount =                               MINSTEPS;
 	TYPESET * UNTITLED   =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
@@ -80,7 +84,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM1148916ba1f0;
-			checksum 0 4129971366;
+			checksum 0 4129971366 WM1148916ba1f0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 469 496;
+			setLocation 10 26;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -88,6 +105,7 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
@@ -102,8 +120,12 @@ Begin MESQUITE;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					colorRowNames  #mesquite.charMatrices.TaxonGroupColor.TaxonGroupColor;
+					colorColumnNames  #mesquite.charMatrices.CharGroupColor.CharGroupColor;
+					colorText  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -113,16 +135,24 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 16;
 					toggleBirdsEye off;
+					toggleAllowAutosize on;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
+					toggleDiagonal on;
+					setDiagonalHeight 80;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.categ.StateNamesEditor.StateNamesEditor;
 				tell It;
 					makeWindow;
 					tell It;
+						popAsTile false;
 						popOut;
 						setExplanationSize 40;
 						setAnnotationSize 0;
@@ -136,7 +166,6 @@ Begin MESQUITE;
 						tell It;
 							setTool mesquite.categ.StateNamesEditor.StateNamesWindow.arrow;
 						endTell;
-						setActive;
 						rowsAreCharacters on;
 						toggleConstrainChar on;
 						toggleConstrainCharNum 3;
@@ -157,14 +186,13 @@ Begin MESQUITE;
 				tell It;
 					showStrip off;
 				endTell;
-				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
-				tell It;
-					setColor Red;
-					removeColor off;
-				endTell;
 				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
 				tell It;
 					autotabOff;
+				endTell;
+				getEmployee #mesquite.categ.SmallStateNamesEditor.SmallStateNamesEditor;
+				tell It;
+					panelOpen true;
 				endTell;
 			endTell;
 		endTell;
@@ -178,10 +206,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 490 387;
+					setSize 397 479;
 					setLocation 10 26;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'Characters can be assigned names, for instance by editing the column heading in the Character Matrix editor.  ^n^nIf the matrix is Categorical data, there is a State Names Editor (shown below) that is available by choosing Edit State Names in the Matrix menu of the Character Matrix editor window.  The State Names Editor shows characters on one axis, and states on the other.  You can choose whether characters are rows or columns by hitting the double arrow at the top left of the matrix. In this window, you can edit the names of characters and their character states.  You can use copy and paste to use similar character state names in different characters.^n^nIf character state names are assigned, then they will by default appear in the Character Matrix Editor, as shown at left.  When editing the matrix, you can enter a character state either by its name (e.g., "red") or by its state symbol (e.g., "1").  Display of the state names in the Character Matrix Editor can be turned off by unchecking Show State Names of the Display submenu of the Matrix menu of the Characer Matrix Editor. ^n^nYou can attach footnotes and more complex annotations to the characters and character states.  For instance, you can request a panel for making annotations by selecting Show State Annotations in the State_Names menu of the State Names Editor.';
 				setTitle Character_&_state_names;
 				toggleFileNames off;

@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 17:42:11 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at thrandina.zoology.ubc.ca/137.82.80.142 (Wayne Maddison)]
+[written Sat Jun 07 12:28:36 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=101;
 	TAXLABELS
 		Sand_S127W Papacheus_093X Pshoshoensis_430Z Plongimanus_510Z ustul_RailX_211Z ustul_Mar_551Z cfsign_AV_570Z signat_684Z amicus_387Z alachua_527X cognatus_294W peckhami_382X elegans_213Z conjun_179AX geron_60Z doroth_LS_621Z huast_Chp_623X cfparat_88W venat_119Z carolin_134X cocker_108Z splend_525Z ocala_612Z pugill_459Z hallini_37Z cambrid_443Z fall_TX_288Z fallax_Chp_647X fallax_WComp_648W oregon_05Z icenog_196Z taras_643Z cftaras_554Z texanus_494X altan_AZ_124Z altan_Chih_325Z altan_Oax_645W cfsugill_Nay_281X cfpoch_Cham_639W cfpoch_LG_638W cfpoch_LY_608Z yucun_636Z banksi_104X amer_WM_316W amer_DG_345X bulb_Long_536Z waughi_129W cfsans_349W sans_368W kubai_540W tars_KR_377Z tars_Baja_591Z must_BRB_365X ophrys_SL_352X tuber_WP_464X kawini_592X notial_471X jucun_395Z calcalc_524Z virid_470X calmadd_16Z cfcalc_546W trim_559X orbus_27Z morat_485Z cfmor_ET_611W cfmor_LY_667W cfmor_Cham_662Z divar_563W caldiv_ES_600Z cyncity_468Z silvcty_285W doss_Chir_274W doss_Yec_531X veliv_LS_659X veliv_Teq_661Z fort_290Z aztec_218W cffest_517Z klaus_Heuco_502Z klaus_Bis_390Z zebra_442W tlax_674X virg_Pach_652W virg_Cat_167Z virg_Swiss_682Z mexic_496Z carp_LS_670Z boreal_130Z coec_96Z cusp_550Z coecgrp_Mag_580Z pyr_10Z ball_383X cfanep_576Z anep_LB_557Z anep_ITT_314Z ammo_556Z cfpyrr_578X brunn_543X schlin_160X 
@@ -12,6 +13,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "01-gcContentChart.nex"';
 	DIMENSIONS  NCHAR=716;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
 CHARSTATELABELS 
@@ -228,22 +230,9 @@ CHARSTATELABELS
 
 END;
 
-BEGIN LABELS;
-	CHARGROUPLABEL introns COLOR = (RGB 0.88627451 0.00392157 0.28627451) ;
-
-
-END;
-
-BEGIN SETS;
-CHARSET * UNTITLED   =   245 -  391 574 -  665;
-CHARSET introns   =   245 -  391 574 -  665;
-CHARSET exons   =   1 -  244 392 -  573 666 -  716;
-
-CHARPARTITION * UNTITLED  =  introns :  245 -  391 574 -  665;
-
-END;
-
 BEGIN TREES;
+	Title 'Trees from "01-gcContentChart.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Sand_S127W,
 		2 Papacheus_093X,
@@ -351,6 +340,21 @@ BEGIN TREES;
 END;
 
 
+BEGIN LABELS;
+	CHARGROUPLABEL introns COLOR = (RGB 0.88627451 0.00392157 0.28627451) ;
+
+
+END;
+
+BEGIN SETS;
+	CHARSET * UNTITLED   =   245 -  391 574 -  665;
+	CHARSET introns   =   245 -  391 574 -  665;
+	CHARSET exons   =   1 -  244 392 -  573 666 -  716;
+
+	CHARPARTITION * UNTITLED  =  introns :  245 -  391 574 -  665;
+
+END;
+
 BEGIN ASSUMPTIONS;
 	TYPESET * UNTITLED   =  unord:  1 -  716;
 
@@ -369,7 +373,7 @@ BEGIN MESQUITECHARMODELS;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  716;
+	CODESET * UNTITLED   =  universal:  1 -  716;
 
 
 END;
@@ -385,7 +389,20 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 5453088708553656046 WM1148b045a600;
-			checksum 0 2175300760;
+			checksum 0 2175300760 WM1148b045a600;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false true 80;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 684 232;
+			setLocation 1 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -393,6 +410,7 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -405,11 +423,14 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+					colorRowNames  #mesquite.charMatrices.TaxonGroupColor.TaxonGroupColor;
+					colorColumnNames  #mesquite.charMatrices.CharGroupColor.CharGroupColor;
+					colorText  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -419,12 +440,17 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 16;
 					toggleBirdsEye off;
+					toggleAllowAutosize off;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.categ.StateNamesStrip.StateNamesStrip;
 				tell It;
 					showStrip off;
@@ -437,11 +463,6 @@ Begin MESQUITE;
 				tell It;
 					showStrip off;
 				endTell;
-				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
-				tell It;
-					setColor Red;
-					removeColor off;
-				endTell;
 				getEmployee #mesquite.charMatrices.QuickKeySelector.QuickKeySelector;
 				tell It;
 					autotabOff;
@@ -451,10 +472,18 @@ Begin MESQUITE;
 					gapCosts 8 3 2 2;
 					subCosts  10 5 10 10 10 5 5 10 10 10 5 10;
 				endTell;
+				getEmployee #mesquite.molec.ColorByAA.ColorByAA;
+				tell It;
+					emphasizeDegeneracy off;
+				endTell;
 				getEmployee #mesquite.molec.ColorByNumber.ColorByNumber;
 				tell It;
 					setNumberTask  #mesquite.molec.GCAsNumber.GCAsNumber;
 					setWindowWidth 1;
+				endTell;
+				getEmployee #mesquite.molec.SequenceInfoEditor.SequenceInfoEditor;
+				tell It;
+					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -476,6 +505,7 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -491,7 +521,9 @@ Begin MESQUITE;
 					valuesByItems;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
+					suspend;
 					showAverageToggle on;
+					showPercentToggle off;
 					setCumulativeMode 0;
 					showAsBarChartToggle on;
 					showRawToggle off;
@@ -499,6 +531,7 @@ Begin MESQUITE;
 					setIntervalSize 1.0;
 					setMovingWindowSize 10.0 2.0;
 					setMode 3;
+					resume;
 				endTell;
 					toggleColorItems on;
 					setNumberItems 716;
@@ -519,10 +552,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 541 208;
+					setSize 684 215;
 					setLocation 1 22;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'In the Character Matrix Editor are DNA sequences of EF1-alpha in some spiders.  The cells of the matrix are colored using Color By State from the Color Cells submenu.^n^nBelow is a chart of average (across taxa) GC bias for each site along the sequence.  The chart is using amoving window analysis to smooth the chart.  The red regions are the introns.  As expected, the introns are less GC rich (i.e. more AT rich) than the exons.';
 				setTitle GC_bias;
 				toggleFileNames off;

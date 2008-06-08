@@ -1,5 +1,5 @@
 #NEXUS
-[written Wed Aug 22 09:47:37 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/10.0.1.2 (Wayne Maddison)]
+[written Sat Jun 07 11:30:52 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE populations;
@@ -25,6 +25,7 @@ END;
 
 
 BEGIN CHARACTERS;
+	TITLE  'Matrix in file "04-outOfAfrica.nex"';
 	LINK TAXA = genes_sampled;
 	DIMENSIONS  NCHAR=3;
 	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
@@ -77,6 +78,7 @@ END;
 
 
 BEGIN TREES;
+	Title 'Trees block 2 from 04-outOfAfrica.nex';
 	LINK Taxa = populations;
 	TRANSLATE
 		1 Africa,
@@ -90,15 +92,15 @@ END;
 
 
 BEGIN LABELS;
-TAXAGROUPLABEL Africa COLOR = (RGB 1.0 0.70196078 0.12941176) ;
-TAXAGROUPLABEL Eurasia COLOR = (RGB 0.05882353 1.0 0.60392157) ;
-TAXAGROUPLABEL Chimp COLOR = (RGB 0.50980392 0.13725490 1.0) ;
+	TAXAGROUPLABEL Africa COLOR = (RGB 1.0 0.70196078 0.12941176) ;
+	TAXAGROUPLABEL Eurasia COLOR = (RGB 0.05882353 1.0 0.60392157) ;
+	TAXAGROUPLABEL Chimp COLOR = (RGB 0.50980392 0.13725490 1.0) ;
 
 
 END;
 
 BEGIN SETS;
-TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Africa :  1 -  10, Eurasia :  11 -  20, Chimp :  21 -  25;
+	TAXPARTITION * UNTITLED  (TAXA = genes_sampled) =  Africa :  1 -  10, Eurasia :  11 -  20, Chimp :  21 -  25;
 
 END;
 
@@ -112,7 +114,7 @@ BEGIN MESQUITECHARMODELS;
 END;
 
 BEGIN CODONS;
-CODESET * UNTITLED   =  universal:  1 -  3;
+	CODESET * UNTITLED   =  universal:  1 -  3;
 
 
 END;
@@ -129,12 +131,26 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 7325247286052868622 WM1148e785a0c0;
-			checksum 0 1674843106;
+			checksum 0 1674843106 WM1148e785a0c0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false true 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 575 323;
+			setLocation 23 26;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
 			makeTreeWindow #703462755303490792  #mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker;
 			tell It;
+				suppressEPCResponse;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTaxa #703462755303490792;
@@ -144,6 +160,7 @@ Begin MESQUITE;
 				setAssignedID 401.982328606974.8040224577453098533;
 				getTreeWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -210,7 +227,6 @@ Begin MESQUITE;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
-							namesAngle ?;
 						endTell;
 					endTell;
 					setBackground White;
@@ -218,6 +234,11 @@ Begin MESQUITE;
 					showNodeNumbers off;
 					showBranchColors on;
 					labelBranchLengths off;
+					centerBrLenLabels on;
+					showBrLensUnspecified on;
+					showBrLenLabelsOnTerminals on;
+					setBrLenLabelColor 0 0 255;
+					setNumBrLenDecimals 6;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
@@ -227,14 +248,16 @@ Begin MESQUITE;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
+						namesAngle ?;
 					endTell;
 				endTell;
 					setTreeNumber 1;
 					useSuggestedSize off;
 					toggleSizeToFit on;
 					toggleTextOnTree off;
+					showWindow;
 				endTell;
-				showWindow;
+				desuppressEPCResponse;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
 					setColor Red;
@@ -247,6 +270,19 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
+				endTell;
+				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+				tell It;
+					setOn on;
+					setDigits 4;
+					writeAsPercentage off;
+					toggleHorizontal on;
+					setFontSize 10;
+					setOffset 0  0;
+				endTell;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -298,6 +334,7 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -310,11 +347,12 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 					itemsByValues;
 					setChartType  #mesquite.charts.Histogram.Histogram;
 				tell It;
+					suspend;
 					showAverageToggle on;
+					showPercentToggle off;
 					setCumulativeMode 0;
 					showAsBarChartToggle on;
 					showRawToggle off;
@@ -322,6 +360,7 @@ Begin MESQUITE;
 					setIntervalSize 1.0;
 					setMovingWindowSize 5.0 1.0;
 					setMode 0;
+					resume;
 				endTell;
 					toggleColorItems off;
 					setNumberItems 1000;
@@ -343,10 +382,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 599 247;
+					setSize 575 306;
 					setLocation 23 26;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'The chart shows the number of gene trees that show one more (+1), one less (-1), or the same (0) number of steps with the special character indicating Eurasian rooting than with that indicating African rooting.  (See the previous example file for explanation.) Thus, a +1 indicates the gene tree prefers to root in Africa, a -1 that it prefers to root in Eurasia. ^n^nThe gene trees of the chart are simulated by neutral coalescence within the population tree in the tree window.  If you scroll to another population tree using the blue arrows above the tool palette, you''ll get trees with stronger bottlenecks.  Note that at the strongest bottleneck, most of the gene trees show humans rooting in Africa.';
 				setTitle Probability_of_African_root;
 				toggleFileNames off;

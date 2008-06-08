@@ -1,7 +1,8 @@
 #NEXUS
-[written Tue Aug 21 08:50:00 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Sat Jun 07 10:46:17 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=16;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa Abnyora Syphorchus Lissaminopus Chaelodonter Chloroxyxops Mincinia Phoronibium 
@@ -14,7 +15,7 @@ END;
 BEGIN CHARACTERS;
 	TITLE  measurements;
 	DIMENSIONS  NCHAR=5;
-	FORMAT DATATYPE = CONTINUOUS;
+	FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
 CHARSTATELABELS 
 		1 length,
 		2 width,
@@ -47,7 +48,7 @@ END;
 BEGIN CHARACTERS;
 	TITLE  More_measurements;
 	DIMENSIONS  NCHAR=3;
-	FORMAT DATATYPE = CONTINUOUS;
+	FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
 	MATRIX
 	Aus            -0.44835771207670727 -0.3797290583888003 -0.8473437479546313
 	Fubonidia      1.8787474634121184 -1.6628411407927441 1.3305339069030753
@@ -100,9 +101,22 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 4132708679229515777 WM114891d2b7e0;
-			checksum 0 1628742248;
+			checksum 0 1628742248 WM114891d2b7e0;
 			setID 1 7825336589848395740 WM114891d2b9b0;
-			checksum 1 2246663599;
+			checksum 1 2246663599 WM114891d2b9b0;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 436 411;
+			setLocation 6 22;
+			setFont SanSerif;
+			setFontSize 10;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -110,6 +124,7 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -124,8 +139,12 @@ Begin MESQUITE;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
+					colorRowNames  #mesquite.charMatrices.TaxonGroupColor.TaxonGroupColor;
+					colorColumnNames  #mesquite.charMatrices.CharGroupColor.CharGroupColor;
+					colorText  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
+					toggleShowTaxonNames on;
 					toggleTight off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
@@ -135,12 +154,17 @@ Begin MESQUITE;
 					toggleConstrainCW on;
 					setColumnWidth 66;
 					toggleBirdsEye off;
+					toggleAllowAutosize on;
 					toggleColorsPanel off;
-					birdsEyeWidth 2;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
 				showWindow;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
@@ -149,10 +173,9 @@ Begin MESQUITE;
 				tell It;
 					showStrip off;
 				endTell;
-				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				getEmployee #mesquite.cont.ItemsEditorForInfoPanel.ItemsEditorForInfoPanel;
 				tell It;
-					setColor Red;
-					removeColor off;
+					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -183,6 +206,7 @@ Begin MESQUITE;
 				tell It;
 					setX 4;
 					setY 5;
+					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
@@ -195,7 +219,6 @@ Begin MESQUITE;
 					getToolPalette;
 					tell It;
 					endTell;
-					setActive;
 				endTell;
 				enableCalculations;
 				getEmployee #mesquite.charts.Scattergram.Scattergram;
@@ -221,11 +244,12 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 458 483;
+					setSize 364 394;
 					setLocation 6 22;
 					setFont SanSerif;
 					setFontSize 10;
-				setExplanation 'The previous examples focused on character matrices that are stored in the file.  When you save the file to disk, these matrices will be saved in the file.  These "stored matrices" are indicated in List of Character Matrices (available in the Characters menu) and in the Projects & Files window.^n^nStored matrices and their contained characters are used for calculations throughout Mesquite.  At right for example is a plot of the value in character 5 in a taxon versus the value of character 4, where characters 5 and 4 are taken from the data matrix shown above.^n';
+					setActive;
+				setExplanation 'The previous examples focused on character matrices that are stored in the file.  When you save the file to disk, these matrices will be saved in the file.  These "stored matrices" are indicated in List of Character Matrices (available in the Characters menu) and in the Project panel (at left of this window).^n^nStored matrices and their contained characters are used for calculations throughout Mesquite.  At right for example is a plot of the value in character 5 in a taxon versus the value of character 4, where characters 5 and 4 are taken from the data matrix shown above.^n';
 				setTitle Stored_matrices;
 				toggleFileNames off;
 				setPrevButtonName Previous;

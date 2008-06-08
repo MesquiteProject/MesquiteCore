@@ -1,7 +1,8 @@
 #NEXUS
-[written Mon Sep 10 21:54:14 EDT 2007 by Mesquite  version 2.0BETA3 (build i57) at Thrandina.local/10.71.1.127 (Wayne Maddison)]
+[written Sat Jun 07 11:22:48 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
 
 BEGIN TAXA;
+	TITLE Taxa;
 	DIMENSIONS NTAX=9;
 	TAXLABELS
 		Aus Fubonidia Ibbinidibe Snorolopa Quidnubia Suinon Zorabynyx Huichoros Jotinupa 
@@ -21,7 +22,7 @@ BEGIN CHARACTERS;
 	Aus         11
 	Fubonidia   11
 	Ibbinidibe  11
-	Snorolopa   1(0,1)
+	Snorolopa   1(0 1)
 	Quidnubia   00
 	Suinon      00
 	Zorabynyx   00
@@ -36,7 +37,7 @@ END;
 BEGIN CHARACTERS;
 	TITLE  Measurements;
 	DIMENSIONS  NCHAR=2;
-	FORMAT DATATYPE = CONTINUOUS;
+	FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
 CHARSTATELABELS 
 		1 Growth_rate,
 		2 Q_index ; 
@@ -57,6 +58,8 @@ CHARSTATELABELS
 
 END;
 BEGIN TREES;
+	Title 'Trees from "09-multiTrees.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,
@@ -78,13 +81,13 @@ END;
 
 
 BEGIN CODONS;
-CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
+	CODESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  universal:  1 -  2;
 
 
 END;
 
 BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                         unord PolyTcount =                         MINSTEPS;
+OPTIONS DEFTYPE =                          unord PolyTcount =                          MINSTEPS;
 	TYPESET * UNTITLED  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET Current_Parsimony_Models  (CHARACTERS = Structure_&_Color)  =  unord:  1 -  2;
 TYPESET * UNTITLED  (CHARACTERS = Measurements)  =  Squared:  1 -  2;
@@ -111,6 +114,19 @@ Begin MESQUITE;
 			setID 1 3539015483384763311 WM114895b6f7b0;
 			checksum 1 4236368331 WM114895b6f7b0;
 		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			setPopoutState 400;
+			setExplanationSize 0;
+			setAnnotationSize 0;
+			setFontIncAnnot 0;
+			setFontIncExp 0;
+			setSize 410 478;
+			setLocation 2 22;
+			setFont SanSerif;
+			setFontSize 10;
+		endTell;
 		newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;
 		tell It;
 			setTaxa #8476784597994698209;
@@ -130,16 +146,16 @@ Begin MESQUITE;
 			setNamesVisible on;
 			getWindow;
 			tell It;
+				popAsTile false;
 				popOut;
 				setExplanationSize 0;
 				setAnnotationSize 0;
 				setFontIncAnnot 0;
 				setFontIncExp 0;
 				setSize 851 497;
-				setLocation 403 22;
+				setLocation 429 23;
 				setFont SanSerif;
 				setFontSize 10;
-				setActive;
 			endTell;
 			getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
 			tell It;
@@ -154,7 +170,6 @@ Begin MESQUITE;
 						toggleBroadScale off;
 						toggleCenter on;
 						toggleEven on;
-						namesAngle ?;
 					endTell;
 					setEdgeWidth 4;
 					orientRight;
@@ -164,6 +179,11 @@ Begin MESQUITE;
 				showNodeNumbers off;
 				showBranchColors on;
 				labelBranchLengths off;
+				centerBrLenLabels on;
+				showBrLensUnspecified on;
+				showBrLenLabelsOnTerminals on;
+				setBrLenLabelColor 0 0 255;
+				setNumBrLenDecimals 6;
 				desuppress;
 				getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 				tell It;
@@ -173,9 +193,23 @@ Begin MESQUITE;
 					toggleNodeLabels on;
 					toggleCenterNodeNames off;
 					toggleShowNames on;
+					namesAngle ?;
 				endTell;
 			endTell;
 			showWindow;
+			getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
+			tell It;
+				colorByPartition off;
+			endTell;
+			getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
+			tell It;
+				setOn on;
+				setDigits 4;
+				writeAsPercentage off;
+				toggleHorizontal on;
+				setFontSize 10;
+				setOffset 0  0;
+			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
@@ -187,10 +221,11 @@ Begin MESQUITE;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 400 309;
+					setSize 338 461;
 					setLocation 2 22;
 					setFont SanSerif;
 					setFontSize 10;
+					setActive;
 				setExplanation 'This shows another tree-viewing window, the Multi-Tree Window.  It is available under the Taxa&Trees menu.  It shows a series of trees from a single source.  In this case, it is showing trees simulated by a random process of speciation.  You could also show trees stored in a file.^n^nYou can change the number of columns and rows of trees displayed by selecting Number of Rows or Number of Columns from the Multi-Tree menu.  You can scroll through the trees using the scroll-bar on the window''s right hand side.';
 				setTitle 'Multi-tree window';
 				toggleFileNames off;
