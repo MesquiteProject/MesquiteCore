@@ -58,7 +58,7 @@ import mesquite.lib.*;
 		}   	 
 		/*.................................................................................................................*/
 		public int getVersionOfFirstRelease(){
-			return NEXTRELEASE;  
+			return 250;  
 		}
 
 	}

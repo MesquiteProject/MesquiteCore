@@ -72,7 +72,7 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 250;  
 	}
 
 
@@ -200,6 +200,7 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 			if (!MesquiteInteger.isCombinable(numOriginalTrees))
 				return false;
 		}
+		
 		String path = getPathForExport(arguments, suggested, dir, fn);
 		if (path != null) {
 			f = MesquiteFile.newFile(dir.getValue(), fn.getValue());
@@ -214,9 +215,30 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 				int count=0;
 				String name;
 
+				ProgressIndicator progIndicator = null;
+				if (MesquiteInteger.isCombinable(numOriginalTrees))
+					progIndicator = new ProgressIndicator(getProject(),getName(), "Processing trees", numOriginalTrees, true);
+				else 
+					progIndicator = new ProgressIndicator(getProject(),getName(), "Processing trees", 1, true);
+				if (progIndicator!=null){
+					progIndicator.setButtonMode(ProgressIndicator.OFFER_CONTINUE);
+					progIndicator.setOfferContinueMessageString("Are you sure you want to stop the export?");
+					progIndicator.start();
+				}
 				for (int i=0; i<numOriginalTrees; i++) {
 					Tree tree =  treeSourceTask.getTree(taxa, i);
 
+					if (progIndicator!=null) {
+						if (progIndicator.isAborted()) {
+							progIndicator.goAway();
+							break;
+						}
+						progIndicator.setText("Tree " + (i+1));
+							if (MesquiteInteger.isCombinable(numOriginalTrees))
+								progIndicator.setCurrentValue(i+1);
+							else
+								progIndicator.spin();
+					}
 					if (tree !=null) {
 						name = tree.getName();
 						if (StringUtil.notEmpty(name))
@@ -229,8 +251,10 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 							logln("   Writing tree " + count);
 					}
 				}
+				if (progIndicator != null)
+					progIndicator.goAway();
 
-				f.writeLine("end TREES;" + StringUtil.lineEnding());
+				f.writeLine("end;" + StringUtil.lineEnding());
 
 
 				if (addendum != null)

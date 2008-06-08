@@ -141,7 +141,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	}   	 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 250;  
 	}
 	public double getFrequencyLimit() {
 		return frequencyLimit;

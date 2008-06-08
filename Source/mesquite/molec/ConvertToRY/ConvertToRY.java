@@ -67,7 +67,7 @@ public class ConvertToRY extends DNADataAlterer {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -78,7 +78,7 @@ public class ConvertToRY extends DNADataAlterer {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 250;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

@@ -57,7 +57,7 @@ public class StrictConsensusTree extends BasicTreeConsenser   {
 	}   	 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 250;  
 	}
 
 }
