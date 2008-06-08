@@ -38,6 +38,10 @@ public class PercentBranchNames extends BranchNamesAltererMult {
 	public boolean isPrerelease(){
 		return true;
 	}
+	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return 250;  
+	}
 
 	/*-----------------------------------------*/
 	/** Sets the branch length of nodes (stored as a double internally).*/

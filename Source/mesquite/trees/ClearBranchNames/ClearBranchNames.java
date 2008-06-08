@@ -36,9 +36,13 @@ public class ClearBranchNames extends BranchNamesAltererMult {
    	 }
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
-   	 	return true;
+   	 	return false;
    	 }
-   
+ 	/*.................................................................................................................*/
+ 	public int getVersionOfFirstRelease(){
+ 		return 250;  
+ 	}
+ 
  	private void convertLabels(AdjustableTree tree, int node) { 
  		if (tree.nodeIsInternal(node))
  			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))

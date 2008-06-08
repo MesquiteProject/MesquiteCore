@@ -31,6 +31,10 @@ public class CategVariable extends BooleanForCharacter {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
+	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return 250;  
+	}
 
 	public int charIsVariable(CharacterData data, int ic) {
 		CategoricalData cData = (CategoricalData)data;

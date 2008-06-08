@@ -60,6 +60,10 @@ public class AbsoluteDistance extends TaxaDistFromMatrix {
    	 public boolean showCitation(){
    	 	return true;
    	 }
+ 	/*.................................................................................................................*/
+ 	public int getVersionOfFirstRelease(){
+ 		return 250;  
+ 	}
 }
 
 /* ======================================================================== */

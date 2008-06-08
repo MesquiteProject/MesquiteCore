@@ -55,6 +55,10 @@ public class TaxonPairDistance extends NumberForMatrix{//NumberForMatrixAndTaxon
 		}
 		return true;
 	}
+	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return 250;  
+	}
 	/*.............................................................................*/
 	public void initialize(MCharactersDistribution data){
 		if(data != null){

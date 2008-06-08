@@ -35,6 +35,7 @@ public class RandomFillMeristic extends MeristicDataAlterer {
 		max = new MesquiteInteger(10);
 		return true;
 	}
+	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 

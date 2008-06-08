@@ -41,6 +41,10 @@ public class ScrollToData extends DataWindowAssistantI {
 		return new RequiresAnyMolecularData();
 	}
 	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return 250;  
+	}
+	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		if (!(data instanceof CategoricalData))
 			return;

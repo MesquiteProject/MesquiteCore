@@ -31,8 +31,12 @@ public class SetBranchLengthsIfLessThan extends BranchLengthsAltererMult {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public int getVersionOfFirstRelease(){
+		return 250;  
+	}
+	/*.................................................................................................................*/
 	public boolean isSubstantive(){
-  	 	return false;
+  	 	return true;
   	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
