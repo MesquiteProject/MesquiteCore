@@ -1105,7 +1105,7 @@ private double[] estimate3(Tree tree, CategoricalDistribution observedStates,int
 	}
 
 	public String getVersion() {
-		return "1.0";
+		return "1.01";
 	}
 
 	public String getExplanation(){
@@ -1113,7 +1113,7 @@ private double[] estimate3(Tree tree, CategoricalDistribution observedStates,int
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 }
 /*============================================================================*/
