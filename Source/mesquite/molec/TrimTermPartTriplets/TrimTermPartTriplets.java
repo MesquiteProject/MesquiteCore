@@ -74,10 +74,12 @@ public class TrimTermPartTriplets extends DNADataAlterer {
 					}
 				}
 			}
-		undoInstructions.setNewData(data);
-		if (undoReference!=null){
-			undoReference.setUndoer(undoInstructions);
-			undoReference.setResponsibleModule(this);
+		if (undoInstructions!=null) {
+			undoInstructions.setNewData(data);
+			if (undoReference!=null){
+				undoReference.setUndoer(undoInstructions);
+				undoReference.setResponsibleModule(this);
+			}
 		}
 		return changed;
 	}

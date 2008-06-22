@@ -26,7 +26,8 @@ public class UndoReference {
 
 	public UndoReference(CharacterData data, MesquiteModule responsibleModule) {
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
-		undoInstructions.setNewData(data);
+		if (undoInstructions!=null) 
+			undoInstructions.setNewData(data);
 		setUndoer(new Undoer[] {undoInstructions});
 		setResponsibleModule(responsibleModule);
 	}
@@ -48,7 +49,8 @@ public class UndoReference {
 			switch(undoableObjects[i]) {
 			case UndoInstructions.ALLDATACELLS:
 				undoInstructions[i]= data.getUndoInstructionsAllData();
-				undoInstructions[i].setNewData(data);
+				if (undoInstructions!=null)
+					undoInstructions[i].setNewData(data);
 				break;
 			case UndoInstructions.DATABLOCK:
 				undoInstructions[i]= new UndoInstructions (UndoInstructions.DATABLOCK, data, data, icStart,icEnd, itStart, itEnd, icStart, icEnd, itStart, itEnd,true);

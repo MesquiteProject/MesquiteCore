@@ -54,11 +54,13 @@ public abstract class DataAltererCon extends DataAlterer {
 	   	 			}
 					
 				}
-	   	   		undoInstructions.setNewData(data);
-	   			if (undoReference!=null){
-	   				undoReference.setUndoer(undoInstructions);
-	   				undoReference.setResponsibleModule(this);
-	   			}
+	   	 		if (undoInstructions!=null) {
+	   	 			undoInstructions.setNewData(data);
+	   	 			if (undoReference!=null){
+	   	 				undoReference.setUndoer(undoInstructions);
+	   	 				undoReference.setResponsibleModule(this);
+	   	 			}
+	   	 		}
 	   			if (did)
 	   				data.notifyInLinked(new Notification(DATA_CHANGED));
 				return did;
