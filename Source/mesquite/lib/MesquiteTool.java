@@ -226,6 +226,14 @@ public class MesquiteTool implements Listable, Explainable, ImageOwner, KeyListe
 		else
 			currentStandardCursor = mc;
 	}
+	public void setStandardCursor(MesquiteCursor mc, String name){
+		if (mc!=null) {
+			standardCursor = mc;
+			setCurrentStandardCursor(mc);
+			if (name!=null)
+				setImageFileName(name);
+		}
+	}
 	public String getOptionImagePath(){
 		if (optionImageFileName ==null)
 			return null;
