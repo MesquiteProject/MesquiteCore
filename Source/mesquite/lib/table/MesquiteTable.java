@@ -1850,7 +1850,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return matrixHeight;
 	}
 
-	private void printComponent(Graphics g, Panel c) {
+	private synchronized void  printComponent(Graphics g, Panel c) {
 
 		int shiftX = c.getBounds().x;
 		int shiftY = c.getBounds().y;
@@ -1860,7 +1860,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	public void printAll(Graphics g) {
+	public synchronized void printAll(Graphics g) {
 		cornerCell.paint(g);
 		printComponent(g, rowNames);
 		printComponent(g, columnNames);
