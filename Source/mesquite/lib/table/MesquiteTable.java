@@ -1861,6 +1861,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	public synchronized void printAll(Graphics g) {
+		Debugg.println("\n||||||||||||||||\nrowNames y: " + rowNames.getBounds().y+ ", height: " + rowNames.getBounds().height+ ", x: " + rowNames.getBounds().x + ", width: " + rowNames.getBounds().width);
+		Debugg.println("matrix y: " + matrix.getBounds().y+ ", height: " + matrix.getBounds().height+ ", x: " + matrix.getBounds().x + ", width: " + matrix.getBounds().width);
 		cornerCell.paint(g);
 		printComponent(g, rowNames);
 		printComponent(g, columnNames);
@@ -1878,7 +1880,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/**
 	 * @author Peter Midford
 	 */
-	public void tableToPDF(MesquitePDFFile pdfFile, MesquiteWindow window, int fitToPage) {
+	public synchronized void tableToPDF(MesquitePDFFile pdfFile, MesquiteWindow window, int fitToPage) {
 		if (pdfFile != null) {
 			printAll(pdfFile.getPDFGraphicsForComponent(this, totalDimension()));
 			pdfFile.end();
