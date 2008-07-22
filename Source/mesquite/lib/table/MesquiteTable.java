@@ -1851,7 +1851,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	private synchronized void  printComponent(Graphics g, Panel c) {
-
 		int shiftX = c.getBounds().x;
 		int shiftY = c.getBounds().y;
 		g.translate(shiftX, shiftY);
@@ -1861,8 +1860,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	public synchronized void printAll(Graphics g) {
-		Debugg.println("\n||||||||||||||||\nrowNames y: " + rowNames.getBounds().y+ ", height: " + rowNames.getBounds().height+ ", x: " + rowNames.getBounds().x + ", width: " + rowNames.getBounds().width);
-		Debugg.println("matrix y: " + matrix.getBounds().y+ ", height: " + matrix.getBounds().height+ ", x: " + matrix.getBounds().x + ", width: " + matrix.getBounds().width);
 		cornerCell.paint(g);
 		printComponent(g, rowNames);
 		printComponent(g, columnNames);

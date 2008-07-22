@@ -240,7 +240,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		int lineY = 0;
 		int oldLineY=lineY;
 		Shape clip = g.getClip();
-
+		
 		g.setClip(0,0, getBounds().width, getBounds().height);
 		for (int r=0; (r<table.numRowsTotal); r++) {
 			lineY += table.rowHeights[r];
