@@ -348,7 +348,14 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				 g.setColor(Color.black);
 			 StringBuffer sb = new StringBuffer();
 			 ((CategoricalData)data).statesIntoStringBufferCore(ic,  s,  sb, true,false, false);
-			 g.drawString(sb.toString(), x+4, y+11);
+			 FontMetrics fm = g.getFontMetrics(g.getFont());
+			 int svp = StringUtil.getStringVertPosition(fm, y, h, null);
+
+			 String cellString = sb.toString();
+			 int length = fm.stringWidth(cellString);
+			 int useX = x + (w - length) / 2;
+			 g.drawString(cellString, useX, svp);
+
 		 }
 		 else if (CategoricalState.isInapplicable(s)){
 			 g.setColor(Color.lightGray);

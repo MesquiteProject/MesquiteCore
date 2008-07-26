@@ -50,6 +50,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	protected boolean columnNamesCopyPaste = true;
 	protected boolean rowNamesCopyPaste = true;
 	int baseRowHeight = 16;
+//	int thinRowHeight=22;
 	int baseColumnWidth = 16;
 	int nameStartOffset = 5;
 	int focusColumn = -2;
@@ -83,6 +84,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	int matrixHeight;
 	int[] columnWidths;
 	int[] rowHeights;
+
+	public MesquiteBoolean tight=new MesquiteBoolean(false);
+	public MesquiteBoolean thinRows=new MesquiteBoolean(false);
 
 	Font oldF = null;
 	Font boldFont = null;
@@ -181,6 +185,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		setColumnWidthsUniform(baseColumnWidth);
 		rowHeights = new int[numRowsTotal];
 		setRowHeightsUniform(baseRowHeight);
+//		setRowHeightsUniform(thinRowHeight);
+
 
 		rowsSelected = new Bits[numSelectTypes];
 		columnsSelected = new Bits[numSelectTypes];
@@ -1526,10 +1532,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (g == null || g.getFont() == null)
 			return false;
 		FontMetrics fm = g.getFontMetrics(g.getFont());
-		int h = fm.getMaxAscent() + fm.getMaxDescent() + MesquiteModule.textEdgeCompensationHeight; // 2 + MesquiteString.riseOffset;
-		setRowHeightsUniform(h);
-		if (!columnNames.isDiagonal())
-			setColumnNamesRowHeight(h);
+		autoSizeRows(g);
 		String s = getCornerText();
 		boolean changed = false;
 		if (StringUtil.blank(s))
@@ -1589,6 +1592,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 		return changed;
 	}
+	public void autoSizeRows (Graphics g) {  
+		FontMetrics fm=g.getFontMetrics(g.getFont());
+		int h = fm.getMaxAscent()+ fm.getMaxDescent();
+		if (!thinRows.getValue()) h+= MesquiteModule.textEdgeCompensationHeight; //2 + MesquiteString.riseOffset;
+		setRowHeightsUniform(h);
+		if (!columnNames.isDiagonal())
+			setColumnNamesRowHeight(h);
+
+	}
+
 	/* ................................................................................................................. */
 	public boolean autoSizeRowNames(Graphics g) {
 		if (g == null || g.getFont() == null)
@@ -1932,13 +1945,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (checkResetFont(g)) {
 			if (autosizeColumns)
 				autoSizeColumns(g);
-			else 
+			else{
 				autoSizeRowNames(g);
+				autoSizeRows(g);
+			}
 			repaintAll();
 		}
 		else if (autosizeColumns) {
 			resized = autoSizeColumns(g);
-		}
+		} else
+			autoSizeRows(g);
 		if (resized) {
 			MesquiteWindow.uncheckDoomed(this);
 			repaintAll();
