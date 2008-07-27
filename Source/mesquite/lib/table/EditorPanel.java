@@ -44,19 +44,7 @@ public abstract class EditorPanel extends MesquitePanel {
 		fillColor = toFill;
 	}
 	public int startOfColumn(int column) {
-		if (column<tb.firstColumnVisible)
-			return -1;
-		else if (column>tb.firstColumnVisible + tb.numColumnsTotal || column>=tb.numColumnsTotal)
-			return -1;
-		else {
-			int lineX = 0;
-			//	if (tb.showRowGrabbers)
-			//		lineX = tb.getRowGrabberWidth();
-			for (int c=tb.firstColumnVisible; (c<column); c++) {
-				lineX += tb.columnWidths[c];
-			}
-			return lineX;
-		}
+		return tb.startOfColumn(column);
 	}
 	/*...............................................................................................................*/
 	public void drawBetweenSelection(Graphics g){

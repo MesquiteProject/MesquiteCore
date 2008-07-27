@@ -2759,8 +2759,27 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	public int getLeftOfColumn(int column) {
-		return columnNames.startOfColumn(column);
+		return startOfColumn(column);
 	}
+	
+	/* ............................................................................................................... */
+	public int startOfColumn(int column) {
+		
+		if (column<firstColumnVisible)
+			return -1;
+		else if (column>firstColumnVisible + numColumnsTotal || column>=numColumnsTotal)
+			return -1;
+		else {
+			int lineX = 0;
+			//	if (tb.showRowGrabbers)
+			//		lineX = tb.getRowGrabberWidth();
+			for (int c=firstColumnVisible; (c<column); c++) {
+				lineX += columnWidths[c];
+			}
+			return lineX;
+		}
+	}
+
 
 	/* ............................................................................................................... */
 	public int getColumnNamesRowHeight() {
@@ -4005,11 +4024,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int c2old = MesquiteInteger.maximum(firstColumnOld, lastColumnOld);
 		int r1old = MesquiteInteger.minimum(firstRowOld, lastRowOld);
 		int r2old = MesquiteInteger.maximum(firstRowOld, lastRowOld);
+		int c1min = firstColumnVisible;
+		
 
 		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
 		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
 		int r1 = MesquiteInteger.minimum(firstRow, lastRow);
 		int r2 = MesquiteInteger.maximum(firstRow, lastRow);
+		Graphics g = matrix.getGraphics();
 
 		for (int row = r1old; row <= r2old; row++)
 			for (int column = c1old; column <= c2old; column++) {
@@ -4017,7 +4039,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,r1,c2,r2)) {
 						if (considerAndMoveSelection)
 							deselectCell(column, row);
-						redrawCell(column, row);
+						if (column>=firstColumnVisible && column<=lastColumnVisible && row>=firstRowVisible && row<=lastRowVisible)
+							redrawCell(column, row, g);
 					}
 				}
 			}
@@ -4025,7 +4048,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			for (int j = r1; j <= r2; j++) {
 				if (considerAndMoveSelection)
 					cellsSelected[0].setBit(j * numColumnsTotal + i);
-				redrawCell(i, j);
+				if (i>=firstColumnVisible && i<=lastColumnVisible && j>=firstRowVisible && j<=lastRowVisible)
+					redrawCell(i, j,g);
 
 			}
 	}
@@ -4042,6 +4066,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
 		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		Graphics g = matrix.getGraphics();
 
 		for (int row = 0; row <= numRowsTotal; row++)
 			for (int column = c1old; column <= c2old; column++) {
@@ -4049,7 +4074,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,c2,whichRows)) {
 						if (considerAndMoveSelection)
 							deselectCell(column, row);
-						redrawCell(column, row);
+						if (column>=firstColumnVisible && column<=lastColumnVisible && row>=firstRowVisible && row<=lastRowVisible)
+							redrawCell(column, row,g);
 					}
 				}
 			}
@@ -4058,7 +4084,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				if (whichRows.isBitOn(j)){
 					if (considerAndMoveSelection)
 						cellsSelected[0].setBit(j * numColumnsTotal + i);
-					redrawCell(i, j);
+					if (i>=firstColumnVisible && i<=lastColumnVisible && j>=firstRowVisible && j<=lastRowVisible)
+						redrawCell(i, j,g);
 
 				}
 	}
