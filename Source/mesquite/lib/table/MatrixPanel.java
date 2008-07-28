@@ -364,12 +364,12 @@ timer6.end();
 			int numCells = 0;//еее
 			FontMetrics fm = g.getFontMetrics(g.getFont());
 			Shape clip = g.getClip();
-			for (int r=table.firstRowVisible; (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
+			for (int r=table.firstRowVisible; r<=table.lastRowVisible+1 && (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
 				lineY += table.rowHeights[r];
 
 				lineX = 0;
 				int oldLineX=lineX;
-				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && c< table.columnWidths.length && (lineX<resetWidth); c++) {
+				for (int c=table.firstColumnVisible; c<=table.lastColumnVisible+1 && (c<table.numColumnsTotal) && c< table.columnWidths.length && (lineX<resetWidth); c++) {
 					numCells++;
 					lineX += table.columnWidths[c];
 					if (c!= returningColumn || r != returningRow){ //don't draw if text about to be returned to cell, and will soon be redrawn anyway
