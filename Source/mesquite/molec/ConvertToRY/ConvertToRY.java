@@ -45,23 +45,25 @@ public class ConvertToRY extends DNADataAlterer {
 		DNAData data = (DNAData)ddata;
 		charState = (DNAState) data.getCharacterState(charState, ic, it);
 		long newSet = 0;
-		int count = 0;
+		boolean hasData = false;
 		if (charState.hasPurine()) {
 			newSet = charState.addToSet(newSet, 0); //A
-			newSet = charState.addToSet(newSet, 2); //C
-			count++;
+			newSet = charState.addToSet(newSet, 2); //G
+			hasData = true;
 		}
 		if (charState.hasPyrimidine()) {
-			newSet = charState.addToSet(newSet, 1); //G
+			newSet = charState.addToSet(newSet, 1); //C
 			newSet = charState.addToSet(newSet, 3); //T
-			count++;
+			hasData = true;
 		}
-		if (count>0) {
+		if (hasData) {
 			newSet = charState.setUncertainty(newSet, true);
 			data.setState(ic, it, newSet);
-			if (!MesquiteLong.isCombinable(numCellsAltered))
-				numCellsAltered = 0;
-			numCellsAltered++;
+			if (charState.getValue()!=newSet) {
+				if (!MesquiteLong.isCombinable(numCellsAltered))
+					numCellsAltered = 0;
+				numCellsAltered++;
+			}
 		}
 	}
 
