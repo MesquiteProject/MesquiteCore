@@ -35,9 +35,15 @@ public abstract class BooleanForCharacter extends MesquiteModule implements Bool
 			return getNameAndParameters();
 	   	}
 		/*.................................................................................................................*/
-		public boolean isPrerelease(){
-			return false;
+		public boolean displayTrueAsDark(){
+			return true;
 		}
+		
+		/*.................................................................................................................*/
+		public String getValueString(boolean on){
+			return "";
+		}
+
 
 	 	/*.................................................................................................................*/
 	 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
