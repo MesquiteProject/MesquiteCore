@@ -4063,35 +4063,54 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return;
 		if (!columnLegal(firstColumnOld) || !columnLegal(lastColumnOld))
 			return;
-		int c1old = MesquiteInteger.minimum(firstColumnOld, lastColumnOld);
-		int c2old = MesquiteInteger.maximum(firstColumnOld, lastColumnOld);
-
-		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
-		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
 		Graphics g = matrix.getGraphics();
 
-		for (int row = 0; row <= numRowsTotal; row++)
-			for (int column = c1old; column <= c2old; column++) {
-				if ((column < c1) || (column > c2 || !whichRows.isBitOn(row))) { // not in block
-					if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,c2,whichRows)) {
-						if (considerAndMoveSelection)
-							deselectCell(column, row);
-						if (column>=firstColumnVisible && column<=lastColumnVisible && row>=firstRowVisible && row<=lastRowVisible)
-							redrawCell(column, row,g);
+		int c1old = MesquiteInteger.minimum(firstColumnOld, lastColumnOld);
+		int c2old = MesquiteInteger.maximum(firstColumnOld, lastColumnOld);
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		if (!considerAndMoveSelection) {
+			c1old = MesquiteInteger.minimum(c1old, firstColumnVisible);
+			c2old = MesquiteInteger.maximum(c2old, lastColumnVisible);
+
+			c1 = MesquiteInteger.minimum(c1, firstColumnVisible);
+			c2 = MesquiteInteger.maximum(c2, lastColumnVisible);
+			for (int row = firstRowVisible; row < numRowsTotal && row<=lastRowVisible+1; row++)
+				for (int column = c1old; column <= c2old; column++) {
+					if ((column < c1) || (column > c2 || !whichRows.isBitOn(row))) { // not in block
+						if ((isCellSelected(column, row)) && !cellInBlock(column, row, c1,c2,whichRows)) {
+							if (column>=firstColumnVisible && column<=lastColumnVisible+1 && row>=firstRowVisible && row<=lastRowVisible+1)
+								redrawCell(column, row,g);
+						}
 					}
 				}
-			}
-		for (int i = c1; i <= c2; i++)
-			for (int j = 0; j <= numRowsTotal; j++) 
-				if (whichRows.isBitOn(j)){
-					if (considerAndMoveSelection)
-						cellsSelected[0].setBit(j * numColumnsTotal + i);
-					if (i>=firstColumnVisible && i<=lastColumnVisible && j>=firstRowVisible && j<=lastRowVisible)
-						redrawCell(i, j,g);
-
+			for (int i = c1; i <= c2; i++)
+				for (int j = firstRowVisible; j < numRowsTotal && j<=lastRowVisible+1; j++)
+					if (whichRows.isBitOn(j)){
+						if (i>=firstColumnVisible && i<=lastColumnVisible+1 && j>=firstRowVisible && j<=lastRowVisible+1)
+							redrawCell(i, j,g);
+					}
+		}
+		else	{
+			for (int row = 0; row <= numRowsTotal; row++)
+				for (int column = c1old; column <= c2old; column++) {
+					if ((column < c1) || (column > c2 || !whichRows.isBitOn(row))) { // not in block
+						if ((isCellSelected(column, row)||!considerAndMoveSelection) && !cellInBlock(column, row, c1,c2,whichRows)) {
+							deselectCell(column, row);
+							if (column>=firstColumnVisible && column<=lastColumnVisible+1 && row>=firstRowVisible && row<=lastRowVisible+1)
+								redrawCell(column, row,g);
+						}
+					}
 				}
+			for (int i = c1; i <= c2; i++)
+				for (int j = 0; j <= numRowsTotal; j++) 
+					if (whichRows.isBitOn(j)){
+						cellsSelected[0].setBit(j * numColumnsTotal + i);
+						if (i>=firstColumnVisible && i<=lastColumnVisible+1 && j>=firstRowVisible && j<=lastRowVisible+1)
+							redrawCell(i, j,g);
+					}
+		}
 	}
-
 
 	/* ............................................................................................................... */
 	/** Selects column.; DOES NOT UPDATE ASSOCIABLE */
