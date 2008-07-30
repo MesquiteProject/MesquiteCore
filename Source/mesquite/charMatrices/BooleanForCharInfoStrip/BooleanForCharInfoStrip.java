@@ -177,6 +177,9 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	public String getName() {
 		return "Boolean Info Strip";
 	}
+	public String getExplanation() {
+		return "Shows an strip of boxes near the top of each a character column that shows the value of a boolean for that character in gray or white.";
+	}
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){

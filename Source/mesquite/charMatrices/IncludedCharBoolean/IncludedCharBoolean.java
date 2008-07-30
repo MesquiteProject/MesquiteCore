@@ -31,6 +31,11 @@ public class IncludedCharBoolean extends BooleanForCharacter {
 		if (on) return "included";
 		else return "excluded";
 	}
+	
+	public String getExplanation() {
+		return "A boolean that is true if a character is currently included, and false if the character is currently excluded.";
+	}
+
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
