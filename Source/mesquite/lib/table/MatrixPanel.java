@@ -364,6 +364,8 @@ timer6.end();
 			int numCells = 0;//еее
 			FontMetrics fm = g.getFontMetrics(g.getFont());
 			Shape clip = g.getClip();
+			table.resetNumColumnsVisible();
+			table.resetNumRowsVisible();
 			for (int r=table.firstRowVisible; r<=table.lastRowVisible+1 && (r<table.numRowsTotal)   && r< table.rowHeights.length && (lineY<resetHeight); r++) {
 				lineY += table.rowHeights[r];
 
