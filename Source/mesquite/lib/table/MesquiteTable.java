@@ -2556,8 +2556,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		columnNamesRowHeight = h;
 		columnNames.setRowHeight(h);
 		columnNames.setHeight();
+		int oldMatrixHeight = matrixHeight;
 		matrixHeight = getHeight() - 16 - columnNames.calcColumnNamesHeight();
-	//	resetComponentSizes();
+		if (oldMatrixHeight!=matrixHeight)
+			resetComponentSizes();
 		// cornerCell.setSize(cornerCell.getBounds().width, height+columnGrabberWidth);
 	}
 

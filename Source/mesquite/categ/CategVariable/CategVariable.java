@@ -83,7 +83,7 @@ public class CategVariable extends BooleanForCharacter {
 	/*.................................................................................................................*/
 	public String getValueString(boolean on){
 		if (on) return "multiple states";
-		else return "0 or 1 states";
+		else return "²1 states";
 	}
 
 

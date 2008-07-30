@@ -17,6 +17,7 @@ import java.awt.Graphics;
 
 import mesquite.lib.AssociableWithSpecs;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -38,7 +39,8 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	MesquiteTable table;
 	CharacterData data;
 	BooleanForCharacter booleanTask;
-	MesquiteMenuItemSpec closeMenuItem;
+	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem;
+	MesquiteBoolean standardDirection = new MesquiteBoolean(true);
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(BooleanForCharacter.class, getName() + " needs a method to calculate a boolean (yes/no) value for each of the characters.",
@@ -70,7 +72,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		MesquiteString resultString = new MesquiteString();
 		booleanTask.calculateBoolean( data,  ic,  result,  resultString);
 
-		if (booleanTask.displayTrueAsDark()) {
+		if (booleanTask.displayTrueAsDark()==standardDirection.getValue()) {
 			if (result.getValue())
 				g.setColor(Color.gray); 
 			else {
@@ -100,9 +102,11 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	/*.................................................................................................................*/
 	public void deleteRemoveMenuItem() {
 		deleteMenuItem(closeMenuItem);
+		deleteMenuItem(toggleDirectionItem);
 	}
 	public void addRemoveMenuItem() {
 		closeMenuItem= addMenuItem(null,"Remove Info Strip", makeCommand("remove", this));
+		toggleDirectionItem= addMenuItem(null,"Flip Dark/Light", makeCommand("toggleDirection", this));
 	}
 
 
@@ -122,6 +126,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setValueTask ", booleanTask); 
+		temp.addLine("toggleDirection " + standardDirection.toOffOnString());
 		return temp;
 	}
 
@@ -132,12 +137,16 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 			if (temp!=null) {
 				booleanTask = temp;
 				parametersChanged();
-
 				return temp;
 			}
 		}
 		else if (checker.compare(this.getClass(), "Removes the Info Strip", null, commandName, "remove")) {
 			iQuit();
+		}
+		else if (checker.compare(this.getClass(), "Toggles the dark/light display", "[on, off]", commandName, "toggleDirection")) {
+			standardDirection.toggleValue(parser.getFirstToken(arguments));
+			table.getColumnNamesPanel().repaint();
+			parametersChanged();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
