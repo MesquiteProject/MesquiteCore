@@ -80,6 +80,13 @@ public class CategVariable extends BooleanForCharacter {
 			result.setValue(true);
 	}
 
+	/*.................................................................................................................*/
+	public String getValueString(boolean on){
+		if (on) return "multiple states";
+		else return "0 or 1 states";
+	}
+
+
 	public boolean isPrerelease() {
 		return false;
 	}
