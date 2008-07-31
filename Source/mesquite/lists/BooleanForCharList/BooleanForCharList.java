@@ -194,11 +194,10 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 			return "";
 		if (booleanList.getValue(ic)<0)
 			return "-";
-		else if (booleanList.getValue(ic)==1)
-			return "Yes";
-		else
-			return "No";
+		else if (booleanTask!=null)
+			return booleanTask.getValueString(booleanList.getValue(ic)==1);
 		//return na.toString(ic);
+		return "";
 	}
 	public String getWidestString(){
 		if (booleanTask==null)

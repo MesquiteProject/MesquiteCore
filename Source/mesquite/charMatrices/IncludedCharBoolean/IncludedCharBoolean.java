@@ -26,12 +26,16 @@ public class IncludedCharBoolean extends BooleanForCharacter {
 	public boolean displayTrueAsDark(){
 		return false;
 	}
-	/*.................................................................................................................*/
-	public String getValueString(boolean on){
-		if (on) return "included";
-		else return "excluded";
-	}
 	
+	/*.................................................................................................................*/
+	public String getTrueString(){
+		return "Included";
+	}
+	/*.................................................................................................................*/
+	public String getFalseString(){
+		return "Excluded";
+	}
+
 	public String getExplanation() {
 		return "A boolean that is true if a character is currently included, and false if the character is currently excluded.";
 	}
