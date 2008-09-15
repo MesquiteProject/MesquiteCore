@@ -19,7 +19,7 @@ public class ToLURLServer extends TaxonOnWebServer {
 
 	public String getURL(String taxonName) {
 		String openName = StringUtil.encodeForURL(taxonName);
-		return "http://tolweb.org/" + openName;
+		return "http://working.tolweb.org/" + openName;
 	}
 
 	public String getName() {
