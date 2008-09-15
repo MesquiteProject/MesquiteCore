@@ -32,7 +32,7 @@ public abstract class BaseSearchToLToolTaxonExtra  extends TreeDisplayExtra impl
 		}
 		public void enableTool(){
 			if (tolTool == null){
-				tolTool = new TreeTool(this, getToolName(), ownerModule.getPath(), "ToL.gif", 4,0,"Go to ToL", "This tool downloads the tree from the page of the Tree of Life Web Project for the taxon touched."); //; hold down shift to enter a URL
+				tolTool = new TreeTool(this, getToolScriptName(), ownerModule.getPath(), "ToL.gif", 4,0,getToolName(), getToolExplanation()); //; hold down shift to enter a URL
 				tolTool.setTouchedTaxonCommand(taxonCommand);
 
 				if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
@@ -42,6 +42,10 @@ public abstract class BaseSearchToLToolTaxonExtra  extends TreeDisplayExtra impl
 		}
 		/*.................................................................................................................*/
 		public abstract String getToolName() ;
+		/*.................................................................................................................*/
+		public abstract String getToolScriptName() ;
+		/*.................................................................................................................*/
+		public abstract String getToolExplanation() ;
 		/*.................................................................................................................*/
 		public abstract String getBaseURL() ;
 		/*.................................................................................................................*/
