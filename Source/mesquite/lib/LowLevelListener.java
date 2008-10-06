@@ -16,6 +16,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 /* ======================================================================== */
 public interface LowLevelListener {
-	public void llChange(Object obj, int ic, int it);
+	//change cell of matrix, code VALUE_CHANGED, i1 = ic, i2 = it, i3 not used
+	//add characters to CharacterData or taxa to Taxa, code PARTS_ADDED, i1 = justAfter, i2 = num
+	//delete characters in CharacterData or taxa in Taxa, code PARTS_DELETED, i1 = starting, i2 = num
+	//move characters in CharacterData or taxa in Taxa, code PARTS_MOVED, i1=starting, i2= num, i3 = justAfter
+	//swap characters in CharacterData or taxa in Taxa, code PARTS_SWAPPED, i1= first, i2 = second
+	public void llChange(Object obj, int code, int i1, int i2, int i3);
 }
 
