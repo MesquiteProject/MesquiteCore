@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.trees.lib;
 
 import mesquite.lib.*;
@@ -18,36 +18,39 @@ import mesquite.lib.duties.*;
 public class TreeSearchUtil {
 
 	/*.................................................................................................................*/
-	private static void cleanUpSearch(MesquiteTimer timer, MesquiteNumber currentScore, MesquiteTree swapTree, AdjustableTree tree, int node, MesquiteModule ownerModule, MesquiteLong count,  boolean liveUpdates, boolean notify) {
-		double seconds = timer.timeSinceLastInSeconds();
-		MesquiteMessage.println("\n\nSearch completed.");
-		MesquiteMessage.println("    Final score: " + currentScore.toString());
-		MesquiteMessage.println("    Total number of rearrangements: " + count.toString());
-		MesquiteMessage.println("    Time taken: " + seconds + " seconds");
+	private static void cleanUpSearch(MesquiteTimer timer, MesquiteNumber currentScore, MesquiteTree swapTree, AdjustableTree tree, int node, MesquiteModule ownerModule, MesquiteLong count,  boolean liveUpdates, boolean notify, boolean writeToLog) {
+		if (writeToLog) {
+			double seconds = timer.timeSinceLastInSeconds();
+			MesquiteMessage.println("\n\nSearch completed.");
+			MesquiteMessage.println("    Final score: " + currentScore.toString());
+			MesquiteMessage.println("    Total number of rearrangements: " + count.toString());
+			MesquiteMessage.println("    Time taken: " + seconds + " seconds");
+		}
 		swapTree.standardize(node,true, false);
 		tree.setToClone(swapTree);
 		if (notify && tree instanceof Listened && !liveUpdates) {
 			((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 		}
 	}
-	
-	
+
+
 	/*.................................................................................................................*/
-	public static boolean tryRearrangement(long i, long total,MesquiteTimer timer, MesquiteNumber currentScore, MesquiteModule ownerModule, MesquiteTree swapTree, MesquiteTree tempTree, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, ProgressIndicator progIndicator, MesquiteLong count, MesquiteBoolean foundBetter, boolean smallerIsBetter, boolean liveUpdates, boolean notify) {
+	public static boolean tryRearrangement(long i, long total,MesquiteTimer timer, MesquiteNumber currentScore, MesquiteModule ownerModule, MesquiteTree swapTree, MesquiteTree tempTree, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, ProgressIndicator progIndicator, MesquiteLong count, MesquiteBoolean foundBetter, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog) {
 		count.increment();
 		MesquiteNumber tempScore = new MesquiteNumber();
 		if (progIndicator != null && i % 20==0) {
 			if (progIndicator.isAborted()) {
-					progIndicator.goAway();
-					cleanUpSearch(timer, currentScore, swapTree,tree,node, ownerModule, count, liveUpdates, notify);
-					return false;
+				progIndicator.goAway();
+				cleanUpSearch(timer, currentScore, swapTree,tree,node, ownerModule, count, liveUpdates, notify, writeToLog);
+				return false;
 			}
 			progIndicator.spin();
 		}
-		
+
 		MesquiteString rs =new MesquiteString("");
 		swapTask.rearrange(tempTree, node, i);  //do the rearrangement!
 		numberTask.calculateNumber(tempTree, tempScore, rs);
+		//Debugg.println("  rearrangement: " + tempScore.getIntValue());
 		if (i%100==0) {
 			MesquiteMessage.print(".");
 		}
@@ -56,7 +59,7 @@ public class TreeSearchUtil {
 			if (progIndicator!=null)
 				progIndicator.setText(numberTask.getName()+ ": " + currentScore.toString() + "   ("+total+" rearrangements)");
 		}
-		
+
 		if ((smallerIsBetter && tempScore.isLessThan(currentScore)) || (!smallerIsBetter && tempScore.isMoreThan(currentScore))){
 			currentScore.setValue(tempScore);
 			swapTree.setToClone(tempTree);
@@ -71,13 +74,17 @@ public class TreeSearchUtil {
 			tempTree.setToClone(swapTree);			
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
 	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify){
+		return searchForBetterTree(ownerModule, tree, node, swapTask, numberTask, rng, resultString, smallerIsBetter, liveUpdates, notify, true);
+	}
+	/*.................................................................................................................*/
+	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog){
 		numberTask.initialize(tree);
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
-		
+
 		MesquiteString rs =new MesquiteString();
 		MesquiteNumber currentScore = new MesquiteNumber();
 		rs.setValue("");
@@ -87,7 +94,7 @@ public class TreeSearchUtil {
 		numberTask.calculateNumber(swapTree, currentScore, rs);
 		MesquiteBoolean foundBetter= new MesquiteBoolean(true);
 		MesquiteDialog.hideWizardForCalculation();
-		
+
 		ProgressIndicator progIndicator=null;
 		if (ownerModule!=null && !MesquiteThread.isScripting())
 			progIndicator=new ProgressIndicator(ownerModule.getProject(),ownerModule.getName(), "Searching for a better tree", 0, true);
@@ -100,13 +107,13 @@ public class TreeSearchUtil {
 		MesquiteLong count = new MesquiteLong(0);
 		long total = 0;
 
-		
+
 		while(foundBetter.getValue()) {  // loop for improving tree
 			tempTree.setToClone(swapTree);
 			foundBetter.setValue(false);
 			long numRearrangements = swapTask.numberOfRearrangements(swapTree, node);
-			MesquiteMessage.print("\n  " + numberTask.getName()+ ": " + currentScore.toString()+ " ");
-			
+			if (writeToLog) MesquiteMessage.print("\n  " + numberTask.getName()+ ": " + currentScore.toString()+ " ");
+
 			int motherNode = tree.motherOfNode(node); //store information so we can find our original node even if it has been renumbered.
 			int aTerminalOfNode=tree.leftmostTerminalOfNode(node);
 
@@ -124,31 +131,31 @@ public class TreeSearchUtil {
 			 * intelligent way to pick the boundary, but as that depends upon the nature of the objective function, and this code knows nothing but its value, that would be very hard.  */
 
 			/* if one used the standard order, this is what the next section would look like:
-			
+
 			 for (long i=0; i<numRearrangements; i++) {
 				if (!tryRearrangement( i,  timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
 					return false;
 				if (foundBetter.getValue()) break;
 			}
-			*/
+			 */
 
 			CommandRecord.tick(numberTask.getName()+ ": " + currentScore.toString());
 			if (progIndicator!=null)
 				progIndicator.setText(numberTask.getName()+ ": " + currentScore.toString());
 			long boundary=rng.randomLongBetween(0, numRearrangements-1);
 			boolean downFirst  = rng.randomIntBetween(0, 1)>0;
-			
+
 			if (downFirst) {
 				for (long i=boundary; i<numRearrangements; i++) {
 					total++;
-					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
 						return false;
 					if (foundBetter.getValue()) break;
 				}
 				if (!foundBetter.getValue()){  // then let's try the other rearrangements
 					for (long i=boundary-1; i>=0; i--) {
 						total++;
-						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
 							return false;
 						if (foundBetter.getValue()) break;
 					}
@@ -157,21 +164,21 @@ public class TreeSearchUtil {
 			else {
 				for (long i=boundary-1; i>=0; i--) {
 					total++;
-					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
 						return false;
 					if (foundBetter.getValue()) break;
 				}
 				if (!foundBetter.getValue()){  // then let's try the other rearrangements
 					total++;
 					for (long i=boundary; i<numRearrangements; i++) {
-						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify))
+						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
 							return false;
 						if (foundBetter.getValue()) break;
 					}
 				}
 			}
-	
-			
+
+
 			for (int d = tree.firstDaughterOfNode(motherNode); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 				if (tree.descendantOf(aTerminalOfNode, d)) { // then this is our original node
 					node = d;
@@ -179,10 +186,10 @@ public class TreeSearchUtil {
 				}
 
 			}
-			
+
 		}  // end while loop
-		
-		cleanUpSearch(timer, currentScore, swapTree,tree, node, ownerModule, count, liveUpdates, notify);
+
+		cleanUpSearch(timer, currentScore, swapTree,tree, node, ownerModule, count, liveUpdates, notify, writeToLog);
 
 		if (progIndicator!=null)
 			progIndicator.goAway();
@@ -190,5 +197,40 @@ public class TreeSearchUtil {
 		return true;
 	}
 
+	/*.................................................................................................................*/
+	public static MesquiteTree getStepwiseAdditionTree(Taxa taxa, NumberForTree treeValueTask, ProgressIndicator progIndicator, MesquiteModule module, boolean writeToLog) {
+		MesquiteTree initialTree = new MesquiteTree(taxa);
+		initialTree.setToDefaultBush(2, false);
+		boolean minimize = !treeValueTask.biggerIsBetter();
+
+		MesquiteNumber bestValue = new MesquiteNumber(0);
+
+		MesquiteTree tempTree = initialTree.cloneTree();
+
+		for (int taxon = 2; taxon < taxa.getNumTaxa() && (progIndicator==null || !progIndicator.isAborted()); taxon++) {
+			bestValue.setToUnassigned();
+			if (progIndicator!=null)
+				progIndicator.setSecondaryMessage("Adding taxon " + (taxon +1));
+			int whichNode = 0;
+			MesquiteNumber value = new MesquiteNumber();
+			int numNodes = initialTree.getNumNodeSpaces();
+			for (int node = 0; node<numNodes && (progIndicator==null || !progIndicator.isAborted()); node++) {   
+				if (initialTree.nodeInTree(node)) {
+					tempTree.setToClone(initialTree);
+					tempTree.graftTaxon(taxon, node, false);
+					value.setToUnassigned();
+					treeValueTask.calculateNumber(tempTree, value, null);
+					if ((minimize && value.isLessThan(bestValue)) || (!minimize && value.isMoreThan(bestValue))) {
+						bestValue.setValue(value);
+						whichNode = node;
+					}
+				}
+			}
+			initialTree.graftTaxon(taxon, whichNode, false);
+			if (module!=null && writeToLog)
+				module.logln("   Tree search: " + taxon + " added.");
+		}
+		return initialTree;
+	}
 
 }

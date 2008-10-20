@@ -1,6 +1,19 @@
+/* Mesquite source code.  Copyright 1997-2008 W. Maddison and D. Maddison.
+Version 2.5, June 2008.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
+Perhaps with your help we can be more than a few, and make Mesquite better.
+
+Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Mesquite's web site is http://mesquiteproject.org
+
+This source code and its compiled class files are free and modifiable under the terms of 
+GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
+*/
 package mesquite.treefarm.TopologyCongruent;
 
-/*New October 7, 2008. oliver*/
+/*New October 7, 2008. oliver
+ * Modified 16 October 2008 to use the built-in Tree.equalsTopology method */
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -17,7 +30,7 @@ public class TopologyCongruent extends BooleanForTree {
 	}
 	/*..............................................................................*/
 	/**Checks to see if passed Tree sTree is consistent with constraint tree cTree; is not currently set up to handle
-	 * backbone constraints, but reciprocal calls of pruneToMatch accomodate this in future versions.*/
+	 * backbone constraints, but reciprocal calls of pruneToMatch accomodate this in future versions.*
 	private void checkClades(int node, Tree sTree, Taxa taxa, MesquiteBoolean isConsistent){
 		while(isConsistent.getValue() && constraintTree.nodeExists(node)){
 			if(constraintTree.nodeIsInternal(node)){
@@ -33,8 +46,8 @@ public class TopologyCongruent extends BooleanForTree {
 			node = constraintTree.nextSisterOfNode(node);
 		}
 	}
-	/*..............................................................................*/
-	/**Checks to make sure both trees contain same terminal taxa*/
+	/*..............................................................................*
+	/**Checks to make sure both trees contain same terminal taxa*
 	private boolean taxaCheck(Tree sTree, Tree cTree, Taxa taxa){
 		boolean both = true;
 		int taxonCount=0;
@@ -64,12 +77,18 @@ public class TopologyCongruent extends BooleanForTree {
 		if(constraintTree==null || constraintTree.getTaxa()!=tree.getTaxa())
 			return;
 		MesquiteBoolean isConsistent = new MesquiteBoolean(true);
-		if(!taxaCheck(tree, constraintTree, tree.getTaxa())){
+	//	isConsistent.setValue(tree.equalsTopology(constraintTree, false));
+
+		
+	/*	if(!taxaCheck(tree, constraintTree, tree.getTaxa())){
 			isConsistent.setValue(false);
 		}
 		else {
 			checkClades(constraintTree.getRoot(), tree, tree.getTaxa(), isConsistent);
 		}
+		*/
+		isConsistent.setValue(tree.equalsTopology(constraintTree, false));
+
 		result.setValue(isConsistent.getValue());
 		if (resultString!=null)
 			if (isConsistent.getValue())
