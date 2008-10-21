@@ -77,10 +77,10 @@ public class TreeSearchUtil {
 
 	/*.................................................................................................................*/
 	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify){
-		return searchForBetterTree(ownerModule, tree, node, swapTask, numberTask, rng, resultString, smallerIsBetter, liveUpdates, notify, true);
+		return searchForBetterTree(ownerModule, tree, node, swapTask, numberTask, rng, resultString, smallerIsBetter, liveUpdates, notify, true, true);
 	}
 	/*.................................................................................................................*/
-	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog){
+	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog, boolean showProgressIndicator){
 		numberTask.initialize(tree);
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
@@ -96,7 +96,7 @@ public class TreeSearchUtil {
 		MesquiteDialog.hideWizardForCalculation();
 
 		ProgressIndicator progIndicator=null;
-		if (ownerModule!=null && !MesquiteThread.isScripting())
+		if (ownerModule!=null && !MesquiteThread.isScripting() && showProgressIndicator)
 			progIndicator=new ProgressIndicator(ownerModule.getProject(),ownerModule.getName(), "Searching for a better tree", 0, true);
 		if (progIndicator!=null){
 			progIndicator.setButtonMode(ProgressIndicator.OFFER_CONTINUE);
