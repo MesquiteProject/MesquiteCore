@@ -2053,7 +2053,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		// g.setColor(Color.lightGray);
 		g.setColor(getRCNumberBoxColor(isRow, number));
 		g.fillRect(left, top, width, height);
-		g.setColor(ColorDistribution.veryVeryLightGray);
+		if ((focusRow == number && isRow) || (focusColumn == number && !isRow))
+			GraphicsUtil.fillTransparentSelectionRectangle(g, left, top, width, height);
+			g.setColor(ColorDistribution.veryVeryLightGray);
 		int newTop;
 		if (isRow)
 			newTop = top;

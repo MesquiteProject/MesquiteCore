@@ -161,7 +161,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			g.setClip(0+table.getRowGrabberWidth(),topSide, width-table.getRowGrabberWidth(),rowHeight(row));
 			table.setRowNameColor(g, row);
 			table.drawRowNameCell(g, 0+table.getRowGrabberWidth(),topSide, width-table.getRowGrabberWidth(),rowHeight(row), row);
-		}
+	}
 		else {
 			g.setClip(0,topSide, width,rowHeight(row));
 			table.setRowNameColor(g, row);
