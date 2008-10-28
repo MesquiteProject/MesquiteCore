@@ -50,7 +50,7 @@ public class TreeSearchUtil {
 		MesquiteString rs =new MesquiteString("");
 		swapTask.rearrange(tempTree, node, i);  //do the rearrangement!
 		numberTask.calculateNumber(tempTree, tempScore, rs);
-		//Debugg.println("  rearrangement: " + tempScore.getIntValue());
+
 		if (i%100==0) {
 			MesquiteMessage.print(".");
 		}
