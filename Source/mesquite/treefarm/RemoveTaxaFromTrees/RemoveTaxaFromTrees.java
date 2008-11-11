@@ -24,7 +24,7 @@ public class RemoveTaxaFromTrees extends TreeAltererMult {
 	public void changed(Object caller, Object obj, Notification notification){
 		int code = Notification.getCode(notification);
 		if (obj == currentTaxa && code == MesquiteListener.SELECTION_CHANGED){
-			parametersChanged(notification);
+			parametersChanged();
 		}
 	}
  	/*........................................................*/

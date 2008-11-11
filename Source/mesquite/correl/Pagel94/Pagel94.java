@@ -227,22 +227,123 @@ public class Pagel94 extends Pagel94Calculator {
     		simCount = newCount;
     }
     
+	private boolean hasZeroOrNegLengthBranches(Tree tree, int N, boolean countRoot) {
+		if (tree.getBranchLength(N) <= 0.0 && (countRoot || tree.getRoot() != N))
+			return true;
+		if (tree.nodeIsInternal(N)){
+			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				if (hasZeroOrNegLengthBranches(tree, d, countRoot))
+					return true;
+		}
+		return false;
+	}
+boolean warnedMissing = false;
+	boolean warnedPolymorphic = false;
+	boolean warnedMaxState = false;
+	boolean warnedUnbranchedInternals = false;
+	boolean warnedReticulations = false;
+	boolean warnedNotContiguous = false;
+	boolean warnedSoftPoly = false;
+	boolean warnedZeroLength = false;
+	boolean warnedUnrootedCladeValuesMode = false;
+	boolean warn(CategoricalDistribution observedStates1, CategoricalDistribution observedStates2, Tree tree, MesquiteString resultString){
+		if (observedStates1.hasMultipleStatesInTaxon(tree, tree.getRoot()) || observedStates2.hasMultipleStatesInTaxon(tree, tree.getRoot())) {
+			String s = "Polymorphic or uncertain taxa are not currently supported in Pagel94 calculations.  Calculations were not completed.";
+			if (!warnedPolymorphic) {
+				discreetAlert( s);
+				warnedPolymorphic = true;
+			}
+			if (resultString!=null)
+				resultString.setValue(s);
+			return true;
+		}
+		if (tree.hasSoftPolytomies(tree.getRoot())) {
+			String message = "Trees with soft polytomies are not currently supported in Pagel94 calculations.  Calculations were not completed.";
+			if (!warnedSoftPoly){
+				discreetAlert( message);
+				warnedSoftPoly = true;
+			}
+			if (resultString!=null)
+				resultString.setValue(message);
+			return true;
+		}
+		if (hasZeroOrNegLengthBranches(tree, tree.getRoot(), false) ) {
+			String message = "Trees with zero or negative length branches are not currently supported in Pagel94 calculations.  Calculations were not completed.";
+			message += " TREE: " + tree.writeTree();
+
+			if (!warnedZeroLength){
+				discreetAlert( message);
+				warnedZeroLength = true;
+			}
+			if (resultString!=null)
+				resultString.setValue(message);
+			return true;
+		}
+		long allStates = observedStates1.getAllStates(tree, tree.getRoot()) | observedStates2.getAllStates(tree, tree.getRoot());
+		int max = CategoricalState.maximum(allStates);
+		if (max > 1) {
+			String s = "Character distibution includes state values larger than 1; this is not currently supported in Pagel94 calculations.  Calculations were not completed.";
+			if (!warnedMaxState) {
+				discreetAlert( s);
+				warnedMaxState = true;
+			}
+			if (resultString!=null)
+				resultString.setValue(s);
+			return true;
+		}
+		if (tree.hasUnbranchedInternals(tree.getRoot())) {
+			String s = "Pagel94 calculations cannot be done because tree has unbranched internal nodes.";
+			if (!warnedUnbranchedInternals) {
+				discreetAlert( s);
+				warnedUnbranchedInternals = true;
+			}
+			if (resultString!=null)
+				resultString.setValue(s);
+			return true;
+		}
+		if (tree.hasReticulations()) {
+			String s = "Pagel94 calculations cannot be done because tree has reticulations.";
+			if (!warnedReticulations) {
+				discreetAlert( s);
+				warnedReticulations = true;
+			}
+			if (resultString!=null)
+				resultString.setValue(s);
+			return true;
+		}
+		if (observedStates1.hasMissing(tree, tree.getRoot()) || observedStates1.hasInapplicable(tree, tree.getRoot()) || observedStates2.hasMissing(tree, tree.getRoot()) || observedStates2.hasInapplicable(tree, tree.getRoot())) {
+			String s ="Missing data & Gaps are not currently supported by Pagel94 calculations.  Calculations were not completed.";
+			if (!warnedMissing) {
+				discreetAlert( s);
+				warnedMissing = true;
+			}
+			if (resultString!=null)
+				resultString.setValue(s);
+			return true;
+		}
+		return false;
+	}
 
 
     public void calculateNumber(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, MesquiteNumber result, MesquiteString resultString) {
        	clearResultAndLastResult(result);
-   		double result4;
+ 		double result4;
     		double result8;
     		double pvalue = MesquiteDouble.unassigned;
     	
         if (!(charStates1 instanceof CategoricalDistribution ||
                 charStates2 instanceof CategoricalDistribution)) {
-        		result.setValue(MesquiteDouble.unassigned);     
+        		result.setValue(MesquiteDouble.unassigned);  
+        		if (resultString != null)
+        			resultString.setValue("Character not categorical; inappropriate for Pagel94 calculations");
+        		return;
         }
         
         observedStates1 = (CategoricalDistribution)charStates1;
         observedStates2 = (CategoricalDistribution)charStates2;
-        
+		if (warn(observedStates1, observedStates2, tree, resultString))
+			return;
+      
         if (model8 == null) {
     			model4 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);
     			model8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);

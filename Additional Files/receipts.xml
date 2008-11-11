@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<mesquite>
+		<version>1</version>
+		<installationReceipt>
+			<identity>silk</identity>
+			<packageName>SILK version 1.1</packageName>
+			<explanation>SILK provides functions to display images integrated into a character matrix editor</explanation>
+			<uniqueLocation>mesquite/silk</uniqueLocation>
+			<version>110</version>
+		</installationReceipt>
+		<installationReceipt>
+			<identity>pdap</identity>
+			<packageName>PDAP version 1.1</packageName>
+			<explanation>PDAP provides functions for comparative analyses with continuous data</explanation>
+			<uniqueLocation>mesquite/pdap</uniqueLocation>
+			<version>110</version>
+		</installationReceipt>
+</mesquite>

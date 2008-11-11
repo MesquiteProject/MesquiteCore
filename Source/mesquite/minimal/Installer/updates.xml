@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+		<notice><!--THIS IS AN EXAMPLE FOR PRACTICE-->
+			<forVersion>250</forVersion>
+			<noticeNumber>1</noticeNumber>
+			<messageType>update</messageType>
+			<identity>deleteMe</identity>
+			<updateVersion>000</updateVersion>
+			<packageName>DeleteMe version 0.0</packageName>
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/mesquite/updates/example/splash.gif"><p>
+			DeleteMe is a small package that is installed to demonstrate Mesquite's installation features.
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite</location>
+					<file>deleteMe</file>
+					<url>http://mesquiteproject.org/mesquite/updates/example/deleteMe.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>000</updateVersion>
+				</install>
+				<install>
+					<location>jars</location>
+					<file>deleteMe.jar</file>
+					<url>http://mesquiteproject.org/mesquite/updates/example/deleteMe.jar</url>
+					<treatment>asis</treatment>
+					<updateVersion>000</updateVersion>
+				</install>
+		</notice>
+	</MessagesFromHome>
+</mesquite>

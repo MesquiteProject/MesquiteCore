@@ -125,12 +125,12 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 		}
 /*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Sample Trees from Separate File...";
+	return "Sample Trees from Separate NEXUS File...";
 	 }
 	 
 /*.................................................................................................................*/
 	 public String getExplanation() {
-	return "Supplies randomly-sampled trees directly from a file, without bringing the contained tree block entirely into memory.  This allows much larger blocks of trees to be used within constraints of memory, but will make some calculations slower.  This module does not know how many trees are in the file, and hence may attempt to read files beyond the number in the file.";
+	return "Supplies a fixed number of randomly-sampled trees directly from a file, without bringing the contained tree block entirely into memory.  This allows much larger blocks of trees to be used within constraints of memory, but will make some calculations slower.  This module does not know how many trees are in the file, and hence may attempt to read files beyond the number in the file.";
 	 }
 
 }

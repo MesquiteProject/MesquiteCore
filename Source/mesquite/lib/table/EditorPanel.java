@@ -242,24 +242,40 @@ public abstract class EditorPanel extends MesquitePanel {
 		return tb;
 	}
 	public int firstColumnVisible(){
+		if (tb == null)
+			return 0;
 		return tb.firstColumnVisible;
 	}
 	public int firstRowVisible(){
+		if (tb == null)
+			return 0;
 		return tb.firstRowVisible;
 	}
 	public int numColumnsVisible(){
+		if (tb == null)
+			return 0;
 		return tb.numColumnsTotal;
 	}
 	public int numRowsVisible(){
+		if (tb == null)
+			return 0;
 		return tb.numRowsTotal;
 	}
 	public int columnWidth(int column) {
+		if (tb == null)
+			return 0;
 		if (!tb.columnLegal(column))
+			return -1;
+		if (column>= tb.columnWidths.length)
 			return -1;
 		return tb.columnWidths[column];
 	}
 	public int rowHeight(int row) {
+		if (tb == null)
+			return 0;
 		if (!tb.rowLegal(row))
+			return -1;
+		if (row>= tb.rowHeights.length)
 			return -1;
 		return tb.rowHeights[row];
 	}

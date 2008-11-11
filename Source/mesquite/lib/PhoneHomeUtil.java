@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.util.*;
@@ -22,7 +22,72 @@ public class PhoneHomeUtil {
 	static int OSVERSION=1;
 	static int JAVAVERSION=2;
 
+	/*....+++++++++++++++++++++++++++++++++++++++++..........*/
+	/*updating/install system.  See also INSTALLER: below */
+	public static Vector updateRecords = new Vector();
+	public static Vector installedReceipts = new Vector();
+	public static Vector installMenuItems = new Vector();
+	static MesquiteSubmenuSpec installSubmenu;
 	
+	public static void refreshUpdateMenuItems(){
+		for (int i = 0; i< installMenuItems.size(); i++){
+			MesquiteMenuItemSpec mmis = (MesquiteMenuItemSpec)installMenuItems.elementAt(i);
+			MesquiteTrunk.mesquiteTrunk.deleteMenuItem(mmis);
+		}
+		if (installSubmenu == null)
+			installSubmenu = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.fileMenu, "Available to Install or Update");
+		installMenuItems.removeAllElements();
+		for (int i = 0; i< updateRecords.size(); i++){
+			ListableVector rec = (ListableVector)updateRecords.elementAt(i);
+			String identity = ((MesquiteString)rec.getElement("identity")).getValue();
+			String version = ((MesquiteString)rec.getElement("updateVersion")).getValue();
+			if (!alreadyInReceipts(identity, version)){
+				String name = ((MesquiteString)rec.getElement("packageName")).getValue();
+				String uniqueID = ((MesquiteString)rec.getElement("uniqueID")).getValue();
+				installMenuItems.addElement(MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, installSubmenu, name, new MesquiteCommand("phoneHomeLinkTouched", ParseUtil.tokenize("install:" + uniqueID), PhoneHomeUtil.getLinkHandler())));
+			}
+		}
+		MesquiteTrunk.resetAllMenuBars();
+	}
+	public static boolean alreadyInReceipts(ListableVector v){
+		String identity = ((MesquiteString)v.getElement("identity")).getValue();
+		String version = ((MesquiteString)v.getElement("updateVersion")).getValue();
+		return alreadyInReceipts(identity, version);
+	}
+	public static boolean alreadyInReceipts(String identity, String version){
+		for (int i = 0; i< installedReceipts.size(); i++){
+			ListableVector rec = (ListableVector)installedReceipts.elementAt(i);
+			String idInstalled =  ((MesquiteString)rec.getElement("identity")).getValue();
+			String versInstalled =  ((MesquiteString)rec.getElement("updateVersion")).getValue();
+			if (idInstalled != null && idInstalled.equalsIgnoreCase(identity)){
+				int iv = MesquiteInteger.fromString(version);
+				int ivInstalled = MesquiteInteger.fromString(version);
+				if (MesquiteInteger.isCombinable(ivInstalled) && MesquiteInteger.isCombinable(iv) && ivInstalled>= iv)
+					return true;
+			}
+		}
+	
+		return false;
+	}
+	public static MesquiteCommand getPhoneHomeDialogLinkCommand(){
+		return new MesquiteCommand("phoneHomeLinkTouched", getLinkHandler());
+	}
+	static MesquiteModule getLinkHandler(){
+		MesquiteModule installer = MesquiteModule.mesquiteTrunk.findEmployeeWithName("#mesquite.minimal.Installer.Installer");
+		return installer;
+	}
+
+	public static ListableVector getUpdateRecord(String uniqueID){
+		for (int i = 0; i<updateRecords.size(); i++){
+			ListableVector vec = (ListableVector)updateRecords.elementAt(i);
+			MesquiteString id = (MesquiteString)vec.getElement("uniqueID");
+			if (uniqueID.equals(id.getValue()))
+				return vec;
+
+		}
+		return null;
+	}
+	/*....+++++++++++++++++++++++++++++++++++++++++..........*/
 	/*.................................................................................................................*/
 	public static void readOldPhoneRecords(String path, ListableVector phoneRecords) {
 		if (StringUtil.blank(path))
@@ -35,11 +100,11 @@ public class PhoneHomeUtil {
 		}
 		if (StringUtil.blank(oldPhoneRecords))
 			return;
-		
+
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite", oldPhoneRecords);
 		if (root==null)
 			return;
-		
+
 		Element messagesFromHome = root.element("phoneRecords");
 		if (messagesFromHome != null) {
 			Element versionElement = messagesFromHome.element("version");
@@ -47,7 +112,7 @@ public class PhoneHomeUtil {
 				return ;
 			}
 
-//let's get the phone records
+			//let's get the phone records
 			List noticesFromHomeList = messagesFromHome.elements("record");
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
@@ -60,11 +125,11 @@ public class PhoneHomeUtil {
 					lastNoticeForMyVersion = 0;
 				int lastVersionNoticed = MesquiteInteger.fromString(messageElement.elementText("lastVersionNoticed"));
 				int lastNewerVersionReported = MesquiteInteger.fromString(messageElement.elementText("lastNewerVersionReported"));
-				
+
 				PhoneHomeRecord phoneRecord = new PhoneHomeRecord(moduleName, lastVersionUsedInt, lastNotice,  lastNoticeForMyVersion,  lastVersionNoticed, lastNewerVersionReported);
 				phoneRecords.addElement(phoneRecord, false);
 			}
-			
+
 		} 
 	}
 	/*.................................................................................................................*/
@@ -101,9 +166,8 @@ public class PhoneHomeUtil {
 
 
 
-	
 
-	
+
 	/*.................................................................................................................*/
 	public static int getVersion(MesquiteModuleInfo mmi) {
 		if (mmi.getIsPackageIntro())
@@ -119,7 +183,7 @@ public class PhoneHomeUtil {
 		return greater || (currentBuildLetter.equalsIgnoreCase(buildLetter)&&currentBuildNumber>buildNumber);
 	}
 	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int notice, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, String forBuildLetter, int forBuildNumber) {
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int notice, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, String forBuildLetter, int forBuildNumber, ListableVector v) {
 		if (MesquiteInteger.isCombinable(noticeVersion)){
 			if (MesquiteInteger.isCombinable(notice)){
 
@@ -136,7 +200,7 @@ public class PhoneHomeUtil {
 						}
 					}
 				}
-				
+
 				boolean appliesToBuild = true;
 				if (mmi.getName().equals("Mesquite") && !StringUtil.blank(forBuildLetter) && MesquiteInteger.isCombinable(forBuildNumber)) {
 					appliesToBuild = !currentBuildGreaterThan(forBuildLetter, forBuildNumber);
@@ -164,14 +228,26 @@ public class PhoneHomeUtil {
 						notices.append(message + "<hr>\n");
 						countNotices.increment();
 					}
+					else if (noticeType != null && noticeType.equalsIgnoreCase("update")){
+						if (v != null){
+							MesquiteString packageName = (MesquiteString)v.getElement("packageName");
+							MesquiteString explanation = (MesquiteString)v.getElement("explanation");
+							MesquiteString uniqueID = (MesquiteString)v.getElement("uniqueID");
+							notices.append("<h2>Available for installation: " + packageName + "</h2>");
+							notices.append(explanation);
+							notices.append("<br><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"file://" + MesquiteTrunk.mesquiteTrunk.getRootPath()+"images/download.gif\"> Install</a>" +
+									"&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu<hr>\n");
+							countNotices.increment();
+						}
+					}
 					else {
 						String fromWhom = null;
-							if (mmi.getModuleClass() == mesquite.Mesquite.class)
-								fromWhom = "Mesquite";
-							else if (!StringUtil.blank(mmi.getPackageName()))
-								fromWhom = mmi.getPackageName();
-							else
-								fromWhom = mmi.getName();
+						if (mmi.getModuleClass() == mesquite.Mesquite.class)
+							fromWhom = "Mesquite";
+						else if (!StringUtil.blank(mmi.getPackageName()))
+							fromWhom = mmi.getPackageName();
+						else
+							fromWhom = mmi.getName();
 						MesquiteMessage.println("\n\nNOTICE from " + fromWhom + ": " + message + "\n");
 					}
 					if (noticeVersion ==  currentVersion){  //version of note is this version of Mesquite
@@ -218,13 +294,13 @@ public class PhoneHomeUtil {
 
 			StringBuffer notices = new StringBuffer();
 
-			
+
 			MesquiteInteger countNotices = new MesquiteInteger(1);
 			int lastNoticeForMyVersion = phoneHomeRecord.getLastNoticeForMyVersion();
 			int lastNotice = phoneHomeRecord.getLastNotice();
 			int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
 
-//let's get the notices
+			//let's get the notices
 			List noticesFromHomeList = messagesFromHome.elements("notice");
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
@@ -234,7 +310,6 @@ public class PhoneHomeUtil {
 				int noticeNumber = MesquiteInteger.fromString(messageElement.elementText("noticeNumber"));
 				String messageType = messageElement.elementText("messageType");
 				String message = messageElement.elementText("message");
-				
 				Vector osVector = null;
 				List osList = messageElement.elements("forOS");
 				for (Iterator i = osList.iterator(); i.hasNext();) {   // this is going through all of the notices
@@ -247,13 +322,32 @@ public class PhoneHomeUtil {
 					osStrings[JAVAVERSION]  = osElement.elementText("JavaVersion");
 					osVector.addElement(osStrings);
 				}
+				//INSTALLER: recording update record for later use in dialog and in menu items.
+				ListableVector v = null;
+				if (messageType.equalsIgnoreCase("update")){
+					v = new ListableVector();
+					String packageName = messageElement.elementText("packageName");
+					String versionNum = messageElement.elementText("updateVersion");
+					String explanation = messageElement.elementText("explanation");
+					String uniqueID = MesquiteTrunk.getUniqueIDBase() + updateRecords.size();
+					v.addElement(new MesquiteString("uniqueID", uniqueID), false);
+					v.addElement(new MesquiteString("identity", messageElement.elementText("identity")), false);
+					v.addElement(new MesquiteString("packageName", packageName), false);
+					v.addElement(new MesquiteString("explanation", explanation), false);
+					v.addElement(new MesquiteString("updateVersion", versionNum), false);
+					v.addElement(new ObjectContainer("install", messageElement.elements("install")), false);
+					v.addElement(new MesquiteBoolean("isInstalled", false), false);
+					updateRecords.addElement(v);
+				}
+			
 				// process other notice tags here if they are present
-				
-				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildLetter, forBuildNumber);
+				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildLetter, forBuildNumber, v);
 
 			}
-			
-// now see if there is a tag for the current release version
+			//INSTALLER: here go through updateRecords to figure out which are already installed, which not; which have newer versions already installed, etc.
+			refreshUpdateMenuItems();
+
+			// now see if there is a tag for the current release version
 			Element currentReleaseVersion = messagesFromHome.element("currentReleaseVersion");
 			if (currentReleaseVersion !=null) {
 				String releaseString = "";
@@ -297,13 +391,11 @@ public class PhoneHomeUtil {
 
 			}
 
-// process other tags if they are there
+			// process other tags if they are there
 			return notices.toString();
-			
+
 		} 
 		return null;
 	}
-	
-
 
 }
