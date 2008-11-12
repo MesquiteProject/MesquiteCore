@@ -50,8 +50,14 @@ import org.dom4j.Element;
  * -- check to see that receipts point to files that still exist; if not, then treat receipt as if it hadn't existed
  * -- check all referred files to see that installation is present
  * -- make PhoneHomeUtil ignore updates already included in html
+ * -- have require tag that indicates dependencies
  * -- permit writing outside Mesquite
  * -- permit OS-specific installs
+ * -- make directories needed
+ * -- patch on non=installed package?
+ * -- what if dir not writable???
+ * -- recipt shold containe more info
+ * -- local receipts in package info module, or in folder as xml?
  * -- add tag "critical" to updates; these would get installed only if receipt and folders indicate installation already had been done
  * */
 public class Installer extends MesquiteInit {
