@@ -14,6 +14,7 @@ package mesquite.trees.lib;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import JSci.maths.statistics.*;
 
 public class TreeSearchUtil {
 
@@ -33,9 +34,48 @@ public class TreeSearchUtil {
 		}
 	}
 
-
 	/*.................................................................................................................*/
-	public static boolean tryRearrangement(long i, long total,MesquiteTimer timer, MesquiteNumber currentScore, MesquiteModule ownerModule, MesquiteTree swapTree, MesquiteTree tempTree, AdjustableTree tree, int node, double defaultBranchLengths, TreeSwapper swapTask, NumberForTree numberTask, ProgressIndicator progIndicator, MesquiteLong count, MesquiteBoolean foundBetter, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog) {
+	public static double adjustBranch(MesquiteTree tree,int node, RandomBetween rng) {
+		double currentBranchLength = tree.getBranchLength(node);
+		double candidateLength = currentBranchLength + (rng.nextGaussian()*currentBranchLength/4);
+		if (candidateLength<=0) candidateLength=0.000001;
+		return candidateLength;
+	}
+	/*.................................................................................................................*/
+	public static boolean tryBranchAdjustment(MesquiteTimer timer, MesquiteNumber currentScore, MesquiteModule ownerModule, MesquiteTree swapTree,MesquiteTree tempTree, AdjustableTree tree, int node  , TreeSwapper swapTask, NumberForTree numberTask, ProgressIndicator progIndicator, MesquiteLong count, MesquiteBoolean foundBetter, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog, RandomBetween rng) {
+		count.increment();
+		MesquiteNumber tempScore = new MesquiteNumber();
+		if (progIndicator != null) {
+			if (progIndicator.isAborted()) {
+				progIndicator.goAway();
+				cleanUpSearch(timer, currentScore, swapTree,tree,node, ownerModule, count, liveUpdates, notify, writeToLog);
+				return false;
+			}
+			progIndicator.spin();
+		}
+
+		MesquiteString rs =new MesquiteString("");
+		double oldLength= tempTree.getBranchLength(node);
+		double newLength = adjustBranch(tempTree,node, rng);
+		numberTask.calculateNumber(tempTree, tempScore, rs);
+
+
+		if (tempScore.isBetterThan(currentScore, !smallerIsBetter)){
+			currentScore.setValue(tempScore);
+			swapTree.setBranchLength(node,newLength,notify);
+			foundBetter.setValue(true);
+			if (notify && tree instanceof Listened && liveUpdates) {
+				swapTree.standardize(node,true, false);
+				tree.setBranchLength(node,newLength,notify);
+				((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHLENGTHS_CHANGED));
+			}
+			return true;
+		} else
+			tempTree.setBranchLength(node,oldLength, false);			
+		return true;
+	}
+	/*.................................................................................................................*/
+	public static boolean tryRearrangement(long i, long total,MesquiteTimer timer, MesquiteNumber currentScore, MesquiteModule ownerModule, MesquiteTree swapTree, MesquiteTree tempTree, AdjustableTree tree, int node  , double defaultBranchLengths, TreeSwapper swapTask, NumberForTree numberTask, ProgressIndicator progIndicator, MesquiteLong count, MesquiteBoolean foundBetter, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog) {
 		count.increment();
 		MesquiteNumber tempScore = new MesquiteNumber();
 		if (progIndicator != null && i % 20==0) {
@@ -49,8 +89,12 @@ public class TreeSearchUtil {
 
 		MesquiteString rs =new MesquiteString("");
 		swapTask.rearrange(tempTree, node, i);  //do the rearrangement!
-		if (MesquiteDouble.isCombinable(defaultBranchLengths))
+
+		if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 			tempTree.setAllBranchLengths(defaultBranchLengths,false);
+			tempTree.ultrametricize();
+		}
+
 		numberTask.calculateNumber(tempTree, tempScore, rs);
 
 		if (i%100==0) {
@@ -78,11 +122,15 @@ public class TreeSearchUtil {
 	}
 
 	/*.................................................................................................................*/
-	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, double defaultBranchLengths, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify){
-		return searchForBetterTree(ownerModule, tree, node, defaultBranchLengths, swapTask, numberTask, rng, resultString, smallerIsBetter, liveUpdates, notify, true, true);
+	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify){
+		return searchForBetterTree(ownerModule, tree, node, swapTask, numberTask, rng, resultString, smallerIsBetter, liveUpdates, notify, true, true);
 	}
 	/*.................................................................................................................*/
-	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, double defaultBranchLengths, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog, boolean showProgressIndicator){
+	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog, boolean showProgressIndicator){
+		return searchForBetterTree(ownerModule,  tree,  node, MesquiteDouble.unassigned,  false, false, swapTask,  numberTask,  rng,  resultString,  smallerIsBetter,  liveUpdates,  notify,  writeToLog,  showProgressIndicator);
+	}
+	/*.................................................................................................................*/
+	public  static boolean searchForBetterTree(MesquiteModule ownerModule, AdjustableTree tree, int node, double defaultBranchLengths, boolean searchBranchLengths, boolean searchBranchWidths, TreeSwapper swapTask, NumberForTree numberTask, RandomBetween rng, MesquiteString resultString, boolean smallerIsBetter, boolean liveUpdates, boolean notify, boolean writeToLog, boolean showProgressIndicator){
 		numberTask.initialize(tree);
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
@@ -112,6 +160,9 @@ public class TreeSearchUtil {
 
 		while(foundBetter.getValue()) {  // loop for improving tree
 			tempTree.setToClone(swapTree);
+			if (MesquiteDouble.isCombinable(defaultBranchLengths))
+				tempTree.setAllBranchLengths(defaultBranchLengths,false);
+
 			foundBetter.setValue(false);
 			long numRearrangements = swapTask.numberOfRearrangements(swapTree, node);
 			if (writeToLog) MesquiteMessage.print("\n  " + numberTask.getName()+ ": " + currentScore.toString()+ " ");
@@ -146,36 +197,74 @@ public class TreeSearchUtil {
 				progIndicator.setText(numberTask.getName()+ ": " + currentScore.toString());
 			long boundary=rng.randomLongBetween(0, numRearrangements-1);
 			boolean downFirst  = rng.randomIntBetween(0, 1)>0;
+			double branchLengthAdjustmentFrequency =0.5;
+			if (!searchBranchLengths)
+				branchLengthAdjustmentFrequency=0;
 
 			if (downFirst) {
-				for (long i=boundary; i<numRearrangements; i++) {
-					total++;
-					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, defaultBranchLengths, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
-						return false;
-					if (foundBetter.getValue()) break;
-				}
-				if (!foundBetter.getValue()){  // then let's try the other rearrangements
-					for (long i=boundary-1; i>=0; i--) {
+				long i = boundary;
+				while (i<numRearrangements) {
+					if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
 						total++;
 						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, defaultBranchLengths, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
 							return false;
 						if (foundBetter.getValue()) break;
+						i++;
+					} else{
+						if (!tryBranchAdjustment(timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, tempTree.randomNode(rng,false), swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog, rng))
+							return false;
+						if (foundBetter.getValue()) break;
+
+					}
+				}
+				if (!foundBetter.getValue()){  // then let's try the other rearrangements
+					i = boundary-1; 
+					while (i>=0) {
+						if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
+							total++;
+							if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, defaultBranchLengths, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
+								return false;
+							if (foundBetter.getValue()) break;
+							i--;
+						} else {
+							if (!tryBranchAdjustment(timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, tempTree.randomNode(rng,false), swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog, rng))
+								return false;
+							if (foundBetter.getValue()) break;
+
+						}
 					}
 				}
 			}
 			else {
-				for (long i=boundary-1; i>=0; i--) {
-					total++;
-					if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, node, defaultBranchLengths, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
-						return false;
-					if (foundBetter.getValue()) break;
+				long i=boundary-1;
+				while (i>=0) {
+					if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
+						total++;
+						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, node, defaultBranchLengths, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
+							return false;
+						if (foundBetter.getValue()) break;
+						i--;
+					} else {
+						if (!tryBranchAdjustment(timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, tempTree.randomNode(rng,false), swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog, rng))
+							return false;
+						if (foundBetter.getValue()) break;
+					}
 				}
 				if (!foundBetter.getValue()){  // then let's try the other rearrangements
 					total++;
-					for (long i=boundary; i<numRearrangements; i++) {
-						if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, defaultBranchLengths, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
-							return false;
-						if (foundBetter.getValue()) break;
+					i=boundary;
+					while (i<numRearrangements) {
+						if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
+							if (!tryRearrangement( i,  total, timer, currentScore, ownerModule,  swapTree,  tempTree,  tree,  node, defaultBranchLengths, swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog))
+								return false;
+							if (foundBetter.getValue()) break;
+							i++;
+						} else {
+							if (!tryBranchAdjustment(timer, currentScore, ownerModule,  swapTree,  tempTree,  tree, tempTree.randomNode(rng,false), swapTask,  numberTask,  progIndicator,  count,  foundBetter,  smallerIsBetter,  liveUpdates,  notify, writeToLog, rng))
+								return false;
+							if (foundBetter.getValue()) break;
+						}
+
 					}
 				}
 			}
@@ -203,7 +292,7 @@ public class TreeSearchUtil {
 	public static MesquiteTree getStepwiseAdditionTree(Taxa taxa, NumberForTree treeValueTask, ProgressIndicator progIndicator, MesquiteModule module, boolean writeToLog, double defaultBranchLengths) {
 		MesquiteTree initialTree = new MesquiteTree(taxa);
 		initialTree.setToDefaultBush(2, false);
-		
+
 		boolean minimize = !treeValueTask.biggerIsBetter();
 
 		MesquiteNumber bestValue = new MesquiteNumber(0);
