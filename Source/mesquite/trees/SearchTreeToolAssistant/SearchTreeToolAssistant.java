@@ -216,7 +216,8 @@ import java.awt.image.*;
 				
 				int branchFound= MesquiteInteger.fromString(arguments,pos);
 				MesquiteString resultString = new MesquiteString();
-				TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true);
+				//TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true);
+				TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, 30000,false,false,ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true,true,false);
 
 			}
 			return null;

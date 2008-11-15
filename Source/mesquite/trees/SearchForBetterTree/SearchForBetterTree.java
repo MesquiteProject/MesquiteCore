@@ -116,7 +116,8 @@ public class SearchForBetterTree extends TreeAlterer {
 	}
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
-		return TreeSearchUtil.searchForBetterTree(this,  tree,  tree.getRoot(),swapTask,  numberTask,  rng,  resultString,  smallerIsBetter,  liveUpdates,  notify);
+		return TreeSearchUtil.searchForBetterTree(this,  tree,  tree.getRoot(), swapTask,  numberTask,  rng,  resultString,  smallerIsBetter,  liveUpdates,  notify);
+	//	return TreeSearchUtil.searchForBetterTree(this,  tree,  tree.getRoot(),30000.0, false, false, swapTask,  numberTask,  rng,  resultString,  smallerIsBetter,  liveUpdates,  notify, true, false);
 	}
 	
 	/*.................................................................................................................*/

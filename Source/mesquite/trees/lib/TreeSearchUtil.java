@@ -160,8 +160,10 @@ public class TreeSearchUtil {
 
 		while(foundBetter.getValue()) {  // loop for improving tree
 			tempTree.setToClone(swapTree);
-			if (MesquiteDouble.isCombinable(defaultBranchLengths))
+			if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 				tempTree.setAllBranchLengths(defaultBranchLengths,false);
+				tempTree.ultrametricize();
+			}
 
 			foundBetter.setValue(false);
 			long numRearrangements = swapTask.numberOfRearrangements(swapTree, node);
