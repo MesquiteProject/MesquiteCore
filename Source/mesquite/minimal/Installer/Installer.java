@@ -50,7 +50,9 @@ import org.dom4j.Element;
  * -- check to see that receipts point to files that still exist; if not, then treat receipt as if it hadn't existed
  * -- check all referred files to see that installation is present
  * -- make PhoneHomeUtil ignore updates already included in html
- * -- have require tag that indicates dependencies
+ * -- have uniquePath tag that indictes a unique path that can be checked for existence; if absent, then the package is not installed
+ * -- have dependency tag that indicates dependencies
+ * -- have require tag that indicates minimal Java version
  * -- permit writing outside Mesquite
  * -- permit OS-specific installs
  * -- make directories needed

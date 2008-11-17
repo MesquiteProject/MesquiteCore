@@ -92,7 +92,7 @@ public class TreeSearchUtil {
 
 		if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 			tempTree.setAllBranchLengths(defaultBranchLengths,false);
-			tempTree.ultrametricize();
+			tempTree.arbitrarilyUltrametricize();
 		}
 
 		numberTask.calculateNumber(tempTree, tempScore, rs);
@@ -162,7 +162,7 @@ public class TreeSearchUtil {
 			tempTree.setToClone(swapTree);
 			if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 				tempTree.setAllBranchLengths(defaultBranchLengths,false);
-				tempTree.ultrametricize();
+				tempTree.arbitrarilyUltrametricize();
 			}
 
 			foundBetter.setValue(false);
