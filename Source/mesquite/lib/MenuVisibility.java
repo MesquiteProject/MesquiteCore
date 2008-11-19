@@ -1,7 +1,10 @@
 package mesquite.lib;
 
 public class MenuVisibility implements Listable {
+	
+	/*vvvvvvvvvvvvvvvvvvvvv*/
 	public static final boolean enabled = false;
+	/*^^^^^^^^^^^^^^^^^^^*/
 	
 	//modes
 	public static final int ALL = 0;
@@ -14,10 +17,14 @@ public class MenuVisibility implements Listable {
 	public static final int NORMAL = 0;
 	public static final int HIDDEN = 1;
 	public static final int TOBEHIDDEN = 2;
+	public static final int HIDDENCLASS = 3;
 
-	public static ListableVector hidden;
+	public static ListableVector hiddenMenuItems;
+	public static ListableVector hiddenPackages;
 	static {
-		hidden = new ListableVector();
+		hiddenMenuItems = new ListableVector();
+		hiddenPackages = new ListableVector();
+		//addPackageToHidden("mesquite.coalesce.");
 	}
 	public MenuVisibility(String label, String arguments, String command, Class commandable, Class dutyClass){
 		this.label = label;
@@ -40,15 +47,31 @@ public class MenuVisibility implements Listable {
 		MesquiteMessage.println("-----vvv-----");
 		if (mode == EDITING)
 			MesquiteMessage.println("EDITING");
-		for (int i = 0; i< hidden.size(); i++){
-			MenuVisibility h = (MenuVisibility)hidden.elementAt(i);
+		MesquiteMessage.println("MENU ITEMS");
+		for (int i = 0; i< hiddenMenuItems.size(); i++){
+			MenuVisibility h = (MenuVisibility)hiddenMenuItems.elementAt(i);
 			MesquiteMessage.println("HIDDEN " + h.getName() + " h commandable " + h.commandable + " arguments " + h.arguments + " command " + h.command);
+		}
+		MesquiteMessage.println("...");
+		MesquiteMessage.println("PACKAGES");
+		for (int i = 0; i< hiddenPackages.size(); i++){
+			MesquiteString h = (MesquiteString)hiddenPackages.elementAt(i);
+			MesquiteMessage.println("HIDDEN " + h.getName() + " =  " + h.getValue());
 		}
 		MesquiteMessage.println("-----^^^-----");
 
 	}
-	public static void addToHidden(String label, String arguments, MesquiteCommand command, Class dutyClass){
-		if (onHiddenList(label, arguments, command, dutyClass))
+	public static void addPackageToHidden(String packagePath){
+		hiddenPackages.addElement(new MesquiteString(packagePath, packagePath), false);
+	}
+	public static void removePackageFromHidden(String packagePath){
+		int i = hiddenPackages.indexOfByName(packagePath);
+		if (i>=0)
+			hiddenPackages.removeElementAt(i, false);
+	}
+	
+	public static void addMenuItemToHidden(String label, String arguments, MesquiteCommand command, Class dutyClass){
+		if (onHiddenMenuItemList(label, arguments, command, dutyClass))
 			return;
 		if (command == null)
 			return;
@@ -56,11 +79,11 @@ public class MenuVisibility implements Listable {
 		Object owner = command.getOwner();
 		if (owner != null)
 			commandable = owner.getClass();
-		hidden.addElement(new MenuVisibility(label, arguments, command.getName(), commandable, dutyClass), false);
+		hiddenMenuItems.addElement(new MenuVisibility(label, arguments, command.getName(), commandable, dutyClass), false);
 	}
 
-	public static void removeFromHidden(String label, String arguments, MesquiteCommand command, Class dutyClass){
-		if (onHiddenList(label, arguments, command, dutyClass))
+	public static void removeMenuItemFromHidden(String label, String arguments, MesquiteCommand command, Class dutyClass){
+		if (!onHiddenMenuItemList(label, arguments, command, dutyClass))
 			return;
 		if (command == null)
 			return;
@@ -68,18 +91,18 @@ public class MenuVisibility implements Listable {
 		Object owner = command.getOwner();
 		if (owner != null)
 			commandable = owner.getClass();
-		for (int i = 0; i<hidden.size(); i++){
-			MenuVisibility vis = (MenuVisibility)hidden.elementAt(i);
-			if (vis.matches(label, arguments, command.getName(), commandable, dutyClass)){
-				hidden.removeElement(vis, false);
+		for (int i = 0; i<hiddenMenuItems.size(); i++){
+			MenuVisibility vis = (MenuVisibility)hiddenMenuItems.elementAt(i);
+			if (vis.matchesMenuItem(label, arguments, command.getName(), commandable, dutyClass)){
+				hiddenMenuItems.removeElement(vis, false);
 				return;
 			}
 		}
 	}
 
-	public static boolean onHiddenList(String label, String arguments, MesquiteCommand command, Class dutyClass){
+	static boolean onHiddenMenuItemList(String label, String arguments, MesquiteCommand command, Class dutyClass){
 		if (command == null)
-			return onHiddenList(label, arguments, null, null, dutyClass);
+			return onHiddenMenuItemList(label, arguments, null, null, dutyClass);
 		Object commandable = command.getOwner();
 		Class c = null;
 		if (commandable != null)
@@ -87,29 +110,48 @@ public class MenuVisibility implements Listable {
 
 		if (arguments == null)
 			arguments = command.getDefaultArguments();
-		return onHiddenList(label, arguments, command.getName(), c, dutyClass);
+		return onHiddenMenuItemList(label, arguments, command.getName(), c, dutyClass);
 	}
 
-	public static boolean onHiddenList(String label, String arguments, String command, Class commandable, Class dutyClass){
-		for (int i = 0; i<hidden.size(); i++){
-			MenuVisibility vis = (MenuVisibility)hidden.elementAt(i);
-			if (vis.matches(label, arguments, command, commandable, dutyClass)){
+	static boolean onHiddenMenuItemList(String label, String arguments, String command, Class commandable, Class dutyClass){
+		for (int i = 0; i<hiddenMenuItems.size(); i++){
+			MenuVisibility vis = (MenuVisibility)hiddenMenuItems.elementAt(i);
+			if (vis.matchesMenuItem(label, arguments, command, commandable, dutyClass)){
 				return true;
 			}
 		}
 		return false;
 	}
-	public static int isHidden(String label, String arguments, MesquiteCommand command){
-		return isHiddenWD(label, arguments, command, null);
+	static boolean onHiddenClassList(Class c){
+		if (c == null)
+			return false;
+		String name = c.getName();
+		for (int i = 0; i<hiddenPackages.size(); i++){
+			MesquiteString vis = (MesquiteString)hiddenPackages.elementAt(i);
+			String hidden = vis.getName();
+			if (hidden != null && name.startsWith(hidden))
+				return true;
+		}
+		
+		return false;
+	}
+	public static int isHiddenMenuItem(String label, String arguments, MesquiteCommand command, Class moduleClass){
+		return isHiddenMenuItem(label, arguments, command, moduleClass, (Class)null);
 	}
 
-	public static int isHidden(String label, String arguments, String command, Class commandable){
-		return isHiddenWD(label, arguments, command, commandable, null);
-	}
-	public static int isHiddenWD(String label, String arguments, MesquiteCommand command, Class dutyClass){
+	public static int isHiddenMenuItem(String label, String arguments, MesquiteCommand command, Class moduleClass, Class dutyClass){
 		if (mode == ALL)
 			return NORMAL;
-		boolean onList = onHiddenList(label, arguments, command, dutyClass);
+		
+		boolean classHidden = onHiddenClassList(moduleClass);
+		if (classHidden){
+			if (mode == SIMPLE)
+				return HIDDEN;
+			if (mode == EDITING)
+				return HIDDENCLASS;
+		}
+		boolean onList = onHiddenMenuItemList(label, arguments, command, dutyClass);
+		
 		if (onList){ 
 			if (mode == SIMPLE)
 				return HIDDEN;
@@ -118,11 +160,14 @@ public class MenuVisibility implements Listable {
 		}
 		return NORMAL;
 	}
-
-	public static int isHiddenWD(String label, String arguments, String command, Class commandable, Class dutyClass){
+/*
+	private static int XXisHiddenMenuItem(String label, String arguments, String command, Class commandable, Class moduleClass){
+		return XXisHiddenMenuItem(label, arguments, command, commandable, moduleClass, null);
+	}
+	private static int XXisHiddenMenuItem(String label, String arguments, String command, Class commandable, Class moduleClass, Class dutyClass){
 		if (mode == ALL)
 			return NORMAL;
-		boolean onList =  onHiddenList(label, arguments, command, commandable, dutyClass);
+		boolean onList =  onHiddenMenuItemList(label, arguments, command, commandable, dutyClass);
 		if (onList){ 
 			if (mode == SIMPLE)
 				return HIDDEN;
@@ -158,7 +203,7 @@ public class MenuVisibility implements Listable {
 	}
 	*/
 	
-	public boolean matches(String label, String arguments, String command, Class commandable, Class dutyClass){
+	public boolean matchesMenuItem(String label, String arguments, String command, Class commandable, Class dutyClass){
 		if (this.command == null)
 			return false;
 		if (this.dutyClass != dutyClass)
@@ -174,11 +219,11 @@ public class MenuVisibility implements Listable {
 			// ((arguments == null && this.arguments != null) || (arguments == null && this.arguments != null));
 		}
 		else {  //with dutyclass; 
-			if (this.label.equals(label)) //this is sufficient
-					return true;
+			return (this.label.equals(label)); //this is sufficient
+		/*			return true;
 			if ((arguments == null && this.arguments != null) || (arguments == null && this.arguments != null))
 				return false;
-			return (this.command.equals(command));
+			return (this.command.equals(command));*/
 		}
 	}
 
