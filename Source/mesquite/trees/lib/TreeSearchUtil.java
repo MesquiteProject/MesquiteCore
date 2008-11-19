@@ -134,6 +134,7 @@ public class TreeSearchUtil {
 		numberTask.initialize(tree);
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
+		defaultBranchLengths=10000.0;  //DAVID: 
 
 		MesquiteString rs =new MesquiteString();
 		MesquiteNumber currentScore = new MesquiteNumber();
@@ -162,7 +163,7 @@ public class TreeSearchUtil {
 			tempTree.setToClone(swapTree);
 			if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 				tempTree.setAllBranchLengths(defaultBranchLengths,false);
-				tempTree.arbitrarilyUltrametricize();
+				tempTree.arbitrarilyUltrametricize();  //DAVID: 
 			}
 
 			foundBetter.setValue(false);
