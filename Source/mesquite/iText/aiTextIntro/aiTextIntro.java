@@ -62,5 +62,8 @@ public class aiTextIntro extends PackageIntro {
     	public boolean isPrerelease(){
     		return true;
     	}
+    	public boolean getHideable(){
+    		return false;
+    	}
 
 }
