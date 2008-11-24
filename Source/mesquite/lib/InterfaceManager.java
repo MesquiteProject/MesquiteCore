@@ -11,10 +11,11 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-public class InterfaceManager implements Commandable{
+public class InterfaceManager {
 
 	/*vvvvvvvvvvvvvvvvvvvvv*/
 	public static final boolean enabled = false;
+	public static boolean locked = false;
 	/*^^^^^^^^^^^^^^^^^^^*/
 
 
@@ -23,13 +24,6 @@ public class InterfaceManager implements Commandable{
 	Parser parser = new Parser();
 	UIWindow ww;
 	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Hypertext link has been touched", "[link text]", commandName, "linkTouched")) {
-			//linkTouched(parser.getFirstToken(arguments));
-			Debugg.println("oops" + arguments);
-		}
-		return null;
-	}
 	public void makeWindow(){
 		if (interfaceWindowBabysitter != null)
 			return;
@@ -40,6 +34,7 @@ public class InterfaceManager implements Commandable{
 			ObjectContainer ms = (ObjectContainer)packages.elementAt(i);
 			ww.addPackageToList(ms, i, packages.size());
 		}
+		ww.lock(locked);
 	}
 
 	Vector packages = new Vector();
@@ -90,6 +85,13 @@ public class InterfaceManager implements Commandable{
 		}
 		hiddenTools = new ListableVector();
 		settingsFiles = new ListableVector();
+	}
+	
+	public static void setLock(boolean lock){
+		locked = lock;
+		if (simplicityWindow != null)
+			((UIWindow)simplicityWindow).lock(lock);
+		reset();
 	}
 	/*.................................................................................................................*/
 	public static void report(){
@@ -343,7 +345,8 @@ public class InterfaceManager implements Commandable{
 					MesquiteString ms = importFile(basePath + list[i]);
 					if (ms != null)
 						settingsFiles.addElement(ms, false);
-				}
+					}
+				
 			}
 		}
 		MesquiteString custom = importFile(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml");
@@ -913,6 +916,16 @@ class UIWindow extends MesquiteWindow implements SystemWindow {
 		pane.doLayout();
 		resetTitle();
 		InterfaceManager.simplicityWindow = this;
+		resetSimplicity();
+	}
+	
+	public void lock(boolean L){
+		setVisible(!L);
+	}
+	public void setVisible(boolean vis){
+		if (InterfaceManager.locked && vis)
+			return;
+		super.setVisible(vis);
 	}
 	void resetSimplicity(){
 		if (cb != null){
