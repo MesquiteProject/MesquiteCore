@@ -22,6 +22,8 @@ public class XMLUtil {
 	
 	/*.................................................................................................................*/
 	public static Element addFilledElement(Element containingElement, String name, String content) {
+		if (content == null || name == null)
+			return null;
 		Element element = DocumentHelper.createElement(name);
 		element.addText(content);
 		containingElement.add(element);
@@ -29,12 +31,19 @@ public class XMLUtil {
 	}
 	/*.................................................................................................................*/
 	public static Element addFilledElement(Element containingElement, String name, CDATA cdata) {
+		if (cdata == null || name == null)
+			return null;
 		Element element = DocumentHelper.createElement(name);
 		element.add(cdata);
 		containingElement.add(element);
 		return element;
 	}
-
+	public static String getTextFromElement(Element containingElement, String name){
+		Element e = containingElement.element(name);
+		if (e == null)
+			return null;
+		else return e.getText();
+	}
 	/*.................................................................................................................*/
 
 	public static String getDocumentAsXMLString(Document doc, boolean escapeText)

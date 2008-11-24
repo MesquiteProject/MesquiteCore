@@ -67,7 +67,9 @@ public class MesquiteTool implements Listable, Explainable, ImageOwner, KeyListe
 		currentStandardCursor = standardCursor;
 		
 	}
-	
+	public Object getInitiator(){
+		return initiator;
+	}
 	public void setAllowAnnotate(boolean allow){
 		allowAnnotate = allow;
 	}
