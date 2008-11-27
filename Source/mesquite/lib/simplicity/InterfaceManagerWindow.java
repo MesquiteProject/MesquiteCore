@@ -367,12 +367,12 @@ class PackagesPanel extends MousePanel implements ItemListener {
 				on = !cb.collapsed;
 				int k = count++;
 				if (box == v[i] && box.isVisible())
-					return (count)*h;
+					return (count-1)*h;
 			}
 			else if (on) {
 				int k = count++;
 				if (box == v[i] && box.isVisible())
-					return (count)*h;
+					return (count-1)*h;
 			}
 		}
 		/*for (int i=0; i<v.length; i++){
