@@ -140,7 +140,7 @@ public class TreeOptimizer {
 
 		if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 			tempTree.setAllBranchLengths(defaultBranchLengths,false);
-			tempTree.arbitrarilyUltrametricize();  //DAVID: 
+		//	tempTree.arbitrarilyUltrametricize(); 
 		}
 
 		numberTask.calculateNumber(tempTree, tempScore, rs);

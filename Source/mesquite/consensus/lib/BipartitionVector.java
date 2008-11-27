@@ -351,9 +351,11 @@ public class BipartitionVector extends Vector {
 			double prop = getDecimalFrequency(stored);
 			tree.setAssociatedDouble(freqRef, newNode, prop);
 			//	tree.setNodeLabel(MesquiteDouble.toStringDigitsSpecified(prop, 3), newNode);
-			double length = stored.getSplitLength();
-			if (MesquiteDouble.isCombinable(length))
-				tree.setBranchLength(newNode, length, false);
+			if (tree.nodeIsInternal(newNode)){
+				double length = stored.getSplitLength();
+				if (MesquiteDouble.isCombinable(length))
+					tree.setBranchLength(newNode, length, false);
+			}
 		}
 	}
 	public Tree makeTree(double minFreq){
@@ -366,7 +368,6 @@ public class BipartitionVector extends Vector {
 					branchLengths[it]=branchLengths[it]/weightedTreesTotal;
 				else
 					branchLengths[it]=branchLengths[it]/numTreesTotal;
-				tree.setBranchLength(tree.nodeOfTaxonNumber(it), branchLengths[it], false);
 				setLengths = true;
 			}
 
@@ -408,8 +409,13 @@ public class BipartitionVector extends Vector {
 				}
 			}
 		}
-		if (setLengths)
+		if (setLengths) {
+			for (int it=0; it<numTaxa; it++)
+				if (MesquiteDouble.isCombinable(branchLengths[it])) {
+					tree.setBranchLength(tree.nodeOfTaxonNumber(it), branchLengths[it], false);
+				}
 			tree.setBranchLength(tree.getRoot(), 0.0, false);
+		}
 		tree.standardize(tree.getRoot(), false);
 		return tree;
 	}
