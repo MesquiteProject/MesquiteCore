@@ -54,6 +54,8 @@ import org.dom4j.Element;
  * -- have dependency tag that indicates dependencies
  * -- have require tag that indicates minimal Java version
  * -- permit writing outside Mesquite
+ * -- distinguish install and update, i.e. some do not give messages unless you already have older pakcage installed
+ * -- permit scripts to run, e.g. to install outside of Mesquite_Folder
  * -- permit OS-specific installs
  * -- make directories needed
  * -- patch on non=installed package?
