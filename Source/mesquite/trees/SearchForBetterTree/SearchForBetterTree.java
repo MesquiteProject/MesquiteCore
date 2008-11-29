@@ -30,6 +30,7 @@ public class SearchForBetterTree extends TreeAlterer {
 	boolean smallerIsBetter = true;
 	boolean liveUpdates = true;
 	RandomBetween rng = new RandomBetween(System.currentTimeMillis());
+	TreeOptimizer treeOptimizer;
 
 	public String getName() {
 		return "Search for Better Tree";
@@ -53,6 +54,9 @@ public class SearchForBetterTree extends TreeAlterer {
 			if (!queryOptions())
 				return false;
 		}
+		treeOptimizer = new TreeOptimizer(this, numberTask, swapTask);
+		if (treeOptimizer== null)
+			return sorry(getName() + " couldn't start because the tree optimizer could not be created.");
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -116,7 +120,13 @@ public class SearchForBetterTree extends TreeAlterer {
 	}
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
-		return TreeSearchUtil.searchForBetterTree(this,  tree,  tree.getRoot(), swapTask,  numberTask,  rng,  resultString,  smallerIsBetter,  liveUpdates,  notify);
+		if (treeOptimizer ==null)
+			return false;
+		treeOptimizer.setLiveUpdates(liveUpdates);
+		treeOptimizer.setBiggerIsBetter(!smallerIsBetter);
+		treeOptimizer.setNotify(notify);
+		return treeOptimizer.searchForBetterTree(tree,  tree.getRoot(),  rng,  resultString);
+		//return TreeSearchUtil.searchForBetterTree(this,  tree,  tree.getRoot(), swapTask,  numberTask,  rng,  resultString,  smallerIsBetter,  liveUpdates,  notify);
 	//	return TreeSearchUtil.searchForBetterTree(this,  tree,  tree.getRoot(),30000.0, false, false, swapTask,  numberTask,  rng,  resultString,  smallerIsBetter,  liveUpdates,  notify, true, false);
 	}
 	

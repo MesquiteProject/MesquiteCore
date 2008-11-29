@@ -14,7 +14,7 @@ package mesquite.trees.SearchTreeToolAssistant;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
-import mesquite.trees.lib.TreeSearchUtil;
+import mesquite.trees.lib.*;
 
 import java.lang.*;
 import java.util.*;
@@ -178,6 +178,7 @@ import java.awt.image.*;
 		MesquiteCommand searchTreeCommand;
 		AdjustableTree tree = null;
 		RandomBetween rng = new RandomBetween(System.currentTimeMillis());
+		TreeOptimizer treeOptimizer;
 
 		public SearchTreeToolExtra (SearchTreeToolAssistant ownerModule, TreeDisplay treeDisplay) {
 			super(ownerModule, treeDisplay);
@@ -189,6 +190,7 @@ import java.awt.image.*;
 				((MesquiteWindow)ownerModule.containerOfModule()).addTool(searchTreeTool);
 				searchTreeTool.setPopUpOwner(ownerModule);
 			}
+			treeOptimizer =new TreeOptimizer(ownerModule,  ownerModule.getNumberTask(),ownerModule.getTreeSwapper());
 		}
 		/*.................................................................................................................*/
 		public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
@@ -216,7 +218,14 @@ import java.awt.image.*;
 				
 				int branchFound= MesquiteInteger.fromString(arguments,pos);
 				MesquiteString resultString = new MesquiteString();
-				TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true);
+				treeOptimizer.setSwapTask(ownerModule.getTreeSwapper());
+				treeOptimizer.setNumberTask(ownerModule.getNumberTask());
+				treeOptimizer.setBiggerIsBetter(!ownerModule.getSmallerIsBetter());
+				treeOptimizer.setLiveUpdates(ownerModule.getLiveUpdates());
+				treeOptimizer.setNotify(true);
+				treeOptimizer.searchForBetterTree(tree, branchFound, rng, resultString);
+
+				//	TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true);
 			//	TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, 30000,false,false,ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true,true,false);
 
 			}
