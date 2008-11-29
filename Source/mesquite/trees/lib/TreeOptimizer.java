@@ -203,7 +203,7 @@ public class TreeOptimizer {
 			tempTree.setToClone(swapTree);
 			if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 				tempTree.setAllBranchLengths(defaultBranchLengths,false);
-				tempTree.arbitrarilyUltrametricize();
+				//tempTree.arbitrarilyUltrametricize();
 			}
 
 			foundBetter.setValue(false);
