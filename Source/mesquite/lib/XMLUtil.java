@@ -68,6 +68,24 @@ public class XMLUtil {
 	}
 	/*.................................................................................................................*/
 
+	public static String getElementAsXMLString(Element doc, String encoding, boolean escapeText)
+	{
+		try {
+
+			Writer osw = new StringWriter();
+			OutputFormat opf = new OutputFormat("  ", true, encoding);
+			XMLWriter writer = new XMLWriter(osw, opf);
+			writer.setEscapeText(escapeText);
+			writer.write(doc);
+			writer.close();
+			return osw.toString();
+		} catch (IOException e) {
+			MesquiteMessage.warnProgrammer("XML Document could not be returned as string.");
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+
 	public static String getDocumentAsXMLString(Document doc) {
 		return getDocumentAsXMLString(doc,true);
 	}

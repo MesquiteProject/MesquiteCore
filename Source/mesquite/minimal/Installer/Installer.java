@@ -29,40 +29,63 @@ import org.dom4j.Element;
  * for their own updating, but in addition we will maintain a central updates.xml in Mesquite so that newly released packages can be announced there.
  * 
  * (2) the local receipts for packages installed.  Most of these receipts may be acquired through the online
- * installation process, but some may be acquired within packages installed by hand.  The file receipts.xml is compiled by Mesquite and stored in Mesquite_Folder (it must be
+ * installation process, but some may be acquired within packages installed by hand.  The file receipts.xml is compiled by Mesquite and stored in Mesquite_Folder/extras (it must be
  * there as opposed to Mesquite_Support_Files because it belongs to the installation, not the user.
  * 
  * The main global variable are stored as statics in PhoneHomeUtil; the module managing the system is mesquite.minimal..Installer.
  * 
  * Update notices:  An update notice has messagetype "update".  See updates.xml in this package for examples.  A single update may make reference to multiple installation events.
  * Key tags are:
- * -- location: the folder (in Mesquite_Folder) within which the new file or folder is to be installed.
- * -- file: the folder or file to be installed.  This may be a package folder, e.g. "assoc", or a file, e.g. "rt.jar".  Mesquite uses the name of this file or folder for a hint as to whether
- * a previous version is installed.  Also, this file or folder is renamed temporarily during installation to be able to recover it if the installation fails.
- * -- url: the file to be downloaded for installation, e.g. a zip file (if a package with directory structure is to be installed) or a jar file.
- * -- treatment: asis if the file is simply downloaded in place; unzip if the file is to be unzipped
+ * -- the standard tags of notices from home (forVersion, noticeNumber, messageType=update, explanation
+ * -- identity: name that will uniquely identify your package; don't include version number , e.g. "PDAP"
+ * -- uniqueLocation: a location that should be unique to this package, to help mesquite know if a previous version is installed even if receipt is missing
+ * 			Must be within Mesquite_Folder, and relative to it.
+ * -- updateVersion: the version of the update, to determine if this or later update is already installed
+ * -- packageName: Human readable name of package or update
+ * -- explanation: note (if html, as CDATA) to display in notices dialog
+ * -- java: java version required
+ * -- requires:  human readable name of package this one needs to have already been installed.  MUST be paired with a requiredPath tag
+ * -- requiredPath: file or directory that is a litmus test as to whether the package on which this depends is already installed.  Mesquite merely check to see if this file or directory exists.  
+ * 			Must be within Mesquite_Folder, and relative to it.
+ * -- install:  each install element indicates one item to be installed.  There may be multiple (e.g. one for the package and one for a jar it needs)
+ *		within install:
+ *			-- location: the directory into which this item is to be put. Must be within Mesquite_Folder, and relative to it.
+ *			-- file: the file or directory that will be created within the above directory.  Used in part to retain prior copy in case something goes wrong in installation
+ *			-- url: the url from which to download the item.
+ *			-- treatment: either asis or unzip.  Note: zip files to be downloaded and unzipped must have been prepared by Mesquite itself as noted below
+ *			-- updateVersion: version of this particular item.  Not used, but might be in future
+ *			-- forOS: OS for which this item applies.  Accepts match if value occurs within "os.name" java System propery.  
+ *						There can be multiple forOS elements.  If none, it is assumed to apply to all OS's.
+ *					-- os: os name, e.g. "Windows" or "Mac OS X"
+ *					-- osVersion: optional.  If present must be an exact match.  Thus if you want an item to apply to Mac OS X 10.4 or 10.5, you must include two forOS elements
+ *	The above tags apply to all downloads.  In addition, if a download is an update only, e.g. a patch, then the following tag should be included:
+ * -- updateOnly, with values "false" (default), "true" a non critical update, and "critical" a critical update, e.g. a bug fix.
+ * 			If updateOnly is true or critical, then Mesquite will give notification of it only if the original package being updated appears to be installed.  This is judged by receipts or by the uniqueLocation tag
+ * 			If updateOnly is true, then Mesquite will give notification only once.
+ * 			If updateOnly is critical, then Mesquite will continue to give notification on each startup as long as original package being updated remains installed and critical update is not yet installed
  * 
  * Zip files must be prepared properly such that when unzipped they yield directly the directory stucture desired.  Zip files made by ZipIt on OS X do not work.  Installer can perform
  * the zipping to ensure the zip files will work.  To enable this, select Debug Mode in File>Defaults and restart Mesquite.  Then, select File>Zip.
  * 
  * 
  * todo:
- * -- check to see that receipts point to files that still exist; if not, then treat receipt as if it hadn't existed
- * -- check all referred files to see that installation is present
- * -- make PhoneHomeUtil ignore updates already included in html
- * -- have uniquePath tag that indictes a unique path that can be checked for existence; if absent, then the package is not installed
- * -- have dependency tag that indicates dependencies
- * -- have require tag that indicates minimal Java version
- * -- permit writing outside Mesquite
- * -- distinguish install and update, i.e. some do not give messages unless you already have older pakcage installed
- * -- permit scripts to run, e.g. to install outside of Mesquite_Folder
- * -- permit OS-specific installs
- * -- make directories needed
- * -- patch on non=installed package?
- * -- what if dir not writable???
- * -- recipt shold containe more info
+ * GENERAL
  * -- local receipts in package info module, or in folder as xml?
- * -- add tag "critical" to updates; these would get installed only if receipt and folders indicate installation already had been done
+ * -- uninstall instructions?
+ * 
+ * INSTALL PIECE
+ * -- FUTURE (or in control of modules after they start): permit writing outside Mesquite
+ * -- FUTURE (or in control of modules after they start): permit scripts to run, e.g. to install outside of Mesquite_Folder
+ * 
+ * Ã-- have dependency tag that indicates dependencies
+ * Ã-- make directories needed
+ * Ã-- permit OS-specific installs
+ * Ã-- what if dir not writable???
+ * Ã-- have require tag that indicates minimal Java version
+ * Ã-- receipt should contain more info
+ * Ã-- add tag "critical" to updates; these would get installed only if receipt and folders indicate installation already had been done
+ * Ã-- distinguish install and update, i.e. some do not give messages unless you already have older pakcage installed
+ * Ã-- check to see that receipts point to files that still exist; if not, then treat receipt as if it hadn't existed
  * */
 public class Installer extends MesquiteInit {
 	public String getName() {
@@ -74,7 +97,8 @@ public class Installer extends MesquiteInit {
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
-		return "http://mesquiteproject.org/mesquite/updates/updates.xmlDELETETOTURNON";
+		return "http://mesquiteproject.org/mesquite/updates/updates.xml";
+		//	return "http://mesquiteproject.org/mesquite/updates/updates.xmlDELETETOTURNON";
 	}
 	/*.................................................................................................................*/
 
@@ -86,7 +110,7 @@ public class Installer extends MesquiteInit {
 	}
 	/*.................................................................................................................*/
 	void readReceipts(){
-		readReceipts(getRootPath() + "receipts.xml");
+		readReceipts(getRootPath() + "extras/receipts.xml");
 		File mesquite = new File(getRootPath()+ "mesquite"); 
 		String[] folders = mesquite.list(); 
 		for (int i=0; i<folders.length; i++){
@@ -107,21 +131,47 @@ public class Installer extends MesquiteInit {
 		if (root==null)
 			return;
 		List receipts = root.elements("installationReceipt");
+		boolean stillInstalled = true;
 		for (Iterator iter = receipts.iterator(); iter.hasNext();) {   // this is going through all of the notices
 			Element messageElement = (Element) iter.next();
 			ListableVector v = new ListableVector();
 			v.addElement(new MesquiteString("identity", messageElement.elementText("identity")), false);
 			v.addElement(new MesquiteString("updateVersion", messageElement.elementText("updateVersion")), false);
-			v.addElement(new MesquiteString("uniqueLocation", messageElement.elementText("uniqueLocation")), false);
+			List locs = messageElement.elements("location");
+			for (Iterator locsIter = locs.iterator();  locsIter.hasNext();) {   // this is going through all of the notices
+				Element locElement = (Element) locsIter.next();
+				String p = locElement.elementText("path");
+				if (!MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + p))
+					stillInstalled = false;
+				v.addElement(new MesquiteString("location", locElement.elementText("path")), false);
+
+			}
 			v.addElement(new MesquiteString("explanation", messageElement.elementText("explanation")), false);
 			v.addElement(new MesquiteString("packageName", messageElement.elementText("packageName")), false);
-			if (!PhoneHomeUtil.alreadyInReceipts(v))
-				PhoneHomeUtil.installedReceipts.addElement(v);
+			v.addElement(new MesquiteString("uniqueLocation", messageElement.elementText("uniqueLocation")), false);
+			Element elup = messageElement.element("updateXML");
+			if (elup != null)
+				v.addElement(new MesquiteString("updateXML",  clean(XMLUtil.getElementAsXMLString(elup, "UTF-8", true)) ), false);
+			//	v.addElement(new MesquiteString("updateXML", "<updateXML>\n" + XMLUtil.getElementAsXMLString(elup, "UTF-8", true) + "</updateXML>" ), false);
+
+			if (!PhoneHomeUtil.alreadyInReceipts(v)){
+				if (stillInstalled)
+					PhoneHomeUtil.installedReceipts.addElement(v);
+			}
 		}
 		writeReceipts();  //rewrite into central
 	}
+
+	String clean(String ux){
+		ux = StringUtil.replace(ux, "\n", null);
+		ux = StringUtil.replace(ux, "\r", null);
+		ux = StringUtil.replace(ux, "\t", null);
+		ux = StringUtil.stripStuttered(ux, "  ");
+		return ux;
+	}
 	/*.................................................................................................................*/
 	void writeReceipts(){
+
 		StringBuffer buff = new StringBuffer();
 		buff.append("<?xml version=\"1.0\"?>\n<mesquite>\n");
 		for (int i=0; i< PhoneHomeUtil.installedReceipts.size(); i++){
@@ -129,14 +179,26 @@ public class Installer extends MesquiteInit {
 			buff.append("\t<installationReceipt>\n");
 			buff.append("\t\t<identity>" + ((MesquiteString)rec.getElement("identity")).getValue() + "</identity>\n");
 			buff.append("\t\t<updateVersion>" + ((MesquiteString)rec.getElement("updateVersion")).getValue() + "</updateVersion>\n");
-			buff.append("\t\t<uniqueLocation>" + ((MesquiteString)rec.getElement("uniqueLocation")).getValue() + "</uniqueLocation>\n");
+			List locs = rec.getElements("location");
+			for (Iterator iter = locs.iterator();  iter.hasNext();) {   // this is going through all of the notices
+				MesquiteString loc = (MesquiteString) iter.next();
+				buff.append("\t\t<location><path>" + loc.getValue() + "</path></location>\n");
+
+			}
+
 			buff.append("\t\t<explanation><![CDATA[" + ((MesquiteString)rec.getElement("explanation")).getValue() + "]]></explanation>\n");
 			buff.append("\t\t<packageName>" + ((MesquiteString)rec.getElement("packageName")).getValue() + "</packageName>\n");
+			buff.append("\t\t<uniqueLocation>" + ((MesquiteString)rec.getElement("uniqueLocation")).getValue() + "</uniqueLocation>\n");
+			MesquiteString ux = (MesquiteString)rec.getElement("updateXML");
+			if (ux != null){
+				buff.append("\t\t" + clean(ux.getValue()) + "\n");
+			}
 			buff.append("\t</installationReceipt>\n");
 		}
 		buff.append("\n</mesquite>");
-		MesquiteFile.putFileContents(getRootPath() + "receipts.xml", buff.toString(), true);
+		MesquiteFile.putFileContents(getRootPath() + "extras/receipts.xml", buff.toString(), true);
 	}
+
 	/*.................................................................................................................*/
 	void copy(InputStream in, OutputStream out) throws IOException {
 		byte[] buffer = new byte[1024];
@@ -238,7 +300,29 @@ public class Installer extends MesquiteInit {
 		return false;
 	}
 
+	boolean applicableOS(Element installElement){
+		List osList = installElement.elements("forOS");
+		if (osList == null)
+			return true;
+		if (osList.size() == 0)
+			return true;
+		for (Iterator i = osList.iterator(); i.hasNext();) {   // this is going through all of the notices
+			Element osElement = (Element) i.next();
+			String os = osElement.elementText("os");
+			if (os == null)
+				return true;
+			String osVersion = osElement.elementText("osVersion");
+			boolean osMatches =(StringUtil.blank(os)|| System.getProperty("os.name").indexOf(os)>=0);
+			boolean osVersionMatches =(StringUtil.blank(osVersion)|| System.getProperty("os.version").startsWith(osVersion));
+			if (osMatches && osVersionMatches)
+				return true;
+
+		}
+		return false;
+	}
 	boolean install(Element installElement, ListableVector receipt){
+		if (!applicableOS(installElement))
+			return true;  //return true because not considered failure if inapplicable OS
 		String url = installElement.elementText("url");
 		String pathInMesquiteFolder = installElement.elementText("location");
 		String fileName = installElement.elementText("file");
@@ -260,24 +344,25 @@ public class Installer extends MesquiteInit {
 			}
 		}
 		logln("Downloading installation file from " + url);
+		if (!MesquiteFile.fileOrDirectoryExists(getRootPath() + pathInMesquiteFolder)){
+			MesquiteFile.createDirectory(getRootPath() + pathInMesquiteFolder);
+		}
+		if (hadExisted){
+			logln("Renaming old version of " + fileName + " to " + fileName + "PREVIOUSVERSION");
+			prevPackage.renameTo(tempPackage);
+		}
+		logln("Downloading installation file to " + getRootPath() + pathInMesquiteFolder+ "/" + downloadAs);
 		if (MesquiteFile.downloadURLContents(url, getRootPath() + pathInMesquiteFolder + "/" + downloadAs, true)){
-			if (hadExisted){
-				logln("Renaming old version of " + fileName + " to " + fileName + "PREVIOUSVERSION");
-
-				prevPackage.renameTo(tempPackage);
-			}
-			logln("Unzipping installation file to " + getRootPath() + pathInMesquiteFolder+ "/" + downloadAs);
 			boolean fileReady = true;
 			if (treatment != null && treatment.equalsIgnoreCase("unzip")){
+				logln("Unzipping installation file");
 				fileReady = unzip(getRootPath() + pathInMesquiteFolder + "/", downloadAs);
 				if (fileReady)
 					MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + downloadAs);
 			}
 			if (fileReady){
 				logln("Installation of " + fileName + " was successful.");
-				File f = new File(getRootPath() + pathInMesquiteFolder + "/" + fileName);
-				if (f.isDirectory() && receipt.indexOfByName("uniqueLocation")<0)
-					receipt.addElement(new MesquiteString("uniqueLocation", pathInMesquiteFolder + "/" + fileName), false);
+				receipt.addElement(new MesquiteString("location", pathInMesquiteFolder + "/" + fileName), false);
 			}
 			else if (hadExisted){
 				logln("Installation unsuccessful; attempting to recover old version of " + fileName);
@@ -298,7 +383,10 @@ public class Installer extends MesquiteInit {
 		boolean hadExisted = tempPackage.exists();
 		if (hadExisted){
 			logln("Deleting old version of " + fileName);
-			MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder + "/" + fileName+ "PREVIOUSVERSION");
+			if (tempPackage.isDirectory())
+				MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder + "/" + fileName+ "PREVIOUSVERSION");
+			else 
+				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + fileName+ "PREVIOUSVERSION");
 		}
 	}
 	void reverse(Element installElement){
@@ -309,7 +397,10 @@ public class Installer extends MesquiteInit {
 		boolean hadExisted = tempPackage.exists();
 		if (hadExisted){
 			logln("Installation unsuccessful; attempting to recover old version of " + fileName);
-			MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder + "/" + fileName);
+			if (prevPackage.isDirectory())
+				MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder + "/" + fileName);
+			else 
+				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + fileName);
 			tempPackage.renameTo(prevPackage);
 		}
 	}
@@ -330,11 +421,16 @@ public class Installer extends MesquiteInit {
 			MesquiteString versionString = (MesquiteString)updateRecord.getElement("updateVersion");
 			MesquiteString packageName = (MesquiteString)updateRecord.getElement("packageName");
 			MesquiteString explanation = (MesquiteString)updateRecord.getElement("explanation");
+			MesquiteString uniqueLocation = (MesquiteString)updateRecord.getElement("uniqueLocation");
+			MesquiteString updateXML = (MesquiteString)updateRecord.getElement("updateXML");
 			ListableVector receipt = new ListableVector();
 			receipt.addElement(identity, false);
 			receipt.addElement(versionString, false);
 			receipt.addElement(explanation, false);
 			receipt.addElement(packageName, false);
+			receipt.addElement(uniqueLocation, false);
+			if (updateXML != null)
+				receipt.addElement(updateXML, false);
 			boolean asked = false;
 			if (PhoneHomeUtil.alreadyInReceipts(identity.getValue(), versionString.getValue())){
 				if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Install?", "The package " + packageName + " of the same version already appears to be installed.  Do you want to reinstall?"))

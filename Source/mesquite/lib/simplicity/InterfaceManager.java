@@ -1,15 +1,9 @@
 package mesquite.lib.simplicity;
 
-import mesquite.lib.ColorDistribution;
-import mesquite.lib.ColorTheme;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
-import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MenuVisibility;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteImage;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMenuItem;
 import mesquite.lib.MesquiteMenuItemSpec;
@@ -21,16 +15,12 @@ import mesquite.lib.MesquiteSubmenu;
 import mesquite.lib.MesquiteTool;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.MesquiteWindow;
-import mesquite.lib.MousePanel;
 import mesquite.lib.ObjectContainer;
 import mesquite.lib.Parser;
-import mesquite.lib.SystemWindow;
 import mesquite.lib.XMLUtil;
 import mesquite.lib.duties.WindowHolder;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.awt.event.*;
 import java.io.File;
 
 import org.dom4j.Document;
@@ -45,8 +35,10 @@ public class InterfaceManager {
 	/*^^^^^^^^^^^^^^^^^^^*/
 
 /*todo
- *  -- make Lock convert to SIMPLE before locking
- *  -- leave SIMPLE showing when locked
+ *  --  have default.xml that is loaded if there is none in prefs yet
+ *  -- manual pages for simplification
+ *  -- design several simplifications
+ *  -- make sure submenus can be turned off
  *  --have package intros return pathtopackage which by default would be mesquite.XXXX
  *  */
 
