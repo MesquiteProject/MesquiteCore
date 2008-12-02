@@ -41,6 +41,7 @@
 					<forOS>
 						<os>Mac OS X</os>
 						<osVersion>10.5</osVersion>
+						<osArch>86</osArch>
 					</forOS>
 					<location>jars</location>
 					<file>deleteMe105.jar</file>

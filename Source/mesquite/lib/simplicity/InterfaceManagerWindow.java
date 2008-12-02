@@ -328,11 +328,12 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			v[i] = cb;
 			cb.setVisible(true);
 		}
+		//Debugg.println("============= ");
 		ListableVector.sort(v);
 		for (int i=0; i<v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)v[i];
 			add(cb);
-			//Debugg.println(cb.getName());
+			//Debugg.println( cb.getName());
 		}
 		resetSizes();
 	}

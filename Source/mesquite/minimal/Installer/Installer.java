@@ -70,6 +70,8 @@ import org.dom4j.Element;
  * 
  * todo:
  * GENERAL
+ * -- Same protection in menu formation re java/dependencies
+ * -- Menu entry show html explanation etc.; allow cancel
  * -- local receipts in package info module, or in folder as xml?
  * -- uninstall instructions?
  * 
@@ -312,9 +314,11 @@ public class Installer extends MesquiteInit {
 			if (os == null)
 				return true;
 			String osVersion = osElement.elementText("osVersion");
+			String osArch = osElement.elementText("osArch");
+			boolean osArchMatches =(StringUtil.blank(osArch)|| System.getProperty("os.arch").indexOf(os)>=0);
 			boolean osMatches =(StringUtil.blank(os)|| System.getProperty("os.name").indexOf(os)>=0);
 			boolean osVersionMatches =(StringUtil.blank(osVersion)|| System.getProperty("os.version").startsWith(osVersion));
-			if (osMatches && osVersionMatches)
+			if (osMatches && osVersionMatches && osArchMatches)
 				return true;
 
 		}

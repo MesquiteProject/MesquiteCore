@@ -36,6 +36,7 @@ public class InterfaceManager {
 
 /*todo
  *  --  have default.xml that is loaded if there is none in prefs yet
+ *  -- accomodate packages with no intro
  *  -- manual pages for simplification
  *  -- design several simplifications
  *  -- make sure submenus can be turned off

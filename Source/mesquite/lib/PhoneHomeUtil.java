@@ -23,7 +23,8 @@ public class PhoneHomeUtil {
 	static int JAVAVERSION=2;
 
 	//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
-	/*updating/install system.  See also INSTALL/UPDATE SYSTEM: below */
+	/*updating/install system.  See also INSTALL/UPDATE SYSTEM: below 
+	 * Explanation of system is in mesquite.minimal.Installer.Installer.java*/
 	public static Vector updateRecords = new Vector();
 	public static Vector installedReceipts = new Vector();
 	public static Vector installMenuItems = new Vector();
