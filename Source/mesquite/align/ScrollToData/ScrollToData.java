@@ -96,6 +96,9 @@ public class ScrollToData extends DataWindowAssistantI {
 	public String getName() {
 		return "Scroll To Data";
 	}
+	public String getExplanation() {
+		return "Provides a tool that will scroll the data matrix to the next cell that contains data (i.e., that contains something other than a gap/inapplicable)";
+	}
 
 
 	public class ScrollToDataTool extends TableTool {
