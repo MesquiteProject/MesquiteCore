@@ -295,23 +295,6 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	/*.................................................................................................................*/
 	void addPackages(Vector allPackages){
 
-		/*Listable[] m = new Listable[]{new MesquiteString("b", "b"), new MesquiteString("a", "a"), new MesquiteString("c", "c")};
-		Debugg.println("before---------");
-		for(int i=0; i<m.length; i++)
-			Debugg.println("m " + m[i]);
-		ListableVector.sort(m);
-		Debugg.println("after---------");
-		for(int i=0; i<m.length; i++)
-			Debugg.println("m " + m[i]);
-		int[] mm = new int[]{1, 0, 2};
-		Debugg.println("before---------");
-		for(int i=0; i<mm.length; i++)
-			Debugg.println("mm " + mm[i]);
-		IntegerArray.sort(mm);
-		Debugg.println("after---------");
-		for(int i=0; i<mm.length; i++)
-			Debugg.println("mm " + mm[i]);
-		 */
 		v = new Listable[allPackages.size()];
 		for (int i=0; i< allPackages.size(); i++){
 			ObjectContainer ms = (ObjectContainer)allPackages.elementAt(i);
@@ -328,12 +311,13 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			v[i] = cb;
 			cb.setVisible(true);
 		}
-		//Debugg.println("============= ");
+		
 		ListableVector.sort(v);
+		
+		
 		for (int i=0; i<v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)v[i];
 			add(cb);
-			//Debugg.println( cb.getName());
 		}
 		resetSizes();
 	}

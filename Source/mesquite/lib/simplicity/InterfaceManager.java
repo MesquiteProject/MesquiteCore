@@ -1,26 +1,8 @@
 package mesquite.lib.simplicity;
 
-import mesquite.lib.ListableVector;
-import mesquite.lib.MenuVisibility;
-import mesquite.lib.MesquiteCommand;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteMenuItem;
-import mesquite.lib.MesquiteMenuItemSpec;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquitePopup;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.MesquiteSubmenu;
-import mesquite.lib.MesquiteTool;
-import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.MesquiteWindow;
-import mesquite.lib.ObjectContainer;
-import mesquite.lib.Parser;
-import mesquite.lib.XMLUtil;
+import mesquite.lib.*;
 import mesquite.lib.duties.WindowHolder;
 import java.util.*;
-import java.util.List;
 import java.io.File;
 
 import org.dom4j.Document;
@@ -53,10 +35,40 @@ public class InterfaceManager {
 		interfaceWindowBabysitter = MesquiteTrunk.mesquiteTrunk.hireNamedEmployee (WindowHolder.class, "#WindowBabysitter");
 		ww = new InterfaceManagerWindow(interfaceWindowBabysitter, this);
 		interfaceWindowBabysitter.setModuleWindow(ww);
+		addMissingPackageIntros(allPackages);
+		
 		ww.addPackages(allPackages);
 		ww.lock(locked);
 	}
 
+	boolean hasIntro(ObjectContainer module, Vector allPackages){
+		String[] sMOD = (String[])module.getObject();
+		if ("true".equals(sMOD[3]))  //is intro
+			return true;
+		String pathMOD = sMOD[0];
+		if (pathMOD.equals("mesquite"))
+			return true;
+		for (int i=0; i< allPackages.size(); i++){
+			ObjectContainer ms = (ObjectContainer)allPackages.elementAt(i);
+			if (ms !=module){
+				String[] s = (String[])ms.getObject();
+				String path = s[0];
+				if (!(path.equals("mesquite")) && pathMOD.startsWith(path))  //intro found
+					return true;
+			}
+		}
+		return false;
+	}
+	void addMissingPackageIntros(Vector allPackages){
+		for (int i=0; i< allPackages.size(); i++){
+			ObjectContainer ms = (ObjectContainer)allPackages.elementAt(i);
+			if (!hasIntro(ms, allPackages)){
+				String[] s = (String[])ms.getObject();
+				String path =  StringUtil.getAllButLastItem(s[0], ".");
+				addPackageToList(path + " Package", path, path + " Package", true, true);
+			}
+			}
+	}
 	Vector allPackages = new Vector();
 	public void addPackageToList(String name, String path, String explanation, boolean isHideable, boolean isPackage){
 		allPackages.addElement(new ObjectContainer(name, new String[]{path, explanation, Boolean.toString(isHideable), Boolean.toString(isPackage)}));
