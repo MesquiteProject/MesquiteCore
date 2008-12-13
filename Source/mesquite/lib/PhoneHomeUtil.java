@@ -299,7 +299,7 @@ public class PhoneHomeUtil {
 										notices.append("<h2>Available for installation: " + packageName + "</h2>");
 									notices.append(explanation);
 									String installHTML = null;
-									if (!MesquiteFile.canWrite(MesquiteTrunk.getRootPath() + "extras")){
+									if (!MesquiteFile.canWrite(MesquiteTrunk.getRootPath() + "settings")){
 										installHTML = ("<p>HOWEVER, you cannot install this update because you do not have privileges to write into the Mesquite_Folder." +
 										"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 									}

@@ -44,7 +44,7 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 	CHPanel ch;
 	int headingHeight = 84;
 	int classesHeight = 130;
-	String instructions;
+	public String instructions;
 	//SimplicityStrip simplicityStrip;
 	public InterfaceManagerWindow(MesquiteModule module, InterfaceManager manager) {
 		super(module, false);
@@ -59,7 +59,7 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 		//addToWindow(simplicityStrip);
 		cb.setBounds(0, 0, getWidth(), headingHeight);
 		cb.setVisible(true);
-		String simpLoc = MesquiteTrunk.mesquiteTrunk.getRootPath() + "extras" + MesquiteFile.fileSeparator + "simplifications" + MesquiteFile.fileSeparator + "simplification.html";
+		String simpLoc = module.getPath() + "simplification.html";
 		instructions = MesquiteFile.getFileContentsAsString(simpLoc);
 		addToWindow(ch = new CHPanel());
 		ch.setBackground(Color.white);
@@ -79,7 +79,6 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 		//	adj.setUnitIncrement(65);
 		pane.doLayout();
 		resetTitle();
-		InterfaceManager.simplicityWindow = this;
 		resetSimplicity();
 	}
 
@@ -91,14 +90,14 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 			return;
 		super.setVisible(vis);
 	}
-	void resetSimplicity(){
+	public void resetSimplicity(){
 		if (cb != null){
 			cb.resetStates();
 			field.checkStates();
 		}
 	}
 	/*.................................................................................................................*/
-	void addPackages(Vector allPackages){
+	public void addPackages(Vector allPackages){
 		field.addPackages(allPackages);
 	}
 	/*.................................................................................................................*/
@@ -127,18 +126,6 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 					" Hidden tools will be ringed in red if you have chosen that particular item to hide, in blue if hidden because its package has been hidden. " +
 			" After you have edited what you want to hide, choose \"Simple Interface\" in this menu to show the simplified interface.");
 			 */
-			return null;
-		}
-		else if (checker.compare(this.getClass(), "Saves the current simplification", null, commandName, "saveCurrent")) {
-			InterfaceManager.saveCurrentSettingsFile();
-		}
-		else if (checker.compare(this.getClass(), "Loads a simplification", null, commandName, "load")) {
-			int i = MesquiteInteger.fromString( new Parser(arguments));
-			InterfaceManager.loadSettingsFile(i);
-		}
-		else if (checker.compare(this.getClass(), "Shows Instructions", null, commandName, "showInstructions")) {
-			int i = MesquiteInteger.fromString( new Parser(arguments));
-			InterfaceManager.loadSettingsFile(i);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -257,6 +244,8 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	}
 
 	public void paint(Graphics g){
+		if (v == null)
+			return;
 		g.setColor(Color.white);
 		g.fillRect(16, 0, getWidth(), getHeight());
 		g.setColor(Color.black);
@@ -518,7 +507,7 @@ class IPanel extends MousePanel {
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		command = new MesquiteCommand("showInstructions", InterfaceManager.simplicityWindow);
+		command = new MesquiteCommand("showInstructions", InterfaceManager.simplicityModule);
 		command.doItMainThread(null, null, null);
 		MesquiteWindow.uncheckDoomed(this);
 	}

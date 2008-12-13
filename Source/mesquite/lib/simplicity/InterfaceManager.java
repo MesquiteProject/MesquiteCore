@@ -1,13 +1,7 @@
 package mesquite.lib.simplicity;
 
 import mesquite.lib.*;
-import mesquite.lib.duties.WindowHolder;
 import java.util.*;
-import java.io.File;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
 public class InterfaceManager {
 
@@ -16,64 +10,8 @@ public class InterfaceManager {
 	public static boolean locked = false;
 	/*^^^^^^^^^^^^^^^^^^^*/
 
-/*todo
- *  --  have default.xml that is loaded if there is none in prefs yet
- *  -- accomodate packages with no intro
- *  -- manual pages for simplification
- *  -- design several simplifications
- *  -- make sure submenus can be turned off
- *  --have package intros return pathtopackage which by default would be mesquite.XXXX
- *  */
-
-	MesquiteModule interfaceWindowBabysitter;
 	Parser parser = new Parser();
-	InterfaceManagerWindow ww;
-	/*.................................................................................................................*/
-	public void makeWindow(){
-		if (interfaceWindowBabysitter != null)
-			return;
-		interfaceWindowBabysitter = MesquiteTrunk.mesquiteTrunk.hireNamedEmployee (WindowHolder.class, "#WindowBabysitter");
-		ww = new InterfaceManagerWindow(interfaceWindowBabysitter, this);
-		interfaceWindowBabysitter.setModuleWindow(ww);
-		addMissingPackageIntros(allPackages);
-		
-		ww.addPackages(allPackages);
-		ww.lock(locked);
-	}
-
-	boolean hasIntro(ObjectContainer module, Vector allPackages){
-		String[] sMOD = (String[])module.getObject();
-		if ("true".equals(sMOD[3]))  //is intro
-			return true;
-		String pathMOD = sMOD[0];
-		if (pathMOD.equals("mesquite"))
-			return true;
-		for (int i=0; i< allPackages.size(); i++){
-			ObjectContainer ms = (ObjectContainer)allPackages.elementAt(i);
-			if (ms !=module){
-				String[] s = (String[])ms.getObject();
-				String path = s[0];
-				if (!(path.equals("mesquite")) && pathMOD.startsWith(path))  //intro found
-					return true;
-			}
-		}
-		return false;
-	}
-	void addMissingPackageIntros(Vector allPackages){
-		for (int i=0; i< allPackages.size(); i++){
-			ObjectContainer ms = (ObjectContainer)allPackages.elementAt(i);
-			if (!hasIntro(ms, allPackages)){
-				String[] s = (String[])ms.getObject();
-				String path =  StringUtil.getAllButLastItem(s[0], ".");
-				addPackageToList(path + " Package", path, path + " Package", true, true);
-			}
-			}
-	}
-	Vector allPackages = new Vector();
-	public void addPackageToList(String name, String path, String explanation, boolean isHideable, boolean isPackage){
-		allPackages.addElement(new ObjectContainer(name, new String[]{path, explanation, Boolean.toString(isHideable), Boolean.toString(isPackage)}));
-	}
-
+	
 	/*.................................................................................................................*/
 	//STATIC
 	//modes
@@ -89,7 +27,8 @@ public class InterfaceManager {
 	public static final int TOBEHIDDEN = 2;
 	public static final int HIDDENCLASS = 3;
 
-	static MesquiteWindow simplicityWindow;
+	public static Vector allPackages = new Vector();
+	public static SimplicityManagerModule simplicityModule;
 	public static ListableVector hiddenMenuItems;
 	public static ListableVector hiddenPackages;
 	public static ListableVector hiddenTools;
@@ -124,8 +63,8 @@ public class InterfaceManager {
 		locked = lock;
 		if (lock)
 			mode = SIMPLE;
-		if (simplicityWindow != null)
-			((InterfaceManagerWindow)simplicityWindow).lock(lock);
+		if (simplicityModule != null)
+			simplicityModule.lock(lock);
 		reset();
 	}
 	/*.................................................................................................................*/
@@ -154,6 +93,9 @@ public class InterfaceManager {
 		}
 		MesquiteMessage.println("-----^^^-----");
 
+	}
+	public static void addPackageToList(String name, String path, String explanation, boolean isHideable, boolean isPackage){
+		allPackages.addElement(new ObjectContainer(name, new String[]{path, explanation, Boolean.toString(isHideable), Boolean.toString(isPackage)}));
 	}
 	public static void addPackageToHidden(String packagePath){
 		hiddenPackages.addElement(new MesquiteString(packagePath, packagePath), false);
@@ -366,169 +308,23 @@ public class InterfaceManager {
 	}
 	/*---------------------------*/
 	public static void getLoadSaveMenuItems(MesquitePopup popup){
-		if (simplicityWindow != null){
-			popup.add(new MesquiteMenuItem("Save Current Simplification", null, new MesquiteCommand("saveCurrent", simplicityWindow), null));
+		if (simplicityModule != null){
+			popup.add(new MesquiteMenuItem("Save Current Simplification", null, new MesquiteCommand("saveCurrent", simplicityModule), null));
 			MesquiteSubmenu ms = new MesquiteSubmenu("Load Simplification", popup, null);
 			for (int i = 0; i< settingsFiles.size(); i++){
 				MesquiteString sf = (MesquiteString)settingsFiles.elementAt(i);
-				ms.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand("load", "" + i, simplicityWindow), null));
+				ms.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand("load", "" + i, simplicityModule), null));
 			}
 			popup.add(ms);
 		}
 	}
 	/*---------------------------*/
 	public static void resetSimplicity(){
-		if (simplicityWindow != null)
-			((InterfaceManagerWindow)simplicityWindow).resetSimplicity();
+		if (simplicityModule != null)
+			simplicityModule.resetSimplicity();
 
 	}
-	/*---------------------------*/
-	public static void importSettingsFiles(){
-		String basePath = MesquiteTrunk.mesquiteTrunk.getRootPath() + "extras" + MesquiteFile.fileSeparator + "simplifications" + MesquiteFile.fileSeparator;
-		File f = new File(basePath);
-		if (f.exists() && f.isDirectory()){
-			String[] list = f.list();
-			if (list != null){
-				for (int i=0; i<list.length; i++){
-					MesquiteString ms = importFile(basePath + list[i]);
-					if (ms != null)
-						settingsFiles.addElement(ms, false);
-				}
-
-			}
-		}
-		MesquiteString custom = importFile(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml");
-		loadSettingsFile(custom);
-	}
-	static MesquiteString importFile(String path){
-		String settingsXML = MesquiteFile.getFileContentsAsString(path);
-		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
-		if (root==null)
-			return null;
-		Element element = root.element("hidden");
-		if (element != null) {
-			Element versionElement = element.element("version");
-			if (versionElement == null)
-				return null;
-			else {
-				int version = MesquiteInteger.fromString(element.elementText("version"));
-				boolean acceptableVersion = version==1;
-				if (acceptableVersion) {
-					String name = (element.elementText("name"));
-					return new MesquiteString(name, settingsXML);
-
-				}
-			}
-		} 
-		return null;
-	}
-	public static  void loadSettingsFile(int i){
-		if (!MesquiteInteger.isCombinable(i) || i<0 || i>= settingsFiles.size())
-			return;
-		MesquiteString s = (MesquiteString)settingsFiles.elementAt(i);
-		loadSettingsFile(s);
-	}
-	public static void loadSettingsFile(MesquiteString s){
-		if (s == null)
-			return;
-		hiddenPackages.removeAllElements(false);
-		hiddenMenuItems.removeAllElements(false);
-		hiddenTools.removeAllElements(false);
-		String settingsXML = s.getValue();
-		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
-		if (root==null)
-			return;
-		Element element = root.element("hidden");
-		if (element != null) {
-			Element versionElement = element.element("version");
-			if (versionElement == null)
-				return ;
-			else {
-				int version = MesquiteInteger.fromString(element.elementText("version"));
-				boolean acceptableVersion = version==1;
-				if (acceptableVersion) {
-					String name = (element.elementText("name"));
-					Element packages = element.element("hiddenPackages");
-					if (packages != null){
-						List packageElements = packages.elements("package");
-						for (Iterator iter = packageElements.iterator(); iter.hasNext();) {   // this is going through all of the notices
-							Element hiddenPackage = (Element) iter.next();
-							String pkg = hiddenPackage.element("name").getText();
-							addPackageToHidden(pkg);						
-						}
-					}
-					Element menuItems = element.element("hiddenMenuItems");
-					if (menuItems != null){
-						List menuElements = menuItems.elements("menuItem");
-						for (Iterator iter = menuElements.iterator(); iter.hasNext();) {   // this is going through all of the notices
-							Element hiddenM = (Element) iter.next();
-							String label = XMLUtil.getTextFromElement(hiddenM, "label");
-							String arguments = XMLUtil.getTextFromElement(hiddenM, "arguments");
-							String command = XMLUtil.getTextFromElement(hiddenM, "command");
-							String commandableClass = XMLUtil.getTextFromElement(hiddenM, "commandableClass");
-							String dutyClass = XMLUtil.getTextFromElement(hiddenM, "dutyClass");
-							hiddenMenuItems.addElement(new MenuVisibility(label, arguments, command, commandableClass, dutyClass), false);
-						}
-					}
-					Element tools = element.element("hiddenTools");
-					if (tools != null){
-						List buttonElement = tools.elements("tool");
-						for (Iterator iter = buttonElement.iterator(); iter.hasNext();) {   // this is going through all of the notices
-							Element hiddenT = (Element) iter.next();
-							String n = XMLUtil.getTextFromElement(hiddenT,"name");
-							String d = XMLUtil.getTextFromElement(hiddenT,"description");
-							hiddenTools.addElement(new MesquiteString(n, d), false);
-						}
-					}
-				}
-			}
-		} 
-		reset();
-
-	}
-	/*---------------------------*/
-	public static void saveCurrentSettingsFile(){
-		Element settingsFile = DocumentHelper.createElement("mesquite");
-		Document doc = DocumentHelper.createDocument(settingsFile);
-		Element hidden = DocumentHelper.createElement("hidden");
-		settingsFile.add(hidden);
-		XMLUtil.addFilledElement(hidden, "version","1");
-		XMLUtil.addFilledElement(hidden, "name","Custom");
-
-		Element hiddenPkgs = DocumentHelper.createElement("hiddenPackages");
-		hidden.add(hiddenPkgs);
-		for (int i=0; i<hiddenPackages.size(); i++){
-			MesquiteString ms = (MesquiteString)hiddenPackages.elementAt(i);
-			Element elem = DocumentHelper.createElement("package");
-			hiddenPkgs.add(elem);
-			XMLUtil.addFilledElement(elem, "name",ms.getName());
-		}
-
-		Element hiddenMs = DocumentHelper.createElement("hiddenMenuItems");
-		hidden.add(hiddenMs);
-		for (int i=0; i<hiddenMenuItems.size(); i++){
-			MenuVisibility mv = (MenuVisibility)hiddenMenuItems.elementAt(i);
-			Element elem = DocumentHelper.createElement("menuItem");
-			hiddenMs.add(elem);
-			XMLUtil.addFilledElement(elem, "label",mv.label);
-			if (mv.arguments != null)
-				XMLUtil.addFilledElement(elem, "arguments",mv.arguments);
-			XMLUtil.addFilledElement(elem, "command",mv.command);
-			XMLUtil.addFilledElement(elem, "commandableClass",mv.commandableClassName);
-			XMLUtil.addFilledElement(elem, "dutyClass",mv.dutyClass);
-		}
-		Element hiddenT = DocumentHelper.createElement("hiddenTools");
-		hidden.add(hiddenT);
-		for (int i=0; i<hiddenTools.size(); i++){
-			MesquiteString s = (MesquiteString)hiddenTools.elementAt(i);
-			Element elem = DocumentHelper.createElement("tool");
-			hiddenT.add(elem);
-			XMLUtil.addFilledElement(elem, "name",s.getName());
-			XMLUtil.addFilledElement(elem, "description",s.getValue());
-		}
-
-		MesquiteFile.putFileContents(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", XMLUtil.getDocumentAsXMLString(doc), false);
-	}
+	
 
 	/*---------------------------*/
 	public static void reset(){
