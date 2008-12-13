@@ -15,11 +15,24 @@ public class InterfaceManager {
 	/*.................................................................................................................*/
 	//STATIC
 	//modes
-	public static final int ALL = 0;
-	public static final int SIMPLE = 1;
-	public static final int EDITING = 2;
-
-	public static int mode = ALL;
+/*	private static final int ALL = 0;
+	private static final int SIMPLE = 1;
+	private static final int EDITING = 2;
+*/
+	private static boolean simpleMode = false;
+	private static boolean editingMode = false;
+	public static boolean isEditingMode(){
+		return editingMode;
+	}
+	public static void setEditingMode(boolean ed){
+		editingMode = ed;
+	}
+	public static boolean isSimpleMode(){
+		return simpleMode;
+	}
+	public static void setSimpleMode(boolean simple){
+		simpleMode = simple;
+	}
 
 	//status
 	public static final int NORMAL = 0;
@@ -62,7 +75,7 @@ public class InterfaceManager {
 		boolean wasLocked = locked;
 		locked = lock;
 		if (lock)
-			mode = SIMPLE;
+			editingMode = true;
 		if (simplicityModule != null)
 			simplicityModule.lock(lock);
 		reset();
@@ -72,7 +85,7 @@ public class InterfaceManager {
 		if (!enabled)
 			return;
 		MesquiteMessage.println("-----vvv-----");
-		if (mode == EDITING)
+		if (isEditingMode())
 			MesquiteMessage.println("EDITING");
 		MesquiteMessage.println("MENU ITEMS");
 		for (int i = 0; i< hiddenMenuItems.size(); i++){
@@ -256,7 +269,7 @@ public class InterfaceManager {
 	public static int isHiddenTool(MesquiteTool tool){
 		if (!enabled)
 			return NORMAL;
-		if (mode == ALL)
+		if (!isEditingMode() && !isSimpleMode())
 			return NORMAL;
 		if (tool == null)
 			return NORMAL;
@@ -267,9 +280,9 @@ public class InterfaceManager {
 		String descr = tool.getDescription();
 		boolean toolHidden =  onHiddenToolList(name, descr);
 		if (toolHidden){
-			if (mode == SIMPLE)
+			if (!isEditingMode() && isSimpleMode())
 				return HIDDEN;
-			if (mode == EDITING)
+			if (isEditingMode())
 				return TOBEHIDDEN;
 		}
 		return NORMAL;
@@ -283,7 +296,7 @@ public class InterfaceManager {
 	public static int isHiddenMenuItem(MesquiteMenuItemSpec mmi, String label, String arguments, MesquiteCommand command, Class moduleClass, Class dutyClass){
 		if (!enabled)
 			return NORMAL;
-		if (mode == ALL)
+		if (!isEditingMode() && !isSimpleMode())
 			return NORMAL;
 		boolean classHidden = onHiddenClassList(moduleClass);
 		if (!classHidden && mmi != null && mmi.getOwnerClass() != null)
@@ -291,17 +304,17 @@ public class InterfaceManager {
 		if (!classHidden && mmi != null && mmi.getCommand() != null && mmi.getCommand().getOwner() != null)
 			classHidden = onHiddenClassList(mmi.getCommand().getOwner().getClass());
 		if (classHidden){
-			if (mode == SIMPLE)
+			if (!isEditingMode() && isSimpleMode())
 				return HIDDEN;
-			if (mode == EDITING)
+			if (isEditingMode())
 				return HIDDENCLASS;
 		}
 		boolean onList = onHiddenMenuItemList(label, arguments, command, dutyClass);
 
 		if (onList){ 
-			if (mode == SIMPLE)
+			if (!isEditingMode() && isSimpleMode())
 				return HIDDEN;
-			if (mode == EDITING)
+			if (isEditingMode())
 				return TOBEHIDDEN;
 		}
 		return NORMAL;

@@ -32,7 +32,7 @@ public class Simplicity extends SimplicityManagerModule {
 
 	/*todo
 	 *  --  have default.xml that is loaded if there is none in prefs yet
-	 *  -- accomodate packages with no intro
+	 รรร  -- accomodate packages with no intro
 	 *  -- manual pages for simplification
 	 *  -- design several simplifications
 	 *  -- make sure submenus can be turned off
@@ -68,6 +68,7 @@ public class Simplicity extends SimplicityManagerModule {
 		lock(InterfaceManager.locked);
 		resetSimplicity();
 	}
+	
   	public  void resetSimplicity(){
 		if (simplicityWindow != null)
 			simplicityWindow.resetSimplicity();
@@ -127,7 +128,7 @@ public class Simplicity extends SimplicityManagerModule {
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
 		if (root==null)
 			return null;
-		Element element = root.element("hidden");
+		Element element = root.element("simplicitySettings");
 		if (element != null) {
 			Element versionElement = element.element("version");
 			if (versionElement == null)
@@ -158,9 +159,11 @@ public class Simplicity extends SimplicityManagerModule {
 		InterfaceManager.hiddenTools.removeAllElements(false);
 		String settingsXML = s.getValue();
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
+		Debugg.println("LOADING SETTINGS");
 		if (root==null)
 			return;
-		Element element = root.element("hidden");
+		Element element = root.element("simplicitySettings");
+		Debugg.println("LOADING SETTINGS " + element);
 		if (element != null) {
 			Element versionElement = element.element("version");
 			if (versionElement == null)
@@ -212,7 +215,7 @@ public class Simplicity extends SimplicityManagerModule {
 	public void saveCurrentSettingsFile(){
 		Element settingsFile = DocumentHelper.createElement("mesquite");
 		Document doc = DocumentHelper.createDocument(settingsFile);
-		Element hidden = DocumentHelper.createElement("hidden");
+		Element hidden = DocumentHelper.createElement("simplicitySettings");
 		settingsFile.add(hidden);
 		XMLUtil.addFilledElement(hidden, "version","1");
 		XMLUtil.addFilledElement(hidden, "name","Custom");
@@ -256,23 +259,53 @@ public class Simplicity extends SimplicityManagerModule {
 			lockSimplicity.setValue(content);
 			InterfaceManager.setLock(lockSimplicity.getValue());
 		}
+		else if ("editingMode".equalsIgnoreCase(tag)){
+			MesquiteBoolean c =new MesquiteBoolean();
+			c.setValue(content);
+			InterfaceManager.setEditingMode(c.getValue());
+		}
+		else if ("simplicityMode".equalsIgnoreCase(tag)){
+			MesquiteBoolean c =new MesquiteBoolean();
+			c.setValue(content);
+			InterfaceManager.setSimpleMode(c.getValue());
+		}
 	}
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "lockSimplicity", lockSimplicity);   
+		StringUtil.appendXMLTag(buffer, 2, "simplicityMode", InterfaceManager.isSimpleMode());   
+		StringUtil.appendXMLTag(buffer, 2, "editingMode", InterfaceManager.isEditingMode());   
 		return buffer.toString();
 	}
 	String instructions;
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(getClass(), "Sets whether to lock the simplicity mode", null, commandName, "toggleLockSimplicity")) {
+		if (checker.compare(this.getClass(), "Sets interface to FULL", null, commandName, "full")) {
+			InterfaceManager.setSimpleMode(false);
+			InterfaceManager.setEditingMode(false);
+			InterfaceManager.reset();
+		}
+		else if (checker.compare(this.getClass(), "Sets interface to SIMPLE", null, commandName, "simple")) {
+			InterfaceManager.setSimpleMode(true);
+			InterfaceManager.setEditingMode(false);
+			InterfaceManager.reset();
+		}
+		else if (checker.compare(this.getClass(), "Turns on interface editing", null, commandName, "edit")) {
+			InterfaceManager.setEditingMode(true);
+			InterfaceManager.reset();
+		}
+		else if (checker.compare(this.getClass(), "Turns off interface editing", null, commandName, "offEdit")) {
+			InterfaceManager.setEditingMode(false);
+			InterfaceManager.reset();
+		}
+		else	if (checker.compare(getClass(), "Sets whether to lock the simplicity mode", null, commandName, "toggleLockSimplicity")) {
 			lockSimplicity.toggleValue(null);
 			InterfaceManager.setLock(lockSimplicity.getValue());
 			storePreferences();
 			return lockSimplicity;
 		}
 		/*else if (checker.compare(this.getClass(), "Toggles whether menu visibility is being edited.", null, commandName, "toggleEditMenuVisibility")) {
-			if (InterfaceManager.mode == InterfaceManager.EDITING) {
+			if (InterfaceManager.isEditingMode()) {
 				InterfaceManager.mode = InterfaceManager.SIMPLE;
 			}
 			else{

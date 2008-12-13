@@ -1,83 +1,62 @@
 package mesquite.lib.simplicity;
 
-import mesquite.lib.ColorDistribution;
-import mesquite.lib.ColorTheme;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
-import mesquite.lib.Listable;
-import mesquite.lib.ListableVector;
-import mesquite.lib.MenuVisibility;
-import mesquite.lib.MesquiteCommand;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteImage;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteMenuItem;
-import mesquite.lib.MesquiteMenuItemSpec;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquitePopup;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.MesquiteSubmenu;
-import mesquite.lib.MesquiteTool;
-import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.MesquiteWindow;
-import mesquite.lib.MousePanel;
-import mesquite.lib.ObjectContainer;
-import mesquite.lib.Parser;
-import mesquite.lib.SystemWindow;
-import mesquite.lib.XMLUtil;
-import mesquite.lib.duties.WindowHolder;
+import mesquite.lib.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.awt.event.*;
-import java.io.File;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import javax.swing.*;
 
 public class InterfaceManagerWindow extends MesquiteWindow implements SystemWindow {
-	ClassesPane pane;
+	ClassesPane classesPane;
 	PackagesPanel field;
-	CBPanel cb;
-	CHPanel ch;
-	int headingHeight = 84;
+	ModePanel modePanel;
+	ClassHeadersPanel classesHeaderPanel;
+	JEditorPane instructionsPanel;
+	JScrollPane instructionsScrollPane;
+	int modePanelHeight = 84;
 	int classesHeight = 130;
 	public String instructions;
-	//SimplicityStrip simplicityStrip;
+
 	public InterfaceManagerWindow(MesquiteModule module, InterfaceManager manager) {
 		super(module, false);
 		setWindowSize(400, 450);
 		//ADD: title for classes
 		//instructions
-		//saved settings... load, save
-		pane = new ClassesPane();
-		addToWindow(pane);
-		//simplicityStrip = new SimplicityStrip(this);
-		addToWindow(cb = new CBPanel(this));
-		//addToWindow(simplicityStrip);
-		cb.setBounds(0, 0, getWidth(), headingHeight);
-		cb.setVisible(true);
 		String simpLoc = module.getPath() + "simplification.html";
 		instructions = MesquiteFile.getFileContentsAsString(simpLoc);
-		addToWindow(ch = new CHPanel());
-		ch.setBackground(Color.white);
+		//saved settings... load, save
+		classesPane = new ClassesPane();
+		addToWindow(classesPane);
+		addToWindow(modePanel = new ModePanel(this));
+		modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
+		modePanel.setVisible(true);
+		instructionsPanel = new JEditorPane("text/html","<html></html>");
+		instructionsPanel.setEditable(false);
+		instructionsPanel.setBackground(Color.white);
+		instructionsPanel.setForeground(Color.black);
+		instructionsPanel.setText(instructions);
+		instructionsScrollPane = new  JScrollPane(); 
+		instructionsScrollPane.getViewport().add( instructionsPanel,  BorderLayout.CENTER ); 
+		addToWindow(instructionsScrollPane);
+		instructionsScrollPane.setVisible(true);
+		instructionsScrollPane.setBounds(0, modePanelHeight, getWidth(), getHeight()-modePanelHeight);
+		addToWindow(classesHeaderPanel = new ClassHeadersPanel());
+		classesHeaderPanel.setBackground(Color.white);
 		//addToWindow(simplicityStrip);
-		ch.setBounds(0, headingHeight, getWidth(), classesHeight - headingHeight);
-		ch.setVisible(true);
+		classesHeaderPanel.setBounds(0, modePanelHeight, getWidth(), classesHeight - modePanelHeight);
+		classesHeaderPanel.setVisible(true);
 		field = new PackagesPanel();
 		field.setSize(50, 800);
 		field.setLocation(0,0);
-		pane.addPanel(field);
+		classesPane.addPanel(field);
 		field.setVisible(true);
-		pane.setSize(getWidth(), getHeight()-classesHeight-20);
-		pane.setLocation(0, classesHeight);
+		classesPane.setSize(getWidth(), getHeight()-classesHeight-20);
+		classesPane.setLocation(0, classesHeight);
 		//pane.setScrollPosition(0, 0);
-		pane.setVisible(true);
+		classesPane.setVisible(true);
 		//	Adjustable adj = pane.getVAdjustable();
 		//	adj.setUnitIncrement(65);
-		pane.doLayout();
+		classesPane.doLayout();
 		resetTitle();
 		resetSimplicity();
 	}
@@ -91,10 +70,11 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 		super.setVisible(vis);
 	}
 	public void resetSimplicity(){
-		if (cb != null){
-			cb.resetStates();
+		if (modePanel != null){
+			modePanel.resetStates();
 			field.checkStates();
 		}
+		windowResized();
 	}
 	/*.................................................................................................................*/
 	public void addPackages(Vector allPackages){
@@ -135,12 +115,21 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 	/*.................................................................................................................*/
 	public void windowResized(){
 		super.windowResized();
-		if (pane!=null && field != null) {
-			cb.setSize(getWidth(), headingHeight);
-			ch.setSize(getWidth(), classesHeight-headingHeight);
+		if (classesPane!=null && field != null) {
+			if (InterfaceManager.isEditingMode()){
+				classesHeaderPanel.setSize(getWidth(), classesHeight-modePanelHeight);
+				classesPane.setSize(getWidth(), getHeight()-classesHeight-20);
+				instructionsScrollPane.setSize(0, 0);
+			}
+			else {
+				classesHeaderPanel.setSize(0,0);
+				classesPane.setSize(0, 0);
+				instructionsScrollPane.setSize(getWidth(), getHeight()- modePanelHeight);
+			}
+			modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
+
 			field.setSize(50, 800);
-			pane.setSize(getWidth(), getHeight()-classesHeight-20);
-			pane.doLayout();
+			classesPane.doLayout();
 		}
 	}
 }
@@ -275,7 +264,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			InterfaceManager.removePackageFromHidden(cb.pkg);
 		else
 			InterfaceManager.addPackageToHidden(cb.pkg);
-		if (InterfaceManager.mode != InterfaceManager.ALL){
+		if (InterfaceManager.isEditingMode() || InterfaceManager.isSimpleMode()){
 			MesquiteTrunk.resetAllMenuBars();
 			MesquiteTrunk.resetAllToolPalettes();
 		}
@@ -300,10 +289,10 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			v[i] = cb;
 			cb.setVisible(true);
 		}
-		
+
 		ListableVector.sort(v);
-		
-		
+
+
 		for (int i=0; i<v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)v[i];
 			add(cb);
@@ -430,10 +419,10 @@ class PackageCheckbox extends Checkbox implements Listable {
 		this.late = late;
 	}
 }
-class LSPanel extends MousePanel {
+class LoadSaveButton extends MousePanel {
 	MesquitePopup popup;
 	Polygon dropDownTriangle;
-	public LSPanel(){
+	public LoadSaveButton(){
 		dropDownTriangle=MesquitePopup.getDropDownTriangle();
 	}
 	/*.................................................................................................................*/
@@ -481,22 +470,29 @@ class LSPanel extends MousePanel {
 		add(popup);
 	}
 }
-class IPanel extends MousePanel {
+class EditModeButton extends MousePanel {
 	MesquiteCommand command;
-	public IPanel(){
+	public EditModeButton(){
 	}
 	/*.................................................................................................................*/
 	public void paint (Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		String s = "Instructions";
+		String s = "";
+		if (InterfaceManager.isEditingMode()){
+			g.setColor(Color.cyan);
+			s = "Turn OFF Editing Mode";
+		}
+		else {
+			s  = "Turn ON Editing Mode";
+			g.setColor(ColorTheme.getActiveLight());
+		}
 		Font font = g.getFont();
 		FontMetrics fontMet = g.getFontMetrics(font);
 		int hA = fontMet.getAscent();
 		int w = fontMet.stringWidth(s)+8;
 		int h = hA +fontMet.getDescent()+4;
 		int y = 16-hA-2;
-		g.setColor(ColorTheme.getActiveLight());
 		g.fillRoundRect(0, y, w, h , 3, 3);
 		g.setColor(Color.black);
 		g.drawString(s, 4, 16);
@@ -507,61 +503,59 @@ class IPanel extends MousePanel {
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		command = new MesquiteCommand("showInstructions", InterfaceManager.simplicityModule);
+		if (InterfaceManager.isEditingMode())
+			command = new MesquiteCommand("offedit", InterfaceManager.simplicityModule);
+		else 
+			command = new MesquiteCommand("edit", InterfaceManager.simplicityModule);
 		command.doItMainThread(null, null, null);
+		repaint();
 		MesquiteWindow.uncheckDoomed(this);
 	}
 }
-class CBPanel extends Panel implements ItemListener {
+class ModePanel extends Panel implements ItemListener {
 	CheckboxGroup cbg;
-	Checkbox powerCB, simplerCB, editSimpleCB;
+	Checkbox powerCB, simplerCB;
 	InterfaceManagerWindow w;
 	Image editing, power, simple;
 	MesquitePopup popup;
-	LSPanel lsPanel;
-	IPanel iPanel;
+	LoadSaveButton loadSaveButton;
+	EditModeButton editModeButton;
 	int cbwidth = 160;
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
 	int top = 20;
-	public CBPanel(InterfaceManagerWindow w){
+	public ModePanel(InterfaceManagerWindow w){
 		super();
 		this.w = w;
 		cbg = new CheckboxGroup();
 		powerCB = new Checkbox("Full Interface", cbg, true);
 		simplerCB = new Checkbox("Simple Interface", cbg, true);
-		editSimpleCB = new Checkbox("Edit Simple Interface", cbg, true);
 		cbg.setSelectedCheckbox(powerCB);
 		setLayout(null);
 		add(powerCB);
 		add(simplerCB);
-		add(editSimpleCB);
 		powerCB.setBounds(22, top + 2, cbwidth, 16);
 		powerCB.setFont(fontBig);
 		powerCB.setVisible(true);
 		simplerCB.setBounds(22, top + 22, cbwidth, 16);
 		simplerCB.setVisible(true);
 		simplerCB.setFont(fontBig);
-		editSimpleCB.setBounds(22, top + 42, cbwidth, 16);
-		editSimpleCB.setVisible(true);
-		editSimpleCB.setFont(fontBig);
 		powerCB.addItemListener(this);
 		simplerCB.addItemListener(this);
-		editSimpleCB.addItemListener(this);
 		power = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "power.gif");  
 		simple = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simple.gif");  
 		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
 
-		lsPanel = new LSPanel();
-		lsPanel.setBounds(getWidth()-100, top + 2, 100, 24);
-		lsPanel.setFont(fontBig);
-		lsPanel.setVisible(true);
-		add(lsPanel);
+		loadSaveButton = new LoadSaveButton();
+	loadSaveButton.setFont(fontBig);
+		loadSaveButton.setVisible(true);
+		add(loadSaveButton);
 
-		iPanel = new IPanel();
-		iPanel.setBounds(getWidth()-100, top + 32, 100, 24);
-		iPanel.setFont(fontBig);
-		iPanel.setVisible(true);
-		add(iPanel);
+		editModeButton = new EditModeButton();
+		loadSaveButton.setBounds(getWidth()-200, top + 32, 100, 24);
+		editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
+		editModeButton.setFont(fontBig);
+		editModeButton.setVisible(true);
+		add(editModeButton);
 	}
 
 	/*.................................................................................................................*/
@@ -571,66 +565,67 @@ class CBPanel extends Panel implements ItemListener {
 		g.setFont(fontBig);
 		FontMetrics fontMet = g.getFontMetrics(fontBig);
 		int hA = fontMet.getAscent();
-		String title = "Interface Simplification";
+		String title = "Simplify Control Panel";
 		int w = fontMet.stringWidth(title)+16;
 		g.drawString(title, (getWidth() - w)/2, 16);
 
 		Composite composite = ColorDistribution.getComposite(g);
-		if (InterfaceManager.mode != InterfaceManager.ALL)
+		if (InterfaceManager.isSimpleMode())
 			ColorDistribution.setTransparentGraphics(g,0.1f);
 		g.drawImage(power, 4, top  + 2, this);
 
 		ColorDistribution.setComposite(g,composite);
-		if (InterfaceManager.mode != InterfaceManager.SIMPLE)
+	
+		if (!InterfaceManager.isSimpleMode())
 			ColorDistribution.setTransparentGraphics(g,0.1f);
 		g.drawImage(simple, 4, top  + 22, this);
 
 		ColorDistribution.setComposite(g,composite);
-		if (InterfaceManager.mode != InterfaceManager.EDITING)
+		/*	if (!InterfaceManager.isEditingMode())
 			ColorDistribution.setTransparentGraphics(g,0.1f);
 		g.drawImage(editing, 4, top  + 42, this);
-
+*/
 		ColorDistribution.setComposite(g,composite);
-
+		g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	public void setSize(int w, int h){
 		super.setSize(w, h);
-		if (lsPanel != null){
-			lsPanel.setBounds(getWidth()-100, top + 2, 100, 24);
-			iPanel.setBounds(getWidth()-100, top + 32, 100, 24);
+		if (loadSaveButton != null){
+			loadSaveButton.setBounds(getWidth()-200, top + 32, 100, 24);
+			editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
 		}
 	}
 	public void setBounds(int x, int y, int w, int h){
 		super.setBounds(x, y, w, h);
-		if (lsPanel != null){
-			lsPanel.setBounds(getWidth()-100, top + 2, 100, 24);
-			iPanel.setBounds(getWidth()-100, top + 32, 100, 24);
+		if (loadSaveButton != null){
+			loadSaveButton.setBounds(getWidth()-200, top + 32, 100, 24);
+			editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
 		}
 	}
 	public void resetStates(){
-		if (InterfaceManager.mode == InterfaceManager.ALL)
+		
+		if (!InterfaceManager.isSimpleMode())
 			powerCB.setState(true);
-		else if (InterfaceManager.mode == InterfaceManager.SIMPLE)
+		else if (InterfaceManager.isSimpleMode())
 			simplerCB.setState(true);
-		else if (InterfaceManager.mode == InterfaceManager.EDITING)
-			editSimpleCB.setState(true);
+		powerCB.setEnabled(!InterfaceManager.isEditingMode());
+		simplerCB.setEnabled(!InterfaceManager.isEditingMode());
 		repaint();
+		editModeButton.repaint();
 	}
 	public void itemStateChanged(ItemEvent e){
 		if (powerCB.getState())
-			InterfaceManager.mode = InterfaceManager.ALL;
+			InterfaceManager.setSimpleMode(false);
 		if (simplerCB.getState())
-			InterfaceManager.mode = InterfaceManager.SIMPLE;
-		if (editSimpleCB.getState())
-			InterfaceManager.mode = InterfaceManager.EDITING;
+			InterfaceManager.setSimpleMode(true);
 		repaint();
 		MesquiteModule.resetAllMenuBars();
 		MesquiteModule.resetAllToolPalettes();
 		MesquiteWindow.resetAllSimplicity();
 	}
 }
-class CHPanel extends Panel  {
+class ClassHeadersPanel extends Panel  {
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
 	Font fontSmall = new Font("SansSerif", Font.PLAIN, 10);
 	/*.................................................................................................................*/
