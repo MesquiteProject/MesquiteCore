@@ -22,7 +22,7 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 		setWindowSize(400, 450);
 		//ADD: title for classes
 		//instructions
-		String simpLoc = module.getPath() + "simplification.html";
+		String simpLoc = module.getPath() + "instructions.html";
 		instructions = MesquiteFile.getFileContentsAsString(simpLoc);
 		//saved settings... load, save
 		classesPane = new ClassesPane();
@@ -429,7 +429,7 @@ class LoadSaveButton extends MousePanel {
 	public void paint (Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		String s = "Save/Load";
+		String s = "Save/Load Settings";
 		Font font = g.getFont();
 		FontMetrics fontMet = g.getFontMetrics(font);
 		int hA = fontMet.getAscent();
@@ -472,7 +472,10 @@ class LoadSaveButton extends MousePanel {
 }
 class EditModeButton extends MousePanel {
 	MesquiteCommand command;
+	Image editing;
+
 	public EditModeButton(){
+		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
 	}
 	/*.................................................................................................................*/
 	public void paint (Graphics g) {
@@ -493,7 +496,13 @@ class EditModeButton extends MousePanel {
 		int w = fontMet.stringWidth(s)+8;
 		int h = hA +fontMet.getDescent()+4;
 		int y = 16-hA-2;
+		if (!InterfaceManager.isEditingMode())
+			h = getHeight()-y-3;
+		
+
 		g.fillRoundRect(0, y, w, h , 3, 3);
+		if (!InterfaceManager.isEditingMode())
+			g.drawImage(editing, w/2-8, 30, this);
 		g.setColor(Color.black);
 		g.drawString(s, 4, 16);
 		g.drawRoundRect(0, y, w, h , 3, 3);
@@ -516,7 +525,7 @@ class ModePanel extends Panel implements ItemListener {
 	CheckboxGroup cbg;
 	Checkbox powerCB, simplerCB;
 	InterfaceManagerWindow w;
-	Image editing, power, simple;
+	Image power, simple;
 	MesquitePopup popup;
 	LoadSaveButton loadSaveButton;
 	EditModeButton editModeButton;
@@ -543,16 +552,14 @@ class ModePanel extends Panel implements ItemListener {
 		simplerCB.addItemListener(this);
 		power = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "power.gif");  
 		simple = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simple.gif");  
-		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
 
 		loadSaveButton = new LoadSaveButton();
-	loadSaveButton.setFont(fontBig);
+		loadSaveButton.setFont(fontBig);
 		loadSaveButton.setVisible(true);
 		add(loadSaveButton);
 
 		editModeButton = new EditModeButton();
-		loadSaveButton.setBounds(getWidth()-200, top + 32, 100, 24);
-		editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
+		resizeButtons();
 		editModeButton.setFont(fontBig);
 		editModeButton.setVisible(true);
 		add(editModeButton);
@@ -575,36 +582,37 @@ class ModePanel extends Panel implements ItemListener {
 		g.drawImage(power, 4, top  + 2, this);
 
 		ColorDistribution.setComposite(g,composite);
-	
+
 		if (!InterfaceManager.isSimpleMode())
 			ColorDistribution.setTransparentGraphics(g,0.1f);
 		g.drawImage(simple, 4, top  + 22, this);
 
 		ColorDistribution.setComposite(g,composite);
-		/*	if (!InterfaceManager.isEditingMode())
-			ColorDistribution.setTransparentGraphics(g,0.1f);
-		g.drawImage(editing, 4, top  + 42, this);
-*/
-		ColorDistribution.setComposite(g,composite);
 		g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
 		MesquiteWindow.uncheckDoomed(this);
 	}
+	void resizeButtons(){
+		if (loadSaveButton != null){
+			if (InterfaceManager.isEditingMode()) {
+				loadSaveButton.setBounds(getWidth()-200, top + 32, 200, 24);
+				editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
+			}
+			else {
+				loadSaveButton.setBounds(getWidth()-200, top + 32, 0, 0);
+				editModeButton.setBounds(getWidth()-200, top + 2, 200, 54);
+			}
+		}
+	}
 	public void setSize(int w, int h){
 		super.setSize(w, h);
-		if (loadSaveButton != null){
-			loadSaveButton.setBounds(getWidth()-200, top + 32, 100, 24);
-			editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
-		}
+		resizeButtons();
 	}
 	public void setBounds(int x, int y, int w, int h){
 		super.setBounds(x, y, w, h);
-		if (loadSaveButton != null){
-			loadSaveButton.setBounds(getWidth()-200, top + 32, 100, 24);
-			editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
-		}
+		resizeButtons();
 	}
 	public void resetStates(){
-		
+
 		if (!InterfaceManager.isSimpleMode())
 			powerCB.setState(true);
 		else if (InterfaceManager.isSimpleMode())

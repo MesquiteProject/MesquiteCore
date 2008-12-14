@@ -159,11 +159,9 @@ public class Simplicity extends SimplicityManagerModule {
 		InterfaceManager.hiddenTools.removeAllElements(false);
 		String settingsXML = s.getValue();
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
-		Debugg.println("LOADING SETTINGS");
 		if (root==null)
 			return;
 		Element element = root.element("simplicitySettings");
-		Debugg.println("LOADING SETTINGS " + element);
 		if (element != null) {
 			Element versionElement = element.element("version");
 			if (versionElement == null)
