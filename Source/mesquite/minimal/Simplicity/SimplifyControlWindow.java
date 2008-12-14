@@ -76,7 +76,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 			modePanel.resetStates();
 			field.checkStates();
 		}
-		windowResized();
+		resetSizes();
 	}
 	/*.................................................................................................................*/
 	public void addPackages(Vector allPackages){
@@ -114,25 +114,31 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		return null;
 	}
 
-	/*.................................................................................................................*/
-	public void windowResized(){
-		super.windowResized();
+	void resetSizes(){
+		int smallInstructionsHeight = 120;
 		if (classesPane!=null && field != null) {
+			modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
 			if (InterfaceManager.isEditingMode()){
 				classesHeaderPanel.setSize(getWidth(), classesHeight-modePanelHeight);
-				classesPane.setSize(getWidth(), getHeight()-classesHeight-20);
-				instructionsScrollPane.setSize(0, 0);
+				classesPane.setSize(getWidth(), getHeight()-classesHeight-2 -smallInstructionsHeight);
+				field.setSize(50, 800);
+				classesPane.doLayout();
+				instructionsScrollPane.setBounds(0, getHeight()- smallInstructionsHeight, getWidth(), smallInstructionsHeight-20);
+				instructionsScrollPane.doLayout();
 			}
 			else {
 				classesHeaderPanel.setSize(0,0);
 				classesPane.setSize(0, 0);
-				instructionsScrollPane.setSize(getWidth(), getHeight()- modePanelHeight);
+				field.setSize(0, 0);
+				classesPane.doLayout();
+				instructionsScrollPane.setBounds(0,modePanelHeight,getWidth(), getHeight()- modePanelHeight-20);
+				instructionsScrollPane.doLayout();
 			}
-			modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
-
-			field.setSize(50, 800);
-			classesPane.doLayout();
 		}
+	}
+	/*.................................................................................................................*/
+	public void windowResized(){
+		resetSizes();
 	}
 }
 
