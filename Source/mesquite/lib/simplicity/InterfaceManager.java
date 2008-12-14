@@ -206,7 +206,7 @@ public class InterfaceManager {
 		}
 		return false;
 	}
-	static boolean onHiddenClassList(Class c){
+	public static boolean onHiddenClassList(Class c){
 		if (c == null)
 			return false;
 		String name = c.getName();
@@ -219,7 +219,7 @@ public class InterfaceManager {
 
 		return false;
 	}
-	static boolean onHiddenClassList(String pkg){
+	public static boolean onHiddenClassList(String pkg){
 		if (pkg == null)
 			return false;
 		String name = pkg;
@@ -232,7 +232,7 @@ public class InterfaceManager {
 
 		return false;
 	}
-	static boolean onHiddenClassListExactly(String pkg){
+	public static boolean onHiddenClassListExactly(String pkg){
 		if (pkg == null)
 			return false;
 		String name = pkg;

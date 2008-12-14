@@ -1,12 +1,14 @@
-package mesquite.lib.simplicity;
+package mesquite.minimal.Simplicity;
 
 import mesquite.lib.*;
+import mesquite.lib.simplicity.InterfaceManager;
+
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class InterfaceManagerWindow extends MesquiteWindow implements SystemWindow {
+public class SimplifyControlWindow extends MesquiteWindow implements SystemWindow {
 	ClassesPane classesPane;
 	PackagesPanel field;
 	ModePanel modePanel;
@@ -17,7 +19,7 @@ public class InterfaceManagerWindow extends MesquiteWindow implements SystemWind
 	int classesHeight = 130;
 	public String instructions;
 
-	public InterfaceManagerWindow(MesquiteModule module, InterfaceManager manager) {
+	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager) {
 		super(module, false);
 		setWindowSize(400, 450);
 		//ADD: title for classes
@@ -524,7 +526,7 @@ class EditModeButton extends MousePanel {
 class ModePanel extends Panel implements ItemListener {
 	CheckboxGroup cbg;
 	Checkbox powerCB, simplerCB;
-	InterfaceManagerWindow w;
+	SimplifyControlWindow w;
 	Image power, simple;
 	MesquitePopup popup;
 	LoadSaveButton loadSaveButton;
@@ -532,7 +534,7 @@ class ModePanel extends Panel implements ItemListener {
 	int cbwidth = 160;
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
 	int top = 20;
-	public ModePanel(InterfaceManagerWindow w){
+	public ModePanel(SimplifyControlWindow w){
 		super();
 		this.w = w;
 		cbg = new CheckboxGroup();

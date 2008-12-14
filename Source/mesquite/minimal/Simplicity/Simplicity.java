@@ -39,7 +39,7 @@ public class Simplicity extends SimplicityManagerModule {
 	 *  --have package intros return pathtopackage which by default would be mesquite.XXXX
 	 *  */
 	MesquiteBoolean lockSimplicity;
-	InterfaceManagerWindow simplicityWindow;
+	SimplifyControlWindow simplicityWindow;
 	public String getName() {
 		return "Simplicity Manager";
 	}
@@ -59,7 +59,7 @@ public class Simplicity extends SimplicityManagerModule {
 	/*.................................................................................................................*/
 	public void init(){
 		importSettingsFiles();
-		simplicityWindow = new InterfaceManagerWindow(this, MesquiteTrunk.mesquiteTrunk.interfaceManager);
+		simplicityWindow = new SimplifyControlWindow(this, MesquiteTrunk.mesquiteTrunk.interfaceManager);
 		setModuleWindow(simplicityWindow);
 		//simplicityWindow.setVisible(true);
 		addMissingPackageIntros(InterfaceManager.allPackages);
