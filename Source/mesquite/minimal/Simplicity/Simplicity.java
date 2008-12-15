@@ -32,10 +32,14 @@ public class Simplicity extends SimplicityManagerModule {
 
 	/*todo
 	 *  --  have default.xml that is loaded if there is none in prefs yet
+	 *  -- all hidden; none hidden; 
 	 รรร  -- accomodate packages with no intro
+	 * -- menu searching should say that item is hidden??? or at least warn some not found because simple interface?
 	 *  -- manual pages for simplification
 	 *  -- design several simplifications
 	 *  -- make sure submenus can be turned off
+	 *  -- how much of window to change colour; fix bugs
+	 *  -- David's bug comments 14 Dec
 	 *  --have package intros return pathtopackage which by default would be mesquite.XXXX
 	 *  */
 	MesquiteBoolean lockSimplicity;
@@ -44,15 +48,17 @@ public class Simplicity extends SimplicityManagerModule {
 		return "Simplicity Manager";
 	}
 	public String getExplanation() {
-		return "A small module to house the interface simplification management." ;
+		return "A small module to supervise the interface for simplification management." ;
 	}
 	/*.................................................................................................................*/
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		lockSimplicity = new MesquiteBoolean(false);
+		
 		if (InterfaceManager.enabled)
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Lock In Simple Mode", makeCommand("toggleLockSimplicity",  this), lockSimplicity);
 		InterfaceManager.simplicityModule = this;  //remember me
+		loadPreferences();
 		return true;
 	}
 
@@ -72,6 +78,7 @@ public class Simplicity extends SimplicityManagerModule {
   	public  void resetSimplicity(){
 		if (simplicityWindow != null)
 			simplicityWindow.resetSimplicity();
+		storePreferences();
  	}
   	public void lock(boolean L){
 		if (simplicityWindow != null)
