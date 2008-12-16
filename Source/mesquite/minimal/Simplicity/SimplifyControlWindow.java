@@ -269,9 +269,9 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	public void itemStateChanged(ItemEvent e){
 		PackageCheckbox cb = (PackageCheckbox)e.getItemSelectable();
 		if (cb.getState())
-			InterfaceManager.removePackageFromHidden(cb.pkg);
+			InterfaceManager.removePackageFromHidden(cb.pkg, true);
 		else
-			InterfaceManager.addPackageToHidden(cb.pkg);
+			InterfaceManager.addPackageToHidden(cb.pkg, true);
 		if (InterfaceManager.isEditingMode() || InterfaceManager.isSimpleMode()){
 			MesquiteTrunk.resetAllMenuBars();
 			MesquiteTrunk.resetAllToolPalettes();

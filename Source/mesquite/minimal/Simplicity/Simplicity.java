@@ -184,7 +184,7 @@ public class Simplicity extends SimplicityManagerModule {
 						for (Iterator iter = packageElements.iterator(); iter.hasNext();) {   // this is going through all of the notices
 							Element hiddenPackage = (Element) iter.next();
 							String pkg = hiddenPackage.element("name").getText();
-							InterfaceManager.addPackageToHidden(pkg);						
+							InterfaceManager.addPackageToHidden(pkg, false);						
 						}
 					}
 					Element menuItems = element.element("hiddenMenuItems");
@@ -217,13 +217,18 @@ public class Simplicity extends SimplicityManagerModule {
 
 	}
 	/*---------------------------*/
-	public void saveCurrentSettingsFile(){
+	public void saveCurrentSettings(){
+		MesquiteFile.putFileContents(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", makeSettingsFile("Custom"), false);
+	}
+	/*---------------------------*/
+	/*---------------------------*/
+	public String makeSettingsFile(String name){
 		Element settingsFile = DocumentHelper.createElement("mesquite");
 		Document doc = DocumentHelper.createDocument(settingsFile);
 		Element hidden = DocumentHelper.createElement("simplicitySettings");
 		settingsFile.add(hidden);
 		XMLUtil.addFilledElement(hidden, "version","1");
-		XMLUtil.addFilledElement(hidden, "name","Custom");
+		XMLUtil.addFilledElement(hidden, "name",name);
 
 		Element hiddenPkgs = DocumentHelper.createElement("hiddenPackages");
 		hidden.add(hiddenPkgs);
@@ -256,9 +261,8 @@ public class Simplicity extends SimplicityManagerModule {
 			XMLUtil.addFilledElement(elem, "name",s.getName());
 			XMLUtil.addFilledElement(elem, "description",s.getValue());
 		}
-		MesquiteFile.putFileContents(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", XMLUtil.getDocumentAsXMLString(doc), false);
+		return XMLUtil.getDocumentAsXMLString(doc);
 	}
-
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("lockSimplicity".equalsIgnoreCase(tag)){
 			lockSimplicity.setValue(content);
@@ -318,9 +322,19 @@ public class Simplicity extends SimplicityManagerModule {
 				InterfaceManager.mode = InterfaceManager.EDITING;
 			}
 			InterfaceManager.reset();
+		}
+		else if (checker.compare(this.getClass(), "Saves the current simplification", null, commandName, "saveCurrent")) {
+			saveCurrentSettings();
 		}*/
 		else if (checker.compare(this.getClass(), "Saves the current simplification", null, commandName, "saveCurrent")) {
-			saveCurrentSettingsFile();
+			MesquiteString result = new MesquiteString("Custom Simplification");
+			if (QueryDialogs.queryString(containerOfModule(), "Simplification Name", "Name of Simplification:", result)){
+				String contents =  makeSettingsFile(result.getValue());
+				//String contents =  makeSettingsFile("![CDATA[" + result.getValue() + "]]");
+				String path = MesquiteFile.getUniqueModifiedFileName(getInstallationSettingsPath() + "simplification", "xml");
+			
+			MesquiteFile.putFileContents(path, contents, false);
+			}
 		}
 		else if (checker.compare(this.getClass(), "Loads a simplification", null, commandName, "load")) {
 			int i = MesquiteInteger.fromString( new Parser(arguments));
