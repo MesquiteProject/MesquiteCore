@@ -48,7 +48,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		classesHeaderPanel.setBounds(0, modePanelHeight, getWidth(), classesHeight - modePanelHeight);
 		classesHeaderPanel.setVisible(true);
 		field = new PackagesPanel();
-		field.setSize(50, 800);
+		field.setSize(50, field.getH());
 		field.setLocation(0,0);
 		classesPane.addPanel(field);
 		field.setVisible(true);
@@ -87,7 +87,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		to be self-titling so that when things change (names of files, tree blocks, etc.)
 		they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle("Simplify");
+		setTitle("Simplification");
 	}
 
 	/*.................................................................................................................*/
@@ -121,7 +121,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 			if (InterfaceManager.isEditingMode()){
 				classesHeaderPanel.setSize(getWidth(), classesHeight-modePanelHeight);
 				classesPane.setSize(getWidth(), getHeight()-classesHeight-2 -smallInstructionsHeight);
-				field.setSize(50, 800);
+				field.setSize(50, field.getH());
 				classesPane.doLayout();
 				instructionsScrollPane.setBounds(0, getHeight()- smallInstructionsHeight, getWidth(), smallInstructionsHeight-20);
 				instructionsScrollPane.doLayout();
@@ -162,6 +162,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	Image triangleRight, triangleDown;
 	TextArea explanation = new TextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
 	Font fontBig = new Font("SanSerif", Font.BOLD, 14);
+
 	public PackagesPanel(){
 		super();
 		add(explanation);
@@ -237,6 +238,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			if (cb != null && cb.isPackage){
 				cb.collapsed = !cb.collapsed;
 				resetSizes();
+				getParent().doLayout();
 				repaint();
 			}
 		}
@@ -263,11 +265,6 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			}
 		}
 		//g.fillRect(30, 30, 30, 30);
-	}
-	public Dimension getPreferredSize(){
-		if (v == null)
-			return new Dimension(50, 600);
-		return new Dimension(50, v.length*h);
 	}
 	public void itemStateChanged(ItemEvent e){
 		PackageCheckbox cb = (PackageCheckbox)e.getItemSelectable();
@@ -310,9 +307,17 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		}
 		resetSizes();
 	}
-	void resetSizes(){
+	int getH(){
+		return 50 + deepest;
+	}
+	public Dimension getPreferredSize(){
+		int h = resetSizes();
+		return new Dimension(getWidth(), h); 
+	}
+	int deepest = 0;
+	int resetSizes(){
 		if (v == null)
-			return;
+			return 0;
 		boolean on = true;
 		int count = 0;
 		for (int i=0; i<v.length; i++){
@@ -329,6 +334,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 				cb.setBounds(38, count++*h, getWidth(), h);
 			}
 		}
+		return count*h;
 	}
 	int getY(PackageCheckbox box){
 		if (v == null)
@@ -509,7 +515,7 @@ class EditModeButton extends MousePanel {
 		int y = 16-hA-2;
 		if (!InterfaceManager.isEditingMode())
 			h = getHeight()-y-3;
-		
+
 
 		g.fillRoundRect(0, y, w, h , 3, 3);
 		if (!InterfaceManager.isEditingMode())
@@ -583,7 +589,7 @@ class ModePanel extends Panel implements ItemListener {
 		g.setFont(fontBig);
 		FontMetrics fontMet = g.getFontMetrics(fontBig);
 		int hA = fontMet.getAscent();
-		String title = "Simplify Control Panel";
+		String title = "Simplification Control Panel";
 		int w = fontMet.stringWidth(title)+16;
 		g.drawString(title, (getWidth() - w)/2, 16);
 

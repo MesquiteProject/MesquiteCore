@@ -264,11 +264,12 @@ public class Simplicity extends SimplicityManagerModule {
 			lockSimplicity.setValue(content);
 			InterfaceManager.setLock(lockSimplicity.getValue());
 		}
-		else if ("editingMode".equalsIgnoreCase(tag)){
+	/*	else if ("editingMode".equalsIgnoreCase(tag)){
 			MesquiteBoolean c =new MesquiteBoolean();
 			c.setValue(content);
 			InterfaceManager.setEditingMode(c.getValue());
 		}
+	*/
 		else if ("simplicityMode".equalsIgnoreCase(tag)){
 			MesquiteBoolean c =new MesquiteBoolean();
 			c.setValue(content);
@@ -279,7 +280,7 @@ public class Simplicity extends SimplicityManagerModule {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "lockSimplicity", lockSimplicity);   
 		StringUtil.appendXMLTag(buffer, 2, "simplicityMode", InterfaceManager.isSimpleMode());   
-		StringUtil.appendXMLTag(buffer, 2, "editingMode", InterfaceManager.isEditingMode());   
+	//	StringUtil.appendXMLTag(buffer, 2, "editingMode", InterfaceManager.isEditingMode());   
 		return buffer.toString();
 	}
 	String instructions;

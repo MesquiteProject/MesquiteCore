@@ -299,6 +299,9 @@ public class InterfaceManager {
 		if (!isEditingMode() && !isSimpleMode())
 			return NORMAL;
 		boolean classHidden = onHiddenClassList(moduleClass);
+		if (!classHidden && !StringUtil.blank(arguments)){
+			classHidden = onHiddenClassList(arguments);
+		}
 		if (!classHidden && mmi != null && mmi.getOwnerClass() != null)
 			classHidden = onHiddenClassList(mmi.getOwnerClass());
 		if (!classHidden && mmi != null && mmi.getCommand() != null && mmi.getCommand().getOwner() != null)

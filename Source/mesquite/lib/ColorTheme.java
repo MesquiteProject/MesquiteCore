@@ -149,8 +149,6 @@ public class ColorTheme {
 		InterfaceBackground[MILKCHOCOLATE] = new Color(216,204,172);  // chocolate theme
 	}
 	public static Color getInterfaceBackground(){  //background of tool palettes and small tabs bar
-		if (InterfaceManager.isEditingMode())
-			return Color.cyan;
 			return InterfaceBackground[THEME];
 	}
 	/*-------------*/
@@ -162,8 +160,6 @@ public class ColorTheme {
 		InterfaceBackgroundPale[MILKCHOCOLATE] = new Color(234, 228,212); // chocolate theme
 	}
 	public static Color getInterfaceBackgroundPale(){
-		if (InterfaceManager.isEditingMode())
-			return Color.cyan;
 		return InterfaceBackgroundPale[THEME];
 	}
 	/*-------------Unselected tools; unselected inner tabs*/
@@ -198,8 +194,6 @@ public class ColorTheme {
 		InterfaceEdgeNegative[MILKCHOCOLATE] = new Color(226,222,222); // chocolate theme
 	}
 	public static Color getInterfaceEdgeNegative(){  //edge to unselected small tab and tool button
-		if (InterfaceManager.isEditingMode())
-			return Color.cyan;
 		return InterfaceEdgeNegative[THEME];
 	}
 	/*-------------*/
@@ -211,8 +205,6 @@ public class ColorTheme {
 		InterfaceEdgePositive[MILKCHOCOLATE] = new Color(114,100,90); // chocolate theme
 	}
 	public static Color getInterfaceEdgePositive(){  //edge to selected small tab
-		if (InterfaceManager.isEditingMode())
-			return Color.cyan;
 		return InterfaceEdgePositive[THEME];
 	}
 	/*-------------*/
