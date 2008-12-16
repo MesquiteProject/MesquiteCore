@@ -320,6 +320,28 @@ public class InterfaceManager {
 		return NORMAL;
 	}
 	/*---------------------------*/
+	public static Listable[] filterToSimple(Listable[] list){
+		if (list == null)
+			return null;
+		ListableVector v = new ListableVector();
+		for (int i=0; i< list.length; i++){
+			Listable item = list[i];
+			if (item != null && item instanceof MesquiteModuleInfo){
+				if (!onHiddenClassList(((MesquiteModuleInfo)item).getClassName()))
+					v.addElement(item, false);
+			}
+			else if (item != null)
+				if (!onHiddenClassList(item.getClass()))
+					v.addElement(item, false);
+		}
+		Listable[] result = new Listable[v.size()];
+		for (int i=0; i< v.size(); i++){
+			result[i] = v.elementAt(i);
+		}
+		return result;
+
+	}
+	/*---------------------------*/
 	public static void getLoadSaveMenuItems(MesquitePopup popup){
 		if (simplicityModule != null){
 			popup.add(new MesquiteMenuItem("Save Current Simplification", null, new MesquiteCommand("saveCurrent", simplicityModule), null));

@@ -148,6 +148,9 @@ class ClassesPane extends ScrollPane{
 	public ClassesPane () {
 		//super(null, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
 		super(ScrollPane.SCROLLBARS_AS_NEEDED);
+		Adjustable v = getVAdjustable();
+		if (v != null)
+			v.setUnitIncrement(20);
 	}
 	public void addPanel(Component c){
 		addImpl(c, null, 0);
