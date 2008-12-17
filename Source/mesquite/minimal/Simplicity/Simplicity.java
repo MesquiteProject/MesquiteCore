@@ -330,10 +330,11 @@ public class Simplicity extends SimplicityManagerModule {
 			MesquiteString result = new MesquiteString("Custom Simplification");
 			if (QueryDialogs.queryString(containerOfModule(), "Simplification Name", "Name of Simplification:", result)){
 				String contents =  makeSettingsFile(result.getValue());
-				//String contents =  makeSettingsFile("![CDATA[" + result.getValue() + "]]");
 				String path = MesquiteFile.getUniqueModifiedFileName(getInstallationSettingsPath() + "simplification", "xml");
 			
-			MesquiteFile.putFileContents(path, contents, false);
+				MesquiteFile.putFileContents(path, contents, false);
+					InterfaceManager.settingsFiles.addElement(new MesquiteString(result.getValue(), contents), false);
+
 			}
 		}
 		else if (checker.compare(this.getClass(), "Loads a simplification", null, commandName, "load")) {

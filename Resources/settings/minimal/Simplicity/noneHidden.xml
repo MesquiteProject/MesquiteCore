@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mesquite>
-  <hidden>
+  <simplicitySettings>
     <version>1</version>
     <name>None Hidden</name>
     <hiddenPackages>
     </hiddenPackages>
     <hiddenTools>
     </hiddenTools>
-  </hidden>
+  </simplicitySettings>
 </mesquite>

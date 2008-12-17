@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mesquite>
-  <hidden>
+  <simplicitySettings>
     <version>1</version>
     <name>Basic Morphological Phylogenetics</name>
     <hiddenPackages>
@@ -72,5 +72,5 @@
         <description>Make All Rerootings of Clade</description>
       </tool>
     </hiddenTools>
-  </hidden>
+  </simplicitySettings>
 </mesquite>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mesquite>
-  <hidden>
+  <simplicitySettings>
     <version>1</version>
     <name>Basic Molecular Editing</name>
     <hiddenPackages>
@@ -65,5 +65,5 @@
       </menuItem>
     </hiddenMenuItems>
     <hiddenTools/>
-  </hidden>
+  </simplicitySettings>
 </mesquite>
