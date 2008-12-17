@@ -15,8 +15,8 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	ClassHeadersPanel classesHeaderPanel;
 	JEditorPane instructionsPanel;
 	JScrollPane instructionsScrollPane;
-	int modePanelHeight = 84;
-	int classesHeight = 130;
+	int modePanelHeight = 96;
+	int classesHeight = 140;
 	public String instructions;
 
 	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager) {
@@ -426,7 +426,8 @@ class EditModeCheckBox extends Checkbox {
 		this.late = late;
 	}
 }
-*/
+/*.................................................................................................................*/
+
 class PackageCheckbox extends Checkbox implements Listable {
 	String pkg = null;
 	String expl = null;
@@ -452,41 +453,102 @@ class PackageCheckbox extends Checkbox implements Listable {
 		this.late = late;
 	}
 }
-class LoadSaveButton extends MousePanel {
+/*.................................................................................................................*/
+class SaveRenameDeleteButton extends LoadSaveDeleteButton {
+	public SaveRenameDeleteButton(){
+		super("Save/Rename/Delete");
+		setBackground(ColorTheme.getExtInterfaceBackground());
+		setForeground(ColorTheme.getExtInterfaceTextContrast());
+		//ColorTheme.getExtInterfaceElement());
+	}
+	void redoMenu() {
+		if (popup==null)
+			popup = new MesquitePopup(this);
+		popup.removeAll();
+		popup.add(new MesquiteMenuItem("Save Current...", null, new MesquiteCommand("saveCurrent", InterfaceManager.simplicityModule), null));
+		MesquiteSubmenu ms = new MesquiteSubmenu("Rename...", popup, null);
+		InterfaceManager.addSettingsMenuItems(ms, "rename");
+		popup.add(ms);
+		MesquiteSubmenu ms2 = new MesquiteSubmenu("Delete...", popup, null);
+		InterfaceManager.addSettingsMenuItems(ms2, "delete");
+		popup.add(ms2);
+
+		add(popup);
+	}
+	public void resetSize(){
+		if (!InterfaceManager.isEditingMode()){
+			setSize(0,0);
+			return;
+		}
+		super.resetSize();
+	}
+}
+/*.................................................................................................................*/
+class LoadButton extends LoadSaveDeleteButton {
+	public LoadButton(){
+		super("Load Simplification");
+	}
+	void redoMenu() {
+		if (popup==null)
+			popup = new MesquitePopup(this);
+		popup.removeAll();
+		InterfaceManager.addSettingsMenuItems(popup, "load");
+		add(popup);
+	}
+}
+/*.................................................................................................................*/
+abstract class LoadSaveDeleteButton extends MousePanel {
 	MesquitePopup popup;
 	Polygon dropDownTriangle;
-	public LoadSaveButton(){
+	String label;
+	public LoadSaveDeleteButton(String label){
 		dropDownTriangle=MesquitePopup.getDropDownTriangle();
+		this.label = label;
+		Font fontBig = new Font("SansSerif", Font.BOLD, 10);
+		setFont(fontBig);
+		resetSize();
 	}
-	/*.................................................................................................................*/
+	public void resetSize(){
+		Graphics g = getGraphics();
+		if (g == null)
+			return;
+		Font font = g.getFont();
+		FontMetrics fontMet = g.getFontMetrics(font);
+		int w = fontMet.stringWidth(label)+17;
+		int h = fontMet.getAscent() +fontMet.getDescent()+6;
+		setSize(w, h);
+	}
 	public void paint (Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		String s = "Save/Load Settings";
 		Font font = g.getFont();
 		FontMetrics fontMet = g.getFontMetrics(font);
 		int hA = fontMet.getAscent();
-		int w = fontMet.stringWidth(s)+16;
+		int w = fontMet.stringWidth(label)+16;
 		int h = hA +fontMet.getDescent()+4;
 		int y =16-hA-2;
-		g.drawRoundRect(0, y, w, h , 3, 3);
+		w = getWidth() - 1;
+		h = getHeight() - 1;
+		y = 0;
+		// g.drawRoundRect(0, y, w, h , 3, 3);
 
-		g.setColor(ColorTheme.getActiveLight());
-		g.fillRoundRect(0, y, w, h , 3, 3);
-		g.setColor(Color.black);
-		g.drawString(s, 4, 16);
-		g.drawRoundRect(0, y, w, h , 3, 3);
+		//g.setColor(ColorTheme.getActiveLight());
+		//g.fillRoundRect(0, y, w, h , 3, 3);
+		g.setColor(getForeground());
+		g.drawString(label, 4, hA+2);
+		g.drawLine(4, hA+6, w-8, hA+6);
+		//g.drawRoundRect(0, y, w, h , 3, 3);
 
 
-		dropDownTriangle.translate(w - 8 ,8);
+		dropDownTriangle.translate(w - 10 ,8);
 		g.setColor(Color.white);
 		g.drawPolygon(dropDownTriangle);
-		g.setColor(Color.black);
+		g.setColor(getForeground());
 		g.fillPolygon(dropDownTriangle);
-		dropDownTriangle.translate(-w + 8 ,-8);
+		dropDownTriangle.translate(-w + 10 ,-8);
+
 		MesquiteWindow.uncheckDoomed(this);
 	}
-	/*.................................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
@@ -494,15 +556,102 @@ class LoadSaveButton extends MousePanel {
 		popup.show(this, 0,20);
 		MesquiteWindow.uncheckDoomed(this);
 	}
-	/*.................................................................................................................*/
-	void redoMenu() {
-		if (popup==null)
-			popup = new MesquitePopup(this);
-		popup.removeAll();
-		InterfaceManager.getLoadSaveMenuItems(popup);
-		add(popup);
-	}
+	abstract void redoMenu() ;
 }
+
+/*.................................................................................................................*/
+class EditModeButton extends Checkbox implements ItemListener {
+	MesquiteCommand command;
+	Image editing;
+	
+	public EditModeButton(){
+		super("Editing Mode");
+		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
+		setState(false);
+		setBackground(ColorTheme.getExtInterfaceElement());
+		setForeground(ColorTheme.getExtInterfaceTextContrast()); //ColorTheme.getExtInterfaceElement());
+		addItemListener(this);
+	}
+	
+	void resetColors(){
+		if (InterfaceManager.isEditingMode()){
+			setBackground(ColorTheme.getExtInterfaceBackground());
+			setForeground(ColorTheme.getExtInterfaceTextContrast());
+		}
+		else {
+			setBackground(ColorTheme.getExtInterfaceElement());
+			setForeground(ColorTheme.getExtInterfaceTextMedium());
+		}
+	}
+	public void itemStateChanged(ItemEvent e){
+		if (InterfaceManager.isEditingMode() == getState())
+			return;
+		InterfaceManager.setEditingMode(getState());
+		if (InterfaceManager.isEditingMode()){
+			//setBackground(Color.cyan);
+		//	setLabel("Turn OFF Editing Mode");
+		}
+		else {
+		//	setBackground(ColorTheme.getInterfaceElement());
+		//	setLabel("Turn ON Editing Mode");
+		}
+		resetColors();
+		repaint();
+		MesquiteModule.resetAllMenuBars();
+		MesquiteModule.resetAllToolPalettes();
+		MesquiteWindow.resetAllSimplicity();
+	}
+	
+	public void paint (Graphics g) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		//g.setColor(ColorTheme.getInterfaceElement());
+	//g.fillRect(50, 0, 20, 20);
+	
+		/*
+		 * String s = "";
+		if (InterfaceManager.isEditingMode()){
+			g.setColor(Color.cyan);
+			s = "Turn OFF Editing Mode";
+		}
+		else {
+			s  = "Turn ON Editing Mode";
+			g.setColor(ColorTheme.getActiveLight());
+		}
+		Font font = g.getFont();
+		FontMetrics fontMet = g.getFontMetrics(font);
+		int hA = fontMet.getAscent();
+		int w = fontMet.stringWidth(s)+8;
+		int h = hA +fontMet.getDescent()+4;
+		int y = 16-hA-2;
+		if (!InterfaceManager.isEditingMode())
+			h = getHeight()-y-3;
+
+
+		g.fillRoundRect(0, y, w, h , 3, 3);
+		if (!InterfaceManager.isEditingMode())
+			g.drawImage(editing, w/2-8, 30, this);
+		g.setColor(Color.black);
+		g.drawString(s, 4, 16);
+		g.drawRoundRect(0, y, w, h , 3, 3);
+		*/
+		super.paint(g);
+		MesquiteWindow.uncheckDoomed(this);
+	}
+	/*public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		if (InterfaceManager.isEditingMode())
+			command = new MesquiteCommand("offedit", InterfaceManager.simplicityModule);
+		else 
+			command = new MesquiteCommand("edit", InterfaceManager.simplicityModule);
+		command.doItMainThread(null, null, null);
+		repaint();
+		MesquiteWindow.uncheckDoomed(this);
+	}
+	/**/
+}
+	/*.................................................................................................................*
 class EditModeButton extends MousePanel {
 	MesquiteCommand command;
 	Image editing;
@@ -510,7 +659,6 @@ class EditModeButton extends MousePanel {
 	public EditModeButton(){
 		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
 	}
-	/*.................................................................................................................*/
 	public void paint (Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
@@ -541,7 +689,6 @@ class EditModeButton extends MousePanel {
 		g.drawRoundRect(0, y, w, h , 3, 3);
 		MesquiteWindow.uncheckDoomed(this);
 	}
-	/*.................................................................................................................*/
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
@@ -554,16 +701,19 @@ class EditModeButton extends MousePanel {
 		MesquiteWindow.uncheckDoomed(this);
 	}
 }
+/*.................................................................................................................*/
 class ModePanel extends Panel implements ItemListener {
 	CheckboxGroup cbg;
 	Checkbox powerCB, simplerCB;
 	SimplifyControlWindow w;
 	Image power, simple;
 	MesquitePopup popup;
-	LoadSaveButton loadSaveButton;
+	LoadButton loadButton;
+	SaveRenameDeleteButton saveRenameDeleteButton;
 	EditModeButton editModeButton;
 	int cbwidth = 160;
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
+	Font fontBig14 = new Font("SansSerif", Font.BOLD, 14);
 	int top = 20;
 	public ModePanel(SimplifyControlWindow w){
 		super();
@@ -576,26 +726,32 @@ class ModePanel extends Panel implements ItemListener {
 		add(powerCB);
 		add(simplerCB);
 		powerCB.setBounds(22, top + 2, cbwidth, 16);
-		powerCB.setFont(fontBig);
+		powerCB.setFont(fontBig14);
 		powerCB.setVisible(true);
 		simplerCB.setBounds(22, top + 22, cbwidth, 16);
 		simplerCB.setVisible(true);
-		simplerCB.setFont(fontBig);
+		simplerCB.setFont(fontBig14);
 		powerCB.addItemListener(this);
 		simplerCB.addItemListener(this);
 		power = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "power.gif");  
 		simple = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simple.gif");  
 
-		loadSaveButton = new LoadSaveButton();
-		loadSaveButton.setFont(fontBig);
-		loadSaveButton.setVisible(true);
-		add(loadSaveButton);
+		loadButton = new LoadButton();
+		loadButton.setFont(fontBig);
+		loadButton.setVisible(true);
+		add(loadButton);
+		saveRenameDeleteButton = new SaveRenameDeleteButton();
+		saveRenameDeleteButton.setFont(fontBig);
+		saveRenameDeleteButton.setVisible(true);
+		add(saveRenameDeleteButton);
 
 		editModeButton = new EditModeButton();
 		resizeButtons();
 		editModeButton.setFont(fontBig);
 		editModeButton.setVisible(true);
 		add(editModeButton);
+		editModeButton.resetColors();
+
 	}
 
 	/*.................................................................................................................*/
@@ -622,18 +778,42 @@ class ModePanel extends Panel implements ItemListener {
 
 		ColorDistribution.setComposite(g,composite);
 		g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
+		if (InterfaceManager.isEditingMode()){
+			g.setColor(Color.cyan);
+			g.fillRoundRect(getWidth()-editModeLeft-10, editModeTop + 4, editModeWidth +24, 58, 8, 8);
+		}
+		if (editModeButton != null)
+			g.setColor(editModeButton.getBackground());
+		else
+			g.setColor(ColorTheme.getExtInterfaceElement());
+		if (InterfaceManager.isEditingMode()){
+			g.fillRoundRect(getWidth()-editModeLeft-8, editModeTop + 6, editModeWidth +20, 54, 8, 8);
+		}
+		else {
+			g.fillRoundRect(getWidth()-editModeLeft-8, editModeTop + 6, editModeWidth +20, 28, 8, 8);
+		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
+	int editModeTop = top+4;
+	int editModeLeft = 170;
+	int editModeWidth = 140;
+
 	void resizeButtons(){
-		if (loadSaveButton != null){
-			if (InterfaceManager.isEditingMode()) {
-				loadSaveButton.setBounds(getWidth()-200, top + 32, 200, 24);
-				editModeButton.setBounds(getWidth()-200, top + 2, 200, 24);
+		if (loadButton != null){
+			loadButton.resetSize();
+			saveRenameDeleteButton.resetSize();
+			loadButton.setLocation(50, top + 40);
+			editModeButton.setLocation(getWidth()-editModeLeft, editModeTop + 8);
+			editModeButton.setSize(140, 24);
+			saveRenameDeleteButton.setLocation(getWidth()-editModeLeft, editModeTop + 36);
+			editModeButton.resetColors();
+			
+			/*if (InterfaceManager.isEditingMode()) {
+				editModeButton.setBounds(getWidth()-200, top + 2, 220, 24);
 			}
 			else {
-				loadSaveButton.setBounds(getWidth()-200, top + 32, 0, 0);
-				editModeButton.setBounds(getWidth()-200, top + 2, 200, 54);
-			}
+				editModeButton.setBounds(getWidth()-200, top + 2, 220, 54);
+			}*/
 		}
 	}
 	public void setSize(int w, int h){

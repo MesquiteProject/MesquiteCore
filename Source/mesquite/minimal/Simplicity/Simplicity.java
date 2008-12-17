@@ -54,7 +54,7 @@ public class Simplicity extends SimplicityManagerModule {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		lockSimplicity = new MesquiteBoolean(false);
-		
+
 		if (InterfaceManager.enabled)
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Lock In Simple Mode", makeCommand("toggleLockSimplicity",  this), lockSimplicity);
 		InterfaceManager.simplicityModule = this;  //remember me
@@ -74,13 +74,13 @@ public class Simplicity extends SimplicityManagerModule {
 		lock(InterfaceManager.locked);
 		resetSimplicity();
 	}
-	
-  	public  void resetSimplicity(){
+
+	public  void resetSimplicity(){
 		if (simplicityWindow != null)
 			simplicityWindow.resetSimplicity();
 		storePreferences();
- 	}
-  	public void lock(boolean L){
+	}
+	public void lock(boolean L){
 		if (simplicityWindow != null)
 			simplicityWindow.lock(L);
 	}
@@ -268,12 +268,12 @@ public class Simplicity extends SimplicityManagerModule {
 			lockSimplicity.setValue(content);
 			InterfaceManager.setLock(lockSimplicity.getValue());
 		}
-	/*	else if ("editingMode".equalsIgnoreCase(tag)){
+		/*	else if ("editingMode".equalsIgnoreCase(tag)){
 			MesquiteBoolean c =new MesquiteBoolean();
 			c.setValue(content);
 			InterfaceManager.setEditingMode(c.getValue());
 		}
-	*/
+		 */
 		else if ("simplicityMode".equalsIgnoreCase(tag)){
 			MesquiteBoolean c =new MesquiteBoolean();
 			c.setValue(content);
@@ -284,7 +284,7 @@ public class Simplicity extends SimplicityManagerModule {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "lockSimplicity", lockSimplicity);   
 		StringUtil.appendXMLTag(buffer, 2, "simplicityMode", InterfaceManager.isSimpleMode());   
-	//	StringUtil.appendXMLTag(buffer, 2, "editingMode", InterfaceManager.isEditingMode());   
+		//	StringUtil.appendXMLTag(buffer, 2, "editingMode", InterfaceManager.isEditingMode());   
 		return buffer.toString();
 	}
 	String instructions;
@@ -331,15 +331,19 @@ public class Simplicity extends SimplicityManagerModule {
 			if (QueryDialogs.queryString(containerOfModule(), "Simplification Name", "Name of Simplification:", result)){
 				String contents =  makeSettingsFile(result.getValue());
 				String path = MesquiteFile.getUniqueModifiedFileName(getInstallationSettingsPath() + "simplification", "xml");
-			
+
 				MesquiteFile.putFileContents(path, contents, false);
-					InterfaceManager.settingsFiles.addElement(new MesquiteString(result.getValue(), contents), false);
+				InterfaceManager.settingsFiles.addElement(new MesquiteString(result.getValue(), contents), false);
 
 			}
 		}
 		else if (checker.compare(this.getClass(), "Loads a simplification", null, commandName, "load")) {
 			int i = MesquiteInteger.fromString( new Parser(arguments));
 			loadSettingsFile(i);
+			if (!InterfaceManager.isEditingMode() && !InterfaceManager.isSimpleMode()){
+				InterfaceManager.setSimpleMode(true);
+				InterfaceManager.reset();
+			}
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

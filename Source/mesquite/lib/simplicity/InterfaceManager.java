@@ -339,8 +339,8 @@ public class InterfaceManager {
 		return result;
 
 	}
-	/*---------------------------*/
-	public static void getLoadSaveMenuItems(MesquitePopup popup){
+	/*---------------------------
+	public static void getLoadSaveMenu(MesquitePopup popup){
 		if (simplicityModule != null){
 			popup.add(new MesquiteMenuItem("Save Current Simplification", null, new MesquiteCommand("saveCurrent", simplicityModule), null));
 			MesquiteSubmenu ms = new MesquiteSubmenu("Load Simplification", popup, null);
@@ -349,6 +349,39 @@ public class InterfaceManager {
 				ms.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand("load", "" + i, simplicityModule), null));
 			}
 			popup.add(ms);
+		}
+	}*/
+	public static void getSaveRenameDeleteMenuItems(java.awt.Menu menu){
+		if (simplicityModule != null){
+			menu.add(new MesquiteMenuItem("Save Current...", null, new MesquiteCommand("saveCurrent", simplicityModule), null));
+			MesquiteSubmenu ms = new MesquiteSubmenu("Rename...", menu, null);
+			for (int i = 0; i< settingsFiles.size(); i++){
+				MesquiteString sf = (MesquiteString)settingsFiles.elementAt(i);
+				ms.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand("rename", "" + i, simplicityModule), null));
+			}
+			menu.add(ms);
+			MesquiteSubmenu ms2 = new MesquiteSubmenu("Delete...", menu, null);
+			for (int i = 0; i< settingsFiles.size(); i++){
+				MesquiteString sf = (MesquiteString)settingsFiles.elementAt(i);
+				ms2.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand("delete", "" + i, simplicityModule), null));
+			}
+			menu.add(ms2);
+		}
+	}
+	public static void getLoadMenuItems(java.awt.Menu menu){
+		if (simplicityModule != null){
+			for (int i = 0; i< settingsFiles.size(); i++){
+				MesquiteString sf = (MesquiteString)settingsFiles.elementAt(i);
+				menu.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand("load", "" + i, simplicityModule), null));
+			}
+		}
+	}
+	public static void addSettingsMenuItems(java.awt.Menu menu, String command){
+		if (simplicityModule != null){
+			for (int i = 0; i< settingsFiles.size(); i++){
+				MesquiteString sf = (MesquiteString)settingsFiles.elementAt(i);
+				menu.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand(command, "" + i, simplicityModule), null));
+			}
 		}
 	}
 	/*---------------------------*/
