@@ -25,7 +25,7 @@ import mesquite.ancstates.lib.*;
  * */
 
 /*======================================================================== */
-public class SummarizeChgOverTrees extends FileAssistantT {
+public class SummarizeChgOverTrees extends FileAssistantA {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(ChgSummarizerMultTrees.class, getName() + " needs a calculator.",
 		"This is chosen automatically");

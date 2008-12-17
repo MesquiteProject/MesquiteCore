@@ -410,7 +410,23 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		resetSizes();
 	}
 }
-
+/*
+class EditModeCheckBox extends Checkbox {
+	public EditModeCheckBox(){
+		super(name);
+		setBackground(Color.white);
+		this.name = name;
+		this.pkg = pkg;
+		this.expl = explanation;
+		this.isPackage = isPackage;
+		this.hideable = isHideable;
+		setEnabled(hideable);
+	}
+	void setLate(boolean late){
+		this.late = late;
+	}
+}
+*/
 class PackageCheckbox extends Checkbox implements Listable {
 	String pkg = null;
 	String expl = null;

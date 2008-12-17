@@ -318,7 +318,7 @@ public class InterfaceManager {
 		return NORMAL;
 	}
 	/*---------------------------*/
-	public static Listable[] filterToSimple(Listable[] list){
+	public static Listable[] filterHidden(Listable[] list){
 		if (list == null)
 			return null;
 		ListableVector v = new ListableVector();
