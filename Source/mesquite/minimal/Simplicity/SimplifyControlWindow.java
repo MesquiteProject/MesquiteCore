@@ -487,6 +487,7 @@ class SaveRenameDeleteButton extends LoadSaveDeleteButton {
 class LoadButton extends LoadSaveDeleteButton {
 	public LoadButton(){
 		super("Load Simplification");
+		setForeground(ColorTheme.getExtInterfaceBackground());
 	}
 	void redoMenu() {
 		if (popup==null)
@@ -714,7 +715,7 @@ class ModePanel extends Panel implements ItemListener {
 	int cbwidth = 160;
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
 	Font fontBig14 = new Font("SansSerif", Font.BOLD, 14);
-	int top = 20;
+	int top = 24;
 	public ModePanel(SimplifyControlWindow w){
 		super();
 		this.w = w;
@@ -765,6 +766,7 @@ class ModePanel extends Panel implements ItemListener {
 		int w = fontMet.stringWidth(title)+16;
 		g.drawString(title, (getWidth() - w)/2, 16);
 
+		g.drawLine(16, top-2, getWidth()-16, top-2);
 		Composite composite = ColorDistribution.getComposite(g);
 		if (InterfaceManager.isSimpleMode())
 			ColorDistribution.setTransparentGraphics(g,0.1f);

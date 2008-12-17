@@ -99,12 +99,14 @@ public class InterfaceManager {
 	}
 	public static void addPackageToHidden(String packagePath, boolean save){
 		hiddenPackages.addElement(new MesquiteString(packagePath, packagePath), false);
-		autoSave();
+		if (save) 
+			autoSave();
 	}
 	public static void removePackageFromHidden(String packagePath, boolean save){
 		int i = hiddenPackages.indexOfByName(packagePath);
 		if (i>=0){
 			hiddenPackages.removeElementAt(i, false);
+			if (save) 
 			autoSave();
 		}
 	}
@@ -113,6 +115,7 @@ public class InterfaceManager {
 		if (onHiddenToolList(tool))
 			return;
 		hiddenTools.addElement(new MesquiteString(tool.getName(), tool.getDescription()), false);
+		if (save) 
 		autoSave();
 	}
 	public static void removeToolFromHidden(String name, String description, boolean save){ //TODO: should be based on more than just name and description!
@@ -122,6 +125,7 @@ public class InterfaceManager {
 			String hiddenDescr = vis.getValue();
 			if (hiddenName != null && name.equals(hiddenName) && hiddenDescr != null && description.equals(hiddenDescr)){
 				hiddenTools.removeElementAt(i, false);
+				if (save) 
 				autoSave();
 				return;
 			}
@@ -145,6 +149,7 @@ public class InterfaceManager {
 		if (dutyClass != null)
 			dcName = dutyClass.getName();
 		hiddenMenuItems.addElement(new MenuVisibility(label, arguments, command.getName(), commandableClassName, dcName), false);
+		if (save) 
 		autoSave();
 	}
 
@@ -167,6 +172,7 @@ public class InterfaceManager {
 			MenuVisibility vis = (MenuVisibility)hiddenMenuItems.elementAt(i);
 			if (vis.matchesMenuItem(label, arguments, command.getName(), commandableClassName, dcName)){
 				hiddenMenuItems.removeElement(vis, false);
+				if (save) 
 				autoSave();
 				return;
 			}
@@ -318,27 +324,6 @@ public class InterfaceManager {
 		return NORMAL;
 	}
 	/*---------------------------*/
-	public static Listable[] filterHidden(Listable[] list){
-		if (list == null)
-			return null;
-		ListableVector v = new ListableVector();
-		for (int i=0; i< list.length; i++){
-			Listable item = list[i];
-			if (item != null && item instanceof MesquiteModuleInfo){
-				if (!onHiddenClassList(((MesquiteModuleInfo)item).getClassName()))
-					v.addElement(item, false);
-			}
-			else if (item != null)
-				if (!onHiddenClassList(item.getClass()))
-					v.addElement(item, false);
-		}
-		Listable[] result = new Listable[v.size()];
-		for (int i=0; i< v.size(); i++){
-			result[i] = v.elementAt(i);
-		}
-		return result;
-
-	}
 	/*---------------------------
 	public static void getLoadSaveMenu(MesquitePopup popup){
 		if (simplicityModule != null){
