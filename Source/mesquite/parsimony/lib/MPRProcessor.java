@@ -4,15 +4,18 @@ import mesquite.categ.lib.CategoricalHistory;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Long2DArray;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.Tree;
 import mesquite.lib.characters.*;
 
 public class MPRProcessor {
 	CharacterHistory history = null;
 	long[][] numMPRsForStates = null;
+	boolean overflow = false;
 
 	public MPRProcessor(CharacterHistory history) {
 		this.history = history;
+		overflow=false;
 	}
 
 	/*.................................................................................................................*/
@@ -37,7 +40,10 @@ public class MPRProcessor {
 								fixedNum+=numMPRsForStates[d][e];
 							}
 						}
+						
 						numMPRsForStates[node][ist]=numMPRsForStates[node][ist]*fixedNum;
+						if (numMPRsForStates[node][ist]<0)
+							overflow=true;
 					}
 				}
 			}
@@ -50,6 +56,13 @@ public class MPRProcessor {
 		for (int e = 0; e<= CategoricalState.maxCategoricalState; e++){
 			nodeMPRs+=numMPRsForStates[node][e];
 		}
+		if (nodeMPRs<0)
+			overflow=true;
+		if (overflow) {
+			MesquiteMessage.println("Number of MPRs exceeds that allowed.");
+			return Long.MAX_VALUE;
+		}
+
 		return nodeMPRs;
 	}
 	private void checkArrayIntegrity (Tree tree) {
@@ -58,10 +71,16 @@ public class MPRProcessor {
 	}
 	/*.................................................................................................................*/
 	public long getNumResolutions(Tree tree) {
+		return getNumResolutions(tree, tree.getRoot());
+	}
+
+	/*.................................................................................................................*/
+	public long getNumResolutions(Tree tree, int node) {
+		overflow=false;
 		checkArrayIntegrity(tree);
 		Long2DArray.zeroArray(numMPRsForStates);
 		if (((CategoricalHistory)history).hasConditionalStateSets()) {
-			return numMPRsForNode(tree, tree.getRoot());
+			return numMPRsForNode(tree,node);
 		}
 		return MesquiteInteger.unassigned;
 	}
@@ -78,12 +97,17 @@ public class MPRProcessor {
 				mprTotalInNode +=numMPRsForStates[node][ist];
 			}
 		}
+		if (mprTotalInNode<0)
+			overflow=true;
+		if (overflow) {
+			MesquiteMessage.println("Number of MPRs exceeds that allowed.");
+			return Long.MAX_VALUE;
+		}
 		return mprTotalInNode;
 	}
 
 	/*.................................................................................................................*/
 	public void setMPR(Tree tree, CategoricalHistory results, long whichMPR, long totalRemaining, int node) {
-
 //		first, let's figure out the MPRset for this node given what it's mother is fixed to
 		int stateOfNode = MesquiteInteger.unassigned;
 		int lastState = MesquiteInteger.unassigned;
@@ -140,22 +164,29 @@ public class MPRProcessor {
 				whichMPROnceFixed=whichMPROnceFixed % totalMPRsPerMPRInNode+1;   // have to take the remainder and convert it to 1-based; this is for the next daughter
 			}
 		} 
+
 	}
 	
+
 	/** Returns in results the character history that is the resolution "resolutionNumber" */
 	/*.................................................................................................................*/
-	public CharacterHistory getResolution(Tree tree, CharacterHistory results, long resolutionNumber) {
+	public CharacterHistory getResolution(Tree tree, int node, CharacterHistory results, long resolutionNumber) {
 		if (tree==null || resolutionNumber<0) 
 			return null;
-		long numMPRs = getNumResolutions(tree);
-		if (resolutionNumber>=numMPRs)
+		long numMPRs = getNumResolutions(tree, node);
+		if (resolutionNumber>=numMPRs || overflow)
 			return null;
 		results=((CategoricalHistory)history).adjustHistorySize(tree,results);
 		history.clone(results);
-		setMPR(tree, (CategoricalHistory)results,resolutionNumber+1, numMPRs, tree.getRoot());
+		setMPR(tree, (CategoricalHistory)results,resolutionNumber+1, numMPRs, node);
 		return results;
 
 	}
-
+	/** Returns in results the character history that is the resolution "resolutionNumber" */
+	/*.................................................................................................................*/
+	public CharacterHistory getResolution(Tree tree, CharacterHistory results, long resolutionNumber) {
+	 return getResolution(tree,tree.getRoot(), results, resolutionNumber);
+	}
+	
 
 }
