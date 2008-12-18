@@ -26,6 +26,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		//instructions
 		String simpLoc = module.getPath() + "instructions.html";
 		instructions = MesquiteFile.getFileContentsAsString(simpLoc);
+		instructions = StringUtil.replace(instructions, "RPATH", "file://" + MesquiteModule.getRootImageDirectoryPath());
 		//saved settings... load, save
 		classesPane = new ClassesPane();
 		addToWindow(classesPane);
@@ -467,16 +468,16 @@ class SaveRenameDeleteButton extends LoadSaveDeleteButton {
 		popup.removeAll();
 		popup.add(new MesquiteMenuItem("Save Current...", null, new MesquiteCommand("saveCurrent", InterfaceManager.simplicityModule), null));
 		MesquiteSubmenu ms = new MesquiteSubmenu("Rename...", popup, null);
-		InterfaceManager.addSettingsMenuItems(ms, "rename");
+		InterfaceManager.addSettingsMenuItems(ms, "rename", false);
 		popup.add(ms);
 		MesquiteSubmenu ms2 = new MesquiteSubmenu("Delete...", popup, null);
-		InterfaceManager.addSettingsMenuItems(ms2, "delete");
+		InterfaceManager.addSettingsMenuItems(ms2, "delete", false);
 		popup.add(ms2);
 
 		add(popup);
 	}
 	public void resetSize(){
-		if (!InterfaceManager.isEditingMode()){
+		if (!InterfaceManager.isEditingMode() || !InterfaceManager.settingsWritable()){
 			setSize(0,0);
 			return;
 		}
@@ -493,7 +494,7 @@ class LoadButton extends LoadSaveDeleteButton {
 		if (popup==null)
 			popup = new MesquitePopup(this);
 		popup.removeAll();
-		InterfaceManager.addSettingsMenuItems(popup, "load");
+		InterfaceManager.addSettingsMenuItems(popup, "load", true);
 		add(popup);
 	}
 }
@@ -782,13 +783,16 @@ class ModePanel extends Panel implements ItemListener {
 		g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
 		if (InterfaceManager.isEditingMode()){
 			g.setColor(Color.cyan);
-			g.fillRoundRect(getWidth()-editModeLeft-10, editModeTop + 4, editModeWidth +24, 58, 8, 8);
+			if (InterfaceManager.settingsWritable())
+				g.fillRoundRect(getWidth()-editModeLeft-10, editModeTop + 4, editModeWidth +24, 58, 8, 8);
+			else
+				g.fillRoundRect(getWidth()-editModeLeft-10, editModeTop + 4, editModeWidth +24, 32, 8, 8);
 		}
 		if (editModeButton != null)
 			g.setColor(editModeButton.getBackground());
 		else
 			g.setColor(ColorTheme.getExtInterfaceElement());
-		if (InterfaceManager.isEditingMode()){
+		if (InterfaceManager.isEditingMode() && InterfaceManager.settingsWritable()){
 			g.fillRoundRect(getWidth()-editModeLeft-8, editModeTop + 6, editModeWidth +20, 54, 8, 8);
 		}
 		else {
@@ -809,13 +813,6 @@ class ModePanel extends Panel implements ItemListener {
 			editModeButton.setSize(140, 24);
 			saveRenameDeleteButton.setLocation(getWidth()-editModeLeft, editModeTop + 36);
 			editModeButton.resetColors();
-			
-			/*if (InterfaceManager.isEditingMode()) {
-				editModeButton.setBounds(getWidth()-200, top + 2, 220, 24);
-			}
-			else {
-				editModeButton.setBounds(getWidth()-200, top + 2, 220, 54);
-			}*/
 		}
 	}
 	public void setSize(int w, int h){
