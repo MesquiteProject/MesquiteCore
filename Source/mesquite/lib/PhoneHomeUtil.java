@@ -30,7 +30,7 @@ public class PhoneHomeUtil {
 	public static Vector installMenuItems = new Vector();
 	static MesquiteSubmenuSpec installSubmenu;
 
-	public static void refreshUpdateMenuItems(){
+	public static void refreshUpdateMenuItems(){  //will call resetAllMenuBars at end of phoning all homes
 		for (int i = 0; i< installMenuItems.size(); i++){
 			MesquiteMenuItemSpec mmis = (MesquiteMenuItemSpec)installMenuItems.elementAt(i);
 			MesquiteTrunk.mesquiteTrunk.deleteMenuItem(mmis);
@@ -48,7 +48,6 @@ public class PhoneHomeUtil {
 				installMenuItems.addElement(MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, installSubmenu, name, new MesquiteCommand("phoneHomeLinkTouched", ParseUtil.tokenize("install:" + uniqueID), PhoneHomeUtil.getLinkHandler())));
 			}
 		}
-		MesquiteTrunk.resetAllMenuBars();
 	}
 	public static boolean alreadyInReceipts(ListableVector v){
 		String identity = ((MesquiteString)v.getElement("identity")).getValue();

@@ -1,7 +1,7 @@
 package mesquite.lib.simplicity;
 
 import mesquite.lib.*;
-
+import java.awt.*;
 import java.util.*;
 
 public class InterfaceManager {
@@ -93,7 +93,7 @@ public class InterfaceManager {
 	public static void addPackageToList(String name, String path, String explanation, boolean isHideable, boolean isPackage){
 		allPackages.addElement(new ObjectContainer(name, new String[]{path, explanation, Boolean.toString(isHideable), Boolean.toString(isPackage)}));
 	}
-	
+
 	static void autoSave(){
 		if (simplicityModule != null)
 			simplicityModule.saveCurrentSettings();
@@ -108,7 +108,7 @@ public class InterfaceManager {
 		if (i>=0){
 			hiddenPackages.removeElementAt(i, false);
 			if (save) 
-			autoSave();
+				autoSave();
 		}
 	}
 
@@ -117,7 +117,7 @@ public class InterfaceManager {
 			return;
 		hiddenTools.addElement(new MesquiteString(tool.getName(), tool.getDescription()), false);
 		if (save) 
-		autoSave();
+			autoSave();
 	}
 	public static void removeToolFromHidden(String name, String description, boolean save){ //TODO: should be based on more than just name and description!
 		for (int i = 0; i<hiddenTools.size(); i++){
@@ -127,7 +127,7 @@ public class InterfaceManager {
 			if (hiddenName != null && name.equals(hiddenName) && hiddenDescr != null && description.equals(hiddenDescr)){
 				hiddenTools.removeElementAt(i, false);
 				if (save) 
-				autoSave();
+					autoSave();
 				return;
 			}
 		}
@@ -151,7 +151,7 @@ public class InterfaceManager {
 			dcName = dutyClass.getName();
 		hiddenMenuItems.addElement(new MenuVisibility(label, arguments, command.getName(), commandableClassName, dcName), false);
 		if (save) 
-		autoSave();
+			autoSave();
 	}
 
 	public static void removeMenuItemFromHidden(String label, String arguments, MesquiteCommand command, Class dutyClass, boolean save){
@@ -169,12 +169,13 @@ public class InterfaceManager {
 		String dcName = null;
 		if (dutyClass != null)
 			dcName = dutyClass.getName();
-		for (int i = 0; i<hiddenMenuItems.size(); i++){
+		int size = hiddenMenuItems.size();
+		for (int i = 0; i<size; i++){
 			MenuVisibility vis = (MenuVisibility)hiddenMenuItems.elementAt(i);
 			if (vis.matchesMenuItem(label, arguments, command.getName(), commandableClassName, dcName)){
 				hiddenMenuItems.removeElement(vis, false);
 				if (save) 
-				autoSave();
+					autoSave();
 				return;
 			}
 		}
@@ -208,11 +209,14 @@ public class InterfaceManager {
 		}
 		return false;
 	}
+	static int countC = 0;
+	static int countS = 0;
 	public static boolean onHiddenClassList(Class c){
 		if (c == null)
 			return false;
 		String name = c.getName();
-		for (int i = 0; i<hiddenPackages.size(); i++){
+		int size = hiddenPackages.size();
+		for (int i = 0; i<size; i++){
 			MesquiteString vis = (MesquiteString)hiddenPackages.elementAt(i);
 			String hidden = vis.getName();
 			if (hidden != null && name.startsWith(hidden))
@@ -222,10 +226,11 @@ public class InterfaceManager {
 		return false;
 	}
 	public static boolean onHiddenClassList(String pkg){
-		if (pkg == null)
+		if (StringUtil.blank(pkg))
 			return false;
 		String name = pkg;
-		for (int i = 0; i<hiddenPackages.size(); i++){
+		int size = hiddenPackages.size();
+		for (int i = 0; i<size; i++){
 			MesquiteString vis = (MesquiteString)hiddenPackages.elementAt(i);
 			String hidden = vis.getName();
 			if (hidden != null && name.startsWith(hidden))
@@ -235,10 +240,11 @@ public class InterfaceManager {
 		return false;
 	}
 	public static boolean onHiddenClassListExactly(String pkg){
-		if (pkg == null)
+		if (StringUtil.blank(pkg))
 			return false;
 		String name = pkg;
-		for (int i = 0; i<hiddenPackages.size(); i++){
+		int size = hiddenPackages.size();
+		for (int i = 0; i<size; i++){
 			MesquiteString vis = (MesquiteString)hiddenPackages.elementAt(i);
 			String hidden = vis.getName();
 			if (hidden != null && name.equals(hidden))
@@ -325,6 +331,13 @@ public class InterfaceManager {
 		return NORMAL;
 	}
 	/*---------------------------*/
+	public static boolean isFilterable(Menu menu){
+		if (menu instanceof MesquiteMenu){
+			return (((MesquiteMenu)menu).isFilterable());
+
+		}
+		return true;
+	}
 	/*---------------------------
 	public static void getLoadSaveMenu(MesquitePopup popup){
 		if (simplicityModule != null){
@@ -366,7 +379,7 @@ public class InterfaceManager {
 		if (simplicityModule != null){
 			for (int i = 0; i< settingsFiles.size(); i++){
 				StringArray sf = (StringArray)settingsFiles.elementAt(i);
-				if (includeDefaults || !sf.getValue(2).equalsIgnoreCase("default"))
+				if (includeDefaults || sf.getValue(2) == null || !sf.getValue(2).equalsIgnoreCase("default"))
 					menu.add(new MesquiteMenuItem(sf.getName(), null, new MesquiteCommand(command, "" + i, simplicityModule), null));
 			}
 		}
@@ -376,7 +389,7 @@ public class InterfaceManager {
 			return false;
 		return MesquiteFile.canWrite(simplicityModule.getInstallationSettingsPath());
 	}
-/*---------------------------*/
+	/*---------------------------*/
 	public static void resetSimplicity(){
 		if (simplicityModule != null)
 			simplicityModule.resetSimplicity();

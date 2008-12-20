@@ -57,6 +57,7 @@ public class ListTable extends MesquiteTable {
 				
 				int i = 0;
 				boolean asked = false;
+
 				UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,assoc);
 				undoInstructions.recordPreviousOrder(assoc);
 				UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);

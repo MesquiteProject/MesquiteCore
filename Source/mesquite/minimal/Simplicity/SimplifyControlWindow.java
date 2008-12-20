@@ -273,11 +273,11 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			InterfaceManager.removePackageFromHidden(cb.pkg, true);
 		else
 			InterfaceManager.addPackageToHidden(cb.pkg, true);
+		checkStates();
 		if (InterfaceManager.isEditingMode() || InterfaceManager.isSimpleMode()){
 			MesquiteTrunk.resetAllMenuBars();
 			MesquiteTrunk.resetAllToolPalettes();
 		}
-		checkStates();
 	}
 	/*.................................................................................................................*/
 	void addPackages(Vector allPackages){
