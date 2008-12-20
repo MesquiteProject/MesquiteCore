@@ -10,6 +10,7 @@ import javax.swing.*;
 
 public class SimplifyControlWindow extends MesquiteWindow implements SystemWindow {
 	ClassesPane classesPane;
+	MessagePanel message;
 	PackagesPanel field;
 	ModePanel modePanel;
 	ClassHeadersPanel classesHeaderPanel;
@@ -60,6 +61,11 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		//	Adjustable adj = pane.getVAdjustable();
 		//	adj.setUnitIncrement(65);
 		classesPane.doLayout();
+		message = new MessagePanel(ColorTheme.getExtInterfaceBackground(), false);
+		message.setTextColor(ColorTheme.getExtInterfaceTextContrast());
+		addToWindow(message);
+		message.setBounds(0, getHeight()-20, getWidth(), 20);
+		message.setMessage(InterfaceManager.themeName);
 		resetTitle();
 		resetSimplicity();
 	}
@@ -76,7 +82,18 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		if (modePanel != null){
 			modePanel.resetStates();
 			field.checkStates();
+
 		}
+		if (!InterfaceManager.isSimpleMode() && !InterfaceManager.isEditingMode())
+			message.setMessage("Using Full Interface");
+		else if (InterfaceManager.themeName!= null){
+			if (!InterfaceManager.isSimpleMode())
+				message.setMessage("Theme: " + InterfaceManager.themeName);
+			else 
+				message.setMessage("Current Theme: " + InterfaceManager.themeName);
+		}
+		else
+			message.setMessage("");
 		resetSizes();
 	}
 	/*.................................................................................................................*/
@@ -119,6 +136,8 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		int smallInstructionsHeight = 120;
 		if (classesPane!=null && field != null) {
 			modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
+			message.setBounds(0, getHeight()-20, getWidth(), 20);
+
 			if (InterfaceManager.isEditingMode()){
 				classesHeaderPanel.setSize(getWidth(), classesHeight-modePanelHeight);
 				classesPane.setSize(getWidth(), getHeight()-classesHeight-2 -smallInstructionsHeight);
@@ -565,7 +584,7 @@ abstract class LoadSaveDeleteButton extends MousePanel {
 class EditModeButton extends Checkbox implements ItemListener {
 	MesquiteCommand command;
 	Image editing;
-	
+
 	public EditModeButton(){
 		super("Editing Mode");
 		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
@@ -574,7 +593,7 @@ class EditModeButton extends Checkbox implements ItemListener {
 		setForeground(ColorTheme.getExtInterfaceTextContrast()); //ColorTheme.getExtInterfaceElement());
 		addItemListener(this);
 	}
-	
+
 	void resetColors(){
 		if (InterfaceManager.isEditingMode()){
 			setBackground(ColorTheme.getExtInterfaceBackground());
@@ -591,11 +610,11 @@ class EditModeButton extends Checkbox implements ItemListener {
 		InterfaceManager.setEditingMode(getState());
 		if (InterfaceManager.isEditingMode()){
 			//setBackground(Color.cyan);
-		//	setLabel("Turn OFF Editing Mode");
+			//	setLabel("Turn OFF Editing Mode");
 		}
 		else {
-		//	setBackground(ColorTheme.getInterfaceElement());
-		//	setLabel("Turn ON Editing Mode");
+			//	setBackground(ColorTheme.getInterfaceElement());
+			//	setLabel("Turn ON Editing Mode");
 		}
 		resetColors();
 		repaint();
@@ -603,13 +622,13 @@ class EditModeButton extends Checkbox implements ItemListener {
 		MesquiteModule.resetAllToolPalettes();
 		MesquiteWindow.resetAllSimplicity();
 	}
-	
+
 	public void paint (Graphics g) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		//g.setColor(ColorTheme.getInterfaceElement());
-	//g.fillRect(50, 0, 20, 20);
-	
+		//g.fillRect(50, 0, 20, 20);
+
 		/*
 		 * String s = "";
 		if (InterfaceManager.isEditingMode()){
@@ -636,7 +655,7 @@ class EditModeButton extends Checkbox implements ItemListener {
 		g.setColor(Color.black);
 		g.drawString(s, 4, 16);
 		g.drawRoundRect(0, y, w, h , 3, 3);
-		*/
+		 */
 		super.paint(g);
 		MesquiteWindow.uncheckDoomed(this);
 	}
@@ -653,7 +672,7 @@ class EditModeButton extends Checkbox implements ItemListener {
 	}
 	/**/
 }
-	/*.................................................................................................................*
+/*.................................................................................................................*
 class EditModeButton extends MousePanel {
 	MesquiteCommand command;
 	Image editing;
@@ -735,8 +754,8 @@ class ModePanel extends Panel implements ItemListener {
 		simplerCB.setFont(fontBig14);
 		powerCB.addItemListener(this);
 		simplerCB.addItemListener(this);
-		power = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "power.gif");  
-		simple = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simple.gif");  
+		power = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simplification/power.gif");  
+		simple = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simplification/simple.gif");  
 
 		loadButton = new LoadButton();
 		loadButton.setFont(fontBig);

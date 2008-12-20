@@ -34,7 +34,9 @@ public class InterfaceManager {
 	public static void setSimpleMode(boolean simple){
 		simpleMode = simple;
 	}
-
+	
+	public static String themeName = "";
+	
 	//status
 	public static final int NORMAL = 0;
 	public static final int HIDDEN = 1;
@@ -96,7 +98,7 @@ public class InterfaceManager {
 
 	static void autoSave(){
 		if (simplicityModule != null)
-			simplicityModule.saveCurrentSettings();
+			simplicityModule.settingsChanged();
 	}
 	public static void addPackageToHidden(String packagePath, boolean save){
 		hiddenPackages.addElement(new MesquiteString(packagePath, packagePath), false);

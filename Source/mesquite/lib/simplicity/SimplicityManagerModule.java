@@ -30,7 +30,7 @@ public abstract class SimplicityManagerModule extends MesquiteInit {
   	public abstract void init();
   	public abstract void resetSimplicity();
   	public abstract void lock(boolean lock);
-  	public abstract void saveCurrentSettings();
+  	public abstract void settingsChanged();
 
  }
 

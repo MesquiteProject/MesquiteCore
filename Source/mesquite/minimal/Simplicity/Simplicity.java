@@ -254,6 +254,7 @@ public class Simplicity extends SimplicityManagerModule {
 				boolean acceptableVersion = version==1;
 				if (acceptableVersion) {
 					String name = (element.elementText("name"));
+					InterfaceManager.themeName = name;
 					Element packages = element.element("hiddenPackages");
 					if (packages != null){
 						List packageElements = packages.elements("package");
@@ -293,8 +294,11 @@ public class Simplicity extends SimplicityManagerModule {
 
 	}
 	/*---------------------------*/
-	public void saveCurrentSettings(){
+	public void settingsChanged(){
 		MesquiteFile.putFileContents(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", makeSettingsFile("Custom"), false);
+		InterfaceManager.themeName = "Custom";
+		if (simplicityWindow != null)
+			simplicityWindow.resetSimplicity();
 	}
 	/*---------------------------*/
 	public  String nameOfSimplification(int i){
