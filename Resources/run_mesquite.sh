@@ -11,6 +11,13 @@
 # identifies the path containing this script, and uses it to set the classpath. 
 # (the exact site of the work that served as inspiration for this code is lost to antiquity)
 
+#Note from W. Maddison:  to increase memory allocation adjust the following lines:
+#     java -Djava.library.path=lib -cp "$dir" mesquite.Mesquite $*
+# by adding the extra arguments  -Xmx and  -Xss
+# For instance, 
+#     java -Djava.library.path=lib -Xmx500M -Xss4m -cp "$dir" mesquite.Mesquite $*
+# will allocate 500M for the heap, which helps with large data and calculations,
+# and 4M stack size per thread, which helps with large trees (> 5000 taxa).
 
 #figure out where java lives 
 if [ $MESQUITE_JAVA_HOME ]

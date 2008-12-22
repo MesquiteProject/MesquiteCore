@@ -1,2 +1,2 @@
 dir=`dirname "$0"`
-java  -Xmx400M -Djava.library.path=lib -cp "$dir" mesquite.Mesquite
+java  -Xmx500M -Xss2m -Djava.library.path=lib -cp "$dir" mesquite.Mesquite
