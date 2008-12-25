@@ -19,7 +19,6 @@ import java.util.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.*;
 
 
@@ -49,7 +48,11 @@ public class ListTable extends MesquiteTable {
 			if (after >= getNumRows())
 				after = getNumRows();
 			if (window.getCurrentObject() !=null && window.getCurrentObject() instanceof Associable){
+					
 				Bits b = getRowsSelected();
+				if (b.numBitsOn()==1 && b.firstBitOn() == after){
+					return;
+				}
 				Associable assoc = (Associable)window.getCurrentObject();
 				long[] fullChecksumBefore = null;
 				if (assoc instanceof CharacterData)
