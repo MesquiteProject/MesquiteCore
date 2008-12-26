@@ -6,9 +6,6 @@
 			<fileset dir="${rsrcs.dir}">
 				<exclude name="${osxdirpath}" />
 				<exclude name="${osxdirpathHM}" />				
-				<exclude name="${osxdirpath1.4}" />
-				<exclude name="${osxdirpath1.5}" />
-				<exclude name="${os9path}" />
 				<exclude name="**/*.java"/>
 				<exclude name="**/*.html"/>
 			</fileset>
@@ -71,15 +68,11 @@
 			<fileset dir="${rsrcs.dir}">
 				<include name="${osxdirpath}"/>
 				<include name="${osxdirpathHM}"/>				
-				<include name="${osxdirpath1.4}"/>
-				<include name="${osxdirpath1.5}" />
 			</fileset>
 		</copy>
 		
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirname}/Contents/MacOS/Mesquite'"/>
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirHMname}/Contents/MacOS/Mesquite'"/>		
-		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1.4name}/Contents/MacOS/Mesquite'"/>
-		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1.5name}/Contents/MacOS/Mesquite'"/>
 		
 		<!-- create .dmg -->
 		<exec executable="hdiutil" failonerror="false" os="Mac OS X">
@@ -158,7 +151,7 @@
 	<target name="init"> 
 		<property environment="env" />
 		<property name="dist.dir" location="../dist" />
-		<property name="mesquite.version" value="2.01" />
+		<property name="mesquite.version" value="2.6PRERELEASE" />
 		<property name="release.dir" location="${dist.dir}/Mesquite ${mesquite.version}" />
 		<property name="mesquitefoldername" value="Mesquite_Folder"/>
 		<property name="mesquitefolder.dir" location="${release.dir}/${mesquitefoldername}" />
@@ -189,15 +182,10 @@
 		<property name="librarysource.dir" location="LibrarySource"/>
 
 		<!-- assorted mac folders and files that need to be excluded for linux builds -->
-		<property name="osxdirname" value="Mesquite OSX.app" />		
+		<property name="osxdirname" value="Mesquite.app" />		
 		<property name="osxdirpath" value="**/${osxdirname}/" />
-		<property name="osxdirHMname" value="Mesquite OSX (hi-mem).app" />				
+		<property name="osxdirHMname" value="Mesquite (hi-mem).app" />				
 		<property name="osxdirpathHM" value="**/${osxdirHMname}/" />		
-		<property name="osxdir1.4name" value="Mesquite OSX (Java 1.4).app" />				
-		<property name="osxdirpath1.4" value="**/${osxdir1.4name}/" />
-		<property name="osxdir1.5name" value="Mesquite OSX (Java 1.5).app" />		
-		<property name="osxdirpath1.5" value="**/${osxdir1.5name}/" />
-		<property name="os9path" value="**/Mesquite OS9" />
 
 		<!-- server destination locations -->
 		<property file="${buildfiles.dir}/serverinfo.properties" />
