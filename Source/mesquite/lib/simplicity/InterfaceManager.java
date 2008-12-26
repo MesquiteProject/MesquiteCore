@@ -35,7 +35,7 @@ public class InterfaceManager {
 		simpleMode = simple;
 	}
 	
-	public static String themeName = "";
+	public static String themeName = null;
 	
 	//status
 	public static final int NORMAL = 0;

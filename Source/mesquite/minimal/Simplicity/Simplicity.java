@@ -43,6 +43,7 @@ public class Simplicity extends SimplicityManagerModule {
 	 *  --have package intros return pathtopackage which by default would be mesquite.XXXX
 	 *  */
 	MesquiteBoolean lockSimplicity;
+	String themeToLoad = null;
 	SimplifyControlWindow simplicityWindow;
 	public String getName() {
 		return "Simplicity Manager";
@@ -71,6 +72,8 @@ public class Simplicity extends SimplicityManagerModule {
 		addMissingPackageIntros(InterfaceManager.allPackages);
 
 		simplicityWindow.addPackages(InterfaceManager.allPackages);
+		loadSettingsFileByName(themeToLoad);
+
 		lock(InterfaceManager.locked);
 		resetSimplicity();
 	}
@@ -163,17 +166,25 @@ public class Simplicity extends SimplicityManagerModule {
 					String name = (element.elementText("name"));
 					StringArray s =  new StringArray(3);
 					s.setName(name);
-					s.setValue(0, settingsXML);
-					s.setValue(1, path);
+					s.setValue(XML, settingsXML);
+					s.setValue(PATH, path);
 					if (isDefault)
-						s.setValue(2, "default");
+						s.setValue(DEFAULTORNOT, "default");
 					else
-						s.setValue(2, "nonDefault");
+						s.setValue(DEFAULTORNOT, "nonDefault");
 					return s;
 				}
 			}
 		} 
 		return null;
+	}
+	public  void loadSettingsFileByName(String name){
+		if (name == null)
+			return;
+		StringArray s = (StringArray)InterfaceManager.settingsFiles.getElement(name);
+		if (s == null)
+			return;
+		loadSettingsFile(s);
 	}
 	public  void loadSettingsFile(int i){
 		if (!MesquiteInteger.isCombinable(i) || i<0 || i>= InterfaceManager.settingsFiles.size())
@@ -185,16 +196,19 @@ public class Simplicity extends SimplicityManagerModule {
 		if (!MesquiteInteger.isCombinable(i) || i<0 || i>= InterfaceManager.settingsFiles.size())
 			return;
 		StringArray s = (StringArray)InterfaceManager.settingsFiles.elementAt(i);
-		String path = s.getValue(1);
+		String path = s.getValue(PATH);
 		MesquiteFile.deleteFile(path);
 		InterfaceManager.settingsFiles.removeElement(s, false);
 	}
+	static final int XML = 0;
+	static final int PATH = 1;
+	static final int DEFAULTORNOT = 2;
 	public  void renameSettingsFile(int i, String newName){
 		if (!MesquiteInteger.isCombinable(i) || i<0 || i>= InterfaceManager.settingsFiles.size())
 			return;
 		StringArray s = (StringArray)InterfaceManager.settingsFiles.elementAt(i);
-		String path = s.getValue(1);
-		String settingsXML = s.getValue(0);
+		String path = s.getValue(PATH);
+		String settingsXML = s.getValue(XML);
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
 		if (root==null)
 			return;
@@ -236,13 +250,16 @@ public class Simplicity extends SimplicityManagerModule {
 		StringArray s = (StringArray)InterfaceManager.settingsFiles.elementAt(i);
 		return s.getName();
 	}
-	public static void loadSettingsFile(StringArray s){
+	
+	boolean settingsLoaded = false;
+	public void loadSettingsFile(StringArray s){
 		if (s == null)
 			return;
+		settingsLoaded = true;
 		InterfaceManager.hiddenPackages.removeAllElements(false);
 		InterfaceManager.hiddenMenuItems.removeAllElements(false);
 		InterfaceManager.hiddenTools.removeAllElements(false);
-		String settingsXML = s.getValue(0);
+		String settingsXML = s.getValue(XML);
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
 		if (root==null)
 			return;
@@ -289,6 +306,7 @@ public class Simplicity extends SimplicityManagerModule {
 							InterfaceManager.hiddenTools.addElement(new MesquiteString(n, d), false);
 						}
 					}
+					storePreferences();
 				}
 			}
 		} 
@@ -297,9 +315,9 @@ public class Simplicity extends SimplicityManagerModule {
 	}
 	/*---------------------------*/
 	public void settingsChanged(){
-		//Debugg.println("REMEMBER IF SETTING LOADED TO RELOAD ON NEXT STARTUP");
 		MesquiteFile.putFileContents(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", makeSettingsFile("Custom"), false);
-		InterfaceManager.themeName = "Custom";
+		InterfaceManager.themeName = null;
+		storePreferences();
 		if (simplicityWindow != null)
 			simplicityWindow.resetSimplicity();
 	}
@@ -370,11 +388,21 @@ public class Simplicity extends SimplicityManagerModule {
 			c.setValue(content);
 			InterfaceManager.setSimpleMode(c.getValue());
 		}
+		else if ("theme".equalsIgnoreCase(tag)){
+			themeToLoad = content;
+		}
+		else if ("notheme".equalsIgnoreCase(tag)){
+			themeToLoad = null;
+		}
 	}
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "lockSimplicity", lockSimplicity);   
 		StringUtil.appendXMLTag(buffer, 2, "simplicityMode", InterfaceManager.isSimpleMode());   
+		if (InterfaceManager.themeName != null)
+			StringUtil.appendXMLTag(buffer, 2, "theme", InterfaceManager.themeName);   
+		else
+			StringUtil.appendXMLTag(buffer, 2, "notheme", "");   
 		//	StringUtil.appendXMLTag(buffer, 2, "editingMode", InterfaceManager.isEditingMode());   
 		return buffer.toString();
 	}
@@ -385,11 +413,18 @@ public class Simplicity extends SimplicityManagerModule {
 			InterfaceManager.setSimpleMode(false);
 			InterfaceManager.setEditingMode(false);
 			InterfaceManager.reset();
+			storePreferences();
 		}
 		else if (checker.compare(this.getClass(), "Sets interface to SIMPLE", null, commandName, "simple")) {
 			InterfaceManager.setSimpleMode(true);
 			InterfaceManager.setEditingMode(false);
+			if (!settingsLoaded){
+				Listable simp = ListDialog.queryList(containerOfModule(), "Choose simplification", "What simplification would you like to use?", null, InterfaceManager.settingsFiles, 0);
+				if (simp != null)
+					loadSettingsFile((StringArray)simp);
+			}
 			InterfaceManager.reset();
+			storePreferences();
 		}
 		else if (checker.compare(this.getClass(), "Turns on interface editing", null, commandName, "edit")) {
 			InterfaceManager.setEditingMode(true);
@@ -424,10 +459,10 @@ public class Simplicity extends SimplicityManagerModule {
 				String path = MesquiteFile.getUniqueModifiedFileName(getInstallationSettingsPath() + "simplification", "xml");
 
 				MesquiteFile.putFileContents(path, contents, false);
-				StringArray sa = new StringArray(2);
+				StringArray sa = new StringArray(3);
 				sa.setName(result.getValue());
-				sa.setValue(0, contents);
-				sa.setValue(1, path);
+				sa.setValue(XML, contents);
+				sa.setValue(PATH, path);
 				InterfaceManager.settingsFiles.addElement(sa, false);
 
 			}

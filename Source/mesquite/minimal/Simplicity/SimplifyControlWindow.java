@@ -65,7 +65,10 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		message.setTextColor(ColorTheme.getExtInterfaceTextContrast());
 		addToWindow(message);
 		message.setBounds(0, getHeight()-20, getWidth(), 20);
-		message.setMessage(InterfaceManager.themeName);
+		if (InterfaceManager.themeName == null)
+			message.setMessage("Custom");
+		else
+			message.setMessage(InterfaceManager.themeName);
 		resetTitle();
 		resetSimplicity();
 	}
@@ -93,7 +96,10 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 				message.setMessage("Current Theme: " + InterfaceManager.themeName);
 		}
 		else
-			message.setMessage("");
+			if (!InterfaceManager.isSimpleMode())
+				message.setMessage("Theme: Custom");
+			else 
+				message.setMessage("Current Theme: Custom");
 		resetSizes();
 	}
 	/*.................................................................................................................*/
@@ -853,15 +859,18 @@ class ModePanel extends Panel implements ItemListener {
 		repaint();
 		editModeButton.repaint();
 	}
+	
 	public void itemStateChanged(ItemEvent e){
+		MesquiteCommand com;
 		if (powerCB.getState())
-			InterfaceManager.setSimpleMode(false);
-		if (simplerCB.getState())
-			InterfaceManager.setSimpleMode(true);
+			 com = MesquiteModule.makeCommand("full", w.ownerModule);
+		else
+			 com = MesquiteModule.makeCommand("simple", w.ownerModule);
+		com.doItMainThread(null, null, this);
 		repaint();
-		MesquiteModule.resetAllMenuBars();
-		MesquiteModule.resetAllToolPalettes();
-		MesquiteWindow.resetAllSimplicity();
+		//MesquiteModule.resetAllMenuBars();
+		//MesquiteModule.resetAllToolPalettes();
+		//MesquiteWindow.resetAllSimplicity();
 	}
 }
 class ClassHeadersPanel extends Panel  {
