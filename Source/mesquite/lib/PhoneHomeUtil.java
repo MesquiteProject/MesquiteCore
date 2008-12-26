@@ -303,7 +303,7 @@ public class PhoneHomeUtil {
 										"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 									}
 									else {
-										installHTML = ("<p><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"file://" + MesquiteTrunk.mesquiteTrunk.getRootPath()+"images/download.gif\"> Install</a>" +
+										installHTML = ("<p><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"" + MesquiteFile.massageFilePathToURL(MesquiteTrunk.mesquiteTrunk.getRootPath()+"images" + MesquiteFile.fileSeparator + "download.gif") + "\"> Install</a>" +
 										"&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 									}
 

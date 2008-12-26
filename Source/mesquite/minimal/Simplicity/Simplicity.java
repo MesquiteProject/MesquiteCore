@@ -67,7 +67,7 @@ public class Simplicity extends SimplicityManagerModule {
 		importSettingsFiles();
 		simplicityWindow = new SimplifyControlWindow(this, MesquiteTrunk.mesquiteTrunk.interfaceManager);
 		setModuleWindow(simplicityWindow);
-		//simplicityWindow.setVisible(true);
+		showLogWindow();
 		addMissingPackageIntros(InterfaceManager.allPackages);
 
 		simplicityWindow.addPackages(InterfaceManager.allPackages);
@@ -145,6 +145,8 @@ public class Simplicity extends SimplicityManagerModule {
 		loadSettingsFile(custom);
 	}
 	StringArray importFile(String path, boolean isDefault){
+		if (!MesquiteFile.fileExists(path))
+			return null;
 		String settingsXML = MesquiteFile.getFileContentsAsString(path);
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);
 		if (root==null)
@@ -295,6 +297,7 @@ public class Simplicity extends SimplicityManagerModule {
 	}
 	/*---------------------------*/
 	public void settingsChanged(){
+		//Debugg.println("REMEMBER IF SETTING LOADED TO RELOAD ON NEXT STARTUP");
 		MesquiteFile.putFileContents(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", makeSettingsFile("Custom"), false);
 		InterfaceManager.themeName = "Custom";
 		if (simplicityWindow != null)
