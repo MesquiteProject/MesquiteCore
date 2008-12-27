@@ -89,7 +89,7 @@ public class PhoneHomeUtil {
 	}
 	//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
-	
+
 
 	/*.................................................................................................................*/
 	public static void readOldPhoneRecords(String path, ListableVector phoneRecords) {
@@ -187,6 +187,7 @@ public class PhoneHomeUtil {
 	}
 	/*.................................................................................................................*/
 	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, String forBuildLetter, int forBuildNumber, ListableVector v) {
+		boolean pleaseDeleteFromUpdates = false;
 		if (MesquiteInteger.isCombinable(noticeVersion)){
 			if (MesquiteInteger.isCombinable(noticeNumber)){
 
@@ -221,10 +222,12 @@ public class PhoneHomeUtil {
 					MesquiteString updateVersion = (MesquiteString)v.getElement("updateVersion");
 					if (uniqueLocation != null)
 						appearsToNeedInstallation = !MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + uniqueLocation.getValue());
-					
+
 					MesquiteString updateOnly = (MesquiteString)v.getElement("updateOnly");
 					if (updateOnly != null && !appearsToNeedInstallation && "critical".equalsIgnoreCase(updateOnly.getValue()) && identity != null && alreadyInReceipts(identity.getValue(), "0") && !alreadyInReceipts(identity.getValue(), updateVersion.getValue()))  
 						critical = true;
+					else if (updateOnly != null && !"false".equalsIgnoreCase(updateOnly.getValue()) && appearsToNeedInstallation)
+						pleaseDeleteFromUpdates = true;
 				}
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
@@ -239,6 +242,23 @@ public class PhoneHomeUtil {
 
 				//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
 				seenBefore = seenBefore || (currentVersion<noticeVersion && lastVersionNoticed> noticeVersion);  //e.g., notice is 2.02; 2.03 notices previously read
+				boolean javaInsufficient = false;
+				boolean requirementsNotMet = false;
+				if (v != null){
+					MesquiteString java = (MesquiteString)v.getElement("java");
+					MesquiteString requiredPath = (MesquiteString)v.getElement("requiredPath");
+					if (java != null){
+						double jV = MesquiteDouble.fromString(java.getValue(), new MesquiteInteger(0));
+						if (MesquiteTrunk.isJavaVersionLessThan(jV))
+							javaInsufficient = true;
+					}
+					if (requiredPath != null && !StringUtil.blank(requiredPath.getValue())){
+						String requiredP = requiredPath.getValue();
+						if (!MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + requiredP)){
+							requirementsNotMet = true;
+						}
+					}
+				}
 
 				// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
 				if ((!seenBefore || critical) && appliesToOSVersion && appliesToBuild){  //relevant
@@ -251,8 +271,6 @@ public class PhoneHomeUtil {
 					//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 					else if (noticeType != null && noticeType.equalsIgnoreCase("update")){
 						if (v != null){
-							boolean javaInsufficient = false;
-							boolean requirementsNotMet = false;
 							MesquiteString java = (MesquiteString)v.getElement("java");
 							MesquiteString requiredName = (MesquiteString)v.getElement("requires");
 							MesquiteString requiredPath = (MesquiteString)v.getElement("requiredPath");
@@ -284,11 +302,13 @@ public class PhoneHomeUtil {
 								if (requirementsNotMet && requiredName != null){
 									notices.append("<h2>Available for installation: " + packageName + "</h2>");
 									notices.append("HOWEVER, this package requires " + requiredName.getValue() + ", which apparently is not installed.  If you install this other package, you may install " + packageName + " later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
+									pleaseDeleteFromUpdates = true;
 									countNotices.increment();
 								}
 								else if (javaInsufficient){
 									notices.append("<h2>Available for installation: " + packageName + "</h2>");
 									notices.append("HOWEVER, your version of Java is too old for this package.  You need Java version " + java.getValue() + ".  If you install a sufficiently recent version of java, you may install this package later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
+									pleaseDeleteFromUpdates = true;
 									countNotices.increment();
 								}
 								else {
@@ -341,9 +361,13 @@ public class PhoneHomeUtil {
 					}
 
 				}
+				if (javaInsufficient ||  requirementsNotMet)
+					pleaseDeleteFromUpdates = true;
 			}
 
 		} //
+		if (pleaseDeleteFromUpdates)
+			updateRecords.removeElement(v);
 
 	}
 	/*.................................................................................................................*/
@@ -430,7 +454,7 @@ public class PhoneHomeUtil {
 					if (java != null)
 						v.addElement(new MesquiteString("java", java), false);
 					String ux = XMLUtil.getElementAsXMLString(messageElement, "UTF-8", true) ;
-					
+
 					if (ux != null){
 						ux = "<updateXML>" + ux + "</updateXML>";  //strip for more compact file when viewed
 						ux = StringUtil.replace(ux, "\n", null);

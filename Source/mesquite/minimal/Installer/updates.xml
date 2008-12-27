@@ -134,5 +134,25 @@
 					<updateVersion>000</updateVersion>
 				</install>
 		</notice>
+		<notice><!--THIS IS AN EXAMPLE FOR PRACTICE-->
+			<forVersion>250</forVersion>
+			<noticeNumber>7</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Mesquite</identity>
+			<updateVersion>000</updateVersion>
+			<packageName>Mesquite Installer Update</packageName>
+			<explanation>
+			<![CDATA[
+			This is an update for the installer itself.
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite/minimal/Installer</location>
+					<file>Installer.class</file>
+					<url>http://mesquiteproject.org/mesquite/updates/example/Installer.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>000</updateVersion>
+				</install>
+		</notice>
 	</MessagesFromHome>
 </mesquite>
