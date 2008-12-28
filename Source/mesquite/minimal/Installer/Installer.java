@@ -70,15 +70,12 @@ import org.dom4j.Element;
  * 
  * todo:
  * GENERAL
- * -- Same protection in menu formation re java/dependencies
- * -- Menu entry show html explanation etc.; allow cancel
- * -- local receipts in package info module, or in folder as xml?
- * -- uninstall instructions?
  * 
  * INSTALL PIECE
  * -- FUTURE (or in control of modules after they start): permit writing outside Mesquite
  * -- FUTURE (or in control of modules after they start): permit scripts to run, e.g. to install outside of Mesquite_Folder
  * 
+ * Ã-- Same protection in menu formation re java/dependencies
  * Ã-- have dependency tag that indicates dependencies
  * Ã-- make directories needed
  * Ã-- permit OS-specific installs
@@ -501,7 +498,7 @@ public class Installer extends MesquiteInit {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 }
