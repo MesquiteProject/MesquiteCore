@@ -179,14 +179,7 @@ public class PhoneHomeUtil {
 			return mmi.getVersionInt();
 	}
 	/*.................................................................................................................*/
-	public static boolean currentBuildGreaterThan(String buildLetter, int buildNumber) {
-		String currentBuildLetter = MesquiteModule.getBuildLetter();
-		int currentBuildNumber = MesquiteModule.getBuildNumber();
-		boolean greater = StringUtil.firstStringIsGreaterThan(currentBuildLetter,buildLetter);
-		return greater || (currentBuildLetter.equalsIgnoreCase(buildLetter)&&currentBuildNumber>buildNumber);
-	}
-	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, String forBuildLetter, int forBuildNumber, ListableVector v) {
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberAtLeast, int forBuildNumberExactly, ListableVector v) {
 		boolean pleaseDeleteFromUpdates = false;
 		if (MesquiteInteger.isCombinable(noticeVersion)){
 			if (MesquiteInteger.isCombinable(noticeNumber)){
@@ -206,8 +199,12 @@ public class PhoneHomeUtil {
 				}
 
 				boolean appliesToBuild = true;
-				if (mmi.getName().equals("Mesquite") && !StringUtil.blank(forBuildLetter) && MesquiteInteger.isCombinable(forBuildNumber)) {
-					appliesToBuild = !currentBuildGreaterThan(forBuildLetter, forBuildNumber);
+				
+				if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberExactly)) {
+					appliesToBuild =  forBuildNumberExactly == MesquiteModule.getBuildNumber();
+				}
+				else if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberAtLeast)) {  //notices must simply be for this or later version
+					appliesToBuild = forBuildNumberAtLeast < MesquiteModule.getBuildNumber();
 				}
 
 				//suppose Mesquite is version 2. 01
@@ -406,8 +403,8 @@ public class PhoneHomeUtil {
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
 				int version = MesquiteInteger.fromString(messageElement.elementText("forVersion"));  
-				String forBuildLetter = messageElement.elementText("forBuildLetter");
-				int forBuildNumber = MesquiteInteger.fromString(messageElement.elementText("forBuildNumber"));
+				int forBuildNumberExactly = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberExactly"));
+				int forBuildNumberAtLeast = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberAtLeast"));
 				int noticeNumber = MesquiteInteger.fromString(messageElement.elementText("noticeNumber"));
 				String messageType = messageElement.elementText("messageType");
 				String message = messageElement.elementText("message");
@@ -468,7 +465,7 @@ public class PhoneHomeUtil {
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 				// process other notice tags here if they are present
-				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildLetter, forBuildNumber, v);
+				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberAtLeast, forBuildNumberExactly, v);
 
 			}
 			//INSTALLER: here go through updateRecords to figure out which are already installed, which not; which have newer versions already installed, etc.

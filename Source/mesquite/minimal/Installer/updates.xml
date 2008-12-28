@@ -154,5 +154,47 @@
 					<updateVersion>000</updateVersion>
 				</install>
 		</notice>
+		<notice><!--THIS IS AN EXAMPLE FOR PRACTICE-->
+			<forVersion>250</forVersion>
+			<forBuildNumberAtLeast>473</forBuildNumberAtLeast>
+			<noticeNumber>8</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Mesquite</identity>
+			<updateVersion>002</updateVersion>
+			<packageName>ToontsyAtLeast</packageName>
+			<explanation>
+			<![CDATA[
+			This is ToontsyAtLeast.
+			]]>
+			</explanation>
+				<install>
+					<location>jars</location>
+					<file>deleteMe.jar</file>
+					<url>http://mesquiteproject.org/mesquite/updates/example/deleteMe.jar</url>
+					<treatment>asis</treatment>
+					<updateVersion>002</updateVersion>
+				</install>
+		</notice>
+		<notice><!--THIS IS AN EXAMPLE FOR PRACTICE-->
+			<forVersion>250</forVersion>
+			<forBuildNumberExactly>474</forBuildNumberExactly>
+			<noticeNumber>9</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Mesquite</identity>
+			<updateVersion>002</updateVersion>
+			<packageName>ToontsyExactly</packageName>
+			<explanation>
+			<![CDATA[
+			This is ToontsyExactly.
+			]]>
+			</explanation>
+				<install>
+					<location>jars</location>
+					<file>deleteMe.jar</file>
+					<url>http://mesquiteproject.org/mesquite/updates/example/deleteMe.jar</url>
+					<treatment>asis</treatment>
+					<updateVersion>002</updateVersion>
+				</install>
+		</notice>
 	</MessagesFromHome>
 </mesquite>
