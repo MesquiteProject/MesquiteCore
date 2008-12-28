@@ -43,9 +43,10 @@ public class UndoInstructions implements Undoer {
 	public static final int PARTS_ADDED = 9;
 	public static final int DATABLOCK = 10;
 
+
 //	ones below here are not yet supported
-	public static final int TAXA_DELETED = 11;
-	public static final int CHARACTERS_DELETED = 12;
+	public static final int TAXA_DELETED = 30;
+	public static final int CHARACTERS_DELETED = 31;
 
 	int changeClass;
 
@@ -67,6 +68,10 @@ public class UndoInstructions implements Undoer {
 	Associable assoc;
 	String[] namesList;
 	int[] order = null;
+	
+	String[][] oldStateNames;
+	String[][] oldStateNotes;
+
 
 	/** This is the constructor for single-cell changes. */
 	public UndoInstructions(int changeClass, int ic, int it, Object oldState, Object newState, CharacterData data, MesquiteTable table) {
@@ -139,9 +144,23 @@ public class UndoInstructions implements Undoer {
 
 		if (changeClass==ALLDATACELLS) {
 			if (data != null && obj!=null)
-				if (obj instanceof CharacterData)
+				if (obj instanceof CharacterData) {
 					this.oldData = ((CharacterData)obj).cloneData();
-		} 
+					if (obj instanceof CategoricalData) {
+						CategoricalData cd = (CategoricalData)obj;
+						for (int ic=0; ic<cd.getNumChars(); ic++){
+							if (cd.hasStateNames() && cd.hasStateNames(ic))
+								for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+									if (cd.hasStateName(ic,i))
+										((CategoricalData)oldData).setStateName(ic,i,cd.getStateName(ic,i));
+							if (cd.hasStateNotes() && cd.hasStateNotes(ic))
+								for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+									if (cd.hasStateNote(ic,i))
+										((CategoricalData)oldData).setStateNote(ic,i,cd.getStateNote(ic,i));
+						}
+					}
+				}
+		}
 		else if (changeClass == ALLCHARACTERNAMES) {
 
 			namesList = null;
@@ -303,6 +322,22 @@ public class UndoInstructions implements Undoer {
 		case ALLDATACELLS:
 			newData = data.cloneData();
 			data.copyData(oldData, true);
+			if (oldData instanceof CategoricalData) {
+				CategoricalData cd = (CategoricalData)oldData;
+				for (int ic=0; ic<cd.getNumChars(); ic++){
+					if (cd.hasStateNames() && cd.hasStateNames(ic))
+						for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+							if (cd.hasStateName(ic,i) && StringUtil.notEmpty(cd.getStateName(ic,i))) {
+								String s = cd.getStateName(ic,i);
+								((CategoricalData)data).setStateName(ic,i,cd.getStateName(ic,i));
+							}
+					if (cd.hasStateNotes() && cd.hasStateNotes(ic))
+						for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+							if (cd.hasStateNote(ic,i))
+								((CategoricalData)data).setStateNote(ic,i,cd.getStateNote(ic,i));
+				}
+			}
+
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 			return new UndoInstructions(changeClass, newData, data);
 
