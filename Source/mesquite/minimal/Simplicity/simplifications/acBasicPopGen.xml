@@ -3,28 +3,10 @@
 <mesquite>
   <simplicitySettings>
     <version>1</version>
-    <name>Basic Pop. Gen.</name>
+    <name>Basic Population Genetics</name>
     <hiddenPackages>
       <package>
-        <name>mesquite.arizona</name>
-      </package>
-      <package>
-        <name>mesquite.andy</name>
-      </package>
-      <package>
         <name>mesquite.batchArch</name>
-      </package>
-      <package>
-        <name>mesquite.bosque</name>
-      </package>
-      <package>
-        <name>mesquite.BTOL</name>
-      </package>
-      <package>
-        <name>mesquite.cartographer</name>
-      </package>
-      <package>
-        <name>mesquite.chromaseq</name>
       </package>
       <package>
         <name>mesquite.cont</name>
@@ -49,12 +31,6 @@
       </package>
       <package>
         <name>mesquite.meristic</name>
-      </package>
-      <package>
-        <name>mesquite.oliver</name>
-      </package>
-      <package>
-        <name>mesquite.opal</name>
       </package>
       <package>
         <name>mesquite.pairwise</name>
@@ -157,9 +133,6 @@
       </package>
       <package>
         <name>mesquite.molec.TopBlastMatches</name>
-      </package>
-      <package>
-        <name>mesquite.ToLEditor</name>
       </package>
       <package>
         <name>mesquite.ancstates</name>

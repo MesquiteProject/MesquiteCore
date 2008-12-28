@@ -6,25 +6,10 @@
     <name>MacClade</name>
     <hiddenPackages>
       <package>
-        <name>mesquite.arizona</name>
-      </package>
-      <package>
-        <name>mesquite.andy</name>
-      </package>
-      <package>
         <name>mesquite.assoc</name>
       </package>
       <package>
         <name>mesquite.batchArch</name>
-      </package>
-      <package>
-        <name>mesquite.bosque</name>
-      </package>
-      <package>
-        <name>mesquite.BTOL</name>
-      </package>
-      <package>
-        <name>mesquite.cartographer</name>
       </package>
       <package>
         <name>mesquite.categ</name>
@@ -60,19 +45,10 @@
         <name>mesquite.io</name>
       </package>
       <package>
-        <name>mesquite.leaves</name>
-      </package>
-      <package>
         <name>mesquite.mb</name>
       </package>
       <package>
         <name>mesquite.meristic</name>
-      </package>
-      <package>
-        <name>mesquite.oliver</name>
-      </package>
-      <package>
-        <name>mesquite.opal</name>
       </package>
       <package>
         <name>mesquite.ornamental</name>
@@ -184,9 +160,6 @@
       </package>
       <package>
         <name>mesquite.molec.TopBlastMatches</name>
-      </package>
-      <package>
-        <name>mesquite.ToLEditor</name>
       </package>
     </hiddenPackages>
     <hiddenMenuItems/>
