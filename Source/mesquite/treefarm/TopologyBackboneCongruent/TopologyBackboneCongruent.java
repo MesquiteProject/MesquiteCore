@@ -1,6 +1,6 @@
 package mesquite.treefarm.TopologyBackboneCongruent;
 
-/*New October 7, 2008. oliver*/
+/*New October 7, '08. oliver*/
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
