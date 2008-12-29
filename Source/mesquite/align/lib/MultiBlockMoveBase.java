@@ -19,7 +19,6 @@ import java.awt.Graphics;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
@@ -45,6 +44,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	protected boolean currentlyMoving = false;
 	protected boolean currentlyMovingRight=false;
 	protected boolean optionDown = false;
+	protected Bits originalWhichTaxa;
 
 	protected boolean defaultCanExpand = false;
 	protected MesquiteBoolean canExpand =new MesquiteBoolean(defaultCanExpand);
@@ -144,10 +144,10 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 
 		getFirstAndLastSequences(optionDown);
 		currentMoveFromOriginal = 0;
-		Bits whichTaxa = getWhichTaxa(optionDown);
-		if (whichTaxa==null)
+		originalWhichTaxa = getWhichTaxa(optionDown);
+		if (originalWhichTaxa==null)
 			return false;
-		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),whichTaxa);
+		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),originalWhichTaxa);
 
 		if (!canExpand.getValue())
 			undoReference = new UndoReference(data,this,0,data.getNumChars(), firstSequenceInBlock,lastSequenceInBlock);
@@ -175,7 +175,35 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		if (candidateMovement !=0) {  // move it over from previous position by this amount; at least, that is the request
 			int distanceToMove = currentBlock.movementAllowed(candidateMovement, canExpand.getValue());
 			if (distanceToMove!=0) {
-				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, currentBlock.getWhichTaxa(), canExpand.getValue(), false, true, false,dataChanged,null);
+				long[] checkSums = null;
+				int numTaxaToMove=0;
+				Bits taxaToMove = currentBlock.getWhichTaxa();
+				if (MesquiteTrunk.debugMode) {
+					logln("Candidate movement: " + candidateMovement);
+					numTaxaToMove = taxaToMove.numBitsOn();
+					checkSums = new long[numTaxaToMove];
+					int count = 0;
+					for (int it=0; it<data.getNumTaxa() && count<numTaxaToMove; it++) {
+						if (taxaToMove.isBitOn(it)) {
+							checkSums[count] = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),it,it);
+							count++;
+						}
+					}
+				}
+				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, taxaToMove, canExpand.getValue(), false, true, false,dataChanged,null);
+				if (MesquiteTrunk.debugMode) {
+					numTaxaToMove = taxaToMove.numBitsOn();
+					int count = 0;
+					for (int it=0; it<data.getNumTaxa() && count<numTaxaToMove; it++) {
+						if (taxaToMove.isBitOn(it)) {
+							long newCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),it,it);
+							if (newCheckSum!=checkSums[count]) {
+								logln("CHECKSUM of taxon " + (it+1) + " changed!!!!!!");
+							}
+							count++;
+						}
+					}
+				}
 				if (added<0){ //now start adjusting all the values as we may have added taxa at the start of the matrix
 					firstColumnTouched -= added;
 					effectiveFirstColumnTouched -= added;
@@ -183,6 +211,8 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 				} 
 				if (added!=0){  //we've added some characters
 					addCharactersToBlocks(Math.abs(added), added<0);
+					if (MesquiteTrunk.debugMode)
+						logln("Number of characters added: " + Math.abs(added));
 				}
 				currentBlock.adjustToMove(distanceToMove);
 
@@ -225,8 +255,12 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		return attemptBlockMove(candidateMovement);
 	}
 	/*.................................................................................................................*/
-	public boolean moveMultiSequences() {
+	public boolean afterMoveMultiSequences() {
 		boolean success = ((CategoricalData)data).examineCheckSum(0, data.getNumChars(),currentBlock.getWhichTaxa(), "WARNING! The data have been altered inappropriately by this tool! The changes you have made will be undone.", warnCheckSum, originalCheckSum);
+		if (!success) {   //&& MesquiteTrunk.debugMode) 
+			logln("Original sequences to be moved: " + originalWhichTaxa.getListOfBitsOn(1));
+			logln("Sequences moved: " + currentBlock.getWhichTaxa().getListOfBitsOn(1));
+		}
 		if (dataChanged.getValue()) {
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, null, undoReference));
 			data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));  //TODO: have undo for linked?  or is this automatically taken care of?

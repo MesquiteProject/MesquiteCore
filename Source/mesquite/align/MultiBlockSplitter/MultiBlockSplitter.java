@@ -378,7 +378,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 
 			choosingNewSelection=false;
 		} else if (currentlyMoving){
-			moveMultiSequences();
+			afterMoveMultiSequences();
 		} else stopMoving();
 		return true;
 	}

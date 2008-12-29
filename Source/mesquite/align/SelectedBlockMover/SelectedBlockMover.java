@@ -238,7 +238,7 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 
 			choosingNewSelection=false;
 		} else if (currentlyMoving){
-			moveMultiSequences();
+			afterMoveMultiSequences();
 		} else stopMoving();
 		return true;
 	}
