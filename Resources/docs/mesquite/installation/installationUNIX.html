@@ -1,1 +1,78 @@
-<html>	<head>		<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">		<meta name="generator" content="Adobe GoLive 4">		<title>Mesquite installation for UNIX</title>	</head>	<body>		<h2>Mesquite installation for UNIX/LINUX</h2>		<p>(Please email us at <img src="../images/email.jpg" width="189" height="17">)   with questions or comments about downloading Mesquite).</p>		        <p>Requirements: JRE or JDK 1.4 or better (<a href="http://java.sun.com">java.sun.com</a>).   (It is best to get Sun's Java VM; Mesquite does not run on some third-party   virtual machines.) See notes on the <a href="../../Mesquite_Folder/docs/mesquite/support.html#knownVMBugs">support</a>   page, especially regarding issues with window and dialog size and placement.</p><p>Instructions:</p><p>Download and decompress this file:</p>		<ul>  <li type="disc"><a href="http://mesquiteproject.org/mesquiteDownload/mesquite.tgz">.tgz     file</a> </ul>		<p> It will create a directory called &quot;Mesquite_Folder&quot; in which all   the relevant files reside. To start Mesquite, execute the run_mesquite.sh script from the command line:   <pre>     ./run_mesquite.sh</pre> This should automatically identify your java installation. If you have trouble, you may need to set your JAVA_HOME environment variable. In the uncommon case that you want a java VM to run Mesquite that is different from the VM identified in JAVA_HOME, you may set the MESQUITE_JAVA_HOME environment variable.</p><p>Once Mesquite has finished loading, go to the File menu to open a file.</p><p>If the current user directory is not the Mesquite_Folder, and Mesquite has  not been run before, Mesquite may ask you to find the file &quot;manual.html&quot;  which resides in the <b>Mesquite_Folder/docs/mesquite/</b> directory. This will  help Mesquite find and remember where its files are.</p><h3>If run_mesquite.sh fails</h3>In the event that the shell script fails, it may still be posible to run Mesquite manually. The main class file is mesquite.Mesquite.To start Mesquite you can use jre or java. For instance you could use:</p>		<pre>     java -cp /home/myuser/Mesquite_Folder mesquite.Mesquite</pre>		<p>where /home/myuser/Mesquite_Folder could be replaced by whatever is the		  path to the Mesquite_Folder. On some systems the java virtual machine		  is started by &quot;jre&quot; instead		  of &quot;java&quot;, and thus the command would be:</p>		<pre>     jre -cp /home/myuser/Mesquite_Folder mesquite.Mesquite</pre>		<p>Depending on your configuration, you may need to give the explicit path		  to the java virtual machine, as in:</p>		<pre>/usr/java/jre1.4.2/bin/java -cp /usr/local/Mesquite_Folder mesquite.Mesquite</pre>		<p>If you've changed the name of Mesquite_Folder to, for instance, &quot;Mesquite2&quot;,   you may need to use a command like:</p>		<pre>/usr/java/jre1.4.2/bin/java -cp /usr/local/Mesquite2 mesquite.Mesquite</pre>        <p></p>        <p>If you've had to do all this because the shell script isn't working, please let us know what happened, and what you did to make Mesquite work. That way, we can make it easier for the next person.</p>		<h3>Window Managers</h3>		<p>Mesquite attempts to place windows in particular places on the screen for ease of use, using standard Java calls. Some window managers override this, resulting in haphazard placement of windows. You may need to change your window manager if this sort of thing is happening.</p>		<p>More details of issues of using Mesquite under Linux/UNIX are described in   the <a href="../../Mesquite_Folder/docs/mesquite/support.html#knownVMBugs">Support</a>   page. <hr>Copyright 2002-2006 W. &amp; D. Maddison, T. Wheeler</body></html>
+<html>
+
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+		<meta name="generator" content="Adobe GoLive 4">
+		<title>Mesquite installation for UNIX</title>
+	</head>
+
+	<body>
+		<h2>Mesquite installation for UNIX/LINUX</h2>
+
+		
+<p>(Please email us at <img src="../images/email.jpg" width="189" height="17">) 
+  with questions or comments about downloading Mesquite).</p>
+		
+        
+<p>Requirements: JRE or JDK 1.4 or better (<a href="http://java.sun.com">java.sun.com</a>). 
+  (It is best to get Sun's Java VM; Mesquite does not run on some third-party 
+  virtual machines.) See notes on the <a href="../../Mesquite_Folder/docs/mesquite/support.html#knownVMBugs">support</a> 
+  page, especially regarding issues with window and dialog size and placement.</p>
+<p>Instructions:</p>
+<p>Download and decompress this file:</p>
+		<ul>
+  <li type="disc"><a href="http://mesquiteproject.org/mesquiteDownload/mesquite.tgz">.tgz 
+    file</a> 
+</ul>
+		
+<p> It will create a directory called &quot;Mesquite_Folder&quot; in which all 
+  the relevant files reside. To start Mesquite, execute the run_mesquite.sh script from the command line:
+   <pre>     ./run_mesquite.sh</pre> 
+This should automatically identify your java installation. If you have trouble, you may need to set your 
+JAVA_HOME environment variable. In the uncommon case that you want a java VM to run Mesquite that is different 
+from the VM identified in JAVA_HOME, you may set the MESQUITE_JAVA_HOME environment variable.
+</p>
+
+<p>Once Mesquite has finished loading, go to the File menu to open a file.</p>
+<p>If the current user directory is not the Mesquite_Folder, and Mesquite has
+  not been run before, Mesquite may ask you to find the file &quot;manual.html&quot;
+  which resides in the <b>Mesquite_Folder/docs/mesquite/</b> directory. This will
+  help Mesquite find and remember where its files are.</p>
+
+
+<h3>If run_mesquite.sh fails</h3>
+
+In the event that the shell script fails, it may still be posible to run Mesquite manually. The main class file is mesquite.Mesquite.
+
+To start Mesquite you can use jre or java. For instance you could use:</p>
+		<pre>
+     java -cp /home/myuser/Mesquite_Folder mesquite.Mesquite</pre>
+		<p>where /home/myuser/Mesquite_Folder could be replaced by whatever is the
+		  path to the Mesquite_Folder. On some systems the java virtual machine
+		  is started by &quot;jre&quot; instead
+		  of &quot;java&quot;, and thus the command would be:</p>
+
+		<pre>
+     jre -cp /home/myuser/Mesquite_Folder mesquite.Mesquite</pre>
+		<p>Depending on your configuration, you may need to give the explicit path
+		  to the java virtual machine, as in:</p>
+		<pre>/usr/java/jre1.4.2/bin/java -cp /usr/local/Mesquite_Folder mesquite.Mesquite</pre>
+		
+<p>If you've changed the name of Mesquite_Folder to, for instance, &quot;Mesquite2&quot;, 
+  you may need to use a command like:</p>
+		<pre>/usr/java/jre1.4.2/bin/java -cp /usr/local/Mesquite2 mesquite.Mesquite</pre>
+
+        <p></p>
+        <p>If you've had to do all this because the shell script isn't working, please let us know 
+what happened, and what you did to make Mesquite work. That way, we can make it easier for the next person.</p>
+
+		<h3>Window Managers</h3>
+		<p>Mesquite attempts to place windows in particular places on the screen for ease of use, using standard Java calls. Some window managers override this, resulting in haphazard placement of windows. You may need to change your window manager if this sort of thing is happening.</p>
+		
+<p>More details of issues of using Mesquite under Linux/UNIX are described in 
+  the <a href="../../Mesquite_Folder/docs/mesquite/support.html#knownVMBugs">Support</a> 
+  page. 
+<hr>
+Copyright 2002-2009 W. &amp; D. Maddison, T. Wheeler
+</body>
+</html>

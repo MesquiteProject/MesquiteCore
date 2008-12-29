@@ -11,6 +11,6 @@
 	<classpathentry exported="true" kind="lib" path="jars/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/commons-lang-2.3.jar"/>
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
-	<classpathentry excluding="mesquite/treefarm/ConsensusTree/|mesquite/diverse/lib/SpecExtincRatioDiffCategModel.java|mesquite/diverse/DiversificationLikeCategChar/DiversificationLikeCategChar.java" kind="src" path="Source"/>
+	<classpathentry kind="src" path="Source"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>

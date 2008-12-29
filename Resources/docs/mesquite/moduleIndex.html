@@ -179,13 +179,14 @@
 <li>Amino Acid Properties  &#8212; Returns property of amino acid</li>
 <li>Among-group PCA  &#8212; Performs among-group principal components analysis on a continous-valued matrix.</li>
 <li>Ancestral States All  &#8212; Reconstructs ancestral states at nodes for all characters supplied by character source.</li>
-<li>Ancestral States Reconstruction Package Introduction  &#8212; Serves as an introduction to the ancestral states reconstruction package for Mesquite.</li>
+<li>Ancestral States Reconstruction Package Introduction  &#8212; The ancestral states reconstruction package provides modules to coordinate and display reconstruction of ancestral states on the branches of trees.</li>
 <li>Annotate Branches  &#8212; Supplies a tool for tree windows to attach and view footnotes for branches.</li>
 <li>Annotation Panel module  &#8212; Provides tools with which to attach notes (including images) to cells of the matrix and show them.</li>
 <li>Annotation Panel module (list of characters)  &#8212; Provides tools with which to attach notes (including images) to characters and show them.</li>
 <li>Annotation Panel module (list of taaa)  &#8212; Provides tools with which to attach notes (including images) to characters and show them.</li>
 <li>Append numbers  &#8212; Appends to each taxon name the number of the taxon. This will ensure that each taxon name is unique.</li>
 <li>Arbitrarily Resolve State Ambiguities  &#8212; Alters categorical data by arbitrarily resolving ambiguous sites to one of the possible states.</li>
+<li>Arbitrarily Ultrametricize  &#8212; Adjusts a tree's branch lengths so that the distances among terminal taxa are ultrametric (i.e. like a molecular clock, all tips reaching to same level).  This is not done with any sophisticated smoothing algorithm; rather, branches are just stretched until they reach to same level.</li>
 <li>Assign All Branch Lengths  &#8212; Assigns a value for branch length for all of a tree's branches.</li>
 <li>Assign Branch Lengths From Node Names  &#8212; Assigns a value for branch length for all of a tree's branches based upon node names that represent numbers.</li>
 <li>Assign Branch Lengths Less than or Equal to Zero...  &#8212; Assigns a user-provided value to all branches with lengths less than or equal to zero.</li>
@@ -210,7 +211,8 @@
 <li>Basic Draw Names for Tree Display  &#8212; Draws taxon names on a tree.  Chooses orientation of names according to orientation of tree.</li>
 <li>Basic File Coordinator  &#8212; Coordinates the reading, maintenance and linkages of files, which include Taxa, Trees, CharacterData, and other objects. This module is hired directly by the Mesquite trunk module.</li>
 <li>Basic Tree Draw Coordinator  &#8212; Coordinates the drawing of a tree by maintaining the basic TreeDisplay and by hiring a DrawTree module.</li>
-<li>Batch Architect Package Introduction  &#8212; Serves as an introduction to the Batch Architect package for Mesquite.</li>
+<li>Basic Utilities Package Introduction  &#8212; Provides basic utilities for Mesquite.</li>
+<li>Batch Architect Package Introduction  &#8212; Provides facilities to coordinate the simulation of data and generate batch files for replicated analyses.</li>
 <li>Batch File Template Manager  &#8212; Manages templates used in saving batch files.</li>
 <li>Birth/Death Process Trees  &#8212; Generates tree by simple birth/death model with a constant rate of speciation (birth) and of extinction (death).</li>
 <li>BiSSE Ln Likelihood Difference  &#8212; Calculates the difference in log likelihoods between two BiSSE speciation/extinction models.</li>
@@ -219,9 +221,10 @@
 <li>BiSSE Speciation/Extinction Likelihood  &#8212; Calculates likelihood with a tree of a species diversification model whose speciation and extinction rates depend on the state of a binary character (BiSSE model, Maddison, Midford &amp; Otto, 2007).</li>
 <li>BiSSE Speciation/Extinction Likelihood Calculator  &#8212; Calculates likelihood with a tree of a species diversification model whose speciation and extinction rates depend on the state of a binary character (BiSSE model, Maddison, Midford &amp; Otto, 2007).</li>
 <li>BiSSE Trees &amp; Characters  &#8212; Generates tree by a speciation/extinction model in which a character controls rates of speciation/extinction.  Time to next event drawn from negative exponential distribution.</li>
-<li>BLAST in Web Browser  &#8212; BLASTs selected data.</li>
+<li>BLAST in Web Browser  &#8212; BLASTs selected data against GenBank.</li>
 <li>Boolean for Character (in List of Characters window)  &#8212; Supplies booleans for characters for a character list window.</li>
 <li>Boolean for Tree (in List of Trees window)  &#8212; Supplies booleans for trees for a trees list window.</li>
+<li>Boolean Info Strip  &#8212; Shows an strip of boxes near the top of each a character column that shows the value of a boolean for that character in gray or white.</li>
 <li>Boolean Tree Value  &#8212; Gives a tree a value of 1 if it satisfies the criterion, 0 otherwise.</li>
 <li>Bootstrap Resample Matrix  &#8212; Resamples characters from a matrix for use in bootstrap methods.</li>
 <li>Branch Information  &#8212; Provides a tool that shows information about branches.</li>
@@ -231,15 +234,17 @@
 <li>Calculated value for taxon  &#8212; Supplies values for taxa reinterpreted as if characters.</li>
 <li>Canonical Variates Analysis  &#8212; Performs canonical variates analysis on a continous-valued matrix.</li>
 <li>Catalogue of Life  &#8212; Provides a URL to a taxon in the Catalogue of Life</li>
+<li>Categorical Data Package Introduction  &#8212; Provides basic facilities for handling categorical characters.</li>
 <li>Cell Wand (data)  &#8212; Provides a tool with which to select cells in a matrix automatically.</li>
 <li>Character Compositional Bias  &#8212; Calculates the percent of taxa with particular nucleotides (GC bias, or individual frequency of A, C, G or T) for a character.</li>
 <li>Character Group Color  &#8212; Colors by Character Group.</li>
+<li>Character Included  &#8212; A boolean that is true if a character is currently included, and false if the character is currently excluded.</li>
 <li>Character Inclusion  &#8212; Shows current character inclusion in character list window.</li>
 <li>Character Likelihood  &#8212; Calculates the negative log likelihood of a tree for a given character.</li>
 <li>Character List  &#8212; Makes windows listing characters and information about them.</li>
 <li>Character Loadings  &#8212; Returns loadings of a character in an ordination</li>
 <li>Character Matrices List  &#8212; Makes windows listing character data matrices and information about them.</li>
-<li>Character Matrices Package Introduction  &#8212; Serves as an introduction to the basic character matrices package for Mesquite.</li>
+<li>Character Matrices Package Introduction  &#8212; Provides basic management and utilities for character data matrices.</li>
 <li>Character Matrix Editor  &#8212; Makes editor windows to edit character data.</li>
 <li>Character Matrix manager  &#8212; Coordinates the management of character data matrices.</li>
 <li>Character matrix selection coordinator  &#8212; Coordinates selecting taxa and characters in data matrix.</li>
@@ -260,6 +265,7 @@
 <li>Characters from Ordinations  &#8212; Supplies a character from an ordination of an existing matrix.</li>
 <li>Characters Scattergram  &#8212; Makes a scatterplot displaying two values (such as likelihoods, parsimony scores, etc.) for a series of characters.</li>
 <li>Chart from Instruction File  &#8212; Displays a chart summarizing data contained in files, as directed by an instruction file.</li>
+<li>Charting Package Introduction  &#8212; Provides basic charting functions.</li>
 <li>Circular tree  &#8212; Draws trees in circular form.</li>
 <li>Clade Match with Another Current Tree  &#8212; Calculates a number relating each clade in the tree to another current tree (e.g., a tree-to-tree distance metric).</li>
 <li>Clear All Node Names  &#8212; Clears all node names from the tree.</li>
@@ -269,7 +275,7 @@
 <li>Cluster analysis  &#8212; Supplies trees obtained from cluster analysis on distance matrices.</li>
 <li>Coalescence Contained within Current Tree  &#8212; Generates tree by a simple coalescence model of a neutral gene with constant population size, within a current species tree from a Tree window or other tree context. Branch lengths are assigned according to generation of coalescence.The species tree used is a current tree found in a Tree Window or other tree context.</li>
 <li>Coalescence in Current Tree with Migration  &#8212; Generates tree by a simple coalescence model of a neutral gene with constant population size, within a current species tree from a Tree window or other tree context. Branch lengths are assigned according to generation of coalescence.  The default population size is 10000. The species tree used is a current tree found in a Tree Window or other tree context. Migration is allowed; the default probability is 0.00001 per individual generation. Migration can be isolated to a particular generation, or spread throughout the depth of the species/population history.</li>
-<li>Coalescence Package Introduction  &#8212; Serves as an introduction to the coalescence package.</li>
+<li>Coalescence Package Introduction  &#8212; Provides simulations and calculations for coalescence (genetic drift) within populations.</li>
 <li>Coalescence Simulated within Current Tree  &#8212; Generates tree by a simple coalescence model of a neutral gene with constant population size, within species trees. Branch lengths are assigned according to generation of coalescence.The species tree used is a current tree found in a Tree Window or other tree context.</li>
 <li>Coalescent Trees  &#8212; Generates tree by coalescence within a single panmictic population.</li>
 <li>Codon Position Rates Model  &#8212; Defines and maintains models that specify rates for codon positions.</li>
@@ -287,12 +293,14 @@
 <li>Color By Taxon Value  &#8212; Colors the cells of a character matrix according to a value for the Taxon or a moving window of taxa.</li>
 <li>Color For Aligning  &#8212; Colors the cells of a character matrix for easy of alignment.</li>
 <li>Color If Excluded  &#8212; Colors the excluded characters gray.</li>
+<li>Color Taxa  &#8212; Provides paintbrush to color taxon names.</li>
 <li>Compare Bases with Taxon  &#8212; Compares nucleotide bases of selected taxa with those of a chosen taxon.</li>
 <li>Compare Other Matrix  &#8212; Compares matrix in data editor with another.</li>
 <li>Compare with Another Current Tree  &#8212; Calculates a number relating a tree and another current tree (e.g., a tree-to-tree distance metric).</li>
 <li>Compare with Other Trees  &#8212; Calculates a number relating one tree to another in a sequence (e.g., a tree-to-tree distance metric), such that the i'th tree is compared to the i'th other tree in the sequence.</li>
 <li>Composite DNA Simulation Model  &#8212; Defines and maintains simple stochastic models of DNA evolution for simulations.</li>
 <li>Concatenate Other Matrix  &#8212; Concatenates matrix onto one in data editor.  Assumptions like weights and character models are NOT transferred.  For categorical data, state names are not included.  For continuous data, new items may need to be created to accommodate differences in items between the matrices.</li>
+<li>Concatenate Respective Matrices from Two Sources  &#8212; Supplies matrices by concatenating respective matrices from two sources.  The i'th matrix supplied is the concatenation of the i'th matrix from each of the two sources.  Assumptions like weights and character models are NOT transferred.  For categorical data, state names are not included.  For continuous data, new items may need to be created to accommodate differences in items between the matrices.</li>
 <li>Concatenate tree blocks  &#8212; Concatenates selected tree blocks into a new tree block.</li>
 <li>Condense taxon names  &#8212; Condenses taxon names, for example for use by programs that cannot handle long names or names with punctuation.</li>
 <li>Condensed Tree Source  &#8212; Produces a block of trees that are a condensed version of another block of trees, with duplicate trees removed.</li>
@@ -300,12 +308,13 @@
 <li>Consensus State for Character  &#8212; </li>
 <li>Consensus Tree  &#8212; Supplies consensus tree from a block of trees.</li>
 <li>Consensus Trees from Tree Blocks  &#8212; Supplies consensus trees from Tree blocks.</li>
+<li>Consensus Trees Package Introduction  &#8212; Calculations for consensus trees.</li>
 <li>Constellation  &#8212; Draws trees with spots at the nodes in a more or less unrooted way.</li>
 <li>Contained Gene (or Other) Trees  &#8212; Draws wide trees containing trees of associates (e.g., species tree containing gene tree)</li>
+<li>Continuous Data Package Introduction  &#8212; Provides basic facilities for handling continuous-valued characters.</li>
 <li>Continuous Items Editor  &#8212; Edits items for continuous data matrix within the editor info panel.</li>
 <li>Continuous state of taxon  &#8212; State of a continuous character.</li>
 <li>Convert Negative Branch Lengths to Zero  &#8212; Adjusts a tree's branch lengths so that negative branch lengths are zero</li>
-<li>Convert Node Names to Percentages  &#8212; If the names of nodes are numbers between 0 and 1, multiplies the number by 100 and converts to an integer.</li>
 <li>Convert Polymorphisms to Uncertainties  &#8212; Alters categorical data by converting polymorphic entries to uncertainties.</li>
 <li>Convert to RY  &#8212; Converts nucleotide data to RY data in selected region.</li>
 <li>Convert Uncert./Polymorph. to Missing  &#8212; Alters categorical data by converting uncertain or polymorphic entries to missing data.</li>
@@ -341,13 +350,16 @@
 <li>Diagonal tree  &#8212; Draws trees with standard diagonal branches ("cladogram")</li>
 <li>Difference in steps in two characters  &#8212; Calculates the difference between two characters in parsimony steps for a given tree.</li>
 <li>Difference in two values for character  &#8212; Coordinates the calculation of the difference in two numbers for a character.</li>
+<li>Difference in two values for tree  &#8212; Coordinates the calculation of the difference in two numbers for a tree.</li>
 <li>Display Character Loadings  &#8212; Shows character loadings in ordination.</li>
 <li>Display Mean  &#8212; Calculates and shows the mean value.</li>
 <li>Distance between taxa  &#8212; Counts the difference between two taxa.</li>
+<li>Distance Matrix Package Introduction  &#8212; Calculates and provides utilities for distances matrices.</li>
 <li>Distance of Contained Taxa  &#8212; Distances among taxa according to distances among contained taxa (e.g., genes).</li>
 <li>Distances from Character Matrix  &#8212; Distances calculated from a character matrix.</li>
 <li>Diverse Package  &#8212; Diverse is a Mesquite package for examining speciation and extinction.</li>
 <li>Diversification (Char. Indep.)  &#8212; Coordinates analyses of diversification (speciation/extinction).</li>
+<li>DManager Package Introduction  &#8212; Provides special tools for managing data and taxa.</li>
 <li>DNA Empirical State Frequencies Model  &#8212; Defines and maintains model of state frequences that match those found in an empirical matrix.</li>
 <li>DrawHierarchy  &#8212; Draws project and module trees</li>
 <li>E-mail Tree  &#8212; Calls mailto: to email a text image of the tree.</li>
@@ -384,29 +396,30 @@
 <li>GenBank Taxon  &#8212; Provides a URL to a taxon in NCBI GenBank</li>
 <li>Gene Duplication-Extinction (gene tree)  &#8212; Counts the number of duplication and extinction events for gene tree implied by a containing species tree</li>
 <li>Gene Duplication-Extinction (species tree)  &#8212; Counts the number of duplication and extinction events for species tree implied by a contained gene tree</li>
-<li>Genesis Introduction  &#8212; Serves as an introduction to the Genesis package, which implements models of character evolution.</li>
+<li>Genesis Introduction  &#8212; Implements stochastic models of molecular evolution.</li>
 <li>GenPept (Protein)  &#8212; Imports GenPept files that consist of amino acid sequence data.</li>
 <li>Get Taxon's tree from a web site  &#8212; Supplies a tool for tree windows that gets tree for taxon touched from a web site.</li>
-<li>Get Taxon's tree from tolweb.org  &#8212; Supplies a tool for tree windows that gets tree for taxon touched from tolweb.org.</li>
+<li>Get Taxon's tree from tolweb.org  &#8212; Supplies a tool for tree windows that gets tree for taxon touched from tolweb.org</li>
 <li>Go-to Window  &#8212; Provides a window to jump to another file</li>
 <li>Group Membership (characters)  &#8212; Lists and allows changes to group membership in the current partition of characters, for List of Characters window.</li>
 <li>Group Membership (taxa)  &#8212; Lists and allows changes to group membership in the current partition of taxa, for List of Taxa window.</li>
 <li>GTR Rate Matrix Model  &#8212; Defines and maintains six-parameter general time-reversible (GTR) rate matrix models.</li>
 <li>Heuristic (Add &amp; rearrange)  &#8212; Searches for optimal trees by adding taxa then rearranging the tree.</li>
 <li>Highlight Apparently Slightly Misaligned  &#8212; Colors aligned sequences to emphasize sections that seem slightly misaligned.</li>
-<li>Import and Export Package Introduction  &#8212; Serves as an introduction to the import/export package for Mesquite.</li>
+<li>Import and Export Package Introduction  &#8212; Provides file import/export utilities.</li>
 <li>Initialize DNA Submodels  &#8212; Initializes default DNA submodels.</li>
 <li>Initialize Genetic Code  &#8212; Initializes default genetic codes.</li>
 <li>Initialize Parsimony  &#8212; Initializes default character models for parsimony.</li>
 <li>Initialize predefined categorical parsimony models  &#8212; Initializes the predefined categorical parsimony models.</li>
 <li>Initialize predefined continuous parsimony models  &#8212; Initializes the predefined continuous parsimony models.</li>
 <li>Insert Node  &#8212; Provides a tool with which to insert nodes along a branch.</li>
+<li>Installer  &#8212; Installs packages.</li>
 <li>Interpolate Character Selection  &#8212; Selects characters that are surrounded by characters selected.</li>
 <li>iSpecies  &#8212; Provides a URL to a taxon in iSpecies</li>
 <li>Item values chart  &#8212; Manages chart of values for items.</li>
 <li>Items bi-plot  &#8212; Makes a chart comparing two values for each of many items.</li>
 <li>iText  &#8212; iText is a package for saving PDF files within Mesquite.</li>
-<li>JAMA Introduction  &#8212; Serves as an introduction to the JAMA library used in Mesquite.</li>
+<li>JAMA Introduction  &#8212; Introduces the JAMA library.</li>
 <li>Jukes Cantor distance  &#8212; Jukes Cantor distance from a character matrix.</li>
 <li>K2P distance  &#8212; K2P (Kimura 2-parameter) distance from a character matrix.</li>
 <li>Keep Prefix/Suffix of Taxon Name  &#8212; Keeps only Prefix or Suffix of Taxon Name.</li>
@@ -428,6 +441,7 @@
 <li>List of Probability Model Sets  &#8212; Makes windows listing probability model sets.</li>
 <li>List of Taxa Partitions  &#8212; Makes windows listing taxa partitions.</li>
 <li>List of Taxon Sets  &#8212; Makes windows listing taxon sets.</li>
+<li>List Windows Package Introduction  &#8212; Provides List windows to manage taxa, characters and other information.</li>
 <li>Log transform  &#8212; Alters continuous data by log transforming values.</li>
 <li>Lower Case  &#8212; Returns 1 if state symbol is a lower case letter.</li>
 <li>Maintain Clipboard Match  &#8212; Finds the first occurrence of the sequence in  the clipboard, within a designated taxon, and maintains that match as the clipboard changes.</li>
@@ -481,19 +495,22 @@
 <li>Mean value of character (linked matrix)  &#8212; Calculates the mean observed trait for continuous character in a linked matrix.</li>
 <li>Merge Taxa  &#8212; Merges selected taxa and their character states.</li>
 <li>Merge Taxa &amp; Matrices from File  &#8212; Includes a file and concatenates its taxa to an existing taxa block, for instance to add seqences.</li>
+<li>Meristic Data Package Introduction  &#8212; Provides basic facilities for handling meristic characters.</li>
 <li>Meristic Items Editor  &#8212; Edits items for meristic data matrix within the editor info panel.</li>
 <li>Mesquite  &#8212; This is the central module for the Mesquite system. In it is the main method that starts up the Mesquite application.  This moduleloads information for all of the other modules, and hires FileCoordinator modules as needed to deal with open files.  Thus, in the tree of employeesthat active modules make, this module is at its root.</li>
-<li>mesquite.jsci Package Introduction  &#8212; Serves as an introduction to the portions of JSci used by Mesquite.</li>
+<li>mesquite.jsci Package Introduction  &#8212; Introduces the JSci library.</li>
 <li>Mirror Tree Window  &#8212; Displays a single tree (the same as in a tree window) twice, in mirror image.</li>
 <li>Missing to Gaps  &#8212; Converts missing data to gaps in selected region.</li>
 <li>Mk1 Estimated Rate  &#8212; Estimates the rate of a character's evolution under the simple Mk1 model.</li>
 <li>Mk1 Model (Markov 1 parameter)  &#8212; Defines and maintains simple Markov k-state 1-parameter stochastic models (Lewis, 2001) of character evolution.</li>
 <li>Model Paradigm  &#8212; Indicates paradigm of model in list window.</li>
 <li>Modify Current Tree  &#8212; Modifies current tree.</li>
+<li>Molecular Utilities Package Introduction  &#8212; Provides utilities for molecular data.</li>
 <li>Most Pairs  &#8212; Chooses taxon pairings regardless of contrast in a character, so as to maximize the number of pairs that are phylogenetically independent.</li>
 <li>Move block  &#8212; Allows one to manually blocks in a sequence, and split the blocks.</li>
 <li>Move Prefix/Suffix of Taxon Name  &#8212; Moves the suffix of the taxon name to be to prefix or the prefix to be the suffix</li>
 <li>MrBayes Max. A-Post. Tree  &#8212; Supplies tree from MrBayes with highest posterior probability (MAP tree).</li>
+<li>MrBayes Package Introduction  &#8212; Provides links to MrBayes analyses.</li>
 <li>MrBayes Score  &#8212; Supplies posterior probability score from MrBayes</li>
 <li>MrBayes Trees from .t File  &#8212; Supplies trees from a ".t" file produced by MrBayes</li>
 <li>MRP Matrices from Trees  &#8212; Supplies matrices which represent trees for MRP (Matrix Representation with Parsimony) supertree analyses.</li>
@@ -532,6 +549,7 @@
 <li>Number of characters in character set  &#8212; Indicates number of characters in character set in list window.</li>
 <li>Number of characters in inclusion set  &#8212; Indicates number of characters in inclusion set in list window.</li>
 <li>Number of characters of data matrix  &#8212; Indicates taxa of data matrix.</li>
+<li>Number of Congruent Trees  &#8212; </li>
 <li>Number of groups in taxa partition  &#8212; Indicates number of groups in taxa partition in list window.</li>
 <li>Number of Stops  &#8212; Reports the number of stops coded by nucleotides in a taxon for a data matrix.</li>
 <li>Number of Taxa  &#8212; Counts the number of taxa in a tree.</li>
@@ -544,6 +562,7 @@
 <li>Occasionally Randomly Modify  &#8212; With specified probabililty, will ask random tree modifier to modify current tree.</li>
 <li>Open URL  &#8212; Opens a file on the web as if it were a local data file</li>
 <li>Original File (import source)  &#8212; Shows the orignal file from which a fuse/imported taxon came.</li>
+<li>Ornamental Trees Package Introduction  &#8212; Has extra methods for drawing and decorating trees.</li>
 <li>Other Tree Blocks  &#8212; Supplies blocks of trees from various sources</li>
 <li>Pagel format (ppy) file for Discrete  &#8212; Imports and exports files formatted for Pagel's Discrete program.</li>
 <li>Pagel format (ppy) file for Multistate  &#8212; Imports and exports files formatted for Pagel's Multistate program.</li>
@@ -551,15 +570,15 @@
 <li>Pairs Contrasting in State of One Character  &#8212; Chooses taxon pairings so as to maximize the number of pairs that are phylogenetically independent, subject to the constraint that each pair shows a contrast the states of a binary character.</li>
 <li>Pairs Contrasting in State of Two Characters  &#8212; Chooses taxon pairings so as to maximize the number of pairs that are phylogenetically independent, subject to the constraint that each pair shows a contrast the states of both of two binary characters.</li>
 <li>Pairwise Comparison  &#8212; Performs pairwise comparison character correlation tests. Phylogenetically independent pairs are chosen, and the states of two binary characters are compared to see if they are correlated among these pairs.</li>
-<li>Pairwise Comparisons Package Introduction  &#8212; Serves as an introduction to the pairwise comparisons character correlation package for Mesquite.</li>
+<li>Pairwise Comparisons Package Introduction  &#8212; Performs pairwise comparisons character correlation analyses.</li>
 <li>Pairwise Taxon Difference  &#8212; Calculates distance between a specific pair of taxa based on a character matrix.  Differs from Distance Between Taxa in thatit performs calculation for only a single pair of taxa.</li>
-<li>PAL Introduction  &#8212; Serves as an introduction to the use of the PAL library in Mesquite.</li>
+<li>PAL Introduction  &#8212; Introduces the PAL library.</li>
 <li>Parameters Explorer  &#8212; Provides a window to show values returned when parameter settings are varied</li>
 <li>Parsimony Ancestral States  &#8212; Coordinates the parsimony reconstruction of ancestral states.</li>
 <li>Parsimony Character Steps  &#8212; Calculates the number of parsimony steps in a character.</li>
 <li>Parsimony Linear  &#8212; Reconstructs the ancestral states of continuous characters so as to minimize the sum of absolute values of changes (linear, Wagner, Farris or Manhattan parsimony).  If the continuous character has multiple items, then length is reported on only the first item.</li>
 <li>Parsimony Ordered  &#8212; Reconstructs the ancestral states of categorical characters using parsimony, under the assumption that states are ordered (ordered, Farris or Wagner parsimony; additive).  Also counts parsimony steps.</li>
-<li>Parsimony Package Introduction  &#8212; Serves as an introduction to the basic parsimony package for Mesquite.</li>
+<li>Parsimony Package Introduction  &#8212; Preforms parsimony calculations to count steps and treelength of characters on trees.</li>
 <li>Parsimony Squared-change  &#8212; Reconstructs the ancestral states of continuous characters so as to minimize the sum of squared changes (squared-change or least squares parsimony; Brownian motion likelihood).</li>
 <li>Parsimony Stepmatrix  &#8212; Reconstructs ancestral states of categorical characters using a stepmatrix (cost matrix).</li>
 <li>Parsimony Unordered  &#8212; Reconstructs the ancestral states of categorical characters using parsimony, under the assumption that states are unordered (unordered or Fitch parsimony; nonadditive).  Also counts parsimony steps.</li>
@@ -613,6 +632,8 @@
 <li>Remove Gaps-Only Characters  &#8212; Removes all characters that are gaps only.</li>
 <li>Remove Internal Node Labels  &#8212; Deletes labels from all internal nodes.</li>
 <li>Remove item...  &#8212; Removes an item in each cell of a continuous matrix.</li>
+<li>Remove Selected Taxa from Trees  &#8212; Removes selected taxa from trees.</li>
+<li>Remove taxa from tree  &#8212; Removes taxa from tree.</li>
 <li>Rename item...  &#8212; Renames an item of a continuous matrix.</li>
 <li>Replaces text in taxon names  &#8212; Replaces text in taxon names.</li>
 <li>Reshuffle Character  &#8212; Supplies characters that are reshufflings of an existing character.</li>
@@ -624,18 +645,18 @@
 <li>Resolve Polytomies (to 0-length branches)  &#8212; Resolves polytomies arbitrarily and assigned the resulting new branches zero length.</li>
 <li>Reverse Complement  &#8212; Reverses the DNA sequence and complements the bases.</li>
 <li>Reverse Sequence  &#8212; Alters data by reversing sequence of states.</li>
-<li>Rhetenor Package Introduction  &#8212; Serves as an introduction to the Rhetenor morphometrics package.</li>
+<li>Rhetenor Package Introduction  &#8212; Multivariate analyses and morphometrics.</li>
 <li>Right-Ladderize Tree  &#8212; Sets the tree to its ladderized (right) version.</li>
 <li>Root tree  &#8212; Sets the tree to rooted.</li>
 <li>Root tree with selected taxa as outgroup  &#8212; Roots the tree between the selected taxa and the remainder, if possible.</li>
 <li>Rooting status  &#8212; Indicates whether the tree is rooted or unrooted.</li>
 <li>s of Slatkin &amp; Maddison  &#8212; Calculates 's' of Slaktin &amp; Maddison 1989 for tree of genes associated with given populations</li>
-<li>Sample Trees from Separate NEXUS File  &#8212; Supplies randomly-sampled trees directly from a file, without bringing the contained tree block entirely into memory.  This allows much larger blocks of trees to be used within constraints of memory, but will make some calculations slower.  This module does not know how many trees are in the file, and hence may attempt to read files beyond the number in the file.</li>
+<li>Sample Trees from Separate NEXUS File  &#8212; Supplies a fixed number of randomly-sampled trees directly from a file, without bringing the contained tree block entirely into memory.  This allows much larger blocks of trees to be used within constraints of memory, but will make some calculations slower.  This module does not know how many trees are in the file, and hence may attempt to read files beyond the number in the file.</li>
 <li>Save matrix copies  &#8212; Provides for the saving of copies of matrices to separate files.  This is available under the Characters menu.</li>
 <li>Scale All Branch Lengths  &#8212; Adjusts a tree's branch lengths by multiplying them by an amount.</li>
 <li>Scale Selected Branch Lengths  &#8212; Adjusts lengths of a tree's selected branches by multiplying them by an amount.</li>
 <li>Scattergram  &#8212; Helps make scattergram charts.</li>
-<li>Scroll To Data  &#8212; </li>
+<li>Scroll To Data  &#8212; Provides a tool that will scroll the data matrix to the next cell that contains data (i.e., that contains something other than a gap/inapplicable)</li>
 <li>Search Data  &#8212; Manages data-searching modules.</li>
 <li>Search for Better Tree  &#8212; Finds better trees (by the chosen optimality criterion) by rearranging the current tree.</li>
 <li>Search within clade  &#8212; Supplies a tool for tree windows that searches for a better branch arrangement within clade touched.</li>
@@ -684,6 +705,7 @@
 <li>Simple (Geographic data)  &#8212; Imports and exports simple matrices that consist of basic geographic  data. The first character must be the latitude, and the second character the longitude.</li>
 <li>Simple (protein)  &#8212; Imports and exports simple matrices that consist of amino acid sequence data.</li>
 <li>Simple Tree Window  &#8212; Displays a single tree.</li>
+<li>Simplicity Manager  &#8212; A small module to supervise the interface for simplification management.</li>
 <li>Simplified NEXUS  &#8212; Exports NEXUS files, for instance of old fashioned style (using DATA block).</li>
 <li>Simulate Ancestral States  &#8212; Simulates ancestral states on the nodes of a tree.</li>
 <li>Simulated Characters  &#8212; Supplies simulated characters.</li>
@@ -709,7 +731,7 @@
 <li>States Information (in List of Characters window)  &#8212; Supplies basic character state information for characters in character list window.</li>
 <li>Stepmatrix  &#8212; Supplies editor for and manages stepmatrices (cost matrices).</li>
 <li>Steps in Character  &#8212; Calculates the parsimony steps in a character for a given tree.</li>
-<li>Stochastic Character Evolution Package Introduction  &#8212; Serves as an introduction to the basic stochastic character evolution package for Mesquite.</li>
+<li>Stochastic Character Evolution Package Introduction  &#8212; Provides stochastic models and simulations of character evolution.</li>
 <li>Stochastic Character Mapping (Categorical)  &#8212; Coordinates reconstruction of ancestral states using stochastic character mapping. </li>
 <li>Stored Character Order  &#8212; Supplies current order applied to characters for character list window.</li>
 <li>Stored Characters  &#8212; Supplies characters from data files (as opposed to simulated characters, for example).</li>
@@ -729,7 +751,7 @@
 <li>Summarize State Changes Over Trees  &#8212; Summarizes reconstructions of state changes of a character over a series of trees.</li>
 <li>Tab-delimited categorical data file  &#8212; Imports simple tab-delimited files of categorical data.</li>
 <li>Tab-delimited continuous data file  &#8212; Imports and exports simple tab-delimited files of continuous data.</li>
-<li>Taxa Association Package Introduction  &#8212; Serves as an introduction to the taxa association package for Mesquite.</li>
+<li>Taxa Association Package Introduction  &#8212; Provides utilities for managing taxa associations (e.g. for gene/species analyses).</li>
 <li>Taxa blocks list  &#8212; Makes windows listing blocks of Taxa and information about them.</li>
 <li>Taxa of data matrix  &#8212; Indicates taxa of data matrix.</li>
 <li>Taxa of tree block  &#8212; Indicates taxa of tree block.</li>
@@ -749,7 +771,7 @@
 <li>Text Window  &#8212; Displays Text in a window.</li>
 <li>Ti/Tv Rate Matrix Model  &#8212; Defines and maintains two-parameter rate matrix models with a transition and transversion rates.</li>
 <li>TNT  &#8212; Imports and exports TNT files.</li>
-<li>Top BLAST Matches  &#8212; Does a blast search on selected data and returns the top blast matches for each sequence selected.</li>
+<li>Top BLAST Matches  &#8212; Does a BLAST search against GenBank on selected data and returns the top BLAST matches for each sequence selected.</li>
 <li>Trace All Characters  &#8212; Summarizes for each node the reconstructions of the states at all characters of the tree.</li>
 <li>Trace Character History  &#8212; Traces a history of character evolution on the nodes of a drawn tree.</li>
 <li>Trace Character Over Trees  &#8212; Summarizes at each node reconstructions of the states of a character over a series of trees.  The summary is shown on the current tree; if you want to show it on a consensus of the trees, make sure that the current tree is that consensus.</li>
@@ -759,13 +781,16 @@
 <li>Tree Block Values  &#8212; Makes a chart showing some value for each of many tree blocks.</li>
 <li>Tree Blocks from Files Listed In File  &#8212; Supplies tree blocks in files listed in a file.</li>
 <li>Tree Blocks List  &#8212; Makes windows listing tree blocks and information about them.</li>
+<li>Tree Congruent with Backbone Constraint Tree Topology  &#8212; Determines if tree matches topology of a given backbone constraint tree.</li>
+<li>Tree Congruent with Constraint Tree Topology  &#8212; Determines if tree matches topology of a given constraint tree.  This module does not handle backbone constraints; all trees must have the same taxa present.  For backbone constraint trees, where the constraint tree need not contain all taxa, use the 'Tree Congruent with Backbone Constraint Tree Topology' module.</li>
 <li>Tree Depth  &#8212; Calculates the deepest path (in branch length) from terminals to the root, treating unassigned lengths as 0.  The length of the root is not counted.</li>
-<li>Tree Farm Package Introduction  &#8212; Serves as an introduction to the Tree Farm package for Mesquite.</li>
+<li>Tree Farm Package Introduction  &#8212; Extra utilities for trees, including comparisons, randomizations and manipulations.</li>
 <li>Tree from ToL Web Project...  &#8212; Gets the tree for the page of the Tree of Life Web Project for the group specified.</li>
 <li>Tree of context  &#8212; Supplies a single tree from the nearest tree context (e.g., an available tree window).</li>
 <li>Tree of Life Web Project  &#8212; Provides a URL to a taxon on the Tree of Life Web Project</li>
+<li>Tree of Life Web Project Interface Package Introduction  &#8212; Provides interfaces to the Tree of Life Web Project.</li>
 <li>Tree Search  &#8212; Supplies trees resulting from a search to optimize some value.</li>
-<li>Tree Search Package Introduction  &#8212; Serves as an introduction to the tree search package for Mesquite.</li>
+<li>Tree Search Package Introduction  &#8212; Coordinates simple searches for optimal trees.</li>
 <li>Tree Utility Coordinator  &#8212; Coordinates use of tree utilities in tree window</li>
 <li>Tree Value Satisfies Criterion  &#8212; Determines if the tree has a value either greater than, less than or equal to one specified.</li>
 <li>Tree value using 2 characters  &#8212; Coordinates the calculation of a number for a tree based on 2 characters.</li>
@@ -778,7 +803,7 @@
 <li>Treelength   &#8212; Calculates the parsimony treelength of a given tree and matrix.</li>
 <li>Trees &amp; Diversification Characters  &#8212; Evolves a series of trees, each tied to a single character controlling diversification rates.</li>
 <li>Trees List  &#8212; Makes windows listing trees and information about them.</li>
-<li>Trees Package Introduction  &#8212; Serves as an introduction to the basic trees package for Mesquite.</li>
+<li>Trees Package Introduction  &#8212; Basic management and utilities for phylogenetic trees.</li>
 <li>Trees Scattergram  &#8212; Makes a scatterplot displaying two values (such as likelihoods, parsimony scores, imbalance statistics, correlations,etc.) for a series of trees.</li>
 <li>Trim Terminal Gap Characters  &#8212; Trims characters at edges of matrix that are gaps only.</li>
 <li>Trim Terminal Incomplete Codons  &#8212; Trims any incomplete codons from the start and end of each sequence.</li>
@@ -786,7 +811,6 @@
 <li>Type of character data matrix  &#8212; Indicates type of character data matrix (e.g., continuous, DNA, etc.).</li>
 <li>Type of Model  &#8212; Indicates type of model (e.g., Mk1, step-matrix) in list window.</li>
 <li>uBio  &#8212; Provides a URL to a taxon in uBio</li>
-<li>Ultrametricize  &#8212; Adjusts a tree's branch lengths so that the distances among terminal taxa are ultrametric (i.e. like a molecular clock, all tips reaching to same level).  This is not done with any sophisticated smoothing algorithm; rather, branches are just stretched until they reach to same level.</li>
 <li>Unambiguous Changes  &#8212; Counts number of unambiguous changes along branch below based upon the character reconstruction.</li>
 <li>Uncorrected (p) distance (DNA)  &#8212; Uncorrected (p) distance from a DNA matrix.</li>
 <li>Uncorrected Distance (General)  &#8212; Uncorrected (p) distance from a character matrix.</li>
@@ -801,6 +825,8 @@
 <li>User-Specified Nucleotide Frequency Model  &#8212; Defines and maintains user-specified nucleotide frequency models.</li>
 <li>Utilities  &#8212; Provides a menu for utilities</li>
 <li>Value for 2 characters with current tree  &#8212; Coordinates the calculation of a number for two characters based on a current tree.</li>
+<li>Value for Clade of Selected Taxa  &#8212; Coordinates the calculation of a value for the clade of selected terminal taxa.  If no terminal taxa are selected, the value at the root is given.  If the selected taxa do not make a clade, no answer is returned.</li>
+<li>Value for Node Selected In Current Tree  &#8212; Coordinates the calculation of a value for a node selected in a current tree.  If no node or more than one node is selected in current tree, no result is returned.  If the assessed tree does not share the same clade of the selected node, no answer is returned.</li>
 <li>Value from Tree  &#8212; Calculates a value for each taxon using a tree.</li>
 <li>Values (Tree information panel)...  &#8212; Makes the Values section of the Tree Information Panel to display values pertaining to the tree.</li>
 <li>Values for Current Tree  &#8212; Makes the legend in a tree window to display the tree name and values pertaining to the tree.</li>
@@ -826,7 +852,7 @@
               Home Page</font></a><font size="2"> | <a href="manual.html">Mesquite
               Manual</a></font></span></font></p>
               <p><font face="Trebuchet MS"><span class="smallplain">Copyright 
-                &copy; 2002-2008 by <a href="http://salticidae.org/wpm/home.html">Wayne 
+                &copy; 2002-2009 by <a href="http://salticidae.org/wpm/home.html">Wayne 
                 P. Maddison</a> and <a href="http://david.bembidion.org">David 
                 R. Maddison</a>.<br>
 &nbsp;All rights reserved.</span></font></p></td>
