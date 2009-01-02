@@ -96,7 +96,7 @@ public class Installer extends MesquiteInit {
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
-		return "http://mesquiteproject.org/mesquite/updates/updates.xml";
+		return "http://mesquiteproject.org/mesquite/updates/updates.xmlDELETETOTURNON";
 		//	return "http://mesquiteproject.org/mesquite/updates/updates.xmlDELETETOTURNON";
 	}
 	/*.................................................................................................................*/
