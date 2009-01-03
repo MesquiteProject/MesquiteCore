@@ -10,7 +10,7 @@ There are 3 ways to start Mesquite under OS X:
 
 1. Default: Double click Mesquite.app
 
-2. To run Mesquite with more memory: Double click Mesquite (hi-mem).app  (Hint: if you want to adjust the memory allocated, right click on the application's icon, go to info.plist in Contents, and change Xmx512M to Xmx700M or higher)
+2. To run Mesquite with more memory: Double click Mesquite (500MB).app or Mesquite (1GB).app  (Hint: if you want to adjust the memory allocated, right click on the application's icon, go to info.plist in Contents, and change Xmx512M to Xmx700M or higher)
 
 3. Or, to adjust how exactly Mesquite starts, including memory allocation:
 Run Mesquite by double clicking the file Run_MesquiteOSX.command.  If double clicking this file does not start Mesquite, select the file in the Finder, choose Get Info, and change the "Open With" to "Terminal.app", which is in /Applications/Utilities/
