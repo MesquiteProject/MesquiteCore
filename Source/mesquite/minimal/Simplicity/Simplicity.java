@@ -45,6 +45,7 @@ public class Simplicity extends SimplicityManagerModule {
 	MesquiteBoolean lockSimplicity;
 	String themeToLoad = null;
 	SimplifyControlWindow simplicityWindow;
+	boolean usingLockedSimplification = false;
 	public String getName() {
 		return "Simplicity Manager";
 	}
@@ -72,18 +73,24 @@ public class Simplicity extends SimplicityManagerModule {
 		addMissingPackageIntros(InterfaceManager.allPackages);
 
 		simplicityWindow.addPackages(InterfaceManager.allPackages);
-		loadSettingsFileByName(themeToLoad);
-
-		lock(InterfaceManager.locked);
+		if (!usingLockedSimplification){
+			loadSettingsFileByName(themeToLoad);
+			lock(InterfaceManager.locked);
+		}
+		else {
+			InterfaceManager.setSimpleMode(true);
+			InterfaceManager.setLock(true);
+		}
 		resetSimplicity();
 	}
-	
+
 	public  void resetSimplicity(){
 		if (simplicityWindow != null)
 			simplicityWindow.resetSimplicity();
 		storePreferences();
 	}
 	public void lock(boolean L){
+		lockSimplicity.setValue(L);
 		if (simplicityWindow != null)
 			simplicityWindow.lock(L);
 	}
@@ -118,14 +125,20 @@ public class Simplicity extends SimplicityManagerModule {
 	/*---------------------------*/
 	public void importSettingsFiles(){
 		String basePath = 		getInstallationSettingsPath();
+		StringArray custom = null;
 		File f = new File(basePath);
 		if (f.exists() && f.isDirectory()){
 			String[] list = f.list();
 			if (list != null){
 				for (int i=0; i<list.length; i++){
 					StringArray ms = importFile(basePath + list[i], false);
-					if (ms != null)
+					if (ms != null){
+						if (list[i].equalsIgnoreCase("locked.xml")){
+							usingLockedSimplification = true;  //this will later be used as a cue to set to simple mode & lock
+							custom = ms;
+						}
 						InterfaceManager.settingsFiles.addElement(ms, false);
+					}
 				}
 
 			}
@@ -143,8 +156,9 @@ public class Simplicity extends SimplicityManagerModule {
 
 			}
 		}
-		
-		StringArray custom = importFile(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", false);
+
+		if (custom == null)
+			custom = importFile(MesquiteTrunk.prefsDirectory.toString() + MesquiteFile.fileSeparator +  "Simplification.xml", false);
 		loadSettingsFile(custom);
 	}
 	StringArray importFile(String path, boolean isDefault){
@@ -250,7 +264,7 @@ public class Simplicity extends SimplicityManagerModule {
 		StringArray s = (StringArray)InterfaceManager.settingsFiles.elementAt(i);
 		return s.getName();
 	}
-	
+
 	boolean settingsLoaded = false;
 	public void loadSettingsFile(StringArray s){
 		if (s == null)

@@ -72,7 +72,7 @@ public class InterfaceManager {
 		boolean wasLocked = locked;
 		locked = lock;
 		if (lock)
-			editingMode = true;
+			editingMode = false;
 		if (simplicityModule != null)
 			simplicityModule.lock(lock);
 		reset();

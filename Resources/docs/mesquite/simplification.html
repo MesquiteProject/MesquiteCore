@@ -184,7 +184,17 @@ To create or modify your own simplification theme, turn on the <strong>Editing M
 <hr><h3>Saving  Simplification Themes</h3>
 Your current simplification theme is automatically saved for you, and loaded when you restart Mesquite. However, you can put aside simplification themes you've created for use later. To do this, make sure Editing Mode is on. Then select <strong>Save Current</strong> from the <strong>Save/Rename/Delete</strong> drop-down menu. (Note: this menu will not be available if your computer account is not permitted to modify the Mesquite_Folder directory.) You will get an opportunity to name the theme, and then it will be available for you to re-load as needed.
 <h3>Technical details</h3>
-<p>The simplifications you make are stored in Mesquite_Folder/settings/mesquite/minimal/Simplify. If your computer account does not have permission to modify this directory, you will be able to load simplification themes but not to store them for later. (The current simplifcation theme that is saved automatically for you is stored in Mesquite_Support_Files/Mesquite_Prefs/Simplification.xml. You could get an administrator to copy this file into Mesquite_Folder/settings/mesquite/minimal/Simplify if you want to have it for later access. You may want to open the file with a text editor to change the indicated name (look for &lt;name&gt;...&lt;/name&gt;.)</p>
+<p>The simplifications you make are stored in Mesquite_Folder/settings/mesquite/minimal/Simplify. If your computer account does not have permission to modify this directory, you will be able to load simplification themes but not to store them for later. (The current simplification theme that is saved automatically for you is stored in Mesquite_Support_Files/Mesquite_Prefs/Simplification.xml. You could get an administrator to copy this file into Mesquite_Folder/settings/mesquite/minimal/Simplify if you want to have it for later access. You may want to open the file with a text editor to change the indicated name (look for &lt;name&gt;...&lt;/name&gt;.)</p>
+<h3>For teachers</h3>
+<p>You can lock a copy of Mesquite in the simplified interface by choosing &quot;Lock in Simple Mode&quot; in File&gt;Defaults&gt;. This can be useful for use by students in a course, so that they don't accidently switch to the full interface.</p>
+<p>If you want to have install a simplified version of Mesquite on several computers for a laboratory section of a course, without having to set up each copy, do the following:</p>
+<p>
+  <ul>
+    <li>Choose a simplification theme and find the file describing it. This could be one of the ones stored in Mesquite_Folder/settings/mesquite/minimal/Simplify that you have previously saved.</li>
+    <li>Change the name of this simplification theme file to &quot;locked.xml&quot;. If it is not already there, place it in Mesquite_Folder/settings/mesquite/minimal/Simplify.</li>
+    <li>Mesquite will find this file on startup. Because its name is &quot;locked.xml&quot;, Mesquite will know to use this as the simplification. It will also set the interface to simple mode, and will lock it so that students won't accidentally switch on the full interface. Because the file locked.xml is within Mesquite_Folder, when you install Mesquite_Folder in the lab computers, it will carry locked.xml with it.</li>
+  </ul>
+</p>
 <p>&nbsp;</p>
              <!-- #EndEditable --></font></td>
           </tr>
