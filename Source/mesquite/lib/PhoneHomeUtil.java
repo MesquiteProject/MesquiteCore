@@ -199,7 +199,7 @@ public class PhoneHomeUtil {
 				}
 
 				boolean appliesToBuild = true;
-				
+
 				if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberExactly)) {
 					appliesToBuild =  forBuildNumberExactly == MesquiteModule.getBuildNumber();
 				}
@@ -477,40 +477,54 @@ public class PhoneHomeUtil {
 				String releaseString = "";
 				String releaseStringHTML ="";
 				String versionString = currentReleaseVersion.elementText("versionString");
-				String buildString = currentReleaseVersion.elementText("build");
-				String URL = currentReleaseVersion.elementText("URL");
-				String downloadURL = currentReleaseVersion.elementText("downloadURL");
-				int releaseVersionInt = MesquiteInteger.fromString(currentReleaseVersion.elementText("version"));
-				int userVersionInt = getVersion(mmi);
-				if (!StringUtil.blank(versionString))
-					releaseString+="The current release version of " + mmi.getName() + " is " + versionString;
-				if (!StringUtil.blank(buildString))
-					releaseString+= " build " + buildString;
-				if (!StringUtil.blank(releaseString)) {
-					if (mmi.getIsPackageIntro()) {
-						if (!StringUtil.blank(mmi.getPackageVersion()))
-							releaseString+= " (the version you have installed is "+ mmi.getPackageVersion() + ").";
-					}
-					else if (!StringUtil.blank(mmi.getVersion()))
-						releaseString+= " (the version you have installed is "+ mmi.getVersion() + ").";
-					releaseStringHTML = releaseString;
-					if (!StringUtil.blank(URL)) {
-						releaseStringHTML +=" <a href=\"" + URL + "\">Home page</a><BR>";
-						releaseString+=" The home page is: " + URL+ ". ";
-					}
-					if (!StringUtil.blank(downloadURL)) {
-						releaseStringHTML +=" <a href=\"" + downloadURL + "\">Download page</a>";
-						releaseString+=" The latest version is downloadable at: " + downloadURL+ ". ";
-					}
-				}
+				String versionStringInstalled = null;
+				if (mmi.getIsPackageIntro() && !StringUtil.blank(mmi.getPackageVersion()))
+					versionStringInstalled =  mmi.getPackageVersion();
 
-				if (MesquiteInteger.isCombinable(releaseVersionInt) && userVersionInt<releaseVersionInt) {
-					if (phoneHomeRecord.getLastNewerVersionReported()<releaseVersionInt) { // we've not reported on this new version yet
-						notices.append("\n" +releaseStringHTML);  // there is a newer version that has been released
-						phoneHomeRecord.setLastNewerVersionReported(releaseVersionInt);
+				else if (!StringUtil.blank(mmi.getVersion()))
+					versionStringInstalled = mmi.getVersion();
+				String buildString = currentReleaseVersion.elementText("build");
+				boolean skip = false;
+
+				if (versionStringInstalled != null && versionString != null && versionStringInstalled.equals(versionString)){  //same version
+					if (!(buildString != null && mmi.getModuleClass() == mesquite.Mesquite.class && buildString.equals(Integer.toString(MesquiteModule.getBuildNumber()))))
+						skip = true; //skip unless Mesquite and different build
+				}
+				if (!skip){
+					String URL = currentReleaseVersion.elementText("URL");
+					String downloadURL = currentReleaseVersion.elementText("downloadURL");
+					int releaseVersionInt = MesquiteInteger.fromString(currentReleaseVersion.elementText("version"));
+					int userVersionInt = getVersion(mmi);
+					if (!StringUtil.blank(versionString))
+						releaseString+="The current release version of " + mmi.getName() + " is " + versionString;
+					if (!StringUtil.blank(buildString))
+						releaseString+= " build " + buildString;
+					if (!StringUtil.blank(releaseString)) {
+						if (mmi.getIsPackageIntro()) {
+							if (!StringUtil.blank(mmi.getPackageVersion()))
+								releaseString+= " (the version you have installed is "+ mmi.getPackageVersion() + ").";
+						}
+						else if (!StringUtil.blank(mmi.getVersion()))
+							releaseString+= " (the version you have installed is "+ mmi.getVersion() + ").";
+						releaseStringHTML = releaseString;
+						if (!StringUtil.blank(URL)) {
+							releaseStringHTML +=" <a href=\"" + URL + "\">Home page</a><BR>";
+							releaseString+=" The home page is: " + URL+ ". ";
+						}
+						if (!StringUtil.blank(downloadURL)) {
+							releaseStringHTML +="&nbsp;<a href=\"" + downloadURL + "\">Download page</a>.   You may also find an option below to install this using Mesquite's automatic installation system.";
+							releaseString+=" The latest version is downloadable at: " + downloadURL+ ".   You may also be able to install this using Mesquite's automatic installation system.";
+						}
 					}
-					if (logBuffer!=null)
-						logBuffer.append("\n" +releaseString);
+
+					if (MesquiteInteger.isCombinable(releaseVersionInt) && userVersionInt<releaseVersionInt) {
+						if (phoneHomeRecord.getLastNewerVersionReported()<releaseVersionInt) { // we've not reported on this new version yet
+							notices.append("\n" +releaseStringHTML);  // there is a newer version that has been released
+							phoneHomeRecord.setLastNewerVersionReported(releaseVersionInt);
+						}
+						if (logBuffer!=null)
+							logBuffer.append("\n" +releaseString);
+					}
 				}
 
 			}

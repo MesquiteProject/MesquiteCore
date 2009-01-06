@@ -196,5 +196,58 @@
 					<updateVersion>002</updateVersion>
 				</install>
 		</notice>
+		<notice><!--THIS IS AN EXAMPLE FOR PRACTICE-->
+			<forVersion>250</forVersion>
+			<noticeNumber>10</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Opal</identity>
+			<updateVersion>001</updateVersion>
+			<packageName>Opal v. 1.0</packageName>
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/mesquite/updates/opalTest/opalSplash.jpg"> <img src="http://mesquiteproject.org/mesquite/updates/opalTest/opalescentSplash.jpg"><p>
+			Opal does multiple sequence alignment.  This download will install Opal as well as Opalescent, a package of Mesquite modules to access Opal's functions.  In downloading you are agreeing to Opal's terms of use, as follows:<p>
+			Opal is free for noncommercial use, and comes with neither warranty nor guarantee.<p>
+Opal cannot be redistributed in any form. If you wish to use Opal for commercial purpose, you must first obtain the permission from all authors.<p>
+All noteworthy uses of Opal should cite the related paper (see&nbsp;<a href = "http://opal.cs.arizona.edu">Opal website</a> for details)
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite</location>
+					<file>opal</file>
+					<url>http://mesquiteproject.org/mesquite/updates/opalTest/opalMesquite.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>000</updateVersion>
+				</install>
+				<install>
+					<location>mesquite</location>
+					<file>opalescent</file>
+					<url>http://mesquiteproject.org/mesquite/updates/opalTest/opalescent.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>000</updateVersion>
+				</install>
+		</notice>
+		<notice><!--THIS IS AN EXAMPLE FOR PRACTICE-->
+			<forVersion>250</forVersion>
+			<noticeNumber>11</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Mesquite</identity>
+			<updateVersion>001</updateVersion>
+			<packageName>Mesquite</packageName>
+			<explanation>
+			A new executable.
+			</explanation>
+				<install>
+					<location></location>
+					<file>Mesquite (test).app</file>
+					<url>http://mesquiteproject.org/mesquite/updates/opalTest/mesquiteExec.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>000</updateVersion>
+				</install>
+				<install>
+					<executeInMesquiteFolder><![CDATA[cd 'Mesquite (test).app/Contents/MacOS';
+					chmod +x Mesquite;
+					]]></executeInMesquiteFolder>
+				</install>
+		</notice>
 	</MessagesFromHome>
 </mesquite>

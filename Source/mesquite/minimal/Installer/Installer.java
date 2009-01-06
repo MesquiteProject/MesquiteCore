@@ -102,8 +102,10 @@ public class Installer extends MesquiteInit {
 	/*.................................................................................................................*/
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		if (MesquiteTrunk.debugMode)
-			mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Zip Folder for Installer", makeCommand("zip", this));
+		if (MesquiteTrunk.debugMode){
+			mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Zip Folder for Installer", makeCommand("zipDir", this));
+			mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Zip File for Installer", makeCommand("zipFile", this));
+		}
 		readReceipts();
 		return true;
 	}
@@ -322,6 +324,15 @@ public class Installer extends MesquiteInit {
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
+	public boolean executeScriptString(String script, boolean precedeWithCDToMesquiteFolder){
+		MesquiteBoolean b = new MesquiteBoolean();
+		String scriptPath  = createSupportDirectory(b) + MesquiteFile.fileSeparator + "script";
+		if (precedeWithCDToMesquiteFolder)
+			script = ShellScriptUtil.getChangeDirectoryCommand(getRootPath()) + script;
+		MesquiteFile.putFileContents(scriptPath, script, true);
+		return ShellScriptUtil.executeAndWaitForShell(scriptPath, "installScript");
+	}
 	boolean install(Element installElement, ListableVector receipt){
 		if (!applicableOS(installElement))
 			return true;  //return true because not considered failure if inapplicable OS
@@ -330,6 +341,8 @@ public class Installer extends MesquiteInit {
 		String fileName = installElement.elementText("file");
 		int version = MesquiteInteger.fromString(installElement.elementText("updateVersion"));  
 		String treatment = installElement.elementText("treatment");
+		String execute = installElement.elementText("execute");
+		String executeInMesquiteFolder = installElement.elementText("executeInMesquiteFolder");
 		String downloadAs = "installerDownload";
 		if (treatment == null || treatment.equalsIgnoreCase("asis"))
 			downloadAs = fileName;
@@ -345,42 +358,70 @@ public class Installer extends MesquiteInit {
 				}
 			}
 		}
-		logln("Downloading installation file from " + url);
-		if (!MesquiteFile.fileOrDirectoryExists(getRootPath() + pathInMesquiteFolder)){
-			MesquiteFile.createDirectory(getRootPath() + pathInMesquiteFolder);
-		}
-		if (hadExisted){
-			logln("Renaming old version of " + fileName + " to " + fileName + "PREVIOUSVERSION");
-			prevPackage.renameTo(tempPackage);
-		}
-		logln("Downloading installation file to " + getRootPath() + pathInMesquiteFolder+ "/" + downloadAs);
-		if (MesquiteFile.downloadURLContents(url, getRootPath() + pathInMesquiteFolder + "/" + downloadAs, true)){
-			boolean fileReady = true;
-			if (treatment != null && treatment.equalsIgnoreCase("unzip")){
-				logln("Unzipping installation file");
-				fileReady = unzip(getRootPath() + pathInMesquiteFolder + "/", downloadAs);
-				if (fileReady)
-					MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + downloadAs);
+		if (url != null){
+			logln("Downloading installation file from " + url);
+			if (!MesquiteFile.fileOrDirectoryExists(getRootPath() + pathInMesquiteFolder)){
+				MesquiteFile.createDirectory(getRootPath() + pathInMesquiteFolder);
 			}
-			if (fileReady){
-				logln("Installation of " + fileName + " was successful.");
-				receipt.addElement(new MesquiteString("location", pathInMesquiteFolder + "/" + fileName), false);
+			if (hadExisted){
+				logln("Renaming old version of " + fileName + " to " + fileName + "PREVIOUSVERSION");
+				prevPackage.renameTo(tempPackage);
 			}
-			else if (hadExisted){
-				logln("Installation unsuccessful; attempting to recover old version of " + fileName);
-				tempPackage.renameTo(prevPackage);
+			logln("Downloading installation file to " + getRootPath() + pathInMesquiteFolder+ "/" + downloadAs);
+			if (MesquiteFile.downloadURLContents(url, getRootPath() + pathInMesquiteFolder + "/" + downloadAs, true)){
+				boolean fileReady = true;
+				if (treatment != null && treatment.equalsIgnoreCase("unzip")){
+					logln("Unzipping installation file");
+					fileReady = unzip(getRootPath() + pathInMesquiteFolder + "/", downloadAs);
+					if (fileReady)
+						MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + downloadAs);
+				}
+				if (fileReady){
+					logln("Installation of " + fileName + " was successful.");
+					receipt.addElement(new MesquiteString("location", pathInMesquiteFolder + "/" + fileName), false);
+				}
+				else if (hadExisted){
+					logln("Installation unsuccessful; attempting to recover old version of " + fileName);
+					tempPackage.renameTo(prevPackage);
+					return false;
+				}
+			}	
+			else {
+				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + downloadAs);
 				return false;
 			}
-		}	
-		else {
-			MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + downloadAs);
-			return false;
+		}
+		if (execute != null){
+			String shortEx = execute;
+			if (execute.length() > 500)
+				shortEx = execute.substring(0, 500);
+			if (AlertDialog.query(containerOfModule(), "Execute Script?", "The installer has downloaded the following script to execute.  Is it OK to execute it?\n"+ shortEx)){
+				logln("Executing script");
+				if (!executeScriptString(execute, false)){
+					logln("Script execution unsuccessful");
+					return false;
+				}
+			}
+		}
+		if (executeInMesquiteFolder != null){
+			String shortEx = executeInMesquiteFolder;
+			if (executeInMesquiteFolder.length() > 500)
+				shortEx = executeInMesquiteFolder.substring(0, 500);
+			shortEx = "<first, change directories into Mesquite_Folder>\n" + shortEx;
+			if (AlertDialog.query(containerOfModule(), "Execute Script?", "The installer has downloaded the following script to execute.  Is it OK to execute it?\n"+ shortEx)){
+				logln("Executing script");
+				if (!executeScriptString(executeInMesquiteFolder, true)){
+					logln("Script execution unsuccessful");
+					return false;
+				}
+			}
 		}
 		return true;
 	}
 	void cleanUp(Element installElement){
 		String pathInMesquiteFolder = installElement.elementText("location");
 		String fileName = installElement.elementText("file");
+		Debugg.println("pathInMesquiteFolder " + pathInMesquiteFolder + " fileName " + fileName );
 		File tempPackage = new File(getRootPath() + pathInMesquiteFolder + "/"  + fileName+ "PREVIOUSVERSION");
 		boolean hadExisted = tempPackage.exists();
 		if (hadExisted){
@@ -476,8 +517,16 @@ public class Installer extends MesquiteInit {
 				discreetAlert("Installation was successful.  You will need to restart Mesquite to make use of the new installation.");
 			}
 		}
-		else if (checker.compare(this.getClass(), "zip", null, commandName, "zip")) {
+		else if (checker.compare(this.getClass(), "zip directory", null, commandName, "zipDir")) {
 			String source = MesquiteFile.chooseDirectory("Directory to Zip", null);
+			String destination = MesquiteFile.saveFileAsDialog("Save zip file", null);
+			if (zipDirectory(MesquiteFile.getDirectoryPathFromFilePath(source), source, destination))
+				alert("Zip successful");
+			else
+				alert("Zip unsuccessful!!!!");
+		}
+		else if (checker.compare(this.getClass(), "zip file", null, commandName, "zipFile")) {
+			String source = MesquiteFile.openFileDialog("File to Zip",  null,  null);
 			String destination = MesquiteFile.saveFileAsDialog("Save zip file", null);
 			if (zipDirectory(MesquiteFile.getDirectoryPathFromFilePath(source), source, destination))
 				alert("Zip successful");
