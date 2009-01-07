@@ -180,6 +180,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 				int numTaxaToMove=0;
 				Bits taxaToMove = currentBlock.getWhichTaxa();
 				if (MesquiteTrunk.debugMode) {
+					//logln("Candidate movement: " + candidateMovement + ", memory available: " + MesquiteTrunk.getMaxAvailableMemory());
 					logln("Candidate movement: " + candidateMovement);
 					numTaxaToMove = taxaToMove.numBitsOn();
 					checkSums = new long[numTaxaToMove];

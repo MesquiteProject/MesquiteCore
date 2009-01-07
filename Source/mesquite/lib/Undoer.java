@@ -18,6 +18,8 @@ public interface Undoer  {
 
 	public Undoer undo();
 	
+	public void dispose();
+	
 	public void setNewState (Object newState);
 
 	

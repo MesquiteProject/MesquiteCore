@@ -29,46 +29,6 @@ public class TopologyCongruent extends BooleanForTree {
 		return true;
 	}
 	/*..............................................................................*/
-	/**Checks to see if passed Tree sTree is consistent with constraint tree cTree; is not currently set up to handle
-	 * backbone constraints, but reciprocal calls of pruneToMatch accomodate this in future versions.*
-	private void checkClades(int node, Tree sTree, Taxa taxa, MesquiteBoolean isConsistent){
-		while(isConsistent.getValue() && constraintTree.nodeExists(node)){
-			if(constraintTree.nodeIsInternal(node)){
-				Bits terms = constraintTree.getTerminalTaxaAsBits(node);
-				if(!sTree.isClade(terms)){
-					isConsistent.setValue(false);
-				}
-				if(isConsistent.getValue()){
-					int d = constraintTree.firstDaughterOfNode(node);
-					checkClades(d, sTree, taxa, isConsistent);
-				}
-			}
-			node = constraintTree.nextSisterOfNode(node);
-		}
-	}
-	/*..............................................................................*
-	/**Checks to make sure both trees contain same terminal taxa*
-	private boolean taxaCheck(Tree sTree, Tree cTree, Taxa taxa){
-		boolean both = true;
-		int taxonCount=0;
-		while (both && taxonCount<taxa.getNumTaxa()){
-			if(sTree.taxonInTree(taxonCount)){
-				if(!cTree.taxonInTree(taxonCount)){
-					both=false;
-					return both;
-				}
-			}
-			if(cTree.taxonInTree(taxonCount)){
-				if(!sTree.taxonInTree(taxonCount)){
-					both=false;
-					return both;
-				}
-			}
-			taxonCount++;
-		}
-		return both;
-	}
-	/*..............................................................................*/
 	public void calculateBoolean(Tree tree, MesquiteBoolean result,	MesquiteString resultString) {
 		if(tree==null || result==null){
 			return;
@@ -77,16 +37,6 @@ public class TopologyCongruent extends BooleanForTree {
 		if(constraintTree==null || constraintTree.getTaxa()!=tree.getTaxa())
 			return;
 		MesquiteBoolean isConsistent = new MesquiteBoolean(true);
-	//	isConsistent.setValue(tree.equalsTopology(constraintTree, false));
-
-		
-	/*	if(!taxaCheck(tree, constraintTree, tree.getTaxa())){
-			isConsistent.setValue(false);
-		}
-		else {
-			checkClades(constraintTree.getRoot(), tree, tree.getTaxa(), isConsistent);
-		}
-		*/
 		isConsistent.setValue(tree.equalsTopology(constraintTree, false));
 
 		result.setValue(isConsistent.getValue());

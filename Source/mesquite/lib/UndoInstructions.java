@@ -267,6 +267,19 @@ public class UndoInstructions implements Undoer {
 		if (assoc!=null)
 			assoc.deleteJustAdded();
 	}
+	
+	public void dispose() {
+		if (oldData!=null)
+			oldData.dispose();
+		if (newData!=null)
+			newData.dispose();
+		oldData=null;
+		newData=null;
+	}
+	
+	public void finalize() {
+		dispose();
+	}
 
 	public Undoer undo() {
 		String[] oldNamesList;

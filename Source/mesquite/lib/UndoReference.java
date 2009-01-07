@@ -96,8 +96,20 @@ public class UndoReference {
 	}
 
 	public void setUndoer(Undoer undoer) {
+		if (this.undoer!=null) {
+			for (int i=0; i<this.undoer.length; i++)
+				this.undoer[i].dispose();
+		}
 		this.undoer = new Undoer[] {undoer};
 	}
+	
+	public void dispose() {
+		if (undoer!=null) {
+			for (int i=0; i<undoer.length; i++)
+				undoer[i].dispose();
+		}
+	}
+
 
 	public static UndoReference getUndoReferenceForMatrixSelection(CharacterData data, MesquiteTable table, MesquiteModule responsibleModule){
 		if (data!=null) 
