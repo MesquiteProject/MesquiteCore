@@ -11,7 +11,8 @@ import javax.swing.*;
 public class SimplifyControlWindow extends MesquiteWindow implements SystemWindow {
 	ClassesPane classesPane;
 	MessagePanel message;
-	PackagesPanel field;
+	PackagesPanel packagesPanel;
+	TrianglePanel trianglePanel;
 	ModePanel modePanel;
 	ClassHeadersPanel classesHeaderPanel;
 	JEditorPane instructionsPanel;
@@ -19,7 +20,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	int modePanelHeight = 96;
 	int classesHeight = 140;
 	public String instructions;
-
+	OuterPackagesPanel field;
 	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager, Vector allPackages) {
 		super(module, false);
 		setWindowSize(400, 450);
@@ -30,8 +31,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		instructions = StringUtil.replace(instructions, "RPATH", MesquiteFile.massageFilePathToURL(MesquiteModule.getRootImageDirectoryPath()));
 		//saved settings... load, save
 		classesPane = new ClassesPane();
-		addToWindow(classesPane);
-		addToWindow(modePanel = new ModePanel(this));
+		modePanel = new ModePanel(this);
 		modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
 		modePanel.setVisible(true);
 		instructionsPanel = new JEditorPane("text/html","<html></html>");
@@ -41,19 +41,32 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		instructionsPanel.setText(instructions);
 		instructionsScrollPane = new  JScrollPane(); 
 		instructionsScrollPane.getViewport().add( instructionsPanel,  BorderLayout.CENTER ); 
-		addToWindow(instructionsScrollPane);
 		instructionsScrollPane.setVisible(true);
 		instructionsScrollPane.setBounds(0, modePanelHeight, getWidth(), getHeight()-modePanelHeight);
-		addToWindow(classesHeaderPanel = new ClassHeadersPanel());
+		classesHeaderPanel = new ClassHeadersPanel();
 		classesHeaderPanel.setBackground(Color.white);
 		//addToWindow(simplicityStrip);
 		classesHeaderPanel.setBounds(0, modePanelHeight, getWidth(), classesHeight - modePanelHeight);
 		classesHeaderPanel.setVisible(true);
-		field = new PackagesPanel();
-		field.addPackages(allPackages);
-		field.setSize(50, field.getH());
-		field.setLocation(0,0);
+		packagesPanel = new PackagesPanel(this);
+		
+		packagesPanel.addPackages(allPackages);
+		field = new OuterPackagesPanel(packagesPanel);
+		field.setBackground(Color.red);
+		field.setLayout(null);
+		field.setSize(50, packagesPanel.getH());
+		field.add(packagesPanel);
+		packagesPanel.setSize(50, packagesPanel.getH());
+		packagesPanel.setLocation(18,0);
+		trianglePanel = new TrianglePanel(packagesPanel);
+		field.add(trianglePanel);
+		trianglePanel.setBounds(0, 0, 18, packagesPanel.getH());
+		
 		classesPane.addPanel(field);
+		addToWindow(classesPane);
+		addToWindow(modePanel);
+		addToWindow(instructionsScrollPane);
+		addToWindow(classesHeaderPanel);
 		field.setVisible(true);
 		classesPane.setSize(getWidth(), getHeight()-classesHeight-20);
 		classesPane.setLocation(0, classesHeight);
@@ -70,6 +83,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 			message.setMessage("Custom");
 		else
 			message.setMessage(InterfaceManager.themeName);
+		resetSizes();
 		resetTitle();
 		resetSimplicity();
 	}
@@ -85,7 +99,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	public void resetSimplicity(){
 		if (modePanel != null){
 			modePanel.resetStates();
-			field.checkStates();
+			packagesPanel.checkStates();
 
 		}
 		if (!InterfaceManager.isSimpleMode() && !InterfaceManager.isEditingMode())
@@ -105,7 +119,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	}
 	/*.................................................................................................................*/
 	public void addPackages(Vector allPackages){
-		field.addPackages(allPackages);
+		packagesPanel.addPackages(allPackages);
 	}
 	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
@@ -148,7 +162,9 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 			if (InterfaceManager.isEditingMode()){
 				classesHeaderPanel.setSize(getWidth(), classesHeight-modePanelHeight);
 				classesPane.setSize(getWidth(), getHeight()-classesHeight-2 -smallInstructionsHeight);
-				field.setSize(50, field.getH());
+				packagesPanel.setSize(getWidth(), packagesPanel.getH());
+				trianglePanel.setSize(18, packagesPanel.getH());
+				field.setSize(getWidth(), packagesPanel.getH());
 				classesPane.doLayout();
 				instructionsScrollPane.setBounds(0, getHeight()- smallInstructionsHeight, getWidth(), smallInstructionsHeight-20);
 				instructionsScrollPane.doLayout();
@@ -156,6 +172,8 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 			else {
 				classesHeaderPanel.setSize(0,0);
 				classesPane.setSize(0, 0);
+				packagesPanel.setSize(0,0);
+				trianglePanel.setSize(0,0);
 				field.setSize(0, 0);
 				classesPane.doLayout();
 				instructionsScrollPane.setBounds(0,modePanelHeight,getWidth(), getHeight()- modePanelHeight-20);
@@ -183,22 +201,131 @@ class ClassesPane extends ScrollPane{
 		addImpl(c, null, 0);
 	}
 }
-class PackagesPanel extends MousePanel implements ItemListener {
-	Listable[] v;
-	int h = 30;
-	Image triangleRight, triangleDown;
-	TextArea explanation = new TextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
-	Font fontBig = new Font("SanSerif", Font.BOLD, 14);
 
-	public PackagesPanel(){
-		super();
-		add(explanation);
-		explanation.setBounds(0,0,0,0);
-		explanation.setVisible(false);
-		explanation.setBackground(ColorTheme.getActiveLight());
+class TrianglePanel extends MousePanel {
+	Image triangleRight, triangleDown;
+	PackagesPanel packagesPanel;
+	public TrianglePanel(PackagesPanel pp){
+		packagesPanel = pp;
 		triangleRight = MesquiteImage.getImage(MesquiteTrunk.getRootImageDirectoryPath() + "triangleRightOn.gif");
 		triangleDown = MesquiteImage.getImage(MesquiteTrunk.getRootImageDirectoryPath() + "triangleDownOn.gif");
 		setBackground(ColorTheme.getInterfaceBackgroundPale());
+	}
+	public void paint(Graphics g){
+		if (packagesPanel.v == null)
+			return;
+		g.setColor(Color.white);
+		g.fillRect(16, 0, getWidth(), getHeight());
+		g.setColor(Color.black);
+		//Font font = g.getFont();
+		//g.setFont(fontBig);
+		//g.drawString("?", 4, 20);//g.setColor(Color.red);
+		//g.setFont(font);
+		for (int i=0; i<packagesPanel.v.length; i++){
+			PackageCheckbox cb = (PackageCheckbox)packagesPanel.v[i];
+			if (cb.isPackage){
+				if (cb.collapsed)
+					g.drawImage(triangleRight, 0, cb.getY()+6, this);
+				else 
+					g.drawImage(triangleDown, 0, cb.getY()+6, this);
+			}
+		}
+		//g.fillRect(30, 30, 30, 30);
+	}
+	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		/*if (x>18){
+			MesquiteWindow.uncheckDoomed(this);
+			return;
+		}*/
+		packagesPanel.shown = packagesPanel.getCheckbox(y);
+		if (packagesPanel.shown != null){
+			if (packagesPanel.shown.late)
+				packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)-80,340,80);
+			else 
+				packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)+ packagesPanel.shown.getHeight(),340,80);
+			packagesPanel.explanation.setText(packagesPanel.shown.name +": " + packagesPanel.shown.expl);
+			packagesPanel.explanation.setVisible(true);
+		}
+		MesquiteWindow.uncheckDoomed(this);
+	}
+	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		packagesPanel.explanation.setVisible(false);
+		packagesPanel.shown = null;
+		MesquiteWindow.uncheckDoomed(this);
+	}
+	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		/*if (x>18){
+			MesquiteWindow.uncheckDoomed(this);
+			return;
+		}*/
+		PackageCheckbox nowshown = packagesPanel.getCheckbox(y);
+		if (nowshown != packagesPanel.shown){
+			packagesPanel.shown = nowshown;
+			if (packagesPanel.shown != null){
+				if (packagesPanel.shown.late)
+					packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)-80,340,80);
+				else 
+					packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)+ packagesPanel.shown.getHeight(),340,80);
+				packagesPanel.explanation.setText(packagesPanel.shown.name +": " + packagesPanel.shown.expl);
+				packagesPanel.explanation.setVisible(true);
+			}
+		}
+		MesquiteWindow.uncheckDoomed(this);
+	}
+	/*.................................................................................................................*
+	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		explanation.setBounds(20,20,100,100);
+		explanation.setVisible(true);
+		MesquiteWindow.uncheckDoomed(this);
+	}
+	/*.................................................................................................................*/
+	public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		if (x<18){
+			PackageCheckbox cb = packagesPanel.getCheckbox(y);
+			if (cb != null && cb.isPackage){
+				cb.collapsed = !cb.collapsed;
+				packagesPanel.resetSizesInclParents();
+				repaint();
+			}
+		}
+		MesquiteWindow.uncheckDoomed(this);
+	}
+}
+
+class OuterPackagesPanel extends Panel {
+	PackagesPanel packagesPanel;
+	public OuterPackagesPanel(PackagesPanel pp){
+		packagesPanel = pp;
+	}
+	public Dimension getPreferredSize(){
+		int h = packagesPanel.checkSizes();
+		return new Dimension(packagesPanel.getWidth() + 18, h); 
+	}
+}
+class PackagesPanel extends MousePanel implements ItemListener {
+	Listable[] v;
+	int h = 30;
+	TextArea explanation = new TextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
+	Font fontBig = new Font("SanSerif", Font.BOLD, 14);
+	SimplifyControlWindow w;
+	public PackagesPanel(SimplifyControlWindow w){
+		super();
+		this.w = w;
+		//add(explanation);
+		explanation.setBounds(0,0,0,0);
+		explanation.setVisible(false);
+		explanation.setBackground(ColorTheme.getActiveLight());
+		setBackground(Color.white);
 		setLayout(null);
 	}
 	PackageCheckbox shown = null;
@@ -256,7 +383,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		explanation.setVisible(true);
 		MesquiteWindow.uncheckDoomed(this);
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
@@ -271,7 +398,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
-
+/*
 	public void paint(Graphics g){
 		if (v == null)
 			return;
@@ -293,9 +420,10 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		}
 		//g.fillRect(30, 30, 30, 30);
 	}
+	*/
 	public void itemStateChanged(ItemEvent e){
 		PackageCheckbox cb = (PackageCheckbox)e.getItemSelectable();
-		if (cb.getState())
+		if (cb.isSelected())
 			InterfaceManager.removePackageFromHidden(cb.pkg, true);
 		else
 			InterfaceManager.addPackageToHidden(cb.pkg, true);
@@ -318,8 +446,8 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			PackageCheckbox cb = new PackageCheckbox(name,  s[0], s[1],  "true".equals(s[2]), "true".equals(s[3]));
 			if (allPackages.size()-i<4)
 				cb.setLate(true);
-			cb.setState(!InterfaceManager.onHiddenClassListExactly(s[0]));
-			if (cb.getState() && InterfaceManager.onHiddenClassList(s[0]))
+			cb.setSelected(!InterfaceManager.onHiddenClassListExactly(s[0]));
+			if (cb.isSelected() && InterfaceManager.onHiddenClassList(s[0]))
 				cb.setEnabled(false);
 			cb.addItemListener(this);
 			v[i] = cb;
@@ -328,22 +456,28 @@ class PackagesPanel extends MousePanel implements ItemListener {
 
 		ListableVector.sort(v);
 
-Debugg.println("addPackages " + v.length);
 		for (int i=0; i<v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)v[i];
 			add(cb);
+			cb.setVisible(true);
 		}
-		resetSizes();
 	}
+	 public void resetSizesInclParents(){
+		 checkSizes();
+		 w.resetSizes();
+		w.field.invalidate();
+		w.field.doLayout();
+	}
+	
 	int getH(){
 		return 50 + deepest;
 	}
 	public Dimension getPreferredSize(){
-		int h = resetSizes();
+		int h = checkSizes();
 		return new Dimension(getWidth(), h); 
 	}
 	int deepest = 0;
-	int resetSizes(){
+	int checkSizes(){
 		if (v == null)
 			return 0;
 		boolean on = true;
@@ -352,17 +486,18 @@ Debugg.println("addPackages " + v.length);
 			PackageCheckbox cb = (PackageCheckbox)v[i];
 			if (cb.isPackage){
 				on = !cb.collapsed;
-				cb.setBounds(18,count++*h, getWidth(), h);
+				cb.setBounds(0,count++*h, getWidth(), h);
 			}
 			else if (!on){
 				cb.setVisible(false);
 			}
 			else {
 				cb.setVisible(true);
-				cb.setBounds(38, count++*h, getWidth(), h);
+				cb.setBounds(20, count++*h, getWidth(), h);
 			}
 		}
-		return count*h;
+		deepest = count*h;
+		return deepest;
 	}
 	int getY(PackageCheckbox box){
 		if (v == null)
@@ -417,25 +552,32 @@ Debugg.println("addPackages " + v.length);
 	void checkStates(){
 		if (v == null)
 			return;
+		boolean changed = false;
 		for (int i=0; i<v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)v[i];
-			cb.setState(!InterfaceManager.onHiddenClassListExactly(cb.pkg));
-			if (cb.getState() && InterfaceManager.onHiddenClassList(cb.pkg))
+			boolean was = cb.isSelected();
+			cb.setSelected(!InterfaceManager.onHiddenClassListExactly(cb.pkg));
+			if (was != cb.isSelected())
+				changed = true;
+			if (cb.isSelected() && InterfaceManager.onHiddenClassList(cb.pkg))
 				cb.setEnabled(false);
 			else if (!cb.hideable)
 				cb.setEnabled(false);
 			else
 				cb.setEnabled(true);
 		}
+		
+	if (changed)
+		getParent().doLayout();
 		repaint();
 	}
 	public void setSize( int w, int h){
 		super.setSize(w, h);
-		resetSizes();
+		checkSizes();
 	}
 	public void setBounds(int x, int y, int w, int h){
 		super.setBounds(x, y, w, h);
-		resetSizes();
+		checkSizes();
 	}
 }
 /*
@@ -456,7 +598,7 @@ class EditModeCheckBox extends Checkbox {
 }
 /*.................................................................................................................*/
 
-class PackageCheckbox extends Checkbox implements Listable {
+class PackageCheckbox extends JCheckBox implements Listable {
 	String pkg = null;
 	String expl = null;
 	String name = null;
