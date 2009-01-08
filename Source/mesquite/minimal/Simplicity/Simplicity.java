@@ -67,12 +67,12 @@ public class Simplicity extends SimplicityManagerModule {
 	/*.................................................................................................................*/
 	public void init(){
 		importSettingsFiles();
-		simplicityWindow = new SimplifyControlWindow(this, MesquiteTrunk.mesquiteTrunk.interfaceManager);
+		addMissingPackageIntros(InterfaceManager.allPackages);
+		simplicityWindow = new SimplifyControlWindow(this, MesquiteTrunk.mesquiteTrunk.interfaceManager, InterfaceManager.allPackages);
 		setModuleWindow(simplicityWindow);
 		showLogWindow();
-		addMissingPackageIntros(InterfaceManager.allPackages);
 
-		simplicityWindow.addPackages(InterfaceManager.allPackages);
+//		simplicityWindow.addPackages(InterfaceManager.allPackages);
 		if (!usingLockedSimplification){
 			loadSettingsFileByName(themeToLoad);
 			lock(InterfaceManager.locked);

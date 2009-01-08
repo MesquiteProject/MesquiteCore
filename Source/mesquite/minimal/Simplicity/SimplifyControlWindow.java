@@ -20,7 +20,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	int classesHeight = 140;
 	public String instructions;
 
-	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager) {
+	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager, Vector allPackages) {
 		super(module, false);
 		setWindowSize(400, 450);
 		//ADD: title for classes
@@ -50,6 +50,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		classesHeaderPanel.setBounds(0, modePanelHeight, getWidth(), classesHeight - modePanelHeight);
 		classesHeaderPanel.setVisible(true);
 		field = new PackagesPanel();
+		field.addPackages(allPackages);
 		field.setSize(50, field.getH());
 		field.setLocation(0,0);
 		classesPane.addPanel(field);
@@ -304,6 +305,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			MesquiteTrunk.resetAllToolPalettes();
 		}
 	}
+	
 	/*.................................................................................................................*/
 	void addPackages(Vector allPackages){
 
@@ -326,7 +328,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 
 		ListableVector.sort(v);
 
-
+Debugg.println("addPackages " + v.length);
 		for (int i=0; i<v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)v[i];
 			add(cb);
