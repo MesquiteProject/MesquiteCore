@@ -24,7 +24,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager, Vector allPackages) {
 		super(module, false);
 		setWindowSize(400, 450);
-		//ADD: title for classes
+
 		//instructions
 		String simpLoc = module.getPath() + "instructions.html";
 		instructions = MesquiteFile.getFileContentsAsString(simpLoc);
@@ -45,14 +45,14 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		instructionsScrollPane.setBounds(0, modePanelHeight, getWidth(), getHeight()-modePanelHeight);
 		classesHeaderPanel = new ClassHeadersPanel();
 		classesHeaderPanel.setBackground(Color.white);
-		//addToWindow(simplicityStrip);
+
 		classesHeaderPanel.setBounds(0, modePanelHeight, getWidth(), classesHeight - modePanelHeight);
 		classesHeaderPanel.setVisible(true);
 		packagesPanel = new PackagesPanel(this);
 		
 		packagesPanel.addPackages(allPackages);
 		field = new OuterPackagesPanel(packagesPanel);
-		field.setBackground(Color.red);
+		field.setBackground(Color.white);
 		field.setLayout(null);
 		field.setSize(50, packagesPanel.getH());
 		field.add(packagesPanel);
@@ -70,10 +70,9 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		field.setVisible(true);
 		classesPane.setSize(getWidth(), getHeight()-classesHeight-20);
 		classesPane.setLocation(0, classesHeight);
-		//pane.setScrollPosition(0, 0);
+
 		classesPane.setVisible(true);
-		//	Adjustable adj = pane.getVAdjustable();
-		//	adj.setUnitIncrement(65);
+
 		classesPane.doLayout();
 		message = new MessagePanel(ColorTheme.getExtInterfaceBackground(), false);
 		message.setTextColor(ColorTheme.getExtInterfaceTextContrast());
@@ -137,16 +136,6 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows instructions", null, commandName, "showInstructions")) {
 			MesquiteModule.mesquiteTrunk.alertHTML(instructions, "Simplification Instructions", "Simplification Instructions", 600, 600);
-			/*MesquiteModule.mesquiteTrunk.alert("The Mesquite interface can be shown in Simple mode, in which some menu items and tools are hidden, " +
-					"or in Full mode, in which all available menu items and tools are shown. To toggle between modes, use the small menu you touched to make this message appear. " +
-					"\n\nThere are two ways to choose what items are hidden.  First, you can go to the Simplify panel of the main Mesquite system window, and " + 
-					" choose which packages are shown or hidden.  All or most menu items and tools pertaining to hidden packages will be hidden.  " +
-					" Second, you can select the menu item \"Edit Simple Interface\" from this menu to choose particular items to hide. " +
-					"Then, when you select menu items or tools, they will be highlighted to show they will be hidden. Hidden menu items will be marked with \"(OFF)\"" +
-					" if you have chosen that particular item to hide, \"(PACKAGE OFF)\" if the item will be hidden because its package has been hidden. " +
-					" Hidden tools will be ringed in red if you have chosen that particular item to hide, in blue if hidden because its package has been hidden. " +
-			" After you have edited what you want to hide, choose \"Simple Interface\" in this menu to show the simplified interface.");
-			 */
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -162,9 +151,9 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 			if (InterfaceManager.isEditingMode()){
 				classesHeaderPanel.setSize(getWidth(), classesHeight-modePanelHeight);
 				classesPane.setSize(getWidth(), getHeight()-classesHeight-2 -smallInstructionsHeight);
-				packagesPanel.setSize(getWidth(), packagesPanel.getH());
+				packagesPanel.setSize(getWidth()-38, packagesPanel.getH());
 				trianglePanel.setSize(18, packagesPanel.getH());
-				field.setSize(getWidth(), packagesPanel.getH());
+				field.setSize(getWidth()-20, packagesPanel.getH());
 				classesPane.doLayout();
 				instructionsScrollPane.setBounds(0, getHeight()- smallInstructionsHeight, getWidth(), smallInstructionsHeight-20);
 				instructionsScrollPane.doLayout();
@@ -191,7 +180,6 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 class ClassesPane extends ScrollPane{
 
 	public ClassesPane () {
-		//super(null, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
 		super(ScrollPane.SCROLLBARS_AS_NEEDED);
 		Adjustable v = getVAdjustable();
 		if (v != null)
@@ -217,10 +205,6 @@ class TrianglePanel extends MousePanel {
 		g.setColor(Color.white);
 		g.fillRect(16, 0, getWidth(), getHeight());
 		g.setColor(Color.black);
-		//Font font = g.getFont();
-		//g.setFont(fontBig);
-		//g.drawString("?", 4, 20);//g.setColor(Color.red);
-		//g.setFont(font);
 		for (int i=0; i<packagesPanel.v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)packagesPanel.v[i];
 			if (cb.isPackage){
@@ -230,15 +214,10 @@ class TrianglePanel extends MousePanel {
 					g.drawImage(triangleDown, 0, cb.getY()+6, this);
 			}
 		}
-		//g.fillRect(30, 30, 30, 30);
 	}
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		/*if (x>18){
-			MesquiteWindow.uncheckDoomed(this);
-			return;
-		}*/
 		packagesPanel.shown = packagesPanel.getCheckbox(y);
 		if (packagesPanel.shown != null){
 			if (packagesPanel.shown.late)
@@ -260,10 +239,6 @@ class TrianglePanel extends MousePanel {
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		/*if (x>18){
-			MesquiteWindow.uncheckDoomed(this);
-			return;
-		}*/
 		PackageCheckbox nowshown = packagesPanel.getCheckbox(y);
 		if (nowshown != packagesPanel.shown){
 			packagesPanel.shown = nowshown;
@@ -276,14 +251,6 @@ class TrianglePanel extends MousePanel {
 				packagesPanel.explanation.setVisible(true);
 			}
 		}
-		MesquiteWindow.uncheckDoomed(this);
-	}
-	/*.................................................................................................................*
-	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
-		if (MesquiteWindow.checkDoomed(this))
-			return;
-		explanation.setBounds(20,20,100,100);
-		explanation.setVisible(true);
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*.................................................................................................................*/
@@ -332,10 +299,6 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		/*if (x>18){
-			MesquiteWindow.uncheckDoomed(this);
-			return;
-		}*/
 		shown = getCheckbox(y);
 		if (shown != null){
 			if (shown.late)
@@ -357,10 +320,6 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		/*if (x>18){
-			MesquiteWindow.uncheckDoomed(this);
-			return;
-		}*/
 		PackageCheckbox nowshown = getCheckbox(y);
 		if (nowshown != shown){
 			shown = nowshown;
@@ -375,52 +334,6 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
-	/*.................................................................................................................*
-	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
-		if (MesquiteWindow.checkDoomed(this))
-			return;
-		explanation.setBounds(20,20,100,100);
-		explanation.setVisible(true);
-		MesquiteWindow.uncheckDoomed(this);
-	}
-	/*.................................................................................................................*
-	public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
-		if (MesquiteWindow.checkDoomed(this))
-			return;
-		if (x<18){
-			PackageCheckbox cb = getCheckbox(y);
-			if (cb != null && cb.isPackage){
-				cb.collapsed = !cb.collapsed;
-				resetSizes();
-				getParent().doLayout();
-				repaint();
-			}
-		}
-		MesquiteWindow.uncheckDoomed(this);
-	}
-/*
-	public void paint(Graphics g){
-		if (v == null)
-			return;
-		g.setColor(Color.white);
-		g.fillRect(16, 0, getWidth(), getHeight());
-		g.setColor(Color.black);
-		//Font font = g.getFont();
-		//g.setFont(fontBig);
-		//g.drawString("?", 4, 20);//g.setColor(Color.red);
-		//g.setFont(font);
-		for (int i=0; i<v.length; i++){
-			PackageCheckbox cb = (PackageCheckbox)v[i];
-			if (cb.isPackage){
-				if (cb.collapsed)
-					g.drawImage(triangleRight, 0, cb.getY()+6, this);
-				else 
-					g.drawImage(triangleDown, 0, cb.getY()+6, this);
-			}
-		}
-		//g.fillRect(30, 30, 30, 30);
-	}
-	*/
 	public void itemStateChanged(ItemEvent e){
 		PackageCheckbox cb = (PackageCheckbox)e.getItemSelectable();
 		if (cb.isSelected())
@@ -518,10 +431,6 @@ class PackagesPanel extends MousePanel implements ItemListener {
 					return (count-1)*h;
 			}
 		}
-		/*for (int i=0; i<v.length; i++){
-			if (box == v[i] && box.isVisible())
-				return (i)*h;
-		}*/
 		return 0;
 	}
 	PackageCheckbox getCheckbox(int y){
@@ -543,10 +452,6 @@ class PackagesPanel extends MousePanel implements ItemListener {
 					return (PackageCheckbox)v[i];
 			}
 		}
-		/*for (int i=0; i<v.length; i++){
-			if (y< (1+i)*h)
-				return (PackageCheckbox)v[i];
-		}*/
 		return null;
 	}
 	void checkStates(){
@@ -580,22 +485,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		checkSizes();
 	}
 }
-/*
-class EditModeCheckBox extends Checkbox {
-	public EditModeCheckBox(){
-		super(name);
-		setBackground(Color.white);
-		this.name = name;
-		this.pkg = pkg;
-		this.expl = explanation;
-		this.isPackage = isPackage;
-		this.hideable = isHideable;
-		setEnabled(hideable);
-	}
-	void setLate(boolean late){
-		this.late = late;
-	}
-}
+
 /*.................................................................................................................*/
 
 class PackageCheckbox extends JCheckBox implements Listable {
@@ -701,15 +591,9 @@ abstract class LoadSaveDeleteButton extends MousePanel {
 		w = getWidth() - 1;
 		h = getHeight() - 1;
 		y = 0;
-		// g.drawRoundRect(0, y, w, h , 3, 3);
-
-		//g.setColor(ColorTheme.getActiveLight());
-		//g.fillRoundRect(0, y, w, h , 3, 3);
 		g.setColor(getForeground());
 		g.drawString(label, 4, hA+2);
 		g.drawLine(4, hA+6, w-8, hA+6);
-		//g.drawRoundRect(0, y, w, h , 3, 3);
-
 
 		dropDownTriangle.translate(w - 10 ,8);
 		g.setColor(Color.white);
@@ -758,14 +642,6 @@ class EditModeButton extends Checkbox implements ItemListener {
 		if (InterfaceManager.isEditingMode() == getState())
 			return;
 		InterfaceManager.setEditingMode(getState());
-		if (InterfaceManager.isEditingMode()){
-			//setBackground(Color.cyan);
-			//	setLabel("Turn OFF Editing Mode");
-		}
-		else {
-			//	setBackground(ColorTheme.getInterfaceElement());
-			//	setLabel("Turn ON Editing Mode");
-		}
 		resetColors();
 		repaint();
 		MesquiteModule.resetAllMenuBars();
@@ -773,105 +649,10 @@ class EditModeButton extends Checkbox implements ItemListener {
 		MesquiteWindow.resetAllSimplicity();
 	}
 
-	public void paint (Graphics g) {
-		if (MesquiteWindow.checkDoomed(this))
-			return;
-		//g.setColor(ColorTheme.getInterfaceElement());
-		//g.fillRect(50, 0, 20, 20);
-
-		/*
-		 * String s = "";
-		if (InterfaceManager.isEditingMode()){
-			g.setColor(Color.cyan);
-			s = "Turn OFF Editing Mode";
-		}
-		else {
-			s  = "Turn ON Editing Mode";
-			g.setColor(ColorTheme.getActiveLight());
-		}
-		Font font = g.getFont();
-		FontMetrics fontMet = g.getFontMetrics(font);
-		int hA = fontMet.getAscent();
-		int w = fontMet.stringWidth(s)+8;
-		int h = hA +fontMet.getDescent()+4;
-		int y = 16-hA-2;
-		if (!InterfaceManager.isEditingMode())
-			h = getHeight()-y-3;
-
-
-		g.fillRoundRect(0, y, w, h , 3, 3);
-		if (!InterfaceManager.isEditingMode())
-			g.drawImage(editing, w/2-8, 30, this);
-		g.setColor(Color.black);
-		g.drawString(s, 4, 16);
-		g.drawRoundRect(0, y, w, h , 3, 3);
-		 */
-		super.paint(g);
-		MesquiteWindow.uncheckDoomed(this);
-	}
-	/*public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
-		if (MesquiteWindow.checkDoomed(this))
-			return;
-		if (InterfaceManager.isEditingMode())
-			command = new MesquiteCommand("offedit", InterfaceManager.simplicityModule);
-		else 
-			command = new MesquiteCommand("edit", InterfaceManager.simplicityModule);
-		command.doItMainThread(null, null, null);
-		repaint();
-		MesquiteWindow.uncheckDoomed(this);
-	}
-	/**/
+	
+	
 }
-/*.................................................................................................................*
-class EditModeButton extends MousePanel {
-	MesquiteCommand command;
-	Image editing;
 
-	public EditModeButton(){
-		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
-	}
-	public void paint (Graphics g) {
-		if (MesquiteWindow.checkDoomed(this))
-			return;
-		String s = "";
-		if (InterfaceManager.isEditingMode()){
-			g.setColor(Color.cyan);
-			s = "Turn OFF Editing Mode";
-		}
-		else {
-			s  = "Turn ON Editing Mode";
-			g.setColor(ColorTheme.getActiveLight());
-		}
-		Font font = g.getFont();
-		FontMetrics fontMet = g.getFontMetrics(font);
-		int hA = fontMet.getAscent();
-		int w = fontMet.stringWidth(s)+8;
-		int h = hA +fontMet.getDescent()+4;
-		int y = 16-hA-2;
-		if (!InterfaceManager.isEditingMode())
-			h = getHeight()-y-3;
-
-
-		g.fillRoundRect(0, y, w, h , 3, 3);
-		if (!InterfaceManager.isEditingMode())
-			g.drawImage(editing, w/2-8, 30, this);
-		g.setColor(Color.black);
-		g.drawString(s, 4, 16);
-		g.drawRoundRect(0, y, w, h , 3, 3);
-		MesquiteWindow.uncheckDoomed(this);
-	}
-	public void mouseUp(int modifiers, int x, int y, MesquiteTool toolTouching) {
-		if (MesquiteWindow.checkDoomed(this))
-			return;
-		if (InterfaceManager.isEditingMode())
-			command = new MesquiteCommand("offedit", InterfaceManager.simplicityModule);
-		else 
-			command = new MesquiteCommand("edit", InterfaceManager.simplicityModule);
-		command.doItMainThread(null, null, null);
-		repaint();
-		MesquiteWindow.uncheckDoomed(this);
-	}
-}
 /*.................................................................................................................*/
 class ModePanel extends Panel implements ItemListener {
 	CheckboxGroup cbg;
@@ -1012,9 +793,7 @@ class ModePanel extends Panel implements ItemListener {
 			 com = MesquiteModule.makeCommand("simple", w.ownerModule);
 		com.doItMainThread(null, null, this);
 		repaint();
-		//MesquiteModule.resetAllMenuBars();
-		//MesquiteModule.resetAllToolPalettes();
-		//MesquiteWindow.resetAllSimplicity();
+		
 	}
 }
 class ClassHeadersPanel extends Panel  {
