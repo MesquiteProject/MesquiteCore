@@ -186,7 +186,9 @@
                 <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">)
                   If consensus trees were constructed over trees with branch
                   lengths stored, the average branch lengths of the terminal
-                branches of the consensus tree was incorrect.</li>
+                branches of the consensus tree was incorrect. This has been corrected.</li>
+				<li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">)
+				  If new characters or taxa were inserted in an existing matrix or taxa block anywhere but in last position, then subsequent characters or taxa may have had their status in selection sets corrupted. This would not directly lead to a substantive error, but could indirectly if those selection sets were subsequently used for manipulating data. This has been fixed.</li>
 				<li>Mesquite can now more successfully import and export PHYLIP files.</li>
 				<li>Undoing some operations in the data matrix caused Mesquite to crash.
 				  This has been fixed, but only by preventing the ability to
