@@ -164,6 +164,10 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		this.data = data;
 	}
 
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false; 
+	}
 
 	/*.................................................................................................................*/
 	public void endJob() {

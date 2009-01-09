@@ -52,6 +52,10 @@ public class IncludedCharBoolean extends BooleanForCharacter {
 		return "A boolean that is true if a character is currently included, and false if the character is currently excluded.";
 	}
 
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false; 
+	}
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){

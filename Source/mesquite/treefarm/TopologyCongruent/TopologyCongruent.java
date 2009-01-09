@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.TopologyCongruent;
 
 /*New October 7, '08. oliver
- * Modified 16 October '08 to use the built-in Tree.equalsTopology method */
+ * Modified 16 October '08  to use the built-in Tree.equalsTopology method - DRM */
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -61,6 +61,6 @@ public class TopologyCongruent extends BooleanForTree {
     }
     /*........................................................*/
     public boolean isPrerelease(){
-    	return true;
+    	return false;
     }
 }
