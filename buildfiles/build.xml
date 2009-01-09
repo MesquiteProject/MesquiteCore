@@ -5,7 +5,8 @@
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<exclude name="${osxdirpath}" />
-				<exclude name="${osxdirpathHM}" />				
+				<exclude name="${osxdirpath500M}" />				
+				<exclude name="${osxdirpath1G}" />				
 				<exclude name="**/*.java"/>
 				<exclude name="**/*.html"/>
 			</fileset>
@@ -67,12 +68,14 @@
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<include name="${osxdirpath}"/>
-				<include name="${osxdirpathHM}"/>				
+				<include name="${osxdirpath500M}"/>				
+				<include name="${osxdirpath1G}"/>				
 			</fileset>
 		</copy>
 		
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirname}/Contents/MacOS/Mesquite'"/>
-		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirHMname}/Contents/MacOS/Mesquite'"/>		
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir500Mname}/Contents/MacOS/Mesquite'"/>		
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1Gname}/Contents/MacOS/Mesquite'"/>		
 		
 		<!-- create .dmg -->
 		<exec executable="hdiutil" failonerror="false" os="Mac OS X">
@@ -184,8 +187,10 @@
 		<!-- assorted mac folders and files that need to be excluded for linux builds -->
 		<property name="osxdirname" value="Mesquite.app" />		
 		<property name="osxdirpath" value="**/${osxdirname}/" />
-		<property name="osxdirHMname" value="Mesquite (hi-mem).app" />				
-		<property name="osxdirpathHM" value="**/${osxdirHMname}/" />		
+		<property name="osxdir500Mname" value="Mesquite (500MB).app" />				
+		<property name="osxdirpath500M" value="**/${osxdir500Mname}/" />		
+		<property name="osxdir1Gname" value="Mesquite (1GB).app" />				
+		<property name="osxdirpath1G" value="**/${osxdir1Gname}/" />		
 
 		<!-- server destination locations -->
 		<property file="${buildfiles.dir}/serverinfo.properties" />
