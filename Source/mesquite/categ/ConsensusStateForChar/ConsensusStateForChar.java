@@ -79,8 +79,9 @@ public class ConsensusStateForChar extends CategStateForCharacter {
 		double[] freq = new double[CategoricalState.getMaxPossibleStateStatic()];
 		int numTaxa = data.getNumTaxa();
 		int numTaxaWithData = 0;
+		boolean noRowsSelected = !table.anyRowSelected();
 		for (int it=0; it<numTaxa; it++) {
-			if (!getSelectedOnly() || table!=null && (table.isRowSelected(it) || !table.anyRowSelected())) {
+			if (!getSelectedOnly() || table!=null && (table.isRowSelected(it) || noRowsSelected)) {
 				long s= data.getState(ic,it);
 				if (CategoricalState.isInapplicable(s))
 					continue;

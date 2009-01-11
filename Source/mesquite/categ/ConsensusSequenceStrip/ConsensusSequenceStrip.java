@@ -255,8 +255,9 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		 //long s;
 		 int numTaxa = data.getNumTaxa();
 		 int numTaxaWithData = 0;
+		boolean noRowsSelected =  !table.anyRowSelected();
 		 for (int it=0; it<numTaxa; it++) {
-			 if (!selectedOnly.getValue() || table.isRowSelected(it) || !table.anyRowSelected()) {
+			 if (!selectedOnly.getValue() || table.isRowSelected(it) || noRowsSelected) {
 				 long s= ((CategoricalData)data).getState(ic,it);
 				 if (CategoricalState.isInapplicable(s))
 					 return true;
