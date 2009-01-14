@@ -24,8 +24,6 @@ import mesquite.distance.lib.*;
 
 public class ExportTaxaDistances extends FileInterpreterI {
 	TaxaDistanceSource distanceTask;
-	MesquiteString distanceTaskName;
-	MesquiteCommand dtC;
 	Taxa currentTaxa = null;
 	boolean suspend = false;
 
@@ -35,7 +33,7 @@ public class ExportTaxaDistances extends FileInterpreterI {
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isSubstantive(){
 		return true;
@@ -78,20 +76,20 @@ public class ExportTaxaDistances extends FileInterpreterI {
 	/*.................................................................................................................*/
 	String fileName = "distances.txt";
 	String addendum = "";
-
+/*
 	public boolean getExportOptions(Taxa taxa){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export distance matrix", buttonPressed);
 		exportDialog.setSuppressLineEndQuery(true);
 		exportDialog.setDefaultButton(null);
 		exportDialog.addLargeOrSmallTextLabel("Distances are to be exported from:\n\n" + distanceTask.getNameAndParameters());
-/*		Checkbox itCheckBox = exportDialog.addCheckBox("Include Taxa Block", includeTaxaBlock);
+/ *		Checkbox itCheckBox = exportDialog.addCheckBox("Include Taxa Block", includeTaxaBlock);
 		exportDialog.addLabel("Addendum: ");
 
 		addendum = "";
 
 		TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,16);
-*/
+* /
 		exportDialog.completeAndShowDialog();
 
 		boolean ok = (exportDialog.query()==0);
@@ -119,8 +117,7 @@ public class ExportTaxaDistances extends FileInterpreterI {
 	/** passes which object changed*/
 	public void disposing(Object obj){
 		if (obj == currentTaxa) {
-			setHiringCommand(null); //since there is no rehiring
-			iQuit();
+			currentTaxa = null;
 		}
 	}
 
@@ -139,7 +136,7 @@ public class ExportTaxaDistances extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
-		boolean usePrevious = args.parameterExists("usePrevious");
+	//	boolean usePrevious = args.parameterExists("usePrevious");
 
 		Taxa taxa = 	 getProject().chooseTaxa(getModuleWindow(), "Choose taxa block"); 
 		if (taxa==null) 
@@ -158,19 +155,23 @@ public class ExportTaxaDistances extends FileInterpreterI {
 		String suggested = fileName;
 		if (file !=null) {
 			suggested = file.getFileName();
-			if (StringUtil.getLastItem(suggested, ".").equalsIgnoreCase("txt")) {
+			if (StringUtil.getLastItem(suggested, ".").equalsIgnoreCase("nex")) {
 				suggested = StringUtil.getAllButLastItem(suggested, ".") +".distances.txt";
-			}  else
+			}
+			else	if (StringUtil.getLastItem(suggested, ".").equalsIgnoreCase("nxs")) {
+				suggested = StringUtil.getAllButLastItem(suggested, ".") +".distances.txt";
+			}else
 				suggested = suggested +".distances.txt";
 		}
 
 		MesquiteFile f;
-		if (!usePrevious){
+		/*if (!usePrevious){
 			if (!getExportOptions(null)) {
 				distanceTask=null;
 				return false;
 			}
 		}
+		*/
 		TaxaDistance distances = distanceTask.getTaxaDistance(taxa);
 		
 		String path = getPathForExport(arguments, suggested, dir, fn);
