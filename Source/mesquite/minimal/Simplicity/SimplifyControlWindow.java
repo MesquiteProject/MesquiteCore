@@ -23,6 +23,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	OuterPackagesPanel field;
 	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager, Vector allPackages) {
 		super(module, false);
+		resetTitle();
 		setWindowSize(400, 450);
 
 		//instructions
@@ -221,9 +222,9 @@ class TrianglePanel extends MousePanel {
 		packagesPanel.shown = packagesPanel.getCheckbox(y);
 		if (packagesPanel.shown != null){
 			if (packagesPanel.shown.late)
-				packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)-80,340,80);
+				packagesPanel.explanation.setBounds(4,packagesPanel.getY(packagesPanel.shown)-80,340,40);
 			else 
-				packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)+ packagesPanel.shown.getHeight(),340,80);
+				packagesPanel.explanation.setBounds(4,packagesPanel.getY(packagesPanel.shown)+ packagesPanel.shown.getHeight(),340,40);
 			packagesPanel.explanation.setText(packagesPanel.shown.name +": " + packagesPanel.shown.expl);
 			packagesPanel.explanation.setVisible(true);
 		}
@@ -244,9 +245,9 @@ class TrianglePanel extends MousePanel {
 			packagesPanel.shown = nowshown;
 			if (packagesPanel.shown != null){
 				if (packagesPanel.shown.late)
-					packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)-80,340,80);
+					packagesPanel.explanation.setBounds(4,packagesPanel.getY(packagesPanel.shown)-80,340,40);
 				else 
-					packagesPanel.explanation.setBounds(20,packagesPanel.getY(packagesPanel.shown)+ packagesPanel.shown.getHeight(),340,80);
+					packagesPanel.explanation.setBounds(4,packagesPanel.getY(packagesPanel.shown)+ packagesPanel.shown.getHeight(),340,40);
 				packagesPanel.explanation.setText(packagesPanel.shown.name +": " + packagesPanel.shown.expl);
 				packagesPanel.explanation.setVisible(true);
 			}
@@ -288,7 +289,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 	public PackagesPanel(SimplifyControlWindow w){
 		super();
 		this.w = w;
-		//add(explanation);
+		add(explanation);
 		explanation.setBounds(0,0,0,0);
 		explanation.setVisible(false);
 		explanation.setBackground(ColorTheme.getActiveLight());
@@ -300,14 +301,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		shown = getCheckbox(y);
-		if (shown != null){
-			if (shown.late)
-				explanation.setBounds(20,getY(shown)-80,340,80);
-			else 
-				explanation.setBounds(20,getY(shown)+ shown.getHeight(),340,80);
-			explanation.setText(shown.name +": " + shown.expl);
-			explanation.setVisible(true);
-		}
+		mouseEnteredCheckbox(shown);
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
@@ -317,6 +311,21 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		shown = null;
 		MesquiteWindow.uncheckDoomed(this);
 	}
+	public void mouseEnteredCheckbox(PackageCheckbox shown) {
+		if (shown != null){
+			this.shown = shown;
+			if (shown.late)
+				explanation.setBounds(4,getY(shown)-80,340,40);
+			else 
+				explanation.setBounds(4,getY(shown)+ shown.getHeight(),340,40);
+			explanation.setText(shown.name +": " + shown.expl);
+			explanation.setVisible(true);
+		}
+	}
+	public void mouseExitedCheckbox(PackageCheckbox shown) {
+		explanation.setVisible(false);
+		shown = null;
+	}
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
@@ -325,16 +334,19 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			shown = nowshown;
 			if (shown != null){
 				if (shown.late)
-					explanation.setBounds(20,getY(shown)-80,340,80);
+					explanation.setBounds(4,getY(shown)-80,340,40);
 				else 
-					explanation.setBounds(20,getY(shown)+ shown.getHeight(),340,80);
+					explanation.setBounds(4,getY(shown)+ shown.getHeight(),340,40);
 				explanation.setText(shown.name +": " + shown.expl);
 				explanation.setVisible(true);
 			}
 		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
+	
 	public void itemStateChanged(ItemEvent e){
+		if (	checkingStates)
+			return;
 		PackageCheckbox cb = (PackageCheckbox)e.getItemSelectable();
 		if (cb.isSelected())
 			InterfaceManager.removePackageFromHidden(cb.pkg, true);
@@ -356,7 +368,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 			String name = ms.getName();
 			String[] s = (String[])ms.getObject();
 
-			PackageCheckbox cb = new PackageCheckbox(name,  s[0], s[1],  "true".equals(s[2]), "true".equals(s[3]));
+			PackageCheckbox cb = new PackageCheckbox(this, name,  s[0], s[1],  "true".equals(s[2]), "true".equals(s[3]));
 			if (allPackages.size()-i<4)
 				cb.setLate(true);
 			cb.setSelected(!InterfaceManager.onHiddenClassListExactly(s[0]));
@@ -454,6 +466,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		}
 		return null;
 	}
+	boolean checkingStates = false;
 	void checkStates(){
 		if (v == null)
 			return;
@@ -461,7 +474,9 @@ class PackagesPanel extends MousePanel implements ItemListener {
 		for (int i=0; i<v.length; i++){
 			PackageCheckbox cb = (PackageCheckbox)v[i];
 			boolean was = cb.isSelected();
+			checkingStates = true;
 			cb.setSelected(!InterfaceManager.onHiddenClassListExactly(cb.pkg));
+			checkingStates = false;
 			if (was != cb.isSelected())
 				changed = true;
 			if (cb.isSelected() && InterfaceManager.onHiddenClassList(cb.pkg))
@@ -488,7 +503,7 @@ class PackagesPanel extends MousePanel implements ItemListener {
 
 /*.................................................................................................................*/
 
-class PackageCheckbox extends JCheckBox implements Listable {
+class PackageCheckbox extends JCheckBox implements Listable, MouseListener {
 	String pkg = null;
 	String expl = null;
 	String name = null;
@@ -496,14 +511,17 @@ class PackageCheckbox extends JCheckBox implements Listable {
 	boolean isPackage = false;
 	boolean hideable = true;
 	boolean collapsed = true;
-	public PackageCheckbox(String name, String pkg, String explanation, boolean isHideable, boolean isPackage){
+	PackagesPanel packagesPanel;
+	public PackageCheckbox(PackagesPanel pp, String name, String pkg, String explanation, boolean isHideable, boolean isPackage){
 		super(name);
 		setBackground(Color.white);
+		this.packagesPanel = pp;
 		this.name = name;
 		this.pkg = pkg;
 		this.expl = explanation;
 		this.isPackage = isPackage;
 		this.hideable = isHideable;
+		addMouseListener(this);
 		setEnabled(hideable);
 	}
 	public String getName(){
@@ -511,6 +529,18 @@ class PackageCheckbox extends JCheckBox implements Listable {
 	}
 	void setLate(boolean late){
 		this.late = late;
+	}
+	public void mouseClicked(MouseEvent e){
+	}
+	public void mouseEntered(MouseEvent e){
+		packagesPanel.mouseEnteredCheckbox(this);
+	}
+	public void mouseExited(MouseEvent e){
+		packagesPanel.mouseExitedCheckbox(this);
+	}
+	public void mousePressed(MouseEvent e){
+	}
+	public void mouseReleased(MouseEvent e){
 	}
 }
 /*.................................................................................................................*/
