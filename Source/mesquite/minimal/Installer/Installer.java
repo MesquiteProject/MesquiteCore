@@ -94,6 +94,13 @@ public class Installer extends MesquiteInit {
 		return "Installs packages." ;
 	}
 	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 260;  
+	}
+	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
 		return "http://mesquiteproject.org/mesquite/updates/updates.xmlDELETETOTURNON";
