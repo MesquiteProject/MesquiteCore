@@ -21,6 +21,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	int classesHeight = 140;
 	public String instructions;
 	OuterPackagesPanel field;
+	MovePanel movePanel;
 	public SimplifyControlWindow(MesquiteModule module, InterfaceManager manager, Vector allPackages) {
 		super(module, false);
 		resetTitle();
@@ -64,10 +65,12 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		trianglePanel.setBounds(0, 0, 18, packagesPanel.getH());
 		
 		classesPane.addPanel(field);
+		movePanel = new MovePanel(this);
 		addToWindow(classesPane);
 		addToWindow(modePanel);
 		addToWindow(instructionsScrollPane);
 		addToWindow(classesHeaderPanel);
+		addToWindow(movePanel);
 		field.setVisible(true);
 		classesPane.setSize(getWidth(), getHeight()-classesHeight-20);
 		classesPane.setLocation(0, classesHeight);
@@ -78,6 +81,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		message = new MessagePanel(ColorTheme.getExtInterfaceBackground(), false);
 		message.setTextColor(ColorTheme.getExtInterfaceTextContrast());
 		addToWindow(message);
+		
 		message.setBounds(0, getHeight()-20, getWidth(), 20);
 		if (InterfaceManager.themeName == null)
 			message.setMessage("Custom");
@@ -142,16 +146,23 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	int smallInstructionsHeight = 120;
 
 	void resetSizes(){
-		int smallInstructionsHeight = 120;
 		if (classesPane!=null && field != null) {
 			modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
 			message.setBounds(0, getHeight()-20, getWidth(), 20);
 
 			if (InterfaceManager.isEditingMode()){
 				classesHeaderPanel.setSize(getWidth(), classesHeight-modePanelHeight);
+				if (smallInstructionsHeight < 60)
+					smallInstructionsHeight = 60;
+				int cpheight = getHeight()-classesHeight-2 -smallInstructionsHeight;
+				if (cpheight < 100)
+					smallInstructionsHeight = getHeight()-classesHeight-2 -100;
+				
 				classesPane.setSize(getWidth(), getHeight()-classesHeight-2 -smallInstructionsHeight);
+				movePanel.setBounds(0,getHeight()- smallInstructionsHeight-2, getWidth(), 2);
 				packagesPanel.setSize(getWidth()-38, packagesPanel.getH());
 				trianglePanel.setSize(18, packagesPanel.getH());
 				field.setSize(getWidth()-20, packagesPanel.getH());
@@ -164,6 +175,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 				classesPane.setSize(0, 0);
 				packagesPanel.setSize(0,0);
 				trianglePanel.setSize(0,0);
+				movePanel.setBounds(0,0,0,0);
 				field.setSize(0, 0);
 				classesPane.doLayout();
 				instructionsScrollPane.setBounds(0,modePanelHeight,getWidth(), getHeight()- modePanelHeight-20);
@@ -176,7 +188,27 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		resetSizes();
 	}
 }
-
+class MovePanel extends MousePanel {
+	SimplifyControlWindow window;
+	int touchY = -1;
+	public MovePanel(SimplifyControlWindow window){
+		setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+		this.window = window;
+		setBackground(Color.darkGray);
+	}
+	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		touchY = y;
+		MesquiteWindow.uncheckDoomed(this);
+	}
+	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
+		int movedY = y - touchY;
+		window.smallInstructionsHeight -= movedY;
+		window.resetSizes();
+		touchY = -1;
+	}
+}
 /* ======================================================================== */
 class ClassesPane extends ScrollPane{
 
