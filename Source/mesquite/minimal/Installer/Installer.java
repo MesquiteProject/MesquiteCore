@@ -428,7 +428,6 @@ public class Installer extends MesquiteInit {
 	void cleanUp(Element installElement){
 		String pathInMesquiteFolder = installElement.elementText("location");
 		String fileName = installElement.elementText("file");
-		Debugg.println("pathInMesquiteFolder " + pathInMesquiteFolder + " fileName " + fileName );
 		File tempPackage = new File(getRootPath() + pathInMesquiteFolder + "/"  + fileName+ "PREVIOUSVERSION");
 		boolean hadExisted = tempPackage.exists();
 		if (hadExisted){
