@@ -285,6 +285,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 
 	/*.................................................................................................................*/
 	public boolean mouseDown(boolean optionDown, boolean shiftDown) {
+		checkCurrentBlockIntegrity(table,data);
 		effectiveFirstColumnTouched = firstColumnTouched;
 		endOfLeftBlockAtTouch = firstColumnTouched;
 		startOfRightBlockAtTouch = firstColumnTouched;

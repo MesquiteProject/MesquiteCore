@@ -29,6 +29,8 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	protected MesquiteTable table;
 	protected CharacterData  data;
 	protected CellBlock currentBlock = null;
+	protected int currentNumTaxa = 0;
+	protected int currentNumChars = 0;
 
 	protected MesquiteBoolean warnCheckSum = new MesquiteBoolean(true);
 	protected long originalCheckSum;
@@ -113,7 +115,17 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 			return;
 		this.table = table;
 		this.data = data;
+		currentNumChars = data.getNumChars();
+		currentNumTaxa = data.getNumTaxa();
 		initialize( table,  data);
+	}
+	/*.................................................................................................................*/
+	public void checkCurrentBlockIntegrity(MesquiteTable table, CharacterData data){
+		if (data.getNumChars()!=currentNumChars || data.getNumTaxa()!=currentNumTaxa) {
+			initialize(table,data);
+			currentNumChars = data.getNumChars();
+			currentNumTaxa = data.getNumTaxa();
+		}
 	}
 
 	/*.................................................................................................................*/
@@ -260,6 +272,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 	public boolean afterMoveMultiSequences() {
 		boolean success = ((CategoricalData)data).examineCheckSum(0, data.getNumChars(),currentBlock.getWhichTaxa(), "WARNING! The data have been altered inappropriately by this tool! The changes you have made will be undone.", warnCheckSum, originalCheckSum);
 		if (!success) {   //&& MesquiteTrunk.debugMode) 
+			logln("WARNING! The data have been altered inappropriately by this tool! The changes you have made will be undone.");
 			logln("Original sequences to be moved: " + originalWhichTaxa.getListOfBitsOn(1));
 			logln("Sequences moved: " + currentBlock.getWhichTaxa().getListOfBitsOn(1));
 		}
@@ -298,7 +311,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 				firstTouchPercentHorizontal= MesquiteInteger.fromString(arguments, io);
 				firstTouchPercentVertical= MesquiteInteger.fromString(arguments, io);
 
-				 if (!mouseDown(optionDown, shiftDown))
+				if (!mouseDown(optionDown, shiftDown))
 					return null;
 			}
 		}
