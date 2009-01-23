@@ -57,7 +57,7 @@ public class TopologyCongruent extends BooleanForTree {
 	}
 	/*........................................................*/
     public int getVersionOfFirstRelease(){
-        return NEXTRELEASE;
+        return 260;
     }
     /*........................................................*/
     public boolean isPrerelease(){

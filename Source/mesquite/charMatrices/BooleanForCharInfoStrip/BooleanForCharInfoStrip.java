@@ -187,7 +187,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 260;  
 	}
 
 

@@ -127,7 +127,14 @@ public class NumTopologyCongruent extends NumberForTree {
 	public String getName() {
 		return "Number of Congruent Trees";
 	}
+	public String getExplanation() {
+		return "For the given tree, returns the number of trees in the tree source that are congruent with it.";
+	}
 
+	/*........................................................*/
+    public int getVersionOfFirstRelease(){
+        return 260;
+    }
 
 
 }

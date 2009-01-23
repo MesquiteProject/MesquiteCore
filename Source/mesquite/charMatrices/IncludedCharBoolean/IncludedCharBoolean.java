@@ -59,7 +59,7 @@ public class IncludedCharBoolean extends BooleanForCharacter {
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 260;  
 	}
 
 
