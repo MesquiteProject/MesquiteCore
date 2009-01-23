@@ -172,6 +172,9 @@ public class ExportTaxaDistances extends FileInterpreterI {
 			}
 		}
 		*/
+		if (!distanceTask.getDistanceOptions())
+			return false;
+
 		TaxaDistance distances = distanceTask.getTaxaDistance(taxa);
 		
 		String path = getPathForExport(arguments, suggested, dir, fn);

@@ -11,6 +11,8 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.distance.lib;
 
+import java.awt.Checkbox;
+
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -22,12 +24,14 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 		int maxNumStates;
 		CategoricalData data; 
     	boolean estimateAmbiguityDifferences = true;
-    	boolean countDifferencesIfGapInPair = true;
+    	boolean countDifferencesIfGapInPair = false;
+    	MesquiteModule ownerModule;
 		
 		public MolecularTaxaDistance(MesquiteModule ownerModule, Taxa taxa, MCharactersDistribution observedStates, boolean estimateAmbiguityDifferences, boolean countDifferencesIfGapInPair){
 			super(taxa);
 			if (observedStates==null)
 				return;
+			this.ownerModule = ownerModule;
 			this.estimateAmbiguityDifferences = estimateAmbiguityDifferences;
 			this.countDifferencesIfGapInPair = countDifferencesIfGapInPair;
 			data = (CategoricalData)observedStates.getParentData();
@@ -50,7 +54,28 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 		}
 		public abstract int getMaxState();
 		
-		
+	/*	public boolean getDistanceOptions() {
+			if (MesquiteThread.isScripting())
+				return true;
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(), "Distance Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			dialog.addLabel("Distance Options");
+
+			Checkbox estimateAmbiguityDifferencesBox = dialog.addCheckBox("estimate ambiguity differences", estimateAmbiguityDifferences);
+			Checkbox countDifferencesIfGapInPairBox = dialog.addCheckBox("count as a difference one taxon having a gap and the other a non-gap", countDifferencesIfGapInPair);
+
+
+
+			dialog.completeAndShowDialog(true);
+			if (buttonPressed.getValue()==0)  {
+				estimateAmbiguityDifferences = estimateAmbiguityDifferencesBox.getState();
+				countDifferencesIfGapInPair = countDifferencesIfGapInPairBox.getState();
+			}
+			dialog.dispose();
+			return (buttonPressed.getValue()==0) ;
+
+		}
+*/
 		public double[][] calcPairwiseDistance(int taxon1, int taxon2, MesquiteDouble N, MesquiteDouble D){
 			if (catStates==null)
 				return null;
@@ -89,6 +114,7 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 			int count = 0;
 			int countTotal = 0;
 			double sumDiffs =0;
+			double gapDifferences = 0.0;
 
 					
 			for (int ic=0; ic< catStates.getNumChars(); ic++) {
@@ -103,7 +129,10 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 					int twoState = CategoricalState.getOnlyElement(two);
 					boolean oneIsMissingInapplicable = CategoricalState.isInapplicable(oneAllBits) || CategoricalState.isUnassigned(oneAllBits);
 					boolean twoIsMissingInapplicable = CategoricalState.isInapplicable(twoAllBits) || CategoricalState.isUnassigned(twoAllBits);
-					if (oneState>=0 && oneState<numStates && twoState>=0 && twoState<numStates){  // they have single states
+					 if (countDifferencesIfGapInPair && (CategoricalState.isInapplicable(oneAllBits) != CategoricalState.isInapplicable(twoAllBits))) { 
+						 gapDifferences+=1.0;
+					 }
+					 else if (oneState>=0 && oneState<numStates && twoState>=0 && twoState<numStates){  // they have single states
 						fxy[oneState][twoState] ++;
 					}
 					else if (oneIsMissingInapplicable &&  twoIsMissingInapplicable) {  // both are missing or inapplicable, skip site
@@ -121,11 +150,13 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 						}
 					}
 					else {  //at least one is not inapplicable or missing, and they don't overlap
-						if (oneIsMissingInapplicable) 
+						if (CategoricalState.isUnassigned(oneAllBits) || (!countDifferencesIfGapInPair && CategoricalState.isInapplicable(oneAllBits))) 
 							one = DNAState.fullSet();
-						if (twoIsMissingInapplicable) 
+						if (CategoricalState.isUnassigned(twoAllBits) || (!countDifferencesIfGapInPair && CategoricalState.isInapplicable(twoAllBits))) 
 							two = DNAState.fullSet();
-																							//TODO: deal with polymorphism
+						
+						
+						//TODO: deal with polymorphism
 						if (estimateAmbiguityDifferences) {// at least one of them has multiple states or is empty
 							double sum = 0.0;
 							double combinationCount = 0.0;
@@ -185,14 +216,17 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 				}
 			}
 
-			double sumF = 0.0;
+			double sumF = gapDifferences;
 			double nonDiagonals = 0.0;
 			for (int i=0; i<numStates;i++)
 				for (int j=0; j<numStates; j++)
 					sumF += fxy[i][j];
 			for (int i=0; i<numStates;i++)
 				nonDiagonals -= fxy[i][i];
-			nonDiagonals /= sumF;
+			if (sumF==0)
+				nonDiagonals = -1.0;
+			else
+				nonDiagonals /= sumF;
 
 			//nonDiagonals = nonDiagonals*1.0*count/countTotal;
 			nonDiagonals += 1.0;
