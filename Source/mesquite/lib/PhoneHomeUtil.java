@@ -179,9 +179,10 @@ public class PhoneHomeUtil {
 			return mmi.getVersionInt();
 	}
 	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int noticeVersion, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberAtLeast, int forBuildNumberExactly, ListableVector v) {
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int mesquiteVersionThisNoticeisFor, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberAtLeast, int forBuildNumberExactly, ListableVector v) {
 		boolean pleaseDeleteFromUpdates = false;
-		if (MesquiteInteger.isCombinable(noticeVersion)){
+Debugg.println("forVersion: " + mesquiteVersionThisNoticeisFor);
+		if (MesquiteInteger.isCombinable(mesquiteVersionThisNoticeisFor)){
 			if (MesquiteInteger.isCombinable(noticeNumber)){
 
 				boolean appliesToOSVersion = true;
@@ -208,7 +209,7 @@ public class PhoneHomeUtil {
 				}
 
 				//suppose Mesquite is version 2. 01
-				int currentVersion = getVersion(mmi);
+				int currentMesquiteVersion = getVersion(mmi);
 
 				//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 				boolean critical = false;
@@ -229,16 +230,16 @@ public class PhoneHomeUtil {
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 				//notice assumed to have been seen before if its version number is less than current
-				boolean seenBefore = noticeVersion < currentVersion;  //e.g., notice is version 2.0
+				boolean seenBefore = mesquiteVersionThisNoticeisFor < currentMesquiteVersion;  //e.g., notice is version 2.0
 
 				//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
-				seenBefore = seenBefore || (noticeVersion ==  currentVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
+				seenBefore = seenBefore || (mesquiteVersionThisNoticeisFor ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
 
 				//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
-				seenBefore = seenBefore || (currentVersion<noticeVersion && lastVersionNoticed == noticeVersion && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
+				seenBefore = seenBefore || (currentMesquiteVersion<mesquiteVersionThisNoticeisFor && lastVersionNoticed == mesquiteVersionThisNoticeisFor && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
 
 				//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
-				seenBefore = seenBefore || (currentVersion<noticeVersion && lastVersionNoticed> noticeVersion);  //e.g., notice is 2.02; 2.03 notices previously read
+				seenBefore = seenBefore || (currentMesquiteVersion<mesquiteVersionThisNoticeisFor && lastVersionNoticed> mesquiteVersionThisNoticeisFor);  //e.g., notice is 2.02; 2.03 notices previously read
 				boolean javaInsufficient = false;
 				boolean requirementsNotMet = false;
 				if (v != null){
@@ -344,14 +345,14 @@ public class PhoneHomeUtil {
 						MesquiteMessage.println("\n\nNOTICE from " + fromWhom + ": " + message + "\n");
 					}
 					if (!skip){
-						if (noticeVersion ==  currentVersion){  //version of note is this version of Mesquite
+						if (mesquiteVersionThisNoticeisFor ==  currentMesquiteVersion){  //version of note is this version of Mesquite
 							if (phoneHomeRecord.getLastNoticeForMyVersion() < noticeNumber)  // this is a later notice than we had seen before; record it
 								phoneHomeRecord.setLastNoticeForMyVersion(noticeNumber);
-							if (noticeVersion ==  phoneHomeRecord.getLastVersionNoticed() && noticeNumber >phoneHomeRecord.getLastNotice())
+							if (mesquiteVersionThisNoticeisFor ==  phoneHomeRecord.getLastVersionNoticed() && noticeNumber >phoneHomeRecord.getLastNotice())
 								phoneHomeRecord.setLastNotice(noticeNumber);
 						}
-						if (noticeVersion >=  phoneHomeRecord.getLastVersionNoticed()){
-							phoneHomeRecord.setLastVersionNoticed(noticeVersion);
+						if (mesquiteVersionThisNoticeisFor >=  phoneHomeRecord.getLastVersionNoticed()){
+							phoneHomeRecord.setLastVersionNoticed(mesquiteVersionThisNoticeisFor);
 							if (noticeNumber >phoneHomeRecord. getLastNotice())
 								phoneHomeRecord.setLastNotice(noticeNumber);
 						}
@@ -402,7 +403,7 @@ public class PhoneHomeUtil {
 			List noticesFromHomeList = messagesFromHome.elements("notice");
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
 				Element messageElement = (Element) iter.next();
-				int version = MesquiteInteger.fromString(messageElement.elementText("forVersion"));  
+				int mesquiteVersionNoticeIsFor = MesquiteInteger.fromString(messageElement.elementText("forVersion"));    // notice is for this version and any previous version
 				int forBuildNumberExactly = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberExactly"));
 				int forBuildNumberAtLeast = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberAtLeast"));
 				int noticeNumber = MesquiteInteger.fromString(messageElement.elementText("noticeNumber"));
@@ -465,7 +466,7 @@ public class PhoneHomeUtil {
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 				// process other notice tags here if they are present
-				processSingleNotice(mmi, notices, countNotices, version, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberAtLeast, forBuildNumberExactly, v);
+				processSingleNotice(mmi, notices, countNotices, mesquiteVersionNoticeIsFor, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberAtLeast, forBuildNumberExactly, v);
 
 			}
 			//INSTALLER: here go through updateRecords to figure out which are already installed, which not; which have newer versions already installed, etc.
