@@ -166,9 +166,13 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 				packagesPanel.setSize(getWidth()-38, packagesPanel.getH());
 				trianglePanel.setSize(18, packagesPanel.getH());
 				field.setSize(getWidth()-20, packagesPanel.getH());
-				classesPane.doLayout();
 				instructionsScrollPane.setBounds(0, getHeight()- smallInstructionsHeight, getWidth(), smallInstructionsHeight-20);
-				instructionsScrollPane.doLayout();
+				try{
+					classesPane.doLayout();
+					instructionsScrollPane.doLayout();
+				}
+				catch (Exception e){
+				}
 			}
 			else {
 				classesHeaderPanel.setSize(0,0);
@@ -177,9 +181,13 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 				trianglePanel.setSize(0,0);
 				movePanel.setBounds(0,0,0,0);
 				field.setSize(0, 0);
-				classesPane.doLayout();
 				instructionsScrollPane.setBounds(0,modePanelHeight,getWidth(), getHeight()- modePanelHeight-20);
-				instructionsScrollPane.doLayout();
+				try{
+					classesPane.doLayout();
+					instructionsScrollPane.doLayout();
+				}
+				catch (Exception e){
+				}
 			}
 		}
 	}
