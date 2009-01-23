@@ -136,7 +136,6 @@ public class ExportTaxaDistances extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
-	//	boolean usePrevious = args.parameterExists("usePrevious");
 
 		Taxa taxa = 	 getProject().chooseTaxa(getModuleWindow(), "Choose taxa block"); 
 		if (taxa==null) 
@@ -172,9 +171,11 @@ public class ExportTaxaDistances extends FileInterpreterI {
 			}
 		}
 		*/
-		if (!distanceTask.getDistanceOptions())
+		if (!distanceTask.getDistanceOptions()) {
+			fireEmployee(distanceTask);
+			distanceTask=null;
 			return false;
-
+		}
 		TaxaDistance distances = distanceTask.getTaxaDistance(taxa);
 		
 		String path = getPathForExport(arguments, suggested, dir, fn);
@@ -193,10 +194,12 @@ public class ExportTaxaDistances extends FileInterpreterI {
 					f.writeLine(line.toString());
 				}
 				f.closeWriting();
+				fireEmployee(distanceTask);
 				distanceTask=null;
 				return true;
 			}
 		}
+		fireEmployee(distanceTask);
 		distanceTask=null;
 		return false;
 	}
