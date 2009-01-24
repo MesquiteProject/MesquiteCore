@@ -64,8 +64,9 @@ import org.dom4j.Element;
  * 			If updateOnly is true, then Mesquite will give notification only once.
  * 			If updateOnly is critical, then Mesquite will continue to give notification on each startup as long as original package being updated remains installed and critical update is not yet installed
  * 
- * Zip files must be prepared properly such that when unzipped they yield directly the directory stucture desired.  Zip files made by ZipIt on OS X do not work.  Installer can perform
- * the zipping to ensure the zip files will work.  To enable this, select Debug Mode in File>Defaults and restart Mesquite.  Then, select File>Zip.
+ * Zip files must be prepared properly such that when unzipped they yield directly the directory stucture desired.  Zip files made by ZipIt on OS X do not work.  
+ * Installer can perform the zipping to ensure the zip files will work.  To enable this, select Debug Mode in File>Defaults and restart Mesquite.  
+ * Then, select File>Zip Folder or Zip File.
  * 
  * 
  * todo:

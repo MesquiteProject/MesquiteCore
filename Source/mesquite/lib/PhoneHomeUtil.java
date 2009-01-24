@@ -179,190 +179,194 @@ public class PhoneHomeUtil {
 			return mmi.getVersionInt();
 	}
 	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int mesquiteVersionThisNoticeisFor, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberAtLeast, int forBuildNumberExactly, ListableVector v) {
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int mesquiteVersionThisNoticeisFor, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberAtLeast, int forBuildNumberAtMost, int forBuildNumberExactly, ListableVector v) {
 		boolean pleaseDeleteFromUpdates = false;
-		if (MesquiteInteger.isCombinable(mesquiteVersionThisNoticeisFor)){
-			if (MesquiteInteger.isCombinable(noticeNumber)){
+		if (!MesquiteInteger.isCombinable(mesquiteVersionThisNoticeisFor))
+			mesquiteVersionThisNoticeisFor = MesquiteInteger.infinite;
+		if (MesquiteInteger.isCombinable(noticeNumber)){
 
-				boolean appliesToOSVersion = true;
-				if (osVector!=null) {
-					appliesToOSVersion=false;
-					for (int i=0; i<osVector.size() && !appliesToOSVersion; i++) {
-						String [] osStrings = (String[])osVector.get(i);
-						boolean osMatches =(StringUtil.blank(osStrings[OS])|| System.getProperty("os.name").startsWith(osStrings[OS]));
-						boolean osVersionMatches =(StringUtil.blank(osStrings[OSVERSION])|| System.getProperty("os.version").startsWith(osStrings[OSVERSION]));
-						boolean javaMatches =(StringUtil.blank(osStrings[JAVAVERSION])|| MesquiteTrunk.getJavaVersionAsString().startsWith(osStrings[JAVAVERSION]));
-						if (osMatches && osVersionMatches && javaMatches) {
-							appliesToOSVersion=true;
-						}
+			boolean appliesToOSVersion = true;
+			if (osVector!=null) {
+				appliesToOSVersion=false;
+				for (int i=0; i<osVector.size() && !appliesToOSVersion; i++) {
+					String [] osStrings = (String[])osVector.get(i);
+					boolean osMatches =(StringUtil.blank(osStrings[OS])|| System.getProperty("os.name").startsWith(osStrings[OS]));
+					boolean osVersionMatches =(StringUtil.blank(osStrings[OSVERSION])|| System.getProperty("os.version").startsWith(osStrings[OSVERSION]));
+					boolean javaMatches =(StringUtil.blank(osStrings[JAVAVERSION])|| MesquiteTrunk.getJavaVersionAsString().startsWith(osStrings[JAVAVERSION]));
+					if (osMatches && osVersionMatches && javaMatches) {
+						appliesToOSVersion=true;
 					}
 				}
+			}
 
-				boolean appliesToBuild = true;
+			boolean appliesToBuild = true;
 
-				if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberExactly)) {
-					appliesToBuild =  forBuildNumberExactly == MesquiteModule.getBuildNumber();
+			if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberExactly)) {
+				appliesToBuild =  appliesToBuild && (forBuildNumberExactly == MesquiteModule.getBuildNumber());
+			}
+			if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberAtLeast)) {  //notices must simply be for this or later version
+				appliesToBuild =  appliesToBuild && (forBuildNumberAtLeast <= MesquiteModule.getBuildNumber());
+			}
+			if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberAtMost)) {  //notices must simply be for this or later version
+				appliesToBuild =  appliesToBuild && (forBuildNumberAtMost >= MesquiteModule.getBuildNumber());
+			}
+
+			//suppose Mesquite is version 2. 01
+			int currentMesquiteVersion = getVersion(mmi);
+
+			//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
+			boolean critical = false;
+			boolean appearsToNeedInstallation = false;
+			if (noticeType != null && noticeType.equalsIgnoreCase("update")){
+				MesquiteString uniqueLocation = (MesquiteString)v.getElement("uniqueLocation");
+				MesquiteString identity = (MesquiteString)v.getElement("identity");
+				MesquiteString updateVersion = (MesquiteString)v.getElement("updateVersion");
+				if (uniqueLocation != null)
+					appearsToNeedInstallation = !MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + uniqueLocation.getValue());
+
+				MesquiteString updateOnly = (MesquiteString)v.getElement("updateOnly");
+				if (updateOnly != null && !appearsToNeedInstallation && "critical".equalsIgnoreCase(updateOnly.getValue()) && identity != null && alreadyInReceipts(identity.getValue(), "0") && !alreadyInReceipts(identity.getValue(), updateVersion.getValue()))  
+					critical = true;
+				else if (updateOnly != null && !"false".equalsIgnoreCase(updateOnly.getValue()) && appearsToNeedInstallation)
+					pleaseDeleteFromUpdates = true;
+			}
+			//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
+
+			//notice assumed to have been seen before if its version number is less than current
+			boolean seenBefore = mesquiteVersionThisNoticeisFor < currentMesquiteVersion;  //e.g., notice is version 2.0
+
+			//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
+			seenBefore = seenBefore || (mesquiteVersionThisNoticeisFor ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
+
+			//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
+			seenBefore = seenBefore || (currentMesquiteVersion<mesquiteVersionThisNoticeisFor && lastVersionNoticed == mesquiteVersionThisNoticeisFor && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
+
+			//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
+			seenBefore = seenBefore || (currentMesquiteVersion<mesquiteVersionThisNoticeisFor && lastVersionNoticed> mesquiteVersionThisNoticeisFor);  //e.g., notice is 2.02; 2.03 notices previously read
+			boolean javaInsufficient = false;
+			boolean requirementsNotMet = false;
+			if (v != null){
+				MesquiteString java = (MesquiteString)v.getElement("java");
+				MesquiteString requiredPath = (MesquiteString)v.getElement("requiredPath");
+				if (java != null){
+					double jV = MesquiteDouble.fromString(java.getValue(), new MesquiteInteger(0));
+					if (MesquiteTrunk.isJavaVersionLessThan(jV))
+						javaInsufficient = true;
 				}
-				else if ((mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer")) && MesquiteInteger.isCombinable(forBuildNumberAtLeast)) {  //notices must simply be for this or later version
-					appliesToBuild = forBuildNumberAtLeast < MesquiteModule.getBuildNumber();
+				if (requiredPath != null && !StringUtil.blank(requiredPath.getValue())){
+					String requiredP = requiredPath.getValue();
+					if (!MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + requiredP)){
+						requirementsNotMet = true;
+					}
 				}
+			}
 
-				//suppose Mesquite is version 2. 01
-				int currentMesquiteVersion = getVersion(mmi);
-
+			// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
+			if ((!seenBefore || critical) && appliesToOSVersion && appliesToBuild){  //relevant
+				boolean skip = false;
+				if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
+					//notices.append( countNotices.toString() + ". " + message + "<hr>\n");
+					notices.append(message + "<hr>\n");
+					countNotices.increment();
+				}
 				//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
-				boolean critical = false;
-				boolean appearsToNeedInstallation = false;
-				if (noticeType != null && noticeType.equalsIgnoreCase("update")){
-					MesquiteString uniqueLocation = (MesquiteString)v.getElement("uniqueLocation");
-					MesquiteString identity = (MesquiteString)v.getElement("identity");
-					MesquiteString updateVersion = (MesquiteString)v.getElement("updateVersion");
-					if (uniqueLocation != null)
-						appearsToNeedInstallation = !MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + uniqueLocation.getValue());
-
-					MesquiteString updateOnly = (MesquiteString)v.getElement("updateOnly");
-					if (updateOnly != null && !appearsToNeedInstallation && "critical".equalsIgnoreCase(updateOnly.getValue()) && identity != null && alreadyInReceipts(identity.getValue(), "0") && !alreadyInReceipts(identity.getValue(), updateVersion.getValue()))  
-						critical = true;
-					else if (updateOnly != null && !"false".equalsIgnoreCase(updateOnly.getValue()) && appearsToNeedInstallation)
-						pleaseDeleteFromUpdates = true;
-				}
-				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
-
-				//notice assumed to have been seen before if its version number is less than current
-				boolean seenBefore = mesquiteVersionThisNoticeisFor < currentMesquiteVersion;  //e.g., notice is version 2.0
-
-				//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
-				seenBefore = seenBefore || (mesquiteVersionThisNoticeisFor ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
-
-				//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
-				seenBefore = seenBefore || (currentMesquiteVersion<mesquiteVersionThisNoticeisFor && lastVersionNoticed == mesquiteVersionThisNoticeisFor && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
-
-				//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
-				seenBefore = seenBefore || (currentMesquiteVersion<mesquiteVersionThisNoticeisFor && lastVersionNoticed> mesquiteVersionThisNoticeisFor);  //e.g., notice is 2.02; 2.03 notices previously read
-				boolean javaInsufficient = false;
-				boolean requirementsNotMet = false;
-				if (v != null){
-					MesquiteString java = (MesquiteString)v.getElement("java");
-					MesquiteString requiredPath = (MesquiteString)v.getElement("requiredPath");
-					if (java != null){
-						double jV = MesquiteDouble.fromString(java.getValue(), new MesquiteInteger(0));
-						if (MesquiteTrunk.isJavaVersionLessThan(jV))
-							javaInsufficient = true;
-					}
-					if (requiredPath != null && !StringUtil.blank(requiredPath.getValue())){
-						String requiredP = requiredPath.getValue();
-						if (!MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + requiredP)){
-							requirementsNotMet = true;
-						}
-					}
-				}
-
-				// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
-				if ((!seenBefore || critical) && appliesToOSVersion && appliesToBuild){  //relevant
-					boolean skip = false;
-					if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
-						//notices.append( countNotices.toString() + ". " + message + "<hr>\n");
-						notices.append(message + "<hr>\n");
-						countNotices.increment();
-					}
-					//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
-					else if (noticeType != null && noticeType.equalsIgnoreCase("update")){
-						if (v != null){
-							MesquiteString java = (MesquiteString)v.getElement("java");
-							MesquiteString requiredName = (MesquiteString)v.getElement("requires");
-							MesquiteString requiredPath = (MesquiteString)v.getElement("requiredPath");
-							MesquiteString updateOnly = (MesquiteString)v.getElement("updateOnly");
-							MesquiteString updateVersion = (MesquiteString)v.getElement("updateVersion");
-							MesquiteString identity = (MesquiteString)v.getElement("identity");
-							if (java != null){
-								double jV = MesquiteDouble.fromString(java.getValue(), new MesquiteInteger(0));
-								if (MesquiteTrunk.isJavaVersionLessThan(jV)){
-									javaInsufficient = true;
-									if (appearsToNeedInstallation || (identity != null && !alreadyInReceipts(identity.getValue(), "0")))  //this package is not already installed in some form									
-										skip = true;
-								}
-							}
-							if (requiredPath != null && !StringUtil.blank(requiredPath.getValue())){
-								String requiredP = requiredPath.getValue();
-								if (!MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + requiredP)){
-									requirementsNotMet = true;
-								}
-							}
-							if (!javaInsufficient && updateOnly != null && !"false".equalsIgnoreCase(updateOnly.getValue())){  //update only tag is active
+				else if (noticeType != null && noticeType.equalsIgnoreCase("update")){
+					if (v != null){
+						MesquiteString java = (MesquiteString)v.getElement("java");
+						MesquiteString requiredName = (MesquiteString)v.getElement("requires");
+						MesquiteString requiredPath = (MesquiteString)v.getElement("requiredPath");
+						MesquiteString updateOnly = (MesquiteString)v.getElement("updateOnly");
+						MesquiteString updateVersion = (MesquiteString)v.getElement("updateVersion");
+						MesquiteString identity = (MesquiteString)v.getElement("identity");
+						if (java != null){
+							double jV = MesquiteDouble.fromString(java.getValue(), new MesquiteInteger(0));
+							if (MesquiteTrunk.isJavaVersionLessThan(jV)){
+								javaInsufficient = true;
 								if (appearsToNeedInstallation || (identity != null && !alreadyInReceipts(identity.getValue(), "0")))  //this package is not already installed in some form									
 									skip = true;
 							}
-							if (!skip){
-								MesquiteString packageName = (MesquiteString)v.getElement("packageName");
-								MesquiteString explanation = (MesquiteString)v.getElement("explanation");
-								MesquiteString uniqueID = (MesquiteString)v.getElement("uniqueID");
-								if (requirementsNotMet && requiredName != null){
+						}
+						if (requiredPath != null && !StringUtil.blank(requiredPath.getValue())){
+							String requiredP = requiredPath.getValue();
+							if (!MesquiteFile.fileOrDirectoryExists(MesquiteTrunk.getRootPath() + requiredP)){
+								requirementsNotMet = true;
+							}
+						}
+						if (!javaInsufficient && updateOnly != null && !"false".equalsIgnoreCase(updateOnly.getValue())){  //update only tag is active
+							if (appearsToNeedInstallation || (identity != null && !alreadyInReceipts(identity.getValue(), "0")))  //this package is not already installed in some form									
+								skip = true;
+						}
+						if (!skip){
+							MesquiteString packageName = (MesquiteString)v.getElement("packageName");
+							MesquiteString explanation = (MesquiteString)v.getElement("explanation");
+							MesquiteString uniqueID = (MesquiteString)v.getElement("uniqueID");
+							if (requirementsNotMet && requiredName != null){
+								notices.append("<h2>Available for installation: " + packageName + "</h2>");
+								notices.append("HOWEVER, this package requires " + requiredName.getValue() + ", which apparently is not installed.  If you install this other package, you may install " + packageName + " later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
+								pleaseDeleteFromUpdates = true;
+								countNotices.increment();
+							}
+							else if (javaInsufficient){
+								notices.append("<h2>Available for installation: " + packageName + "</h2>");
+								notices.append("HOWEVER, your version of Java is too old for this package.  You need Java version " + java.getValue() + ".  If you install a sufficiently recent version of java, you may install this package later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
+								pleaseDeleteFromUpdates = true;
+								countNotices.increment();
+							}
+							else {
+								if (critical)
+									notices.append("<h2>CRITICAL UPDATE Available for installation: " + packageName + "</h2>");
+								else
 									notices.append("<h2>Available for installation: " + packageName + "</h2>");
-									notices.append("HOWEVER, this package requires " + requiredName.getValue() + ", which apparently is not installed.  If you install this other package, you may install " + packageName + " later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
-									pleaseDeleteFromUpdates = true;
-									countNotices.increment();
-								}
-								else if (javaInsufficient){
-									notices.append("<h2>Available for installation: " + packageName + "</h2>");
-									notices.append("HOWEVER, your version of Java is too old for this package.  You need Java version " + java.getValue() + ".  If you install a sufficiently recent version of java, you may install this package later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
-									pleaseDeleteFromUpdates = true;
-									countNotices.increment();
+								notices.append(explanation);
+								String installHTML = null;
+								if (!MesquiteFile.canWrite(MesquiteTrunk.getRootPath() + "settings")){
+									installHTML = ("<p>HOWEVER, you cannot install this update because you do not have privileges to write into the Mesquite_Folder." +
+									"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 								}
 								else {
-									if (critical)
-										notices.append("<h2>CRITICAL UPDATE Available for installation: " + packageName + "</h2>");
-									else
-										notices.append("<h2>Available for installation: " + packageName + "</h2>");
-									notices.append(explanation);
-									String installHTML = null;
-									if (!MesquiteFile.canWrite(MesquiteTrunk.getRootPath() + "settings")){
-										installHTML = ("<p>HOWEVER, you cannot install this update because you do not have privileges to write into the Mesquite_Folder." +
-										"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
-									}
-									else {
-										installHTML = ("<p><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"" + MesquiteFile.massageFilePathToURL(MesquiteTrunk.mesquiteTrunk.getRootPath()+"images" + MesquiteFile.fileSeparator + "download.gif") + "\"> Install</a>" +
-										"&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
-									}
-
-									notices.append(installHTML);
-									if (!appearsToNeedInstallation) notices.append("<p><b>Note:</b> A version of this package may already be installed.\n");
-									notices.append("<hr>\n");
-									countNotices.increment();
+									installHTML = ("<p><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"" + MesquiteFile.massageFilePathToURL(MesquiteTrunk.mesquiteTrunk.getRootPath()+"images" + MesquiteFile.fileSeparator + "download.gif") + "\"> Install</a>" +
+									"&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 								}
+
+								notices.append(installHTML);
+								if (!appearsToNeedInstallation) notices.append("<p><b>Note:</b> A version of this package may already be installed.\n");
+								notices.append("<hr>\n");
+								countNotices.increment();
 							}
 						}
 					}
-					//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
-					else {
-						String fromWhom = null;
-						if (mmi.getModuleClass() == mesquite.Mesquite.class)
-							fromWhom = "Mesquite";
-						else if (!StringUtil.blank(mmi.getPackageName()))
-							fromWhom = mmi.getPackageName();
-						else
-							fromWhom = mmi.getName();
-						MesquiteMessage.println("\n\nNOTICE from " + fromWhom + ": " + message + "\n");
-					}
-					if (!skip){
-						if (mesquiteVersionThisNoticeisFor ==  currentMesquiteVersion){  //version of note is this version of Mesquite
-							if (phoneHomeRecord.getLastNoticeForMyVersion() < noticeNumber)  // this is a later notice than we had seen before; record it
-								phoneHomeRecord.setLastNoticeForMyVersion(noticeNumber);
-							if (mesquiteVersionThisNoticeisFor ==  phoneHomeRecord.getLastVersionNoticed() && noticeNumber >phoneHomeRecord.getLastNotice())
-								phoneHomeRecord.setLastNotice(noticeNumber);
-						}
-						if (mesquiteVersionThisNoticeisFor >=  phoneHomeRecord.getLastVersionNoticed()){
-							phoneHomeRecord.setLastVersionNoticed(mesquiteVersionThisNoticeisFor);
-							if (noticeNumber >phoneHomeRecord. getLastNotice())
-								phoneHomeRecord.setLastNotice(noticeNumber);
-						}
-					}
-
 				}
-				if (javaInsufficient ||  requirementsNotMet)
-					pleaseDeleteFromUpdates = true;
-			}
+				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
+				else {
+					String fromWhom = null;
+					if (mmi.getModuleClass() == mesquite.Mesquite.class)
+						fromWhom = "Mesquite";
+					else if (!StringUtil.blank(mmi.getPackageName()))
+						fromWhom = mmi.getPackageName();
+					else
+						fromWhom = mmi.getName();
+					MesquiteMessage.println("\n\nNOTICE from " + fromWhom + ": " + message + "\n");
+				}
+				if (!skip){
+					if (mesquiteVersionThisNoticeisFor ==  currentMesquiteVersion){  //version of note is this version of Mesquite
+						if (phoneHomeRecord.getLastNoticeForMyVersion() < noticeNumber)  // this is a later notice than we had seen before; record it
+							phoneHomeRecord.setLastNoticeForMyVersion(noticeNumber);
+						if (mesquiteVersionThisNoticeisFor ==  phoneHomeRecord.getLastVersionNoticed() && noticeNumber >phoneHomeRecord.getLastNotice())
+							phoneHomeRecord.setLastNotice(noticeNumber);
+					}
+					if (mesquiteVersionThisNoticeisFor >=  phoneHomeRecord.getLastVersionNoticed()){
+						phoneHomeRecord.setLastVersionNoticed(mesquiteVersionThisNoticeisFor);
+						if (noticeNumber >phoneHomeRecord. getLastNotice())
+							phoneHomeRecord.setLastNotice(noticeNumber);
+					}
+				}
 
-		} //
+			}
+			if (javaInsufficient ||  requirementsNotMet)
+				pleaseDeleteFromUpdates = true;
+		}
+
+
 		if (pleaseDeleteFromUpdates)
 			updateRecords.removeElement(v);
 
@@ -405,6 +409,7 @@ public class PhoneHomeUtil {
 				int mesquiteVersionNoticeIsFor = MesquiteInteger.fromString(messageElement.elementText("forVersion"));    // notice is for this version and any previous version
 				int forBuildNumberExactly = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberExactly"));
 				int forBuildNumberAtLeast = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberAtLeast"));
+				int forBuildNumberAtMost = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberAtMost"));
 				int noticeNumber = MesquiteInteger.fromString(messageElement.elementText("noticeNumber"));
 				String messageType = messageElement.elementText("messageType");
 				String message = messageElement.elementText("message");
@@ -465,7 +470,7 @@ public class PhoneHomeUtil {
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 				// process other notice tags here if they are present
-				processSingleNotice(mmi, notices, countNotices, mesquiteVersionNoticeIsFor, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberAtLeast, forBuildNumberExactly, v);
+				processSingleNotice(mmi, notices, countNotices, mesquiteVersionNoticeIsFor, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberAtLeast, forBuildNumberAtMost, forBuildNumberExactly, v);
 
 			}
 			//INSTALLER: here go through updateRecords to figure out which are already installed, which not; which have newer versions already installed, etc.
