@@ -18,7 +18,7 @@
 				<exclude name="**/a*Intro/*.html"/>
 			</fileset>
 		</copy>
-		<echo message="going to copy and replace html files"/>
+		<echo message="About to copy and replace html files"/>
 		<copy todir="${mesquitefolder.dir}">
 			<fileset dir="${rsrcs.dir}">
 				<include name="**/*.html"/>				
@@ -33,7 +33,7 @@
 				<filter token="protectedURL" value="${closeBracket}"/>
 			</filterset>						
 		</copy>
-		<echo message="just checked html"/>
+		<echo message="About to copy jars folder contents"/>
 		<copy todir="${mesquitefolder.dir}/jars">
 			<fileset dir="${jars.dir}">
 				<include name="**/*"/>	
