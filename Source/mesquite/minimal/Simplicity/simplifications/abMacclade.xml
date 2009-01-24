@@ -3,7 +3,7 @@
 <mesquite>
   <simplicitySettings>
     <version>1</version>
-    <name>MacClade</name>
+    <name>MacClade-like</name>
     <hiddenPackages>
       <package>
         <name>mesquite.assoc</name>
