@@ -171,7 +171,7 @@
 		<property name="windowssrc" location="${dist.dir}/mesquiteSource.zip" />
 		<property name="macsrc" location="${dist.dir}/mesquiteSource.sit" />
 		
-		<property name="buildfiles.dir" location="buildfiles"/>
+		<property name="buildfiles.dir" location="distributionBuildFiles"/>
 
 		<property name="workspacecontaining.dir" location="${dist.dir}/mesquiteworkspacedist"/>
 		<property name="workspacedist.dir" location="${workspacecontaining.dir}/MesquiteWorkspace/" />
