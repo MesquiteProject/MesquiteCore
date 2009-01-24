@@ -181,7 +181,6 @@ public class PhoneHomeUtil {
 	/*.................................................................................................................*/
 	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int mesquiteVersionThisNoticeisFor, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberAtLeast, int forBuildNumberExactly, ListableVector v) {
 		boolean pleaseDeleteFromUpdates = false;
-Debugg.println("forVersion: " + mesquiteVersionThisNoticeisFor);
 		if (MesquiteInteger.isCombinable(mesquiteVersionThisNoticeisFor)){
 			if (MesquiteInteger.isCombinable(noticeNumber)){
 
