@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../" default="compile" name="Mesquite">
+	<target depends="packagedist,packagesrc" name="packagedistandsrc" description="packages source and binary distributions"/>
+	<target depends="compile" name="packagedist" description="Copies the appropriate files and creates distribution .tgz and .sit">
+		<copy todir="${mesquitefolder.dir}">
+			<fileset dir="${rsrcs.dir}">
+				<exclude name="${osxdirpath}" />
+				<exclude name="${osxdirpath500M}" />				
+				<exclude name="${osxdirpath1G}" />				
+				<exclude name="**/*.java"/>
+				<exclude name="**/*.html"/>
+			</fileset>
+			<fileset dir="${srcpath}">
+				<include name="**/*" />
+				<exclude name="**/*.java" />
+				<exclude name="**/Notes/" />
+				<exclude name="**/notes/" />				
+				<exclude name="**/a*Intro/*.html"/>
+			</fileset>
+		</copy>
+		<echo message="going to copy and replace html files"/>
+		<copy todir="${mesquitefolder.dir}">
+			<fileset dir="${rsrcs.dir}">
+				<include name="**/*.html"/>				
+			</fileset>
+			<fileset dir="${srcpath}">
+				<include name="**/a*Intro/*.html"/>
+			</fileset>
+			<filterset begintoken="${openBracket}" endtoken="${closeBracket}">
+				<filter token="protectedURL" value="${openBracket}"/>
+			</filterset>			
+			<filterset begintoken="${openBracket}/" endtoken="${closeBracket}">
+				<filter token="protectedURL" value="${closeBracket}"/>
+			</filterset>						
+		</copy>
+		<echo message="just checked html"/>
+		<copy todir="${mesquitefolder.dir}/jars">
+			<fileset dir="${jars.dir}">
+				<include name="**/*"/>	
+				<exclude name="AppleJavaExtensions.jar"/>
+				<exclude name="MRJToolkitStubs.zip"/>				
+			</fileset>
+		</copy>
+		
+		<copy todir="${mesquitefolder.dir}">
+			<fileset dir="${rsrcs.dir}">
+				<include name="${scriptfile}"/>
+			</fileset>
+		</copy>
+		<!-- package up the linux dist before we copy the mac stuff -->
+		<tar destfile="${linuxbin.tgz}" compression="gzip">	
+			<tarfileset dir="${release.dir}" mode="755"/>
+		</tar>
+		<!-- delete the script file before we package up the windows or mac distros -->
+		<delete>
+			<fileset dir="${mesquitefolder.dir}">
+				<include name="${scriptfile}"/>
+			</fileset>
+		</delete>
+		<delete>
+			<fileset dir="${mesquitefolder.dir}">
+				<include name="${macscriptfile}"/>
+			</fileset>
+		</delete>
+		
+		<antcall target="callwindowsinstaller"/>
+		
+		<copy todir="${mesquitefolder.dir}">
+			<fileset dir="${rsrcs.dir}">
+				<include name="${osxdirpath}"/>
+				<include name="${osxdirpath500M}"/>				
+				<include name="${osxdirpath1G}"/>				
+			</fileset>
+		</copy>
+		
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirname}/Contents/MacOS/Mesquite'"/>
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir500Mname}/Contents/MacOS/Mesquite'"/>		
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1Gname}/Contents/MacOS/Mesquite'"/>		
+		
+		<!-- create .dmg -->
+		<exec executable="hdiutil" failonerror="false" os="Mac OS X">
+			<arg value="create" />
+			<arg value="-srcfolder" />
+			<arg value="${release.dir}" />
+			<arg value="-fs" />
+			<arg value="HFS+" />
+			<arg value="${dmgbin}" />
+		</exec>
+		<!--
+		<exec executable="stuff" failifexecutionfails="false" failonerror="false" os="Mac OS X">
+			<arg line="-q -n='${sitbin}' -f=sit5 '${mesquitefolder.dir}'"/>
+		</exec>
+		-->
+	</target>
+	
+	<target depends="init" name="javadoc">
+		<javadoc destdir="${javadoc.dir}" doctitle="Mesquite Package Overview">
+			<packageset dir="${src.dir}">
+				<exclude name="**/corejava*"/>
+				<exclude name="**/edu*/**"/>				
+				<include name="**/mesquite/**/lib/**"/>
+				<include name="**/mesquite/lib/"/>				
+			</packageset>
+		</javadoc>
+	</target>	
+	<target depends="init" name="packagesrc">
+		<description>packages up the source distributions</description>
+
+		<mkdir dir="${dist.dir}"/>		
+		<mkdir dir="${workspacecontaining.dir}"/>
+		<mkdir dir="${workspacedist.dir}"/>
+		<mkdir dir="${workspaceproject.dir}"/>
+		<mkdir dir="${workspacejars.dir}"/>
+		<mkdir dir="${workspacesrc.dir}"/>
+		<mkdir dir="${workspacelibsrc.dir}"/>		
+		<copy todir="${workspaceproject.dir}">
+			<fileset dir=".">
+				<include name=".project"/>
+				<include name=".settings/"/>
+				<include name="${mesquitefoldername}"/>
+				<include name="${rsrcs}"/>
+			</fileset>
+		</copy>
+		<copy todir="${workspacejars.dir}">
+			<fileset dir="${jars.dir}">
+				<include name="*"/>
+			</fileset>
+		</copy>
+		<copy todir="${workspaceproject.dir}/${rsrcs}">
+			<fileset dir="${rsrcs}">
+				<include name="**/*"/>
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		<copy todir="${workspacesrc.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java"/>
+				<include name="**/*.gif"/>
+			</fileset>
+			<filterset refid="mesquitetokens.filterset" />
+		</copy>
+		<copy todir="${workspacelibsrc.dir}">
+			<fileset dir="${librarysource.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<!-- ANDREW: EXCLUDED BECAUSE ABSENT copy file="${workspacedistclasspath}" tofile="${workspaceproject.dir}/.classpath"/ -->
+		<zip destfile="${windowssrc}">
+			<fileset dir="${workspacedist.dir}" />
+		</zip>
+		<tar destfile="${linuxsrc}" compression="gzip" basedir="${workspacedist.dir}" />
+	</target>	
+		
+	<target name="init"> 
+		<property environment="env" />
+		<property name="dist.dir" location="../dist" />
+		<property name="mesquite.version" value="2.6PRERELEASE" />
+		<property name="release.dir" location="${dist.dir}/Mesquite ${mesquite.version}" />
+		<property name="mesquitefoldername" value="Mesquite_Folder"/>
+		<property name="mesquitefolder.dir" location="${release.dir}/${mesquitefoldername}" />
+		<property name="srcpath" value="Source" />
+		<property name="src.dir" location="${srcpath}" />
+		<property name="mesquitesrccontainingdir" location="${dist.dir}/Source" />
+		<property name="mesquitesrc" location="${mesquitesrccontainingdir}/mesquiteSource" />
+		<property name="rsrcs" value="Resources"/> 
+		<property name="rsrcs.dir" location="${rsrcs}" />
+		<property name="linuxbin.tgz" location="${dist.dir}/mesquite.tgz" />
+		<property name="dmgbin" location="${dist.dir}/mesquite.dmg" />
+		<property name="sitbin" location="${dist.dir}/mesquite.sit" />
+		<property name="linuxsrc" location="${dist.dir}/mesquiteSource.tgz" />
+		<property name="windowssrc" location="${dist.dir}/mesquiteSource.zip" />
+		<property name="macsrc" location="${dist.dir}/mesquiteSource.sit" />
+		
+		<property name="buildfiles.dir" location="buildfiles"/>
+
+		<property name="workspacecontaining.dir" location="${dist.dir}/mesquiteworkspacedist"/>
+		<property name="workspacedist.dir" location="${workspacecontaining.dir}/MesquiteWorkspace/" />
+		<property name="workspaceproject.dir" location="${workspacedist.dir}/MesquiteProject/" />
+		<property name="workspacejars.dir" location="${workspaceproject.dir}/jars"/>
+		<property name="workspacesrc.dir" location="${workspaceproject.dir}/Source"/>
+		<property name="workspacelibsrc.dir" location="${workspaceproject.dir}/LibrarySource"/>
+		<property name="workspacedistclasspath" location="${buildfiles.dir}/.classpath.dist"/>
+		
+		<property name="installer.dir" location="${basedir}/../mesquiteinstaller"/>     
+		<property name="librarysource.dir" location="LibrarySource"/>
+
+		<!-- assorted mac folders and files that need to be excluded for linux builds -->
+		<property name="osxdirname" value="Mesquite.app" />		
+		<property name="osxdirpath" value="**/${osxdirname}/" />
+		<property name="osxdir500Mname" value="Mesquite (500MB).app" />				
+		<property name="osxdirpath500M" value="**/${osxdir500Mname}/" />		
+		<property name="osxdir1Gname" value="Mesquite (1GB).app" />				
+		<property name="osxdirpath1G" value="**/${osxdir1Gname}/" />		
+
+		<!-- server destination locations -->
+		<property file="${buildfiles.dir}/serverinfo.properties" />
+		<property name="hostprefix" value="${username}:${password}@${host}:" />
+		<!-- The directory where the binary distributions are stored -->
+		<property name="bininstalldir" value="${hostprefix}/mesquite_install_folder/" />
+		<!-- The directory where the source distributions are stored -->
+		<property name="srcinstalldir" value="${hostprefix}/mesquite_source_folder/" />
+		<!-- The path to Mesquite_Folder on the server -->
+		<property name="mesquitefolderinstalldir" value="/Mesquite_Folder/" />
+
+
+		<property name="sftpjar" value="maverick-ant.jar"/>
+		<property name="jars.dir" location="jars"/>
+		
+		<property name="javadoc.dir" location="${dist.dir}/javadoc"/>
+		<property name="scriptfile" value="run_mesquite.sh"/>
+		<property name="macscriptfile" value="Run_Mesquite_OSX.command"/>
+		
+		<property file="${buildfiles.dir}/${os.name}.properties"/>
+		<property file="${buildfiles.dir}/build.properties"/>
+		
+		<path id="compile.classpath" >
+			<fileset dir="${jars.dir}">
+				<include name="*.jar"/>
+				<include name="*.zip"/>
+			</fileset>
+		</path>
+		<tstamp>
+			<format property="year" pattern="yyyy" />
+		</tstamp>
+		<filterset id="mesquitetokens.filterset">
+			<filter token="MESQUITE_RELEASE_VERSION" value="${mesquite.version}" />
+			<!-- is this needed, or is the release date always the year? -->
+			<filter token="MESQUITE_RELEASE_DATE" value="${TODAY}" />
+			<filter token="MESQUITE_RELEASE_YEAR" value="${year}" />
+		</filterset>
+	</target>
+
+	<target depends="init" name="clean">
+		<description>Gets rid of all generated build files</description>
+		<delete>
+			<fileset dir="${src.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</delete>
+		<delete dir="${dist.dir}" />
+		<delete dir="${workspacecontaining.dir}" />
+		<delete file="${linuxbin.tgz}" />
+		<delete file="${dmgbin}" />
+		<delete file="${sitbin}" />
+		<delete file="${linuxsrc}" />
+		<delete file="${windowssrc}" />
+		<delete file="${macsrc}" />
+	</target>
+	<target depends="init,clean" name="compile">
+		<description>Compiles the mesquite source and sends the output to the dist directory</description>
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${mesquitefolder.dir}" />
+		<mkdir dir="${mesquitefolder.dir}/jars"/>
+		<javac debug="false" destdir="${mesquitefolder.dir}" srcdir="${srcpath}" target="1.4" source="1.4" nowarn="true" memorymaximumsize="500m" fork="true" memoryinitialsize="100m">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+	<target name="callwindowsinstaller"  if="windows">
+		<description>
+			Calls the windows installer build script.  This only executes if the machine executing the build
+			is running windows.
+		</description>
+        <!-- <ant dir="${installer.dir}" target="makensis" inheritAll="true" /> -->
+		<!-- after consulting the documentation for Ant, I found that inheritAll is true by default -->
+		<ant dir="${installer.dir}" target="makensis" />
+	</target>
+	<!--
+	<target depends="packagedist,packagesrc" name="deployfiles">
+		<description>Sends all of the generated files up to the server</description>		
+		<scp file="${linuxbin.tgz}" todir="${bininstalldir}" trust="true" failonerror="false"/>
+		<scp file="${sitbin}" todir="${bininstalldir}" trust="true" failonerror="false"/>
+		<scp file="${dmgbin}" todir="${bininstalldir}" trust="true" failonerror="false"/>
+		<scp file="${macsrc}" todir="${srcinstalldir}" trust="true" failonerror="false"/>
+		<scp file="${windowssrc}" todir="${srcinstalldir}" trust="true" failonerror="false"/>
+		<scp file="${linuxsrc}" todir="${srcinstalldir}" trust="true" failonerror="false"/>
+		<taskdef name="ssh" classname="com.sshtools.ant.Ssh" classpath="${buildfiles.dir}/${sftpjar}" />
+		<ssh host="${host}" username="${username}" password="${password}">
+			<exec cmd="rm -rf ${mesquitefolderinstalldir}" />
+			<exec cmd="mkdir ${mesquitefolderinstalldir}" />
+			<sftp action="put" remotedir="${mesquitefolderinstalldir}">
+				<fileset dir="${mesquitefolder.dir}" />
+			</sftp>
+		</ssh>
+	</target>
+	-->
+</project>
