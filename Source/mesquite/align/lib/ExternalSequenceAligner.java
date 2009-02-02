@@ -31,6 +31,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	String programPath;
 	SingleLineTextField programPathField =  null;
 	boolean preferencesSet = false;
+	boolean includeGaps = false;
 	String programOptions = "" ;
 	Random rng;
 	public static int runs = 0;
@@ -88,23 +89,26 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog queryFilesDialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		queryFilesDialog.addLabel(getProgramName() + " - File Locations & Options");
-		queryFilesDialog.appendToHelpString(getHelpString());
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel(getProgramName() + " - File Locations & Options");
+		dialog.appendToHelpString(getHelpString());
 
-		programPathField = queryFilesDialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
-		Button programBrowseButton = queryFilesDialog.addAListenedButton("Browse...",null, this);
+		programPathField = dialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
+		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
 
-		SingleLineTextField programOptionsField = queryFilesDialog.addTextField(getProgramName() + " options:", programOptions, 26, true);
+		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
 
-		queryFilesDialog.completeAndShowDialog(true);
+		SingleLineTextField programOptionsField = dialog.addTextField(getProgramName() + " options:", programOptions, 26, true);
+
+		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			programPath = programPathField.getText();
 			programOptions = programOptionsField.getText();
+			includeGaps = includeGapsCheckBox.getState();
 			storePreferences();
 		}
-		queryFilesDialog.dispose();
+		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
 
@@ -170,6 +174,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 
 			String s = "file = " + StringUtil.tokenize(fileName + ext) + " directory = " + StringUtil.tokenize(directoryPath) + " noTrees suppressAllGapTaxa";
+			if (includeGaps)
+				s+= " includeGaps";
 			//if (data.anySelected()) 
 			//	s += " writeOnlySelectedData";
 			s+= " usePrevious";
