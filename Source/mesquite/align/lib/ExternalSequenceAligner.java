@@ -214,6 +214,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		boolean success = false;
 		
+		logln("Exporting file for " + getProgramName());
 		if (taxaToAlign!=null)
 			success = saveExportFile(data, rootDir, fileName, taxaToAlign, firstSite, lastSite);
 		else if (!(firstTaxon==0 && lastTaxon==matrix.getNumTaxa())) {  // we are doing something other than all taxa.
@@ -226,6 +227,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			success = saveExportFile(data, rootDir, fileName, null, -1, -1);
 
 		if (!success) {
+			logln("File export failed");
 			data.setEditorInhibition(false);
 			return null;
 		}
@@ -246,10 +248,15 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 
-  
+		logln("Requesting the operating system to run " + getProgramName());
+		logln("Location of  " + getProgramName()+ ": " + getProgramPath());
+		MesquiteTimer timer = new MesquiteTimer();
+		timer.start();
+
 		 success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
 
 		if (success){
+			logln("Alignment completed in " + timer.timeSinceLastInSeconds() + " seconds");
 			FileCoordinator coord = getFileCoordinator();
 			MesquiteFile tempDataFile = null;
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
