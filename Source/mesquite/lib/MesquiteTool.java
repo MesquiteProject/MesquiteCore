@@ -106,7 +106,7 @@ public class MesquiteTool implements Listable, Explainable, ImageOwner, KeyListe
 		if (oldEnabled!=enabled) {
 			if (getButton()!=null)
 				getButton().repaint();
-			if (!enabled && getPalette()!=null)  //turning off
+			if (!enabled && getPalette()!=null && getButton()!= null && getPalette().getCurrentTool()==this)  //turning off
 				getPalette().setToDefaultTool();
 		}
 	}
