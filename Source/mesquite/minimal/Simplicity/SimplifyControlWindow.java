@@ -791,13 +791,15 @@ class ModePanel extends Panel implements ItemListener {
 		Composite composite = ColorDistribution.getComposite(g);
 		if (InterfaceManager.isSimpleMode())
 			ColorDistribution.setTransparentGraphics(g,0.1f);
-		g.drawImage(power, 4, top  + 2, this);
+		if (power != null)
+			g.drawImage(power, 4, top  + 2, this);
 
 		ColorDistribution.setComposite(g,composite);
 
 		if (!InterfaceManager.isSimpleMode())
 			ColorDistribution.setTransparentGraphics(g,0.1f);
-		g.drawImage(simple, 4, top  + 22, this);
+		if (simple != null)
+			g.drawImage(simple, 4, top  + 22, this);
 
 		ColorDistribution.setComposite(g,composite);
 		g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
