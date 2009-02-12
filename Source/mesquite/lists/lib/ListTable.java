@@ -95,7 +95,7 @@ public class ListTable extends MesquiteTable {
 					}
 				*/
 				synchronizeRowSelection(((Associable)window.getCurrentObject()));
-				((Associable)window.getCurrentObject()).notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		 		repaintAll();
 	 		}
  		}
