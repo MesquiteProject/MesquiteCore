@@ -379,6 +379,8 @@ public class PhoneHomeUtil {
 
 	}
 	/*.................................................................................................................*/
+	public static boolean phoneHomeSuccessful = false;
+
 	public static String retrieveMessagesFromHome(MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
 		String url = mmi.getHomePhoneNumber();
 		if (StringUtil.blank(url))
@@ -386,11 +388,14 @@ public class PhoneHomeUtil {
 		String noticesFromHome = null;
 		try{
 			noticesFromHome = MesquiteFile.getURLContentsAsString(url, -1, false);
+			
 		} catch (Exception e) {
 			return null;
 		}
 		if (StringUtil.blank(noticesFromHome))
 			return null;
+		if (mmi.getModuleClass() == mesquite.Mesquite.class)
+			phoneHomeSuccessful = true;
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;
