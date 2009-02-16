@@ -98,7 +98,7 @@ public class UndoReference {
 	public void setUndoer(Undoer undoer) {
 		if (this.undoer!=null) {
 			for (int i=0; i<this.undoer.length; i++)
-				if (this.undoer[i]!=null)
+				if (this.undoer[i]!=null && undoer != this.undoer[i])
 				this.undoer[i].dispose();
 		}
 		this.undoer = new Undoer[] {undoer};
