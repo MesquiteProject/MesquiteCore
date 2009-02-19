@@ -21,6 +21,8 @@ public class PhoneHomeUtil {
 	static int OS = 0;
 	static int OSVERSION=1;
 	static int JAVAVERSION=2;
+	public static boolean phoneHomeSuccessful = false;
+	public static boolean suppressErrorReporting = false;
 
 	//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 	/*updating/install system.  See also INSTALL/UPDATE SYSTEM: below 
@@ -379,7 +381,6 @@ public class PhoneHomeUtil {
 
 	}
 	/*.................................................................................................................*/
-	public static boolean phoneHomeSuccessful = false;
 
 	public static String retrieveMessagesFromHome(MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
 		String url = mmi.getHomePhoneNumber();
