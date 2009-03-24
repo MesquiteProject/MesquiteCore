@@ -12,8 +12,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.Component;
-import java.awt.GridLayout;
+import java.awt.*;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -33,6 +32,7 @@ public class MesquiteTabbedPanel extends JPanel  {
 	public void addPanel(String title, boolean setAsAddPanel){
 		JPanel panel = new JPanel();
 		tabbedPane.addTab(title, panel);
+		//panel.add(new Checkbox("testing panel " + numPanels));
 		panel.setVisible(false);
 		if (setAsAddPanel && dialog!=null)
 			dialog.setAddJPanel(panel);

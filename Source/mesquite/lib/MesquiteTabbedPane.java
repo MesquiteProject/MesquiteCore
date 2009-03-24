@@ -9,11 +9,12 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import java.awt.*;
 
 
 public class MesquiteTabbedPane extends JTabbedPane {
@@ -22,11 +23,34 @@ public class MesquiteTabbedPane extends JTabbedPane {
 		super();
 		this.panel = panel;
 	}
+	
 	int count = 0;
-	public void setSelectedIndex(int i){
-		JPanel p = panel.getTabPanel(i);
-		if (p != null)
-			p.setVisible(false);
+	
+	public void setSelectedIndex2(int i){
+	
+		 int current = getSelectedIndex();
+		// Debugg.println("current index: " + current + ", i: " + i);
+		if (current>=0) {
+			JPanel p2 = panel.getTabPanel(current);
+			if (p2 != null)
+				p2.setVisible(false);
+		}
+
 		super.setSelectedIndex(i);
+
+
+		JPanel p = panel.getTabPanel(i);
+		//	setVisible(true);
+		if (p != null) {
+			p.setVisible(true);
+			Graphics g = p.getGraphics();
+			if (g!=null)
+				g.setClip(null);
+			p.invalidate();
+		}
+		invalidate();
+		//	try {Thread.sleep(20);} catch (Exception e) {}
+		//	Debugg.println("MesquiteTabbedPane.setSelectedIndex()");
+	//	super.setSelectedIndex(i);
 	}
 }
