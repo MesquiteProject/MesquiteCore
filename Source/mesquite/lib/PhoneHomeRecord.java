@@ -74,7 +74,8 @@ public class PhoneHomeRecord implements Listable {
 
 
 	public void setLastVersionNoticed(int lastVersionNoticed) {
-		this.lastVersionNoticed = lastVersionNoticed;
+		if (MesquiteInteger.isCombinable(lastVersionNoticed))
+			this.lastVersionNoticed = lastVersionNoticed;
 	}
 
 
