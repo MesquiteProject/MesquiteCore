@@ -1922,7 +1922,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 							setRowHeight(i, height + MesquiteModule.textEdgeCompensationHeight);
 							doReset = true;
 						}
-						resetTableSize(false);
+						///resetTableSize(false);  why is this here???  Debugg.println may 09 WPM
 					}
 					oldF = f;
 				}
