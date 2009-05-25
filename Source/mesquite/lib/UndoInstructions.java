@@ -283,7 +283,7 @@ public class UndoInstructions implements Undoer {
 
 	public Undoer undo() {
 		String[] oldNamesList;
-
+if (oldState != null) Debugg.println("undo: " + changeClass + " oldState " + oldState.getClass());
 		switch (changeClass) {
 
 		case SINGLEDATACELL:
@@ -291,6 +291,7 @@ public class UndoInstructions implements Undoer {
 				table.offAllEditingSelection();
 				table.setFocusedCell(icStart, itStart, true);
 			}
+		
 			if (data instanceof CategoricalData)  
 				data.setState(icStart, itStart, (CategoricalState) oldState); // receive
 			else
@@ -399,7 +400,7 @@ public class UndoInstructions implements Undoer {
 			assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 			return null;		
 		}
-
+		
 		return null;
 	}
 
