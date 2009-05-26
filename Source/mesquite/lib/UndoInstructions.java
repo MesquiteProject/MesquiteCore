@@ -283,7 +283,7 @@ public class UndoInstructions implements Undoer {
 
 	public Undoer undo() {
 		String[] oldNamesList;
-if (oldState != null) Debugg.println("undo: " + changeClass + " oldState " + oldState.getClass());
+
 		switch (changeClass) {
 
 		case SINGLEDATACELL:
