@@ -177,6 +177,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		treeParser =  new Parser();
 		line = line.trim();
 		treeParser.setQuoteCharacter((char)0);
+		treeParser.setPunctuationString("():[];,@+");
 		String lowerLine = line.toLowerCase();
 		int treadpos = lowerLine.indexOf("tread");   // check to see it is at start
 		if (treadpos>=0){
@@ -212,8 +213,9 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 				parser.setString(line);
 				//parser.setPosition(0);
 			}	
-			if (StringUtil.blank(line))
+			if (StringUtil.blank(line)) {
 				return null;
+			}
 			treeNumber++;
 			if (progIndicator!=null) {
 				progIndicator.setCurrentValue(totalLength-line.length());
@@ -1111,6 +1113,8 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 								long newSet = newData.fromChar(c);
 								set += newSet;
 								c=parser.nextDarkChar();
+						//		if (c=='[')  give warning
+									
 							}
 							newData.setState(ic, it, set);
 						}
