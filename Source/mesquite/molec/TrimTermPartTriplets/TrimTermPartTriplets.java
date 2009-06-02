@@ -42,7 +42,7 @@ public class TrimTermPartTriplets extends DNADataAlterer {
 		boolean changed = false;
 		
 		for (int it = 0; it<data.getNumTaxa(); it++)
-			if (table.isRowSelected(it)) {
+			if (table.wholeRowSelectedAnyWay(it)) {
 				for (int ic = 0; ic<data.getNumChars(); ic++){  // check start
 					if (!data.isInapplicable(ic, it)) {
 						if (data.getCodonPosition(ic)==2) {

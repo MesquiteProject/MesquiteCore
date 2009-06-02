@@ -4669,12 +4669,25 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
+	/** returns true if all cells are selected within a row. */
+	public boolean allCellsSelectedInRow(int row) {
+		if (row == -1)
+			return false;
+
+		if (rowLegal(row)) {
+			for (int i = 0; i < numColumnsTotal; i++)
+				if (!isCellSelectedAnyWay(i, row))
+					return false;
+		}
+		return true;
+	}
+
+	/* ............................................................................................................... */
 	/** returns whether or not all cells are selected in a row. */
 	public boolean wholeRowSelectedAnyWay(int row) {
 		if (isRowSelected(row))
 			return true;
-		int num = numCellsSelectedInRow(row);
-		if (num == numColumnsTotal)
+		if (allCellsSelectedInRow(row))
 			return true;
 		return false;
 	}

@@ -52,7 +52,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 		MesquiteInteger charAdded = new MesquiteInteger(0);
 		int[] numStops= new int[3];
 		for (int it=0; it<dnaData.getNumTaxa(); it++) 
-			if (table.isRowSelected(it)) {
+			if (table.wholeRowSelectedAnyWay(it)) {
 				numStops[0]= dnaData.getAminoAcidNumbers(it,ProteinData.TER);
 				if (numStops[0]>0) {
 					int added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
