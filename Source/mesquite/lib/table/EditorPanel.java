@@ -353,9 +353,13 @@ public abstract class EditorPanel extends MesquitePanel {
 		returningRow  = row;
 		deselectCell(column, row);
 	}
+	public void resetUndoAfterLeavingEditorCell(int column, int row){  
+	}
+
 	public void editCell(int column, int row){  
 		tb.offOtherEdits(this);
 		if (editField.getEditing() && (editField.getColumn()!=column || editField.getRow() != row)) {
+			resetUndoAfterLeavingEditorCell(column, row);
 			recordEdit(); //used to be offEdit
 		}
 		tb.selectCell(column, row);

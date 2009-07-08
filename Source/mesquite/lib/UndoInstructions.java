@@ -57,8 +57,8 @@ public class UndoInstructions implements Undoer {
 	int row;
 
 	MesquiteModule ownerModule = null;
-	Object oldState;
-	Object newState;
+	private Object oldState=null;
+	private Object newState=null;
 	CharacterData data;
 	CharacterData oldData;
 	CharacterData newData;
@@ -75,6 +75,7 @@ public class UndoInstructions implements Undoer {
 
 	/** This is the constructor for single-cell changes. */
 	public UndoInstructions(int changeClass, int ic, int it, Object oldState, Object newState, CharacterData data, MesquiteTable table) {
+	//	Debugg.printStackTrace("UndoInstructions Constructor, changeClass: " + changeClass + ", oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
 
 		this.table = table;
 		this.changeClass = changeClass;
@@ -87,9 +88,8 @@ public class UndoInstructions implements Undoer {
 		this.data = data;
 	}
 
-	/** This is the constructor for single-cell changes. */
+	/** This is the constructor for single-cell changes to taxon names or character names. */
 	public UndoInstructions(int changeClass, int row, Object oldState, Object newState, Object obj, MesquiteTable table) {
-
 		this.table = table;
 		this.changeClass = changeClass;
 		this.row = row;
@@ -108,6 +108,7 @@ public class UndoInstructions implements Undoer {
 
 	/** This is the constructor for changes to a TextField. */
 	public UndoInstructions(int changeClass, Object oldState, Object newState, EditorTextField textField) {
+//		Debugg.printStackTrace("UndoInstructions Constructor 3, changeClass: " + changeClass + ", oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
 		this.changeClass = changeClass;
 		this.oldState = oldState;
 		this.newState = newState;
@@ -253,7 +254,10 @@ public class UndoInstructions implements Undoer {
 	}
 
 	public void setNewState(Object newState) {
-		this.newState = newState;
+		//Debugg.println("*** setNewState: " + newState.getClass());
+
+		if (this.newState.getClass().equals(newState.getClass()))
+				this.newState = newState;
 	}
 
 	public void setNewData(CharacterData data) {
@@ -291,16 +295,19 @@ public class UndoInstructions implements Undoer {
 				table.offAllEditingSelection();
 				table.setFocusedCell(icStart, itStart, true);
 			}
+			//Debugg.println("*** UndoInstructions.undo(), SINGLEDATACELL,  oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
 		
 			if (data instanceof CategoricalData)  
 				data.setState(icStart, itStart, (CategoricalState) oldState); // receive
 			else
 				data.setState(icStart, itStart, (CharacterState) oldState); // receive
 			// errors?
-			data.notifyListeners(this, new Notification(
-					MesquiteListener.DATA_CHANGED,
-					new int[] { icStart, itStart }));
-			return new UndoInstructions(changeClass, icStart, itStart, newState, oldState, data, table);
+			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, new int[] { icStart, itStart }));
+		//	Debugg.println("*** after notifyListeners,  oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
+			UndoInstructions undoInst =  new UndoInstructions(changeClass, icStart, itStart, newState, oldState, data, table);
+		//	Debugg.println("*** after new UndoInstructions,  oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
+
+			return undoInst;
 
 		case SINGLETAXONNAME:
 			if (table != null) {
@@ -329,6 +336,7 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, icStart, -1, newState, oldState, data, table);
 
 		case EDITTEXTFIELD:
+//		Debugg.println("*** UndoInstructions.undo(), EDITTEXTFIELD,  oldState: " + oldState.getClass()+ ", newState: " + oldState.getClass());
 			if (textField != null)
 				textField.setText(((MesquiteString) oldState).getValue());
 			return new UndoInstructions(changeClass, newState, oldState, textField);
