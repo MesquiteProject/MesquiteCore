@@ -343,7 +343,8 @@ boolean warnedMissing = false;
         observedStates2 = (CategoricalDistribution)charStates2;
 		if (warn(observedStates1, observedStates2, tree, resultString))
 			return;
-      
+        logln("Pagel 94 analysis: Using characters " + observedStates1.getName() + " and " + observedStates2.getName());
+     
         if (model8 == null) {
     			model4 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);
     			model8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);
@@ -488,12 +489,13 @@ boolean warnedMissing = false;
         	 			writeToLogger("Simulation set includes " + constantCharCount + " sets with constant characters");
 	        	 	completedCount = simCount;
 	         }
-   	         if (result != null)
-	     	    result.setValue(pvalue);
+	         result.setValue(score);
+	        String message = "Difference in log likelihoods = " + result.getDoubleValue();
+	         result.setValue(pvalue);
 	         if (result.isUnassigned())
-	            resultString.setValue("No pvalue was calculated, see MesquiteLog for details");
+	            resultString.setValue(message + ". No p-value was calculated, see MesquiteLog for details");
 	        else
-	            resultString.setValue("p-value = " + result.getDoubleValue() + " (from " + completedCount + " simulations)" );
+	            resultString.setValue(message + ". p-value = " + result.getDoubleValue() + " (from " + completedCount + " simulations)" );
      }
        else {
 	         if (result != null)
