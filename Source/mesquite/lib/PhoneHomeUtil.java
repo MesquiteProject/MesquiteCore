@@ -175,6 +175,8 @@ public class PhoneHomeUtil {
 
 	/*.................................................................................................................*/
 	public static int getVersion(MesquiteModuleInfo mmi) {
+		if (mmi == null)
+			return 0;
 		if (mmi.getIsPackageIntro())
 			return mmi.getPackageVersionInt();
 		else
@@ -182,6 +184,7 @@ public class PhoneHomeUtil {
 	}
 	/*.................................................................................................................*/
 	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int forMesquiteVersionLessOrEqual, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberEqualOrGreater, int forBuildNumberEqualOrLess, int forBuildNumberExactly, int forPackageVersionEqualOrGreater, int forPackageVersionEqualOrLess, int forPackageVersionExactly, ListableVector v) {
+		Debugg.println("psn 3");
 		boolean pleaseDeleteFromUpdates = false;
 		if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
 			forMesquiteVersionLessOrEqual = MesquiteInteger.infinite;
@@ -202,7 +205,8 @@ public class PhoneHomeUtil {
 			}
 
 			boolean appliesToBuild = true;
-			if (mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){
+			if (mmi != null){
+				if (mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){
 				if (MesquiteInteger.isCombinable(forBuildNumberExactly)) 
 					appliesToBuild =  appliesToBuild && (forBuildNumberExactly == MesquiteModule.getBuildNumber());
 				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrGreater)) 
@@ -211,13 +215,14 @@ public class PhoneHomeUtil {
 					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrLess >= MesquiteModule.getBuildNumber());
 			}
 			else {
-				
+
 				if (MesquiteInteger.isCombinable(forPackageVersionExactly)) 
 					appliesToBuild =  appliesToBuild && (forPackageVersionExactly == mmi.getVersionInt());
 				if (MesquiteInteger.isCombinable(forPackageVersionEqualOrGreater)) 
 					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrGreater <= mmi.getVersionInt());
 				if (MesquiteInteger.isCombinable(forPackageVersionEqualOrLess))  
 					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrLess >= mmi.getVersionInt());
+			}
 			}
 
 			//suppose Mesquite is version 2. 01
@@ -269,9 +274,11 @@ public class PhoneHomeUtil {
 					}
 				}
 			}
+			Debugg.println("psn 4");
 
 			// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
 			if ((!seenBefore || critical) && appliesToOSVersion && appliesToBuild){  //relevant
+				Debugg.println("psn 5");
 				boolean skip = false;
 				if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
 					//notices.append( countNotices.toString() + ". " + message + "<hr>\n");
@@ -306,7 +313,8 @@ public class PhoneHomeUtil {
 								skip = true;
 						}
 						if (!skip){
-							MesquiteString packageName = (MesquiteString)v.getElement("packageName");
+							Debugg.println("psn 6");
+						MesquiteString packageName = (MesquiteString)v.getElement("packageName");
 							MesquiteString explanation = (MesquiteString)v.getElement("explanation");
 							MesquiteString uniqueID = (MesquiteString)v.getElement("uniqueID");
 							if (requirementsNotMet && requiredName != null){
@@ -348,12 +356,14 @@ public class PhoneHomeUtil {
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 				else {
 					String fromWhom = null;
-					if (mmi.getModuleClass() == mesquite.Mesquite.class)
+					if (mmi != null){
+						if (mmi.getModuleClass() == mesquite.Mesquite.class)
 						fromWhom = "Mesquite";
 					else if (!StringUtil.blank(mmi.getPackageName()))
 						fromWhom = mmi.getPackageName();
 					else
 						fromWhom = mmi.getName();
+					}
 					MesquiteMessage.println("\n\nNOTICE from " + fromWhom + ": " + message + "\n");
 				}
 				if (!skip && MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual)){
@@ -382,6 +392,32 @@ public class PhoneHomeUtil {
 	}
 	/*.................................................................................................................*/
 
+	public static void checkForNotices(String URLString) {
+		if (StringUtil.blank(URLString))
+			return;
+		String noticesFromHome = null;
+		try{
+			noticesFromHome = MesquiteFile.getURLContentsAsString(URLString, -1, false);
+
+		} catch (Exception e) {
+			return;
+		}
+		if (StringUtil.blank(noticesFromHome))
+			return;
+		Debugg.println("notices " + noticesFromHome);
+		PhoneHomeRecord phr = new PhoneHomeRecord("");
+		String notices = handleMessages(noticesFromHome, null, phr, null);
+		if (!StringUtil.blank(notices)){
+			String note = ("<h2>Notices from " + StringUtil.protectForXML(URLString) + "</h2><hr>" + notices.toString() + "<br>");
+			if (!MesquiteThread.isScripting()){
+				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 500, PhoneHomeUtil.getPhoneHomeDialogLinkCommand(), true);
+			}
+			else
+				System.out.println(note);
+		}
+	}
+	/*.................................................................................................................*/
+
 	public static String retrieveMessagesFromHome(MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
 		String url = mmi.getHomePhoneNumber();
 		if (StringUtil.blank(url))
@@ -389,7 +425,7 @@ public class PhoneHomeUtil {
 		String noticesFromHome = null;
 		try{
 			noticesFromHome = MesquiteFile.getURLContentsAsString(url, -1, false);
-			
+
 		} catch (Exception e) {
 			return null;
 		}
@@ -397,9 +433,36 @@ public class PhoneHomeUtil {
 			return null;
 		if (mmi.getModuleClass() == mesquite.Mesquite.class)
 			phoneHomeSuccessful = true;
+		return handleMessages(noticesFromHome, mmi, phoneHomeRecord, logBuffer);
+	}
+	/*.................................................................................................................*/
+
+	public static String handleMessages(String noticesFromHome, MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
+	/*	String url = mmi.getHomePhoneNumber();
+		if (StringUtil.blank(url))
+			return null;
+		String noticesFromHome = null;
+		try{
+			noticesFromHome = MesquiteFile.getURLContentsAsString(url, -1, false);
+
+		} catch (Exception e) {
+			return null;
+		}
+		if (StringUtil.blank(noticesFromHome))
+			return null;
+		if (mmi.getModuleClass() == mesquite.Mesquite.class)
+			phoneHomeSuccessful = true;
+		*/
+		
+		int lastNoticeForMyVersion = phoneHomeRecord.getLastNoticeForMyVersion();
+		int lastNotice = phoneHomeRecord.getLastNotice();
+		int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
+
+
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;
+		Debugg.println("hm 1");
 		Element messagesFromHome = root.element("MessagesFromHome");
 		if (messagesFromHome != null) {
 			Element versionElement = messagesFromHome.element("version");
@@ -411,13 +474,11 @@ public class PhoneHomeUtil {
 
 
 			MesquiteInteger countNotices = new MesquiteInteger(1);
-			int lastNoticeForMyVersion = phoneHomeRecord.getLastNoticeForMyVersion();
-			int lastNotice = phoneHomeRecord.getLastNotice();
-			int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
 
 			//let's get the notices
 			List noticesFromHomeList = messagesFromHome.elements("notice");
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
+				Debugg.println("hm 2");
 				Element messageElement = (Element) iter.next();
 				int forMesquiteVersionLessOrEqual = MesquiteInteger.fromString(messageElement.elementText("forMesquiteVersionLessOrEqual"));    // notice is for this version and any previous version			
 				if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
@@ -496,7 +557,7 @@ public class PhoneHomeUtil {
 
 			// now see if there is a tag for the current release version
 			Element currentReleaseVersion = messagesFromHome.element("currentReleaseVersion");
-			if (currentReleaseVersion !=null) {
+			if (mmi != null && currentReleaseVersion !=null) {
 				String releaseString = "";
 				String releaseStringHTML ="";
 				String versionString = currentReleaseVersion.elementText("versionString");

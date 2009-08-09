@@ -29,7 +29,6 @@ public class MesquiteTabbedPane extends JTabbedPane {
 	public void setSelectedIndex2(int i){
 	
 		 int current = getSelectedIndex();
-		// Debugg.println("current index: " + current + ", i: " + i);
 		if (current>=0) {
 			JPanel p2 = panel.getTabPanel(current);
 			if (p2 != null)
@@ -50,7 +49,6 @@ public class MesquiteTabbedPane extends JTabbedPane {
 		}
 		invalidate();
 		//	try {Thread.sleep(20);} catch (Exception e) {}
-		//	Debugg.println("MesquiteTabbedPane.setSelectedIndex()");
 	//	super.setSelectedIndex(i);
 	}
 }
