@@ -184,7 +184,6 @@ public class PhoneHomeUtil {
 	}
 	/*.................................................................................................................*/
 	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int forMesquiteVersionLessOrEqual, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberEqualOrGreater, int forBuildNumberEqualOrLess, int forBuildNumberExactly, int forPackageVersionEqualOrGreater, int forPackageVersionEqualOrLess, int forPackageVersionExactly, ListableVector v) {
-		Debugg.println("psn 3");
 		boolean pleaseDeleteFromUpdates = false;
 		if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
 			forMesquiteVersionLessOrEqual = MesquiteInteger.infinite;
@@ -274,11 +273,9 @@ public class PhoneHomeUtil {
 					}
 				}
 			}
-			Debugg.println("psn 4");
 
 			// otherwise assumed to have been seen before if version is same as current and notice is at or before recalled one
 			if ((!seenBefore || critical) && appliesToOSVersion && appliesToBuild){  //relevant
-				Debugg.println("psn 5");
 				boolean skip = false;
 				if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
 					//notices.append( countNotices.toString() + ". " + message + "<hr>\n");
@@ -313,7 +310,6 @@ public class PhoneHomeUtil {
 								skip = true;
 						}
 						if (!skip){
-							Debugg.println("psn 6");
 						MesquiteString packageName = (MesquiteString)v.getElement("packageName");
 							MesquiteString explanation = (MesquiteString)v.getElement("explanation");
 							MesquiteString uniqueID = (MesquiteString)v.getElement("uniqueID");
@@ -404,7 +400,6 @@ public class PhoneHomeUtil {
 		}
 		if (StringUtil.blank(noticesFromHome))
 			return;
-		Debugg.println("notices " + noticesFromHome);
 		PhoneHomeRecord phr = new PhoneHomeRecord("");
 		String notices = handleMessages(noticesFromHome, null, phr, null);
 		if (!StringUtil.blank(notices)){
@@ -462,7 +457,6 @@ public class PhoneHomeUtil {
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;
-		Debugg.println("hm 1");
 		Element messagesFromHome = root.element("MessagesFromHome");
 		if (messagesFromHome != null) {
 			Element versionElement = messagesFromHome.element("version");
@@ -478,7 +472,6 @@ public class PhoneHomeUtil {
 			//let's get the notices
 			List noticesFromHomeList = messagesFromHome.elements("notice");
 			for (Iterator iter = noticesFromHomeList.iterator(); iter.hasNext();) {   // this is going through all of the notices
-				Debugg.println("hm 2");
 				Element messageElement = (Element) iter.next();
 				int forMesquiteVersionLessOrEqual = MesquiteInteger.fromString(messageElement.elementText("forMesquiteVersionLessOrEqual"));    // notice is for this version and any previous version			
 				if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))

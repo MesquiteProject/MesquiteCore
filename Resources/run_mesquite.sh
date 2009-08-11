@@ -55,10 +55,10 @@ then
   fi
   chmod -R u+w  "$dir/com/"
   cp -r  "$dir/../Resources/com/"* "$dir/com/" >& /dev/null
-  $java -Djava.library.path=lib -cp "$dir" mesquite.Mesquite $*
+  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -cp "$dir" mesquite.Mesquite $*
 else
   chmod -R u+w  "$dir/com/"
   cp -r  "$dir/../Resources/com/"* "$dir/com/" >& /dev/null
-  $java -Djava.library.path=lib -cp "$dir" mesquite.Mesquite $*
+  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -cp "$dir" mesquite.Mesquite $*
 fi
 
