@@ -462,7 +462,8 @@ public class Installer extends MesquiteInit {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "phoneHomeLinkTouched", null, commandName, "phoneHomeLinkTouched")) {
+		if (checker.compare(this.getClass(), "phoneHomeLinkTouched", null, commandName, "phoneHomeLinkTouched") || checker.compare(this.getClass(), "phoneHomeLinkTouchedAdHoc", null, commandName, "phoneHomeLinkTouchedAdHoc")) {
+			boolean adHoc =  (commandName.equalsIgnoreCase("phoneHomeLinkTouchedAdHoc"));
 			if (!MesquiteFile.canWrite(getRootPath())){
 				discreetAlert("Sorry, you do not have the permissions required to modify the Mesquite_Folder.  Installation cannot proceed.");
 				return null;
@@ -486,12 +487,12 @@ public class Installer extends MesquiteInit {
 			if (updateXML != null)
 				receipt.addElement(updateXML, false);
 			boolean asked = false;
-			if (PhoneHomeUtil.alreadyInReceipts(identity.getValue(), versionString.getValue())){
+			if (!adHoc && PhoneHomeUtil.alreadyInReceipts(identity.getValue(), versionString.getValue())){
 				if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Install?", "The package " + packageName + " of the same version already appears to be installed.  Do you want to reinstall?"))
 					return null;
 				else asked = true;
 			}
-			if (!asked && !MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Install?", "You have requested to install the package " + packageName + ".  Do you want to install it now?"))
+			if ((adHoc || !asked) && !MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Install?", "You have requested to install the package " + packageName + ".  Do you want to install it now?"))
 				return null;
 			parser.setString(versionString.getValue());
 			int version = MesquiteInteger.fromString(parser);
@@ -526,6 +527,7 @@ public class Installer extends MesquiteInit {
 				writeReceipts();
 				PhoneHomeUtil.refreshUpdateMenuItems();
 				discreetAlert("Installation was successful.  You will need to restart Mesquite to make use of the new installation.");
+				resetAllMenuBars();
 			}
 		}
 		else if (checker.compare(this.getClass(), "zip directory", null, commandName, "zipDir")) {

@@ -47,9 +47,11 @@ public class PhoneHomeUtil {
 			if (!alreadyInReceipts(identity, version)){
 				String name = ((MesquiteString)rec.getElement("packageName")).getValue();
 				String uniqueID = ((MesquiteString)rec.getElement("uniqueID")).getValue();
-				installMenuItems.addElement(MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, installSubmenu, name, new MesquiteCommand("phoneHomeLinkTouched", ParseUtil.tokenize("install:" + uniqueID), PhoneHomeUtil.getLinkHandler())));
+				MesquiteCommand phlt = new MesquiteCommand("phoneHomeLinkTouched", ParseUtil.tokenize("install:" + uniqueID), PhoneHomeUtil.getLinkHandler());
+				installMenuItems.addElement(MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, installSubmenu, name, phlt));
 			}
 		}
+		
 	}
 	public static boolean alreadyInReceipts(ListableVector v){
 		String identity = ((MesquiteString)v.getElement("identity")).getValue();
@@ -405,7 +407,7 @@ public class PhoneHomeUtil {
 		if (!StringUtil.blank(notices)){
 			String note = ("<h2>Notices from " + StringUtil.protectForXML(URLString) + "</h2><hr>" + notices.toString() + "<br>");
 			if (!MesquiteThread.isScripting()){
-				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 500, PhoneHomeUtil.getPhoneHomeDialogLinkCommand(), true);
+				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 500, new MesquiteCommand("phoneHomeLinkTouchedAdHoc", getLinkHandler()), true);
 			}
 			else
 				System.out.println(note);
@@ -537,7 +539,8 @@ public class PhoneHomeUtil {
 						ux = StringUtil.stripStuttered(ux, "  ");
 						v.addElement(new MesquiteString("updateXML", ux), false);
 					}
-					updateRecords.addElement(v);
+					if (mmi != null)//Debugg.println( the clue that this is an ad hoc request hence shouldn't add to updaterecords)
+						updateRecords.addElement(v);  
 				}
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
