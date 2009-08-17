@@ -403,9 +403,9 @@ public class PhoneHomeUtil {
 		if (StringUtil.blank(noticesFromHome))
 			return;
 		PhoneHomeRecord phr = new PhoneHomeRecord("");
-		String notices = handleMessages(noticesFromHome, null, phr, null);
+		String notices = handleMessages(true, noticesFromHome, null, phr, null);
 		if (!StringUtil.blank(notices)){
-			String note = ("<h2>Notices from " + StringUtil.protectForXML(URLString) + "</h2><hr>" + notices.toString() + "<br>");
+			String note = ("<h2>Notices from " + StringUtil.protectForXML(URLString) + "</h2><hr><b>NOTE:</b> these notices may include some that have already been seen and dealt with.  When you ask specifically to check for notices, you are shown all whether seen previously or not.<hr>" + notices.toString() + "<br>");
 			if (!MesquiteThread.isScripting()){
 				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 500, new MesquiteCommand("phoneHomeLinkTouchedAdHoc", getLinkHandler()), true);
 			}
@@ -430,11 +430,11 @@ public class PhoneHomeUtil {
 			return null;
 		if (mmi.getModuleClass() == mesquite.Mesquite.class)
 			phoneHomeSuccessful = true;
-		return handleMessages(noticesFromHome, mmi, phoneHomeRecord, logBuffer);
+		return handleMessages(false, noticesFromHome, mmi, phoneHomeRecord, logBuffer);
 	}
 	/*.................................................................................................................*/
 
-	public static String handleMessages(String noticesFromHome, MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
+	private static String handleMessages(boolean adHoc, String noticesFromHome, MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
 	/*	String url = mmi.getHomePhoneNumber();
 		if (StringUtil.blank(url))
 			return null;
@@ -539,7 +539,7 @@ public class PhoneHomeUtil {
 						ux = StringUtil.stripStuttered(ux, "  ");
 						v.addElement(new MesquiteString("updateXML", ux), false);
 					}
-					if (mmi != null)//Debugg.println( the clue that this is an ad hoc request hence shouldn't add to updaterecords)
+					if (!adHoc)
 						updateRecords.addElement(v);  
 				}
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^

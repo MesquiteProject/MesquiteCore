@@ -160,14 +160,25 @@
               <p><font face="Trebuchet MS">There is also a short list of <a href="#releaseDates">release
               dates</a>.</font></p>
                <hr>
-             <h3><font face="Trebuchet MS">Version 2.61</font></h3>
+             <h3><font face="Trebuchet MS">Version 2.7</font></h3>
               <h4><font face="Trebuchet MS">New Features</font></h4>
               <font face="Trebuchet MS"> </font> 
               <ul>
                 <li>There is a new <strong>crash reporting</strong> system that can send reports to the Mesquite development team. When certain crashes occur, a dialog box will appear offering to send a report.  We urge you to permit the report to be sent; it will help us fix bugs.</li>
+                <li>Speed and memory use  has been improved considerably for large matrices and trees. This permits many more taxa and characters to be conveniently handled.</li>
+                <li>NEXUS tree files without translation tables can now be read directly, without first reading or making the corresponding taxa block.</li>
                 <li>The <strong>BiSSE simulation</strong> of trees and characters (available through Trees &amp; Diversification Characters in the Taxa &amp; Trees menu) now asks in the simulating dialog box what prior probability to put on state 1 at the root. The default is to use the equilibrium (stationary) frequencies as the prior, but you can enter 0.0 to indicate the state at the root is necessarily 0, 1.0 to indicate it is necessarily 1.</li>
                 <li>Tree simulations normally are set to be repeatable; i.e. if you ask for tree 1 several times, you will get the same tree 1. This can now be turned off by deselecting the menu item <strong>Simulation Repeatable</strong>. This could be useful in scripting under different scenarios to ensure each scenario uses an independent random number sequence.</li>
+                <li>There is a new tree window tool, <strong>Node Age Constraints</strong> (shaped like an anchor), that permits age constraints to be assigned to nodes. These constraints are not yet used by any standard Mesquite module, but could be used by optional modules. More details are given <a href="trees.html#nodeageconstraints">here</a>.</li>
+                <li>The function to save trees to a file without holding them in memory, previously available under File&gt;Export as &quot;Export NEXUS Tree File from Tree Source&quot; has been moved to Taxa&amp;Trees&gt;<strong>Save Trees To File from</strong>.</li>
                 <li>You can now suppress decorations on taxon names in the tree window (e.g. the &quot;*&quot; that indicates a footnote is available) by deselecting <strong>Show Footnotes Etc.</strong> under Taxon Names in the Drawing window.</li>
+                <li>The tree window now has a menu item, Legends to Default Positions, that can recover legends that have become lost off screen.</li>
+                <li>The Square Tree drawing form now has a Corners submenu that permits drawing with rounded corners:<br>
+                    <img src="images/roundedCorners.jpg" width="333" height="145"><br>
+                </li>
+                <li>When a duplicate taxa block is read, for instance in a linked file, the first taxa block is not reordered. (Actually, it is reordered temporarily to complete reading of the linked file, but then reverted to the original order.)</li>
+                <li>Mesquite now requests more memory by default.</li>
+                <li>Mesquite's <strong>phone home</strong> system now sends the following information to the Mesquite server when you start up Mesquite: your IP address, your operating system, and your version of Java. (Similar information is sent to any web server you visit when you browse the web.) This is sent so that we can better  prioritize what operating systems and Java versions to support. If you want to turn this reporting off, deselect &quot;Check for Notices on Mesquite Server&quot; from the Defaults submenu of the File menu. </li>
               </ul>
              <h4><font face="Trebuchet MS">Bug Fixes</font></h4>
               <font face="Trebuchet MS"> </font> 
@@ -177,6 +188,9 @@
                 <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) There was a bug that caused Mesquite to misinterpret  typed character states when editing a character matrix that used certain non-standard lists of symbols. This would have generated a warning about checksum errors. This bug has been fixed.</li>
                 <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">)
                   The Translate DNA to Protein feature had a bug in that it on occasion removed the last amino acid; this has been fixed.</li>
+                <li>Trace Character over Trees could sometimes display the incorrect character name when characters were excluded. This bug has been fixed.</li>
+                <li>We have fixed a bug that would cause Mesquite to issue an unnecessary warning that the log file could not be written.</li>
+                <li>Some bugs with tree window scrolling, introduced in version 2.6, have been fixed.</li>
                 <li>Various other small bugs were fixed</li>
               </ul>
               <hr>

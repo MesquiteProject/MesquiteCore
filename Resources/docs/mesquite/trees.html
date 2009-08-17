@@ -396,7 +396,7 @@
                 between the chosen outgroups and ingroup.</p>
               </font> 
 			  
-			  <h3><a name="exportTreesFromSource"></a>Exporting from a Tree Source</h3>
+			  <h3><a name="exportTreesFromSource"></a>Saving Trees to a file  from a Tree Source</h3>
 				<p>You can ask Mesquite to save a NEXUS file containing trees from a tree source.  
 				This feature can have many uses.  For example, it can be very valuable 
 				if you want to create a tree file but don't want Mesquite to keep all of the trees im memory. 
@@ -405,17 +405,17 @@
 				a new tree file with 20,000 rerooted trees, without ever having more than one in memory at once:
 				<ul>
 					<li>Select the outgroups in the List of Taxa window</li>
-					<li>File>Export...</li>
-					<li>In the list presented, choose Export NEXUS Tree File from Tree Source</li>
-					<li>As a tree source, choose Transform Trees from Other Source</li>
+					<li>In the submenu Taxa&amp;Trees&gt;<strong>Save Trees To File from</strong>, choose Transform Trees from Other Source</li>
 					<li>For the source of trees to be transformed, choose Use Trees from Separate NEXUS file</li>
 					<li>Choose the NEXUS file containing the 20,000 original trees</li>
 					<li>Specify where the new tree file is to be saved</li>
 				</ul>
 				
-				Mesquite will then proceed to read in one tree at a time from the original file, transform that tree, and then write it out to the new tree file.
+				Mesquite will then proceed to read in one tree at a time from the original file, transform that tree, and then write it out to the new tree file.  
 				</p>
-              <h3><a name="treewindow"></a>Editing trees: The Basic Tree Window</h3>
+                <p>
+                This function was originally available from the File&gt;Export menu as Export NEXUS Tree File from Tree Source.</p>
+                <h3><a name="treewindow"></a>Editing trees: The Basic Tree Window</h3>
               <p>The Tree Window shows a tree that can be edited and used in analyses. 
                 A new Tree Window can be requested by selecting <font size="-1"><u>Taxa&amp;Trees&gt;New 
                 Tree Window</u></font>. (Mesquite allows multple tree windows, 
@@ -536,7 +536,7 @@
                 tree (the fundamental relationships among taxa implied by the 
                 tree). Some of these tools might not be available if their controlling 
                 modules are not installed or loaded. <font face="Trebuchet MS"> 
-              <table width="75%" border="0" cellspacing="0" cellpadding="4">
+              <table width="85%" border="0" cellspacing="0" cellpadding="4">
                 <tr> 
                   <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>
                   <td><b><font face="Trebuchet MS">Tool</font></b></td>
@@ -602,7 +602,7 @@
               </font> 
               <p>The following tools change the <strong>branch lengths or widths</strong> 
                 of the tree. <font face="Trebuchet MS"><font face="Trebuchet MS"> 
-              <table width="75%" border="0" cellspacing="0" cellpadding="4">
+              <table width="85%" border="0" cellspacing="0" cellpadding="4">
                 <tr> 
                   <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>
                   <td><b><font face="Trebuchet MS">Tool</font></b></td>
@@ -640,11 +640,16 @@
                 the tree, or change attributes of its branches, but do not change 
                 the topology or branch lengths. Thus the changes these tools make 
                 will not affect most calculations. <font face="Trebuchet MS"><font face="Trebuchet MS"> 
-              <table width="75%" border="0" cellspacing="0" cellpadding="4">
+              <table width="85%" border="0" cellspacing="0" cellpadding="4">
                 <tr> 
                   <td> <div align="center"><font face="Trebuchet MS"><font face="Trebuchet MS"></font></font></div></td>
                   <td><b><font face="Trebuchet MS">Tool</font></b></td>
                   <td><font face="Trebuchet MS"><b>Action</b></font></td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/zoomImage.gif" width="26" height="26"></td>
+                  <td>Zoom</td>
+                  <td>Zooms the magnification to enlarge the tree.  Holding down Option or Alt shrinks the tree.  If you click and hold on the tool button, a drop down menu lets you reset back to standard magnification.  Note also the Drawing Size submenu in the Drawing menu.</td>
                 </tr>
                 <tr> 
                   <td><img src="images/treeTools/ladderizeClade.gif" width="26" height="26"></td>
@@ -728,6 +733,11 @@
                   <td>Searches a taxonomic database for the taxon name that is touched.  The database searched
 				  (e.g., Tree of Life Web Project, iSpecies, Catalogue of Life, GenBank) can be chosen
 				  in the tool's popup menu. </td>
+                </tr>
+                <tr> 
+                  <td><img src="images/treeTools/nodeAgeConstraints.gif" width="26" height="26"></td>
+                  <td>Node Age Constraints</td>
+                  <td><a name = "nodeageconstraints">Assigns constraints on ages to a node.  When you touch on a node, a text edit field appears.<font face="Trebuchet MS">&nbsp; </font>To indicate the minimum age is 2.0, enter &quot;2.0+&quot;.  To indicate the range is 2.0 to 4.0, enter &quot;2.0-4.0&quot;.  To indicate the maximum is 4.0, enter &quot;0.0-4.0&quot;.  To say age is exactly 3.0, enter &quot;3.0&quot;. These constraints are not yet used by standard Mesquite modules</a></td>
                 </tr>
               </table>
               </font></font> 

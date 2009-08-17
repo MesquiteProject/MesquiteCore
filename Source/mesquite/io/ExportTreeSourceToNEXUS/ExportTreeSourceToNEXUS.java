@@ -195,7 +195,7 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 			}
 		}
 		int numOriginalTrees = treeSourceTask.getNumberOfTrees(taxa);
-		if (numOriginalTrees == MesquiteInteger.infinite){
+		if (!treeSourceTask.hasLimitedTrees(taxa)){
 			numOriginalTrees = MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees", "Number of trees to export", 100, 1, 99999, true); 
 			if (!MesquiteInteger.isCombinable(numOriginalTrees))
 				return false;
@@ -225,7 +225,8 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 					progIndicator.setOfferContinueMessageString("Are you sure you want to stop the export?");
 					progIndicator.start();
 				}
-				for (int i=0; i<numOriginalTrees; i++) {
+				boolean done = false;
+				for (int i=0; i<numOriginalTrees && !done; i++) {
 					Tree tree =  treeSourceTask.getTree(taxa, i);
 
 					if (progIndicator!=null) {
@@ -250,6 +251,8 @@ public class ExportTreeSourceToNEXUS extends FileInterpreterI {
 						if (count %100 == 0)
 							logln("   Writing tree " + count);
 					}
+					else
+						done = true;
 				}
 				if (progIndicator != null)
 					progIndicator.goAway();
