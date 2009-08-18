@@ -36,35 +36,6 @@ public class CategVariable extends BooleanForCharacter {
 		return 250;  
 	}
 
-	public int charIsVariable(CharacterData data, int ic) {
-		CategoricalData cData = (CategoricalData)data;
-		long intersection = CategoricalState.statesBitsMask;
-		boolean anySel = cData.getTaxa().anySelected();
-		for (int it=0; it<cData.getNumTaxa(); it++){
-			if (!anySel || cData.getTaxa().getSelected(it)){
-				long state = cData.getState(ic, it);
-				if (CategoricalState.isCombinable(state)){
-					if (CategoricalState.cardinality(state)>1){ //polymorphic or uncertain
-						if (CategoricalState.isUncertain(state)){ //uncertain; ok if overlaps
-							intersection &= state;
-							if (intersection == 0L)
-								return 1;
-						}
-						else
-							return 1;
-					}
-					else {
-						intersection &= state;
-						if (intersection == 0L)
-							return 1;
-					}
-				}
-			}
-		}
-		return 0;
-	}
-
-
 	public void calculateBoolean(CharacterData data, int ic, MesquiteBoolean result, MesquiteString resultString) {
 		if (data==null || result==null)
 			return;
@@ -72,12 +43,9 @@ public class CategVariable extends BooleanForCharacter {
 		if (!(data instanceof CategoricalData))
 			return;
 		Taxa taxa = data.getTaxa();
-		int inform = charIsVariable(data,ic);
+		CategoricalData cData = (CategoricalData)data;
 
-		if (inform==0)
-			result.setValue(false);
-		else if (inform==1)
-			result.setValue(true);
+		result.setValue(cData.charIsVariable(ic));
 	}
 
 	/*.................................................................................................................*/
