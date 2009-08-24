@@ -75,7 +75,6 @@ public class UndoInstructions implements Undoer {
 
 	/** This is the constructor for single-cell changes. */
 	public UndoInstructions(int changeClass, int ic, int it, Object oldState, Object newState, CharacterData data, MesquiteTable table) {
-	//	Debugg.printStackTrace("UndoInstructions Constructor, changeClass: " + changeClass + ", oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
 
 		this.table = table;
 		this.changeClass = changeClass;
@@ -108,7 +107,6 @@ public class UndoInstructions implements Undoer {
 
 	/** This is the constructor for changes to a TextField. */
 	public UndoInstructions(int changeClass, Object oldState, Object newState, EditorTextField textField) {
-//		Debugg.printStackTrace("UndoInstructions Constructor 3, changeClass: " + changeClass + ", oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
 		this.changeClass = changeClass;
 		this.oldState = oldState;
 		this.newState = newState;
@@ -254,12 +252,15 @@ public class UndoInstructions implements Undoer {
 	}
 
 	public void setNewState(Object newState) {
-		//Debugg.println("*** setNewState: " + newState.getClass());
-
+		if (newState == null)
+			return;
 		if (this.newState.getClass().equals(newState.getClass()))
 				this.newState = newState;
 	}
 
+	public Object getNewState() {
+		return newState;
+	}
 	public void setNewData(CharacterData data) {
 		this.newData = data.cloneData();
 	}
@@ -295,17 +296,24 @@ public class UndoInstructions implements Undoer {
 				table.offAllEditingSelection();
 				table.setFocusedCell(icStart, itStart, true);
 			}
-			//Debugg.println("*** UndoInstructions.undo(), SINGLEDATACELL,  oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
-		
-			if (data instanceof CategoricalData)  
+			if (oldState instanceof MesquiteString){
+				
+				CharacterState cs = data.makeCharacterState();
+				String st = ((MesquiteString) oldState).getValue();
+
+				if (StringUtil.blank(st)){
+					return null;
+				}
+				cs.setValue(st, data);
+				data.setState(icStart, itStart, cs); // receive
+			}
+			else if (data instanceof CategoricalData)  
 				data.setState(icStart, itStart, (CategoricalState) oldState); // receive
 			else
 				data.setState(icStart, itStart, (CharacterState) oldState); // receive
 			// errors?
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, new int[] { icStart, itStart }));
-		//	Debugg.println("*** after notifyListeners,  oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
 			UndoInstructions undoInst =  new UndoInstructions(changeClass, icStart, itStart, newState, oldState, data, table);
-		//	Debugg.println("*** after new UndoInstructions,  oldState: " + oldState.getClass()+ ", newState: " + newState.getClass());
 
 			return undoInst;
 
@@ -336,9 +344,11 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, icStart, -1, newState, oldState, data, table);
 
 		case EDITTEXTFIELD:
-//		Debugg.println("*** UndoInstructions.undo(), EDITTEXTFIELD,  oldState: " + oldState.getClass()+ ", newState: " + oldState.getClass());
+			if (oldState == null || ((MesquiteString) oldState).getValue() == null)
+				return null;
 			if (textField != null)
 				textField.setText(((MesquiteString) oldState).getValue());
+			
 			return new UndoInstructions(changeClass, newState, oldState, textField);
 
 		case ALLDATACELLS:

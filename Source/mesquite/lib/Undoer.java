@@ -21,6 +21,7 @@ public interface Undoer  {
 	public void dispose();
 	
 	public void setNewState (Object newState);
+	public Object getNewState ();
 
 	
 }

@@ -156,6 +156,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	MesquiteCommand copyLiteralCommand = MesquiteModule.makeCommand("copyLiteral", this);
 	MesquiteCommand selectAllCommand = MesquiteModule.makeCommand("selectAll", this);
 	boolean showRowNames = true;
+	
 
 	public static MesquiteTimer tableTime;
 
