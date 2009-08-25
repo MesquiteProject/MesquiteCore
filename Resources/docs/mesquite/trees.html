@@ -322,7 +322,10 @@
                  When you Link File or choose an option to read trees individually, and then you save your project file, Mesquite will remember what external file is to be read.  If you later separate the project file and tree file apart, Mesquite will no longer be able 
                  to find the tree file.  Thus, if you ask to save a file that is using another tree file via Link File or an option to read trees individually, you should remember to keep both files 
                  together.
-                 <h3><a name="filtering"></a>Filtering Trees</h3>
+                  <h3><a name="concat2sources"></a>Concatenating tree sources</h3>
+                  <p>The tree source <strong>Concatenate 2 Tree Sources</strong> supplies trees from two separate sources as if they were one source.  Trees from the first source have an attached value of &quot;1&quot;, while trees from the second source have an attached value of &quot;2&quot;.  Concatenating tree sources can be useful for example to concatenate two large tree files that are too large to read in memory at once. To do this, first open a file that contains the taxa block that pertains to the two tree files.  Then choose Save Trees to File from, Concatenate 2 Tree Sources.  For the first source of trees choose Use Trees from Separate NEXUS file, and select the tree file.  For the second source of trees choose Use Trees from Separate NEXUS file, and select the second tree file.  Mesquite will then read all the trees in the first and then second tree file and concatenate them into a single tree file.
+                  </p>
+                  <h3><a name="filtering"></a>Filtering Trees</h3>
               <p>Trees used in charts, the tree window or to make a new tree block 
                 can be filtered. To do this, select Filter Trees from Other source 
                 as your source of trees. You will be asked for the original source 
