@@ -16,7 +16,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.CharHistorySource;
 
 public class CategStateChanges {
-	static int maxChanges = 10;
+	int maxChangesRecorded = 10;
 	int[][] min;
 	int[][] max;
 	double[][] avg;
@@ -30,15 +30,16 @@ public class CategStateChanges {
 	long numMappings = 0;
 	long numHistories = 0;
 
-	public CategStateChanges(int numStates) {
+	public CategStateChanges(int numStates, int maxChanges) {
+		maxChangesRecorded = maxChanges;
 		this.numStates = numStates;
 		min = new int[numStates][numStates];
 		max = new int[numStates][numStates];
 		avg = new double[numStates][numStates];
 		total = new double[numStates][numStates];
 		totalChanges = new double[numStates][numStates];
-		fractionWithAmount = new double[numStates][numStates][maxChanges];
-		totalWithAmount = new double[numStates][numStates][maxChanges];
+		fractionWithAmount = new double[numStates][numStates][maxChangesRecorded];
+		totalWithAmount = new double[numStates][numStates][maxChangesRecorded];
 		acceptableChange = new boolean[numStates][numStates];
 		initializeArrays();
 	}
@@ -53,8 +54,8 @@ public class CategStateChanges {
 		avg =Double2DArray.cloneIncreaseSize(avg,numStatesNew, numStatesNew);
 		total =Double2DArray.cloneIncreaseSize(total,numStatesNew, numStatesNew);
 		totalChanges =Double2DArray.cloneIncreaseSize(totalChanges,numStatesNew, numStatesNew);
-		fractionWithAmount =Double2DArray.cloneIncreaseSize(fractionWithAmount,numStatesNew, numStatesNew, maxChanges);
-		totalWithAmount =Double2DArray.cloneIncreaseSize(totalWithAmount,numStatesNew, numStatesNew, maxChanges);
+		fractionWithAmount =Double2DArray.cloneIncreaseSize(fractionWithAmount,numStatesNew, numStatesNew, maxChangesRecorded);
+		totalWithAmount =Double2DArray.cloneIncreaseSize(totalWithAmount,numStatesNew, numStatesNew, maxChangesRecorded);
 		numStates = numStatesNew;
 	}
 	/*.................................................................................................................*/
@@ -67,7 +68,7 @@ public class CategStateChanges {
 				total[i][j]=0.0;
 				totalChanges[i][j]=0.0;
 				acceptableChange[i][j]=true;
-				for (int k=0; k<maxChanges; k++) {
+				for (int k=0; k<maxChangesRecorded; k++) {
 					fractionWithAmount[i][j][k] = 0.0;
 					totalWithAmount[i][j][k] = 0.0;
 				}
@@ -86,7 +87,7 @@ public class CategStateChanges {
 			for (int j=0; j<numStates; j++) {
 				total[i][j]=0.0;
 				totalChanges[i][j]=0.0;
-				for (int k=0; k<maxChanges; k++) {
+				for (int k=0; k<maxChangesRecorded; k++) {
 					totalWithAmount[i][j][k] = 0.0;
 				}
 			}
@@ -129,8 +130,8 @@ public class CategStateChanges {
 					total[i][j] = total[i][j]+array[i][j];
 				else
 					avg[i][j] = ((avg[i][j]*numMappings-1)+array[i][j])/numMappings;
-				if (array[i][j]>=maxChanges)
-					totalWithAmount[i][j][maxChanges-1]++;
+				if (array[i][j]>=maxChangesRecorded)
+					totalWithAmount[i][j][maxChangesRecorded-1]++;
 				else
 					totalWithAmount[i][j][array[i][j]]++;
 				totalChanges[i][j]++;
@@ -228,7 +229,7 @@ public class CategStateChanges {
 				{
 					avg[i][j] = avg[i][j]+total[i][j]/mappingsAdded;
 					if (totalChanges[i][j]>0 && i!=j)
-						for (int k=0; k<maxChanges; k++) {
+						for (int k=0; k<maxChangesRecorded; k++) {
 							fractionWithAmount[i][j][k] = fractionWithAmount[i][j][k]+totalWithAmount[i][j][k]/totalChanges[i][j];
 						}
 				}
@@ -289,7 +290,7 @@ public class CategStateChanges {
 				{
 					avg[i][j] = avg[i][j]+total[i][j]/mappingsAdded;
 					if (totalChanges[i][j]>0 && i!=j)
-						for (int k=0; k<maxChanges; k++) {
+						for (int k=0; k<maxChangesRecorded; k++) {
 							fractionWithAmount[i][j][k] = fractionWithAmount[i][j][k]+totalWithAmount[i][j][k]/totalChanges[i][j];
 						}
 				}
@@ -306,7 +307,7 @@ public class CategStateChanges {
 					min[i][j] = 0;
 				if (numHistories>0) {
 					avg[i][j] = avg[i][j]/numHistories;
-					if (i!=j) for (int k=0; k<maxChanges; k++) {
+					if (i!=j) for (int k=0; k<maxChangesRecorded; k++) {
 						fractionWithAmount[i][j][k] = fractionWithAmount[i][j][k]/numHistories;
 					}
 				}
@@ -343,10 +344,10 @@ public class CategStateChanges {
 		for (int i=0; i<numStates; i++)
 			for (int j=0; j<numStates; j++)
 				if (i!=j) {
-					for (int k=0; k<maxChanges-1; k++) {
+					for (int k=0; k<maxChangesRecorded-1; k++) {
 						sb.append(""+i+"->"+j+" \t"+k +"\t"+fractionWithAmount[i][j][k]+"\n"); 
 					}
-					sb.append(""+i+"->"+j+" \t"+(maxChanges-1) +"+\t"+fractionWithAmount[i][j][maxChanges-1]+"\n"); 
+					sb.append(""+i+"->"+j+" \t"+(maxChangesRecorded-1) +"+\t"+fractionWithAmount[i][j][maxChangesRecorded-1]+"\n"); 
 					sb.append("\n");
 				}
 		return sb.toString();

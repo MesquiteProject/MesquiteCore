@@ -41,6 +41,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	}
 
 	static int maxNumMappings = 50;
+	int maxChangesRecorded = 10;
 	static boolean queryLimits = true;
 	MesquiteBoolean saveDetailsToFile = new MesquiteBoolean(false);
 
@@ -90,6 +91,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		mm.setShortcut(KeyEvent.VK_LEFT); //right
 		addMenuItem( "Choose Character History", makeCommand("chooseCharacter",  this));
 		addMenuItem( "Allowed Changes...", makeCommand("allowedChanges",  this));
+		addMenuItem( "Maximum Number of Changes Recorded...", makeCommand("setMaxChangesRecorded",  this));
 		addMenuItem( "Maximum Number of Mappings...", makeCommand("setMaxNumMappings",  this));
 
 
@@ -186,11 +188,14 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("maxNumMappings".equalsIgnoreCase(tag))
 			maxNumMappings = MesquiteInteger.fromString(content);
+		if ("maxChangesRecorded".equalsIgnoreCase(tag))
+			maxChangesRecorded = MesquiteInteger.fromString(content);
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMappings", maxNumMappings);  
+		StringUtil.appendXMLTag(buffer, 2, "maxChangesRecorded", maxChangesRecorded);  
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -201,6 +206,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		temp.addLine("setHistorySource ",historyTask);
 		temp.addLine("setCharacter " + CharacterStates.toExternal(currentChar));
 		temp.addLine("setMaxNumMappings " + maxNumMappings);
+		temp.addLine("setMaxChangesRecorded " + maxChangesRecorded);
 		temp.addLine( "setTreeSource " , treeSourceTask);
 		temp.addLine("setNumTrees " + numTrees);
 		temp.addLine("makeWindow");
@@ -292,6 +298,16 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 				newNum = MesquiteInteger.queryInteger(getModuleWindow(), "Maximum number of mappings to sample", "Maximum number of mappings to sample for the character on each tree",maxNumMappings, 1, Integer.MAX_VALUE);
 			if (newNum>0 && MesquiteInteger.isCombinable(newNum) && maxNumMappings!=newNum) {
 				maxNumMappings=newNum;
+				storePreferences();
+				recalculate();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the maximum number of changes recorded", null, commandName, "setMaxChangesRecorded")) {
+			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
+			if (!MesquiteInteger.isCombinable(newNum))
+				newNum = MesquiteInteger.queryInteger(getModuleWindow(), "Maximum number of changes to record", "Maximum number of changes to record for the character on each tree",maxChangesRecorded, 1, Integer.MAX_VALUE);
+			if (newNum>0 && MesquiteInteger.isCombinable(newNum) && maxChangesRecorded!=newNum) {
+				maxChangesRecorded=newNum;
 				storePreferences();
 				recalculate();
 			}
@@ -573,7 +589,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 					if (tempCharStates!=null) {
 						oneValidMapping = true;
 						if (stateChanges==null) {
-							stateChanges = new CategStateChanges(tempCharStates.getMaxState()+1);
+							stateChanges = new CategStateChanges(tempCharStates.getMaxState()+1, maxChangesRecorded+1);
 							if (saveDetails())
 								addFullDetailsHeader(tempCharStates.getMaxState()+1,fullDetails);
 						}
