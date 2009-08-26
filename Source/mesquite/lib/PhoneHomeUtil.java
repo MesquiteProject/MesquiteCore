@@ -30,6 +30,7 @@ public class PhoneHomeUtil {
 	public static Vector updateRecords = new Vector();
 	public static Vector installedReceipts = new Vector();
 	public static Vector installMenuItems = new Vector();
+	public static ListableVector adHocRecord = null;
 	static MesquiteSubmenuSpec installSubmenu;
 
 	public static void refreshUpdateMenuItems(){  //will call resetAllMenuBars at end of phoning all homes
@@ -541,6 +542,8 @@ public class PhoneHomeUtil {
 					}
 					if (!adHoc)
 						updateRecords.addElement(v);  
+					else  
+						adHocRecord = v;
 				}
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 

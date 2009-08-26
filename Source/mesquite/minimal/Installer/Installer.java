@@ -469,7 +469,11 @@ public class Installer extends MesquiteInit {
 				return null;
 			}
 			String source = parser.getFirstToken(arguments);
-			ListableVector updateRecord = PhoneHomeUtil.getUpdateRecord(source.substring(source.indexOf(":")+1, source.length()));
+			ListableVector updateRecord = null;
+			if (adHoc)
+				updateRecord = PhoneHomeUtil.adHocRecord;
+			else
+				updateRecord = PhoneHomeUtil.getUpdateRecord(source.substring(source.indexOf(":")+1, source.length()));
 			if (updateRecord == null)
 				return null;
 			MesquiteString identity = (MesquiteString)updateRecord.getElement("identity");
