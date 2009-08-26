@@ -1,6 +1,8 @@
 #NEXUS
-[written Tue Aug 21 10:33:34 PDT 2007 by Mesquite  version 2.0BETA3 (build i50) at Thrandina.local/192.168.0.101 (Wayne Maddison)]
+[written Wed Aug 26 11:16:55 PDT 2009 by Mesquite  version 2.6+ (build 508) at thrandina.zoology.ubc.ca/137.82.80.142 (Wayne Maddison)]
 BEGIN TREES;
+	Title 'Tree block 3 from "10-treeFile.nex"';
+	LINK Taxa = Taxa;
 	TRANSLATE
 		1 Aus,
 		2 Fubonidia,

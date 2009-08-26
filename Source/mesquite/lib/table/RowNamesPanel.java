@@ -350,11 +350,15 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			table.rowTouched(isArrowEquivalent,possibleTouch,regionInCellH, regionInCellV,modifiers);
 		else if (tool != null && tool.isArrowTool()){
 			table.offAllEdits();
+			table.outOfBoundsTouched(modifiers, clickCount);
 			if (table.anythingSelected()) {
 				table.deselectAllNotify();
 				table.repaintAll();
 			}
 		}
+		else
+			table.outOfBoundsTouched(modifiers, clickCount);
+
 	}
 	/*...............................................................................................................*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {

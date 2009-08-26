@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Jun 07 11:17:54 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
+[written Wed Aug 26 11:16:54 PDT 2009 by Mesquite  version 2.6+ (build 508) at thrandina.zoology.ubc.ca/137.82.80.142 (Wayne Maddison)]
 
 BEGIN TAXA;
 	TITLE Taxa;
@@ -75,8 +75,10 @@ BEGIN TREES;
 END;
 
 
-BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
+BEGIN CODONS;
+	CODESET * UNTITLED   =  universal:  1 -  2;
+
+
 END;
 
 BEGIN ASSUMPTIONS;
@@ -86,10 +88,8 @@ TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
 
 END;
 
-BEGIN CODONS;
-	CODESET * UNTITLED   =  universal:  1 -  2;
-
-
+BEGIN MESQUITECHARMODELS;
+	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
 Begin MESQUITE;
@@ -104,10 +104,11 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114896111fd0;
-			checksum 0 4129971366 WM114896111fd0;
+			checksumv 0 2 3673400160 WM114896111fd0;
 		endTell;
 		getWindow;
 		tell It;
+			suppress;
 			setResourcesState false false 72;
 			setPopoutState 400;
 			setExplanationSize 0;
@@ -118,6 +119,10 @@ Begin MESQUITE;
 			setLocation 6 312;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+			desuppress;
 		endTell;
 		getEmployee  #mesquite.trees.ManageTrees.ManageTrees;
 		tell It;
@@ -177,7 +182,7 @@ Begin MESQUITE;
 					tell It;
 						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
-							stretchToggle off;
+							inhibitStretchToggle on;
 							branchLengthsToggle off;
 							toggleScale on;
 							toggleBroadScale off;
@@ -203,6 +208,7 @@ Begin MESQUITE;
 						setColor Black;
 						toggleColorPartition on;
 						toggleShadePartition off;
+						toggleShowFootnotes on;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
@@ -210,8 +216,8 @@ Begin MESQUITE;
 					endTell;
 				endTell;
 					setTreeNumber 1;
-					useSuggestedSize off;
-					toggleSizeToFit on;
+					setDrawingSizeMode 1;
+					toggleLegendFloat on;
 					toggleTextOnTree off;
 					showWindow;
 				endTell;
@@ -234,6 +240,7 @@ Begin MESQUITE;
 					setOn on;
 					setDigits 4;
 					writeAsPercentage off;
+					toggleCentred on;
 					toggleHorizontal on;
 					setFontSize 10;
 					setOffset 0  0;
@@ -258,8 +265,11 @@ Begin MESQUITE;
 					setLocation 6 312;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 					setActive;
-				setExplanation 'This file illustrates how trees can be obtained from an external tree file.^n^nMesquite can consider information from several files on disk when doing its calculations.  Once a file is open, other files can be linked or included within it, thus making their information available for calculations.  This information is not necessarily restricted to trees in external tree files (for further information see the example files on basic Mesquite operation), but for this example we will be focusing on external files containing trees.^n^nIn the Projects and Files panel of the main Mesquite module (above), you''ll notice that there are two active files, "10-storedTrees.nex" (the main data file) and "10-treeFile.nex" (the external tree file).  The main data file contains two tree blocks (Basic Trees, More Trees) while the external tree file contains one tree block (SomeRandomTrees), as shown in the Tree Blocks list window at right.^n^nAn external tree file can be read in using the Link or Include menu items in the File menu, or using the Get File With Taxa&Trees menu items in the Taxa&Trees menu.  To Include a file is to incorporate its information into the current main file of the project.  The information is treated as part of the main file, and it saved within the main file.  In contrast, to Link a file is to read its information for use while remembering that it belongs within a distinct file on disk.  This linked file can be saved and re-read separately.  More information on including and linking is given in the basic Mesquite example files.^n^nThe reason the data file 10-storedTrees.nex opens up with the external tree file already linked is that when a main file of a project is stored, it remembers what other files are linked to it and opens them up automatically next time it is opened.';
+				setExplanation 'This file illustrates how trees can be obtained from an external tree file.^n^nMesquite can consider information from several files on disk when doing its calculations.  Once a file is open, other files can be linked or included within it, thus making their information available for calculations.  This information is not necessarily restricted to trees in external tree files (for further information see the example files on basic Mesquite operation), but for this example we will be focusing on external files containing trees.^n^nIn the Projects and Files panel of the main Mesquite module (above), you''ll notice that there are two active files, "10-storedTrees.nex" (the main data file) and "10-treeFile.nex" (the external tree file).  The main data file contains two tree blocks (Basic Trees, More Trees) while the external tree file contains one tree block (SomeRandomTrees), as shown in the Tree Blocks list window at right.^n^nAn external tree file can be read in using the Link or Include menu items in the File menu, or using the Import File With Trees menu items in the Taxa&Trees menu.  To Include a file is to incorporate its information into the current main file of the project.  The information is treated as part of the main file, and it saved within the main file.  In contrast, to Link a file is to read its information for use while remembering that it belongs within a distinct file on disk.  This linked file can be saved and re-read separately.  More information on including and linking is given in the basic Mesquite example files.^n^nYou can also read in an external tree file tree by tree, without bringing the whole tree block into memory at once.  This can be used as a source of trees for tree windows, charts, and other calculations.  To do this, whenever presented with a choice for a source of trees, choose Use Trees from Separate NEXUS file.^n^nThe reason the data file 10-storedTrees.nex opens up with the external tree file already linked is that when a main file of a project is stored, it remembers what other files are linked to it and opens them up automatically next time it is opened.';
 				setTitle External_tree_files;
 				toggleFileNames off;
 				setPrevButtonName Previous;

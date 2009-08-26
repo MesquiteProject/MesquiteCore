@@ -3260,8 +3260,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			deselectAllNotify();
 			repaintAll();
 		}
+		outOfBoundsTouched(modifiers, 1);
 	}
 
+	/* ............................................................................................................... */
+	/** Called if part of panel out of bounds is touched. */
+	public void outOfBoundsTouched( int modifiers, int clickCount) {
+	}
 	/* ............................................................................................................... */
 	int rowFirstTouched = -2;
 

@@ -570,8 +570,10 @@ timer6.end();
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
 		else if (row==-2 && ((TableTool)tool).getWorksBeyondLastRow())
 			table.cellTouched(column, row, regionInCellH, regionInCellV,modifiers, clickCount);
-		else 
+		else {
+			table.outOfBoundsTouched(modifiers, clickCount);
 			setWindowAnnotation("", null);
+		}
 
 
 	}
