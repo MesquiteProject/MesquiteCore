@@ -301,6 +301,7 @@
 <li>Composite DNA Simulation Model  &#8212; Defines and maintains simple stochastic models of DNA evolution for simulations.</li>
 <li>Concatenate Other Matrix  &#8212; Concatenates matrix onto one in data editor.  Assumptions like weights and character models are NOT transferred.  For categorical data, state names are not included.  For continuous data, new items may need to be created to accommodate differences in items between the matrices.</li>
 <li>Concatenate Respective Matrices from Two Sources  &#8212; Supplies matrices by concatenating respective matrices from two sources.  The i'th matrix supplied is the concatenation of the i'th matrix from each of the two sources.  Assumptions like weights and character models are NOT transferred.  For categorical data, state names are not included.  For continuous data, new items may need to be created to accommodate differences in items between the matrices.</li>
+<li>Concatenate Two Tree Sources  &#8212; Concatenates two tree sources to yield a tree source first supplying trees from one source, then supplying trees from another.  The trees are marked with values 1 and 2 to indicate the source.</li>
 <li>Concatenate tree blocks  &#8212; Concatenates selected tree blocks into a new tree block.</li>
 <li>Condense taxon names  &#8212; Condenses taxon names, for example for use by programs that cannot handle long names or names with punctuation.</li>
 <li>Condensed Tree Source  &#8212; Produces a block of trees that are a condensed version of another block of trees, with duplicate trees removed.</li>
@@ -309,6 +310,8 @@
 <li>Consensus Tree  &#8212; Supplies consensus tree from a block of trees.</li>
 <li>Consensus Trees from Tree Blocks  &#8212; Supplies consensus trees from Tree blocks.</li>
 <li>Consensus Trees Package Introduction  &#8212; Calculations for consensus trees.</li>
+<li>Consistency Index for Character  &#8212; Calculates the Consistency Index (CI) for a tree and character.</li>
+<li>Consistency Index for Matrix  &#8212; Calculates the Consistency Index (CI) for a tree and matrix.</li>
 <li>Constellation  &#8212; Draws trees with spots at the nodes in a more or less unrooted way.</li>
 <li>Contained Gene (or Other) Trees  &#8212; Draws wide trees containing trees of associates (e.g., species tree containing gene tree)</li>
 <li>Continuous Data Package Introduction  &#8212; Provides basic facilities for handling continuous-valued characters.</li>
@@ -528,6 +531,7 @@
 <li>NEXUS file interpreter  &#8212; Coordinates the reading and writing of NEXUS files.</li>
 <li>NNI Rearranger  &#8212; Rearranges a tree by nearest neighbor interchange (NNI).  Does not handle trees with polytomies.</li>
 <li>No Color  &#8212; Turns off cell coloring.</li>
+<li>Node Age Constraints  &#8212; Supplies a tool for tree windows to set node age constraints.  A short text string summarizes constraints.</li>
 <li>Node Count (Speciation Patristic) Distances implied by Tree  &#8212; Distances among taxa implied by counting nodes along branches of tree from one taxon to another (Speciation Patristic distances).</li>
 <li>Node Depth  &#8212; Calculates the depth of each node from the highest terminal in its clade.</li>
 <li>Node Locations (2D plot)  &#8212; Calculates the node locations for a tree plotted in a two dimensional space.</li>
@@ -630,6 +634,7 @@
 <li>Recode Characters  &#8212; Recodes categorical data (e.g., state 1 to state 0).</li>
 <li>Reconstruct Ancestral States  &#8212; Reconstructs ancestral states on the nodes of a tree.</li>
 <li>Reconstruct Deep Coalescence  &#8212; Reconstructs a contained tree within a containing tree so as to minimize the amount of deep coalescence (failure of lineage sorting).  The contained tree is assumed to be rooted.</li>
+<li>Remove Invariant Characters  &#8212; Removes all characters that have one state or fewer.</li>
 <li>Remove from Taxon Names  &#8212; Removes a specified number of characters from taxon names.</li>
 <li>Remove Gaps-Only Characters  &#8212; Removes all characters that are gaps only.</li>
 <li>Remove Internal Node Labels  &#8212; Deletes labels from all internal nodes.</li>
@@ -645,6 +650,8 @@
 <li>Reshuffle Within Characters (Taxa Partitioned)  &#8212; Shuffles (permutes) character states among taxa of each taxa partition, within each character.</li>
 <li>Reshuffle Within Taxa (Char. Partitioned)  &#8212; Shuffles (permutes) character states among characters of each character partition, within each taxon.</li>
 <li>Resolve Polytomies (to 0-length branches)  &#8212; Resolves polytomies arbitrarily and assigned the resulting new branches zero length.</li>
+<li>Retention Index for Character  &#8212; Calculates the Retention Index (RI) for a tree and character.</li>
+<li>Retention Index for Matrix  &#8212; Calculates the Retention Index (RI) for a tree and matrix.</li>
 <li>Reverse Complement  &#8212; Reverses the DNA sequence and complements the bases.</li>
 <li>Reverse Sequence  &#8212; Alters data by reversing sequence of states.</li>
 <li>Rhetenor Package Introduction  &#8212; Multivariate analyses and morphometrics.</li>
@@ -835,6 +842,7 @@
 <li>Values for Nodes  &#8212; Shows on a drawn tree various possible numbers at the nodes.</li>
 <li>Variable (Mult. States)  &#8212; Indicates whether a character has multiple observed states.  If taxa are selected, only the selected taxa are examined.</li>
 <li>Variable among taxa  &#8212; Selects characters that are variable among the selected taxa</li>
+<li>Visibility of Matrix  &#8212; Indicates whether character data matrix is hidden or not.</li>
 <li>Web page link  &#8212; Provides a window to jump to a web page</li>
 <li>Whole or Submodel  &#8212; Indicates whether model is a complete or partial model of character evolution.</li>
 <li>Window Holder  &#8212; Helps other modules by holding their windows.</li>

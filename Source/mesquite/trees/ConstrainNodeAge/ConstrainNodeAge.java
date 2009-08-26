@@ -23,6 +23,9 @@ public class ConstrainNodeAge extends TreeDisplayAssistantI {
 	public boolean first = true;
 	static NameReference nodeAgeConstrRef = NameReference.getNameReference("nodeAgeConstraints");
 
+	public int getVersionOfFirstRelease(){
+		return 270;  
+	}
 	public String getFunctionIconPath(){
 		return getPath() + "anchorTool.gif";
 	}
