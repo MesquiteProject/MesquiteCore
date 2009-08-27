@@ -411,7 +411,7 @@ public class PhoneHomeUtil {
 		if (!StringUtil.blank(notices)){
 			String note = ("<h2>Notices from " + StringUtil.protectForXML(URLString) + "</h2><hr><b>NOTE:</b> these notices may include some that have already been seen and dealt with.  When you ask specifically to check for notices, you are shown all whether seen previously or not.<hr>" + notices.toString() + "<br>");
 			if (!MesquiteThread.isScripting()){
-				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 500, new MesquiteCommand("phoneHomeLinkTouchedAdHoc", getLinkHandler()), true);
+				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 400, new MesquiteCommand("phoneHomeLinkTouchedAdHoc", getLinkHandler()), true);
 			}
 			else
 				System.out.println(note);
