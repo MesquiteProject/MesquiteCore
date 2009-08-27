@@ -50,12 +50,14 @@
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
         <key>VMOptions</key>
-        <string>-Xmx256m -Djava.library.path=lib -Djri.ignore.ule="yes"  -mqex  -Dapple.awt.graphics.UseQuartz=true</string>
+        <string>-Xmx256m -Djava.library.path=lib -Djri.ignore.ule="yes"  -Dapple.awt.graphics.UseQuartz=true</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
 			<string>true</string>
 		</dict>
+		<key>Arguments</key>
+		<string>-mqex</string>
 	</dict>
 </dict>
 </plist>
