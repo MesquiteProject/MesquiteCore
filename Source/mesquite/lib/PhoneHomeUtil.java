@@ -399,10 +399,13 @@ public class PhoneHomeUtil {
 			noticesFromHome = MesquiteFile.getURLContentsAsString(URLString, -1, false);
 
 		} catch (Exception e) {
+			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no information found at that URL");
 			return;
 		}
-		if (StringUtil.blank(noticesFromHome))
+		if (StringUtil.blank(noticesFromHome)){
+			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no information found at that URL");
 			return;
+		}
 		PhoneHomeRecord phr = new PhoneHomeRecord("");
 		String notices = handleMessages(true, noticesFromHome, null, phr, null);
 		if (!StringUtil.blank(notices)){
@@ -413,6 +416,8 @@ public class PhoneHomeUtil {
 			else
 				System.out.println(note);
 		}
+		else
+			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no information found at that URL");
 	}
 	/*.................................................................................................................*/
 
