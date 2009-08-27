@@ -154,7 +154,7 @@
 	<target name="init"> 
 		<property environment="env" />
 		<property name="dist.dir" location="../dist" />
-		<property name="mesquite.version" value="2.6" />
+		<property name="mesquite.version" value="2.7" />
 		<property name="release.dir" location="${dist.dir}/Mesquite ${mesquite.version}" />
 		<property name="mesquitefoldername" value="Mesquite_Folder"/>
 		<property name="mesquitefolder.dir" location="${release.dir}/${mesquitefoldername}" />
