@@ -186,7 +186,11 @@ public class PhoneHomeUtil {
 			return mmi.getVersionInt();
 	}
 	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int forMesquiteVersionLessOrEqual, int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, PhoneHomeRecord phoneHomeRecord, Vector osVector, int forBuildNumberEqualOrGreater, int forBuildNumberEqualOrLess, int forBuildNumberExactly, int forPackageVersionEqualOrGreater, int forPackageVersionEqualOrLess, int forPackageVersionExactly, ListableVector v) {
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int forMesquiteVersionLessOrEqual, 
+			int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, 
+			PhoneHomeRecord phoneHomeRecord, Vector osVector, 
+			int forBuildNumberEqualOrGreater, int forBuildNumberEqualOrLess, int forBuildNumberExactly, 
+			int forPackageVersionEqualOrGreater, int forPackageVersionEqualOrLess, int forPackageVersionExactly, ListableVector v, boolean adHoc) {
 		boolean pleaseDeleteFromUpdates = false;
 		if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
 			forMesquiteVersionLessOrEqual = MesquiteInteger.infinite;
@@ -340,8 +344,9 @@ public class PhoneHomeUtil {
 									"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 								}
 								else {
-									installHTML = ("<p><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"" + MesquiteFile.massageFilePathToURL(MesquiteTrunk.mesquiteTrunk.getRootPath()+"images" + MesquiteFile.fileSeparator + "download.gif") + "\"> Install</a>" +
-									"&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
+									installHTML = "<p><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"" + MesquiteFile.massageFilePathToURL(MesquiteTrunk.mesquiteTrunk.getRootPath()+"images" + MesquiteFile.fileSeparator + "download.gif") + "\"> Install</a>";
+									if (!adHoc)
+										installHTML += "&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.";
 								}
 
 								notices.append(installHTML);
@@ -553,7 +558,7 @@ public class PhoneHomeUtil {
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 				// process other notice tags here if they are present
-				processSingleNotice(mmi, notices, countNotices, forMesquiteVersionLessOrEqual, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberEqualOrGreater, forBuildNumberEqualOrLess, forBuildNumberExactly, forPackageVersionEqualOrGreater, forPackageVersionEqualOrLess, forPackageVersionExactly, v);
+				processSingleNotice(mmi, notices, countNotices, forMesquiteVersionLessOrEqual, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberEqualOrGreater, forBuildNumberEqualOrLess, forBuildNumberExactly, forPackageVersionEqualOrGreater, forPackageVersionEqualOrLess, forPackageVersionExactly, v, adHoc);
 
 			}
 			//INSTALLER: here go through updateRecords to figure out which are already installed, which not; which have newer versions already installed, etc.

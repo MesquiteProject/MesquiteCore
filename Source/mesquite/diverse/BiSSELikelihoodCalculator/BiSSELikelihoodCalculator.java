@@ -432,6 +432,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		CategoricalDistribution states = (CategoricalDistribution)b[1];
 		SpecExtincCategModel model = (SpecExtincCategModel)b[2];
 		model.setParamValuesUsingConstraints(params);
+		
 		double result =  logLike(tree, states, model);
 		if (!MesquiteDouble.isCombinable(result) || result < -1e100 || result >= 1e100)
 			result = 1e100 + 1e99*badCount++;
@@ -461,7 +462,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	double[] freq = new double[2];
 	/*.................................................................................................................*/
 	public double logLike(Tree tree, CategoricalDistribution states, SpecExtincCategModel model) {  
-		if (model==null)
+		if (model==null || states == null)
 			return MesquiteDouble.unassigned;
 		int root = tree.getRoot(deleted);
 		initProbs(tree.getNumNodeSpaces(),lastMaxState);
