@@ -580,7 +580,7 @@ public class PhoneHomeUtil {
 				boolean skip = false;
 
 				if (versionStringInstalled != null && versionString != null && versionStringInstalled.equals(versionString)){  //same version
-					if (!(buildString != null && mmi.getModuleClass() == mesquite.Mesquite.class && buildString.equals(Integer.toString(MesquiteModule.getBuildNumber()))))
+					if (mmi.getModuleClass() != mesquite.Mesquite.class || buildString == null ||  buildString.equals(Integer.toString(MesquiteModule.getBuildNumber())))
 						skip = true; //skip unless Mesquite and different build
 				}
 				if (!skip){
@@ -605,8 +605,8 @@ public class PhoneHomeUtil {
 							releaseString+=" The home page is: " + URL+ ". ";
 						}
 						if (!StringUtil.blank(downloadURL)) {
-							releaseStringHTML +="&nbsp;<a href=\"" + downloadURL + "\">Download page</a>.   You may also find an option below to install this using Mesquite's automatic installation system.";
-							releaseString+=" The latest version is downloadable at: " + downloadURL+ ".   You may also be able to install this using Mesquite's automatic installation system.";
+							releaseStringHTML +="&nbsp;<a href=\"" + downloadURL + "\">Download page</a>.   You may also find an option to install this using Mesquite's automatic installation system (look in File menu under Available to Install or Update).";
+							releaseString+=" The latest version is downloadable at: " + downloadURL+ ".   You may also be able to install this using Mesquite's automatic installation system (look in File menu under Available to Install or Update).";
 						}
 					}
 
