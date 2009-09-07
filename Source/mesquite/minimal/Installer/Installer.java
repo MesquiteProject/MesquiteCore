@@ -1,5 +1,5 @@
 /* Mesquite source code.  Copyright 1997-2009 W. Maddison and D. Maddison. 
-Version 2.7, August 2009.
+Version 2.71, September 2009.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -104,7 +104,10 @@ public class Installer extends MesquiteInit {
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
-		return "http://mesquiteproject.org/mesquite/updates/updates.xml";
+		if (!MesquiteTrunk.mesquiteTrunk.isPrerelease() && !MesquiteTrunk.debugMode)
+			return "http://mesquiteproject.org/mesquite/updates/updates.xml";
+		else
+			return "http://mesquiteproject.org/mesquite/prereleasenotices/updates.xml";   
 		//NOTE mesquite.minimal.Defaults.Defaults has own home phone number for server to record build numbers in use
 	}
 	/*.................................................................................................................*/
@@ -496,7 +499,7 @@ public class Installer extends MesquiteInit {
 					return null;
 				else asked = true;
 			}
-			if ((adHoc || !asked) && !MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Install?", "You have requested to install the package " + packageName + ".  Do you want to install it now?"))
+			if ((adHoc || !asked) && !MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Install?", "You have requested to install " + packageName + ".  Do you want to install it now?"))
 				return null;
 			parser.setString(versionString.getValue());
 			int version = MesquiteInteger.fromString(parser);
