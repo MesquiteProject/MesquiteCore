@@ -536,7 +536,8 @@ class HennigCCODE extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public boolean readCommand(MesquiteProject mp, MesquiteFile file, ProgressIndicator progIndicator, CategoricalData data, Taxa taxa, String firstLine){
-
+		if (data == null || taxa == null)
+			return false;
 		/*		[ 	make following characters active   
 		]	make following characters inactive;  i.e., exclude
 		- 	make following characters nonadditive;  i.e., unordered
