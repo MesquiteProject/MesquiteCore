@@ -69,6 +69,10 @@ public class ReshuffleWTaxaByPart extends RandomMatrixModifier {
   	}
 		
 		CharacterPartition partition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
+		if (partition == null){
+			mm(matrix, modified, rng);
+			return;
+		}
 		CharactersGroup[] groups = null;
 		if (partition != null)
 			groups = partition.getGroups();

@@ -45,8 +45,8 @@ public class BipartitionVector extends Vector {
 		numTreesTotal = 0;
 		this.taxa = taxa;
 		numTaxa = taxa.getNumTaxa();
-		nodes = new Bits[MesquiteTree.standardNumNodeSpaces(taxa)];
-		partitionPresent = new Bits(MesquiteTree.standardNumNodeSpaces(taxa));
+		nodes = new Bits[MesquiteTree.standardNumNodeSpaces(taxa)*2];  //some slack in case nonstandard tree
+		partitionPresent = new Bits(MesquiteTree.standardNumNodeSpaces(taxa)*2);
 		for (int i= 0; i<nodes.length; i++)
 			nodes[i] = new Bits(numTaxa);
 		allTaxa = new Bits(numTaxa);
@@ -275,13 +275,19 @@ public class BipartitionVector extends Vector {
 	}
 
 	private void getPartitions(Tree tree, int node){
+		if (node >= nodes.length)
+			MesquiteMessage.println("Problem with getPartitions: node array wrong size");
 		if (tree.nodeIsTerminal(node)){
-			nodes[node].setBit(tree.taxonNumberOfNode(node));
+			int it = tree.taxonNumberOfNode(node);
+			if (it< 0 || it >= branchLengths.length)
+				MesquiteMessage.println("Problem with getPartitions: branchlengths array wrong size");
+			
+			nodes[node].setBit(it);
 			double length = tree.getBranchLength(node);
 			if (MesquiteDouble.isCombinable(length)) {
-				if (!MesquiteDouble.isCombinable(branchLengths[tree.taxonNumberOfNode(node)]))
-					branchLengths[tree.taxonNumberOfNode(node)] =0.0;
-				branchLengths[tree.taxonNumberOfNode(node)] += length;
+				if (!MesquiteDouble.isCombinable(branchLengths[it]))
+					branchLengths[it] =0.0;
+				branchLengths[it] += length;
 			}
 			return;
 		}

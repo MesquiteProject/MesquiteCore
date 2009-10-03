@@ -149,7 +149,8 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		else {
 			g.setColor(Color.black);
 		}
-		g.drawString(taxa.getTaxonName(row),5+offset,getRowBottom(row)-maxDescent);
+		if (taxa.getTaxonName(row) != null)
+			g.drawString(taxa.getTaxonName(row),5+offset,getRowBottom(row)-maxDescent);
 	}
 	public void redrawRow(int row, boolean erase) {
 		if (taxa==null || row<0)
