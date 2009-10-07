@@ -63,7 +63,7 @@ public class Simplicity extends SimplicityManagerModule {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		lockSimplicity = new MesquiteBoolean(false);
-
+		
 		if (InterfaceManager.enabled)
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Lock In Simple Mode", makeCommand("toggleLockSimplicity",  this), lockSimplicity);
 		InterfaceManager.simplicityModule = this;  //remember me
