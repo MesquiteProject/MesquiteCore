@@ -507,6 +507,20 @@ public class Installer extends MesquiteInit {
 			List installation = (List)io.getObject();
 			int count = 0;
 			boolean failed = false;
+			
+			//hide all project windows
+			Enumeration e = MesquiteTrunk.mesquiteTrunk.windowVector.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				MesquiteWindow mw = (MesquiteWindow)obj;
+				if (!(mw instanceof SystemWindow))
+					mw.getParentFrame().setVisible(false);
+			}
+			Projects projects = MesquiteTrunk.mesquiteTrunk.getProjectList();
+			for (int ip = 0; ip< projects.getNumProjects(); ip++){
+				MesquiteProject proj = projects.getProject(ip);
+				
+			}
 			for (Iterator iter = installation.iterator(); !failed && iter.hasNext();) {   // this is going through all of the notices
 				Element installElement = (Element) iter.next();
 				if (install(installElement, receipt))
@@ -527,6 +541,16 @@ public class Installer extends MesquiteInit {
 					cleanUp(installElement);
 				i++;
 			}
+			//show all project windows
+			Enumeration e2 = MesquiteTrunk.mesquiteTrunk.windowVector.elements();
+			while (e2.hasMoreElements()) {
+				Object obj = e2.nextElement();
+				MesquiteWindow mw = (MesquiteWindow)obj;
+				if (!(mw instanceof SystemWindow))
+					mw.getParentFrame().setVisible(true);
+			}
+			
+			
 			if (!failed){
 				//Here mesquite should store a receipt that this update was installed.  Should store package reference and version reference.  
 				if (!PhoneHomeUtil.alreadyInReceipts(receipt))
