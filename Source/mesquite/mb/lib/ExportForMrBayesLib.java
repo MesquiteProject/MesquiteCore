@@ -18,7 +18,6 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
@@ -134,17 +133,34 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI {
 		boolean nucleotides = (data instanceof DNAData);
 		if (writeCodPosPartition) {
 			//codon positions if nucleotide
-			MesquiteInteger numberCharSets = new MesquiteInteger(0);
-			MesquiteString charSetList = new MesquiteString("");
-			String codPos = ((DNAData)data).getCodonsAsNexusCharSets(numberCharSets, charSetList);
-			if (!StringUtil.blank(codPos)) {
+			int numberCharSets = 0;
+			String list = "";
+			String names = "";
+			CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
+			for (int iw = 0; iw<4; iw++){
+				String locs = codSet.getListOfMatches(iw);
+				if (!StringUtil.blank(locs)) {
+					String charSetName = "";
+					if (iw==0) 
+						charSetName = StringUtil.tokenize("nonCoding");
+					else 
+						charSetName = StringUtil.tokenize("codonPos" + iw);			
+					numberCharSets++;
+					list += "\n\tcharset " + charSetName + " = " +  locs + ";";
+					if (!StringUtil.blank(names))
+						names += ", ";
+					names += charSetName;
+				}
+			}
+		//	String codPos = ((DNAData)data).getCodonsAsNexusCharSets(numberCharSets, charSetList); // equivalent to list
+			if (!StringUtil.blank(list)) {
 				codPosPart += "\n\n [codon positions if you wish to use these]";
-				codPosPart +=codPos;
-				codPosPart += "\n\tpartition currentPartition = " + numberCharSets.getValue() + ": " + charSetList.toString() + ";";
+				codPosPart +=list;
+				codPosPart += "\n\tpartition currentPartition = " + numberCharSets + ": " + names + ";";
 				codPosPart +="\n\tset partition = currentPartition;\n\tlset applyto=(";
-				for (int i = 1; i<=numberCharSets.getValue(); i++) {
+				for (int i = 1; i<=numberCharSets; i++) {
 					codPosPart += i;
-					if (i<numberCharSets.getValue()) 
+					if (i<numberCharSets) 
 						codPosPart += ", ";
 				}
 				codPosPart += ");\n";
