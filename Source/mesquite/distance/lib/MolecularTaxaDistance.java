@@ -23,9 +23,13 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 		protected CharInclusionSet incl = null;
 		int maxNumStates;
 		CategoricalData data; 
-    	boolean estimateAmbiguityDifferences = true;
-    	boolean countDifferencesIfGapInPair = false;
+		public static final boolean DEFAULTESTIMATEAMBIGUITYDIFFERENCES = true;
+		public static final boolean DEFAULTCOUNTDIFFERENCESIFGAPINPAIR = false;
+    	boolean estimateAmbiguityDifferences = DEFAULTESTIMATEAMBIGUITYDIFFERENCES;
+    	boolean countDifferencesIfGapInPair = DEFAULTCOUNTDIFFERENCESIFGAPINPAIR;
     	MesquiteModule ownerModule;
+    	boolean isDNAData=false;
+    	boolean allIncluded = true;
 		
 		public MolecularTaxaDistance(MesquiteModule ownerModule, Taxa taxa, MCharactersDistribution observedStates, boolean estimateAmbiguityDifferences, boolean countDifferencesIfGapInPair){
 			super(taxa);
@@ -35,13 +39,27 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 			this.estimateAmbiguityDifferences = estimateAmbiguityDifferences;
 			this.countDifferencesIfGapInPair = countDifferencesIfGapInPair;
 			data = (CategoricalData)observedStates.getParentData();
+			isDNAData = data instanceof DNAData;
+			isDNAData = false;
 			
-			if (data !=null)
+			if (data !=null) {
 				incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
+				if (incl!=null && !incl.allBitsOn()) 
+					allIncluded=false;
+			}
 				
 			catStates = (MCategoricalDistribution)observedStates;
 			distances= new double[getNumTaxa()][getNumTaxa()];
 		}
+
+		public void copyDistanceTriangle() {
+			for (int taxon1=0; taxon1<getNumTaxa(); taxon1++)
+				distances[taxon1][taxon1]= 0.0;  
+			for (int taxon1=0; taxon1<getNumTaxa(); taxon1++)
+				for (int taxon2=taxon1; taxon2<getNumTaxa(); taxon2++)
+					distances[taxon2][taxon1]=distances[taxon1][taxon2];
+		}
+		
 		public void setEstimateAmbiguityDifferences(boolean estimateAmbiguityDifferences){
 			this.estimateAmbiguityDifferences = estimateAmbiguityDifferences;
 		}
@@ -54,31 +72,10 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 		}
 		public abstract int getMaxState();
 		
-	/*	public boolean getDistanceOptions() {
-			if (MesquiteThread.isScripting())
-				return true;
-			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(), "Distance Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-			dialog.addLabel("Distance Options");
-
-			Checkbox estimateAmbiguityDifferencesBox = dialog.addCheckBox("estimate ambiguity differences", estimateAmbiguityDifferences);
-			Checkbox countDifferencesIfGapInPairBox = dialog.addCheckBox("count as a difference one taxon having a gap and the other a non-gap", countDifferencesIfGapInPair);
-
-
-
-			dialog.completeAndShowDialog(true);
-			if (buttonPressed.getValue()==0)  {
-				estimateAmbiguityDifferences = estimateAmbiguityDifferencesBox.getState();
-				countDifferencesIfGapInPair = countDifferencesIfGapInPairBox.getState();
-			}
-			dialog.dispose();
-			return (buttonPressed.getValue()==0) ;
-
-		}
-*/
 		public double[][] calcPairwiseDistance(int taxon1, int taxon2, MesquiteDouble N, MesquiteDouble D){
 			if (catStates==null)
 				return null;
+			int numChars = catStates.getNumChars();
 			int numStates = getMaxState()+1;
 			double[][] fxy = new double[numStates][numStates];
 			double[][] unambiguousFxy = new double[numStates][numStates];
@@ -87,15 +84,25 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 					fxy[i][j]=0.0;
 					unambiguousFxy[i][j]=0.0;
 				}
+
 			if (estimateAmbiguityDifferences)  // calculate pairings for unambiguous
-				for (int ic=0; ic< catStates.getNumChars(); ic++) {
-					if (incl == null || incl.isBitOn(ic)){
+				for (int ic=0; ic< numChars; ic++) {
+					if (allIncluded || incl.isBitOn(ic)){
 						long one =catStates.getState(ic, taxon1) & CategoricalState.dataBitsMask;
 						long two = catStates.getState(ic, taxon2) & CategoricalState.dataBitsMask;
-						int oneState = CategoricalState.getOnlyElement(one);
-						int twoState = CategoricalState.getOnlyElement(two);
-						boolean oneIsMissingInapplicable = CategoricalState.isInapplicable(one) || CategoricalState.isUnassigned(one);
-						boolean twoIsMissingInapplicable = CategoricalState.isInapplicable(two) || CategoricalState.isUnassigned(two);
+						int oneState;
+						int twoState;
+
+						if (isDNAData) {
+							oneState = DNAState.getOnlyElement(one);
+							twoState = DNAState.getOnlyElement(two);
+						}
+						else {
+							oneState = CategoricalState.getOnlyElement(one);
+							twoState = CategoricalState.getOnlyElement(two);
+						}
+					//	boolean oneIsMissingInapplicable = CategoricalState.isInapplicable(one) || CategoricalState.isUnassigned(one);
+					//	boolean twoIsMissingInapplicable = CategoricalState.isInapplicable(two) || CategoricalState.isUnassigned(two);
 						if (oneState>=0 && oneState<numStates && twoState>=0 && twoState<numStates){  // they have single states
 							unambiguousFxy[oneState][twoState] ++;
 							//unambiguousFxy[twoState][oneState] ++;
@@ -117,16 +124,24 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 			double gapDifferences = 0.0;
 
 					
-			for (int ic=0; ic< catStates.getNumChars(); ic++) {
-				if (incl == null || incl.isBitOn(ic)){
+			for (int ic=0; ic< numChars; ic++) {
+				if (allIncluded || incl.isBitOn(ic)){
 					count++;
 					countTotal++;
 					long oneAllBits =catStates.getState(ic, taxon1);
 					long twoAllBits = catStates.getState(ic, taxon2);
 					long one = oneAllBits & CategoricalState.dataBitsMask;
 					long two = twoAllBits & CategoricalState.dataBitsMask;
-					int oneState = CategoricalState.getOnlyElement(one);
-					int twoState = CategoricalState.getOnlyElement(two);
+					int oneState;
+					int twoState;
+					if (isDNAData) {
+						oneState = DNAState.getOnlyElement(one);
+						twoState = DNAState.getOnlyElement(two);
+					}
+					else {
+						oneState = CategoricalState.getOnlyElement(one);
+						twoState = CategoricalState.getOnlyElement(two);
+					}
 					boolean oneIsMissingInapplicable = CategoricalState.isInapplicable(oneAllBits) || CategoricalState.isUnassigned(oneAllBits);
 					boolean twoIsMissingInapplicable = CategoricalState.isInapplicable(twoAllBits) || CategoricalState.isUnassigned(twoAllBits);
 					 if (countDifferencesIfGapInPair && (CategoricalState.isInapplicable(oneAllBits) != CategoricalState.isInapplicable(twoAllBits))) { 
@@ -151,9 +166,15 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 					}
 					else {  //at least one is not inapplicable or missing, and they don't overlap
 						if (CategoricalState.isUnassigned(oneAllBits) || (!countDifferencesIfGapInPair && CategoricalState.isInapplicable(oneAllBits))) 
-							one = DNAState.fullSet();
+							if (isDNAData)
+								one = DNAState.fullSet();
+							else if (isDNAData)
+								one = ProteinState.fullSet();
 						if (CategoricalState.isUnassigned(twoAllBits) || (!countDifferencesIfGapInPair && CategoricalState.isInapplicable(twoAllBits))) 
-							two = DNAState.fullSet();
+							if (isDNAData)
+								two = DNAState.fullSet();
+							else if (isDNAData)
+								two = ProteinState.fullSet();
 						
 						
 						//TODO: deal with polymorphism
@@ -186,7 +207,7 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 							}
 							else   //at this point we could bail if estimateAmbiguityDifferences, which PAUP seems to do, and not count this site.  However, instead we will estimate the values in another way
 								if (oneIsMissingInapplicable) {  // first one is missing/inapplicable
-								int card = CategoricalState.cardinality(two);
+								int card =CategoricalState.cardinality(two);
 								for (int i=0; i<numStates; i++) {
 									if (CategoricalState.isElement(two,i))
 											fxy[i][i] += 1.0/card;
