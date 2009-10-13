@@ -12,6 +12,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.align.AlignDNAToProtein;
 
+import java.awt.Checkbox;
+
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -25,6 +27,7 @@ import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
 
 public class AlignDNAToProtein extends DNADataAltererCon {
 	CharMatrixCoordIndep characterSourceTask;
+	boolean adjustCodonPositions = true;
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CharMatrixCoordIndep.class, getName() + " needs a module to supply a character matrix.",
@@ -37,8 +40,26 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 //	characterSourceTask = (CharMatrixCoordIndep)hireCompatibleEmployee(CharMatrixCoordIndep.class, ProteinState.class, "Protein Matrix");
 		if (characterSourceTask == null)
 			return sorry(getName() + " couldn't start because no protein matrix obtained");
+		if (!MesquiteThread.isScripting())
+			if (!queryOptions())
+				return false;
 
 		return true;
+	}
+	/*.................................................................................................................*/
+	public boolean queryOptions() {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "AlignDNAToProtein",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Align DNA to Protein");
+		Checkbox adjustCodonPositionsBox = dialog.addCheckBox("adjust codon positions if necessary in re-aligned sequences", adjustCodonPositions);
+
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			adjustCodonPositions = adjustCodonPositionsBox.getState();
+			storePreferences();
+		}
+		dialog.dispose();
+		return (buttonPressed.getValue()==0);
 	}
 
 	/*.................................................................................................................*/
@@ -78,6 +99,8 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 					dnaData.moveCells(icDNA,icDNA, -distance, it,it, false, false, true,  false, dataChanged, charAdded);
 					if (charAdded.isCombinable() && charAdded.getValue()!=0) 
 						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
+					else if (adjustCodonPositions)  // adjust codpos so it fits for this taxon
+						dnaData.setCodonPosition(adjustedPosInDNA, codPos+1, false, false);
 					adjustedPosInDNA++;
 					icDNA++;
 				}
