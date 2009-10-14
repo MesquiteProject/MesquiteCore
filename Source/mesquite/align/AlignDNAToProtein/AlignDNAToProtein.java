@@ -131,6 +131,10 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 		return "Align DNA to Protein";
 	}
 
+	public String getNameForMenuItem() {
+		return "Align DNA to Protein...";
+	}
+
 	public String getExplanation() {
 		return "Realigns a DNA matrix to match the alignment in an amino acid alignment.";
 	}

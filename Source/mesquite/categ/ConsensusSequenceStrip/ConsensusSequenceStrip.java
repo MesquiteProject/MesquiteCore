@@ -31,8 +31,9 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	MesquiteString stateTaskName;
 	MesquiteCommand stC;
 	MesquiteSubmenuSpec stSubmenu;
-	MesquiteMenuItemSpec menuItem1, menuItem2, colorByAAMenuItem, closeMenuItem, lineMenuItem, moveToMatrixItem;
+	MesquiteMenuItemSpec menuItem1, menuItem2, colorByAAMenuItem, closeMenuItem, lineMenuItem, moveToMatrixItem, emphasizeLessDegenerateMenuItem;
 	MesquiteBoolean colorByAA = new MesquiteBoolean(false);
+	MesquiteBoolean emphasizeLessDegenerateAAs = new MesquiteBoolean(true);
 	
 	boolean suspend = false;
 
@@ -78,10 +79,12 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		deleteMenuItem(menuItem1);
 		deleteMenuItem(menuItem2);
 		deleteMenuItem(colorByAAMenuItem);
+		deleteMenuItem(emphasizeLessDegenerateMenuItem);
 	}
 	/*.................................................................................................................*/
 	public void checkMenuItems() {
 		colorByAAMenuItem.setEnabled((data instanceof DNAData) && ((DNAData)data).someCoding());
+		emphasizeLessDegenerateMenuItem.setEnabled((data instanceof DNAData) && ((DNAData)data).someCoding()&& colorByAA.getValue());
 	}
 	public void deleteRemoveMenuItem() {
 		deleteMenuItem(lineMenuItem);
@@ -103,6 +106,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		menuItem1= addCheckMenuItem(null,"Selected Taxa Only", makeCommand("toggleSelectedOnly", this), selectedOnly);
 		menuItem2= addCheckMenuItem(null,"Darken if Any Gaps", makeCommand("toggleGrayIfGaps", this), showSomeInapplicableAsGray);
 		colorByAAMenuItem= addCheckMenuItem(null,"Color Nucleotide by AA Color", makeCommand("toggleColorByAA", this), colorByAA);
+		emphasizeLessDegenerateMenuItem= addCheckMenuItem(null,"Emphasize Less Degenerate AAs", makeCommand("toggleEmphasizeLessDegenerateAAs", this), emphasizeLessDegenerateAAs);
 		
 		
 		if (data != null)
@@ -146,6 +150,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		temp.addLine("toggleSelectedOnly " + selectedOnly.toOffOnString());
 		temp.addLine("toggleGrayIfGaps " + showSomeInapplicableAsGray.toOffOnString());
 		temp.addLine("toggleColorByAA " + colorByAA.toOffOnString());
+		temp.addLine("toggleEmphasizeLessDegenerateAAs " + emphasizeLessDegenerateAAs.toOffOnString());
 		temp.addLine("resume");
 
 		return temp;
@@ -171,6 +176,19 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 			if (current!=colorByAA.getValue() && !suspend) {
 				parametersChanged();
 				calculateSequence();
+				checkMenuItems();
+				if (table !=null) {
+					table.repaintAll();
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not less degenerate amino acids should be emphasized.", "[on or off]", commandName, "toggleEmphasizeLessDegenerateAAs")) {
+			boolean current = emphasizeLessDegenerateAAs.getValue();
+			emphasizeLessDegenerateAAs.toggleValue(parser.getFirstToken(arguments));
+			if (current!=emphasizeLessDegenerateAAs.getValue() && !suspend) {
+				parametersChanged();
+				checkMenuItems();
+				//calculateSequence();
 				if (table !=null) {
 					table.repaintAll();
 				}
@@ -307,8 +325,13 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				 if (colorByAA.getValue()){
 					 Color color = null;
 					 long aa = ((DNAData)data).getAminoAcid(consensusSequence, ic,true);
-					 if (!CategoricalState.isImpossible(aa))
-						 color = ProteinData.getAminoAcidColor(aa);
+					 if (!CategoricalState.isImpossible(aa)) {
+						 if (emphasizeLessDegenerateAAs.getValue()) {
+							 color = ProteinData.getAminoAcidColor(aa, Color.white);
+							 color = ((DNAData)data).alterColorToDeemphasizeDegeneracy(ic,aa,color);
+						 } else
+							 color = ProteinData.getAminoAcidColor(aa, ProteinData.multistateColor);
+					 }
 					 if (color==null){
 						 if (e>=0)
 							 g.setColor(DNAData.getDNAColorOfState(e));
