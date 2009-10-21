@@ -79,7 +79,7 @@ public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incr
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Shared History Distances implied by Tree";  
+		return "Shared History Distances (Covariance matrix) implied by Tree";  
 	}
 	   	 
 	public String getParameters() {
@@ -89,7 +89,7 @@ public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incr
 	   	 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Distances among taxa implied by length of shared history (distance from root to most recent ancestor).  Unassigned branches are treated as of length 1.0." ;
+		return "Distances among taxa implied by length of shared history (distance from root to most recent ancestor). This is the most common Covariance/Variance matrix used in GLS methods. Unassigned branches are treated as of length 1.0." ;
 	}
 	/*.................................................................................................................*/
     public String getAuthors(){
