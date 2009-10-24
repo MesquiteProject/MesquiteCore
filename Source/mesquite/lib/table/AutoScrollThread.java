@@ -60,7 +60,7 @@ public class AutoScrollThread extends Thread implements MouseListener {
 		super.start();
 	}
 	public void run() {
-		while (!abort && !suppressed) {
+		while (!abort && !suppressed && !MesquiteTrunk.mesquiteTrunk.mesquiteExiting) {
 			try {
 				Thread.sleep(200);
 				if (MesquiteInteger.isCombinable(panel.getMouseX()) && MesquiteInteger.isCombinable(panel.getMouseY()) )

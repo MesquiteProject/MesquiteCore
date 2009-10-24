@@ -75,7 +75,7 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Report BiSSE Results As", makeCommand("setReportMode", this), reportModes); 
 		mss.setSelected(reportModeName);
 
-		if (MesquiteThread.isScripting()  && !MesquiteThread.actingAsLibrary)
+		if (MesquiteThread.isScripting()  && !MesquiteThread.suppressInteractionAsLibrary)
 			suspended = true;
 		if (!MesquiteThread.isScripting()){
 			if (!showDialog())

@@ -91,6 +91,8 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 		if (result==null)
 			return;
 		clearResultAndLastResult(result);
+		if (taxon == null || comparisonTaxon == null)
+			return;
 		Taxa taxa = taxon.getTaxa();
 		if (comparisonTaxon.getValue()<0 || comparisonTaxon.getValue()>=taxa.getNumTaxa())
 			comparisonTaxon.setValue(0);

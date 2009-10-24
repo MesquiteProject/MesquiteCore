@@ -99,7 +99,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		mu1p = new MesquiteParameter("mu1", "Rate of extinction with state 1", 0.1, 0, inf, 0.000, 1);
 		q01p = new MesquiteParameter("q01", "Rate of 0->1 changes", 0.1, 0, inf, 0.000, 1);
 		q10p = new MesquiteParameter("q10", "Rate of 1->0 changes", 0.1, 0, inf, 0.000, 1);
-		if (MesquiteThread.isScripting()  && !MesquiteThread.actingAsLibrary)
+		if (MesquiteThread.isScripting()  && !MesquiteThread.suppressInteractionAsLibrary)
 			suspended = true;
 		paramsForExploration= new MesquiteParameter[]{s0p, s1p, mu0p, mu1p, q01p, q10p};
 		speciesModel = new SpecExtincCategModel();
