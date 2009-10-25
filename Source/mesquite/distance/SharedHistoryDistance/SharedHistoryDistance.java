@@ -79,7 +79,7 @@ public class SharedHistoryDistance extends IncTaxaDistanceSource implements Incr
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Shared History Distances (Covariance matrix) implied by Tree";  
+		return "Shared History Distances (Covariance matrix) from Tree";  
 	}
 	   	 
 	public String getParameters() {
