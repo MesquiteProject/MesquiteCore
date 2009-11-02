@@ -136,7 +136,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 			 long s= CategoricalState.inapplicable;
 			 CategoricalState resultState = new CategoricalState();
 			 MesquiteString resultString = new MesquiteString();
-			 stateTask.calculateState( (CategoricalData)data,  ic,  table,  resultState,  resultString);
+			 stateTask.calculateState( (CategoricalData)data,  ic,  table,  resultState,  resultString, null);
 			 s = resultState.getValue();
 			 ((CategoricalData)data).setState(ic, 0, s);
 		 }
@@ -292,7 +292,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		 MesquiteString resultString = new MesquiteString();
 		 long[] sequence = new long[data.getNumChars()];
 		 for (int i = 0; i<data.getNumChars(); i++) {
-			 stateTask.calculateState( (CategoricalData)data,  i,  table,  resultState,  resultString);
+			 stateTask.calculateState( (CategoricalData)data,  i,  table,  resultState,  resultString, null);
 			 sequence[i] = resultState.getValue();
 		 }
 		consensusSequence = sequence;
@@ -310,7 +310,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 		 } else {
 			 CategoricalState resultState = new CategoricalState();
 			 MesquiteString resultString = new MesquiteString();
-			 stateTask.calculateState( (CategoricalData)data,  ic,  table,  resultState,  resultString);
+			 stateTask.calculateState( (CategoricalData)data,  ic,  table,  resultState,  resultString, null);
 			 s = resultState.getValue();
 		 }
 
@@ -321,43 +321,43 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 			 if (colorSomeInapp) {
 				 g.setColor(Color.darkGray);
 			 }
+			 Color cellColor = null;
+			 long aa=-1;
 			 if (data instanceof DNAData){
 				 if (colorByAA.getValue()){
-					 Color color = null;
-					 long aa = ((DNAData)data).getAminoAcid(consensusSequence, ic,true);
+					aa = ((DNAData)data).getAminoAcid(consensusSequence, ic,true);
 					 if (!CategoricalState.isImpossible(aa)) {
 						 if (emphasizeLessDegenerateAAs.getValue()) {
-							 color = ProteinData.getAminoAcidColor(aa, Color.white);
-							 color = ((DNAData)data).alterColorToDeemphasizeDegeneracy(ic,aa,color);
+							 cellColor = ProteinData.getAminoAcidColor(aa, Color.white);
+							 cellColor = ((DNAData)data).alterColorToDeemphasizeDegeneracy(ic,aa,cellColor);
 						 } else
-							 color = ProteinData.getAminoAcidColor(aa, ProteinData.multistateColor);
+							 cellColor = ProteinData.getAminoAcidColor(aa, ProteinData.multistateColor);
 					 }
-					 if (color==null){
+					 if (cellColor==null){
 						 if (e>=0)
-							 g.setColor(DNAData.getDNAColorOfState(e));
+							 cellColor = DNAData.getDNAColorOfState(e);
 						 else
-							 g.setColor(Color.white);
+							 cellColor =Color.white;
 					 }
-					 else
-						 g.setColor(color);
 				 }
 				 else if (e>=0)
-					 g.setColor(DNAData.getDNAColorOfState(e));
+					 cellColor =DNAData.getDNAColorOfState(e);
 				 else {
-					 g.setColor(Color.white);
+					 cellColor =Color.white;
 					 grayText =true;
 				 }
 			 }
 			 else if (data instanceof ProteinData){
 				 if (e>=0)
-					 g.setColor(ProteinData.getProteinColorOfState(e));
+					 cellColor =ProteinData.getProteinColorOfState(e);
 				 else {
-					 g.setColor(Color.white);
+					 cellColor =Color.white;
 					 grayText =true;
 				 }
 			 }
 			 else 
-				 g.setColor(Color.white);
+				 cellColor =Color.white;
+			 g.setColor(cellColor);
 			 g.fillRect(x,y,w,h);
 
 			 if (colorSomeInapp) 
@@ -368,8 +368,13 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 				 else 
 					 g.setColor(Color.lightGray);
 			 }
-			 else
-				 g.setColor(Color.black);
+			 else {
+					float[] hsb = new float[3];
+					hsb[0]=hsb[1]=hsb[2]= 1;
+					Color.RGBtoHSB(cellColor.getRed(), cellColor.getGreen(), cellColor.getBlue(), hsb);
+					Color textColor = ColorDistribution.getContrasting(selected, cellColor, hsb, Color.white, Color.black);
+					g.setColor(textColor);
+			 }
 			 StringBuffer sb = new StringBuffer();
 			 ((CategoricalData)data).statesIntoStringBufferCore(ic,  s,  sb, true,false, false);
 			 FontMetrics fm = g.getFontMetrics(g.getFont());

@@ -699,7 +699,7 @@ class HennigCCODE extends HennigNonaCommand {
 								if (weightSet.getInt(icFollow)==icWeight && !processedSet.isBitOn(icFollow))  {
 									processedSet.setSelected(icFollow, true);
 									if (scopeStart==-1) {
-										scopeStart=counter;
+										scopeStart=icFollow; //DRM 1 Nov 2009; was scopeStart=counter
 									}
 									if ((icFollow==numChars-1 && !fileInterpreter.writeOnlySelectedData)||(icFollow==data.lastSelected() && fileInterpreter.writeOnlySelectedData)) {
 										ccodePart += scopeToString(scopeStart, writeCounter);

@@ -127,11 +127,31 @@ public class ConsensusStateForChar extends CategStateForCharacter {
 	}
 
 
-	public void calculateState(CategoricalData data, int ic,MesquiteTable table, CategoricalState resultState, MesquiteString resultString) {
+	public void calculateState(CategoricalData data, int ic,MesquiteTable table, CategoricalState resultState, MesquiteString resultString, MesquiteDouble fractionMatching) {
 		if (data==null || resultState==null)
 			return;
-		long s = getConsensusState(data, ic, table);
-		resultState.setValue(s);
+		long consensusState = getConsensusState(data, ic, table);
+		if (fractionMatching !=null) { 
+			int numTaxa = data.getNumTaxa();
+			boolean noRowsSelected = !table.anyRowSelected();
+			int numTaxaMatch=0;
+			int numTaxaWithData = 0;
+			for (int it=0; it<numTaxa; it++) {
+				if (!getSelectedOnly() || table!=null && (table.isRowSelected(it) || noRowsSelected)) {
+					long s= data.getState(ic,it);
+					if (CategoricalState.isInapplicable(s))
+						continue;
+					if (CategoricalState.isSubset(s, consensusState)) 
+						numTaxaMatch++;
+					numTaxaWithData++;
+				}
+			}
+			if (numTaxaWithData>0)
+				fractionMatching.setValue(numTaxaMatch*1.0/numTaxaWithData);
+			else
+				fractionMatching.setValue(0.0);
+		}
+		resultState.setValue(consensusState);
 		resultString.setValue(resultState.toString());
 	}
 

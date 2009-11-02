@@ -26,7 +26,7 @@ public abstract class CategStateForCharacter extends MesquiteModule {
  		return "Assigns a single character state for a categorical character; e.g., for consensus sequences.";
    	 }
 
-	public abstract void calculateState(CategoricalData data, int ic,  MesquiteTable table, CategoricalState resultState, MesquiteString resultString);
+	public abstract void calculateState(CategoricalData data, int ic,  MesquiteTable table, CategoricalState resultState, MesquiteString resultString, MesquiteDouble fractionMatching);
 
 	/*.................................................................................................................*/
 	 public String getShortParameters() {
