@@ -1435,7 +1435,7 @@ class HennigTREAD extends HennigNonaCommand {
 			outputBuffer.append(getCommandName()+fileInterpreter.getLineEnding());
 			for (int iTree = 0; iTree < treeVector.size(); iTree++) {
 				tree = (Tree)treeVector.elementAt(iTree);
-				outputBuffer.append(tree.writeTree(Tree.BY_NUMBERS, false, false, false, true, null));  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
+				outputBuffer.append(tree.writeTreeSimple(Tree.BY_NUMBERS, false, false, false, true, null));  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
 				// if do it BY_NAMES, make sure you truncate the taxon names to 10 characters!!
 				outputBuffer.append("*"+fileInterpreter.getLineEnding());
 			}

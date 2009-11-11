@@ -34,7 +34,7 @@ public class AuthorDefaults extends DefaultsAssistant {
 		storePreferences();
 	}
 
-	
+
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
 			if ("&".equals(prefs[0])){
@@ -60,7 +60,7 @@ public class AuthorDefaults extends DefaultsAssistant {
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("authorBlockDefault".equalsIgnoreCase(tag)){
 			authorBlockDefault.setValue(content);
-		
+
 		}
 		else if ("authorName".equalsIgnoreCase(tag)){
 			MesquiteModule.author.setName(content);
@@ -91,10 +91,46 @@ public class AuthorDefaults extends DefaultsAssistant {
 			return (new String[] {"&", authorsRecDef});
 	}
 	/**/
-	
-	
-	
-	
+
+
+
+	/*.................................................................................................................*/
+	Author findAuthorIdentical(String name, String code){
+		if (code == null || name == null)
+			return null;
+		Projects p = MesquiteTrunk.getProjectList();
+		for (int i=0; i<p.getNumProjects(); i++){
+			MesquiteProject proj = p.getProject(i);
+			if (proj.numAuthors()>0){
+				ListableVector v = proj.getAuthors();
+				for (int k = 0; k< v.size(); k++){
+					Author a = (Author)v.elementAt(k);
+					if (a.getCode()!= null && a.getCode().equals(code) && a.getName()!= null && a.getName().equals(name))
+						return a;
+				}
+			}
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	Author findAuthorByCode(String code){
+		if (code == null )
+			return null;
+		Projects p = MesquiteTrunk.getProjectList();
+		for (int i=0; i<p.getNumProjects(); i++){
+			MesquiteProject proj = p.getProject(i);
+			if (proj.numAuthors()>0){
+				ListableVector v = proj.getAuthors();
+				for (int k = 0; k< v.size(); k++){
+					Author a = (Author)v.elementAt(k);
+					if (a.getCode()!= null && a.getCode().equals(code))
+						return a;
+				}
+			}
+		}
+		return null;
+	}
+
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -103,12 +139,42 @@ public class AuthorDefaults extends DefaultsAssistant {
 			MesquiteString resp1 = new MesquiteString(MesquiteModule.author.getName());
 			MesquiteString resp2 = new MesquiteString(MesquiteModule.author.getCode());
 			MesquiteString.queryTwoStrings(containerOfModule(), "Set Author", "Author", "Author code (do not use a number!)", answer, resp1, resp2, false);
-			if (answer.getValue()){
-				MesquiteModule.author.setName(resp1.getValue());
-				MesquiteModule.author.setCode(resp2.getValue());
+			if (answer.getValue() && (!MesquiteModule.author.getName().equals(resp1.getValue()) || !MesquiteModule.author.getCode().equals(resp2.getValue()))){
+				//there's be a change
+				//first, is it a known author?
+				Author a = findAuthorIdentical(resp1.getValue(), resp2.getValue());
+				if (a == null){
+					a = findAuthorByCode(resp2.getValue());  //exists; just need to change names
+					if (a !=null){
+						a.setName(resp1.getValue());
+						Projects p = MesquiteTrunk.mesquiteTrunk.getProjectList();
+						for (int i=0; i<p.getNumProjects(); i++){
+							MesquiteProject proj = p.getProject(i);
+							ListableVector v = proj.getAuthors();
+							v.notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
+						}
+						return null;
+					}
+				}
+				if (a == null){  //no, so make a new author
+					a = new Author();
+					a.setName(resp1.getValue());
+					a.setCode(resp2.getValue());
+					Projects p = MesquiteTrunk.mesquiteTrunk.getProjectList();
+					for (int i=0; i<p.getNumProjects(); i++){
+						MesquiteProject proj = p.getProject(i);
+						ListableVector v = proj.getAuthors();
+						v.addElement(a, false);
+					}
+				}
+
+				MesquiteModule.author.setCurrent(false);
+				a.setCurrent(true);
+				MesquiteModule.author = a;
+				storePreferences();
+				setCurrentAllProjects();
+				
 			}
-			storePreferences();
-			setCurrentAllProjects();
 			return null;
 
 		}
@@ -144,6 +210,7 @@ public class AuthorDefaults extends DefaultsAssistant {
 				a.setCurrent(true);
 				v.addElement(a, true);
 			}
+			v.notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 		}
 	}
 	/*.................................................................................................................*/
