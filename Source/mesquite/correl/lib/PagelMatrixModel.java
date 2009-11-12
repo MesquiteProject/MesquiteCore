@@ -1042,6 +1042,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	/*.................................................................................................................*/	
 	// overloading for 2 characters
 	private double checkUnderflow(double[][] probs){
+		if (probs == null || probs.length==0)
+			return 0;
 		minChecker.setValue(MesquiteDouble.unassigned);
 		int probsDim1 = probs.length;
 		int probsDim2 = probs[0].length;

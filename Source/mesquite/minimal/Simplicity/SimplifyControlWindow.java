@@ -31,6 +31,8 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		String simpLoc = module.getPath() + "instructions.html";
 		instructions = MesquiteFile.getFileContentsAsString(simpLoc);
 		instructions = StringUtil.replace(instructions, "RPATH", MesquiteFile.massageFilePathToURL(MesquiteModule.getRootImageDirectoryPath()));
+		if (instructions == null)
+			instructions = "";
 		//saved settings... load, save
 		classesPane = new ClassesPane();
 		modePanel = new ModePanel(this);

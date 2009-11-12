@@ -52,6 +52,8 @@ public abstract class GeneticCode implements Listable {
 	/*.................................................................................................................*/
   	/** Returns true if the GeneticCode objects are the same */
  		public boolean equals (GeneticCode otherGeneticCode) {
+ 			if (otherGeneticCode == null)
+ 				return false;
  	 		if (getNCBITranslationTableNumber() == CUSTOM_CODE ||  otherGeneticCode.getNCBITranslationTableNumber() == CUSTOM_CODE) {
  	 			for (int c1=0; c1<4; c1++) 
  	 				for (int c2=0; c2<4; c2++) 

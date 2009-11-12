@@ -73,7 +73,7 @@ public abstract class EditorPanel extends MesquitePanel {
 			int lineX = 0;
 			//	if (tb.showRowGrabbers)
 			//		lineX = tb.getRowGrabberWidth();
-			for (int c=tb.firstRowVisible; (c<row); c++) {
+			for (int c=tb.firstRowVisible; (c<row && c< tb.rowHeights.length); c++) {
 				lineX += tb.rowHeights[c];
 			}
 			return lineX;
