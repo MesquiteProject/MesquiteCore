@@ -5,6 +5,7 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Long2DArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Tree;
 import mesquite.lib.characters.*;
 
@@ -155,12 +156,31 @@ public class MPRProcessor {
 				long daughterNodeSet = ((CategoricalHistory)history).getConditionalStateSet(d,stateOfNode);
 				long mprsInDaughter = totalMPRsAtNodeGivenMPRSet(d,daughterNodeSet);
 
-				totalMPRsPerMPRInNode = totalMPRsPerMPRInNode/mprsInDaughter;
+				if (mprsInDaughter==0) {
+					totalMPRsPerMPRInNode = Long.MAX_VALUE;
+					MesquiteTrunk.mesquiteTrunk.discreetAlert("Number of MPRs exceeds that allowed - calculations can not be completed.");
+					return;
+				}
+				else 
+					totalMPRsPerMPRInNode = totalMPRsPerMPRInNode/mprsInDaughter;
 
-				long whichMPRInDaughter = whichMPROnceFixed / totalMPRsPerMPRInNode;  
-				if (whichMPROnceFixed % totalMPRsPerMPRInNode!=0) 
-					whichMPRInDaughter++;
+				long whichMPRInDaughter;
+				if (totalMPRsPerMPRInNode==0) {
+					whichMPRInDaughter = Long.MAX_VALUE;
+					MesquiteTrunk.mesquiteTrunk.discreetAlert("Number of MPRs exceeds that allowed - calculations can not be completed.");
+					return;
+				}
+				else{
+					whichMPRInDaughter = whichMPROnceFixed / totalMPRsPerMPRInNode;  
+					if (whichMPROnceFixed % totalMPRsPerMPRInNode!=0) 
+						whichMPRInDaughter++;
+				}
 				setMPR(tree,results, whichMPRInDaughter, mprsInDaughter, d);
+				if (totalMPRsPerMPRInNode==0) {
+					whichMPROnceFixed = Long.MAX_VALUE;
+					MesquiteTrunk.mesquiteTrunk.discreetAlert("Number of MPRs exceeds that allowed - calculations can not be completed.");
+					return;
+				}
 				whichMPROnceFixed=whichMPROnceFixed % totalMPRsPerMPRInNode+1;   // have to take the remainder and convert it to 1-based; this is for the next daughter
 			}
 		} 
