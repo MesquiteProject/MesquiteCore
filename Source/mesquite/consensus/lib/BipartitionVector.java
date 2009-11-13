@@ -355,7 +355,7 @@ public class BipartitionVector extends Vector {
 		int newNode = tree.makeClade(stored.bits);
 		if (mode==MAJRULEMODE) {
 			double prop = getDecimalFrequency(stored);
-			tree.setAssociatedDouble(freqRef, newNode, prop);
+			tree.setAssociatedDouble(freqRef, newNode, prop, true);
 			//	tree.setNodeLabel(MesquiteDouble.toStringDigitsSpecified(prop, 3), newNode);
 			if (tree.nodeIsInternal(newNode)){
 				double length = stored.getSplitLength();
