@@ -1942,11 +1942,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		boolean resized = false;
+		autoSizeRowNames(g);
 		if (checkResetFont(g)) {
 			if (autosizeColumns)
 				autoSizeColumns(g);
 			else{
-				autoSizeRowNames(g);
 				autoSizeRows(g);
 			}
 			repaintAll();

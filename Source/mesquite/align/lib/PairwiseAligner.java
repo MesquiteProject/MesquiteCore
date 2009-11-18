@@ -33,6 +33,7 @@ public class PairwiseAligner  {
 	private int gapExtendTerminal;
 	private int subs[][];
 	private boolean keepGaps = false;
+	private boolean maintainOrder = false;
 	
 	public int totalGapChars = 0;
 		
@@ -83,23 +84,6 @@ public class PairwiseAligner  {
 	}
 	
 	
-	public long[][] getAlignment(MolecularData data1, int it1, MolecularData data2, int it2, MesquiteNumber alignScore) {
-		int[] firstSite = new int[] {0, 0};
-		int[] lastSite = new int[] {data1.getNumChars()-1, data2.getNumChars()-1};
-		int[] numChars = new int[] {lastSite[0] - firstSite[0]+1, lastSite[1] - firstSite[1]+1};
-		long[] extracted1 = new long[numChars[0]];
-		long[] extracted2 = new long[numChars[1]];
-		
-		for (int ic = firstSite[0]; ic<=lastSite[0]; ic++){
-			extracted1[ic] = data1.getState(ic, it1);
-		}
-		for (int ic = firstSite[1]; ic<=lastSite[1]; ic++){
-			extracted2[ic] = data2.getState(ic, it2);
-		}
-  		CategoricalState state = (CategoricalState)data1.makeCharacterState();
-		return alignSequences(extracted1, extracted2, true, alignScore);
-	}
-
 
 	
 	public long[][] stripEmptyBases(long[][] alignment, int minLength){
@@ -226,7 +210,7 @@ public class PairwiseAligner  {
 		
 		//Just to decrease the amount of memory used to O(min of A_length and B_length)
 		//note: the "withGaps" version won't do this (at least at first), since then the "A" that needs to have gaps retained would be wrong. 
-		if ( !keepGaps && lengthB < lengthA) {
+		if (!maintainOrder && !keepGaps && lengthB < lengthA) {
 			int [] tmp2 = A;
 			A = B;
 			B = tmp2;
@@ -374,6 +358,24 @@ public class PairwiseAligner  {
 		return score;
 	}
 
+	public long[][] getAlignment(MolecularData data1, int it1, MolecularData data2, int it2, MesquiteNumber alignScore, boolean maintainOrder) {
+		if (data1==null || data2==null)
+			return null;
+		long[] extracted1 = new long[data1.getNumChars()];
+		long[] extracted2 = new long[data2.getNumChars()];
+		
+		for (int ic = 0; ic<data1.getNumChars(); ic++){
+			extracted1[ic] = data1.getState(ic, it1);
+		}
+		for (int ic = 0; ic<data2.getNumChars(); ic++){
+			extracted2[ic] = data2.getState(ic, it2);
+		}
+		setMaintainOrder(maintainOrder);
+		long[][] aligned = alignSequences(extracted1, extracted2, true, alignScore);
+		return aligned;
+	}
+
+
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the sequences identified by the "taxon" and "site" arguments.
 	 * If object has been told to retain gaps, gaps in taxon1 will remain intact (new ones  may be added)*/
 	public long[][] alignSequences(MCategoricalDistribution data, int taxon1, int taxon2, int firstSite, int lastSite, boolean returnAlignment, MesquiteNumber score) {
@@ -399,6 +401,14 @@ public class PairwiseAligner  {
 		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
 	
 		return aligned;
+	}
+
+	public boolean isMaintainOrder() {
+		return maintainOrder;
+	}
+
+	public void setMaintainOrder(boolean maintainOrder) {
+		this.maintainOrder = maintainOrder;
 	}
 
 }
