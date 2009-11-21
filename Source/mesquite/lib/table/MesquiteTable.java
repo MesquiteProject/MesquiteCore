@@ -100,7 +100,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public boolean cornerIsHeading = false;
 	protected boolean autosizeColumns = false;
-	protected boolean autosizeRowNames = false;
+//	protected boolean autosizeRowNames = false;
+	public MesquiteBoolean autoRowNameWidth = new MesquiteBoolean(false);
+
 	private boolean cellsAutoEditable = false;
 	private boolean rowNamesAutoEditable = false;
 	private boolean columnNamesAutoEditable = false;
@@ -1626,9 +1628,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int tableWIDTHpart = (getTableWidth() - getRowNamesWidth()) / (contrainedMaxColumnNum + 1);
 		if (constrainMaxAutoRownames && max > tableWIDTHpart) // v. 1.01 e 81
 			max = tableWIDTHpart;
-		int newCW = max + 2 + MesquiteModule.textEdgeCompensationHeight;
+		int newCW = max + 10 + MesquiteModule.textEdgeCompensationHeight;
 		int current = getRowNamesWidth();
-		if (newCW != current && (Math.abs(newCW - current) > 1)) {
+		if (newCW > current && (Math.abs(newCW - current) > 1)) {
 			setRowNamesWidth(newCW);
 			changed = true;
 		}
@@ -1943,7 +1945,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		boolean resized = false;
-		if (autosizeRowNames)
+		if (autoRowNameWidth.getValue())
 			autoSizeRowNames(g);
 		if (checkResetFont(g)) {
 			if (autosizeColumns)
