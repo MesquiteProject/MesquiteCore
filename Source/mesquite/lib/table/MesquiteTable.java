@@ -100,6 +100,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public boolean cornerIsHeading = false;
 	protected boolean autosizeColumns = false;
+	protected boolean autosizeRowNames = false;
 	private boolean cellsAutoEditable = false;
 	private boolean rowNamesAutoEditable = false;
 	private boolean columnNamesAutoEditable = false;
@@ -1942,6 +1943,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		boolean resized = false;
+		if (autosizeRowNames)
+			autoSizeRowNames(g);
 		if (checkResetFont(g)) {
 			if (autosizeColumns)
 				autoSizeColumns(g);
