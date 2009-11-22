@@ -145,6 +145,7 @@ public class UndoInstructions implements Undoer {
 			if (data != null && obj!=null)
 				if (obj instanceof CharacterData) {
 					this.oldData = ((CharacterData)obj).cloneData();
+					this.oldData.disconnectListening();
 					if (obj instanceof CategoricalData) {
 						CategoricalData cd = (CategoricalData)obj;
 						for (int ic=0; ic<cd.getNumChars(); ic++){
@@ -188,6 +189,7 @@ public class UndoInstructions implements Undoer {
 			if (data != null && obj!=null)
 				if (obj instanceof CharacterData) {
 					this.oldData = ((CharacterData)obj).cloneDataBlock(icStart,  icEnd,  itStart, itEnd);
+					this.oldData.disconnectListening();
 					if (recordRange) {
 						this.itStart = itStartStore;
 						this.itEnd = itEndStore;
@@ -263,9 +265,11 @@ public class UndoInstructions implements Undoer {
 	}
 	public void setNewData(CharacterData data) {
 		this.newData = data.cloneData();
+		newData.disconnectListening();
 	}
 	public void setNewDataBlock(CharacterData data,int icStart, int icEnd, int itStart, int itEnd) {
 		this.newData = data.cloneDataBlock( icStart,  icEnd,  itStart,  itEnd);
+		newData.disconnectListening();
 	}
 
 	public void deleteJustAdded(Associable assoc) {
@@ -353,6 +357,7 @@ public class UndoInstructions implements Undoer {
 
 		case ALLDATACELLS:
 			newData = data.cloneData();
+			newData.disconnectListening();
 			data.copyData(oldData, true);
 			if (oldData instanceof CategoricalData) {
 				CategoricalData cd = (CategoricalData)oldData;
@@ -375,6 +380,7 @@ public class UndoInstructions implements Undoer {
 
 		case DATABLOCK:
 			newData = data.cloneDataBlock(icStart, icEnd, itStart, itEnd); //this will be just the size of the block
+			newData.disconnectListening();
 			data.copyDataBlock(oldData, icStart, icEnd, itStart, itEnd);
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 			return new UndoInstructions(changeClass, newData, data, icStart, icEnd, itStart, itEnd, 0, icEnd-icStart, 0, itEnd-itStart, true);
