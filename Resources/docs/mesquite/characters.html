@@ -154,8 +154,7 @@
                 details specific to those types of characters, see the pages on 
                 <a href="molecular/molecular.html">molecular</a> and <a href="continuous/continuous.html">continuous</a> 
                 characters. <strong>Categorical characters</strong> other than molecular characters 
-                can have 55 states (by default symbols 0 - 9, A - H, K - N, P 
-                - Z, a - h, k - n, p - z).  <strong>Meristic characters</strong> are whole numbers (and can be negative); inapplicable is indicated by an asterisk (*), not &quot;-&quot; as in other data types, and missing by question mark (?). </p>
+                can have 55 states.  <strong>Meristic characters</strong> are whole numbers (and can be negative). </p>
               <p>Characters can exist within <strong>matrices</strong> that are 
                 stored in a data file. Thus, one matrix may store a series of 
                 categorical characters to describe phenotypic features. A separate 
@@ -171,7 +170,8 @@
                 at any point being captured in a matrix and stored in a file. Thus, the &quot;<strong><a name="source"></a>Source of Characters</strong>&quot; used for a calculation can be either matrices stored in the file, or characters generated on-the-fly by simulations or randomizations, or ordinations. For this reason, Mesquite by default asks you what  Source of Characters to use when characters or matrices are needed. Because some novice users may find this request confusing, you can set Mesquite to choose Stored Characters or Stored Matrices by default, without asking, by selecting the &quot;Use Stored Characters/Matrices by Default&quot; item in the Defaults submenu of the File menu. </p>
               <p>Most of this manual page concerns characters/matrices stored in the data file.
               <ul>
-                <li><a href="#creating">Creating a character matrix</a></li>
+                 <li><a href="#types">Types of character matrices</a></li>
+               <li><a href="#creating">Creating a character matrix</a></li>
                 <li><a href="#deleting">Deleting and renaming character matrices</a></li>
                 <li><a href="#editor">The Character Matrix Editor</a> 
                   <ul>
@@ -193,7 +193,27 @@
                 <li><a href="#charting">Charting information about Characters</a></li>
                 <li><a href="#listingMatrices">Listing all character matrices</a></li>
               </ul></p>
-              <h3><font face="Trebuchet MS"><a name="creating"></a>Creating a 
+              <h3><font face="Trebuchet MS"><a name="types"></a>Types of Character Matrices</font></h3>
+              <p>The standard types of character matrices available in Mesquite are:              
+              
+              <ul>
+                  <li><strong>Standard Categorical Matrices</strong> &mdash; States are discrete, not necessarily ordered. Characters can have as many as 55 states, whose symbols by default are 0 - 9, A - H, K - N, P 
+                - Z, a - h, k - n, p - z. Polymorphisms (e.g., state 0 and 2) are indicated by 0&amp;2; uncertainty (e.g., state 0 or 2) is indicated by 0/2. A completely unknown state is indicated by ? by default. If the character is inapplicable to that taxon, the symbol is - by default. State names can be assigned using Edit State Names.<br>
+                <img src="images/categEG.jpg" width="292" height="201"><br>
+                  </li>
+                  <li><strong>DNA/RNA matrices</strong> &mdash; Four states, A, C, G, T or A, C, G, U. Standard ambiguity codes (e.g., R = A or G) can be used. By default, unknown state is ?, gap is -. More information on editing DNA data is given <a href="molecular/molecular.html">here</a>.<br>
+                    
+                  <img src="images/DNAEG.jpg" width="358" height="154"></li>
+                  <li><strong>Protein matrices</strong> &mdash; Standard symbols for amino acids. By default, unknown state is ?, gap is -. More information on editing protein data is given <a href="molecular/molecular.html">here</a>.</li>
+                  <li><strong>Continuous matrices</strong> &mdash; States are continuous values (e.g. 1.02, 3e-4). A matrix can have multiple items, such as x, y or min, max. Items can be added using the menu items under Matrix&gt;Utilities, or using the matrix information panel (shown using the blue &quot;i&quot; at lower left of the matrix). A special type of continuous matrix, Geographic, has two characters (latitude, longitude). More information on continous data is given <a href="continuous/continuous.html">here</a>.<br>
+                    
+                  <img src="images/contEG.jpg" width="377" height="213"></li>
+                  <li><strong>Meristic matrices</strong> &mdash; States are whole numbers (and can be negative). If the character is inapplicable to that taxon is indicated by an x, not &quot;-&quot; as in other data types, to avoid confusion with the minus sign. Missing data is indicated by a question mark (?). Meristic matrices can have multiple items, which can be added using the matrix information panel (shown using the blue &quot;i&quot; at lower left of the matrix).<br>
+                  <img src="images/merEG.jpg" width="220" height="154"></li>
+              </ul>
+         
+              <font face="Trebuchet MS"> 
+             <h3><font face="Trebuchet MS"><a name="creating"></a>Creating a 
                 character matrix</font></h3>
               <p>There are several ways to create a<font face="Trebuchet MS"> 
                 character matrix to be stored in the file. Most simply, you can 
