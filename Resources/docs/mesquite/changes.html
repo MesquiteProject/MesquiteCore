@@ -160,7 +160,27 @@
               <p><font face="Trebuchet MS">There is also a short list of <a href="#releaseDates">release
               dates</a>.</font></p>
                <hr>
-             <h3><font face="Trebuchet MS">Version 2.71</font></h3>
+              <h3><font face="Trebuchet MS">Version 2.72</font></h3>
+              <h4><font face="Trebuchet MS">New Features</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+
+                <li>Parsimony analyses can now be done with meristic data matrices, using Linear Parsimony (analogous to Ordered parsimony with categorical data)</li>
+                <li>New options have been provided for intepreting how information is attached to nodes and branches of trees, which affects how the information behaves when the tree is rerooted.  Branch lengths are treated as if they belong to the branch ancestral to a node, and so when the tree is rerooted, the branch length is reassociated so as to continue to refer to the same branch between nodes.  However, the name of a clade needs to remain associated with the same node regardless of rerooting.  Ned Young pointed out that other information always behaves as if attached to the nodes (not the branches between nodes). We have changed the behaviour so that branch widths and branch color behave as if attached to the branch.  We have also provided a function &quot;Reinterpret Internal Node Labels&quot;, available in the Alter/Transform Tree submenu of the Tree menu of a Tree window.  When this is selected you can change information associated with the tree as node labels and associate it with the nodes or branches in a different form.  This can be useful, for instance, if you have imported a tree from MrBayes with posterior probabilities attached as node labels.  Being attached as node labels, the probabilities will be mis-associated with nodes if the tree is rerooted.  You can move the probabilities from node labels to numbers attached to branches using Reinterpret Internal Node Labels.</li>
+                <li>The reporting of crashes and checksum errors has been improved. </li>
+              </ul>
+             <h4><font face="Trebuchet MS">Bug Fixes</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+
+                <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) When taxa were deleted, there was a chance that a crash would occur, and this crash could corrupt data.  This crash occurred inconsistently, but if it did occur, then you would have received a warning that data might be corrupted.  If you ignored the warning, then your character data or other information could have become associated with the wrong taxa.  This bug has been fixed.</li>
+                <li>Reading and writing of DNA matrices was fixed so that it preserved lower case symbols</li>
+                <li>Trees exported to PHYLIP and other formats are now written without "decorations" such as branch colors, which tended to render the trees unreadable by other programs</li>
+                <li>Sorting of columns now respects numerical order (and thus 2.0 is sorted as between 1.0 and 10.0)</li>
+                <li>Various  small bugs were fixed.</li>
+              </ul>
+               <hr>
+            <h3><font face="Trebuchet MS">Version 2.71</font></h3>
               <h4><font face="Trebuchet MS">New Features</font></h4>
               <font face="Trebuchet MS"> </font> 
               <ul>
