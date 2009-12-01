@@ -145,6 +145,7 @@ public class UndoInstructions implements Undoer {
 			if (data != null && obj!=null)
 				if (obj instanceof CharacterData) {
 					this.oldData = ((CharacterData)obj).cloneData();
+					this.oldData.setName("Undo Matrix [old]");
 					this.oldData.disconnectListening();
 					if (obj instanceof CategoricalData) {
 						CategoricalData cd = (CategoricalData)obj;
@@ -189,6 +190,7 @@ public class UndoInstructions implements Undoer {
 			if (data != null && obj!=null)
 				if (obj instanceof CharacterData) {
 					this.oldData = ((CharacterData)obj).cloneDataBlock(icStart,  icEnd,  itStart, itEnd);
+					this.oldData.setName("Undo Matrix [old]");
 					this.oldData.disconnectListening();
 					if (recordRange) {
 						this.itStart = itStartStore;
@@ -265,10 +267,12 @@ public class UndoInstructions implements Undoer {
 	}
 	public void setNewData(CharacterData data) {
 		this.newData = data.cloneData();
+		this.newData.setName("Undo Matrix [new]");
 		newData.disconnectListening();
 	}
 	public void setNewDataBlock(CharacterData data,int icStart, int icEnd, int itStart, int itEnd) {
 		this.newData = data.cloneDataBlock( icStart,  icEnd,  itStart,  itEnd);
+		this.newData.setName("Undo Matrix [new]");
 		newData.disconnectListening();
 	}
 
@@ -357,6 +361,7 @@ public class UndoInstructions implements Undoer {
 
 		case ALLDATACELLS:
 			newData = data.cloneData();
+			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();
 			data.copyData(oldData, true);
 			if (oldData instanceof CategoricalData) {
@@ -380,6 +385,7 @@ public class UndoInstructions implements Undoer {
 
 		case DATABLOCK:
 			newData = data.cloneDataBlock(icStart, icEnd, itStart, itEnd); //this will be just the size of the block
+			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();
 			data.copyDataBlock(oldData, icStart, icEnd, itStart, itEnd);
 			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
