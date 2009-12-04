@@ -174,6 +174,7 @@
               <ul>
 
                 <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) When taxa were deleted, there was a chance that a crash would occur, and this crash could corrupt data.  This crash occurred inconsistently, but if it did occur, then you would have received a warning that data might be corrupted.  If you ignored the warning, then your character data or other information could have become associated with the wrong taxa.  This bug has been fixed.</li>
+                <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) When a 3 dimensional (i.e. multi-item) continuous character matrix was exported to a file, and in a few other contexts, the exported matrix would have the items written incorrectly.  This did not affect typical continuous matrices, only those with multiple items in each cell of the matrix.  This bug has been fixed.</li>
                 <li>Reading and writing of DNA matrices was fixed so that it preserved lower case symbols</li>
                 <li>Trees exported to PHYLIP and other formats are now written without "decorations" such as branch colors, which tended to render the trees unreadable by other programs</li>
                 <li>Sorting of columns now respects numerical order (and thus 2.0 is sorted as between 1.0 and 10.0)</li>
