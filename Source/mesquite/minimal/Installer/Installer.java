@@ -349,6 +349,9 @@ public class Installer extends MesquiteInit {
 			return true;  //return true because not considered failure if inapplicable OS
 		String url = installElement.elementText("url");
 		String pathInMesquiteFolder = installElement.elementText("location");
+		String locationInMesquiteFolder = installElement.elementText("location");
+		if (!StringUtil.blank(locationInMesquiteFolder))
+			locationInMesquiteFolder = locationInMesquiteFolder + "/";
 		String fileName = installElement.elementText("file");
 		int version = MesquiteInteger.fromString(installElement.elementText("updateVersion"));  
 		String treatment = installElement.elementText("treatment");
@@ -357,12 +360,12 @@ public class Installer extends MesquiteInit {
 		String downloadAs = "installerDownload";
 		if (treatment == null || treatment.equalsIgnoreCase("asis"))
 			downloadAs = fileName;
-		String prevPackagePath = getRootPath() + pathInMesquiteFolder + "/" + fileName;
-		String tempPackagePath = getRootPath() + pathInMesquiteFolder + "/"  + fileName+ "PREVIOUSVERSION";
+		String prevPackagePath = getRootPath() + locationInMesquiteFolder + fileName;
+		String tempPackagePath = getRootPath() + locationInMesquiteFolder  + fileName+ "PREVIOUSVERSION";
 		File prevPackage = new File(prevPackagePath);
 		boolean hadExisted = prevPackage.exists();
 		if (false && hadExisted){
-			String prevVString = MesquiteFile.getFileContentsAsString(getRootPath() +  pathInMesquiteFolder + "/" + fileName+ "/version.txt");
+			String prevVString = MesquiteFile.getFileContentsAsString(getRootPath() +  locationInMesquiteFolder + fileName+ "/version.txt");
 			int prevVersion  = MesquiteInteger.fromString(prevVString);
 			if (false && prevVersion >= version){
 				if (!AlertDialog.query(containerOfModule(), "Replace?", "The version of the package " + fileName + " installed (" + prevVersion + ") is the same as or newer than the one to be downloaded (" + version + ") .  Do you want to replace it with the one to be downloaded?")){
@@ -379,18 +382,18 @@ public class Installer extends MesquiteInit {
 				logln("Renaming old version of " + fileName + " to " + fileName + "PREVIOUSVERSION");
 				MesquiteFile.rename(prevPackagePath, tempPackagePath);
 			}
-			logln("Downloading installation file to " + getRootPath() + pathInMesquiteFolder+ "/" + downloadAs);
-			if (MesquiteFile.downloadURLContents(url, getRootPath() + pathInMesquiteFolder + "/" + downloadAs, true)){
+			logln("Downloading installation file to " + getRootPath() + locationInMesquiteFolder + downloadAs);
+			if (MesquiteFile.downloadURLContents(url, getRootPath() + locationInMesquiteFolder + downloadAs, true)){
 				boolean fileReady = true;
 				if (treatment != null && treatment.equalsIgnoreCase("unzip")){
 					logln("Unzipping installation file");
-					fileReady = unzip(getRootPath() + pathInMesquiteFolder + "/", downloadAs);
+					fileReady = unzip(getRootPath() + locationInMesquiteFolder, downloadAs);
 					if (fileReady)
-						MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + downloadAs);
+						MesquiteFile.deleteFile(getRootPath() + locationInMesquiteFolder + downloadAs);
 				}
 				if (fileReady){
 					logln("Installation of " + fileName + " was successful.");
-					receipt.addElement(new MesquiteString("location", pathInMesquiteFolder + "/" + fileName), false);
+					receipt.addElement(new MesquiteString("location", locationInMesquiteFolder + fileName), false);
 				}
 				else if (hadExisted){
 					logln("Installation unsuccessful; attempting to recover old version of " + fileName);
@@ -399,7 +402,7 @@ public class Installer extends MesquiteInit {
 				}
 			}	
 			else {
-				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + downloadAs);
+				MesquiteFile.deleteFile(getRootPath() + locationInMesquiteFolder + downloadAs);
 				return false;
 			}
 		}
@@ -432,22 +435,26 @@ public class Installer extends MesquiteInit {
 	}
 	void cleanUp(Element installElement){
 		String pathInMesquiteFolder = installElement.elementText("location");
+		if (!StringUtil.blank(pathInMesquiteFolder))
+			pathInMesquiteFolder = pathInMesquiteFolder + "/";
 		String fileName = installElement.elementText("file");
-		File tempPackage = new File(getRootPath() + pathInMesquiteFolder + "/"  + fileName+ "PREVIOUSVERSION");
+		File tempPackage = new File(getRootPath() + pathInMesquiteFolder   + fileName+ "PREVIOUSVERSION");
 		boolean hadExisted = tempPackage.exists();
 		if (hadExisted){
 			logln("Deleting old version of " + fileName);
 			if (tempPackage.isDirectory())
-				MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder + "/" + fileName+ "PREVIOUSVERSION");
+				MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder  + fileName+ "PREVIOUSVERSION");
 			else 
-				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + fileName+ "PREVIOUSVERSION");
+				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder  + fileName+ "PREVIOUSVERSION");
 		}
 	}
 	void reverse(Element installElement){
 		String pathInMesquiteFolder = installElement.elementText("location");
+		if (!StringUtil.blank(pathInMesquiteFolder))
+			pathInMesquiteFolder = pathInMesquiteFolder + "/";
 		String fileName = installElement.elementText("file");
-		String prevPackagePath = getRootPath() + pathInMesquiteFolder + "/" + fileName;
-		String tempPackagePath = getRootPath() + pathInMesquiteFolder + "/"  + fileName+ "PREVIOUSVERSION";
+		String prevPackagePath = getRootPath() + pathInMesquiteFolder  + fileName;
+		String tempPackagePath = getRootPath() + pathInMesquiteFolder   + fileName+ "PREVIOUSVERSION";
 		File prevPackage = new File(prevPackagePath);
 
 		File tempPackage = new File(tempPackagePath);
@@ -455,9 +462,9 @@ public class Installer extends MesquiteInit {
 		if (hadExisted){
 			logln("Installation unsuccessful; attempting to recover old version of " + fileName);
 			if (prevPackage.isDirectory())
-				MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder + "/" + fileName);
+				MesquiteFile.deleteDirectory(getRootPath() + pathInMesquiteFolder  + fileName);
 			else 
-				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder + "/" + fileName);
+				MesquiteFile.deleteFile(getRootPath() + pathInMesquiteFolder  + fileName);
 			MesquiteFile.rename(tempPackagePath, prevPackagePath);
 		}
 	}
