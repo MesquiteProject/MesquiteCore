@@ -520,7 +520,7 @@ public class Installer extends MesquiteInit {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				MesquiteWindow mw = (MesquiteWindow)obj;
-				if (!(mw instanceof SystemWindow))
+				if (!(mw instanceof SystemWindow) && !(mw instanceof mesquite.trunk.AboutWindow))
 					mw.getParentFrame().setVisible(false);
 			}
 			Projects projects = MesquiteTrunk.mesquiteTrunk.getProjectList();
@@ -553,7 +553,7 @@ public class Installer extends MesquiteInit {
 			while (e2.hasMoreElements()) {
 				Object obj = e2.nextElement();
 				MesquiteWindow mw = (MesquiteWindow)obj;
-				if (!(mw instanceof SystemWindow))
+				if (!(mw instanceof SystemWindow) && !(mw instanceof mesquite.trunk.AboutWindow))
 					mw.getParentFrame().setVisible(true);
 			}
 			
