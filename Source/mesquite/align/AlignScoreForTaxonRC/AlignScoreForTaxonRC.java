@@ -40,7 +40,7 @@ public class AlignScoreForTaxonRC extends AlignScoreForTaxonGen {
 		aligner.alignSequences(extracted1, extracted2, false, alignScore);
 
 		for (int ic = firstSite; ic<=lastSite; ic++){
-			extracted1[lastSite-ic] = DNAData.complement(data.getState(ic, it1));
+			extracted1[lastSite-ic] = DNAState.complement(data.getState(ic, it1));
 		}
 		MesquiteNumber alignRCScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignRCScore);

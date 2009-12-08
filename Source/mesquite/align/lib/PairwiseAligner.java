@@ -111,7 +111,8 @@ public class PairwiseAligner  {
 	public synchronized long[][] alignSequences( long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score) {
 		
 		if (!gapCostsInitialized  || !subCostsInitialized) {
-			score.setValue( -1 );
+			if (score != null)
+				score.setValue( -1 );
 			return null;
 		}
 		
