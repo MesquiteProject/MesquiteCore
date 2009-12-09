@@ -327,7 +327,8 @@ public class Installer extends MesquiteInit {
 			String osVersion = osElement.elementText("osVersion");
 			String osArch = osElement.elementText("osArch");
 			boolean osArchMatches =(StringUtil.blank(osArch)|| System.getProperty("os.arch").indexOf(os)>=0);
-			boolean osMatches =(StringUtil.blank(os)|| System.getProperty("os.name").indexOf(os)>=0);
+			boolean osMatches =(StringUtil.blank(os)|| System.getProperty("os.name").indexOf(os)>=0 || (os.equalsIgnoreCase("other") && !MesquiteTrunk.isWindows() && !MesquiteTrunk.isMacOSX()));
+			
 			boolean osVersionMatches =(StringUtil.blank(osVersion)|| System.getProperty("os.version").startsWith(osVersion));
 			if (osMatches && osVersionMatches && osArchMatches)
 				return true;
