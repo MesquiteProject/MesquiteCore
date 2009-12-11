@@ -77,7 +77,8 @@ public class CategStateChanges {
 	
 	/*.................................................................................................................*/
 	public void setAcceptableChange(int i, int j, boolean b) {
-		acceptableChange[i][j]=b;
+		if (acceptableChange != null && i < acceptableChange.length && j < acceptableChange[i].length)		                                                                                  
+			acceptableChange[i][j]=b;
 
 	}
 

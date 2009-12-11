@@ -328,7 +328,7 @@ public class Installer extends MesquiteInit {
 			String osArch = osElement.elementText("osArch");
 			boolean osArchMatches =(StringUtil.blank(osArch)|| System.getProperty("os.arch").indexOf(os)>=0);
 			boolean osMatches =(StringUtil.blank(os)|| System.getProperty("os.name").indexOf(os)>=0 || (os.equalsIgnoreCase("other") && !MesquiteTrunk.isWindows() && !MesquiteTrunk.isMacOSX()));
-			
+
 			boolean osVersionMatches =(StringUtil.blank(osVersion)|| System.getProperty("os.version").startsWith(osVersion));
 			if (osMatches && osVersionMatches && osArchMatches)
 				return true;
@@ -349,11 +349,20 @@ public class Installer extends MesquiteInit {
 		if (!applicableOS(installElement))
 			return true;  //return true because not considered failure if inapplicable OS
 		String url = installElement.elementText("url");
+		String fileName = installElement.elementText("file");
 		String pathInMesquiteFolder = installElement.elementText("location");
 		String locationInMesquiteFolder = installElement.elementText("location");
 		if (!StringUtil.blank(locationInMesquiteFolder))
-			locationInMesquiteFolder = locationInMesquiteFolder + "/";
-		String fileName = installElement.elementText("file");
+			locationInMesquiteFolder = locationInMesquiteFolder + MesquiteFile.fileSeparator;
+
+		String directoryLocation = getRootPath() + locationInMesquiteFolder;
+		if (pathInMesquiteFolder != null && pathInMesquiteFolder.equalsIgnoreCase(":query user")){
+			String dL = MesquiteFile.chooseDirectory("Choose location for " + fileName);
+			if (dL != null)
+				directoryLocation = dL + MesquiteFile.fileSeparator;
+			else
+				directoryLocation = getRootPath();
+		}
 		int version = MesquiteInteger.fromString(installElement.elementText("updateVersion"));  
 		String treatment = installElement.elementText("treatment");
 		String execute = installElement.elementText("execute");
@@ -361,8 +370,8 @@ public class Installer extends MesquiteInit {
 		String downloadAs = "installerDownload";
 		if (treatment == null || treatment.equalsIgnoreCase("asis"))
 			downloadAs = fileName;
-		String prevPackagePath = getRootPath() + locationInMesquiteFolder + fileName;
-		String tempPackagePath = getRootPath() + locationInMesquiteFolder  + fileName+ "PREVIOUSVERSION";
+		String prevPackagePath = directoryLocation + fileName;
+		String tempPackagePath = directoryLocation  + fileName+ "PREVIOUSVERSION";
 		File prevPackage = new File(prevPackagePath);
 		boolean hadExisted = prevPackage.exists();
 		if (false && hadExisted){
@@ -376,21 +385,21 @@ public class Installer extends MesquiteInit {
 		}
 		if (url != null){
 			logln("Downloading installation file from " + url);
-			if (!MesquiteFile.fileOrDirectoryExists(getRootPath() + pathInMesquiteFolder)){
-				MesquiteFile.createDirectory(getRootPath() + pathInMesquiteFolder);
+			if (!MesquiteFile.fileOrDirectoryExists(directoryLocation)){
+				MesquiteFile.createDirectory(directoryLocation);
 			}
 			if (hadExisted){
 				logln("Renaming old version of " + fileName + " to " + fileName + "PREVIOUSVERSION");
 				MesquiteFile.rename(prevPackagePath, tempPackagePath);
 			}
-			logln("Downloading installation file to " + getRootPath() + locationInMesquiteFolder + downloadAs);
-			if (MesquiteFile.downloadURLContents(url, getRootPath() + locationInMesquiteFolder + downloadAs, true)){
+			logln("Downloading installation file to " + directoryLocation + downloadAs);
+			if (MesquiteFile.downloadURLContents(url, directoryLocation + downloadAs, true)){
 				boolean fileReady = true;
 				if (treatment != null && treatment.equalsIgnoreCase("unzip")){
 					logln("Unzipping installation file");
-					fileReady = unzip(getRootPath() + locationInMesquiteFolder, downloadAs);
+					fileReady = unzip(directoryLocation, downloadAs);
 					if (fileReady)
-						MesquiteFile.deleteFile(getRootPath() + locationInMesquiteFolder + downloadAs);
+						MesquiteFile.deleteFile(directoryLocation + downloadAs);
 				}
 				if (fileReady){
 					logln("Installation of " + fileName + " was successful.");
@@ -403,7 +412,7 @@ public class Installer extends MesquiteInit {
 				}
 			}	
 			else {
-				MesquiteFile.deleteFile(getRootPath() + locationInMesquiteFolder + downloadAs);
+				MesquiteFile.deleteFile(directoryLocation + downloadAs);
 				return false;
 			}
 		}
@@ -493,6 +502,8 @@ public class Installer extends MesquiteInit {
 			MesquiteString explanation = (MesquiteString)updateRecord.getElement("explanation");
 			MesquiteString uniqueLocation = (MesquiteString)updateRecord.getElement("uniqueLocation");
 			MesquiteString updateXML = (MesquiteString)updateRecord.getElement("updateXML");
+			MesquiteString beforeMessage = (MesquiteString)updateRecord.getElement("beforeMessage");
+			MesquiteString afterMessage = (MesquiteString)updateRecord.getElement("afterMessage");
 			ListableVector receipt = new ListableVector();
 			receipt.addElement(identity, false);
 			receipt.addElement(versionString, false);
@@ -509,13 +520,15 @@ public class Installer extends MesquiteInit {
 			}
 			if ((adHoc || !asked) && !MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Install?", "You have requested to install " + packageName + ".  Do you want to install it now?"))
 				return null;
+			if (beforeMessage != null && !StringUtil.blank(beforeMessage.getValue()))
+				discreetAlert(beforeMessage.getValue());
 			parser.setString(versionString.getValue());
 			int version = MesquiteInteger.fromString(parser);
 			ObjectContainer io = (ObjectContainer)updateRecord.getElement("install");
 			List installation = (List)io.getObject();
 			int count = 0;
 			boolean failed = false;
-			
+
 			//hide all project windows
 			Enumeration e = MesquiteTrunk.mesquiteTrunk.windowVector.elements();
 			while (e.hasMoreElements()) {
@@ -527,7 +540,7 @@ public class Installer extends MesquiteInit {
 			Projects projects = MesquiteTrunk.mesquiteTrunk.getProjectList();
 			for (int ip = 0; ip< projects.getNumProjects(); ip++){
 				MesquiteProject proj = projects.getProject(ip);
-				
+
 			}
 			for (Iterator iter = installation.iterator(); !failed && iter.hasNext();) {   // this is going through all of the notices
 				Element installElement = (Element) iter.next();
@@ -557,8 +570,7 @@ public class Installer extends MesquiteInit {
 				if (!(mw instanceof SystemWindow) && !(mw instanceof mesquite.trunk.AboutWindow))
 					mw.getParentFrame().setVisible(true);
 			}
-			
-			
+
 			if (!failed){
 				//Here mesquite should store a receipt that this update was installed.  Should store package reference and version reference.  
 				if (!PhoneHomeUtil.alreadyInReceipts(receipt))
@@ -566,6 +578,8 @@ public class Installer extends MesquiteInit {
 				writeReceipts();
 				PhoneHomeUtil.refreshUpdateMenuItems();
 				discreetAlert("Installation was successful.  You will need to restart Mesquite to make use of the new installation.");
+				if (afterMessage != null && !StringUtil.blank(afterMessage.getValue()))
+					discreetAlert(afterMessage.getValue());
 				resetAllMenuBars();
 			}
 		}

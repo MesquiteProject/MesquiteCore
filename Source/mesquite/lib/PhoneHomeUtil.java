@@ -523,6 +523,8 @@ public class PhoneHomeUtil {
 					String java = messageElement.elementText("java");
 					String requires = messageElement.elementText("requires");
 					String requiredPath = messageElement.elementText("requiredPath");
+					String beforeMessage = messageElement.elementText("beforeMessage");
+					String afterMessage = messageElement.elementText("afterMessage");
 					String uniqueID = MesquiteTrunk.getUniqueIDBase() + updateRecords.size();
 					v.addElement(new MesquiteString("uniqueID", uniqueID), false);
 					v.addElement(new MesquiteString("identity", messageElement.elementText("identity")), false);
@@ -534,6 +536,10 @@ public class PhoneHomeUtil {
 						v.addElement(new MesquiteString("requiredPath", requiredPath), false);
 					if (requires != null)
 						v.addElement(new MesquiteString("requires", requires), false);
+					if (beforeMessage != null)
+						v.addElement(new MesquiteString("beforeMessage", beforeMessage), false);
+					if (afterMessage != null)
+						v.addElement(new MesquiteString("afterMessage", afterMessage), false);
 					v.addElement(new MesquiteString("updateVersion", versionNum), false);
 					v.addElement(new MesquiteString("uniqueLocation", uniqueLocation), false);
 					v.addElement(new ObjectContainer("install", messageElement.elements("install")), false);

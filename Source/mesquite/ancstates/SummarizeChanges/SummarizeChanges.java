@@ -464,8 +464,9 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	public int getMaxState() {
 		return maxState;
 	}
-	public void setMaxState(int maxState) {
+	public void setMaxState(int maxState, CategStateChanges stateChanges) {
 		this.maxState = maxState;
+		stateChanges.adjustNumStates(maxState+1);
 	}
 	public void setAcceptableChanges(CategStateChanges stateChanges) {
 		if (stateChanges!=null)
@@ -593,7 +594,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 							if (saveDetails())
 								addFullDetailsHeader(tempCharStates.getMaxState()+1,fullDetails);
 						}
-						setMaxState(tempCharStates.getMaxState());
+						setMaxState(tempCharStates.getMaxState(), stateChanges);
 						setAcceptableChanges(stateChanges);
 
 						boolean processTree = true;

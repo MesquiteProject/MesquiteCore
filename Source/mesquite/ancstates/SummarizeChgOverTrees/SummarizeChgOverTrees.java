@@ -39,7 +39,7 @@ public class SummarizeChgOverTrees extends FileAssistantA {
 			return sorry(getName() + " couldn't start because no summarizer was obtained.");
 		}
 		summarizerTask.setSensitiveToBranchSelection(false);
-		Taxa taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to show a Multi-tree window?");
+		Taxa taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to summarize changes over trees?");
 		if (taxa == null)
 			return false;
 		summarizerTask.setup(taxa, false);
@@ -75,7 +75,7 @@ public class SummarizeChgOverTrees extends FileAssistantA {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/

@@ -104,7 +104,8 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 		if (observedStates==null)
 			return;
 		DNAData data = (DNAData)observedStates.getParentData();
-		
+		if (data == null)
+			return;
 		MesquiteNumber score = new MesquiteNumber();
 		
 		
