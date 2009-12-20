@@ -524,7 +524,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	 Should return estimated values in the MesquiteParameter array that was input
 	/*.................................................................................................................*/
 	public void calculateLogProbability(Tree tree, CharacterDistribution obsStates, MesquiteParameter[] params, MesquiteNumber prob, MesquiteString resultString) {  
-		if (speciesModel==null || obsStates==null || prob == null)
+		if (speciesModel==null || obsStates==null || prob == null || tree == null)
 			return;
 		lastTree = tree;
 		lastCharDistribution = obsStates;
@@ -534,7 +534,11 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 			return;
 		CategoricalDistribution observedStates = (CategoricalDistribution)obsStates;
 		int workingMaxState;
-		if (observedStates.getMaxState() <= 0){
+		if (tree.hasReticulations() || tree.hasUnbranchedInternals(tree.getRoot())){
+			MesquiteMessage.warnProgrammer("Tree has reticulations or unbranched internal nodes; these are not allowed in BiSSE calcuclations.");
+			return;
+		}
+		else if (observedStates.getMaxState() <= 0){
 			MesquiteMessage.warnProgrammer("Character Distribution appears to be constant; cannot calculate likelihood of tree and character (Speciation/Extinction)");
 			return;
 		}
