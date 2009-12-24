@@ -175,7 +175,7 @@ public class GenBankNumber extends TaxonListAssistant {
 		if (data==null || taxa==null)
 			return;
 		Taxon taxon = data.getTaxa().getTaxon(row);
-		Associable tInfo = data.getTaxaInfo(false);
+		Associable tInfo = data.getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
 			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, row, s);
 		}
