@@ -52,7 +52,7 @@ public class GenBankNumber extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		deleteMenuItem(mss2);
-		mss2 = addMenuItem("Move Numbers from GenBank Taxon Name", makeCommand("moveNumbersFromName", this));
+		mss2 = addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
 		if (this.taxa != null)
 			this.taxa.removeListener(this);
 		this.taxa = taxa;
