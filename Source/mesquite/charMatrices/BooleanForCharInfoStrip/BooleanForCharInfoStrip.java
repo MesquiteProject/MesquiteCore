@@ -52,13 +52,13 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		if (arguments !=null) {
 			booleanTask = (BooleanForCharacter)hireNamedEmployee(BooleanForCharacter.class, arguments);
 			if (booleanTask==null) {
-				return sorry("Boolean for character (for list) can't start because the requested calculator module wasn't successfully hired");
+				return sorry("Boolean for character (for info strip) can't start because the requested calculator module wasn't successfully hired");
 			}
 		}
 		else {
 			booleanTask = (BooleanForCharacter)hireEmployee(BooleanForCharacter.class, "Value to calculate for character (for character list)");
 			if (booleanTask==null) {
-				return sorry("Boolean for character (for list) can't start because no calculator module was successfully hired");
+				return sorry("Boolean for character (for info strip) can't start because no calculator module was successfully hired");
 			}
 		}
 		return true;

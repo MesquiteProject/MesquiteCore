@@ -40,6 +40,24 @@ public abstract class BooleanForTaxon extends MesquiteModule implements BooleanF
 				calculateBoolean((Taxa)object1, i, result, resultString);
 			}
 		}
+		/*.................................................................................................................*/
+		public String getValueString(boolean on){
+			if (on)
+				return getTrueString();
+			else
+				return getFalseString();
+		}
+		/** Returns the text to be used to describe the condition of this boolean being true. */
+		/*.................................................................................................................*/
+		public String getTrueString(){
+			return "True";
+		}
+
+		/** Returns the text to be used to describe the condition of this boolean being false. */
+/*.................................................................................................................*/
+		public String getFalseString(){
+			return "False";
+		}
 	   	public String getNameOfValueCalculated(){ 
 			return getNameAndParameters();
 	   	}
