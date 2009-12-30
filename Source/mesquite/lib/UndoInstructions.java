@@ -399,7 +399,8 @@ public class UndoInstructions implements Undoer {
 			for (int i = 0; i < oldNamesList.length; i++)
 				oldNamesList[i] = taxa.getTaxonName(i);
 			for (int i = 0; i < namesList.length && i < taxa.getNumTaxa(); i++)
-				taxa.setTaxonName(i, namesList[i]);
+				taxa.setTaxonName(i, namesList[i], false);
+			taxa.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
 			return new UndoInstructions(changeClass, oldNamesList, taxa);
 
 		case ALLCHARACTERNAMES:
