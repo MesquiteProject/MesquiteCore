@@ -43,6 +43,11 @@ public class aiTextIntro extends PackageIntro {
  		return "iText";
  	}
 	/*.................................................................................................................*/
+	/** Returns whether package is built-in (comes with default install of Mesquite)*/
+	public boolean isBuiltInPackage(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	/** Returns information about a package of modules*/
  	public String getPackageCitation(){
  		return "iText";
