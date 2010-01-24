@@ -328,6 +328,7 @@ timer6.end();
 				g.setColor(Color.white);
 				g.fillRect(0,0,width, height);
 			}
+			
 
 			if (table.frameMatrixCells) {
 				int columnHeight = 0;
@@ -336,8 +337,10 @@ timer6.end();
 				}
 				if  (columnHeight>height)
 					columnHeight=height;
-
-				g.setColor(Color.gray);
+				if (table.paleGrid)
+					g.setColor(ColorDistribution.veryLightGray);
+				else
+					g.setColor(Color.gray);
 				lineX = 0;
 				for (int c=table.firstColumnVisible; (c<table.numColumnsTotal) && (lineX<width) && c< table.columnWidths.length; c++) {
 					lineX += table.columnWidths[c];
@@ -362,7 +365,16 @@ timer6.end();
 			int resetHeight = getBounds().height;
 
 			int numCells = 0;//еее
+			
+			Font oldFont = g.getFont();
 			FontMetrics fm = g.getFontMetrics(g.getFont());
+			Font plainFont = new Font(oldFont.getName(), Font.PLAIN, oldFont.getSize());
+			Font boldFont = new Font(oldFont.getName(), Font.BOLD, oldFont.getSize());
+			if (table.boldCellText && boldFont!=null)
+				g.setFont(boldFont);
+			else
+				g.setFont(plainFont);
+				
 			Shape clip = g.getClip();
 			table.resetNumColumnsVisible();
 			table.resetNumRowsVisible();

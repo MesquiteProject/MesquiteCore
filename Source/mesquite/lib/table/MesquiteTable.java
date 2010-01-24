@@ -93,6 +93,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public boolean frameRowNames = true;
 	public boolean frameColumnNames = true;
 	public boolean frameMatrixCells = true;
+	public boolean paleGrid = false;
+	public boolean boldCellText = false;
+	public boolean paleCellColors = false;
 	public boolean showRowGrabbers = false;
 	public boolean showColumnGrabbers = false;
 	public boolean showRowNumbers = false;
