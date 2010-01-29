@@ -69,7 +69,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	/*.................................................................................................................*/
 	public void getSubfunctions(){
 		String  explanationString = "(An Info Strip of a Categorical Matrix Window) Displays a consensus sequence for categorical data, as indicated by the two arrows in the figure below. <br> <img src=\"" + MesquiteFile.massageFilePathToURL(getPath() + "consensus.gif");
-		explanationString += "\"><br>To create a consensus sequence, choose Matrix>Add Info Strip>Consensus Sequence.  To adjust options, use the drop-down menu that appears when you touch on the consensus sequence.<br>";
+		explanationString += "\"><br>To create a consensus sequence, choose Matrix>Add Char Info Strip>Consensus Sequence.  To adjust options, use the drop-down menu that appears when you touch on the consensus sequence.<br>";
 		registerSubfunction(new FunctionExplanation("Consensus Sequence", explanationString, null, null));
 		super.getSubfunctions();
 	}
