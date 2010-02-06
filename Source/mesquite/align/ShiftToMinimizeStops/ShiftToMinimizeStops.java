@@ -40,6 +40,11 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+		return alterData(data,table,undoReference,null);
+	}
+	/*.................................................................................................................*/
+	/** Called to alter data in those cells selected in table*/
+	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference, AlteredDataParameters alteredDataParameters){
 		if (data==null || table==null || !(data instanceof DNAData))
 			return false;
 
@@ -50,20 +55,28 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 
 		MesquiteBoolean dataChanged = new MesquiteBoolean();
 		MesquiteInteger charAdded = new MesquiteInteger(0);
+		boolean someCharAdded = false;
+		int singleTaxonChanged = -1;
+		
+		
 		int[] numStops= new int[3];
 		for (int it=0; it<dnaData.getNumTaxa(); it++) 
 			if (table.wholeRowSelectedAnyWay(it)) {
-				numStops[0]= dnaData.getAminoAcidNumbers(it,ProteinData.TER);
+				numStops[0]= dnaData.getAminoAcidNumbers(it,ProteinData.TER);   //unshifted amount
 				if (numStops[0]>0) {
 					int added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
-					if (charAdded.isCombinable() && charAdded.getValue()!=0) 
+					if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
-					numStops[1] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);
+						someCharAdded=true;
+					}
+					numStops[1] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);  //amount if shift by 1
 					if (numStops[1]>0) {
 						added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
-						if (charAdded.isCombinable() && charAdded.getValue()!=0) 
+						if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 							dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
-						numStops[2] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);
+							someCharAdded=true;
+						}
+						numStops[2] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);  //amount if shift by 2
 						if (numStops[0]<=numStops[1] && numStops[0]<=numStops[2] ) {  // no change is best, but have shifted by 2, need to shift back
 							added = data.shiftAllCells(-2, it, true, true, false, dataChanged,charAdded);
 							dataChanged.setValue(false);
@@ -72,9 +85,22 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 							added = data.shiftAllCells(-1, it, true, true, false, dataChanged,charAdded);							
 						}
 					}
+					if (dataChanged.getValue())
+						if (singleTaxonChanged<0)
+							singleTaxonChanged=it;
+						else if (MesquiteInteger.isCombinable(singleTaxonChanged))
+							singleTaxonChanged=MesquiteInteger.unassigned;
 
 				}
 			}
+		if (!someCharAdded && alteredDataParameters!=null) {
+			if (singleTaxonChanged>=0 && MesquiteInteger.isCombinable(singleTaxonChanged)) {
+				alteredDataParameters.setSubcodes(new int[] {MesquiteListener.SINGLE_TAXON});
+				alteredDataParameters.setParameters(new int[] {singleTaxonChanged});
+
+			} else
+				alteredDataParameters.setSubcodes(new int[] {MesquiteListener.ALL_CELLS_ONLY_SHIFTED});
+		}
 
 		if (undoInstructions!=null) {
 			undoInstructions.setNewData(data);
