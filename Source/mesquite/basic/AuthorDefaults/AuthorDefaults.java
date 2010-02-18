@@ -60,6 +60,7 @@ public class AuthorDefaults extends DefaultsAssistant {
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("authorBlockDefault".equalsIgnoreCase(tag)){
 			authorBlockDefault.setValue(content);
+			Author.addAuthorBlockByDefault = authorBlockDefault.getValue();
 
 		}
 		else if ("authorName".equalsIgnoreCase(tag)){
