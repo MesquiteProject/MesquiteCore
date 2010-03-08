@@ -58,12 +58,8 @@ public class SimplifyTaxonNames extends TaxonNameAlterer {
 		return null;
    	 }
 	/*.................................................................................................................*/
-    	 public String getNameForMenuItem() {
-		return "Simplify Taxon Names...";
-   	 }
-	/*.................................................................................................................*/
     	 public String getName() {
-		return "Simplify taxon names";
+		return "Simplify Taxon Names";
    	 }
    	 
 	/*.................................................................................................................*/
