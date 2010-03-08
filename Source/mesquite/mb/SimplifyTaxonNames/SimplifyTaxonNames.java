@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.mb.SimpleTaxonNames;
+package mesquite.mb.SimplifyTaxonNames;
 
 import java.util.*;
 import java.awt.*;
@@ -20,7 +20,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class SimpleTaxonNames extends TaxonNameAlterer {
+public class SimplifyTaxonNames extends TaxonNameAlterer {
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
