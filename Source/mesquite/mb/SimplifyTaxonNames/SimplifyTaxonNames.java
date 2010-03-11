@@ -39,8 +39,9 @@ public class SimplifyTaxonNames extends TaxonNameAlterer {
 		String name = taxa.getTaxonName(it);
 		if (name!=null){
 			String modifiedName = StringUtil.simplifyIfNeededForOutput(name,true);
+			modifiedName = StringUtil.underlineToBlanks(modifiedName);
 			if (!modifiedName.equalsIgnoreCase(name)) {
-				taxa.setTaxonName(it, StringUtil.simplifyIfNeededForOutput(name,true), false);
+				taxa.setTaxonName(it, modifiedName, false);
 				nameChanged = true;
 			}
 		}
