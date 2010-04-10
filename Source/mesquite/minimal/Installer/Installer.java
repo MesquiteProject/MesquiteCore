@@ -528,7 +528,8 @@ public class Installer extends MesquiteInit {
 			List installation = (List)io.getObject();
 			int count = 0;
 			boolean failed = false;
-
+			MesquiteTrunk.suppressMenuResponse = true;
+			try {
 			//hide all project windows
 			Enumeration e = MesquiteTrunk.mesquiteTrunk.windowVector.elements();
 			while (e.hasMoreElements()) {
@@ -549,6 +550,11 @@ public class Installer extends MesquiteInit {
 				else
 					failed = true;
 			}
+			}
+			catch (Throwable t){
+				failed = true;
+			}
+			MesquiteTrunk.suppressMenuResponse = false;
 			int i = 0;
 			if (failed)
 				discreetAlert("Installation was UNSUCCESSFUL; Mesquite will attempt to restore any previous versions");

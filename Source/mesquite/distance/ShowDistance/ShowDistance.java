@@ -69,6 +69,10 @@ public class ShowDistance extends DataWindowAssistantA {
 			return;
    		distanceTask.initialize(data.getTaxa());
  		TaxaDistance dist = distanceTask.getTaxaDistance(data.getTaxa());
+		if (dist == null) {
+			logln("\n\nNO DISTANCE MATRIX OBTAINED");
+			return;
+		}
 		logln("\n\n=== Distance matrix for " + dist.getName() + " ===");
 
 		dist.distancesToLog();

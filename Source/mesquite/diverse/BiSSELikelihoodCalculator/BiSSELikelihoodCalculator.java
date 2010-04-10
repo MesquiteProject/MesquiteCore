@@ -234,7 +234,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	/*.................................................................................................................*/
 	private void initProbs(int nodes, int numStates) {
 		this.numStates = numStates;
-		if (yStart == null || yStart.length != numStates*2 || probsData==null || probsData.length!=nodes || probsData[0].length!=numStates){
+		if (yStart == null || yStart.length != numStates*2 || d == null || e == null || probsData==null || probsData.length!=nodes || probsData[0].length!=numStates){
 			probsData = new double[nodes][numStates];
 			probsExt = new double[nodes][numStates];
 			yStart = new double[2*numStates];
@@ -281,6 +281,10 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	/* now returns underflow compensation */
 	private double downPass(int node, Tree tree, SpecExtincCategModel model, DEQNumSolver solver, CategoricalDistribution observedStates) {
 		double logComp;
+        if (tree == null || observedStates == null || e == null || d == null){
+        	MesquiteMessage.printStackTrace("ERROR: downpass in BISSELikelihoodCalculator with null object: tree " + tree + " observedStates " + observedStates + " d " + d + " e " + e);
+        	return MesquiteDouble.unassigned;
+        }
 		if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
@@ -462,7 +466,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	double[] freq = new double[2];
 	/*.................................................................................................................*/
 	public double logLike(Tree tree, CategoricalDistribution states, SpecExtincCategModel model) {  
-		if (model==null || states == null)
+		if (model==null || states == null || tree == null)
 			return MesquiteDouble.unassigned;
 		int root = tree.getRoot(deleted);
 		initProbs(tree.getNumNodeSpaces(),lastMaxState);

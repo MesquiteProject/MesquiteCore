@@ -237,7 +237,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     /*.................................................................................................................*/
     private void initProbs(int nodes, int numStates) {
         this.numStates = numStates;
-        if (yStart == null || yStart.length != numStates*2 || probsData==null || probsData.length!=nodes || probsData[0].length!=numStates){
+        if (yStart == null || yStart.length != numStates*2 || d == null || e == null || probsData==null || probsData.length!=nodes || probsData[0].length!=numStates){
             probsData = new double[nodes][numStates];
             probsExt = new double[nodes][numStates];
             yStart = new double[2*numStates];
@@ -279,6 +279,10 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     /* now returns underflow compensation */
     private double downPass(int node, Tree tree, DiversificationCategModel model, DEQNumSolver solver, CategoricalDistribution observedStates) {
         double logComp;
+        if (tree == null || observedStates == null || e == null || d == null){
+        	MesquiteMessage.printStackTrace("ERROR: downpass in DivCategCharMLCalculator with null object: tree " + tree + " observedStates " + observedStates + " d " + d + " e " + e);
+        	return MesquiteDouble.unassigned;
+       }
         if (tree.nodeIsTerminal(node)) { //initial conditions from observations if terminal
             long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
             int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
@@ -342,6 +346,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
             }
             integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());        
             double[] yEnd = (double[])integrationResults.lastElement();
+            
             if (yEnd.length == 2*numStates){
                 for(int i=0;i<numStates;i++){
                     probsExt[node][i] = yEnd[i];
@@ -864,7 +869,7 @@ public class DivCategCharMLCalculator extends MesquiteModule implements Paramete
     double[] freq = new double[2];
     /*.................................................................................................................*/
     public double logLike(Tree tree, CategoricalDistribution states, DiversificationCategModel model) {  
-        if (model==null)
+        if (model==null || tree == null || states == null)
             return MesquiteDouble.unassigned;
         int root = tree.getRoot(deleted);
         double f0 = stationaryFreq0(model);

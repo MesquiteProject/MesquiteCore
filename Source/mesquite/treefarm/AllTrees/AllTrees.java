@@ -92,7 +92,7 @@ public class AllTrees extends TreeSource {
 			return null;
 		if (taxa.getNumTaxa()>maxNumTaxa) {
 			if (!warned)
-				MesquiteMessage.discreetNotifyUser("There are too taxa to create all trees, as there will be too many trees.");
+				MesquiteMessage.discreetNotifyUser("There are too many taxa to create all trees, as there will be too many trees.");
 			warned=true;
 			return null;
 		}
@@ -136,7 +136,7 @@ public class AllTrees extends TreeSource {
 		}	
 		if (numTaxa>maxNumTaxa) {
 			if (!warned)
-				MesquiteMessage.discreetNotifyUser("There are too taxa to create all trees, as there will be too many trees.");
+				MesquiteMessage.discreetNotifyUser("There are too many taxa to create all trees, as there will be too many trees.");
 			warned=true;
 		}
 		return 0;

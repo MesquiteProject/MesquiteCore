@@ -45,7 +45,7 @@ public class CategVariable extends BooleanForCharacter {
 		Taxa taxa = data.getTaxa();
 		CategoricalData cData = (CategoricalData)data;
 
-		result.setValue(cData.charIsVariable(ic));
+		result.setValue(cData.charIsVariable(ic, true));
 	}
 
 	/*.................................................................................................................*/

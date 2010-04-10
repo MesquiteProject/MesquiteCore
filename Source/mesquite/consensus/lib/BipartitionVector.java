@@ -221,6 +221,8 @@ public class BipartitionVector extends Vector {
 	}
 
 	private Bipartition addBipart(Bits bits){
+		if (bits == null)
+			return null;
 		switch (mode) {
 		case STRICTMODE: 
 			if (numTreesTotal==0) {  // first tree; just add it
@@ -233,7 +235,8 @@ public class BipartitionVector extends Vector {
 				int identical = -1;
 				for (int i=size()-1; i>=0; i--){  // going through stored ones and see whether it matches the new bits
 					Bipartition stored = getBipart(i);
-					if (compatible(stored.getBits(),bits)){ //the incoming is compatible with the ith stored bipartition
+					if (stored != null){
+						if (compatible(stored.getBits(),bits)){ //the incoming is compatible with the ith stored bipartition
 						if (stored.equals(bits, rooted)){  // it's not only compatible, but they are the same
 							identical=i;
 							stored.setPresent(true);
@@ -241,6 +244,7 @@ public class BipartitionVector extends Vector {
 					} else { // 
 						foundConflict=true;
 						remove(i);
+					}
 					}
 				}
 				if (foundConflict && identical>0)
@@ -253,7 +257,7 @@ public class BipartitionVector extends Vector {
 			for (int i=0; i<size(); i++){
 				Bipartition stored = getBipart(i);
 
-				if ( stored.equals(bits, rooted)){  //stored.potentialMatch(numBits, rooted)&&
+				if (stored != null && stored.equals(bits, rooted)){  //stored.potentialMatch(numBits, rooted)&&
 					if (useWeights && mode==MAJRULEMODE)
 						stored.weightedIncrement(weight);
 					else

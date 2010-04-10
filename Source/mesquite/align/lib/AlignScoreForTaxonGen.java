@@ -101,7 +101,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 			observedStates = matrixSourceTask.getCurrentMatrix(taxa);
 			currentTaxa = taxa;
 		}
-		if (observedStates==null)
+		if (observedStates==null || !(observedStates.getParentData() instanceof DNAData))
 			return;
 		DNAData data = (DNAData)observedStates.getParentData();
 		if (data == null)

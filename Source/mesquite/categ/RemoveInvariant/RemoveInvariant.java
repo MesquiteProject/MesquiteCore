@@ -38,7 +38,7 @@ public class RemoveInvariant extends DataAlterer {
 	public boolean removeCharactersThatAreInvariant(CategoricalData cData){
 		boolean removedSome = false;
 		for (int ic = cData.getNumChars()-1; ic>=0; ic--){
-			if (!cData.charIsVariable(ic)) {
+			if (!cData.charIsVariable(ic, false)) {
 				cData.deleteCharacters(ic, 1, false);
 				removedSome=true;
 			}

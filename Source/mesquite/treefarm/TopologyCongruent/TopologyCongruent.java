@@ -30,7 +30,7 @@ public class TopologyCongruent extends BooleanForTree {
 	}
 	/*..............................................................................*/
 	public void calculateBoolean(Tree tree, MesquiteBoolean result,	MesquiteString resultString) {
-		if(tree==null || result==null){
+		if(tree==null || result==null || constraintTreeSource == null){
 			return;
 		}
 		constraintTree = constraintTreeSource.getTree(tree.getTaxa()).cloneTree();

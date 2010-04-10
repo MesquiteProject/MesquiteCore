@@ -962,7 +962,8 @@ class HennigCOMMENTS extends HennigNonaCommand {
 		String line = firstLine;
 		String token;
 
-		progIndicator.setText("Reading comments");
+		if (progIndicator != null)
+			progIndicator.setText("Reading comments");
 		while (!StringUtil.blank(line)) {
 			token = parser.getNextToken(); //getting
 			if (token==";") 
@@ -973,12 +974,12 @@ class HennigCOMMENTS extends HennigNonaCommand {
 				}						
 				token = parser.getNextToken();
 				int taxonNumber = MesquiteInteger.fromString(token);
-				if ((taxonNumber>=0)&&(taxonNumber<=taxa.getNumTaxa())) {
+				if (taxa != null && (taxonNumber>=0)&&(taxonNumber<=taxa.getNumTaxa())) {
 					token = parser.getNextToken(); //taxon number
 					int charNumber = MesquiteInteger.fromString(token);
 					if ((charNumber>=0)&&(charNumber<=data.getNumChars())) {
 						token = parser.getRemaining(); 
-						if ((token !=";") && (token != null)) {
+						if (data != null && (token !=";") && (token != null)) {
 							data.setAnnotation(charNumber, taxonNumber, token);
 						}
 					}

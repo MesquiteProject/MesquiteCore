@@ -51,11 +51,14 @@ public class TreeOptimizer {
 		MesquiteNumber bestValue = new MesquiteNumber(0);
 
 		MesquiteTree tempTree = initialTree.cloneTree();
+		CommandRecord rec = CommandRecord.getRecNSIfNull();
 
-		for (int taxon = 2; taxon < taxa.getNumTaxa() && (progIndicator==null || !progIndicator.isAborted()); taxon++) {
+		for (int taxon = 2; taxon < taxa.getNumTaxa() && (progIndicator==null || !progIndicator.isAborted()) && (rec==null || !rec.isCancelled()); taxon++) {
 			bestValue.setToUnassigned();
-			if (progIndicator!=null)
+			if (progIndicator!=null) {
 				progIndicator.setSecondaryMessage("Adding taxon " + (taxon +1));
+				progIndicator.toFront();
+		}
 			int whichNode = 0;
 			MesquiteNumber value = new MesquiteNumber();
 			int numNodes = initialTree.getNumNodeSpaces();
@@ -198,8 +201,9 @@ public class TreeOptimizer {
 		numRearrangementsTried.setValue(0);
 		long total = 0;
 
+		CommandRecord rec = CommandRecord.getRecNSIfNull();
 
-		while(foundBetter.getValue()) {  // loop for improving tree
+		while(foundBetter.getValue() && !aborted(progIndicator, rec)) {  // loop for improving tree
 			tempTree.setToClone(swapTree);
 			if (MesquiteDouble.isCombinable(defaultBranchLengths)) {
 				tempTree.setAllBranchLengths(defaultBranchLengths,false);
@@ -236,8 +240,10 @@ public class TreeOptimizer {
 			 */
 
 			CommandRecord.tick(numberTask.getName()+ ": " + currentScore.toString());
-			if (progIndicator!=null)
+			if (progIndicator!=null) {
 				progIndicator.setText(numberTask.getName()+ ": " + currentScore.toString());
+				progIndicator.toFront();
+			}
 			long boundary=rng.randomLongBetween(0, numRearrangements-1);
 			boolean downFirst  = rng.randomIntBetween(0, 1)>0;
 			double branchLengthAdjustmentFrequency =0.5;
@@ -246,7 +252,7 @@ public class TreeOptimizer {
 
 			if (downFirst) {
 				long i = boundary;
-				while (i<numRearrangements) {
+				while (i<numRearrangements && !aborted(progIndicator, rec)) {
 					if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
 						total++;
 						if (!tryRearrangement( i,  total, currentScore,  swapTree,  tempTree,  tree,  node,  foundBetter))
@@ -262,7 +268,7 @@ public class TreeOptimizer {
 				}
 				if (!foundBetter.getValue()){  // then let's try the other rearrangements
 					i = boundary-1; 
-					while (i>=0) {
+					while (i>=0 && !aborted(progIndicator, rec)) {
 						if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
 							total++;
 							if (!tryRearrangement( i,  total, currentScore,  swapTree,  tempTree,  tree,  node,  foundBetter))
@@ -280,7 +286,7 @@ public class TreeOptimizer {
 			}
 			else {
 				long i=boundary-1;
-				while (i>=0) {
+				while (i>=0 && !aborted(progIndicator, rec)) {
 					if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
 						total++;
 						if (!tryRearrangement( i,  total, currentScore,  swapTree,  tempTree,  tree, node,  foundBetter))
@@ -293,10 +299,11 @@ public class TreeOptimizer {
 						if (foundBetter.getValue()) break;
 					}
 				}
+				
 				if (!foundBetter.getValue()){  // then let's try the other rearrangements
 					total++;
 					i=boundary;
-					while (i<numRearrangements) {
+					while (i<numRearrangements && !aborted(progIndicator, rec)) {
 						if (rng.nextDouble()>=branchLengthAdjustmentFrequency) {
 							if (!tryRearrangement( i,  total, currentScore,  swapTree,  tempTree,  tree,  node,  foundBetter))
 								return false;
@@ -331,7 +338,13 @@ public class TreeOptimizer {
 		return true;
 	}
 
-	
+	boolean aborted(ProgressIndicator progIndicator, CommandRecord rec){
+		if (progIndicator != null && progIndicator.isAborted())
+			return true;
+		if (rec != null && rec.isCancelled())
+			return true;
+		return false;
+	}
 	/*.................................................................................................................*/
 	private  void cleanUpSearch(MesquiteNumber currentScore, MesquiteTree swapTree, AdjustableTree tree, int node) {
 		if (writeToLog) {
