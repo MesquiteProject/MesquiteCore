@@ -682,45 +682,47 @@ class HennigCCODE extends HennigNonaCommand {
 		int icWeight = 1;
 		String ccodePart = "";
 		int counter = 0;
-		int writeCounter =0;
+		int outerLoopCharNumber = -1;
+		int innerLoopCharNumber = 0;
 
 		if (weightSet != null)
 			while (ic< numChars) {
 				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
+					outerLoopCharNumber++;
 					icWeight = weightSet.getInt(ic);
 					if (icWeight!=1 && !processedSet.isBitOn(ic)) {
 						processedSet.setSelected(ic, true);   // marks this one as already chosen
 						ccodePart+=" /"+icWeight + " ";
 						scopeStart= counter;
 						boolean foundFirstBreak = false;
+						innerLoopCharNumber = outerLoopCharNumber;
 						for (int icFollow=ic+1; icFollow<numChars; icFollow++) {
 							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(icFollow))) {
-								writeCounter++; 
-								if (weightSet.getInt(icFollow)==icWeight && !processedSet.isBitOn(icFollow))  {
+								innerLoopCharNumber++;
+								if (weightSet.getInt(icFollow)==icWeight && !processedSet.isBitOn(icFollow))  {  //it's a weight I've seen before
 									processedSet.setSelected(icFollow, true);
 									if (scopeStart==-1) {
-										scopeStart=icFollow; //DRM 1 Nov 2009; was scopeStart=counter
+										scopeStart=innerLoopCharNumber; 
 									}
 									if ((icFollow==numChars-1 && !fileInterpreter.writeOnlySelectedData)||(icFollow==data.lastSelected() && fileInterpreter.writeOnlySelectedData)) {
-										ccodePart += scopeToString(scopeStart, writeCounter);
+										ccodePart += scopeToString(scopeStart, innerLoopCharNumber);
 										if (!foundFirstBreak)
 											ic=numChars;
 									}
 								}
 								else if (scopeStart>=0) {   // we've found a break, write previous scope
-									ccodePart += scopeToString(scopeStart, writeCounter-1);
+									ccodePart += scopeToString(scopeStart, innerLoopCharNumber-1);
 									scopeStart=-1;
 									if (!foundFirstBreak) {
 										foundFirstBreak = true;
-										ic = icFollow-1;
 									}
 
 								}
 							}
 						}
+					
 					}
 					counter++;
-					writeCounter = counter;
 				}
 				ic ++;
 			}
