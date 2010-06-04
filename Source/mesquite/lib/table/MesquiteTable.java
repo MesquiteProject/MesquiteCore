@@ -4607,6 +4607,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return cellsSelected[0].numBitsOn();
 	}
 	/* ............................................................................................................... */
+	/** returns number of cells in central matrix are selected any way. */
+	public int numCellsSelectedAnyWay () {
+		int num = 0;
+		for (int ic= 0; ic< numColumnsTotal; ic++)
+			for (int it= 0; it< numRowsTotal; it++)
+				if (isCellSelectedAnyWay(ic, it))
+					num++;
+		return num;
+	}
+	/* ............................................................................................................... */
 	/** returns number of cells in central matrix are selected within a column. */
 	public int numCellsSelectedInColumn (int column) {
 		if (column == -1)

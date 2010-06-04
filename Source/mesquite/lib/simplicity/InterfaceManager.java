@@ -44,6 +44,13 @@ public class InterfaceManager {
 		return simpleMode;
 	}
 	public static void setSimpleMode(boolean simple){
+		if (simpleMode != simple){
+			if (simple)
+				MesquiteTrunk.mesquiteTrunk.logln("Simplified Interface in use.  Some options will be hidden.");
+			else
+				MesquiteTrunk.mesquiteTrunk.logln("Full Interface in use");
+				
+		}
 		simpleMode = simple;
 	}
 	
