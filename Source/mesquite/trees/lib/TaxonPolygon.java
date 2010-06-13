@@ -28,7 +28,12 @@ public class TaxonPolygon  extends Polygon {
 			b.height = h;
 		}
 	}
-
+	
+	public boolean isHidden(){
+		if (b == null)
+			return true;
+		return b.width == 0 || b.height == 0;
+	}
 	public Rectangle getB(){
 		return b;
 	}

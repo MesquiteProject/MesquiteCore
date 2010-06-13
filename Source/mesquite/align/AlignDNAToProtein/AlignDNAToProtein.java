@@ -64,7 +64,8 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 
 	/*.................................................................................................................*/
 	public boolean forceAlignment(DNAData dnaData, ProteinData proteinData, int it) {
-		
+		if (dnaData == null || proteinData == null)
+			return false;
 		int numBases = dnaData.getNumberApplicableInTaxon(it, true);
 		int numAAs = proteinData.getNumberApplicableInTaxon(it, true);
 		if (numAAs*3!= numBases) {

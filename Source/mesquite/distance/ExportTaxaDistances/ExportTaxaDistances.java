@@ -177,7 +177,9 @@ public class ExportTaxaDistances extends FileInterpreterI {
 			return false;
 		}
 		TaxaDistance distances = distanceTask.getTaxaDistance(taxa);
-		
+		if (distances == null){
+			return false;
+		}
 		String path = getPathForExport(arguments, suggested, dir, fn);
 		if (path != null) {
 			f = MesquiteFile.newFile(dir.getValue(), fn.getValue());

@@ -959,6 +959,8 @@ class HennigCOMMENTS extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public boolean readCommand(MesquiteProject mp, MesquiteFile file, ProgressIndicator progIndicator, CategoricalData data, Taxa taxa, String firstLine){
+		if (parser == null || taxa == null || data == null)
+			return false;
 		parser.setPunctuationString("{;");
 
 		String line = firstLine;
@@ -971,7 +973,7 @@ class HennigCOMMENTS extends HennigNonaCommand {
 			if (token==";") 
 				return true;
 			else {    // info for this character
-				if (!("{".equals(token))){
+				if (token == null || !("{".equals(token))){
 					token = parser.getNextToken(); //getting
 				}						
 				token = parser.getNextToken();
