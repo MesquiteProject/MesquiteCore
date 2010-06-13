@@ -689,7 +689,12 @@ class HennigCCODE extends HennigNonaCommand {
 			while (ic< numChars) {
 				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
 					outerLoopCharNumber++;
-					icWeight = weightSet.getInt(ic);
+					if (weightSet.isUnassigned(ic))
+						icWeight = 1;  //unassigned treated as 1
+					else if (weightSet.isDouble())
+						icWeight = (int)(0.5 + weightSet.getDouble(ic));
+					else 
+						icWeight = weightSet.getInt(ic);
 					if (icWeight!=1 && !processedSet.isBitOn(ic)) {
 						processedSet.setSelected(ic, true);   // marks this one as already chosen
 						ccodePart+=" /"+icWeight + " ";
@@ -699,7 +704,14 @@ class HennigCCODE extends HennigNonaCommand {
 						for (int icFollow=ic+1; icFollow<numChars; icFollow++) {
 							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(icFollow))) {
 								innerLoopCharNumber++;
-								if (weightSet.getInt(icFollow)==icWeight && !processedSet.isBitOn(icFollow))  {  //it's a weight I've seen before
+								int icFollowWeight = 0;
+								if (weightSet.isUnassigned(icFollow))
+									icFollowWeight = 1;
+								else if (weightSet.isDouble())
+									icFollowWeight = (int)(0.5 + weightSet.getDouble(icFollow));
+								else 
+									icFollowWeight = weightSet.getInt(icFollow);
+								if (icFollowWeight==icWeight && !processedSet.isBitOn(icFollow))  {  //it's a weight I've seen before
 									processedSet.setSelected(icFollow, true);
 									if (scopeStart==-1) {
 										scopeStart=innerLoopCharNumber; 
@@ -1116,6 +1128,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							long set = 0;
 							c=parser.nextDarkChar();
 							while ((c!=']' && c!='\0')) {
+								//DAVID: long newSet = newData.fromChar(TNTtoMesquite(c));
 								long newSet = newData.fromChar(c);
 								set += newSet;
 								c=parser.nextDarkChar();
@@ -1125,6 +1138,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							newData.setState(ic, it, set);
 						}
 						else
+							//DAVID: newData.setState(ic, it, TNTtoMesquite(c));    // setting state to that specified by character c
 							newData.setState(ic, it, c);    // setting state to that specified by character c
 					}
 				}
@@ -1134,8 +1148,79 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		newData.resetChangedSinceSave();
 		return newData;
 	}
+	/*David:
+	 * Michel Laurin reported an issue with exporting to TNT yielding unexpected treelength counts.  Goloboff seemed to think it 
+	 * had something to do with different conventions for counting polymorphism, while Michel seemed to think it might have to do with
+	 * having states greater than 9.  I suspect it may have to do with TNT's
+	 * including letters I and O in the symbols list and Mesquite excluding them by default -- exported states H and J would be one step apart
+	 * by Mesquite and 2 steps by TNT if both treat the character as ordered.
+	 * 
+	 * I started to change the export so Mesquite exported using TNT symbol convention  (see DAVID: twice in method above and new method below) 
+	 * and imported with a translation to Mesquite's BUT I got confused as to the rules here.
+	 * 
+	 * In XDREAD (here) data.statesIntoStringBuffer is used; in XREAD statesToStringDefaultSymbols is used if the export is to Hennig86 but
+	 * to data.statesIntoStringBuffer if to TNT.   Does this imply that TNT is OK with non-default symbols?  But there doesn't seem to be any symbols statement
+	 * exporting, so it seems that we need to take control always and use only default symbols (and translate them to get around the I and O issue).
+	 * */
+	static char TNTtoMesquite(char tnt){
+		if (tnt == 'I') return 'J';
+		if (tnt == 'J') return 'K';
+		if (tnt == 'K') return 'L';
+		if (tnt == 'L') return 'M';
+		if (tnt == 'M') return 'N';
+		if (tnt == 'N') return 'P';
+		if (tnt == 'O') return 'Q';
+		if (tnt == 'P') return 'R';
+		if (tnt == 'Q') return 'S';
+		if (tnt == 'R') return 'T';
+		if (tnt == 'S') return 'U';
+		if (tnt == 'T') return 'V';
+		if (tnt == 'U') return 'W';
+		if (tnt == 'V') return 'X';
+		if (tnt == 'X') return 'Y';
+		if (tnt == 'Y') return 'Z';
+		return tnt;
+	}
+	
+	//takes state integer and yields TNT symbol
+	static char standardTNTSymbolForState(int s){
+		if (s == 0) return '0';
+		if (s == 1) return '1';
+		if (s == 2) return '2';
+		if (s == 3) return '3';
+		if (s == 4) return '4';
+		if (s == 5) return '5';
+		if (s == 6) return '6';
+		if (s == 7) return '7';
+		if (s == 8) return '8';
+		if (s == 9) return '9';
+		if (s == 10) return 'A';
+		if (s == 11) return 'B';
+		if (s == 12) return 'C';
+		if (s == 13) return 'D';
+		if (s == 14) return 'E';
+		if (s == 15) return 'F';
+		if (s == 16) return 'G';
+		if (s == 17) return 'H';
+		if (s == 18) return 'I';
+		if (s == 19) return 'J';
+		if (s == 20) return 'K';
+		if (s == 21) return 'L';
+		if (s == 22) return 'M';
+		if (s == 23) return 'N';
+		if (s == 24) return 'O';
+		if (s == 25) return 'P';
+		if (s == 26) return 'Q';
+		if (s == 27) return 'R';
+		if (s == 28) return 'S';
+		if (s == 29) return 'T';
+		if (s == 30) return 'U';
+		if (s == 31) return 'V';
+		return '?';
+	}
 	/*.................................................................................................................*/
 	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CategoricalData data){
+		
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 	/*.................................................................................................................*/
