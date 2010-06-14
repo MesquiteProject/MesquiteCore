@@ -1128,8 +1128,8 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							long set = 0;
 							c=parser.nextDarkChar();
 							while ((c!=']' && c!='\0')) {
-								//DAVID: long newSet = newData.fromChar(TNTtoMesquite(c));
-								long newSet = newData.fromChar(c);
+								long newSet = newData.fromChar(TNTtoMesquite(c)); //NEW
+								//OLD long newSet = newData.fromChar(c);
 								set += newSet;
 								c=parser.nextDarkChar();
 						//		if (c=='[')  give warning
@@ -1138,8 +1138,8 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							newData.setState(ic, it, set);
 						}
 						else
-							//DAVID: newData.setState(ic, it, TNTtoMesquite(c));    // setting state to that specified by character c
-							newData.setState(ic, it, c);    // setting state to that specified by character c
+							newData.setState(ic, it, TNTtoMesquite(c));    //NEW // setting state to that specified by character c
+							//OLD newData.setState(ic, it, c);    // setting state to that specified by character c
 					}
 				}
 			}

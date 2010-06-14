@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+		<!-- This is a simple example of an update file that could be placed at the URL specified by the package's getHomePhoneNumber
+		
+		The currentReleaseVersion element will ensure that Mesquite notifies the user until the new version is installed
+		
+		The notice element will show up and offer to install the update.  If the user chooses not to install, it will be listed under
+		File > Available to Install or Update.
+		
+		-->
+		
+		
+		<currentReleaseVersion>
+			<versionString>1.01</versionString>
+			<version>101</version>
+			<downloadURL>http://mesquiteproject.org/packages/examples/deleteMe/</downloadURL>
+		</currentReleaseVersion>
+		<notice>
+			<forPackageVersionEqualOrLess>100</forPackageVersionEqualOrLess>
+			<noticeNumber>3</noticeNumber>
+			<messageType>update</messageType>
+			<identity>deleteMe</identity>
+			<updateVersion>101</updateVersion>
+			<packageName>DeleteMe version 1.01</packageName>
+			<beforeMessage>This update may take a while to download; please wait until a message appears saying it's finished.</beforeMessage>
+			<explanation><![CDATA[<h2>Bug fixes for DeleteMe</h2>An update to fix bugs in DeleteMe version 1 has been released.
+			]]>
+			</explanation>
+			<install>
+				<location>mesquite</location>
+				<file>deleteMe</file>
+				<url>http://mesquiteproject.org/packages/examples/deleteMe/mesquite.deleteMe.zip</url>
+				<treatment>unzip</treatment>
+				<updateVersion>001</updateVersion>
+			</install>
+		</notice>
+		
+		
+	</MessagesFromHome>
+</mesquite>

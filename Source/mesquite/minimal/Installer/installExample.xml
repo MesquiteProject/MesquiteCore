@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+
+		<notice><!--A simple installation -->
+			<forBuildNumberEqualOrGreater>537</forBuildNumberEqualOrGreater> <!-- this refers to Mesquite build, e.g. for compatibility -->
+			<noticeNumber>1</noticeNumber>
+			<messageType>update</messageType>
+			<identity>DeleteMe</identity>
+			<updateVersion>001</updateVersion>
+			<packageName>DeleteMe v. 1.01</packageName>
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/packages/examples/deleteMe/splash.gif"><p>
+			DeleteMe is a package of Mesquite modules designed as an example, merely to be deleted.  
+			For more information about its, see the 
+			<a href = "http://mesquiteproject.org/packages/examples/deleteMe">MyPackage web page</a>.
+			]]>
+			</explanation>
+			<install>
+				<location>mesquite</location>
+				<file>deleteMe</file>
+				<url>http://mesquiteproject.org/packages/examples/deleteMe/mesquite.deleteMe.zip</url>
+				<treatment>unzip</treatment>
+				<updateVersion>001</updateVersion>
+			</install>
+		</notice>
+	</MessagesFromHome>
+</mesquite>

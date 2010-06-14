@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+		<!--@@@@@@@@@@@@@@@@@@@@  THIS IS AN EXAMPLE and EXPLANATION of the notices, installation and update system (NoticesAndInstallationExplanation.xml)
+		Applicable for Mesquite 2.73 and up; not too different for earlier versions
+		
+		This format is used for notices, installs and updates.
+		These notices are processed in mesquite.lib.PhoneHomeUtil and mesquite.minimal.Installer.Installer.java.
+		
+		Typical use
+		For users to install your package: zip your package and put it on a website for http access.  See instructions below for zipping.  
+		  Create a file like this one named "install.xml" and include on website. 
+		  Tell users to point Check Now For Notices/Installs (in the File menu) to http://yourwebsite/install.xml.
+		For notices and updates for your package: in the package intro module of your package, include the method public String getHomePhoneNumber(), 
+		  returning the intended address for your notices file, e.g. "http://yourwebsite/notices.xml".  
+		  Mesquite will check that URL and process the file on your behalf on startup.  The user can be notified of an update, and
+		  the update installed on request.
+		  
+		These files have two fundamental elements:
+		
+		notice -- used for messages to users, installation and updating/patching.  This is described below with examples; also see other files in 
+		Mesquite_Folder/mesquite/minimal/Installer
+		
+		currentReleaseVersion -- indicates to Mesquite what is the current release version.  
+		This enables Mesquite to keep reminding the user that they don't have the most recent version.  This should be placed in file at the getHomePhoneNumber URL
+		so that it is checked on startup.  An example of this element is in updateExample.xml
+		
+		A single xml notices file can have multiple notices; each is treated separately.
+		
+		NOTE: this file is designed as an installation file, not as an update/patch.  See updateExample.xml for an example of an update file.
+		@@@@@@@@@@@@@@@@@@@@ -->
+		
+		<notice>
+		
+			<!-- ##################### HEADER SECTION: determines what type of message and whether it's applicable.
+			This section is not well designed, nor is the java code handling it.  It may be a bit flaky.
+			In theory the following elements determine whether the notice is applicable to this version, 
+			but the implicit boolean calculations may or may not be well handled in the java code.
+			
+			forMesquiteVersionLessOrEqual -- Integer (e.g. 250 for 2.50).  Intended for use only by Mesquite itself
+			forBuildNumberExactly -- Integer.  Refers to Mesquite build number (e.g., 528 for v. 2.72) intended to ensure compatibility or relevance
+			forBuildNumberEqualOrGreater -- Integer.  Refers to Mesquite build, intended to ensure compatibility or relevance
+			forBuildNumberEqualOrLess -- Integer.  Refers to Mesquite build, intended to ensure compatibility or relevance
+			forPackageVersionExactly -- Integer.  Refers to package build number, used for automatic phone home system of installed packages
+			forPackageVersionEqualOrGreater -- Integer.  Refers to package build number, used for automatic phone home system of installed packages
+			forPackageVersionEqualOrLess -- Integer.  Refers to package build number, used for automatic phone home system of installed packages
+			java -- Real number (decimal).  Refers to required java version, e.g. 1.4.
+			requiredPath -- Relative path within Mesquite_Folder.  If this path does not exist in Mesquite_Folder, then notice is ignored.  Can be used for dependencies.
+			requires -- Human readable name of required component. Used in explanation to user if requiredPath is not present.
+			 
+			noticeNumber -- REQUIRED.  This is critical; keep incrementing it for each new notice for your package.  Mesquite uses this to determine
+			if it has already notified the user; if it has give the user notice n then in the future it suppresses notices with numbers n or less,
+			unless it's a specific request using Check Now for Notices/Installs.  Mesquite stores its record of notices already given in
+			Mesquite_Support_Files/Mesquite_prefs/phoneRecords.xml.
+			
+ 			messageType -- REQUIRED.  If a simple notice then type should be "alert"; otherwise "update" is used for installs or updates
+ 			
+ 			updateOnly -- if has value "critical" then Mesquite will continue to pester user on startup even if the message has been seen before
+ 			
+			identity -- name that will uniquely identify your package; don't include version number. This is the tag that Mesquite
+			remembers in connection with the notice numbers already shown		
+ 			
+ 			uniqueLocation -- for installs/updates, this refers to a relative path within Mesquite_Folder that 
+ 			should be unique to this package, to help Mesquite know if a previous version is installed 
+ 			even if receipt is missing
+ 			
+ 			updateVersion -- the version of the install/update, to help determine if this or later update is already installed
+ 			
+ 			packageName -- Human readable name of package or update, for the dialog box when notices are shown to user
+ 			
+ 			beforeMessage -- a message to the user that is given before the installation starts, e.g. "This update may take a while to download; please wait until a message appears saying it's finished."
+  			afterMessage -- a message to the user that is given after the installation finishes, e.g. "The update is done.  Thank you."
+ 			
+			######################### -->
+			
+			<forBuildNumberEqualOrGreater>530</forBuildNumberEqualOrGreater>
+			<noticeNumber>1</noticeNumber>
+			<messageType>update</messageType>			
+			<identity>deleteMe</identity> 
+			<uniqueLocation>mesquite/deleteMe</uniqueLocation> 			
+			<updateVersion>000</updateVersion>			
+			<packageName>DeleteMe version 0.0</packageName>
+			
+			
+			<!-- ##################### EXPLANATION SECTION: This is the notice shown to the user. 
+			Should be in html.  Can have href links that then open up in a browser.  
+			########################## -->
+			
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/packages/examples/deleteMe/splash.gif"><p>
+			DeleteMe is a small package that is installed to demonstrate Mesquite's installation features.
+			]]>
+			</explanation>
+			
+			
+			<!-- ##################### INSTALL SECTION: Used for installs and updates. 
+			The install sections are processed primarily by mesquite.minimal.Installer.Installer.  
+			
+			install -- Notice that a single notice can have multiple pieces installed.  Each piece is installed with a single
+			install statement.
+			
+			The install statement's elements are:
+			
+				location --  REQUIRED. Path to contain the installation, relative to and within Mesquite_Folder.  Thus, "mesquite" means the installation
+				is to occur within Mesquite_Folder/mesquite. The file at the URL specified by the url element is downloaded into this location.  If the path
+				does not exist, it will be created within Mesquite_Folder.  
+				NOTE: if the value of this is ":query user", then the user will be queried for a location.
+				This can be useful for components like example files or documentation.
+				
+				file -- REQUIRED. The file or folder within the location above that is to be installed or updated.  Thus, if you are installing or
+				updating the folder Mesquite_Folder/mesquite/deleteMe, then you indicate location as "mesquite" and file as "deleteMe".  This is important
+				to help Mesquite prepare for installation.  This file, if it already exists, is temporarily renamed by adding the suffix "PREVIOUSVERSION"
+				to save it in case the installation must be undone.
+				
+				url -- REQUIRED. The absolute url from which the item to be installed is to be obtained.  Must be a single file.  Before
+				
+				treatment -- REQUIRED. How to treat the file downloaded, either asis or unzip. "Asis" is typically used for jar files, 
+				scripts, and single class files.  "Unzip" is used for folders, e.g. a package.  
+				by the location element, then unzipped.  See PREPARING ZIP ARCHIVES for information on how to zip a folder or package.
+				
+				updateversion -- I'm not sure if this is used!!!
+				
+				forOS -- Indicates if this component is OS-specific. See applicableOS method of mesquite.minimal.Installer.Installer. Its elements are:
+				
+					os -- Usually, "Mac OS X", "Windows", or "other".  Value must be a substring of java's System.getProperty("os.name"), 
+					or if value is "other", then system must be one other than Windows or Mac OS X
+					
+					osVersion -- Value must be starting substring of java's System.getProperty("os.version")
+					
+					osArch -- Value must be a substring of java's System.getProperty("os.arch").indexOf(osArch).
+ 				
+ 				execute -- execute the string as a batch file/shell script.  This would probably be an os-specific element.
+ 				The user will be shown the script and asked to confirm that it is to be executed!!! 
+ 				Please be polite.  This was enabled to permit executable bits to be set on some components.
+ 				
+ 				executeInMesquiteFolder -- as for execute, but first change current directory to be Mesquite_Folder. For example:
+ 				<executeInMesquiteFolder>chmod +x myShellScript.sh</executeInMesquiteFolder>
+
+			PREPARING ZIP ARCHIVES
+			Packages and folders must be zipped with java.  Mesquite can zip the packages for you.
+			To zip a folder, first turn on Debug Mode (under Defaults in the File menu).  Then, restart Mesquite and you will see in the File menu
+			the item Zip Folder For Installer.  Zip the package folder itself.  For example, if you want to distribute the package myPackage,
+			that would normally reside at Mesquite_Folder/mesquite/myPackage, then zip just the folder myPackage ("Mesquite_Folder") and indicate in
+			the location element the location "mesquite", and for the file, "myPackage". 
+		
+			######################### -->
+			<install>
+				<location>mesquite</location>
+				<file>deleteMe</file>
+				<url>http://mesquiteproject.org/packages/examples/deleteMe/mesquite.deleteMe.zip</url>
+				<treatment>unzip</treatment>
+				<updateVersion>000</updateVersion>
+			</install>
+			<install>
+				<forOS>
+					<os>Mac OS X</os>
+					<osVersion>10.3</osVersion>
+				</forOS>
+				<forOS>
+					<os>Mac OS X</os>
+					<osVersion>10.4</osVersion>
+				</forOS>
+				<location>jars</location>
+				<file>deleteMe104.jar</file>
+				<url>http://mesquiteproject.org/packages/examples/deleteMe/deleteMe104.jar</url>
+				<treatment>asis</treatment>
+				<updateVersion>000</updateVersion>
+			</install>
+			<install>
+				<forOS>
+					<os>Mac OS X</os>
+					<osVersion>10.5</osVersion>
+					<osArch>86</osArch>
+				</forOS>
+				<location>jars</location>
+				<file>deleteMe105.jar</file>
+				<url>http://mesquiteproject.org/packages/examples/deleteMe/deleteMe105.jar</url>
+				<treatment>asis</treatment>
+				<updateVersion>000</updateVersion>
+			</install>
+			<install>
+				<forOS>
+					<os>Windows</os>
+				</forOS>
+				<location>jars</location>
+				<file>deleteMeWin.jar</file>
+				<url>http://mesquiteproject.org/packages/examples/deleteMe/deleteMeWin.jar</url>
+				<treatment>asis</treatment>
+				<updateVersion>000</updateVersion>
+			</install>
+		</notice>
+		
+		
+
+	</MessagesFromHome>
+</mesquite>

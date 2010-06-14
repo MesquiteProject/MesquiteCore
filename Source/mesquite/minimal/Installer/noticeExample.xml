@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+
+		<notice> <!-- A simple example notice.  This would be placed at a URL referred to by getHomePhoneNumber method of the package intro of your package. -->
+			<forPackageVersionEqualOrLess>102</forPackageVersionEqualOrLess>
+			<noticeNumber>3</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[<img src="http://mesquiteproject.org/packages/examples/deleteMe/splash.gif"><h2>DeleteMe</h2>Version 1.02 of DeleteMe, 
+			a silly package designed only to demonstrate the installation system, is now
+			 <a href = "http://mesquiteproject.org/packages/examples/deleteMe">available</a>.]]>
+			</message>
+		</notice>
+		
+	</MessagesFromHome>
+</mesquite>

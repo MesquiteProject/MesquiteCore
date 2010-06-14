@@ -22,21 +22,21 @@ import java.io.*;
 
 import org.dom4j.Element;
 
-/*....+++++++++++++++Installer.  See also PhoneHomeUtil  ++++++++++++++++++++++++++..........*/
+/*....+++++++++++++++Installer.  See also PhoneHomeUtil and NoticesAndInstallationExplanation.xml  ++++++++++++++++++++++++++..........*/
 /*
  * The update/installation system relies on two sources of information: 
  * (1) the notices of updates compiled by the Phone Home system, using getHomePhoneNumber() of modules to know where to call.  Packages can list these phone numbers
  * for their own updating, but in addition we will maintain a central updates.xml in Mesquite so that newly released packages can be announced there.
  * 
  * (2) the local receipts for packages installed.  Most of these receipts may be acquired through the online
- * installation process, but some may be acquired within packages installed by hand.  The file receipts.xml is compiled by Mesquite and stored in Mesquite_Folder/extras (it must be
+ * installation process, but some may be acquired within packages installed by hand.  The file receipts.xml is compiled by Mesquite and stored in Mesquite_Folder/settings (it must be
  * there as opposed to Mesquite_Support_Files because it belongs to the installation, not the user.
  * 
  * The main global variable are stored as statics in PhoneHomeUtil; the module managing the system is mesquite.minimal..Installer.
  * 
- * Update notices:  An update notice has messagetype "update".  See updates.xml in this package for examples.  A single update may make reference to multiple installation events.
- * Key tags are:
- * -- the standard tags of notices from home (forVersion, noticeNumber, messageType=update, explanation
+ * Update notices:  An update notice has messagetype "update".  See NoticesAndInstallationExplanation.xml in this package for examples.  A single update may make reference to multiple installation events.
+ * Key tags are as follows.  See NoticesAndInstallationExplanation.xml for a more complete list:
+ * -- the standard tags of notices from home (noticeNumber, messageType=update, explanation)
  * -- identity: name that will uniquely identify your package; don't include version number , e.g. "PDAP"
  * -- uniqueLocation: a location that should be unique to this package, to help mesquite know if a previous version is installed even if receipt is missing
  * 			Must be within Mesquite_Folder, and relative to it.
@@ -66,7 +66,7 @@ import org.dom4j.Element;
  * 
  * Zip files must be prepared properly such that when unzipped they yield directly the directory stucture desired.  Zip files made by ZipIt on OS X do not work.  
  * Installer can perform the zipping to ensure the zip files will work.  To enable this, select Debug Mode in File>Defaults and restart Mesquite.  
- * Then, select File>Zip Folder or Zip File.
+ * Then, select File>Zip Folder.
  * 
  * 
  * todo:
@@ -115,7 +115,7 @@ public class Installer extends MesquiteInit {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		if (MesquiteTrunk.debugMode){
 			mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Zip Folder for Installer", makeCommand("zipDir", this));
-			mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Zip File for Installer", makeCommand("zipFile", this));
+			//mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Zip File for Installer", makeCommand("zipFile", this));
 		}
 		readReceipts();
 		return true;
@@ -326,7 +326,7 @@ public class Installer extends MesquiteInit {
 				return true;
 			String osVersion = osElement.elementText("osVersion");
 			String osArch = osElement.elementText("osArch");
-			boolean osArchMatches =(StringUtil.blank(osArch)|| System.getProperty("os.arch").indexOf(os)>=0);
+			boolean osArchMatches =(StringUtil.blank(osArch)|| System.getProperty("os.arch").indexOf(osArch)>=0);
 			boolean osMatches =(StringUtil.blank(os)|| System.getProperty("os.name").indexOf(os)>=0 || (os.equalsIgnoreCase("other") && !MesquiteTrunk.isWindows() && !MesquiteTrunk.isMacOSX()));
 
 			boolean osVersionMatches =(StringUtil.blank(osVersion)|| System.getProperty("os.version").startsWith(osVersion));

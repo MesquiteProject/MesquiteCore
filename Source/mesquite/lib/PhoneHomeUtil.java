@@ -26,7 +26,8 @@ public class PhoneHomeUtil {
 
 	//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 	/*updating/install system.  See also INSTALL/UPDATE SYSTEM: below 
-	 * Explanation of system is in mesquite.minimal.Installer.Installer.java*/
+	 * Explanation of system is in mesquite.minimal.Installer.Installer.java and in NoticesAndInstallationExplanation.xml.
+	 * Also see example XML files in mesquite.minimal.Installer*/
 	public static Vector updateRecords = new Vector();
 	public static Vector installedReceipts = new Vector();
 	public static Vector installMenuItems = new Vector();
@@ -211,8 +212,7 @@ public class PhoneHomeUtil {
 			}
 
 			boolean appliesToBuild = true;
-			if (mmi != null){
-				if (mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){
+			if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){
 				if (MesquiteInteger.isCombinable(forBuildNumberExactly)) 
 					appliesToBuild =  appliesToBuild && (forBuildNumberExactly == MesquiteModule.getBuildNumber());
 				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrGreater)) 
@@ -221,6 +221,12 @@ public class PhoneHomeUtil {
 					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrLess >= MesquiteModule.getBuildNumber());
 			}
 			else {
+				if (MesquiteInteger.isCombinable(forBuildNumberExactly)) 
+					appliesToBuild =  appliesToBuild && (forBuildNumberExactly == MesquiteModule.getBuildNumber());
+				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrGreater)) 
+					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrGreater <= MesquiteModule.getBuildNumber());
+				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrLess))  
+					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrLess >= MesquiteModule.getBuildNumber());
 
 				if (MesquiteInteger.isCombinable(forPackageVersionExactly)) 
 					appliesToBuild =  appliesToBuild && (forPackageVersionExactly == mmi.getVersionInt());
@@ -228,7 +234,7 @@ public class PhoneHomeUtil {
 					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrGreater <= mmi.getVersionInt());
 				if (MesquiteInteger.isCombinable(forPackageVersionEqualOrLess))  
 					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrLess >= mmi.getVersionInt());
-			}
+			
 			}
 
 			//suppose Mesquite is version 2. 01
@@ -253,7 +259,7 @@ public class PhoneHomeUtil {
 			//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 			//notice assumed to have been seen before if its version number is less than current
-			boolean seenBefore = forMesquiteVersionLessOrEqual < currentMesquiteVersion;  //e.g., notice is version 2.0
+			boolean seenBefore = !adHoc && (forMesquiteVersionLessOrEqual < currentMesquiteVersion);  //e.g., notice is version 2.0
 
 			//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
 			seenBefore = seenBefore || (forMesquiteVersionLessOrEqual ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
@@ -385,7 +391,7 @@ public class PhoneHomeUtil {
 				}
 
 			}
-			if (javaInsufficient ||  requirementsNotMet)
+			if (javaInsufficient ||  requirementsNotMet || !appliesToOSVersion  || !appliesToBuild)
 				pleaseDeleteFromUpdates = true;
 		}
 
@@ -404,11 +410,11 @@ public class PhoneHomeUtil {
 			noticesFromHome = MesquiteFile.getURLContentsAsString(URLString, -1, false);
 
 		} catch (Exception e) {
-			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no information found at that URL");
+			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no relevant information found at that URL");
 			return;
 		}
 		if (StringUtil.blank(noticesFromHome)){
-			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no information found at that URL");
+			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no relevant information found at that URL");
 			return;
 		}
 		PhoneHomeRecord phr = new PhoneHomeRecord("");
@@ -422,7 +428,7 @@ public class PhoneHomeUtil {
 				System.out.println(note);
 		}
 		else
-			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, no information found at that URL");
+			MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, relevant no information found at that URL");
 	}
 	/*.................................................................................................................*/
 
@@ -489,6 +495,8 @@ public class PhoneHomeUtil {
 				int forMesquiteVersionLessOrEqual = MesquiteInteger.fromString(messageElement.elementText("forMesquiteVersionLessOrEqual"));    // notice is for this version and any previous version			
 				if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
 					forMesquiteVersionLessOrEqual = MesquiteInteger.fromString(messageElement.elementText("forVersion"));    // old name
+				//NOTE: for adhoc requests forMesquiteVersionLessOrEqual is not used
+				
 				int forPackageVersionExactly = MesquiteInteger.fromString(messageElement.elementText("forPackageVersionExactly"));    // notice is for this version and any previous version
 				int forPackageVersionEqualOrGreater = MesquiteInteger.fromString(messageElement.elementText("forPackageVersionEqualOrGreater"));    // notice is for this version and any previous version
 				int forPackageVersionEqualOrLess = MesquiteInteger.fromString(messageElement.elementText("forPackageVersionEqualOrLess"));    // notice is for this version and any previous version
