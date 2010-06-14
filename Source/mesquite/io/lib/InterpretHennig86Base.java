@@ -1128,18 +1128,19 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							long set = 0;
 							c=parser.nextDarkChar();
 							while ((c!=']' && c!='\0')) {
-								long newSet = newData.fromChar(TNTtoMesquite(c)); //NEW
-								//OLD long newSet = newData.fromChar(c);
-								set += newSet;
+								if (c == 'K')
+									Debugg.println("");
+								long newSet = newData.fromChar(TNTtoMesquite(c)); 
+								set |= newSet;
 								c=parser.nextDarkChar();
 						//		if (c=='[')  give warning
 									
 							}
 							newData.setState(ic, it, set);
 						}
-						else
-							newData.setState(ic, it, TNTtoMesquite(c));    //NEW // setting state to that specified by character c
-							//OLD newData.setState(ic, it, c);    // setting state to that specified by character c
+						else {
+							newData.setState(ic, it, TNTtoMesquite(c));     // setting state to that specified by character c
+						}
 					}
 				}
 			}
@@ -1148,37 +1149,47 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		newData.resetChangedSinceSave();
 		return newData;
 	}
-	/*David:
-	 * Michel Laurin reported an issue with exporting to TNT yielding unexpected treelength counts.  Goloboff seemed to think it 
-	 * had something to do with different conventions for counting polymorphism, while Michel seemed to think it might have to do with
-	 * having states greater than 9.  I suspect it may have to do with TNT's
-	 * including letters I and O in the symbols list and Mesquite excluding them by default -- exported states H and J would be one step apart
-	 * by Mesquite and 2 steps by TNT if both treat the character as ordered.
-	 * 
-	 * I started to change the export so Mesquite exported using TNT symbol convention  (see DAVID: twice in method above and new method below) 
-	 * and imported with a translation to Mesquite's BUT I got confused as to the rules here.
-	 * 
-	 * In XDREAD (here) data.statesIntoStringBuffer is used; in XREAD statesToStringDefaultSymbols is used if the export is to Hennig86 but
-	 * to data.statesIntoStringBuffer if to TNT.   Does this imply that TNT is OK with non-default symbols?  But there doesn't seem to be any symbols statement
-	 * exporting, so it seems that we need to take control always and use only default symbols (and translate them to get around the I and O issue).
+	/*As of 2. 73 recognizing different default symbol lists to eliminate different step counting when ordered and states span I and O.
 	 * */
 	static char TNTtoMesquite(char tnt){
 		if (tnt == 'I') return 'J';
 		if (tnt == 'J') return 'K';
-		if (tnt == 'K') return 'L';
-		if (tnt == 'L') return 'M';
-		if (tnt == 'M') return 'N';
-		if (tnt == 'N') return 'P';
-		if (tnt == 'O') return 'Q';
-		if (tnt == 'P') return 'R';
-		if (tnt == 'Q') return 'S';
-		if (tnt == 'R') return 'T';
-		if (tnt == 'S') return 'U';
-		if (tnt == 'T') return 'V';
-		if (tnt == 'U') return 'W';
-		if (tnt == 'V') return 'X';
-		if (tnt == 'X') return 'Y';
-		if (tnt == 'Y') return 'Z';
+		if (tnt == 'K') return 'M';
+		if (tnt == 'L') return 'N';
+		if (tnt == 'M') return 'P';
+		if (tnt == 'N') return 'Q';
+		if (tnt == 'O') return 'R';
+		if (tnt == 'P') return 'S';
+		if (tnt == 'Q') return 'T';
+		if (tnt == 'R') return 'U';
+		if (tnt == 'S') return 'V';
+		if (tnt == 'T') return 'W';
+		if (tnt == 'U') return 'X';
+		if (tnt == 'V') return 'Y';
+		if (tnt == 'W') return 'Z';
+		if (tnt == 'X') return 'a';
+		if (tnt == 'Y') return 'b';
+		if (tnt == 'Z') return 'c';
+		if (tnt == 'a') return 'd';
+		if (tnt == 'b') return 'e';
+		if (tnt == 'c') return 'f';
+		if (tnt == 'd') return 'g';
+		if (tnt == 'e') return 'h';
+		if (tnt == 'f') return 'j';
+		if (tnt == 'g') return 'k';
+		if (tnt == 'h') return 'm';
+		if (tnt == 'i') return 'n';
+		if (tnt == 'j') return 'p';
+		if (tnt == 'k') return 'q';
+		if (tnt == 'l') return 'r';
+		if (tnt == 'm') return 's';
+		if (tnt == 'n') return 't';
+		if (tnt == 'o') return 'u';
+		if (tnt == 'p') return 'v';
+		if (tnt == 'q') return 'w';
+		if (tnt == 'r') return 'x';
+		if (tnt == 's') return 'y';
+		if (tnt == 't') return 'z';
 		return tnt;
 	}
 	
@@ -1216,12 +1227,75 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		if (s == 29) return 'T';
 		if (s == 30) return 'U';
 		if (s == 31) return 'V';
+		if (s == 32) return 'W';
+		if (s == 33) return 'X';
+		if (s == 34) return 'Y';
+		if (s == 35) return 'Z';
+		if (s == 36) return 'a';
+		if (s == 37) return 'b';
+		if (s == 38) return 'c';
+		if (s == 39) return 'd';
+		if (s == 40) return 'e';
+		if (s == 41) return 'f';
+		if (s == 42) return 'g';
+		if (s == 43) return 'h';
+		if (s == 44) return 'i';
+		if (s == 45) return 'j';
+		if (s == 46) return 'k';
+		if (s == 47) return 'l';
+		if (s == 48) return 'm';
+		if (s == 49) return 'n';
+		if (s == 50) return 'o';
+		if (s == 51) return 'p';
+		if (s == 52) return 'q';
+		if (s == 53) return 'r';
+		if (s == 54) return 's';
+		if (s == 55) return 't';
 		return '?';
+	}
+	/*..........................................   ..................................................*/
+	/** returns string describing the state(s) of character ic in taxon it.  Uses default symbols, and uses separators 
+   		between states in polymorphic (andSep) or partially uncertain (orSep) taxa.  
+   		Uses leftBracket and rightBracket to bound entries with multiple symbols */
+	String statesToStringDefaultSymbols(CategoricalData data, int ic,int it, char leftBracket, char rightBracket, char andSep, char orSep){
+		long s =data.getState(ic, it);
+		char INAPPLICABLE = '-';
+		char UNASSIGNED = '?';
+		boolean first=true;
+		char sep = andSep;
+		if (CategoricalState.isUncertain(s))
+			sep = orSep;
+		String stateString="";
+		if (s==CategoricalState.inapplicable) 
+			return stateString+ INAPPLICABLE;
+		else if (s==CategoricalState.unassigned) 
+			return stateString+ UNASSIGNED; 
+		else if (CategoricalState.cardinality(s)>1) {
+			stateString = "" + leftBracket;
+			for (int e=0; e<=CategoricalState.maxCategoricalState; e++) {
+				if (CategoricalState.isElement(s,e)) {
+					if ((!first) && (sep!=Character.UNASSIGNED))
+						stateString+=sep;
+					stateString += standardTNTSymbolForState(e);
+					first = false;
+				}
+			}
+			stateString += rightBracket;
+			return stateString;
+		}
+		else
+			return stateString+standardTNTSymbolForState(CategoricalState.minimum(s));
 	}
 	/*.................................................................................................................*/
 	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CategoricalData data){
-		
-		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+		if (ownerModule.isTNT()){
+			if (data instanceof MolecularData)
+				data.statesIntoStringBuffer(ic, it, outputBuffer, " ", "[", "]");
+			else 
+				outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']', ' ', ' '));
+		}
+		else
+			outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']',(char)Character.UNASSIGNED, (char)Character.UNASSIGNED));
 	}
 	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
@@ -1272,10 +1346,6 @@ class HennigDREAD extends HennigXDREAD {
 		return "dread";
 	}
 	/*.................................................................................................................*/
-	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CategoricalData data){
-		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
-	}
-	/*.................................................................................................................*/
 	public boolean readStartXDREAD(Parser parser){
 		String token = parser.getNextToken();
 		if (token==null || !token.equalsIgnoreCase("GAP")) {
@@ -1315,57 +1385,10 @@ class HennigXREAD extends HennigXDREAD {
 	
 
 	/*.................................................................................................................*/
-	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CategoricalData data){
-		if (ownerModule.isTNT())
-			data.statesIntoStringBuffer(ic, it, outputBuffer, " ", "[", "]");
-		else
-			outputBuffer.append(statesToStringDefaultSymbols(data, ic,it,'[',']'));
-	}
-	/*.................................................................................................................*/
 	public CharacterData createData(CharactersManager charTask, Taxa taxa) {  
 		return charTask.newCharacterData(taxa, 0, CategoricalData.DATATYPENAME);  //
 	}
-	/*..........................................  CategoricalData  ..................................................*/
-	/** returns string describing the state(s) of character ic in taxon it.  Uses default symbols, and uses separators 
-   		between states in polymorphic (andSep) or partially uncertain (orSep) taxa.  
-   		Uses leftBracket and rightBracket to bound entries with multiple symbols 
-   		USED BY NONA HENNIG EXPORT*/
-	public String statesToStringDefaultSymbols(CategoricalData data, int ic,int it, char leftBracket, char rightBracket, char andSep, char orSep){
-		long s =data.getState(ic, it);
-		//matrix[ic][it];
-		boolean first=true;
-		char sep = andSep;
-		if (CategoricalState.isUncertain(s))
-			sep = orSep;
-		String stateString="";
-		if (s==CategoricalState.inapplicable) 
-			return stateString+data.getInapplicableSymbol();
-		else if (s==CategoricalState.unassigned) 
-			return stateString+data.getUnassignedSymbol(); 
-		else if (CategoricalState.cardinality(s)>1) {
-			stateString = "" + leftBracket;
-			for (int e=0; e<=CategoricalState.maxCategoricalState; e++) {
-				if (CategoricalState.isElement(s,e)) {
-					if ((!first) && (sep!=Character.UNASSIGNED))
-						stateString+=sep;
-					stateString += data.getDefaultStateSymbol(e);
-					first = false;
-				}
-			}
-			stateString += rightBracket;
-			return stateString;
-		}
-		else
-			return stateString+data.getDefaultStateSymbol(CategoricalState.minimum(s));
-	}
-	/*..........................................  CategoricalData  ..................................................*/
-	/** returns string describing the state(s) of character ic in taxon it.  Uses default symbols, and uses no separators 
-   		between states in polymorphic or partially uncertain taxa.  Uses leftBracket and rightBracket to 
-   		bound entries with multiple symbols 
-   		USED BY NONA HENNIG EXPORT*/
-	public String statesToStringDefaultSymbols(CategoricalData data, int ic,int it, char leftBracket, char rightBracket){
-		return statesToStringDefaultSymbols(data, ic,it, leftBracket, rightBracket,(char)Character.UNASSIGNED, (char)Character.UNASSIGNED);
-	}
+
 }
 
 
