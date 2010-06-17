@@ -151,15 +151,35 @@
           <tr> 
             <td><font face="Trebuchet MS"><!-- #BeginEditable "body" --><h2><font face="Trebuchet MS">New Features and History of Changes</font></h2>
               <p><font face="Trebuchet MS">Here are some of the more notable new 
-                features and bug fixes since version 1.0. Bugs that could have 
-                yielded errors in substantive results (e.g. a bug in a phylogenetic 
+                features and bug fixes since version 1.0. If the previous way Mesquite worked could have 
+                yielded errors in substantive results (e.g., there was a bug in a phylogenetic 
                 calculation) are marked with <img src="images/prerelease.gif" width="14" height="14">.</font></p>
               <p><font face="Trebuchet MS">Beginning with version 1.1, a list 
                 of new modules in the latest version can be seen by choosing &quot;List 
                 new modules&quot; from the Help menu.</font></p>
               <p><font face="Trebuchet MS">There is also a short list of <a href="#releaseDates">release
               dates</a>.</font></p>
-               <hr>
+                <hr>
+              <h3><font face="Trebuchet MS">Version 2.73</font></h3>
+              <h4><font face="Trebuchet MS">New Features</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+
+                <li>Two Taxon Name modifiers have been added: (1) Remove Tokens, which allows you to remove a specified number of words (=tokens) from the start or end of taxon names; (2) Simplify Names, which will simplify names in a standard way for use in MrBayes, RAxML, etc.  These are available from the Taxon Names submenu.</li>
+                <li>There are now more options for  coloring matrix cells by the character state.  If Matrix > Color Matrix Cells > Character State is chosen for categorical matrices (other than molecular sequence matrices), then two new options will appear under the Matrix menu: (1) "All Characters Use Same Maximum Value for Cell Coloring" will force Mesquite to use the same color for each state for all characters (e.g., state 1 will always be blue), as opposed to having the state colors vary from character to character as a function of the maximum state for each character; (2) "Set Maximum Value for Cell Coloring" allows you to set the state range to be used for this constant coloring.</li>
+
+                <li>The default color table for non-DNA and RNA data has been changed so that it is easier to distinguish states visually.</li>
+                <li><strong>Wayne: describe Notes window saving changes</strong></li>
+                <li>In importing GenBank files, Mesquite no longer puts GenBank accession numbers as footnotes; instead it stores accession numbers in a special location.  GenBank accession numbers can then be viewed in the List of Taxa window by choosing GenBank Number under the Columns menu.  It also now uses the DEFINITION tag rather than the ORGANISM tag to obtain the sequence name.</li>
+              </ul>
+             <h4><font face="Trebuchet MS">Bug Fixes</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+                <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) ClustalX 2, when writing a NEXUS file, inappropriately inserts a problematic SYMBOLS subcommand in the FORMAT command.  While, by the NEXUS standard, this should cause IUPAC ambiguity symbols to be incorrectly attributed to novel states, that's not how Mesquite 2.72 interpreted such files: it interpreted this symbols subcommand to override the default ACGT symbols list, which caused the character states in the matrix to be mis-read.  As a protection against such files, Mesquite now ignores the SYMBOLS subcommand for DNA and RNA matrices.</li>
+                <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) Export to TNT now writes CCODEs correctly; previously, the characters to which weights, etc., are applied could be in error.</li>
+                <li>Various  small bugs were fixed.</li>
+              </ul>
+              <hr>
               <h3><font face="Trebuchet MS">Version 2.72</font></h3>
               <h4><font face="Trebuchet MS">New Features</font></h4>
               <font face="Trebuchet MS"> </font> 
