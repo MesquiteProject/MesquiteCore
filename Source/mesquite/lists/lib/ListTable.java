@@ -42,6 +42,36 @@ public class ListTable extends MesquiteTable {
 		setUserMove(true, false);
 	}
 	
+	/* ............................................................................................................... */
+	/** Selects row */
+	public void selectRow(int row) {
+		super.selectRow(row);
+		if (false && rowLegal(row)){
+			if (getRowAssociable() != null) {
+				getRowAssociable().setSelected(row, true);
+				//getRowAssociable().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+			}
+		}
+	}
+
+	/* ............................................................................................................... */
+	/** Selects rows */
+	public void selectRows(int first, int last) {
+		super.selectRows(first, last);
+		if (false && rowLegal(first) && rowLegal(last)) {
+			int r1 = MesquiteInteger.minimum(first, last);
+			int r2 = MesquiteInteger.maximum(first, last);
+			for (int i = r1; i <= r2; i++) {
+				if (getRowAssociable() != null) {
+					getRowAssociable().setSelected(i, true);
+				}
+			}
+		}
+		if (false && getRowAssociable() != null) 
+			getRowAssociable().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
+	}
+
 	/*...............................................................................................................*/
 	public void selectedRowsDropped(int after){
 		if (window.owner.rowsMovable() && after >= -1) {
@@ -282,6 +312,8 @@ public class ListTable extends MesquiteTable {
 	}
 	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
 		super.rowTouched(asArrow,  row, regionInCellH, regionInCellV, modifiers);
+		//if (getRowAssociable() != null) 
+		//	synchronizeRowSelection(getRowAssociable());
 		showAnnotationAndExplanation(row);
 	}
 	private void showAnnotationAndExplanation(int row){

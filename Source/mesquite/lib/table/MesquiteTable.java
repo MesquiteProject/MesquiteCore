@@ -330,6 +330,24 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				clip.setContents(ss, ss);
 			}
 		}
+		else if (checker.compare(MesquiteTable.class, "Key pressed", null, commandName, "enterPressed")) {
+			enterPressed(arguments);
+		}
+		else if (checker.compare(MesquiteTable.class, "Key pressed", null, commandName, "tabPressed")) {
+			tabPressed(arguments);
+		}
+		else if (checker.compare(MesquiteTable.class, "Key pressed", null, commandName, "rightArrowPressed")) {
+			rightArrowPressed(arguments);
+		}
+		else if (checker.compare(MesquiteTable.class, "Key pressed", null, commandName, "leftArrowPressed")) {
+			leftArrowPressed(arguments);
+		}
+		else if (checker.compare(MesquiteTable.class, "Key pressed", null, commandName, "upArrowPressed")) {
+			upArrowPressed(arguments);
+		}
+		else if (checker.compare(MesquiteTable.class, "Key pressed", null, commandName, "downArrowPressed")) {
+			downArrowPressed(arguments);
+		}
 		else if (checker.compare(MesquiteTable.class, "Copies current selection to clipboard, literally (with full names)", null, commandName, "copyLiteral")) {
 			if (matrix.getEditing() || rowNames.getEditing() || columnNames.getEditing()) {
 				TextField edit = null;
@@ -1049,26 +1067,49 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void keyTyped(KeyEvent e) {
 	}
 
-	public void keyPressed(KeyEvent e) {
+	
+	public void keyPressed(KeyEvent e) {  
 		if (!MesquiteWindow.belongsTo(e.getComponent(), this))
 			return;
 		if (e.getComponent() instanceof Scrollbar)
 			return;
-		if (e.getKeyCode() == KeyEvent.VK_ENTER)
-			enterPressed(e);
-		else if (e.getKeyCode() == KeyEvent.VK_TAB)
-			tabPressed(e);
-		else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-			rightArrowPressed(e);
+		String arguments = "";
+		if (e.isShiftDown())
+			arguments += " shift ";
+		if (e.isAltDown())
+			arguments += " option ";
+		
+		if (e.getKeyCode() == KeyEvent.VK_ENTER){
+			MesquiteCommand key = new MesquiteCommand("enterPressed", arguments, this);
+			key.setSuppressLogging(true);
+			key.doItMainThread(arguments, null, this);
+		}
+		else if (e.getKeyCode() == KeyEvent.VK_TAB){
+			MesquiteCommand key = new MesquiteCommand("tabPressed", arguments, this);
+			key.setSuppressLogging(true);
+			key.doItMainThread(arguments, null, this);
+		}
+		else if (e.getKeyCode() == KeyEvent.VK_RIGHT){
+			MesquiteCommand key = new MesquiteCommand("rightArrowPressed", arguments, this);
+			key.setSuppressLogging(true);
+			key.doItMainThread(arguments, null, this);
+		}
 		else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			leftArrowPressed(e);
+			MesquiteCommand key = new MesquiteCommand("leftArrowPressed", arguments, this);
+			key.setSuppressLogging(true);
+			key.doItMainThread(arguments, null, this);
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_UP)
-			upArrowPressed(e);
-		else if (e.getKeyCode() == KeyEvent.VK_DOWN)
-			downArrowPressed(e);
-		{
+		else if (e.getKeyCode() == KeyEvent.VK_UP){
+			MesquiteCommand key = new MesquiteCommand("upArrowPressed", arguments, this);
+			key.setSuppressLogging(true);
+			key.doItMainThread(arguments, null, this);
 		}
+		else if (e.getKeyCode() == KeyEvent.VK_DOWN){
+			MesquiteCommand key = new MesquiteCommand("downArrowPressed", arguments, this);
+			key.setSuppressLogging(true);
+			key.doItMainThread(arguments, null, this);
+		}
+		
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -1088,7 +1129,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return matrix.getEditing() || columnNames.getEditing() || rowNames.getEditing();
 	}
 
-	public void enterPressed(KeyEvent e) {
+	public void enterPressed(String arguments) {
 		if (getEditing()) // let the edit box handle it
 			return;
 		// go to editing
@@ -1112,20 +1153,23 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 	}
 
-	public void tabPressed(KeyEvent e) {
+	public void tabPressed(String arguments) {
 		if (getEditing())
 			return;
-		rightArrowPressed(e);
+		rightArrowPressed(arguments);
 	}
 
-	public void downArrowPressed(KeyEvent e) {
+	public void downArrowPressed(String arguments) {
 		if (getEditing())
 			return;
-		if (e!=null && e.isShiftDown()){
+		if (StringUtil.foundIgnoreCase(arguments, "shift")){
 			if (anyRowSelected()){ //accumulateSelection
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int first = firstRowSelected();
 					selectRows(first, getNumRows()-1);
+					if (rowAssociable != null) 
+						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
 					repaintAll();
 				}
 				else {
@@ -1133,11 +1177,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						if (isRowSelected(i) && !isRowSelected(i+1))
 							selectRow(i+1);
 					}
+					if (rowAssociable != null) 
+						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					repaintAll();
 				}
 			}
 			if (anyCellSelected()){
-				if (e.isAltDown()){
+				if (StringUtil.foundIgnoreCase(arguments, "option")){
 					for (int column = 0; column< getNumColumns(); column++){
 						boolean doneColumn = false;
 						for (int row = 0; row< getNumRows() && !doneColumn; row++)
@@ -1160,7 +1206,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				}
 			}
 			if (anyRowNameSelected()){
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int first = firstRowNameSelected();
 					selectRowNames(first, getNumRows()-1);
 					repaintAll();
@@ -1193,14 +1239,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 	}
 
-	public void upArrowPressed(KeyEvent e) { //
+	public void upArrowPressed(String arguments) { //
 		if (getEditing())
 			return;
-		if (e!=null && e.isShiftDown()){
+		if (StringUtil.foundIgnoreCase(arguments, "shift")){
 			if (anyRowSelected()){ //accumulateSelection
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int last = lastRowSelected();
 					selectRows(0, last);
+					if (rowAssociable != null) 
+						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					repaintAll();
 				}
 				else {
@@ -1208,11 +1256,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						if (isRowSelected(i) && !isRowSelected(i-1))
 							selectRow(i-1);
 					}
+					if (rowAssociable != null) 
+						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					repaintAll();
 				}
 			}
 			if (anyCellSelected()){
-				if (e.isAltDown()){
+				if (StringUtil.foundIgnoreCase(arguments, "option")){
 					for (int column = 0; column< getNumColumns(); column++){
 						boolean doneColumn = false;
 						for (int row = getNumRows()-1; row>=0 && !doneColumn; row--)
@@ -1236,7 +1286,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				}
 			}
 			if (anyRowNameSelected()){
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int last = lastRowNameSelected();
 					selectRowNames(0, last);
 					repaintAll();
@@ -1265,14 +1315,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 	}
 
-	public void rightArrowPressed(KeyEvent e) {
+	public void rightArrowPressed(String arguments) {
 		if (getEditing())
 			return;
-		if (e!=null && e.isShiftDown()){
+		if (StringUtil.foundIgnoreCase(arguments, "shift")){
 			if (anyColumnSelected()){ //accumulateSelection
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int first = firstColumnSelected();
 					selectColumns(first, getNumColumns()-1);
+					if (columnAssociable != null) 
+						columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					repaintAll();
 				}
 				else {
@@ -1280,11 +1332,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						if (isColumnSelected(i) && !isColumnSelected(i+1))
 							selectColumn(i+1);
 					}
+					if (columnAssociable != null) 
+						columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					repaintAll();
 				}
 			}
 			if (anyCellSelected()){
-				if (e.isAltDown()){
+				if (StringUtil.foundIgnoreCase(arguments, "option")){
 					for (int row = 0; row< getNumRows(); row++){
 						boolean doneRow = false;
 						for (int column = 0; column< getNumColumns() && !doneRow; column++)
@@ -1307,7 +1361,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				}
 			}
 			if (anyColumnNameSelected()){
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int first = firstColumnNameSelected();
 					selectColumnNames(first, getNumColumns()-1);
 					repaintAll();
@@ -1342,15 +1396,17 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 	}
 
-	public void leftArrowPressed(KeyEvent e) {
+	public void leftArrowPressed(String arguments) {
 		if (getEditing())
 			return;
-		if (e!=null && e.isShiftDown()){
+		if (StringUtil.foundIgnoreCase(arguments, "shift")){
 
 			if (anyColumnSelected()){ //accumulateSelection
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int last = lastColumnSelected();
 					selectColumns(0, last);
+					if (columnAssociable != null) 
+						columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					repaintAll();
 				}
 				else {
@@ -1358,11 +1414,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						if (isColumnSelected(i) && !isColumnSelected(i-1))
 							selectColumn(i-1);
 					}
+					if (columnAssociable != null) 
+						columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					repaintAll();
 				}
 			}
 			if (anyCellSelected()){
-				if (e.isAltDown()){
+				if (StringUtil.foundIgnoreCase(arguments, "option")){
 					for (int row = 0; row< getNumRows(); row++){
 						boolean doneRow = false;
 						for (int column = getNumColumns()-1; column>=0 && !doneRow; column--)
@@ -1386,7 +1444,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				}
 			}
 			if (anyColumnNameSelected()){
-				if (e.isAltDown()){ //select all the way to end
+				if (StringUtil.foundIgnoreCase(arguments, "option")){ //select all the way to end
 					int last = lastColumnNameSelected();
 					selectColumnNames(0, last);
 					repaintAll();
@@ -3618,7 +3676,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				else {
 					selectRow(row);
 					if (rowAssociable != null) {
-						rowAssociable.setSelected(row, true);
+					//	rowAssociable.setSelected(row, true);
 						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					}
 				}
@@ -3631,7 +3689,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				if (columnAssociable != null)
 					columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				if (rowAssociable != null) {
-					rowAssociable.setSelected(row, true);
+					//rowAssociable.setSelected(row, true);
 					rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				}
 
@@ -3648,7 +3706,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			if (columnAssociable != null)
 				columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			if (rowAssociable != null) {
-				rowAssociable.setSelected(row, true);
+			//	rowAssociable.setSelected(row, true);
 				rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 		}
@@ -3923,10 +3981,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** Selects row; DOES NOT UPDATE ASSOCIABLE */
+	/** Selects row; DOES NOT notify listeners of ASSOCIABLE; responsibility of subclasses*/
 	public void selectRow(int row) {
-		if (rowLegal(row))
+		if (rowLegal(row)){
 			rowsSelected[0].setBit(row);
+			if (rowAssociable != null)
+				rowAssociable.setSelected(row, true);
+		}
 	}
 
 	/* ............................................................................................................... */
@@ -4129,10 +4190,13 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** Selects column.; DOES NOT UPDATE ASSOCIABLE */
+	/** Selects column.; DOES NOT notify listeners of ASSOCIABLE; responsibility of subclasses */
 	public void selectColumn(int column) {
-		if (columnLegal(column))
+		if (columnLegal(column)){
 			columnsSelected[0].setBit(column);
+			if (columnAssociable != null)
+				columnAssociable.setSelected(column, true);
+		}
 	}
 
 	/* ............................................................................................................... */

@@ -1128,8 +1128,6 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							long set = 0;
 							c=parser.nextDarkChar();
 							while ((c!=']' && c!='\0')) {
-								if (c == 'K')
-									Debugg.println("");
 								long newSet = newData.fromChar(TNTtoMesquite(c)); 
 								set |= newSet;
 								c=parser.nextDarkChar();
