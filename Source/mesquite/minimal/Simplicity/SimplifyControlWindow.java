@@ -38,7 +38,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		modePanel = new ModePanel(this);
 		modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
 		modePanel.setVisible(true);
-		instructionsPanel = new JEditorPane("text/html","<html></html>");
+		instructionsPanel = new MesqJEditorPane("text/html","<html></html>");
 		instructionsPanel.setEditable(false);
 		instructionsPanel.setBackground(Color.white);
 		instructionsPanel.setForeground(Color.black);
