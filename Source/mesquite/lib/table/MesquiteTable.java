@@ -2040,6 +2040,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** repaints all components of the table */
 	public void repaintAll() {
 		// checkResetFont(getGraphics());
+
 		columnNames.repaint();
 		repaint();
 		rowNames.repaint();
