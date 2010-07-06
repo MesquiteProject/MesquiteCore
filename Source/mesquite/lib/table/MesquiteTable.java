@@ -2036,11 +2036,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		paint(g);
 	}
 
+	public boolean flag = false;   //just in case
 	/* ............................................................................................................... */
 	/** repaints all components of the table */
 	public void repaintAll() {
 		// checkResetFont(getGraphics());
-
 		columnNames.repaint();
 		repaint();
 		rowNames.repaint();
