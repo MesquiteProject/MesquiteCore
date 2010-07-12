@@ -47,8 +47,6 @@ public abstract class DNADatabaseURLSource extends DatabaseURLSource {
 		return false;
 	}
 	
-	public String getChromatogramDownloadURL(Hashtable args) {
-		return "";
-	}
+	public abstract String getChromatogramDownloadURL(Hashtable args);
 
 }

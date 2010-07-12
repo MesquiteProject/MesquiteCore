@@ -17,13 +17,8 @@ import java.util.*;
 
 public abstract class DatabaseURLSource extends MesquiteModule {
 	Vector keyValuePairs;
-	String baseURL;
-	String pageURL;
 	static final String COUNT = "count";
 	
-	public boolean needsKeyValuePairAuthorization() {
-		return false;
-	}
   	 public Class getDutyClass() {
     	 	return DatabaseURLSource.class;
     	 }
@@ -40,6 +35,10 @@ public abstract class DatabaseURLSource extends MesquiteModule {
   		keyValuePairs.addElement(pair);
   	}
   	
+	public void addKeyValuePair(int key, String value) {
+		addKeyValuePair(getKeyString(key), value);
+	}
+
   	public void removeKeyValuePair(String key){
   		for (int i=0; i<keyValuePairs.size(); i++) {
   			String[] pair= (String[])keyValuePairs.get(i);
@@ -48,33 +47,20 @@ public abstract class DatabaseURLSource extends MesquiteModule {
   		}
   	}
 
-	public String getKeyString(int key) {
-		return "";
-	}
-
-	public String getElementName(int elementID) {
-		return "";
+	public boolean needsKeyValuePairAuthorization() {
+		return false;
 	}
 
   	
-	public String getBaseURL() {
-		return baseURL;
-	}
-	public void setBaseURL(String baseURL) {
-		this.baseURL = baseURL;
-	}
-	public String getPageURL() {
-		return pageURL;
-	}
-	public void setPageURL(String pageURL) {
-		this.pageURL = pageURL;
-	}
+	public abstract String getBaseURL();
 	
-	public String getPage(int whichPage) {
-		return "";
-	}
+	public abstract String getPage(int whichPage);
 
-	public String getKey() {
+	public abstract String getKeyString(int key) ;
+
+	public abstract String getElementName(int elementID);
+
+	public  String getKey() {
 		return "";
 	}
 
