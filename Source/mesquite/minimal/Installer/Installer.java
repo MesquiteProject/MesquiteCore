@@ -393,7 +393,7 @@ public class Installer extends MesquiteInit {
 				MesquiteFile.rename(prevPackagePath, tempPackagePath);
 			}
 			logln("Downloading installation file to " + directoryLocation + downloadAs);
-			if (MesquiteFile.downloadURLContents(url, directoryLocation + downloadAs, true)){
+			if (MesquiteFile.downloadURLContents(url, directoryLocation + downloadAs, true, true)){
 				boolean fileReady = true;
 				if (treatment != null && treatment.equalsIgnoreCase("unzip")){
 					logln("Unzipping installation file");
@@ -530,26 +530,26 @@ public class Installer extends MesquiteInit {
 			boolean failed = false;
 			MesquiteTrunk.suppressMenuResponse = true;
 			try {
-			//hide all project windows
-			Enumeration e = MesquiteTrunk.mesquiteTrunk.windowVector.elements();
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				MesquiteWindow mw = (MesquiteWindow)obj;
-				if (!(mw instanceof SystemWindow) && !(mw instanceof mesquite.trunk.AboutWindow))
-					mw.getParentFrame().setVisible(false);
-			}
-			Projects projects = MesquiteTrunk.mesquiteTrunk.getProjectList();
-			for (int ip = 0; ip< projects.getNumProjects(); ip++){
-				MesquiteProject proj = projects.getProject(ip);
+				//hide all project windows
+				Enumeration e = MesquiteTrunk.mesquiteTrunk.windowVector.elements();
+				while (e.hasMoreElements()) {
+					Object obj = e.nextElement();
+					MesquiteWindow mw = (MesquiteWindow)obj;
+					if (!(mw instanceof SystemWindow) && !(mw instanceof mesquite.trunk.AboutWindow))
+						mw.getParentFrame().setVisible(false);
+				}
+				Projects projects = MesquiteTrunk.mesquiteTrunk.getProjectList();
+				for (int ip = 0; ip< projects.getNumProjects(); ip++){
+					MesquiteProject proj = projects.getProject(ip);
 
-			}
-			for (Iterator iter = installation.iterator(); !failed && iter.hasNext();) {   // this is going through all of the notices
-				Element installElement = (Element) iter.next();
-				if (install(installElement, receipt))
-					count++;
-				else
-					failed = true;
-			}
+				}
+				for (Iterator iter = installation.iterator(); !failed && iter.hasNext();) {   // this is going through all of the notices
+					Element installElement = (Element) iter.next();
+					if (install(installElement, receipt))
+						count++;
+					else
+						failed = true;
+				}
 			}
 			catch (Throwable t){
 				failed = true;
