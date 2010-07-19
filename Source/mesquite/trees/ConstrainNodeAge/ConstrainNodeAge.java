@@ -78,7 +78,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 		nodeAgeConstrTool.setTouchedCommand(branchCommand);
 		if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
 			((MesquiteWindow)ownerModule.containerOfModule()).addTool(nodeAgeConstrTool);
-			nodeAgeConstrTool.setPopUpOwner(ownerModule);
+		//	nodeAgeConstrTool.setPopUpOwner(ownerModule);
 		}
 	
 	}
