@@ -53,7 +53,7 @@ public class PhoneHomeUtil {
 				installMenuItems.addElement(MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, installSubmenu, name, phlt));
 			}
 		}
-		
+
 	}
 	public static boolean alreadyInReceipts(ListableVector v){
 		String identity = ((MesquiteString)v.getElement("identity")).getValue();
@@ -234,7 +234,7 @@ public class PhoneHomeUtil {
 					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrGreater <= mmi.getVersionInt());
 				if (MesquiteInteger.isCombinable(forPackageVersionEqualOrLess))  
 					appliesToBuild =  appliesToBuild && (forPackageVersionEqualOrLess >= mmi.getVersionInt());
-			
+
 			}
 
 			//suppose Mesquite is version 2. 01
@@ -259,16 +259,25 @@ public class PhoneHomeUtil {
 			//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 			//notice assumed to have been seen before if its version number is less than current
-			boolean seenBefore = !adHoc && (forMesquiteVersionLessOrEqual < currentMesquiteVersion);  //e.g., notice is version 2.0
+			boolean seenBefore = false;
 
-			//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
-			seenBefore = seenBefore || (forMesquiteVersionLessOrEqual ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
+			if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){  //a Mesquite update
+				seenBefore = seenBefore || !adHoc && (forMesquiteVersionLessOrEqual < currentMesquiteVersion);  //e.g., notice is version 2.0
 
-			//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
-			seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed == forMesquiteVersionLessOrEqual && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
+				//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
+				seenBefore = seenBefore || (forMesquiteVersionLessOrEqual ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
 
-			//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
-			seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed> forMesquiteVersionLessOrEqual);  //e.g., notice is 2.02; 2.03 notices previously read
+				//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
+				seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed == forMesquiteVersionLessOrEqual && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
+
+				//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
+				seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed> forMesquiteVersionLessOrEqual);  //e.g., notice is 2.02; 2.03 notices previously read
+			}
+			else {  //third party update
+				seenBefore = seenBefore || (noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
+
+				seenBefore = seenBefore || (noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
+			}
 			boolean javaInsufficient = false;
 			boolean requirementsNotMet = false;
 			if (v != null){
@@ -323,7 +332,7 @@ public class PhoneHomeUtil {
 								skip = true;
 						}
 						if (!skip){
-						MesquiteString packageName = (MesquiteString)v.getElement("packageName");
+							MesquiteString packageName = (MesquiteString)v.getElement("packageName");
 							MesquiteString explanation = (MesquiteString)v.getElement("explanation");
 							MesquiteString uniqueID = (MesquiteString)v.getElement("uniqueID");
 							if (requirementsNotMet && requiredName != null){
@@ -368,25 +377,36 @@ public class PhoneHomeUtil {
 					String fromWhom = null;
 					if (mmi != null){
 						if (mmi.getModuleClass() == mesquite.Mesquite.class)
-						fromWhom = "Mesquite";
-					else if (!StringUtil.blank(mmi.getPackageName()))
-						fromWhom = mmi.getPackageName();
-					else
-						fromWhom = mmi.getName();
+							fromWhom = "Mesquite";
+						else if (!StringUtil.blank(mmi.getPackageName()))
+							fromWhom = mmi.getPackageName();
+						else
+							fromWhom = mmi.getName();
 					}
 					MesquiteMessage.println("\n\nNOTICE from " + fromWhom + ": " + message + "\n");
 				}
-				if (!skip && MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual)){
-					if (forMesquiteVersionLessOrEqual ==  currentMesquiteVersion){  //version of note is this version of Mesquite
+				if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){  //Mesquite update
+					if (!skip && MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual)){
+						if (forMesquiteVersionLessOrEqual ==  currentMesquiteVersion){  //version of note is this version of Mesquite
+							if (phoneHomeRecord.getLastNoticeForMyVersion() < noticeNumber)  // this is a later notice than we had seen before; record it
+								phoneHomeRecord.setLastNoticeForMyVersion(noticeNumber);
+							if (forMesquiteVersionLessOrEqual ==  phoneHomeRecord.getLastVersionNoticed() && noticeNumber >phoneHomeRecord.getLastNotice())
+								phoneHomeRecord.setLastNotice(noticeNumber);
+						}
+						if (forMesquiteVersionLessOrEqual >=  phoneHomeRecord.getLastVersionNoticed()){
+							phoneHomeRecord.setLastVersionNoticed(forMesquiteVersionLessOrEqual);
+							if (noticeNumber >phoneHomeRecord. getLastNotice())
+								phoneHomeRecord.setLastNotice(noticeNumber);
+						}
+					}
+				}
+				else {  //third party update
+					if (!skip){
 						if (phoneHomeRecord.getLastNoticeForMyVersion() < noticeNumber)  // this is a later notice than we had seen before; record it
 							phoneHomeRecord.setLastNoticeForMyVersion(noticeNumber);
-						if (forMesquiteVersionLessOrEqual ==  phoneHomeRecord.getLastVersionNoticed() && noticeNumber >phoneHomeRecord.getLastNotice())
+						if (noticeNumber >phoneHomeRecord.getLastNotice())
 							phoneHomeRecord.setLastNotice(noticeNumber);
-					}
-					if (forMesquiteVersionLessOrEqual >=  phoneHomeRecord.getLastVersionNoticed()){
-						phoneHomeRecord.setLastVersionNoticed(forMesquiteVersionLessOrEqual);
-						if (noticeNumber >phoneHomeRecord. getLastNotice())
-							phoneHomeRecord.setLastNotice(noticeNumber);
+
 					}
 				}
 
@@ -452,7 +472,7 @@ public class PhoneHomeUtil {
 	/*.................................................................................................................*/
 
 	private static String handleMessages(boolean adHoc, String noticesFromHome, MesquiteModuleInfo mmi, PhoneHomeRecord phoneHomeRecord, StringBuffer logBuffer) {
-	/*	String url = mmi.getHomePhoneNumber();
+		/*	String url = mmi.getHomePhoneNumber();
 		if (StringUtil.blank(url))
 			return null;
 		String noticesFromHome = null;
@@ -466,8 +486,8 @@ public class PhoneHomeUtil {
 			return null;
 		if (mmi.getModuleClass() == mesquite.Mesquite.class)
 			phoneHomeSuccessful = true;
-		*/
-		
+		 */
+
 		int lastNoticeForMyVersion = phoneHomeRecord.getLastNoticeForMyVersion();
 		int lastNotice = phoneHomeRecord.getLastNotice();
 		int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
@@ -496,7 +516,7 @@ public class PhoneHomeUtil {
 				if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
 					forMesquiteVersionLessOrEqual = MesquiteInteger.fromString(messageElement.elementText("forVersion"));    // old name
 				//NOTE: for adhoc requests forMesquiteVersionLessOrEqual is not used
-				
+
 				int forPackageVersionExactly = MesquiteInteger.fromString(messageElement.elementText("forPackageVersionExactly"));    // notice is for this version and any previous version
 				int forPackageVersionEqualOrGreater = MesquiteInteger.fromString(messageElement.elementText("forPackageVersionEqualOrGreater"));    // notice is for this version and any previous version
 				int forPackageVersionEqualOrLess = MesquiteInteger.fromString(messageElement.elementText("forPackageVersionEqualOrLess"));    // notice is for this version and any previous version
