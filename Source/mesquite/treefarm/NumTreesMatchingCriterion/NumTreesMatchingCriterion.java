@@ -1,5 +1,5 @@
 package mesquite.treefarm.NumTreesMatchingCriterion;
-/* Mesquite source code.  J.C. Oliver.  July 2010.
+/* Mesquite source code, NumTreesMatchingCriterion.  J.C. Oliver.  July 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -18,6 +18,9 @@ public class NumTreesMatchingCriterion extends NumberForTreeBlock {
 	BooleanForTree treeCriterionTask;
 	MesquiteCommand criterionCommand;
 	
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e1 = registerEmployeeNeed(BooleanForTree.class, getName() + " needs a criterion for trees.", "The criterion for trees trees is indicated initially.");
+	}
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		treeCriterionTask = (BooleanForTree)hireEmployee(BooleanForTree.class, "Criterion for Trees");
 		if(treeCriterionTask == null)
@@ -36,7 +39,7 @@ public class NumTreesMatchingCriterion extends NumberForTreeBlock {
 	}
 	/*.................................................................................................................*/
 	public void calculateNumber(TreeVector trees, MesquiteNumber result, MesquiteString resultString) {
-		if (result==null)
+		if (result==null || trees ==null)
 			return;
 		clearResultAndLastResult(result);
 		int metCriterion = 0;
