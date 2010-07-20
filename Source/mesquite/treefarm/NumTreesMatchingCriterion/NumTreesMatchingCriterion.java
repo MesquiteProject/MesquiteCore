@@ -89,10 +89,10 @@ public class NumTreesMatchingCriterion extends NumberForTreeBlock {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
     /*........................................................*/
     public int getVersionOfFirstRelease(){
-        return NEXTRELEASE;
+        return 273;
     }
 }

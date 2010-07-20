@@ -24,7 +24,7 @@ public class BLFromNodeAgeConstraints extends BranchLengthsAltererMult {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
@@ -118,4 +118,13 @@ public class BLFromNodeAgeConstraints extends BranchLengthsAltererMult {
 	public String getExplanation() {
 		return "Uses minimum node age constraints to set the branch lengths on the tree." ;
 	}
+	
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 273;  
+	}
+
 }
