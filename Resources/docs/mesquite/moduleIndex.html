@@ -369,6 +369,7 @@
 <li>DrawHierarchy  &#8212; Draws project and module trees</li>
 <li>E-mail Tree  &#8212; Calls mailto: to email a text image of the tree.</li>
 <li>Edit State Names  &#8212; Edits state names of a categorical data matrix.</li>
+<li>Enforce Minimum Node Age Constraints &#8212; Uses minimum node age constraints to set the branch lengths on the tree.</li>
 <li>Equiprobable Trees  &#8212; Generates trees randomly so that each possible labelled tree topology is equally likely.</li>
 <li>Evolutionary Principal Components  &#8212; Performs Maddison and Dyreson's evolutionary principal components analysis on a continous-valued matrix.</li>
 <li>Evolve Categorical Characters  &#8212; Simulates character evolution for categorical characters on a tree.</li>
@@ -380,6 +381,7 @@
 <li>Export NEXUS for MrBayes  &#8212; Exports NEXUS files for use by MrBayes.</li>
 <li>Export NEXUS Tree File  &#8212; Exports NEXUS file with a tree block, and optionally a taxa block.</li>
 <li>Export NEXUS Tree File from Tree Source  &#8212; Exports NEXUS file with a tree block, and optionally a taxa block, based upon a source of trees.  One major advantage of this is that it allows a collection of trees to a file without having them all in memory at once. For example, if the Tree Source is "Transform Trees From Other Source", and the other source is "Use Trees from Separate NEXUS file", then Mesquite will read in a tree from the other NEXUS file, transform the  tree, and wrte it to the file, one at a tme.</li>
+<li>Export Partitions as Separate NEXUS files &#8212; Exports character partitions in a matrix as Separate NEXUS files.</li>
 <li>Export Taxa Distance Matrix  &#8212; Exports a tab-delimited text file of distances among the taxa.</li>
 <li>Extract tree block  &#8212; Extracts selected trees and places them in a new tree block.</li>
 <li>F81 distance  &#8212; F81 (Felsenstein, 1981) distance from a character matrix.</li>
@@ -400,6 +402,7 @@
 <li>Gaps to Missing  &#8212; Converts gaps to missing data in selected region.</li>
 <li>GC  &#8212; Returns 1 for G or C, 0 for A or T.</li>
 <li>GenBank (DNA/RNA)  &#8212; Imports GenBank files that consist of DNA/RNA sequence data.</li>
+<li>GenBank Number &#8212; Lists the primers used in the reads composing a sequence.</li>
 <li>GenBank Taxon  &#8212; Provides a URL to a taxon in NCBI GenBank</li>
 <li>Gene Duplication-Extinction (gene tree)  &#8212; Counts the number of duplication and extinction events for gene tree implied by a containing species tree</li>
 <li>Gene Duplication-Extinction (species tree)  &#8212; Counts the number of duplication and extinction events for species tree implied by a contained gene tree</li>
@@ -408,6 +411,7 @@
 <li>Get Taxon's tree from a web site  &#8212; Supplies a tool for tree windows that gets tree for taxon touched from a web site.</li>
 <li>Get Taxon's tree from tolweb.org  &#8212; Supplies a tool for tree windows that gets tree for taxon touched from tolweb.org</li>
 <li>Go-to Window  &#8212; Provides a window to jump to another file</li>
+<li>Graft Other Tree &#8212; Grafts a tree in a tree window onto given tree; requires that the other tree includes none of the same terminal taxa.  If a taxon in receiving tree is selected, graft occurs there; otherwise, graft occurs at root.</li>
 <li>Group Membership (characters)  &#8212; Lists and allows changes to group membership in the current partition of characters, for List of Characters window.</li>
 <li>Group Membership (taxa)  &#8212; Lists and allows changes to group membership in the current partition of taxa, for List of Taxa window.</li>
 <li>GTR Rate Matrix Model  &#8212; Defines and maintains six-parameter general time-reversible (GTR) rate matrix models.</li>
@@ -500,6 +504,7 @@
 <li>Maximum likelihood reconstruct (Generic categorical)  &#8212; Assesses likelihood for categorical characters, and r econstructs ancestral states by the maximum marginal probability ("MLE") criterion</li>
 <li>Mean value of character  &#8212; Calculates the mean observed trait for continuous character.</li>
 <li>Mean value of character (linked matrix)  &#8212; Calculates the mean observed trait for continuous character in a linked matrix.</li>
+<li>Merge Matrices from File &#8212; Includes a file and concatenates its taxa to an existing taxa block, for instance to add seqences.</li>
 <li>Merge Taxa  &#8212; Merges selected taxa and their character states.</li>
 <li>Merge Taxa &amp; Matrices from File  &#8212; Includes a file and concatenates its taxa to an existing taxa block, for instance to add seqences.</li>
 <li>Meristic Data Package Introduction  &#8212; Provides basic facilities for handling meristic characters.</li>
@@ -555,6 +560,7 @@
 <li>Number for Taxon (in List of Taxa window)  &#8212; Supplies numbers for taxa for a taxa list window.</li>
 <li>Number for Tree (in List of Trees window)  &#8212; Supplies numbers for trees for a trees list window.</li>
 <li>Number for Tree Block (in List of Tree Blocks window)  &#8212; Supplies numbers for tree blocks for a tree blocks list window.</li>
+<li>Number of Trees Matching Criterion &#8212; Counts the number of trees in a tree block that match a user-specified criterion.  For example, it could count the number of trees in a tree block which are congruent with a particular tree topology (by selecting the "Tree Congruent with Constraint Tree Topology" module in the Criterion for Trees dialog). </li>
 <li>Number of characters in character set  &#8212; Indicates number of characters in character set in list window.</li>
 <li>Number of characters in inclusion set  &#8212; Indicates number of characters in inclusion set in list window.</li>
 <li>Number of characters of data matrix  &#8212; Indicates taxa of data matrix.</li>
@@ -644,6 +650,7 @@
 <li>Remove Internal Node Labels  &#8212; Deletes labels from all internal nodes.</li>
 <li>Remove Invariant Characters  &#8212; Removes all characters that have one state or fewer.</li>
 <li>Remove item...  &#8212; Removes an item in each cell of a continuous matrix.</li>
+<li>Remove Tokens &#8212; Removes tokens from start or end of the taxon name.</li>
 <li>Rename item...  &#8212; Renames an item of a continuous matrix.</li>
 <li>Replaces text in taxon names  &#8212; Replaces text in taxon names.</li>
 <li>Reshuffle Character  &#8212; Supplies characters that are reshufflings of an existing character.</li>
@@ -684,6 +691,7 @@
 <li>Selected Block Mover  &#8212; Moves selected blocks of multiple sequences.</li>
 <li>Selected Taxa Convex in Tree  &#8212; Determines if the selected taxa are convex in a tree.  That is, does there exist a rooting of the tree in which the selected taxa form a clade?</li>
 <li>Selected Taxa Form Clade  &#8212; Determines if the selected taxa form a clade in a tree.</li>
+<li>Selection Summary Strip &#8212; Shows the strip at bottom of matrix with character reference.</li>
 <li>Semistrict Consensus  &#8212; Calculates the semistrict consensus tree.</li>
 <li>Sequence Information Editor  &#8212; Edits character state names within the editor info panel.</li>
 <li>Sequence Length  &#8212; Reports the length (total minus gaps) of a molecular sequence in a taxon.</li>
@@ -720,6 +728,7 @@
 <li>Simple Tree Window  &#8212; Displays a single tree.</li>
 <li>Simplicity Manager  &#8212; A small module to supervise the interface for simplification management.</li>
 <li>Simplified NEXUS  &#8212; Exports NEXUS files, for instance of old fashioned style (using DATA block).</li>
+<li>Simplify Taxon Names &#8212; Simplifies taxon names so that they will work with MrBayes, RAxML, etc..</li>
 <li>Simulate Ancestral States  &#8212; Simulates ancestral states on the nodes of a tree.</li>
 <li>Simulated Characters  &#8212; Supplies simulated characters.</li>
 <li>Simulated Characters on Trees  &#8212; Supplies simulated characters each from a respective tree.</li>
@@ -866,7 +875,7 @@
               Home Page</font></a><font size="2"> | <a href="manual.html">Mesquite
               Manual</a></font></span></font></p>
               <p><font face="Trebuchet MS"><span class="smallplain">Copyright 
-                &copy; 2002-2009 by <a href="http://salticidae.org/wpm/home.html">Wayne 
+                &copy; 2002-2010 by <a href="http://salticidae.org/wpm/home.html">Wayne 
                 P. Maddison</a> and <a href="http://david.bembidion.org">David 
                 R. Maddison</a>.<br>
 &nbsp;All rights reserved.</span></font></p></td>
