@@ -67,6 +67,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 					int added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
 					if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
+//						dnaData.assignGeneticCodeToTerminalChars(charAdded.getValue());
 						someCharAdded=true;
 					}
 					numStops[1] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);  //amount if shift by 1
@@ -74,6 +75,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 						added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
 						if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 							dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
+//							dnaData.assignGeneticCodeToTerminalChars(charAdded.getValue());
 							someCharAdded=true;
 						}
 						numStops[2] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);  //amount if shift by 2

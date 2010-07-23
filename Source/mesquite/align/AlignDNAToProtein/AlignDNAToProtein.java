@@ -80,6 +80,7 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 		if (numInDNA<numInProtein*3) {
 			dnaData.addCharacters(numInDNA, numInProtein*3-numInDNA, false);
 			dnaData.assignCodonPositionsToTerminalChars(numInProtein*3-numInDNA);
+//			dnaData.assignGeneticCodeToTerminalChars(numInProtein*3-numInDNA);
 			dnaData.addInLinked(numInDNA, numInProtein*3-numInDNA, true);
 			dataChanged.setValue(true);
 		}
@@ -98,8 +99,10 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 				if (icDNA>=0) {
 					int distance = icDNA-adjustedPosInDNA;
 					dnaData.moveCells(icDNA,icDNA, -distance, it,it, false, false, true,  false, dataChanged, charAdded);
-					if (charAdded.isCombinable() && charAdded.getValue()!=0) 
+					if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
+//						dnaData.assignGeneticCodeToTerminalChars(charAdded.getValue());
+					}
 					else if (adjustCodonPositions)  // adjust codpos so it fits for this taxon
 						dnaData.setCodonPosition(adjustedPosInDNA, codPos+1, false, false);
 					adjustedPosInDNA++;
