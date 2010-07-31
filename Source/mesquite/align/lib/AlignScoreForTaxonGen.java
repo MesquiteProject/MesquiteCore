@@ -31,7 +31,7 @@ public abstract class AlignScoreForTaxonGen extends NumberForTaxon {
 	//MesquiteTimer timer;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for number of stops)"); 
+		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, new RequiresAnyDNAData(), "Source of character matrix (for number of stops)"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		//timer =  new MesquiteTimer();

@@ -117,6 +117,7 @@ public class PairwiseAligner  {
 		}
 		
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
+		//Debugg.println(" lengthA " + lengthA + " lengthB " + lengthB + " returnAlignment " + returnAlignment);
 		
 		if ( returnAlignment) { 
 		
@@ -153,6 +154,11 @@ public class PairwiseAligner  {
 			return ret;
 
 		} else { 
+			if (lengthA == 0 || lengthB == 0){
+				if (score != null)
+					score.setToUnassigned(  );
+				return null;
+			}
 			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.	
 			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true, keepGaps, followsGapSize);
 			helper.fillForward(0,lengthA,0,lengthB,helper.noGap);			
