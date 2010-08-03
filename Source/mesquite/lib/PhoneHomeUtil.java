@@ -622,8 +622,15 @@ public class PhoneHomeUtil {
 					String downloadURL = currentReleaseVersion.elementText("downloadURL");
 					int releaseVersionInt = MesquiteInteger.fromString(currentReleaseVersion.elementText("version"));
 					int userVersionInt = getVersion(mmi);
+					String fromWhom = null;
+					if (mmi.getModuleClass() == mesquite.Mesquite.class)
+						fromWhom = "Mesquite";
+					else if (!StringUtil.blank(mmi.getPackageName()))
+						fromWhom = mmi.getPackageName();
+					else
+						fromWhom = mmi.getName();
 					if (!StringUtil.blank(versionString))
-						releaseString+="The current release version of " + mmi.getName() + " is " + versionString;
+						releaseString+="The current release version of " + fromWhom + " is " + versionString;
 					if (!StringUtil.blank(buildString))
 						releaseString+= " build " + buildString;
 					if (!StringUtil.blank(releaseString)) {
