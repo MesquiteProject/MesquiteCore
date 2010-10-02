@@ -174,7 +174,8 @@
               <font face="Trebuchet MS"> </font> 
               <ul>
 
-                <li>protein data misreading/symbols</li>
+                <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) Protein NEXUS files written by MacClade may be misread by Mesquite 2.73, with some amino acids being coverted to others (specifically, Serine, S, converted to Cysteine, C).   This bug only affects version 2.73, and was introduced in an attempt to fix the problem caused by misformatted NEXUS files created by Clustal.  More specifically, it is caused by problems in interpreting protein NEXUS files in which there is a SYMBOLS subcommand in the FORMAT command, which is a frequent occurrence with files written by MacClade. [Thanks to Wendy Moore for reporting this.]</li>
+                <li>Top BLAST Matches didn't work if used for amino acid sequences; it now works.</li>
                 <li>other small bug fixes</li>
               </ul>
                <hr>             <h3><font face="Trebuchet MS">Version 2.73</font></h3>
