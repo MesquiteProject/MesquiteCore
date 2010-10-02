@@ -117,7 +117,6 @@ public class PairwiseAligner  {
 		}
 		
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
-		//Debugg.println(" lengthA " + lengthA + " lengthB " + lengthB + " returnAlignment " + returnAlignment);
 		
 		if ( returnAlignment) { 
 		
