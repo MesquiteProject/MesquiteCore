@@ -2414,7 +2414,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void resetNumColumnsVisible() {
 		numColumnsVisible = numColumnsTotal - firstColumnVisible + 1;
 		int sum = 0;
-		for (int c = firstColumnVisible; c < numColumnsTotal; c++) {
+		for (int c = firstColumnVisible; c < numColumnsTotal && c < columnWidths.length; c++) {
 			sum += columnWidths[c];
 			if (sum >= matrixWidth) {
 				break;
@@ -2435,7 +2435,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void resetNumRowsVisible() {
 		numRowsVisible = (numRowsTotal - firstRowVisible + 1);
 		int sum = 0;
-		for (int r = firstRowVisible; r < numRowsTotal; r++) {
+		for (int r = firstRowVisible; r < numRowsTotal && r <rowHeights.length; r++) {
 			sum += rowHeights[r];
 			if (sum >= matrixHeight) {
 				numRowsVisible = (r - firstRowVisible + 1);
