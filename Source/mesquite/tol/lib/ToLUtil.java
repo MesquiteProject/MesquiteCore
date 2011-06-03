@@ -128,6 +128,51 @@ public class ToLUtil {
 			return terms;
 
 	}  
+	/*--------------------------*/
+	public static int getTerminalsWithAuthors(Element element, String[] names, String[] authors, boolean[] leaves, boolean[] hasChildren, MesquiteString termName,MesquiteString authorName, MesquiteInteger c) {
+		boolean isNode = isNode(element);
+		boolean isName = "Name".equalsIgnoreCase(element.getName());
+		boolean isAuthor = "Authority".equalsIgnoreCase(element.getName());
+		List children = element.content();
+		Iterator iterator = children.iterator();
+		int terms = 0;
+		while (iterator.hasNext()) {
+			Object o = iterator.next();
+			if (isName){
+				if (o instanceof CDATA) {
+					termName.setValue(((CDATA)o).getText());
+				}
+			}
+			else if (isAuthor){
+				if (o instanceof CDATA) {
+					authorName.setValue(((CDATA)o).getText());
+				}
+			}
+			else if (o instanceof Element) {
+				Element e = (Element)o;
+				if (isContinuable(e))
+					terms += getTerminals((Element) o, names, leaves,hasChildren, termName, c);
+			}
+		}
+		if (isNode && terms == 0) {
+
+			names[c.getValue()] =  new String(termName.getValue()); //element.getAttributeValue("NAME");
+			authors[c.getValue()] =  new String(authorName.getValue()); //element.getAttributeValue("NAME");
+			if (isLeaf(element))
+				leaves[c.getValue()] = true;
+			else
+				leaves[c.getValue()] = false;
+			if (hasChildren(element))
+				hasChildren[c.getValue()] = true;
+			else
+				hasChildren[c.getValue()] = false;
+			c.increment();
+			return 1;
+		}
+		else 
+			return terms;
+
+	}  
 
 	public static void buildTree(boolean isRoot, Element element, MesquiteTree tree, int node, String[] names, MesquiteInteger c) {
 		if (ToLUtil.countTerminals(element, "  ") == 1 && ToLUtil.isNode(element)) {
