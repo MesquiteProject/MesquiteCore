@@ -69,8 +69,8 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 
 			MesquiteInteger numCon = new MesquiteInteger(0);
 
-			int numCladeTree1 = tree1.numberOfInternalsInClade(tree1.getRoot());
-			int numCladeTree2 = tree2.numberOfInternalsInClade(tree2.getRoot());
+			int numCladeTree1 = tree1.numberOfInternalsInClade(tree1.getRoot())-1;  //remove the root
+			int numCladeTree2 = tree2.numberOfInternalsInClade(tree2.getRoot())-1;
 
 			visitOriginal(tree1, tree1.getRoot(), tree2, numCon);
 			if (tree1.getTerminalTaxaAsBits(tree1.getRoot()).equals(tree2.getTerminalTaxaAsBits(tree2.getRoot())))
@@ -80,12 +80,16 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 			double fraction = 0.0;
 			if (numCladeTree1+numCladeTree2>0)
 				fraction  = (numC*2.0)/(numCladeTree1+numCladeTree2);
+			
+	//		NOTE:  SHOULD this be -1 to remove the doublecounting of the descendants of the root node if unrooted?  should be option
 
-/*			Debugg.println("\n\n\n   ");
+	/*	Debugg.println("\n\n\n   ");
 			Debugg.println(tree1.getName() + "    " + numCladeTree1);
 			Debugg.println(tree2.getName() + "    " + numCladeTree2);
 			Debugg.println( "  numC    " + numC);
 			Debugg.println( "  fraction    " + fraction);
+			Debugg.println( "  numCladeTree1    " + numCladeTree1);
+			Debugg.println( "  numCladeTree2    " + numCladeTree2);
 */
 			result.setValue(fraction);
 			if (resultString!=null) {
