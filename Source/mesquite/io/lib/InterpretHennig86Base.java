@@ -20,7 +20,6 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -386,7 +385,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		return exportTotalElements;
 	}
 	/*.................................................................................................................*/
-	public StringBuffer getDataAsFileText(CharacterData data) {
+	public StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
 		CategoricalData catData = (CategoricalData)data;
 		HennigXDREAD dread = (HennigXDREAD)availableCommands[0];
@@ -426,7 +425,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		progIndicator.start();
 
 
-		StringBuffer outputBuffer = getDataAsFileText(data);  //ccode
+		StringBuffer outputBuffer = getDataAsFileText(file, data);  //ccode
 		if (outputBuffer==null)
 			return false;
 
