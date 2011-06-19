@@ -73,6 +73,14 @@ public class BipartitionVector extends Vector {
 		}
 
 	}
+	public String toString(){
+		String s = "BipartitionVector\n";
+		for (int i=0; i<size(); i++){
+			Bipartition b = getBipart(i);
+			s += "   " + b + "\n";
+		}
+		return s;
+	}
 	public Bipartition getBipart(int i){
 		if (i<size() && i>=0)
 			return (Bipartition)elementAt(i);
@@ -370,7 +378,7 @@ public class BipartitionVector extends Vector {
 	}
 	public Tree makeTree(double minFreq){
 		MesquiteTree tree = new MesquiteTree(taxa);
-		tree.setToDefaultBush(allTaxa.numBitsOn(), false);
+		tree.setToDefaultBush(allTaxa, false);  //bug fixed 2. 75; had used the first taxa, not the set in the bipartition vector
 		boolean setLengths = false;
 		for (int it=0; it<numTaxa; it++)
 			if (MesquiteDouble.isCombinable(branchLengths[it])) {

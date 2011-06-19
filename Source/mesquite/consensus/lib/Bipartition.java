@@ -30,6 +30,18 @@ public class Bipartition {
 		freq = new long[numFreqs];
 		reset();
 	}
+	
+	public String toString(){
+		String s = "Bipartition ";
+		s += bits.toPlusMinusString();
+		s += "   FREQ: ";
+		for (int i = 0; i< freq.length; i++){
+			s += "  " + freq[i];
+		}
+		return s;
+	}
+	
+	
 	void reset(){
 		for (int i=0;i<numFreqs; i++)
 			freq[i]=0;
