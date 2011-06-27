@@ -113,6 +113,8 @@ public class ListTable extends MesquiteTable {
 					else
 						i++;
 				}
+				if (assoc instanceof TreeVector)
+					((TreeVector)assoc).resetAssignedNumbers();
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
 					 ((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "character moving");
