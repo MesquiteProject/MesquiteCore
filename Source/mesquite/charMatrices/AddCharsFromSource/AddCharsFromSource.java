@@ -28,7 +28,7 @@ import mesquite.lib.table.*;
 public class AddCharsFromSource extends CategDataAlterer {
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true; 
+		return false; 
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
@@ -48,7 +48,7 @@ public class AddCharsFromSource extends CategDataAlterer {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 275;  
 	}
 
 	CharSourceCoordObed characterSourceTask;
@@ -83,8 +83,10 @@ public class AddCharsFromSource extends CategDataAlterer {
 		CharacterState cs = null;
 		for (int i = 0; i<numChars; i++){
 			CharacterDistribution dist = characterSourceTask.getCharacter(data.getTaxa(), i);
-			if (data.getStateClass() != dist.getStateClass())
+			if (data.getStateClass() != dist.getStateClass()){
+				discreetAlert("Sorry, the source is supplying characters of a different type, and so can't be used");
 				return false;
+			}
 			data.addCharacters(data.getNumChars(), 1, false);
 			int ic = data.getNumChars()-1;
 			for (int it = 0; it<data.getNumTaxa(); it++){
