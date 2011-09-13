@@ -160,6 +160,24 @@
               <p><font face="Trebuchet MS">There is also a short list of <a href="#releaseDates">release
               dates</a>.</font></p>
                 <hr>
+               <h3><font face="Trebuchet MS">Version 2.75</font></h3>
+              <h4><font face="Trebuchet MS">New Features</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+
+                <li>In the List of Trees window, there is now a small magnifyin glass cursor. When you touch on a tree in the list, the tree is shown in a Tree Window.</li>
+                <li>In the Balls&amp;Sticks tree drawing mode, you can now turn off the balls on internal nodes. This can be useful to make a figure with character states shown only at the tips of the tree. First, turn on Trace Character History, then turn off balls on internal nodes to make leave only the tip states visible.</li>
+                <li>Continuous characters can now be discretized by selecting the characters in the Character Matrix Editor, then choosing <strong>Discretize Selected Characters</strong> under the Utilities submenu. Before doing that, you need to have a categorical data matrix available to which the discretized characters will be added.</li>
+              </ul>
+             <h4><font face="Trebuchet MS">Bug Fixes</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+
+                <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) There had been a bug with consensus tree calculation when not all taxa were included in the input trees. In this situation, the consensus tree insofar as it was shown was correct, but it could have been an incomplete tree, with some taxa missing. This bug has been fixed.</li>
+                <li>If tree blocks were deleted or moved in sequence while a calculation using tree blocks was in effect, and the file saved, on reopening the calculation may have used a different tree block than intended. This bug has been fixed.</li>
+                <li>FASTA file export now handles taxon names with spaces and punctuation without adding underscores or quotes.</li>
+              </ul>
+             <hr>
                <h3><font face="Trebuchet MS">Version 2.74</font></h3>
               <h4><font face="Trebuchet MS">New Features</font></h4>
               <font face="Trebuchet MS"> </font> 
