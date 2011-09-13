@@ -63,7 +63,7 @@ public class SummarizeChgOnBranches extends TreeWindowAssistantOA {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Summarize Changes In Selected Clade";
+		return "Summarize Changes In Selected Clade Over Trees";  //Name changed Sept 2011
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
