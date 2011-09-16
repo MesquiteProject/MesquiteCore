@@ -70,18 +70,18 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 						else
 							diff = d1-d2;
 						if (verboseOutput.getValue())
-							Debugg.println("" + node + "\t"+MesquiteDouble.toStringNoNegExponential(diff)+"\t"+d1+"\t"+d2);
+							logln("" + node + "\t"+MesquiteDouble.toStringNoNegExponential(diff)+"\t"+d1+"\t"+d2);
 						totalDiff.add(diff);
 					} else if (verboseOutput.getValue() && listAllNodes.getValue())
 						if (MesquiteDouble.isCombinable(d1))
-							Debugg.println("" + node + "\t-\t" + d1 + "\t-");
+							logln("" + node + "\t-\t" + d1 + "\t-");
 						else
-							Debugg.println("" + node + "\t-\t-\t-");
+							logln("" + node + "\t-\t-\t-");
 				}
 			} else if (verboseOutput.getValue()&& listAllNodes.getValue()) {
 				if (tree.getRoot()!=node) {   // only do it if neither is the root
 					//Debugg.println("    not present: " + d1);
-					Debugg.println("" + node + "\t-\t" + d1 + "\t-");
+					logln("" + node + "\t-\t" + d1 + "\t-");
 				}
 			}
 			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))
@@ -219,8 +219,8 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 			return;
 		
 		if (verboseOutput.getValue()) {
-			Debugg.println("\n\n\n=============== original: " + tree1.getName() + " ======");
-			Debugg.println("=============== comparison: " + tree2.getName() + " ======\n");
+			logln("\n\n\n=============== original: " + tree1.getName() + " ======");
+			logln("=============== comparison: " + tree2.getName() + " ======\n");
 		}
 
 		//		Debugg.println("1: " + array1.toString());

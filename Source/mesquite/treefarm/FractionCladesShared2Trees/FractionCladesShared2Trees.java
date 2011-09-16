@@ -23,10 +23,12 @@ import mesquite.lib.duties.*;
 /* ======================================================================== */
 public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	StringArray terminalsAbove, terminalsBelow, otherTerminalsAbove, otherTerminalsBelow;
+	MesquiteBoolean verboseOutput= new MesquiteBoolean(false);
 	boolean isDistance = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		isDistance = (getHiredAs() == DistanceBetween2Trees.class);
+		addCheckMenuItem(null, "Verbose Output to Log", makeCommand("toggleVerboseOutput",  this), verboseOutput);
 		return true;
 	}
 	public void employeeQuit(MesquiteModule m){
@@ -53,6 +55,18 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Tree t1, Tree t2) {
 
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets whether verbose output is listed to the log file or not", "", commandName, "toggleVerboseOutput")) {
+ 			boolean current = verboseOutput.getValue();
+ 			verboseOutput.toggleValue(parser.getFirstToken(arguments));
+	 			if (current!=verboseOutput.getValue())
+	 				parametersChanged();
+	}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 
 	MesquiteTree tree1eq, tree2eq;
@@ -81,16 +95,14 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 			if (numCladeTree1+numCladeTree2>0)
 				fraction  = (numC*2.0)/(numCladeTree1+numCladeTree2);
 			
-	//		NOTE:  SHOULD this be -1 to remove the doublecounting of the descendants of the root node if unrooted?  should be option
 
-	/*	Debugg.println("\n\n\n   ");
-			Debugg.println(tree1.getName() + "    " + numCladeTree1);
-			Debugg.println(tree2.getName() + "    " + numCladeTree2);
-			Debugg.println( "  numC    " + numC);
-			Debugg.println( "  fraction    " + fraction);
-			Debugg.println( "  numCladeTree1    " + numCladeTree1);
-			Debugg.println( "  numCladeTree2    " + numCladeTree2);
-*/
+			if (verboseOutput.getValue()) {
+				logln("\nnumber of clades in "+tree1.getName() + ": "+numCladeTree1);
+				logln("number of clades in "+tree2.getName() + ": "+numCladeTree2);
+				logln("number of clades in common: "+numC);
+				logln("fraction: "+fraction);
+			}
+
 			result.setValue(fraction);
 			if (resultString!=null) {
 				resultString.setValue("Fraction Shared Clades: "+ result.toString());

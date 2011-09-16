@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 
 package mesquite.trees.lib;
 import mesquite.lib.*;
@@ -148,7 +148,7 @@ public class DrawTreeUtil {
 			poly.npoints=4;
 		}
 		else if (Nx<mNx) //left leaning (*)
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny); // daughter left
 			poly.addPoint(Nx+width, Ny);	//daughter right 
@@ -158,9 +158,9 @@ public class DrawTreeUtil {
 			poly.addPoint(Nx, mNy+width -  nShortcut); //corner left
 			poly.addPoint(Nx, Ny); //return to daughter left
 			poly.npoints=7;
-			}
+		}
 		else //right leaning (*)
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny);// daughter left
 			poly.addPoint(Nx+width, Ny);// daughter right
@@ -170,7 +170,7 @@ public class DrawTreeUtil {
 			poly.addPoint(Nx, mNy -  nShortcut); //corner left
 			poly.addPoint(Nx, Ny); //return to daughter left
 			poly.npoints=7;
-			}
+		}
 	}
 	/*_________________________________________________*/
 	//makes polygon counterclockwise
@@ -188,7 +188,7 @@ public class DrawTreeUtil {
 			poly.npoints=4;
 		}
 		else if (Nx>mNx) //left leaning
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny); //daughter right
 			poly.addPoint(Nx+width, Ny);//daughter left
@@ -198,9 +198,9 @@ public class DrawTreeUtil {
 			poly.addPoint(Nx, mNy + nShortcut); //corner right
 			poly.addPoint(Nx, Ny); //return to daughter right
 			poly.npoints=7;
-			}
+		}
 		else //right leaning
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny); // daughter right
 			poly.addPoint(Nx+width, Ny);	//daughter left
@@ -210,7 +210,7 @@ public class DrawTreeUtil {
 			poly.addPoint(Nx, mNy-width + nShortcut); //corner right
 			poly.addPoint(Nx, Ny); //return to daughter right
 			poly.npoints=7;
-			}
+		}
 	}
 	/*_________________________________________________*/
 	//makes polygon clockwise
@@ -228,7 +228,7 @@ public class DrawTreeUtil {
 			poly.npoints=4;
 		}
 		else if (Ny<mNy) //leans left
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny); // daughter left
 			poly.addPoint(Nx, Ny+width);	//daughter right
@@ -238,9 +238,9 @@ public class DrawTreeUtil {
 			poly.addPoint(mNx-width + nShortcut, Ny); //corner left
 			poly.addPoint(Nx, Ny); //return to daughter left
 			poly.npoints=7;
-			}
+		}
 		else
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny);// daughter left
 			poly.addPoint(Nx, Ny+width);//daughter right
@@ -250,8 +250,8 @@ public class DrawTreeUtil {
 			poly.addPoint(mNx + nShortcut, Ny); //corner left
 			poly.addPoint(Nx, Ny); //return to daughter left
 			poly.npoints=7;
-			}
-			
+		}
+
 	}
 	/*_________________________________________________*/
 	//makes polygon counterclockwise
@@ -269,7 +269,7 @@ public class DrawTreeUtil {
 			poly.npoints=5;
 		}
 		else if (Ny>mNy) //left leaning
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny); // daughter right
 			poly.addPoint(Nx, Ny+width);	//daughter left
@@ -279,9 +279,9 @@ public class DrawTreeUtil {
 			poly.addPoint(mNx -  nShortcut, Ny); //corner right
 			poly.addPoint(Nx, Ny); //return to daughter right
 			poly.npoints=7;
-			}
+		}
 		else
-			{
+		{
 			poly.npoints=0;
 			poly.addPoint(Nx, Ny);// daughter right
 			poly.addPoint(Nx, Ny+width); //daughter left
@@ -291,7 +291,7 @@ public class DrawTreeUtil {
 			poly.addPoint(mNx+width -  nShortcut, Ny); //corner right
 			poly.addPoint(Nx, Ny); //return to daughter right
 			poly.npoints=7;
-			}
+		}
 	}
 
 	/*_________________________________________________*/
@@ -320,7 +320,7 @@ public class DrawTreeUtil {
 							ynM += width/2 +start;
 							yN += width/2;
 						}
-						
+
 					}
 					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //¥¥¥¥
 						if (xnM>xN){ //leans left
@@ -353,7 +353,7 @@ public class DrawTreeUtil {
 							xnM -= width/2 +start;
 							xN -= width/2;
 						}
-						
+
 					}
 					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //¥¥¥¥
 						if (ynM>yN){ //leans right
@@ -430,7 +430,7 @@ public class DrawTreeUtil {
 						g2.setStroke(defaultStroke);
 					}
 				}
-					
+
 			}
 			catch (Throwable t){
 			}
@@ -504,7 +504,7 @@ public class DrawTreeUtil {
 						}
 						yN++;
 					}
-					
+
 				}
 			}
 
@@ -517,7 +517,48 @@ public class DrawTreeUtil {
 		}
 	}
 
-	
+	/*_________________________________________________*/
+	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+		if (tree.nodeExists(node)) {
+			int nM = tree.motherOfNode(node);
+			int xN=x[node];
+			int xnM = x[nM];
+			int yN =y[node];
+			int ynM = y[nM];
+			if ( g instanceof Graphics2D) {
+				BasicStroke wideStroke = new BasicStroke(width);
+				Graphics2D g2 = (Graphics2D)g;
+				g2.setStroke(wideStroke);
+				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
+					g2.drawLine(xN,yN,xN,ynM);
+					g2.drawLine(xN,ynM,xnM,ynM);
+				}
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //¥¥¥¥
+					g2.drawLine(xN,yN,xN,ynM);
+					g2.drawLine(xN,ynM,xnM,ynM);
+				}
+				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+					g2.drawLine(xN,yN,xnM,yN);
+					g2.drawLine(xnM,yN,xnM,ynM);
+
+				}
+				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //¥¥¥¥
+					g2.drawLine(xN,yN,xnM,yN);
+					g2.drawLine(xnM,yN,xnM,ynM);
+				}
+				g2.setStroke(defaultStroke);
+			}
+
+			if (emphasizeNodes && nodePoly!=null) {
+				Color prev = g.getColor();
+				g.setColor(Color.red);//for testing
+				g.fillPolygon(nodePoly);
+				g.setColor(prev);
+			}
+		}
+	}
+
+
 	/*_________________________________________________*/
 	public static boolean inBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, int node, int h, int v) {
 		if (tree.nodeExists(node)) {
@@ -610,14 +651,16 @@ public class DrawTreeUtil {
 				if (h < xN || h> xnM+ edgewidth)
 					return false;
 			}
-			
+
 			if ((h-centerX)*(h-centerX)/(axisX*axisX) + (v-centerY)*(v-centerY)/(axisY*axisY) <= 1.0)  //inside outer edge
-				if ((h-centerX)*(h-centerX)/((axisX-edgewidth)*(axisX-edgewidth)) + (v-centerY)*(v-centerY)/((axisY-edgewidth)*(axisY-edgewidth)) > 1.0) //outside inner edge
+				if ((h-centerX)*(h-centerX)/((axisX-edgewidth)*(axisX-edgewidth)) + (v-centerY)*(v-centerY)/((axisY-edgewidth)*(axisY-edgewidth)) > 1.0){ //outside inner edge
+					Debugg.println("in branch, node: " + node);
 					return true;
+				}
 		}
 		return false;
 	}
 
-	
-	
+
+
 }
