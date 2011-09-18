@@ -326,7 +326,11 @@ boolean warnedMissing = false;
 
 
     public void calculateNumber(Tree tree, CharacterDistribution charStates1, CharacterDistribution charStates2, MesquiteNumber result, MesquiteString resultString) {
+    	
        	clearResultAndLastResult(result);
+       	if (tree == null || charStates1 == null || charStates2 == null)
+       		return;
+       	
  		double result4;
     		double result8;
     		double pvalue = MesquiteDouble.unassigned;

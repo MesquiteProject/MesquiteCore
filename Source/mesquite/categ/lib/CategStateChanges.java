@@ -108,8 +108,8 @@ public class CategStateChanges {
 	}
 	/*.................................................................................................................*/
 	public boolean acceptableMapping(int[][] array) {
-		for (int i=0; i<numStates && i<array.length; i++)
-			for (int j=0; j<numStates &&j<array[i].length; j++)
+		for (int i=0; i<numStates && i<array.length && i<acceptableChange.length; i++)
+			for (int j=0; j<numStates &&j<array[i].length && j<acceptableChange[i].length; j++)
 				if (!acceptableChange[i][j] && array[i][j]>0)
 					return false;
 		return true;

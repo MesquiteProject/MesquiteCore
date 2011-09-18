@@ -271,6 +271,8 @@ public class UndoInstructions implements Undoer {
 		return;
 		}
 		this.newData = data.cloneData();
+		if (newData == null)
+			return;
 		this.newData.setName("Undo Matrix [new]");
 		newData.disconnectListening();
 	}

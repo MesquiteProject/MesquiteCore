@@ -926,6 +926,8 @@ class HennigCNAMES extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public boolean readCommand(MesquiteProject mp, MesquiteFile file, ProgressIndicator progIndicator, CategoricalData data, Taxa taxa, String firstLine){
+		if (parser == null || taxa == null || data == null)
+			return false;
 		parser.setPunctuationString("{;");
 		int charNumber = 0;
 		String line = firstLine;
