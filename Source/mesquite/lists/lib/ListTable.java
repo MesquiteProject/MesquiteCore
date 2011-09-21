@@ -290,8 +290,16 @@ public class ListTable extends MesquiteTable {
 	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
 		window.setAnnotation("", null);
 		if (!window.interceptCellTouch(column, row, modifiers)){
+		
 			if (window.getCurrentTool()== window.arrowTool)  {
-				rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+				ListAssistant assistant = window.findAssistant(column);
+				if (assistant!=null) {
+						if (!assistant.arrowTouchInRow(row))
+							rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+							
+				}
+				else
+					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
 			}
 			else
 				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
