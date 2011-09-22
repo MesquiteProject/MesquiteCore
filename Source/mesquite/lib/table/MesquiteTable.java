@@ -2551,6 +2551,18 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		columnWidths[column] = width;
 		columnWidthsAdjusted.clearBit(column);
 	}
+	/* ............................................................................................................... */
+	/** Sets width of given column. */
+	public void setColumnWidth(int column, int width, boolean treatAsAdjusted) {
+		if (!columnLegal(column))
+			return;
+		columnWidths[column] = width;
+		if (treatAsAdjusted)
+			columnWidthsAdjusted.setBit(column);
+		else
+			columnWidthsAdjusted.clearBit(column);
+
+	}
 
 	/* ............................................................................................................... */
 	/** returns whether the column width has been adjusted */
