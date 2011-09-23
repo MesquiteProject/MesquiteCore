@@ -90,7 +90,7 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	if (!MesquiteTrunk.isWindows())
 		shellScript.append("  -in " + StringUtil.protectForUnix(inFilePath) + " -out " + StringUtil.protectForUnix(outFilePath));
 	else
-		shellScript.append(" \\ -in " + StringUtil.protectForWindows(inFilePath) + " -out " + StringUtil.protectForWindows(outFilePath));
+		shellScript.append("  -in " + StringUtil.protectForWindows(inFilePath) + " -out " + StringUtil.protectForWindows(outFilePath));
 	}
 
 	

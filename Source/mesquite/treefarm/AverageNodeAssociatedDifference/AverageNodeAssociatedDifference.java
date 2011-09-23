@@ -35,6 +35,7 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		isDistance = (getHiredAs() == DistanceBetween2Trees.class);
+		loadPreferences();
 		addMenuItem(null, "Choose Values To Show...", makeCommand("chooseValues",  this));
 		addCheckMenuItem(null, "Verbose Output to Log", makeCommand("toggleVerboseOutput",  this), verboseOutput);
 		addCheckMenuItem(null, "Absolute Value", makeCommand("absoluteValue",  this), absoluteDifference);
@@ -48,6 +49,33 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 	public boolean largerIsFurther(){  
 		return false;
 	}
+	/*.................................................................................................................*
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("absoluteDifference".equalsIgnoreCase(tag))
+			absoluteDifference.setFromTrueFalseString(content);
+		else if ("listAllNodes".equalsIgnoreCase(tag))
+			listAllNodes.setFromTrueFalseString(content);
+		else if ("verboseOutput".equalsIgnoreCase(tag))
+			verboseOutput.setFromTrueFalseString(content);
+	}
+	/*.................................................................................................................*
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "absoluteDifference", absoluteDifference);  
+		StringUtil.appendXMLTag(buffer, 2, "listAllNodes", listAllNodes);  
+		StringUtil.appendXMLTag(buffer, 2, "verboseOutput", verboseOutput);  
+		return buffer.toString();
+	}
+		/*.................................................................................................................*/
+  	 public Snapshot getSnapshot(MesquiteFile file) {
+   	 	Snapshot temp = new Snapshot();
+		temp.addLine("toggleVerboseOutput " + verboseOutput.toOffOnString());
+		temp.addLine("absoluteValue " + absoluteDifference.toOffOnString());
+		temp.addLine("toggleListAllNodes " + listAllNodes.toOffOnString());
+  	 	return temp;
+  	 }
+
+	/*.................................................................................................................*/
 	private void visitOriginal(Tree tree,int node,  Tree otherTree, MesquiteInteger numConsistent, DoubleArray array1, DoubleArray array2, MesquiteDouble totalDiff){
 		if (tree.nodeIsInternal(node)){
 			Bits b = tree.getTerminalTaxaAsBits(node);
@@ -219,8 +247,15 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 			return;
 		
 		if (verboseOutput.getValue()) {
-			logln("\n\n\n=============== original: " + tree1.getName() + " ======");
-			logln("=============== comparison: " + tree2.getName() + " ======\n");
+			logln("\n\n\n=========================================================");
+			logln(" Average Difference of Values Associated with Nodes");
+			logln("   Tree A: \"" + tree1.getName() + "\"");
+			logln("   Tree B: \"" + tree2.getName() + "\"");
+			logln("   [Node number listed below is the node number within Tree A]\n");
+			if (absoluteDifference.getValue()) 
+				logln("\nNode\t|Tree A - Tree B|    \tValue 1\t Value B");
+			else
+				logln("\nNode\tTree A - Tree B    \tValue 1\t Value B");
 		}
 
 		//		Debugg.println("1: " + array1.toString());
@@ -253,14 +288,14 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 
 		result.setValue(avg);
 		if (resultString!=null) {
-			resultString.setValue("Fraction Shared Clades: "+ result.toString());
+			resultString.setValue("Average Difference of Node Values: "+ result.toString());
 		}
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*
@@ -269,11 +304,11 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
    	 }
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Average of Values Associated with Nodes";
+		return "Average Difference of Values Associated with Nodes";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Calculates the average value of values associated with nodes (excludes the clade consisting of all taxa).";
+		return "Calculates the average differences in values associated with nodes across those clades shared between two trees (excludes the clade consisting of all taxa).";
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){
@@ -284,6 +319,6 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 275;  
 	}
 }
