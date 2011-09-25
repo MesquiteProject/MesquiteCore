@@ -72,7 +72,6 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 				int node2 = otherTree.mrca(b);
 				if (tree.getRoot()!=node && otherTree.getRoot()!=node2) {   // only do it if neither is the root
 					double d2 = array2.getValue(node2);
-					//	Debugg.println("    d1: " + d1 + ", d2: " + d2);
 					double diff = 0.0;
 					if (MesquiteDouble.isCombinable(d1) && MesquiteDouble.isCombinable(d2)){
 						if (absoluteDifference.getValue()) {
@@ -94,7 +93,6 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 				}
 			} else if (listAllNodes.getValue()) {
 				if (tree.getRoot()!=node) {   // only do it if neither is the root
-					//Debugg.println("    not present: " + d1);
 					nodeByNodeValues.append("" + node + "\t-\t" + d1 + "\t-"+"\n");
 				}
 			}
@@ -220,7 +218,6 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 				iQuit();
 				return;
 			}
-			//		Debugg.println("node associated value: " + valueToConsider);
 		}
 		if (nodeByNodeValues==null)
 			nodeByNodeValues = new StringBuffer();
@@ -280,10 +277,6 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		int numC = numCon.getValue();
 		double totalD = totalDiff.getValue();
 
-		//		Debugg.println("\n\n numC: " + numC);
-		//		Debugg.println(" totalD: " + totalD);
-
-
 
 		double avg = 0.0;
 		if (numC>0)
@@ -301,10 +294,6 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		return false;
 	}
 
-	/*.................................................................................................................*
-    	 public String getParameters() {
-		return "Shared Clades";
-   	 }
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Average Difference of Values Associated with Nodes";

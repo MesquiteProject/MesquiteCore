@@ -654,7 +654,6 @@ public class DrawTreeUtil {
 
 			if ((h-centerX)*(h-centerX)/(axisX*axisX) + (v-centerY)*(v-centerY)/(axisY*axisY) <= 1.0)  //inside outer edge
 				if ((h-centerX)*(h-centerX)/((axisX-edgewidth)*(axisX-edgewidth)) + (v-centerY)*(v-centerY)/((axisY-edgewidth)*(axisY-edgewidth)) > 1.0){ //outside inner edge
-					Debugg.println("in branch, node: " + node);
 					return true;
 				}
 		}
