@@ -24,10 +24,13 @@ import mesquite.lib.duties.*;
 public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	StringArray terminalsAbove, terminalsBelow, otherTerminalsAbove, otherTerminalsBelow;
 	MesquiteBoolean verboseOutput= new MesquiteBoolean(false);
+	StringBuffer nodeByNodeValues = new StringBuffer();
+
 	boolean isDistance = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		isDistance = (getHiredAs() == DistanceBetween2Trees.class);
+		addMenuItem(null, "Save Node-By-Node Values...", makeCommand("saveVerboseOutput",  this));
 		addCheckMenuItem(null, "Verbose Output to Log", makeCommand("toggleVerboseOutput",  this), verboseOutput);
 		return true;
 	}
@@ -63,6 +66,11 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
  			verboseOutput.toggleValue(parser.getFirstToken(arguments));
 	 			if (current!=verboseOutput.getValue())
 	 				parametersChanged();
+	}
+		else if (checker.compare(this.getClass(), "Saves to a file detailed, node-by-node values used in the calculations", null, commandName, "saveVerboseOutput")) {
+			parametersChanged();
+			MesquiteFile.putFileContentsQuery("Save node-by-node values into file", nodeByNodeValues.toString(), true);
+
 	}
 		else
 			return  super.doCommand(commandName, arguments, checker);

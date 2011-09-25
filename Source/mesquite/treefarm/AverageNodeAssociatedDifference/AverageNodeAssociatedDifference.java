@@ -26,20 +26,21 @@ import mesquite.trees.lib.*;
 
 /* ======================================================================== */
 public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
-	String valueToConsider;
+	String valueToConsider = "";
+	StringBuffer nodeByNodeValues = new StringBuffer();
+	String[] associatedValueNames;
+
 	MesquiteBoolean absoluteDifference= new MesquiteBoolean(false);
 	MesquiteBoolean listAllNodes= new MesquiteBoolean(false);
-	MesquiteBoolean verboseOutput= new MesquiteBoolean(false);
 	StringArray terminalsAbove, terminalsBelow, otherTerminalsAbove, otherTerminalsBelow;
 	boolean isDistance = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		isDistance = (getHiredAs() == DistanceBetween2Trees.class);
-		loadPreferences();
 		addMenuItem(null, "Choose Values To Show...", makeCommand("chooseValues",  this));
-		addCheckMenuItem(null, "Verbose Output to Log", makeCommand("toggleVerboseOutput",  this), verboseOutput);
 		addCheckMenuItem(null, "Absolute Value", makeCommand("absoluteValue",  this), absoluteDifference);
 		addCheckMenuItem(null, "List All Nodes", makeCommand("toggleListAllNodes",  this), listAllNodes);
+		addMenuItem(null, "Save Node-By-Node Values...", makeCommand("saveVerboseOutput",  this));
 		valueToConsider = "";
 		return true;
 	}
@@ -49,31 +50,14 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 	public boolean largerIsFurther(){  
 		return false;
 	}
-	/*.................................................................................................................*
-	public void processSingleXMLPreference (String tag, String content) {
-		if ("absoluteDifference".equalsIgnoreCase(tag))
-			absoluteDifference.setFromTrueFalseString(content);
-		else if ("listAllNodes".equalsIgnoreCase(tag))
-			listAllNodes.setFromTrueFalseString(content);
-		else if ("verboseOutput".equalsIgnoreCase(tag))
-			verboseOutput.setFromTrueFalseString(content);
-	}
-	/*.................................................................................................................*
-	public String preparePreferencesForXML () {
-		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "absoluteDifference", absoluteDifference);  
-		StringUtil.appendXMLTag(buffer, 2, "listAllNodes", listAllNodes);  
-		StringUtil.appendXMLTag(buffer, 2, "verboseOutput", verboseOutput);  
-		return buffer.toString();
-	}
 		/*.................................................................................................................*/
-  	 public Snapshot getSnapshot(MesquiteFile file) {
-   	 	Snapshot temp = new Snapshot();
-		temp.addLine("toggleVerboseOutput " + verboseOutput.toOffOnString());
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
 		temp.addLine("absoluteValue " + absoluteDifference.toOffOnString());
 		temp.addLine("toggleListAllNodes " + listAllNodes.toOffOnString());
-  	 	return temp;
-  	 }
+		temp.addLine("setValueToConsider " + StringUtil.tokenize(valueToConsider));
+		return temp;
+	}
 
 	/*.................................................................................................................*/
 	private void visitOriginal(Tree tree,int node,  Tree otherTree, MesquiteInteger numConsistent, DoubleArray array1, DoubleArray array2, MesquiteDouble totalDiff){
@@ -97,19 +81,19 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 						}
 						else
 							diff = d1-d2;
-						if (verboseOutput.getValue())
-							logln("" + node + "\t"+MesquiteDouble.toStringNoNegExponential(diff)+"\t"+d1+"\t"+d2);
+						//if (verboseOutput.getValue())
+						nodeByNodeValues.append("" + node + "\t"+MesquiteDouble.toStringNoNegExponential(diff)+"\t"+d1+"\t"+d2+"\n");
 						totalDiff.add(diff);
-					} else if (verboseOutput.getValue() && listAllNodes.getValue())
+					} else if (listAllNodes.getValue())
 						if (MesquiteDouble.isCombinable(d1))
-							logln("" + node + "\t-\t" + d1 + "\t-");
+							nodeByNodeValues.append("" + node + "\t-\t" + d1 + "\t-"+"\n");
 						else
-							logln("" + node + "\t-\t-\t-");
+							nodeByNodeValues.append("" + node + "\t-\t-\t-"+"\n");
 				}
-			} else if (verboseOutput.getValue()&& listAllNodes.getValue()) {
+			} else if (listAllNodes.getValue()) {
 				if (tree.getRoot()!=node) {   // only do it if neither is the root
 					//Debugg.println("    not present: " + d1);
-					logln("" + node + "\t-\t" + d1 + "\t-");
+					nodeByNodeValues.append("" + node + "\t-\t" + d1 + "\t-"+"\n");
 				}
 			}
 			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))
@@ -118,82 +102,90 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		}
 	}
 	MesquiteInteger pos = new MesquiteInteger();
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows dialog box to choose what values to display", null, commandName, "chooseValues")) {
-			//			showAssociatedChoiceDialog((Associable)tree, "Values to Average Differences", this);
+			showAssociatedChoiceDialog(associatedValueNames, "Values to Average Differences", this);
 		}
-		else if (checker.compare(this.getClass(), "Sets which value to use for calculation", "[on or off]", commandName, "setValueName")) {
+		else if (checker.compare(this.getClass(), "Saves to a file detailed, node-by-node values used in the calculations", null, commandName, "saveVerboseOutput")) {
+			parametersChanged();
+			MesquiteFile.putFileContentsQuery("Save node-by-node values into file", nodeByNodeValues.toString(), true);
+
+		}
+		else if (checker.compare(this.getClass(), "Sets which value to use for calculation", "", commandName, "setValueToConsider")) {
 			String name = parser.getFirstToken(arguments);
+			if (StringUtil.notEmpty(name) && !valueToConsider.equalsIgnoreCase(name)) {
+				parametersChanged();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether absolute value is shown or raw value", "", commandName, "absoluteValue")) {
- 			boolean current = absoluteDifference.getValue();
- 			absoluteDifference.toggleValue(parser.getFirstToken(arguments));
-	 			if (current!=absoluteDifference.getValue())
-	 				parametersChanged();
-	}
-		else if (checker.compare(this.getClass(), "Sets whether verbose output is listed to the log file or not", "", commandName, "toggleVerboseOutput")) {
- 			boolean current = verboseOutput.getValue();
- 			verboseOutput.toggleValue(parser.getFirstToken(arguments));
-	 			if (current!=verboseOutput.getValue())
-	 				parametersChanged();
-	}
+			boolean current = absoluteDifference.getValue();
+			absoluteDifference.toggleValue(parser.getFirstToken(arguments));
+			if (current!=absoluteDifference.getValue())
+				parametersChanged();
+		}
 		else if (checker.compare(this.getClass(), "Sets whether all nodes are listed in the verbose output, or just the ones in both trees and both with associated values", "", commandName, "toggleListAllNodes")) {
- 			boolean current = listAllNodes.getValue();
- 			listAllNodes.toggleValue(parser.getFirstToken(arguments));
-	 			if (current!=listAllNodes.getValue())
-	 				parametersChanged();
-	}
+			boolean current = listAllNodes.getValue();
+			listAllNodes.toggleValue(parser.getFirstToken(arguments));
+			if (current!=listAllNodes.getValue())
+				parametersChanged();
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 
 	/*.................................................................................................................*/
-	public  boolean showAssociatedChoiceDialog(Associable tree, String message, MesquiteModule module) {
-		if (tree == null)
+	public  boolean showAssociatedChoiceDialog(String[] associatedValueNames, String message, MesquiteModule module) {
+		if (associatedValueNames == null)
 			return false;
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ListableVector v = new ListableVector();
-		int num = tree.getNumberAssociatedDoubles();
-		if (num==1){
-			DoubleArray da = tree.getAssociatedDoubles(0);
-			valueToConsider = da.getName();
+		int num = associatedValueNames.length;
+		if (num==0) {
+			module.alert("This Tree has no values associated with nodes");
+			return false;
+		}
+		else if (MesquiteThread.isScripting() ||  num==1){
+			valueToConsider = associatedValueNames[0];
 			return true;
 		}
-		String[] associatedNames = new String[num];
-		boolean[] shown = new boolean[num]; //bigger than needed probably
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		int valueShown = -1;
+		for (int i = 0; i< num; i++){
+			if (valueToConsider.equalsIgnoreCase(associatedValueNames[i]))
+				valueShown=i;
+		}
+		ExtensibleDialog queryDialog = new ExtensibleDialog(module.containerOfModule(), message,  buttonPressed);
+		queryDialog.addLabel(message, Label.CENTER);
+
+		RadioButtons radios = queryDialog.addRadioButtons(associatedValueNames, valueShown); 			
+
+		queryDialog.completeAndShowDialog(true);
+
+		boolean ok = (queryDialog.query()==0);
+
+		if (ok) {
+			valueToConsider = associatedValueNames[radios.getValue()];
+		}
+
+		queryDialog.dispose();
+		return ok;
+	}
+	/*.................................................................................................................*/
+	public String[]  acquireAssociatedValueNames(Associable tree) {
+		if (tree == null)
+			return null;
+		ListableVector v = new ListableVector();
+		int num = tree.getNumberAssociatedDoubles();
+		String[] associatedValueNames = new String[num];
 		for (int i = 0; i< num; i++){
 			DoubleArray da = tree.getAssociatedDoubles(i);
 			if (da != null){
 				v.addElement(new MesquiteString(da.getName(), ""), false);
-				associatedNames[i] = da.getName();
-				if (valueToConsider.equalsIgnoreCase(da.getName()))
-					valueShown=i;
+				associatedValueNames[i] = da.getName();
 			}
 		}
-		if (num==0)
-			module.alert("This Tree has no values associated with nodes");
-		else {
-			ExtensibleDialog queryDialog = new ExtensibleDialog(module.containerOfModule(), message,  buttonPressed);
-			queryDialog.addLabel(message, Label.CENTER);
-
-			RadioButtons radios = queryDialog.addRadioButtons(associatedNames, valueShown); 			
-
-			queryDialog.completeAndShowDialog(true);
-
-			boolean ok = (queryDialog.query()==0);
-
-			if (ok) {
-				valueToConsider = associatedNames[radios.getValue()];
-			}
-
-			queryDialog.dispose();
-			return ok;
-
-		}
-		return false;
+		return associatedValueNames;
 	}
 
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
@@ -201,7 +193,7 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 	public void initialize(Tree t1, Tree t2) {
 	}
 
-	MesquiteTree tree1eq, tree2eq;
+
 	/*.................................................................................................................*/
 	public void calculateNumber(Tree tree1, Tree tree2, MesquiteNumber result, MesquiteString resultString) {
 		if (result==null)
@@ -211,14 +203,21 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 			return;
 		if (tree2 == null)
 			return;
+		if (associatedValueNames==null)
+			associatedValueNames = acquireAssociatedValueNames((Associable)tree1);
 		if (StringUtil.blank(valueToConsider)) {
-			boolean ok = showAssociatedChoiceDialog((Associable)tree1, "Values to Average Differences", this);
+			boolean ok = showAssociatedChoiceDialog(associatedValueNames, "Values to Average Differences", this);
 			if (!ok) {
 				iQuit();
 				return;
 			}
 			//		Debugg.println("node associated value: " + valueToConsider);
 		}
+		if (nodeByNodeValues==null)
+			nodeByNodeValues = new StringBuffer();
+		nodeByNodeValues.setLength(0);
+		nodeByNodeValues.append("Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n");
+		nodeByNodeValues.append(StringUtil.getDateTime());
 
 		DoubleArray array1 = null;
 		DoubleArray array2 = null;
@@ -245,29 +244,23 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		}
 		if (!found)
 			return;
-		
-		if (verboseOutput.getValue()) {
-			logln("\n\n\n=========================================================");
-			logln(" Average Difference of Values Associated with Nodes");
-			logln("   Tree A: \"" + tree1.getName() + "\"");
-			logln("   Tree B: \"" + tree2.getName() + "\"");
-			logln("   [Node number listed below is the node number within Tree A]\n");
-			if (absoluteDifference.getValue()) 
-				logln("\nNode\t|Tree A - Tree B|    \tValue 1\t Value B");
-			else
-				logln("\nNode\tTree A - Tree B    \tValue 1\t Value B");
-		}
 
-		//		Debugg.println("1: " + array1.toString());
-		//		Debugg.println("2: " + array2.toString());
-		//		Debugg.println("\n\n");
+		nodeByNodeValues.append("\n\n\n========================================================="+"\n");
+		nodeByNodeValues.append(" Average Difference of Values Associated with Nodes"+"\n");
+		nodeByNodeValues.append("   Tree A: \"" + tree1.getName() + "\""+"\n");
+		nodeByNodeValues.append("   Tree B: \"" + tree2.getName() + "\""+"\n");
+		nodeByNodeValues.append("   [Node number listed below is the node number within Tree A]\n"+"\n");
+		if (absoluteDifference.getValue()) 
+			nodeByNodeValues.append("\nNode\t|Tree A - Tree B|    \tValue 1\t Value B"+"\n");
+		else
+			nodeByNodeValues.append("\nNode\tTree A - Tree B    \tValue 1\t Value B"+"\n");
 
 
 		MesquiteInteger numCon = new MesquiteInteger(0);
 		MesquiteDouble totalDiff = new MesquiteDouble(0.0);
 
-		int numCladeTree1 = tree1.numberOfInternalsInClade(tree1.getRoot());
-		int numCladeTree2 = tree2.numberOfInternalsInClade(tree2.getRoot());
+	//	int numCladeTree1 = tree1.numberOfInternalsInClade(tree1.getRoot());
+	//	int numCladeTree2 = tree2.numberOfInternalsInClade(tree2.getRoot());
 
 		visitOriginal(tree1, tree1.getRoot(), tree2, numCon, array1, array2, totalDiff);
 		if (tree1.getTerminalTaxaAsBits(tree1.getRoot()).equals(tree2.getTerminalTaxaAsBits(tree2.getRoot()))){   // remove root value
