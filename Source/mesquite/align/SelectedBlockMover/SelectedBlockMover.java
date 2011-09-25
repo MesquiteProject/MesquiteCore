@@ -20,7 +20,6 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
@@ -54,7 +53,13 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
-			moveTool = new SelectedBlockTool(this, "selectedBlockMover", getPath(), "SelectedBlockMover.gif", 8,8,"CrossHair.gif",8,8,"Moves a selected block of multiple sequences","This tool moves selected blocks of sequences for manual alignment.", MesquiteModule.makeCommand("moveTouchCell",  this) , MesquiteModule.makeCommand("moveDragCell",  this), MesquiteModule.makeCommand("moveDropCell",  this));
+			MesquiteCommand touchCommand = MesquiteModule.makeCommand("moveTouchCell",  this);
+			touchCommand.setSuppressLogging(true);
+			MesquiteCommand dragCommand = MesquiteModule.makeCommand("moveDragCell",  this);
+			dragCommand.setSuppressLogging(true);
+			MesquiteCommand dropCommand = MesquiteModule.makeCommand("moveDropCell",  this);
+			dropCommand.setSuppressLogging(true);
+			moveTool = new SelectedBlockTool(this, "selectedBlockMover", getPath(), "SelectedBlockMover.gif", 8,8,"CrossHair.gif",8,8,"Moves a selected block of multiple sequences","This tool moves selected blocks of sequences for manual alignment.", touchCommand , dragCommand, dropCommand);
 			setOptionTools();
 			moveTool.setDeselectIfOutsideOfCells(false);
 			moveTool.setAcceptsOutsideDrops(true);

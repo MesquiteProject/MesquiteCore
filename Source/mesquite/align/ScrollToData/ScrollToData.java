@@ -28,7 +28,9 @@ public class ScrollToData extends DataWindowAssistantI {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		getCompatibilityTest();
 		if (containerOfModule() instanceof MesquiteWindow) {
-			scrollTool = new ScrollToDataTool(this, "scrollerRight", getPath(), "scrollerRight.gif", 8,8,"Scrolls to next data cell","This tool scrolls to the next cell in the sequence with data.", MesquiteModule.makeCommand("scrollTouchCell",  this) , MesquiteModule.makeCommand("scrollDragCell",  this), MesquiteModule.makeCommand("scrollDropCell",  this));
+			MesquiteCommand dragCommand = MesquiteModule.makeCommand("scrollDragCell",  this);
+			dragCommand.setSuppressLogging(true);
+			scrollTool = new ScrollToDataTool(this, "scrollerRight", getPath(), "scrollerRight.gif", 8,8,"Scrolls to next data cell","This tool scrolls to the next cell in the sequence with data.", MesquiteModule.makeCommand("scrollTouchCell",  this) , dragCommand, MesquiteModule.makeCommand("scrollDropCell",  this));
 			scrollTool.setDeselectIfOutsideOfCells(false);
 			scrollTool.setOptionImageFileName( "scrollerLeft.gif", 8, 8);
 
