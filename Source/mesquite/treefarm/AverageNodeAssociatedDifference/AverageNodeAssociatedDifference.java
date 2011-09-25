@@ -28,6 +28,7 @@ import mesquite.trees.lib.*;
 public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 	String valueToConsider = "";
 	StringBuffer nodeByNodeValues = new StringBuffer();
+	MesquiteBoolean verboseOutput= new MesquiteBoolean(false);
 	String[] associatedValueNames;
 
 	MesquiteBoolean absoluteDifference= new MesquiteBoolean(false);
@@ -40,7 +41,7 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		addMenuItem(null, "Choose Values To Show...", makeCommand("chooseValues",  this));
 		addCheckMenuItem(null, "Absolute Value", makeCommand("absoluteValue",  this), absoluteDifference);
 		addCheckMenuItem(null, "List All Nodes", makeCommand("toggleListAllNodes",  this), listAllNodes);
-		addMenuItem(null, "Save Node-By-Node Values...", makeCommand("saveVerboseOutput",  this));
+		addCheckMenuItem(null, "Verbose Output to Log", makeCommand("toggleVerboseOutput",  this), verboseOutput);
 		valueToConsider = "";
 		return true;
 	}
@@ -55,6 +56,7 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		Snapshot temp = new Snapshot();
 		temp.addLine("absoluteValue " + absoluteDifference.toOffOnString());
 		temp.addLine("toggleListAllNodes " + listAllNodes.toOffOnString());
+		temp.addLine("toggleVerboseOutput " + verboseOutput.toOffOnString());
 		temp.addLine("setValueToConsider " + StringUtil.tokenize(valueToConsider));
 		return temp;
 	}
@@ -105,13 +107,14 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Shows dialog box to choose what values to display", null, commandName, "chooseValues")) {
-			showAssociatedChoiceDialog(associatedValueNames, "Values to Average Differences", this);
+		if (checker.compare(this.getClass(), "Sets whether verbose output is listed to the log file or not", "", commandName, "toggleVerboseOutput")) {
+			boolean current = verboseOutput.getValue();
+			verboseOutput.toggleValue(parser.getFirstToken(arguments));
+			if (current!=verboseOutput.getValue())
+				parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Saves to a file detailed, node-by-node values used in the calculations", null, commandName, "saveVerboseOutput")) {
-			parametersChanged();
-			MesquiteFile.putFileContentsQuery("Save node-by-node values into file", nodeByNodeValues.toString(), true);
-
+		else if (checker.compare(this.getClass(), "Shows dialog box to choose what values to display", null, commandName, "chooseValues")) {
+			showAssociatedChoiceDialog(associatedValueNames, "Values to Average Differences", this);
 		}
 		else if (checker.compare(this.getClass(), "Sets which value to use for calculation", "", commandName, "setValueToConsider")) {
 			String name = parser.getFirstToken(arguments);
@@ -145,10 +148,16 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 			module.alert("This Tree has no values associated with nodes");
 			return false;
 		}
-		else if (MesquiteThread.isScripting() ||  num==1){
+		else if (MesquiteThread.isScripting()) {
 			valueToConsider = associatedValueNames[0];
 			return true;
 		}
+/*		else if (num==1){
+			valueToConsider = associatedValueNames[0];
+			module.alert("This Tree has no values associated with nodes");
+			return true;
+		}
+		*/
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		int valueShown = -1;
 		for (int i = 0; i< num; i++){
@@ -216,8 +225,6 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		if (nodeByNodeValues==null)
 			nodeByNodeValues = new StringBuffer();
 		nodeByNodeValues.setLength(0);
-		nodeByNodeValues.append("Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n");
-		nodeByNodeValues.append(StringUtil.getDateTime());
 
 		DoubleArray array1 = null;
 		DoubleArray array2 = null;
@@ -245,7 +252,7 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		if (!found)
 			return;
 
-		nodeByNodeValues.append("\n\n\n========================================================="+"\n");
+		nodeByNodeValues.append("\n\n\n======================================"+"\n");
 		nodeByNodeValues.append(" Average Difference of Values Associated with Nodes"+"\n");
 		nodeByNodeValues.append("   Tree A: \"" + tree1.getName() + "\""+"\n");
 		nodeByNodeValues.append("   Tree B: \"" + tree2.getName() + "\""+"\n");
@@ -266,6 +273,9 @@ public class AverageNodeAssociatedDifference extends DistanceBetween2Trees {
 		if (tree1.getTerminalTaxaAsBits(tree1.getRoot()).equals(tree2.getTerminalTaxaAsBits(tree2.getRoot()))){   // remove root value
 			numCon.decrement();
 		}
+		
+		if (verboseOutput.getValue())
+			log(nodeByNodeValues.toString());
 
 		int numC = numCon.getValue();
 		double totalD = totalDiff.getValue();

@@ -24,13 +24,11 @@ import mesquite.lib.duties.*;
 public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	StringArray terminalsAbove, terminalsBelow, otherTerminalsAbove, otherTerminalsBelow;
 	MesquiteBoolean verboseOutput= new MesquiteBoolean(false);
-	StringBuffer nodeByNodeValues = new StringBuffer();
 
 	boolean isDistance = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		isDistance = (getHiredAs() == DistanceBetween2Trees.class);
-		addMenuItem(null, "Save Node-By-Node Values...", makeCommand("saveVerboseOutput",  this));
 		addCheckMenuItem(null, "Verbose Output to Log", makeCommand("toggleVerboseOutput",  this), verboseOutput);
 		return true;
 	}
@@ -40,12 +38,18 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	public boolean largerIsFurther(){  
 		return false;
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("toggleVerboseOutput " + verboseOutput.toOffOnString());
+		return temp;
+	}
+
 	private void visitOriginal(Tree tree,int node,  Tree otherTree, MesquiteInteger numConsistent){
 		if (tree.nodeIsInternal(node)){
 			Bits b = tree.getTerminalTaxaAsBits(node);
 			if (otherTree.isClade(b)) {
 				int otherNode = otherTree.mrca(b);
-				//				Debugg.println("    tree node terminals: " + tree.numberOfTerminalsInClade(node)+",    otherTree node terminals: " + otherTree.numberOfTerminalsInClade(otherNode));
 				numConsistent.increment();
 			}
 			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))
@@ -62,16 +66,11 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets whether verbose output is listed to the log file or not", "", commandName, "toggleVerboseOutput")) {
- 			boolean current = verboseOutput.getValue();
- 			verboseOutput.toggleValue(parser.getFirstToken(arguments));
-	 			if (current!=verboseOutput.getValue())
-	 				parametersChanged();
-	}
-		else if (checker.compare(this.getClass(), "Saves to a file detailed, node-by-node values used in the calculations", null, commandName, "saveVerboseOutput")) {
-			parametersChanged();
-			MesquiteFile.putFileContentsQuery("Save node-by-node values into file", nodeByNodeValues.toString(), true);
-
-	}
+			boolean current = verboseOutput.getValue();
+			verboseOutput.toggleValue(parser.getFirstToken(arguments));
+			if (current!=verboseOutput.getValue())
+				parametersChanged();
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -102,7 +101,7 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 			double fraction = 0.0;
 			if (numCladeTree1+numCladeTree2>0)
 				fraction  = (numC*2.0)/(numCladeTree1+numCladeTree2);
-			
+
 
 			if (verboseOutput.getValue()) {
 				logln("\nnumber of clades in "+tree1.getName() + ": "+numCladeTree1);
@@ -126,7 +125,7 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*
@@ -139,7 +138,7 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Calculates the fraction of the total number of clades in two trees that are shared between the  trees (excludes the clade consisting of all taxa).";
+		return "Calculates the fraction of the total number of clades in two trees that are shared between the trees (excludes the clade consisting of all taxa).";
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){
@@ -150,6 +149,6 @@ public class FractionCladesShared2Trees extends DistanceBetween2Trees {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 275;  
 	}
 }
