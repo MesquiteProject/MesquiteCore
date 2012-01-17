@@ -210,6 +210,25 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     		}
    }
     
+    /*Peter: I compiled this; I hope it's correct.
+     * 
+     * joint rate matrix and naming scheme for parameters and array positions
+     * 01 = state 0 in character X, state 1 in character Y
+     * 
+     *      00    10     01   11
+     * 00  xxx  q12  q13  xxx
+     *        ---  [0]   [1]    ---
+     *       
+     * 10  q21  xxx  xxx   q24
+     *       [2]   ---    ---    [4]
+     *       
+     * 01  q31  xxx  xxx   q34
+     *       [3]   ---    ---    [5]
+     *       
+     * 11  xxx   q42  q43  xxx
+     *       ---    [6]    [7]  ---
+     *       
+     * */
     private void setConstraints(int model){
     		checkQArrays(model);
     		switch (model) {
