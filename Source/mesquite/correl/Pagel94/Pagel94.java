@@ -438,12 +438,6 @@ public class Pagel94 extends Pagel94Calculator {
 			writeToLogger("\n\nDifference is " + score);
 		}
 
-		if (currentConstrainedModel == INDEPENDENT4)
-			;
-		else if (currentConstrainedModel == XINDEPENDENTofY)
-			;
-		else  //constrainedModelToUse == YINDEPENDENTofX
-			;
 		if (presentPValue.getValue() && simCount>0){
 			logln("Pagel 94 analysis: Estimating p value using simulations (Generating " + simCount + " simulated data sets)");
 			// Begin Simulation

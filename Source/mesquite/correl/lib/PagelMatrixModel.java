@@ -231,7 +231,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     		     * q12 = params[0] (forward char0 | char1=0)
     		     * q13 = params[1] (forward char1 | char0=0)
     		     * q21 = params[2] (backward char0 | char1=0)
-    		     * q31 = params[3] (backward char1 | char0=1)
+    		     * q31 = params[3] (backward char1 | char0=1)  //Peter: this should be (backward char1 | char0=0), correct?
     		     * q24 = params[4] (forward char1 | char0=1)
     		     * q34 = params[5] (forward char0 | char1=1)
     		     * q42 = params[6] (backward char1 | char0=1)
@@ -273,9 +273,14 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     			}
     			case MODEL6PARAMCONTINGENTCHANGEY:{
     				// six parameters q34=q12,q43=q21
+    				
     				qMapping[5]= 0;
     				qMapping[6]= 5;
             		qMapping[7]= 2;
+    				/* Peter: Should it be what's below?  What you had seems to imply a 5 parameter model
+    				qMapping[5]= 0;
+            		qMapping[7]= 2;
+            		*/
     				break;
     			}
     			case MODEL6PARAMCONTINGENTCHANGEX:{
@@ -284,6 +289,11 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
                 	qMapping[5]= 4;
                  qMapping[6]= 3;
                  qMapping[7]= 5;
+    				
+ 				/* Peter: Should it be what's below?  What you had seems to imply a 4 parameter model
+                 	qMapping[4]= 1;
+                	qMapping[6]= 3;
+                */
     				break;
     			}
     			case MODEL2CHARACTERUSERDEFINED: {
@@ -1179,6 +1189,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		double estParams[];
 		// estjust saves the starting values for error reporting
 		double backupEst[] = null;
+
 		switch (modelType) {
 			case MODEL8PARAM:{  // first try two versions of a 6-parameter model
 				estParams = new double[8];
