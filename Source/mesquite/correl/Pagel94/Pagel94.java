@@ -109,9 +109,9 @@ public class Pagel94 extends Pagel94Calculator {
 		else {
 			model4 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);  //used merely to help 6 param
 			if (currentConstrainedModel == XINDEPENDENTofY)
-				modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEY);
+				modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTX);
 			else  //constrainedModelToUse == YINDEPENDENTofX
-				modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEX);
+				modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTY);
 		}
 		model8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);
 		return true;
@@ -239,9 +239,9 @@ public class Pagel94 extends Pagel94Calculator {
 			else {
 				model4 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);  //used merely to help 6 param
 				if (currentConstrainedModel == XINDEPENDENTofY)
-					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEY);
+					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTX);
 				else  //constrainedModelToUse == YINDEPENDENTofX
-					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEX);
+					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTY);
 			}
 			model8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);
 		}
@@ -392,9 +392,9 @@ public class Pagel94 extends Pagel94Calculator {
 			else {
 				model4 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);
 				if (currentConstrainedModel == XINDEPENDENTofY)
-					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEY);
+					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTX);
 				else  //constrainedModelToUse == YINDEPENDENTofX
-					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEX);
+					modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTY);
 			}
 			model8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);
 		}
@@ -452,9 +452,9 @@ public class Pagel94 extends Pagel94Calculator {
 			if (currentConstrainedModel == INDEPENDENT4)
 				savedModelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM); 
 			else if (currentConstrainedModel == XINDEPENDENTofY)
-				savedModelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEY); 
+				savedModelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTX); 
 			else  //constrainedModelToUse == YINDEPENDENTofX
-				savedModelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMCONTINGENTCHANGEX); 
+				savedModelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL6PARAMINDEPENDENTY); 
 
 			modelConstrained.copyToClone(savedModelConstrained);
 			PagelMatrixModel savedModel8 = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL8PARAM);

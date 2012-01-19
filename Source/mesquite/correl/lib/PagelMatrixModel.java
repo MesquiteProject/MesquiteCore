@@ -55,8 +55,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     public static final int MODEL7PARAMCONTINGENTCHANGEYBACKWARD = 14;
     public static final int MODEL7PARAMCONTINGENTCHANGEXFORWARD = 15;
     public static final int MODEL7PARAMCONTINGENTCHANGEXBACKWARD = 16;
-    public static final int MODEL6PARAMCONTINGENTCHANGEY = 17;
-    public static final int MODEL6PARAMCONTINGENTCHANGEX = 18;
+    public static final int MODEL6PARAMINDEPENDENTX = 17;  //Peter: name changed because easier to understand (for me!)
+    public static final int MODEL6PARAMINDEPENDENTY = 18;
     public static final int MODEL2CHARACTERUSERDEFINED = 19;
     public static final int MODEL3CHARACTERINDEPENDENT = 100;
     public static final int MODEL4CHARACTERINDEPENDENT = 1000;
@@ -151,14 +151,15 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
      * 
      * @return true if any parameters are free (not bound or assigned)
      */
-    boolean anyUnassigned(){
+    /* not used
+     *  boolean anyUnassigned(){
     		boolean result = false;
     		for(int i=0;i<qConstrained.length;i++)
     			if(qConstrained[i])
     				result = true;
     		return result;
     }
-    
+    not used, and besides, always returns true
     boolean allUnassigned(){
     		boolean result = true;
     		for(int i=0;i<qConstrained.length;i++)
@@ -166,7 +167,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     				result = true;
     		return result;
     }
-    
+    */
     /**
      * Extension of method from AsymmModel
      * @param like likelihood estimate from p??
@@ -210,7 +211,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     		}
    }
     
-    /*Peter: I compiled this; I hope it's correct.
+    /* following interpreted by WPM Jan 2012
      * 
      * joint rate matrix and naming scheme for parameters and array positions
      * 01 = state 0 in character X, state 1 in character Y
@@ -228,7 +229,52 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
      * 11  xxx   q42  q43  xxx
      *       ---    [6]    [7]  ---
      *       
-     * */
+      * ======4 parameter model
+     *      00    10     01   11
+     * 00  xxx  q12  q13  xxx
+     *        ---  [0]   [1]    ---
+     *       
+     * 10  q21  xxx  xxx   q24
+     *       [2]   ---    ---    [1]
+     *       
+     * 01  q31  xxx  xxx   q34
+     *       [3]   ---    ---    [0]
+     *       
+     * 11  xxx   q42  q43  xxx
+     *       ---    [3]    [2]  ---
+     *       
+      * ====== 6 param, Y independent of X (contingent X)
+     *      00    10     01   11
+     * 00  xxx  q12  q13  xxx
+     *        ---  [0]   [1]    ---
+     *       
+     * 10  q21  xxx  xxx   q24
+     *       [2]   ---    ---    [1]
+     *       
+     * 01  q31  xxx  xxx   q34
+     *       [3]   ---    ---    [5]
+     *       
+     * 11  xxx   q42  q43  xxx
+     *       ---    [3]    [7]  ---
+     *       
+      * ====== 6 param, X independent of Y (contingent Y)
+      *      00    10     01   11
+     * 00  xxx  q12  q13  xxx
+     *        ---  [0]   [1]    ---
+     *       
+     * 10  q21  xxx  xxx   q24
+     *       [2]   ---    ---    [4]
+     *       
+     * 01  q31  xxx  xxx   q34
+     *       [3]   ---    ---    [0]
+     *       
+     * 11  xxx   q42  q43  xxx
+     *       ---    [6]    [2]  ---
+     *       
+    				qMapping[5]= 0;
+    				qMapping[6]= 5;   
+    				qMapping[7]= 2;
+  * */
     private void setConstraints(int model){
     		checkQArrays(model);
     		switch (model) {
@@ -290,29 +336,38 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
                 	qMapping[7]= 6;
             		break;
     			}
-    			case MODEL6PARAMCONTINGENTCHANGEY:{
+    			case MODEL6PARAMINDEPENDENTX:{
     				// six parameters q34=q12,q43=q21
     				
+    				//constraint
     				qMapping[5]= 0;
-    				qMapping[6]= 5;
-            		qMapping[7]= 2;
-    				/* Peter: Should it be what's below?  What you had seems to imply a 5 parameter model
-    				qMapping[5]= 0;
-            		qMapping[7]= 2;
-            		*/
+    				qMapping[7]= 2;
+    				//compressing to array of 6
+    				qMapping[6]= 5;   
+
+    			/*	qMapping[5]= 0;
+    				qMapping[6]= 5;   
+    				qMapping[7]= 2;
+    				*/
     				break;
     			}
-    			case MODEL6PARAMCONTINGENTCHANGEX:{
+    			case MODEL6PARAMINDEPENDENTY:{
     				// six parameters q24=q13,q42=q31
-                	qMapping[4]= 1;
-                	qMapping[5]= 4;
-                 qMapping[6]= 3;
-                 qMapping[7]= 5;
     				
- 				/* Peter: Should it be what's below?  What you had seems to imply a 4 parameter model
-                 	qMapping[4]= 1;
+    				//constraint
+    				qMapping[4]= 1;
                 	qMapping[6]= 3;
-                */
+                	
+    				//compressing to array of 6
+                	qMapping[7]= 4;  
+                	
+  				/*
+    				qMapping[4]= 1;
+                	qMapping[5]= 4;  
+                	qMapping[6]= 3;
+         //        qMapping[7]= 5;
+          * */
+    				
     				break;
     			}
     			case MODEL2CHARACTERUSERDEFINED: {
@@ -330,7 +385,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private double[] prepareQList(double[] values){
     		if (qList == null || (qList.length < qMapping.length))
     			qList = new double[qMapping.length];
+    	
 		for (int i=0;i<qMapping.length;i++) {
+			if (qMapping[i]>= values.length)
+				Debugg.println("values length " + values.length + " [qMapping[i] " + qMapping[i]);
 			qList[i] = values[qMapping[i]];
 		}
 		return qList;
@@ -348,7 +406,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				rateMatrix = new double[4][4];
 				changed = true;
 			}
-			changed |= fill4x4MatricesFromQList(prepareQList(params));
+			changed |= fill4x4MatricesFromQList(rateMatrix, prepareQList(params));
+		
         }
         if (changed) {
             recalcProbsNeeded = true;
@@ -377,7 +436,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
      * here, in the extra transpose done in the transition probabilities, and
      * is consistent with the comments in the Asym 2 parameter model.
      */
-    private boolean fill4x4MatricesFromQList(double [] lParams){
+    private boolean fill4x4MatricesFromQList(double[][] matrix, double [] lParams){
 		boolean changed = false;
 		for (int i=0; i< 4; i++)
 			for (int j=0; j< 4; j++){
@@ -458,8 +517,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 							break;
 						}
 					} //end of switch
-					if (rateMatrix[i][j]!= r) {
-						rateMatrix[i][j] = r;
+					if (matrix[i][j]!= r) {
+						matrix[i][j] = r;
 						changed = true;
 					//	if (!MesquiteDouble.isCombinable(r))
 					//		unassigned = true;
@@ -1174,6 +1233,34 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     public void estimateParameters(Tree originalTree, CategoricalDistribution observedStates1, CategoricalDistribution observedStates2) {
  //   	if (observedStates1==null || observedStates2==null)
  //   		return;
+    	
+    	/*Peter: testing to see if matrix is manipulated appropriately by mapping
+    	double[][] rMatrix = new double[4][4];
+    	double[] testParams = new double[8];
+    	testParams[0] = 1.2;
+    	testParams[1] = 1.3;
+    	testParams[2] = 2.1;
+    	testParams[3] = 3.1;
+    	testParams[4] = 2.4;
+    	testParams[5] = 3.4;
+    	testParams[6] = 4.2;
+    	testParams[7] = 4.3;
+    	fill4x4MatricesFromQList(rMatrix, prepareQList(testParams));
+    	Debugg.println("TEST " + getModelTypeAsString() + "\n" + Double2DArray.toString(rMatrix));
+    	
+    	*/
+ /*
+  *     		     * q12 = params[0] (forward char0 | char1=0)
+    		     * q13 = params[1] (forward char1 | char0=0)
+    		     * q21 = params[2] (backward char0 | char1=0)
+    		     * q31 = params[3] (backward char1 | char0=1)  //Peter: this should be (backward char1 | char0=0), correct?
+    		     * q24 = params[4] (forward char1 | char0=1)
+    		     * q34 = params[5] (forward char0 | char1=1)
+    		     * q42 = params[6] (backward char1 | char0=1)
+    		     * q43 = params[7] (backward char0 | char1=1)
+
+  * */   	
+    	
         this.observedStates1 = observedStates1;
         this.observedStates2 = observedStates2;
     		// Special treatment for constant states just isn't working out here
@@ -1217,13 +1304,13 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				double best = Double.MAX_VALUE;
 				// no need to reallocate the two 6-p models everytime
 				if (intermediate1 == null)
-					intermediate1 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEY);
+					intermediate1 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMINDEPENDENTX);
 				if (intermediate2 == null)
-					intermediate2 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMCONTINGENTCHANGEX);
+					intermediate2 = new PagelMatrixModel("",CategoricalState.class,MODEL6PARAMINDEPENDENTY);
 				PagelMatrixModel model6_cy = intermediate1;
 				PagelMatrixModel model6_cx = intermediate2;
 				// first a model with changes in Y contingent on changes in X
-				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEY){
+				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMINDEPENDENTX){
 				    model6_cy.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
 					model6_cy.estimateParameters(workingTree,observedStates1, observedStates2);
 					double[] m6_1Params = model6_cy.getParams();
@@ -1255,7 +1342,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 						b[i] = estParams[i];
 				}
 				// now the other 6-parameter model (changes in X contingent on Y)
-				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMCONTINGENTCHANGEX){
+				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMINDEPENDENTY){
 				    model6_cx.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
 					model6_cx.estimateParameters(workingTree,observedStates1, observedStates2);
 					double[] m6_2Params = model6_cx.getParams();
@@ -1320,8 +1407,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 
 				break;
 			}
-			case MODEL6PARAMCONTINGENTCHANGEX:
-			case MODEL6PARAMCONTINGENTCHANGEY: {
+			case MODEL6PARAMINDEPENDENTY:
+			case MODEL6PARAMINDEPENDENTX: {
 				estParams = new double[6];
 				if (params == null ||params.length != 6)
 					params = new double[6];
@@ -1331,7 +1418,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					double [] m4Params = model4.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m4Params[i];
-					if (modelType == MODEL6PARAMCONTINGENTCHANGEX){  
+					if (modelType == MODEL6PARAMINDEPENDENTY){  
 						estParams[4]=m4Params[2];
 						estParams[5]=m4Params[3];
 					}
@@ -1343,7 +1430,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				else { // TODO need to get the parameters from the previous model
 					for(int i=0;i<4;i++)
 						estParams[i]=parametersFromSimplerModel[i];
-					if (modelType == MODEL6PARAMCONTINGENTCHANGEX){  
+					if (modelType == MODEL6PARAMINDEPENDENTY){  
 						estParams[4]=parametersFromSimplerModel[2];
 						estParams[5]=parametersFromSimplerModel[3];
 					}
@@ -1613,11 +1700,11 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			case MODEL7PARAMCONTINGENTCHANGEXBACKWARD: {
 				return "7 parameter model x forward change contingent on y";
 			}
-			case MODEL6PARAMCONTINGENTCHANGEY: {
-				return "6 parameter model y change contingent on x";
+			case MODEL6PARAMINDEPENDENTX: {
+				return "6 parameter model x change independent of y";
 			}
-			case MODEL6PARAMCONTINGENTCHANGEX:{
-				return "6 parameter model x forward change contingent on y";
+			case MODEL6PARAMINDEPENDENTY:{
+				return "6 parameter model y change independent of X";
 			}
 		}
 		return null;
@@ -1626,7 +1713,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		switch (modelType){
 			case MODEL4PARAM:{
 				return "q12(alpha1) =" + params[1] + "\nq13(alpha2) = " 
-				             + params[0] + "\nq21(beta1) = " + params[3] + "\nq31(beta2) = " + params[2];
+				             + params[0] + "\nq21(beta1) = " + params[3] + "\nq31(beta2) = " + params[2]+ "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  //Debugg.println
 			}
 			case MODEL8PARAM:{
 				return "q12 = " + params[0] + "\nq13 = " + params[1] + 
@@ -1659,17 +1746,17 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		                  " q24 = " + params[4] + " q34 = " + params[5] +
 		                  " q42 = " + params[3] + " q43 = " + params[6];
 			}
-			case MODEL6PARAMCONTINGENTCHANGEY: { //TODO check me
+			case MODEL6PARAMINDEPENDENTX: { //TODO check me
 				return "q12 = " + params[0] + " q13 = " + params[1] + 
 		                  " q21 = " + params[2] + " q31 = " + params[3] +
 		                  " q24 = " + params[4] + " q34 = " + params[0] +
-		                  " q42 = " + params[5] + " q43 = " + params[2];
+		                  " q42 = " + params[5] + " q43 = " + params[2] + "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  //Debugg.println
 			}
-			case MODEL6PARAMCONTINGENTCHANGEX:{  //TODO trim me
+			case MODEL6PARAMINDEPENDENTY:{  //TODO trim me
 				return "q12 = " + params[0] + " q13 = " + params[1] + 
 		                  " q21 = " + params[2] + " q31 = " + params[3] +
 		                  " q24 = " + params[1] + " q34 = " + params[4] +
-		                  " q42 = " + params[3] + " q43 = " + params[5];
+		                  " q42 = " + params[3] + " q43 = " + params[5]+ "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  //Debugg.println
 			}
 		}
 		return null;
