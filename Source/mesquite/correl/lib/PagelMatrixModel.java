@@ -73,11 +73,11 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private boolean recalcProbsNeeded = true;
     private boolean needToPrepareMatrices = true;
     private Tree workingTree;
-    private CategoricalDistribution observedStates1;
-    private CategoricalDistribution observedStates2;
+    private CategoricalDistribution observedStatesX;
+    private CategoricalDistribution observedStatesY;
 
 	double[][] downProbs;  // probability at node N given state s at base
-	double[][][] downProbs2; // probabilty at node N given state s1 for char1 and s2 for char2 at base
+	double[][][] downProbs2; // probabilty at node N given state s1 for charX and s2 for charY at base
 	double[][] savedRootEstimates; // holds the estimates at the root (for simulation priors, etc.)
 	double[] underflowCompDown;  // ln of compensation for underflow
 	//double[] empirical;       // may be implemented sometime
@@ -1043,7 +1043,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		double comp;
 		int root = tree.getRoot();
 		if (rootMode == SUM){
-			initProbs2(tree.getNumNodeSpaces(), observedStates1.getMaxState()+1,observedStates2.getMaxState()+1); 
+			initProbs2(tree.getNumNodeSpaces(), observedStatesX.getMaxState()+1,observedStatesY.getMaxState()+1); 
 			estCount++;
 			downPass2(root,tree);
 			for (int i = 0; i<=maxState[0]; i++)
@@ -1090,17 +1090,17 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		return (logLike);
 	}
  		
- 	private void initProbs2(int nodes, int numStates1, int numStates2) {
- 		if (numStates1 != numStates2) {
- 			if (numStates1 >= numStates2)
- 				this.numStates = numStates1;
+ 	private void initProbs2(int nodes, int numStatesX, int numStatesY) {
+ 		if (numStatesX != numStatesY) {
+ 			if (numStatesX >= numStatesY)
+ 				this.numStates = numStatesX;
  			else
- 				this.numStates = numStates2;
+ 				this.numStates = numStatesY;
  		}
- 		else if (numStates1 == 1) 
+ 		else if (numStatesX == 1) 
  			numStates =2;
- 			else numStates = numStates1;
- 		if  (downProbs2==null || downProbs2.length!=nodes || downProbs2[0].length!=numStates1 || downProbs2[0][0].length!=numStates2){
+ 			else numStates = numStatesX;
+ 		if  (downProbs2==null || downProbs2.length!=nodes || downProbs2[0].length!=numStatesX || downProbs2[0][0].length!=numStatesY){
  		 		downProbs2 = new double[nodes][numStates][numStates];
  		 		underflowCompDown = new double[nodes];
  		 		//empirical2 = new double[numStates][numStates];
@@ -1155,8 +1155,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 	// assumes hard polytomies
 	private void downPass2(int node, Tree tree) {
 		if (tree.nodeIsTerminal(node)) {
-			long observed1 = ((CategoricalDistribution)observedStates1).getState(tree.taxonNumberOfNode(node));
-			long observed2 = ((CategoricalDistribution)observedStates2).getState(tree.taxonNumberOfNode(node));
+			long observed1 = ((CategoricalDistribution)observedStatesX).getState(tree.taxonNumberOfNode(node));
+			long observed2 = ((CategoricalDistribution)observedStatesY).getState(tree.taxonNumberOfNode(node));
 			int obs1 = CategoricalState.minimum(observed1); //NOTE: just minimum observed!
 			int obs2 = CategoricalState.minimum(observed2);
 			Double2DArray.zeroArray(downProbs2[node]);
@@ -1230,46 +1230,21 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 
     static final boolean scaleRescale = true;  
  
-    public void estimateParameters(Tree originalTree, CategoricalDistribution observedStates1, CategoricalDistribution observedStates2) {
+    public void estimateParameters(Tree originalTree, CategoricalDistribution observedStatesX, CategoricalDistribution observedStatesY) {
  //   	if (observedStates1==null || observedStates2==null)
  //   		return;
     	
-    	/*Peter: testing to see if matrix is manipulated appropriately by mapping
-    	double[][] rMatrix = new double[4][4];
-    	double[] testParams = new double[8];
-    	testParams[0] = 1.2;
-    	testParams[1] = 1.3;
-    	testParams[2] = 2.1;
-    	testParams[3] = 3.1;
-    	testParams[4] = 2.4;
-    	testParams[5] = 3.4;
-    	testParams[6] = 4.2;
-    	testParams[7] = 4.3;
-    	fill4x4MatricesFromQList(rMatrix, prepareQList(testParams));
-    	Debugg.println("TEST " + getModelTypeAsString() + "\n" + Double2DArray.toString(rMatrix));
+ 
     	
-    	*/
- /*
-  *     		     * q12 = params[0] (forward char0 | char1=0)
-    		     * q13 = params[1] (forward char1 | char0=0)
-    		     * q21 = params[2] (backward char0 | char1=0)
-    		     * q31 = params[3] (backward char1 | char0=1)  //Peter: this should be (backward char1 | char0=0), correct?
-    		     * q24 = params[4] (forward char1 | char0=1)
-    		     * q34 = params[5] (forward char0 | char1=1)
-    		     * q42 = params[6] (backward char1 | char0=1)
-    		     * q43 = params[7] (backward char0 | char1=1)
-
-  * */   	
-    	
-        this.observedStates1 = observedStates1;
-        this.observedStates2 = observedStates2;
+        this.observedStatesX = observedStatesX;
+        this.observedStatesY = observedStatesY;
     		// Special treatment for constant states just isn't working out here
-    		if (observedStates1.getMaxState()>= 1)
-    			maxState[0] = observedStates1.getMaxState();
+    		if (observedStatesX.getMaxState()>= 1)
+    			maxState[0] = observedStatesX.getMaxState();
     		else
     			maxState[0] = 1;
-    		if (observedStates2.getMaxState()>= 1)
-        		maxState[1] = observedStates2.getMaxState();
+    		if (observedStatesY.getMaxState()>= 1)
+        		maxState[1] = observedStatesY.getMaxState();
     		else
     			maxState[1] = 1;
 
@@ -1312,7 +1287,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				// first a model with changes in Y contingent on changes in X
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMINDEPENDENTX){
 				    model6_cy.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
-					model6_cy.estimateParameters(workingTree,observedStates1, observedStates2);
+					model6_cy.estimateParameters(workingTree,observedStatesX, observedStatesY);
 					double[] m6_1Params = model6_cy.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m6_1Params[i];
@@ -1344,7 +1319,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				// now the other 6-parameter model (changes in X contingent on Y)
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL6PARAMINDEPENDENTY){
 				    model6_cx.setParametersFromSimplerModel(parametersFromSimplerModel,simplerModelType);
-					model6_cx.estimateParameters(workingTree,observedStates1, observedStates2);
+					model6_cx.estimateParameters(workingTree,observedStatesX, observedStatesY);
 					double[] m6_2Params = model6_cx.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m6_2Params[i];
@@ -1414,7 +1389,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 					params = new double[6];
 				if (parametersFromSimplerModel == null || simplerModelType != MODEL4PARAM) {
 					PagelMatrixModel model4 = new PagelMatrixModel("",CategoricalState.class,MODEL4PARAM);
-					model4.estimateParameters(workingTree,observedStates1, observedStates2);
+					model4.estimateParameters(workingTree,observedStatesX, observedStatesY);
 					double [] m4Params = model4.getParams();
 					for(int i=0;i<4;i++)
 						estParams[i]=m4Params[i];
@@ -1813,10 +1788,10 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     public void showSurface(Tree tree,CategoricalDistribution dist1, CategoricalDistribution dist2, int divisions) {
     	    Tree savedTree = workingTree;
     	    workingTree = tree;
-    	    CategoricalDistribution savedObservedStates1 = observedStates1;
-    	    observedStates1 = dist1;
-    	    CategoricalDistribution savedObservedStates2 = observedStates2;
-    	    observedStates2 = dist2;
+    	    CategoricalDistribution savedObservedStates1 = observedStatesX;
+    	    observedStatesX = dist1;
+    	    CategoricalDistribution savedObservedStates2 = observedStatesY;
+    	    observedStatesY = dist2;
         double [] outBounds = new double[params.length];
         double [] upperBounds = new double[params.length];
         for (int i = 0;i<upperBounds.length;i++)
@@ -1827,8 +1802,8 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
         getLikelihoodSurface(16,outBounds,upperBounds,lowerBounds);
         // restore fields
         workingTree = savedTree;
-        observedStates1 = savedObservedStates1;
-        observedStates2 = savedObservedStates2;
+        observedStatesX = savedObservedStates1;
+        observedStatesY = savedObservedStates2;
     }
     private void getLikelihoodSurface(int divisions,double[] outputBounds,double[]upperBounds,double[]lowerBounds){ //also pass upper & lower bounds
         // hold paramCount-2 parameters fixed, vary pairs through fixed bounds; just call evaluate
@@ -1921,14 +1896,14 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     }
     
     public void setObserved1(CategoricalDistribution dist1) {
-    		this.observedStates1 = dist1;
+    		this.observedStatesX = dist1;
     }
     
     // fix this
     public void setObserved2(CategoricalDistribution dist2) {
-		this.observedStates2 = dist2;
-		maxState[0] = observedStates1.getMaxState();    	
-		maxState[1] = observedStates2.getMaxState();
+		this.observedStatesY = dist2;
+		maxState[0] = observedStatesX.getMaxState();    	
+		maxState[1] = observedStatesY.getMaxState();
 		allStates[0] = CategoricalState.span(0,maxState[0]);
 		allStates[1] = CategoricalState.span(0,maxState[1]);
     }
