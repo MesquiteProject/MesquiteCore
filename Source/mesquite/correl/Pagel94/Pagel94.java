@@ -30,8 +30,8 @@ public class Pagel94 extends Pagel94Calculator {
 
 	private CategoricalDistribution observedStates1;
 	private CategoricalDistribution observedStates2;
-	MesquiteLong seed;
-	long originalSeed=System.currentTimeMillis(); //0L;
+	private MesquiteLong seed;
+	private long originalSeed=System.currentTimeMillis(); //0L;
 	private CategoricalHistory[] evolvingStates;
 
 	private ProgressIndicator progress = null;
@@ -40,9 +40,9 @@ public class Pagel94 extends Pagel94Calculator {
 	private PagelMatrixModel model8;
 	private PagelMatrixModel model4; //USED temporarily to find starting for 6 param case
 
-	private static int INDEPENDENT4 = 0;  //used to test whether any affect of Y on X or X on Y: 4 parameter model, X and Y are independent of each other
-	private static int XINDEPENDENTofY = 1;  //used to test whether X depends on Y:  6 parameter model, Y is contingent on X & X is independent of Y)
-	private static int YINDEPENDENTofX = 2;  //used to test whether Y depends on X:  6 parameter model, X is contingent on Y & Y is independent of X)
+	private final static int INDEPENDENT4 = 0;  //used to test whether any affect of Y on X or X on Y: 4 parameter model, X and Y are independent of each other
+	private final static int XINDEPENDENTofY = 1;  //used to test whether X depends on Y:  6 parameter model, Y is contingent on X & X is independent of Y)
+	private final static int YINDEPENDENTofX = 2;  //used to test whether Y depends on X:  6 parameter model, X is contingent on Y & Y is independent of X)
 	private int currentConstrainedModel = INDEPENDENT4;
 	private StringArray constrainedModelNames;
 	private MesquiteString currentConstrainedModelName;
@@ -99,10 +99,6 @@ public class Pagel94 extends Pagel94Calculator {
 			else
 				return false;
 
-			/*	int newNum = MesquiteInteger.queryInteger(containerOfModule(), "Likelihood Iterations (Pagel 94)", "Intensity of likelihood search for 8 parameter model for Pagel 94 (Number of extra iterations):", numIterations, 0, MesquiteInteger.infinite);
-			//MesquiteInteger.queryTwoIntegers(MesquiteWindow parent, String title, String label1, String label2, MesquiteBoolean answer, MesquiteInteger num1, MesquiteInteger num2,int min1,int max1,int min2, int max2, String helpString) {
-			if (MesquiteInteger.isCombinable(newNum))
-					numIterations = newNum;*/
 		}
 		if (currentConstrainedModel == INDEPENDENT4)
 			modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);
@@ -204,9 +200,6 @@ public class Pagel94 extends Pagel94Calculator {
 				}
 			}
 		}
-		//        else if (checker.compare(this.getClass(),"(Currently) saves surface plot of 2 parameters as text file","",commandName,"showSurface")){
-		//           return null;
-		//        }
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -274,16 +267,14 @@ public class Pagel94 extends Pagel94Calculator {
 		}
 		return false;
 	}
-	boolean warnedMissing = false;
-	boolean warnedPolymorphic = false;
-	boolean warnedMaxState = false;
-	boolean warnedUnbranchedInternals = false;
-	boolean warnedReticulations = false;
-	boolean warnedNotContiguous = false;
-	boolean warnedSoftPoly = false;
-	boolean warnedZeroLength = false;
-	boolean warnedUnrootedCladeValuesMode = false;
-	boolean warn(CategoricalDistribution observedStates1, CategoricalDistribution observedStates2, Tree tree, MesquiteString resultString){
+	private boolean warnedMissing = false;
+	private boolean warnedPolymorphic = false;
+	private boolean warnedMaxState = false;
+	private boolean warnedUnbranchedInternals = false;
+	private boolean warnedReticulations = false;
+	private boolean warnedSoftPoly = false;
+	private boolean warnedZeroLength = false;
+	private boolean warn(CategoricalDistribution observedStates1, CategoricalDistribution observedStates2, Tree tree, MesquiteString resultString){
 		if (observedStates1.hasMultipleStatesInTaxon(tree, tree.getRoot()) || observedStates2.hasMultipleStatesInTaxon(tree, tree.getRoot())) {
 			String s = "Polymorphic or uncertain taxa are not currently supported in Pagel94 calculations.  Calculations were not completed.";
 			if (!warnedPolymorphic) {

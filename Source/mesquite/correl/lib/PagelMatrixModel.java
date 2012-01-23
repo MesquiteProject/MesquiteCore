@@ -67,29 +67,26 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     private boolean[] paramUnassigned;
     private double[][] probMatrix, rateMatrix, eigenVectors, inverseEigenVectors;
     private double[] eigenValues,imagEigenValues;  //use imagEigenValues with Putzer's method
-    private boolean negativeProbabilities = false;
-    private double negativeProbValue = 0.0;
-    //private MesquiteInteger pos = new MesquiteInteger(0);
     private boolean recalcProbsNeeded = true;
     private boolean needToPrepareMatrices = true;
     private Tree workingTree;
     private CategoricalDistribution observedStatesX;
     private CategoricalDistribution observedStatesY;
 
-	double[][] downProbs;  // probability at node N given state s at base
-	double[][][] downProbs2; // probabilty at node N given state s1 for charX and s2 for charY at base
-	double[][] savedRootEstimates; // holds the estimates at the root (for simulation priors, etc.)
-	double[] underflowCompDown;  // ln of compensation for underflow
+	private double[][] downProbs;  // probability at node N given state s at base
+	private double[][][] downProbs2; // probabilty at node N given state s1 for charX and s2 for charY at base
+	private double[][] savedRootEstimates; // holds the estimates at the root (for simulation priors, etc.)
+	private double[] underflowCompDown;  // ln of compensation for underflow
 	//double[] empirical;       // may be implemented sometime
 	//double[][] empirical2;
-	double[] parametersFromSimplerModel = null;  //holds values from 4 parameter model as starting values for 6 p. model
-	PagelMatrixModel intermediate1 = null;       //holds 6 parameter models called from 8 parameter model
-	PagelMatrixModel intermediate2 = null;
-	int simplerModelType;
-    	private int numStates;
-	long underflowCheckFrequency = 2; //how often to check that not about to underflow; 1 checks every time
-	long underflowCheck = 1;
-	MesquiteNumber minChecker;
+	private double[] parametersFromSimplerModel = null;  //holds values from 4 parameter model as starting values for 6 p. model
+	private PagelMatrixModel intermediate1 = null;       //holds 6 parameter models called from 8 parameter model
+	private PagelMatrixModel intermediate2 = null;
+	private int simplerModelType;
+    private int numStates;
+	private static long underflowCheckFrequency = 2; //how often to check that not about to underflow; 1 checks every time
+	private static long underflowCheck = 1;          //these are static because they are never set, though perhaps they should be setable
+	private MesquiteNumber minChecker;
 
 	private MesquiteInteger eightParameterExtraSearch = new MesquiteInteger(10);
 	
@@ -1008,25 +1005,24 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
      * @param obj is ignored here and should be null (maybe just pass through command record)
      */
 	public double evaluate(double[] values, Object obj) {
-		if (values.length >= 4) {
-			if (prog != null)
-				if (prog.isAborted())
-					throw new StuckSearchException();
-			double height = workingTree.tallestPathAboveNode(workingTree.getRoot()); // to stop the optimization from wandering if very high rates
-			if (!sanityChecks(values,limit, height)){
-				return MesquiteDouble.veryLargeNumber;
-			}
-        		negativeProbabilities = false;
-        		if (params == null || params.length != values.length)
-        			params = new double[values.length];
-        		for(int i=0;i<values.length;i++)
-        			params[i] = values[i];
-			prepareMatrices();			
-			double result =  -this.logLikelihoodCalc(workingTree);
-			return result;
-		}
-		else
-			return 0;
+	    if (values.length >= 4) {
+	        if (prog != null)
+	            if (prog.isAborted())
+	                throw new StuckSearchException();
+	        double height = workingTree.tallestPathAboveNode(workingTree.getRoot()); // to stop the optimization from wandering if very high rates
+	        if (!sanityChecks(values,limit, height)){
+	            return MesquiteDouble.veryLargeNumber;
+	        }
+	        if (params == null || params.length != values.length)
+	            params = new double[values.length];
+	        for(int i=0;i<values.length;i++)
+	            params[i] = values[i];
+	        prepareMatrices();			
+	        double result =  -this.logLikelihoodCalc(workingTree);
+	        return result;
+	    }
+	    else
+	        return 0;
 	}
 	
 	int estCount =0;
