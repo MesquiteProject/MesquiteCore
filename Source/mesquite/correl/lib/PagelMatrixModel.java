@@ -939,9 +939,9 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		int numColumns1 = Double2DArray.numFullColumns(dest);
 		int numColumns2 = Double2DArray.numFullColumns(addend);
 		boolean flag = (numColumns1!= numRows2 || numColumns1!=numColumns2);
-		if (flag) MesquiteMessage.println("Wow! You are trying to add a:   " 
+		if (flag) MesquiteMessage.println("Trying to add matrices of differing sizes: " 
 		        +Integer.toString(numRows2) +"x" +Integer.toString(numColumns2)  
-		             +" to a  " 
+		             +" to a " 
 		        +Integer.toString(numRows1) +"x" +Integer.toString(numColumns1)  ); 
 		if (flag)
 		    return null; 
@@ -970,9 +970,9 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		int numColumns1 = Double2DArray.numFullColumns(source);
 		int numColumns2 = Double2DArray.numFullColumns(subtractor);
 		boolean flag = (numColumns1!= numRows2 || numColumns1!=numColumns2);
-		if (flag) MesquiteMessage.println("Wow! You are trying subtract a:   " 
+		if (flag) MesquiteMessage.println("Trying to subtract matrices of differing sizes: " 
 		        +Integer.toString(numRows2) +"x" +Integer.toString(numColumns2)  
-		             +" from a  " 
+		             +" from a " 
 		        +Integer.toString(numRows1) +"x" +Integer.toString(numColumns1)  ); 
 		if (flag)
 		    return null; 
@@ -1233,8 +1233,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     public void estimateParameters(Tree originalTree, CategoricalDistribution observedStatesX, CategoricalDistribution observedStatesY) {
  //   	if (observedStates1==null || observedStates2==null)
  //   		return;
-    	
- 
     	
         this.observedStatesX = observedStatesX;
         this.observedStatesY = observedStatesY;
@@ -1618,13 +1616,6 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 			return null;
 		double accumProb = 0;
 		int resultCode = recodeStatePair(maxState[0],maxState[1]);
-//		for (int i=0; i<probMatrix[index].length; i++) {
-//			accumProb +=  probMatrix[index][i];
-//			if (r< accumProb){
-//				resultCode = i;
-//				break;
-//			}
-//		}
 		for (int i=0; i<probMatrix.length; i++) {
 			accumProb +=  probMatrix[i][index];
 			if (r< accumProb){
@@ -1841,7 +1832,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
         if (outputBounds.length != 2) {
             MesquiteMessage.warnProgrammer("Array supplied to receive output bounds too small");
         }
-        //THIS DOESN:T work at present
+        //THIS DOESN'T work at present
         //arbitrarily choose the midpoints
         if (upperBounds != null && lowerBounds != null){
             for(int i=0;i<params.length;i++){
