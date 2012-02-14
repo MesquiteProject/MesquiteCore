@@ -122,7 +122,7 @@ public class CGBiasOfTaxon extends NumberForTaxon {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
+		return true;
 	}
 	public String getParameters() {
 		return "Proportion CG in taxon in matrix from: " + matrixSourceTask.getParameters();
