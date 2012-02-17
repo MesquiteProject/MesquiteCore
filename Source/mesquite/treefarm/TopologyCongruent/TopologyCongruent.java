@@ -93,7 +93,10 @@ public class TopologyCongruent extends BooleanForTree {
 		if(tree==null || result==null || constraintTreeSource == null){
 			return;
 		}
-		constraintTree = constraintTreeSource.getTree(tree.getTaxa()).cloneTree();
+		Tree sourceTree = constraintTreeSource.getTree(tree.getTaxa());
+		if (sourceTree==null)
+			return;
+		constraintTree = sourceTree.cloneTree();
 		if(constraintTree==null || constraintTree.getTaxa()!=tree.getTaxa())
 			return;
 		MesquiteBoolean isConsistent = new MesquiteBoolean(true);
