@@ -112,7 +112,19 @@ public class XMLUtil {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public static Document getDocumentFromString(String rootElementName, String contents) {
+	public static String stripSchema(String contents) {
+		int pos = contents.indexOf("<!DOCTYPE");
+		if (pos>=0) {
+			int pos2 = contents.indexOf(">", pos+1);
+			String newVersion = contents.substring(0, pos) + contents.substring(pos2+1,contents.length());
+			return newVersion;
+		}
+		return contents;
+	}
+	/*.................................................................................................................*/
+	public static Document getDocumentFromString(String rootElementName, String contents,boolean stripSchema) {
+		if (stripSchema)
+			contents = stripSchema(contents);
 		Document doc = null;
 		try { 
 			doc = DocumentHelper.parseText(contents); 
@@ -128,19 +140,27 @@ public class XMLUtil {
 		return doc;
 	}
 	/*.................................................................................................................*/
-	public static Document getDocumentFromString(String contents) {
-		return getDocumentFromString("",contents);
+	public static Document getDocumentFromString(String rootElementName, String contents) {
+		return getDocumentFromString(rootElementName,contents, true);
 	}
 	/*.................................................................................................................*/
-	public static Element getRootXMLElementFromString(String rootElementName, String contents) {
-		Document doc = getDocumentFromString(rootElementName, contents);
+	public static Document getDocumentFromString(String contents) {
+		return getDocumentFromString("",contents, true);
+	}
+	/*.................................................................................................................*/
+	public static Element getRootXMLElementFromString(String rootElementName, String contents, boolean stripSchema) {
+		Document doc = getDocumentFromString(rootElementName, contents, stripSchema);
 		if (doc==null)
 			return null;
 		return doc.getRootElement();
 	}
 	/*.................................................................................................................*/
+	public static Element getRootXMLElementFromString(String rootElementName, String contents) {
+		return getRootXMLElementFromString(rootElementName,contents, true);
+	}
+	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromString(String contents) {
-		return getRootXMLElementFromString("",contents);
+		return getRootXMLElementFromString("",contents, true);
 	}
 	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromURL(String rootElementName, String url) {

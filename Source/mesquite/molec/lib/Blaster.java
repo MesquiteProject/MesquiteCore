@@ -34,14 +34,10 @@ public abstract class Blaster extends MesquiteModule   {
    	 }
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-   	public abstract void initialize();
+   	public abstract boolean initialize();
    	
 	public abstract void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, StringBuffer blastResponse);
    	
-	public abstract String fetchTaxonomyList(String accession, boolean isNucleotides, boolean writeLog, StringBuffer report);
-
-	public abstract String fetchGenBankSequencesFromAccessions(String[] accessionNumbers,  boolean isNucleotides, MesquiteModule mod, boolean writeLog, StringBuffer report); 
-
 
 }
 

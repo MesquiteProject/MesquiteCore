@@ -11,20 +11,14 @@ public class NCBIBlaster extends Blaster {
 		return true;
 	}
 
-	public void initialize() {
+	public boolean initialize() {
+		return true;
 	}
 
 	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, StringBuffer blastResponse) {
 		NCBIUtil.blastForMatches(blastType, sequenceName, sequence, isNucleotides, numHits, 300, blastResponse);
 	}
 
-	public String fetchGenBankSequencesFromAccessions(String[] accessionNumbers, boolean isNucleotides, MesquiteModule mod, boolean writeLog, StringBuffer report) {
-		return NCBIUtil.fetchGenBankSequencesFromAccessions(accessionNumbers, isNucleotides, mod, writeLog, report);	
-	}
-
-	public String fetchTaxonomyList(String accession, boolean isNucleotides, boolean writeLog, StringBuffer report) {
-		return NCBIUtil.fetchTaxonomyList(accession, isNucleotides, writeLog, report);
-	}
 
 	public boolean isPrerelease() {
 		return true;
