@@ -40,7 +40,7 @@ public abstract class Blaster extends MesquiteModule   {
    	
 	public abstract String fetchTaxonomyList(String accession, boolean isNucleotides, boolean writeLog, StringBuffer report);
 
-	public abstract String fetchGenBankSequencesFromAccessions(String[] accessionNumbers,  MesquiteModule mod, boolean writeLog, StringBuffer report); 
+	public abstract String fetchGenBankSequencesFromAccessions(String[] accessionNumbers,  boolean isNucleotides, MesquiteModule mod, boolean writeLog, StringBuffer report); 
 
 
 }
