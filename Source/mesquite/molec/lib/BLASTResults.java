@@ -87,6 +87,17 @@ public class BLASTResults {
 		this.sequence[index] = sequence;
 	}
 
+	public String toString(int numHits) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("   Top hits; Accession [eValue] Definition): \n");
+		for (int i=0; i<maxHits && i<numHits && i<accession.length; i++) {
+			if (StringUtil.notEmpty(accession[i]))
+				sb.append("        "+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
+		}
+		return sb.toString();
+	}
+
+
 	/*.................................................................................................................*/
 	public boolean acceptableHit(int hitCount, double bitScore, double eValue) {
 		return hitCount<=maxHits;
@@ -124,7 +135,7 @@ public class BLASTResults {
 									String eValue = Hsp.elementText("Hsp_evalue");
 									seteValue(MesquiteDouble.fromString(eValue), hitCount);
 									setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
-									
+
 									if (storeSequences)
 										setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
 								}
