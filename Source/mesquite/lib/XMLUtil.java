@@ -113,6 +113,8 @@ public class XMLUtil {
 	}
 	/*.................................................................................................................*/
 	public static String stripSchema(String contents) {
+		if (contents==null)
+			return null;
 		int pos = contents.indexOf("<!DOCTYPE");
 		if (pos>=0) {
 			int pos2 = contents.indexOf(">", pos+1);

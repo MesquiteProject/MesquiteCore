@@ -23,6 +23,7 @@ public class BLASTResults {
 	protected String[] taxonomy;
 	protected String[] definition;
 	protected String[] accession;
+	protected String[] ID;
 	protected String[] sequence;
 	int maxHits = 1;
 
@@ -36,14 +37,18 @@ public class BLASTResults {
 		taxonomy = new String[maxHits];
 		definition = new String[maxHits];
 		accession = new String[maxHits];
+		ID = new String[maxHits];
+		zeroArrays();
+	}
+	public void zeroArrays() {
 		for (int i=0; i<maxHits; i++) {
 			eValue[i]= -1.0;
 			bitScore[i] = 0.0;
 			taxonomy[i] = "";
 			definition[i] = "";
 			accession[i] = "";
+			ID[i] = "";
 		}
-		StringArray accessionNumbers = new StringArray(maxHits);
 	}
 	public double geteValue(int index) {
 		return eValue[index];
@@ -78,6 +83,15 @@ public class BLASTResults {
 	public String[] getAccessions() {
 		return accession;
 	}
+	public String getID(int index) {
+		return ID[index];
+	}
+	public void setID(String ID, int index) {
+		this.ID[index] = ID;
+	}
+	public String[] getIDs() {
+		return ID;
+	}
 
 
 	public String getSequence(int index) {
@@ -89,10 +103,10 @@ public class BLASTResults {
 
 	public String toString(int numHits) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("   Top hits; Accession [eValue] Definition): \n");
+		sb.append("   Top hits\n\tAccession [eValue] Definition): \n");
 		for (int i=0; i<maxHits && i<numHits && i<accession.length; i++) {
 			if (StringUtil.notEmpty(accession[i]))
-				sb.append("        "+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
+				sb.append("\t"+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
 		}
 		return sb.toString();
 	}
@@ -107,6 +121,9 @@ public class BLASTResults {
 
 
 	public  boolean processResultsFromBLAST(String response, boolean storeSequences){
+		if (accession==null)
+			return false;
+		zeroArrays();
 		Element blastOutputElement = XMLUtil.getRootXMLElementFromString("BlastOutput",response);
 		if (blastOutputElement==null)
 			return false;
@@ -125,8 +142,19 @@ public class BLASTResults {
 							Element hitID = hitElement.element("Hit_id");
 
 							setDefinition(hitElement.elementText("Hit_def"), hitCount);
-							String accession = hitElement.elementText("Hit_accession");
-							setAccession(accession, hitCount);
+							String s = hitElement.elementText("Hit_accession");
+							setAccession(s, hitCount);
+							
+							s = hitElement.elementText("Hit_id");
+							if (StringUtil.notEmpty(s)) {
+								if (s.indexOf("|")>=0){
+									s=s.substring(s.indexOf('|')+1);
+									if (s.indexOf("|")>=0)
+										s=s.substring(0,s.indexOf('|'));
+								}
+							}
+							if (StringUtil.notEmpty(s))
+								setID(s, hitCount);
 
 							Element hithsps = hitElement.element("Hit_hsps");
 							if (hithsps!=null) {
