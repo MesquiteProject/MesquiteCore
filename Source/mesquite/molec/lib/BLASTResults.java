@@ -118,8 +118,6 @@ public class BLASTResults {
 	}
 
 	/*.................................................................................................................*/
-
-
 	public  boolean processResultsFromBLAST(String response, boolean storeSequences){
 		if (accession==null)
 			return false;

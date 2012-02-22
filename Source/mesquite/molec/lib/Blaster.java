@@ -36,7 +36,7 @@ public abstract class Blaster extends MesquiteModule   {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract boolean initialize();
    	
-	public abstract void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, StringBuffer blastResponse);
+	public abstract void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, StringBuffer blastResponse, boolean writeTime);
    	
 
 }

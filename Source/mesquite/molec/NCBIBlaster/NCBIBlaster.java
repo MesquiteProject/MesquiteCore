@@ -18,7 +18,7 @@ public class NCBIBlaster extends Blaster {
 		return true;
 	}
 
-	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, StringBuffer blastResponse) {
+	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, StringBuffer blastResponse, boolean writeCommand) {
 		timer.timeSinceLast();
 		NCBIUtil.blastForMatches(blastType, sequenceName, sequence, isNucleotides, numHits, 300, blastResponse);
 		logln("Blast completed in " +timer.timeSinceLastInSeconds()+" seconds");
