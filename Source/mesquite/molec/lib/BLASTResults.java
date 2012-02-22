@@ -10,6 +10,7 @@ import mesquite.categ.lib.DNAData;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.Parser;
 import mesquite.lib.PropertyNamesProvider;
@@ -118,6 +119,35 @@ public class BLASTResults {
 	}
 
 	/*.................................................................................................................*/
+	public  void setIDFromDefinition(String separator, int index){
+		String s="";
+		for (int i=0; i<maxHits && i<ID.length; i++) {
+			if (StringUtil.notEmpty(definition[i])){
+				s=StringUtil.getItem(definition[i],"|", index);
+				if (StringUtil.notEmpty(s))
+					ID[i] = s;
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
+	public  void setAccessionFromDefinition(String separator, int index){
+		String s="";
+		for (int i=0; i<maxHits && i<accession.length; i++) {
+			if (StringUtil.notEmpty(definition[i])){
+				s=StringUtil.getItem(definition[i],"|", index);
+				if (StringUtil.notEmpty(s))
+					accession[i] = s;
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
+	public  void setAccessionsFromIDs(boolean nucleotides){
+		accession = NCBIUtil.getGenBankAccessionFromID(ID, nucleotides, null, false);
+	}
+
+	/*.................................................................................................................*/
 	public  boolean processResultsFromBLAST(String response, boolean storeSequences, double eValueCutoff){
 		if (accession==null)
 			return false;
@@ -144,13 +174,7 @@ public class BLASTResults {
 							setAccession(s, hitCount);
 
 							s = hitElement.elementText("Hit_id");
-							if (StringUtil.notEmpty(s)) {
-								if (s.indexOf("|")>=0){
-									s=s.substring(s.indexOf('|')+1);
-									if (s.indexOf("|")>=0)
-										s=s.substring(0,s.indexOf('|'));
-								}
-							}
+							s=StringUtil.getItem(s,"|", 2);
 							if (StringUtil.notEmpty(s))
 								setID(s, hitCount);
 
