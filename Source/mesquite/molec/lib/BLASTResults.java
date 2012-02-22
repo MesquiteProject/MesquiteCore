@@ -118,7 +118,7 @@ public class BLASTResults {
 	}
 
 	/*.................................................................................................................*/
-	public  boolean processResultsFromBLAST(String response, boolean storeSequences){
+	public  boolean processResultsFromBLAST(String response, boolean storeSequences, double eValueCutoff){
 		if (accession==null)
 			return false;
 		zeroArrays();
@@ -142,7 +142,7 @@ public class BLASTResults {
 							setDefinition(hitElement.elementText("Hit_def"), hitCount);
 							String s = hitElement.elementText("Hit_accession");
 							setAccession(s, hitCount);
-							
+
 							s = hitElement.elementText("Hit_id");
 							if (StringUtil.notEmpty(s)) {
 								if (s.indexOf("|")>=0){
@@ -159,11 +159,19 @@ public class BLASTResults {
 								Element Hsp = hithsps.element("Hsp");
 								if (Hsp!=null) {
 									String eValue = Hsp.elementText("Hsp_evalue");
-									seteValue(MesquiteDouble.fromString(eValue), hitCount);
-									setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
+									double eValueDouble = MesquiteDouble.fromString(eValue);
+									if (eValueCutoff>=0.0 && eValueDouble<eValueCutoff) {
+										seteValue(eValueDouble, hitCount);
+										setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
 
-									if (storeSequences)
-										setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
+										if (storeSequences)
+											setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
+									} else if (eValueCutoff>=0.0) {
+										setDefinition("", hitCount);
+										setAccession("", hitCount);
+										setID("", hitCount);
+										hitCount--;
+									}
 								}
 							}
 							hitCount++;
