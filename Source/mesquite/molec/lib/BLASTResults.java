@@ -184,13 +184,13 @@ public class BLASTResults {
 								if (Hsp!=null) {
 									String eValue = Hsp.elementText("Hsp_evalue");
 									double eValueDouble = MesquiteDouble.fromString(eValue);
-									if (eValueCutoff>=0.0 && eValueDouble<eValueCutoff) {
+									if (eValueCutoff< 0.0 || eValueDouble<=eValueCutoff) {
 										seteValue(eValueDouble, hitCount);
 										setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
 
 										if (storeSequences)
 											setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
-									} else if (eValueCutoff>=0.0) {
+									} else if (eValueCutoff>=0.0 && eValueDouble>eValueCutoff) {
 										setDefinition("", hitCount);
 										setAccession("", hitCount);
 										setID("", hitCount);
@@ -210,80 +210,5 @@ public class BLASTResults {
 		return false;
 	}
 
-	/*.................................................................................................................*
-		public  boolean processResultsFromBLAST(String response, int maxHits, boolean fetchTaxonomy, boolean isNucleotides){
-
-			Parser parser = new Parser();
-			parser.setString(response);
-			if (!parser.isXMLDocument(false))   // check if XML
-				return;
-			MesquiteString nextTag = new MesquiteString();
-			String tagContent;
-			String accession="";
-			double bitScore = 0.0;
-			double eValue = -1.0;
-			if (parser.resetToXMLTagContents("BLASTOUTPUT"))
-				if (parser.resetToXMLTagContents("BLASTOUTPUT_iterations")) 
-					if (parser.resetToXMLTagContents("Iteration") && parser.resetToXMLTagContents("Iteration_hits")){
-						tagContent = parser.getNextXMLTaggedContent(nextTag);
-						int hitCount = 0;
-						while (!StringUtil.blank(nextTag.getValue()) && hitCount<maxHits) {
-							if ("Hit".equalsIgnoreCase(nextTag.getValue())) {   // here is a hit
-								String tax=null;
-								StringBuffer tempBuffer = new StringBuffer();
-								Parser hitParser = new Parser(tagContent);
-								tagContent = hitParser.getNextXMLTaggedContent(nextTag);
-								String def = "";
-								while (!StringUtil.blank(nextTag.getValue())) {
-									if ("Hit_def".equalsIgnoreCase(nextTag.getValue())) {  
-										def=StringUtil.stripTrailingWhitespace(tagContent);
-									}
-									else if ("Hit_accession".equalsIgnoreCase(nextTag.getValue())) {  
-										tempBuffer.append(StringUtil.stripTrailingWhitespace(tagContent)+"\t");
-										accession=tagContent;
-										if (fetchTaxonomy) {
-											tax = NCBIUtil.fetchTaxonomyList(accession, isNucleotides, true, null);
-										}
-									}
-									else if ("Hit_hsps".equalsIgnoreCase(nextTag.getValue())) {  
-										Parser subParser = new Parser(tagContent);
-										tagContent = subParser.getNextXMLTaggedContent(nextTag);
-										while (!StringUtil.blank(nextTag.getValue())) {
-											if ("Hsp".equalsIgnoreCase(nextTag.getValue())) {
-												subParser.setString(tagContent);
-												tagContent = subParser.getNextXMLTaggedContent(nextTag);
-												while (!StringUtil.blank(nextTag.getValue())) {
-													if ("Hsp_bit-score".equalsIgnoreCase(nextTag.getValue())) {
-														tempBuffer.append(StringUtil.stripTrailingWhitespace(tagContent)+"\t");
-														bitScore = MesquiteDouble.fromString(tagContent);
-													}
-													else if ("Hsp_evalue".equalsIgnoreCase(nextTag.getValue())) {
-														tempBuffer.append(StringUtil.stripTrailingWhitespace(tagContent)+"\t");
-														eValue = MesquiteDouble.fromString(tagContent);
-													}
-													tagContent = subParser.getNextXMLTaggedContent(nextTag); 
-												}
-											}
-											tagContent = subParser.getNextXMLTaggedContent(nextTag); 
-										}
-									} 
-									tagContent = hitParser.getNextXMLTaggedContent(nextTag);
-								}
-								setAccession(accession,hitCount);
-								setBitScore(bitScore, hitCount);
-								setDefinition(def, hitCount);
-								seteValue(eValue, hitCount);
-								setTaxonomy(tax, hitCount);
-							}
-							if (topHitAccessions!=null)
-								topHitAccessions.addAndFillNextUnassigned(accession);
-
-						}
-						hitCount++;
-						tagContent = parser.getNextXMLTaggedContent(nextTag);
-
-					}
-		}
-		/*.................................................................................................................*/
 
 }
