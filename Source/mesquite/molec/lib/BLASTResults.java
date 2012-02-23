@@ -25,6 +25,7 @@ public class BLASTResults {
 	protected String[] definition;
 	protected String[] accession;
 	protected String[] ID;
+	protected int[] frame;
 	protected String[] sequence;
 	int maxHits = 1;
 
@@ -38,6 +39,7 @@ public class BLASTResults {
 		taxonomy = new String[maxHits];
 		definition = new String[maxHits];
 		accession = new String[maxHits];
+		frame = new int[maxHits];
 		ID = new String[maxHits];
 		zeroArrays();
 	}
@@ -48,6 +50,7 @@ public class BLASTResults {
 			taxonomy[i] = "";
 			definition[i] = "";
 			accession[i] = "";
+			frame[i] = 0;
 			ID[i] = "";
 		}
 	}
@@ -68,6 +71,12 @@ public class BLASTResults {
 	}
 	public void setTaxonomy(String taxonomy, int index) {
 		this.taxonomy[index] = taxonomy;
+	}
+	public int getFrame(int index) {
+		return frame[index];
+	}
+	public void setFrame(int frame, int index) {
+		this.frame[index] = frame;
 	}
 	public String getDefinition(int index) {
 		return definition[index];
@@ -104,7 +113,7 @@ public class BLASTResults {
 
 	public String toString(int numHits) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("   Top hits\n\tAccession [eValue] Definition): \n");
+		sb.append("   Top hits\n\tAccession\t[eValue]\tDefinition): \n");
 		for (int i=0; i<maxHits && i<numHits && i<accession.length; i++) {
 			if (StringUtil.notEmpty(accession[i]))
 				sb.append("\t"+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
@@ -187,6 +196,7 @@ public class BLASTResults {
 									if (eValueCutoff< 0.0 || eValueDouble<=eValueCutoff) {
 										seteValue(eValueDouble, hitCount);
 										setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
+										setFrame(MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-frame")), hitCount);
 
 										if (storeSequences)
 											setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
@@ -194,6 +204,7 @@ public class BLASTResults {
 										setDefinition("", hitCount);
 										setAccession("", hitCount);
 										setID("", hitCount);
+										setFrame(0, hitCount);
 										hitCount--;
 									}
 								}
