@@ -27,6 +27,7 @@ public class BLASTResults {
 	protected String[] ID;
 	protected int[] frame;
 	protected String[] sequence;
+	protected boolean[] reversed;
 	int maxHits = 1;
 
 	public BLASTResults (int maxHits) {
@@ -41,6 +42,7 @@ public class BLASTResults {
 		accession = new String[maxHits];
 		frame = new int[maxHits];
 		ID = new String[maxHits];
+		reversed = new boolean[maxHits];
 		zeroArrays();
 	}
 	public void zeroArrays() {
@@ -51,6 +53,7 @@ public class BLASTResults {
 			definition[i] = "";
 			accession[i] = "";
 			frame[i] = 0;
+			reversed[i] = false;
 			ID[i] = "";
 		}
 	}
@@ -65,6 +68,12 @@ public class BLASTResults {
 	}
 	public void setBitScore(double bitScore, int index) {
 		this.bitScore[index] = bitScore;
+	}
+	public boolean getReversed(int index) {
+		return reversed[index];
+	}
+	public void setReversed(boolean reversed, int index) {
+		this.reversed[index] = reversed;
 	}
 	public String getTaxonomy(int index) {
 		return taxonomy[index];
@@ -115,8 +124,13 @@ public class BLASTResults {
 		StringBuffer sb = new StringBuffer();
 		sb.append("   Top hits\n\tAccession\t[eValue]\tDefinition): \n");
 		for (int i=0; i<maxHits && i<numHits && i<accession.length; i++) {
-			if (StringUtil.notEmpty(accession[i]))
-				sb.append("\t"+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
+			if (StringUtil.notEmpty(accession[i])){
+/*				if (reversed[i])
+					sb.append("\t-");
+				else 
+					sb.append("\t+");
+*/				sb.append("\t"+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
+			}
 		}
 		return sb.toString();
 	}
@@ -197,7 +211,13 @@ public class BLASTResults {
 										seteValue(eValueDouble, hitCount);
 										setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
 										setFrame(MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-frame")), hitCount);
-
+										
+										int queryFrom = MesquiteInteger.fromString(Hsp.elementText("Hsp_query-from"));
+										int queryTo = MesquiteInteger.fromString(Hsp.elementText("Hsp_query-to"));
+										int hitFrom = MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-from"));
+										int hitTo = MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-to"));
+										setReversed((queryTo-queryFrom)*(hitTo-hitFrom)<0, hitCount);
+							              
 										if (storeSequences)
 											setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
 									} else if (eValueCutoff>=0.0 && eValueDouble>eValueCutoff) {
@@ -221,5 +241,8 @@ public class BLASTResults {
 		return false;
 	}
 
+//	Alternatively, You can look at the query start/end and subject start/end coordinates. If your query aligns to reverse of subject, then the subject end 
+	//coordinate will be smaller than the start coordinate. For example, if SeqA aligns to reverse of SeqB, you might see position 50-100 of SeqA 
+	// aligning to position 200-150 of SeqB.
 
 }
