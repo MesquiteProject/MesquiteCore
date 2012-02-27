@@ -22,6 +22,8 @@ import mesquite.lib.characters.CharacterData;
 /* ======================================================================== */
 
 public abstract class Blaster extends MesquiteModule   {
+	protected boolean blastx = false;
+
    	 public Class getDutyClass() {
    	 	return Blaster.class;
    	 }
@@ -38,8 +40,20 @@ public abstract class Blaster extends MesquiteModule   {
    	
 	public abstract void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse, boolean writeTime);
 	
-	
+	public abstract String getFastaFromIDs(String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults);
+		
+	public abstract String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report);
+
+
+	 
+	 
 	public  void postProcessingCleanup(BLASTResults blastResult){
+	}
+	public boolean isBlastx() {
+		return blastx;
+	}
+	public void setBlastx(boolean blastx) {
+		this.blastx = blastx;
 	}
    	
 

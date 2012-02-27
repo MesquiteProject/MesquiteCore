@@ -154,6 +154,18 @@ public class BLASTResults {
 
 	}
 	/*.................................................................................................................*/
+	public  void setIDFromElement(String separator, int index){
+		String s="";
+		for (int i=0; i<maxHits && i<ID.length; i++) {
+			if (StringUtil.notEmpty(ID[i])){
+				s=StringUtil.getItem(ID[i],"|", index);
+				if (StringUtil.notEmpty(s))
+					ID[i] = s;
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
 	public  void setAccessionFromDefinition(String separator, int index){
 		String s="";
 		for (int i=0; i<maxHits && i<accession.length; i++) {
@@ -197,7 +209,7 @@ public class BLASTResults {
 							setAccession(s, hitCount);
 
 							s = hitElement.elementText("Hit_id");
-							s=StringUtil.getItem(s,"|", 2);
+							//s=StringUtil.getItem(s,"|", 2);
 							if (StringUtil.notEmpty(s))
 								setID(s, hitCount);
 

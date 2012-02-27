@@ -2,6 +2,7 @@ package mesquite.molec.NCBIBlaster;
 
 import mesquite.categ.lib.DNAData;
 import mesquite.lib.*;
+import mesquite.molec.lib.BLASTResults;
 import mesquite.molec.lib.Blaster;
 import mesquite.molec.lib.NCBIUtil;
 
@@ -22,6 +23,21 @@ public class NCBIBlaster extends Blaster {
 		timer.timeSinceLast();
 		NCBIUtil.blastForMatches(blastType, sequenceName, sequence, isNucleotides, numHits, 300, eValueCutoff, blastResponse);
 		logln("Blast completed in " +timer.timeSinceLastInSeconds()+" seconds");
+	}
+
+	public String getFastaFromIDs(String[] idList, boolean isNucleotides, StringBuffer fastaBlastResults) {
+		return NCBIUtil.fetchGenBankSequencesFromIDs(idList,  isNucleotides, null, false,  fastaBlastResults,  null);
+	}
+	
+	/*.................................................................................................................*/
+	public  String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report){
+		 return NCBIUtil.fetchTaxonomyFromSequenceID(id, isNucleotides, writeLog, report);
+	}
+
+
+	/*.................................................................................................................*/
+	public  void postProcessingCleanup(BLASTResults blastResult){
+		blastResult.setIDFromElement("|", 2);
 	}
 
 
