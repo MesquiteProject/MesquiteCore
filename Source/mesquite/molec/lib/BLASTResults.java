@@ -155,17 +155,34 @@ public class BLASTResults {
 
 	}
 	/*.................................................................................................................*/
-	public boolean hitsSatisfyMatches (String[] matchInDefinitions, int minNumToMatch, int maxNumToMatch) {  
+	public boolean hitsSatisfyMatches (String[] matchInDefinitions, int minNumToMatch, int maxNumToMatch, boolean noOthers, boolean onlyMatchOnce) {  
 		if (minNumToMatch==0 || matchInDefinitions==null)
 			return true;
+		boolean[] alreadyMatched = new boolean[matchInDefinitions.length];
+		for (int j=0; j<alreadyMatched.length; j++){
+			alreadyMatched[j]=false;
+		}
+
 		int count = 0;
-		for (int i=0; i<maxHits && i<definition.length; i++) {
-			for (int j=0; j<matchInDefinitions.length; j++) 
-				if (StringUtil.notEmpty(definition[i])&&StringUtil.notEmpty(matchInDefinitions[j])) {
-					int index = StringUtil.indexOfIgnoreCase(definition[i], matchInDefinitions[j]);
-					if (index>=0)
-						count++;
+		for (int i=0; i<maxHits && i<definition.length; i++) {  // go through the hits
+			if (StringUtil.notEmpty(definition[i])) {
+				boolean foundMatch = false;
+				for (int j=0; j<matchInDefinitions.length && !foundMatch; j++){ 
+					if (StringUtil.notEmpty(definition[i])&&StringUtil.notEmpty(matchInDefinitions[j])) {
+						int index = StringUtil.indexOfIgnoreCase(definition[i], matchInDefinitions[j]);
+						if (index>=0){
+							if (onlyMatchOnce && alreadyMatched[j])
+								return false;
+							alreadyMatched[j]=true;
+							count++;
+							foundMatch=true;
+						}
+					}
 				}
+				if (!foundMatch) {  // here is something that is not in the match list
+					return false;
+				}
+			}
 		}
 		if (count>=minNumToMatch && count <= maxNumToMatch)
 			return true;
