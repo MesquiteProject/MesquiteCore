@@ -40,6 +40,11 @@ public class NCBIBlaster extends Blaster {
 		blastResult.setIDFromElement("|", 2);
 	}
 
+	public  String[] getNucleotideIDsfromProteinIDs(String[] ID){
+		ID = NCBIUtil.cleanUpID(ID);
+		return NCBIUtil.getNucIDsFromProtIDs(ID);
+	}
+
 
 	public boolean isPrerelease() {
 		return true;

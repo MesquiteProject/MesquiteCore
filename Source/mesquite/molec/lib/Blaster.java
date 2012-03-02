@@ -44,6 +44,7 @@ public abstract class Blaster extends MesquiteModule   {
 		
 	public abstract String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report);
 
+	public abstract String[] getNucleotideIDsfromProteinIDs(String[] ID);
 
 	 
 	 

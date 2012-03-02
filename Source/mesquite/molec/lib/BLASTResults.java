@@ -6,17 +6,8 @@ import java.util.List;
 import org.apache.hivemind.util.PropertyUtils;
 import org.dom4j.*;
 
-import mesquite.categ.lib.DNAData;
-import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.Parser;
-import mesquite.lib.PropertyNamesProvider;
-import mesquite.lib.StringArray;
-import mesquite.lib.StringUtil;
-import mesquite.lib.XMLUtil;
+import mesquite.categ.lib.*;
+import mesquite.lib.*;
 
 public class BLASTResults {
 	protected double[] eValue;
@@ -154,6 +145,16 @@ public class BLASTResults {
 
 	}
 	/*.................................................................................................................*/
+	public  void setIDFromDefinition(){
+		String s="";
+		for (int i=0; i<maxHits && i<ID.length; i++) {
+			if (StringUtil.notEmpty(definition[i])){
+				ID[i] = definition[i];
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
 	public  void setIDFromElement(String separator, int index){
 		String s="";
 		for (int i=0; i<maxHits && i<ID.length; i++) {
@@ -202,13 +203,15 @@ public class BLASTResults {
 						Element hitElement = (Element) iter.next();
 						if (hitElement!=null) {
 
-							Element hitID = hitElement.element("Hit_id");
+							String s = hitElement.elementText("Hit_def");
+							setDefinition(s, hitCount);
+						//	Debugg.println("Hit_def: " + s);
 
-							setDefinition(hitElement.elementText("Hit_def"), hitCount);
-							String s = hitElement.elementText("Hit_accession");
+							s = hitElement.elementText("Hit_accession");
 							setAccession(s, hitCount);
 
 							s = hitElement.elementText("Hit_id");
+						//	Debugg.println("Hit_id: " + s);
 							//s=StringUtil.getItem(s,"|", 2);
 							if (StringUtil.notEmpty(s))
 								setID(s, hitCount);
