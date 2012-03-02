@@ -102,6 +102,16 @@ public class BLASTResults {
 	public String[] getIDs() {
 		return ID;
 	}
+	public String reversedToString() {
+		String s = "";
+		for (int i=0; i<maxHits && i<reversed.length; i++) {
+			if (reversed[i]) 
+				s+= " - ";
+			else 
+				s+= " + ";
+		}
+		return s;
+	}
 
 
 	public String getSequence(int index) {
@@ -116,11 +126,11 @@ public class BLASTResults {
 		sb.append("   Top hits\n\tAccession\t[eValue]\tDefinition): \n");
 		for (int i=0; i<maxHits && i<numHits && i<accession.length; i++) {
 			if (StringUtil.notEmpty(accession[i])){
-/*				if (reversed[i])
+				/*				if (reversed[i])
 					sb.append("\t-");
 				else 
 					sb.append("\t+");
-*/				sb.append("\t"+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
+				 */				sb.append("\t"+ accession[i] + "\t[" + eValue[i]+ "]\t" + definition[i]+"\n");
 			}
 		}
 		return sb.toString();
@@ -144,6 +154,24 @@ public class BLASTResults {
 		}
 
 	}
+	/*.................................................................................................................*/
+	public boolean hitsSatisfyMatches (String[] matchInDefinitions, int minNumToMatch, int maxNumToMatch) {  
+		if (minNumToMatch==0 || matchInDefinitions==null)
+			return true;
+		int count = 0;
+		for (int i=0; i<maxHits && i<definition.length; i++) {
+			for (int j=0; j<matchInDefinitions.length; j++) 
+				if (StringUtil.notEmpty(definition[i])&&StringUtil.notEmpty(matchInDefinitions[j])) {
+					int index = StringUtil.indexOfIgnoreCase(definition[i], matchInDefinitions[j]);
+					if (index>=0)
+						count++;
+				}
+		}
+		if (count>=minNumToMatch && count <= maxNumToMatch)
+			return true;
+		return false;
+	}
+
 	/*.................................................................................................................*/
 	public  void setIDFromDefinition(){
 		String s="";
@@ -205,13 +233,13 @@ public class BLASTResults {
 
 							String s = hitElement.elementText("Hit_def");
 							setDefinition(s, hitCount);
-						//	Debugg.println("Hit_def: " + s);
+							//	Debugg.println("Hit_def: " + s);
 
 							s = hitElement.elementText("Hit_accession");
 							setAccession(s, hitCount);
 
 							s = hitElement.elementText("Hit_id");
-						//	Debugg.println("Hit_id: " + s);
+							//	Debugg.println("Hit_id: " + s);
 							//s=StringUtil.getItem(s,"|", 2);
 							if (StringUtil.notEmpty(s))
 								setID(s, hitCount);
@@ -226,13 +254,10 @@ public class BLASTResults {
 										seteValue(eValueDouble, hitCount);
 										setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
 										setFrame(MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-frame")), hitCount);
-										
-										int queryFrom = MesquiteInteger.fromString(Hsp.elementText("Hsp_query-from"));
-										int queryTo = MesquiteInteger.fromString(Hsp.elementText("Hsp_query-to"));
-										int hitFrom = MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-from"));
-										int hitTo = MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-to"));
-										setReversed((queryTo-queryFrom)*(hitTo-hitFrom)<0, hitCount);
-							              
+
+										int queryFrame = MesquiteInteger.fromString(Hsp.elementText("Hsp_query-frame"));
+										setReversed(queryFrame<0, hitCount);
+
 										if (storeSequences)
 											setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
 									} else if (eValueCutoff>=0.0 && eValueDouble>eValueCutoff) {
@@ -256,7 +281,7 @@ public class BLASTResults {
 		return false;
 	}
 
-//	Alternatively, You can look at the query start/end and subject start/end coordinates. If your query aligns to reverse of subject, then the subject end 
+	//	Alternatively, You can look at the query start/end and subject start/end coordinates. If your query aligns to reverse of subject, then the subject end 
 	//coordinate will be smaller than the start coordinate. For example, if SeqA aligns to reverse of SeqB, you might see position 50-100 of SeqA 
 	// aligning to position 200-150 of SeqB.
 
