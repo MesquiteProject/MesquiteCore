@@ -32,7 +32,8 @@ public class PairwiseAligner  {
 	private int gapOpenTerminal;
 	private int gapExtendTerminal;
 	private int subs[][];
-	private boolean keepGaps = false;
+	private boolean keepGaps = false;  
+	private boolean allowNewGaps = true;
 	private boolean maintainOrder = false;
 	
 	public int totalGapChars = 0;
@@ -50,6 +51,15 @@ public class PairwiseAligner  {
 	private boolean subCostsInitialized = false;
 	private boolean seqsWereExchanged = false;
 		
+	public PairwiseAligner (boolean keepGaps, boolean allowNewGaps, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
+		setSubsCostMatrix(subs);
+		setGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);
+		setKeepGaps (keepGaps);
+		setAllowNewGaps(allowNewGaps);
+		this.alphabetLength=alphabetLength;
+		gapCostsInitialized = subCostsInitialized = true;
+	}	
+
 	public PairwiseAligner (boolean keepGaps, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
 		setSubsCostMatrix(subs);
 		setGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);
@@ -415,6 +425,14 @@ public class PairwiseAligner  {
 
 	public void setMaintainOrder(boolean maintainOrder) {
 		this.maintainOrder = maintainOrder;
+	}
+
+	public boolean getAllowNewGaps() {
+		return allowNewGaps;
+	}
+
+	public void setAllowNewGaps(boolean allowNewGaps) {
+		this.allowNewGaps = allowNewGaps;
 	}
 
 }
