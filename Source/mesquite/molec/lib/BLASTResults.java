@@ -155,9 +155,9 @@ public class BLASTResults {
 
 	}
 	/*.................................................................................................................*/
-	public boolean hitsSatisfyMatches (String[] matchInDefinitions, int minNumToMatch, int maxNumToMatch, boolean noOthers, boolean onlyMatchOnce) {  
+	public int hitsSatisfyMatches (String[] matchInDefinitions, int minNumToMatch, int maxNumToMatch, boolean noOthers, boolean onlyMatchOnce) {  
 		if (minNumToMatch==0 || matchInDefinitions==null)
-			return true;
+			return 0;
 		boolean[] alreadyMatched = new boolean[matchInDefinitions.length];
 		for (int j=0; j<alreadyMatched.length; j++){
 			alreadyMatched[j]=false;
@@ -172,7 +172,7 @@ public class BLASTResults {
 						int index = StringUtil.indexOfIgnoreCase(definition[i], matchInDefinitions[j]);
 						if (index>=0){
 							if (onlyMatchOnce && alreadyMatched[j])
-								return false;
+								return 0;
 							alreadyMatched[j]=true;
 							count++;
 							foundMatch=true;
@@ -180,13 +180,13 @@ public class BLASTResults {
 					}
 				}
 				if (!foundMatch) {  // here is something that is not in the match list
-					return false;
+					return 0;
 				}
 			}
 		}
 		if (count>=minNumToMatch && count <= maxNumToMatch)
-			return true;
-		return false;
+			return count;
+		return 0;
 	}
 
 	/*.................................................................................................................*/
