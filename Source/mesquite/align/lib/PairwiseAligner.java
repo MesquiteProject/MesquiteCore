@@ -52,10 +52,10 @@ public class PairwiseAligner  {
 	private boolean seqsWereExchanged = false;
 		
 	public PairwiseAligner (boolean keepGaps, boolean allowNewInternalGaps, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
-		setSubsCostMatrix(subs);
+	    setSubsCostMatrix(subs);
 		setGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);
 		setKeepGaps (keepGaps);
-		setAllowNewInternalGaps(allowNewInternalGaps);
+	    setAllowNewInternalGaps(allowNewInternalGaps);
 		this.alphabetLength=alphabetLength;
 		gapCostsInitialized = subCostsInitialized = true;
 	}	
@@ -126,6 +126,14 @@ public class PairwiseAligner  {
 			return null;
 		}
 		
+		int gO  = gapOpen;
+		int gE  = gapExtend;
+        int gOt = gapOpenTerminal;
+        int gEt = gapExtendTerminal;
+        if (! this.allowNewInternalGaps)  // make internal gaps impossibly expensive .. but not high enough to cause wrap around of the capacity of an int
+            gE = Integer.MAX_VALUE / 10 ;
+
+        
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		
 		if ( returnAlignment) { 
@@ -134,16 +142,14 @@ public class PairwiseAligner  {
 			long charThreshold = getCharThresholdForLowMemory();
 			if ((lengthA*lengthB)>charThreshold) { 
 				//low memory (but slower, due to recursion) alignment
-				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, keepGaps, followsGapSize);
-				
+			    AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength, keepGaps, followsGapSize);
 				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
-		
 				ret = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
 				gapInsertionArray = helper.getGapInsertionArray();   
 
 			} else {
 //				 fast (but quadratic space) alignment
-				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength);
+			    AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength);
 				ret = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
 				gapInsertionArray = helper.getGapInsertionArray();
 			}
@@ -168,8 +174,8 @@ public class PairwiseAligner  {
 					score.setToUnassigned(  );
 				return null;
 			}
-			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.	
-			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true, keepGaps, followsGapSize);
+			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.
+			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, alphabetLength, true, keepGaps, followsGapSize);
 			helper.fillForward(0,lengthA,0,lengthB,helper.noGap);			
 			int myScore = Math.min(helper.fH[lengthA], Math.min (helper.fD[lengthA], helper.fV[lengthA])) ;
 			
@@ -244,11 +250,12 @@ public class PairwiseAligner  {
 	
 	/** If object wasn't called with gap cost arguments, this must be called or alignment will fail*/
 	public void setGapCosts(int gapOpen, int gapExtend){
-	    //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
+        //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
 		this.gapOpenTerminal = gapOpen;
 		this.gapExtendTerminal = gapExtend;
+
 		gapCostsInitialized = true;
 	}
 
@@ -414,6 +421,8 @@ public class PairwiseAligner  {
 			extracted2[ic-firstSite] = data.getState(ic, taxon2);
 		}
 		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
+		
+		
 		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
 	
 		return aligned;

@@ -197,11 +197,10 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		
 	}
 	public void fillReverse(int firstRow, int lastRow, int firstColumn, int lastColumn, int shape) {
-		//int lengthA = lastRow - firstRow +1;
-		//int lengthB = lastColumn - firstColumn +1;		
-		int i,j;
-		int gapExtendOnB, gapExtendOnA;
-		int gapOpenOnB, gapOpenOnA;		
+
+	    int i,j;
+		int gapExtendOnA;
+		int gapOpenOnA;	
 		
 		
 		rH[lastColumn] = rV[lastColumn] = (lengthB==lastColumn) ? gapOpenTerminal : gapOpen;;
@@ -221,7 +220,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		}
 		
 		int tmp1H, tmp1D, tmp1V, tmp2H, tmp2D, tmp2V;
-	//reuse the arrays, treating it as the next row in the DP table. Keep one temp variable for each array
+		//reuse the arrays, treating it as the next row in the DP table. Keep one temp variable for each array
 		for (i=lastRow-1; i>=firstRow; i--) { // for each "row" in DP table
 			tmp1H = rH[lastColumn];
 			tmp1D = rD[lastColumn];
@@ -232,7 +231,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			
 			gapOpenOnA =  (0==i) ? gapOpenTerminal : gapOpen;
 			gapExtendOnA = (0==i) ? gapExtendTerminal : gapExtend ;
-//			gapOpenOnA = gapOpen; 
+
 			if (keepGaps &&  i<followsGapSize.length && followsGapSize[i]>0) // followsGapSize[i] means reversePrecedsGapSize[i-1]
 				gapOpenOnA = 0;
 			
@@ -241,9 +240,6 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				tmp2D = rD[j];
 				tmp2V = rV[j];
 
-				gapOpenOnB =  (0==j) ? gapOpenTerminal : gapOpen;
-				gapExtendOnB = (0==j) ? gapExtendTerminal : gapExtend ;
-				
 				
 				if (isMinimize) {
 					rV[j] = Math.min(  rH[j] + gapOpen + gapExtend,  

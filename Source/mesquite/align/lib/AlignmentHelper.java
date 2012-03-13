@@ -87,24 +87,7 @@ public abstract class AlignmentHelper {
 			gappedSeq2return[i+usedGaps][0] = inputSequence[i][0] ;
 			gappedSeq2return[i+usedGaps][1] = inputSequence[i][1] ;
 		}		
-/*		
-		long gap_seqA[] = new long[gappedSeq2return.length];
-		long gap_seqB[] = new long[gappedSeq2return.length];
-		
-		for (i=0; i<gappedSeq2return.length; i++) {
-			gap_seqA[i] = gappedSeq2return[i][0];
-			gap_seqB[i] = gappedSeq2return[i][1];
-		}		
-		long input_seqA[] = new long[inputSequence.length];
-		long input_seqB[] = new long[inputSequence.length];
-		
-		for (i=0; i<inputSequence.length; i++) {
-			input_seqA[i] = inputSequence[i][0];
-			input_seqB[i] = inputSequence[i][0];
-		}		
-	
-		*/
-		
+
 		return gappedSeq2return;	
 	}
 
