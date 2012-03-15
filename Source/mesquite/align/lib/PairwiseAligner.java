@@ -80,7 +80,7 @@ public class PairwiseAligner  {
 		// not much to do here ???
 	}
 
-	public static PairwiseAligner getDefaultAligner(MolecularData data){
+	public static PairwiseAligner getDefaultAligner(boolean keepGaps, MolecularData data){
 		MesquiteInteger gapOpen = new MesquiteInteger();
 		MesquiteInteger gapExtend = new MesquiteInteger();
 		MesquiteInteger gapOpenTerminal = new MesquiteInteger();
@@ -88,9 +88,13 @@ public class PairwiseAligner  {
 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);  
 		int alphabetLength = ((CategoricalState)data.makeCharacterState()).getMaxPossibleState()+1;	  
 		int subs[][] = AlignUtil.getDefaultSubstitutionCosts(alphabetLength);  
-		PairwiseAligner aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
+		PairwiseAligner aligner = new PairwiseAligner(keepGaps,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 		aligner.setUseLowMem(true);
 		return aligner;
+	}
+	
+	public static PairwiseAligner getDefaultAligner(MolecularData data){
+		return getDefaultAligner(false,data);
 	}
 	
 	

@@ -43,25 +43,31 @@ public class MolecularDataUtil {
 		return false;
 	}
 	/*.................................................................................................................*/
-	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, Taxa taxa, int referenceTaxon) {
+	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, boolean allowNewGaps) {
+		Taxa taxa = data.getTaxa();
 		MesquiteNumber score = new MesquiteNumber();
 		AlignUtil alignUtil = new AlignUtil();
-		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(data);
+		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(false,data);
+		MesquiteBoolean warnCheckSum = new MesquiteBoolean(false);
+		aligner.setAllowNewInternalGaps(allowNewGaps);
 		for (int it=0; it<data.getNumTaxa(); it++) {
 			if (it!=referenceTaxon) {
+				long originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,it, it);
 				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 				//long[] newAlignment = Long2DArray.extractRow(aligned,1);
 
+				long[] newAlignment = Long2DArray.extractRow(aligned,1);
 				int[] newGaps = aligner.getGapInsertionArray();
 				if (newGaps!=null)
 					alignUtil.insertNewGaps((MolecularData)data, newGaps);
-				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 0, aligned);
+				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
 				
 				if (problem!=null)
 					Debugg.println("problem " + problem.x + " " +problem.y + " " + problem.width + " " + problem.height);
 				
+				((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,it, it, "Bad checksum; alignment has inapproppriately altered data!", warnCheckSum, originalCheckSum);
 				Debugg.println("---------------- completed taxon " + it);
-				data.notifyListeners(module, new Notification(MesquiteListener.DATA_CHANGED, null, null));
+//				data.notifyListeners(module, new Notification(MesquiteListener.DATA_CHANGED, null, null));
 
 			}
 		}
@@ -131,8 +137,10 @@ public class MolecularDataUtil {
 			int stops = getMinimumStops(data, it, modelSet);
 			data.reverseComplement(0, data.getNumChars()-1, it, false, false);
 			int stopsRC = getMinimumStops(data, it, modelSet);
-			if (stops<stopsRC)
+			if (stops>stopsRC) {
 				data.reverseComplement(0, data.getNumChars(), it, false, false);
+				module.logln("Reverse complemented sequence " + (it+1));
+			}
 		}
 	}
 	/*.................................................................................................................*
