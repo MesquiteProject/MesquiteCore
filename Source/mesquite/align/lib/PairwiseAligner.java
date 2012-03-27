@@ -35,6 +35,7 @@ public class PairwiseAligner  {
 	private boolean keepGaps = false;  
 	private boolean allowNewInternalGaps = true;
 	private boolean maintainOrder = false;
+	private boolean flagGapArrayTerminals = true;
 	
 	public int totalGapChars = 0;
 		
@@ -120,6 +121,36 @@ public class PairwiseAligner  {
 
 	}
 	
+	private void doFlagGapArrayTerminals(long[] recipientSequence) {
+		if (gapInsertionArray==null)
+			return;
+		for (int i=0; i<gapInsertionArray.length; i++) {
+			if (gapInsertionArray[i]>0) {
+				boolean terminal=true;
+				for (int j=0; j<=i+1 && j<recipientSequence.length; j++) {
+					if (recipientSequence[j]!=MolecularState.inapplicable)
+						terminal=false;
+				}
+				if (terminal)
+					gapInsertionArray[i] = -gapInsertionArray[i];
+				break;
+			}
+		}
+		for (int i=gapInsertionArray.length-1; i>=0; i--) {
+			if (gapInsertionArray[i]>0) {
+				boolean terminal=true;
+				for (int j=recipientSequence.length-1; j>i && j>=0; j--) {
+					if (recipientSequence[j]!=MolecularState.inapplicable)
+						terminal=false;
+				}
+				if (terminal)
+					gapInsertionArray[i] = -gapInsertionArray[i];
+				break;
+			}
+		}
+	}
+	
+	
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the passed sequences.
 	 * If object has been told to retain gaps, gaps in A_withGaps will remain intact (new ones  may be added)*/
 	public synchronized long[][] alignSequences( long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score) {
@@ -149,7 +180,7 @@ public class PairwiseAligner  {
 			    AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength, keepGaps, followsGapSize);
 				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
 				ret = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
-				gapInsertionArray = helper.getGapInsertionArray();   
+				gapInsertionArray = helper.getGapInsertionArray();  
 
 			} else {
 //				 fast (but quadratic space) alignment
@@ -168,8 +199,11 @@ public class PairwiseAligner  {
 			}
 			
 			if (ret.length>lengthA && ret.length>lengthB)
-				return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
+				ret = stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
 			
+			if (flagGapArrayTerminals && gapInsertionArray!=null) {
+				doFlagGapArrayTerminals(A_withGaps);
+			}
 			return ret;
 
 		} else { 
@@ -316,7 +350,16 @@ public class PairwiseAligner  {
 		return gapInsertionArray;
 	}			
 	
-	
+	public boolean isFlagGapArrayTerminals() {
+		return flagGapArrayTerminals;
+	}
+
+	public void setFlagGapArrayTerminals(boolean flagGapArrayTerminals) {
+		this.flagGapArrayTerminals = flagGapArrayTerminals;
+	}
+
+
+		
 	/** This method returns true if better alignment scores are higher.  Override if needed. */
 	public boolean getHigherIsBetter() {
 		return false;
