@@ -356,6 +356,7 @@ public class TreeOptimizer {
 		}
 		swapTree.standardize(node,true, false);
 		tree.setToClone(swapTree);
+		swapTree.dispose();
 		if (notify && tree instanceof Listened && !liveUpdates) {
 			((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 		}
