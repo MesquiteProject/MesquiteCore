@@ -50,7 +50,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	protected boolean columnNamesCopyPaste = true;
 	protected boolean rowNamesCopyPaste = true;
 	int baseRowHeight = 16;
-//	int thinRowHeight=22;
+	//	int thinRowHeight=22;
 	int baseColumnWidth = 16;
 	int nameStartOffset = 5;
 	int focusColumn = -2;
@@ -103,7 +103,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	public boolean cornerIsHeading = false;
 	protected boolean autosizeColumns = false;
-//	protected boolean autosizeRowNames = false;
+	//	protected boolean autosizeRowNames = false;
 	public MesquiteBoolean autoRowNameWidth = new MesquiteBoolean(false);
 
 	private boolean cellsAutoEditable = false;
@@ -162,7 +162,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	MesquiteCommand copyLiteralCommand = MesquiteModule.makeCommand("copyLiteral", this);
 	MesquiteCommand selectAllCommand = MesquiteModule.makeCommand("selectAll", this);
 	boolean showRowNames = true;
-	
+
 
 	public static MesquiteTimer tableTime;
 
@@ -192,7 +192,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		setColumnWidthsUniform(baseColumnWidth);
 		rowHeights = new int[numRowsTotal];
 		setRowHeightsUniform(baseRowHeight);
-//		setRowHeightsUniform(thinRowHeight);
+		//		setRowHeightsUniform(thinRowHeight);
 
 
 		rowsSelected = new Bits[numSelectTypes];
@@ -908,7 +908,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				top = -1;
 			if (anyRowSelected())
 				left = -1;
-			
+
 			return new Point(left, top);
 		}
 		else if (anyRowNameSelected()) {
@@ -1067,7 +1067,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void keyTyped(KeyEvent e) {
 	}
 
-	
+
 	public void keyPressed(KeyEvent e) {  
 		if (!MesquiteWindow.belongsTo(e.getComponent(), this))
 			return;
@@ -1078,7 +1078,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			arguments += " shift ";
 		if (e.isAltDown())
 			arguments += " option ";
-		
+
 		if (e.getKeyCode() == KeyEvent.VK_ENTER){
 			MesquiteCommand key = new MesquiteCommand("enterPressed", arguments, this);
 			key.setSuppressLogging(true);
@@ -1109,7 +1109,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			key.setSuppressLogging(true);
 			key.doItMainThread(arguments, null, this);
 		}
-		
+
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -1666,7 +1666,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			setColumnNamesRowHeight(h);
 
 	}
-
+	/* ................................................................................................................. */
+	int maximumRowNamesWidth = 5000;
+	public void setMaximumRowNamesWidth(int m){
+		maximumRowNamesWidth = m;
+	}
 	/* ................................................................................................................. */
 	public boolean autoSizeRowNames(Graphics g) {
 		if (g == null || g.getFont() == null)
@@ -1686,6 +1690,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 					max = lengthString;
 			}
 		}
+		if (max > maximumRowNamesWidth)
+			max = maximumRowNamesWidth;
 		int tableWIDTHpart = (getTableWidth() - getRowNamesWidth()) / (contrainedMaxColumnNum + 1);
 		if (constrainMaxAutoRownames && max > tableWIDTHpart) // v. 1.01 e 81
 			max = tableWIDTHpart;
@@ -2122,7 +2128,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		g.fillRect(left, top, width, height);
 		if ((focusRow == number && isRow) || (focusColumn == number && !isRow))
 			GraphicsUtil.fillTransparentSelectionRectangle(g, left, top, width, height);
-			g.setColor(ColorDistribution.veryVeryLightGray);
+		g.setColor(ColorDistribution.veryVeryLightGray);
 		int newTop;
 		if (isRow)
 			newTop = top;
@@ -2845,10 +2851,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public int getLeftOfColumn(int column) {
 		return startOfColumn(column);
 	}
-	
+
 	/* ............................................................................................................... */
 	public int startOfColumn(int column) {
-		
+
 		if (column<firstColumnVisible)
 			return -1;
 		else if (column>firstColumnVisible + numColumnsTotal || column>=numColumnsTotal)
@@ -3689,7 +3695,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				else {
 					selectRow(row);
 					if (rowAssociable != null) {
-					//	rowAssociable.setSelected(row, true);
+						//	rowAssociable.setSelected(row, true);
 						rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 					}
 				}
@@ -3719,7 +3725,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			if (columnAssociable != null)
 				columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			if (rowAssociable != null) {
-			//	rowAssociable.setSelected(row, true);
+				//	rowAssociable.setSelected(row, true);
 				rowAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 		}
@@ -4117,7 +4123,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		int r1old = MesquiteInteger.minimum(firstRowOld, lastRowOld);
 		int r2old = MesquiteInteger.maximum(firstRowOld, lastRowOld);
 		int c1min = firstColumnVisible;
-		
+
 
 		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
 		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);

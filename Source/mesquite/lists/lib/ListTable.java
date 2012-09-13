@@ -40,6 +40,7 @@ public class ListTable extends MesquiteTable {
 		//setSelectable(false, true, true, true, false, false);
 		setSelectable(true, true, true, true, true, false);
 		setUserMove(true, false);
+		setMaximumRowNamesWidth(800);
 	}
 	
 	/* ............................................................................................................... */
