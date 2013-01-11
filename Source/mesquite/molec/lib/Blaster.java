@@ -57,19 +57,20 @@ public abstract class Blaster extends MesquiteModule   {
 	public  void postProcessingCleanup(BLASTResults blastResult){
 	}
 
-	/*public boolean isBlastx() {
+	public boolean isBlastx() {
 		return blastx;
 	}
 	public void setBlastx(boolean blastx) {
 		this.blastx = blastx;
 	}
-	 */
+	 
 
 	public int getBlastType() {
 		return blastType;
 	}
 	public void setBlastType(int blastType) {
 		this.blastType = blastType;
+		setBlastx (blastType==BLASTX);
 	}
 
 	public  void basicDNABlastForMatches(int blastOption, String sequenceName, String sequence, int numHits, double eValueCutoff, StringBuffer blastResponse, boolean writeTime){
