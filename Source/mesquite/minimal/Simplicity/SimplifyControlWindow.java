@@ -596,7 +596,7 @@ class SaveRenameDeleteButton extends LoadSaveDeleteButton {
 	void redoMenu() {
 		if (popup==null)
 			popup = new MesquitePopup(this);
-		popup.removeAll();
+		popup.removeAll(); //Debugg.println  don't use this if can't save because don't have permissions
 		popup.add(new MesquiteMenuItem("Save Current...", null, new MesquiteCommand("saveCurrent", InterfaceManager.simplicityModule), null));
 		MesquiteSubmenu ms = new MesquiteSubmenu("Rename...", popup, null);
 		InterfaceManager.addSettingsMenuItems(ms, "rename", false);

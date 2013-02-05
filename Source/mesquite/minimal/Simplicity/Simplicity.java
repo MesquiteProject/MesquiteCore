@@ -477,11 +477,11 @@ public class Simplicity extends SimplicityManagerModule {
 		}*/
 		else if (checker.compare(this.getClass(), "Saves the current simplification", null, commandName, "saveCurrent")) {
 			MesquiteString result = new MesquiteString("Custom Simplification");
-			if (QueryDialogs.queryString(containerOfModule(), "Simplification Name", "Name of Simplification:", result)){
+			if (QueryDialogs.queryString(containerOfModule(), "Simplification Name", "Name of ÄSimplification:", result)){
 				String contents =  makeSettingsFile(result.getValue());
 				String path = MesquiteFile.getUniqueModifiedFileName(getInstallationSettingsPath() + "simplification", "xml");
 
-				MesquiteFile.putFileContents(path, contents, false);
+				MesquiteFile.putFileContents(path, contents, false, false);
 				StringArray sa = new StringArray(3);
 				sa.setName(result.getValue());
 				sa.setValue(XML, contents);
