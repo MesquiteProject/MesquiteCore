@@ -156,6 +156,7 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 	StringArray explArray = new StringArray(0);
 	int totalYes = 0;
 	int totalNo = 0;
+	int totalUndetermined = 0;
 	/*.................................................................................................................*/
 	public void doCalcs(){
 		if (suppressed || booleanTask==null)
@@ -171,8 +172,10 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 			CommandRecord.tick("Boolean for taxon in tree list; examining taxon " + ic);
 			mb.setToUnassigned();
 			booleanTask.calculateBoolean(taxa, ic, mb, expl);
-			if (mb.isUnassigned())
+			if (mb.isUnassigned()) {
 				booleanList.setValue(ic, -1);
+				totalUndetermined++;
+			}
 			else if (mb.getValue()){
 				booleanList.setValue(ic, 1);
 				totalYes++;
@@ -190,7 +193,7 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 		String s = explArray.getValue(it);
 		if (StringUtil.blank(s))
 			s = getStringForTaxon(it);
-		return s + " [Totals: Yes: " + totalYes + "; No: " + totalNo + "]";
+		return s + " [Totals: Yes: " + totalYes + "; No: " + totalNo + "; Undetermined: " + totalUndetermined + "]";
 	}
 	public String getStringForTaxon(int it){
 		if (booleanList==null)
