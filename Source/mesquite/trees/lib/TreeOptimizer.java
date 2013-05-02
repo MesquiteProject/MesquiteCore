@@ -110,7 +110,7 @@ public class TreeOptimizer {
 
 		MesquiteString rs =new MesquiteString("");
 		double oldLength= tempTree.getBranchLength(node);
-		double newLength = adjustBranch(tempTree,node, rng);
+		double newLength = adjustBranch(tempTree,node, rng);//TODO: tempTree is not modified by adjustBranch, so is the new branch length even evaluated?
 		numberTask.calculateNumber(tempTree, tempScore, rs);
 
 
