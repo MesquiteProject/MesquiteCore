@@ -8,10 +8,16 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Tree;
 import mesquite.lib.characters.*;
+import java.math.*;
+
+
+/* Note:  the switch over to using BigIntegers is only partway done. */
+
 
 public class MPRProcessor {
 	CharacterHistory history = null;
 	long[][] numMPRsForStates = null;
+	BigInteger[][] numMPRsForStatesBigInteger = null;
 	boolean overflow = false;
 
 	public MPRProcessor(CharacterHistory history) {
@@ -51,6 +57,35 @@ public class MPRProcessor {
 		}
 	}
 	/*.................................................................................................................*/
+	private void assignMPRNumberArrayBigInteger(Tree tree, int node) {
+		checkArrayIntegrity(tree);
+
+		long nodeSet = ((CategoricalHistory)history).getState(node);
+		for (int ist = 0; ist<= CategoricalState.maxCategoricalState; ist++){
+			if (CategoricalState.isElement(nodeSet,ist)) {   // ist is in the MPR set
+				numMPRsForStatesBigInteger[node][ist]=new BigInteger("1");
+			}
+		}
+		if (!tree.nodeIsTerminal(node)){
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+				assignMPRNumberArray(tree,d);
+				for (int ist = 0; ist<= CategoricalState.maxCategoricalState; ist++){
+					if (CategoricalState.isElement(nodeSet,ist)) {   // ist is in the MPR set
+						long daughterMPR = ((CategoricalHistory)history).getConditionalStateSet(d,ist);
+						BigInteger fixedNum = new BigInteger("0");
+						for (int e = 0; e<= CategoricalState.maxCategoricalState; e++){
+							if (CategoricalState.isElement(daughterMPR,e)) {   // e is in the MPR set
+								fixedNum.add(numMPRsForStatesBigInteger[d][e]);
+							}
+						}
+						
+						numMPRsForStatesBigInteger[node][ist].multiply(fixedNum);
+					}
+				}
+			}
+		}
+	}
+	/*.................................................................................................................*/
 	private long numMPRsForNode(Tree tree, int node) {
 		assignMPRNumberArray(tree,node);
 		long nodeMPRs=0;
@@ -66,9 +101,25 @@ public class MPRProcessor {
 
 		return nodeMPRs;
 	}
+	/*.................................................................................................................*/
+	private BigInteger numMPRsForNodeBigInteger(Tree tree, int node) {
+		assignMPRNumberArray(tree,node);
+		BigInteger nodeMPRs = new BigInteger("0");
+		for (int e = 0; e<= CategoricalState.maxCategoricalState; e++){
+			nodeMPRs.add(numMPRsForStatesBigInteger[node][e]);
+		}
+		return nodeMPRs;
+	}
 	private void checkArrayIntegrity (Tree tree) {
 		if (numMPRsForStates==null || numMPRsForStates.length!= tree.getNumNodeSpaces())
 			numMPRsForStates = new long[tree.getNumNodeSpaces()][CategoricalState.maxCategoricalState+1];
+		if (numMPRsForStatesBigInteger==null || numMPRsForStatesBigInteger.length!= tree.getNumNodeSpaces()){
+			numMPRsForStatesBigInteger = new BigInteger[tree.getNumNodeSpaces()][CategoricalState.maxCategoricalState+1];
+			for (int i=0; i<tree.getNumNodeSpaces(); i++) 
+				for (int j=0; j<=CategoricalState.maxCategoricalState; j++) 
+					numMPRsForStatesBigInteger[i][j] = new BigInteger("0");
+		}
+		
 	}
 	/*.................................................................................................................*/
 	public long getNumResolutions(Tree tree) {
@@ -85,10 +136,21 @@ public class MPRProcessor {
 		}
 		return MesquiteInteger.unassigned;
 	}
+	/*.................................................................................................................*/
+	public BigInteger getNumResolutionsBigInteger(Tree tree, int node) {
+		overflow=false;
+		checkArrayIntegrity(tree);
+		Long2DArray.zeroArray(numMPRsForStates);
+		if (((CategoricalHistory)history).hasConditionalStateSets()) {
+			return numMPRsForNodeBigInteger(tree,node);
+		}
+		return null;
+	}
 
 	/*.................................................................................................................*/
 
 	long numMPRs = 0;
+	BigInteger numMPRsBigInteger = new BigInteger("0");
 	/** Note:  whichMPR is 1-based! */
 
 	private long totalMPRsAtNodeGivenMPRSet(int node, long nodeSet) {
@@ -158,7 +220,7 @@ public class MPRProcessor {
 
 				if (mprsInDaughter==0) {
 					totalMPRsPerMPRInNode = Long.MAX_VALUE;
-					MesquiteTrunk.mesquiteTrunk.discreetAlert("Number of MPRs exceeds that allowed - calculations can not be completed.");
+					MesquiteTrunk.mesquiteTrunk.logln("Number of MPRs exceeds that allowed - calculations can not be completed.");
 					return;
 				}
 				else 
@@ -167,7 +229,7 @@ public class MPRProcessor {
 				long whichMPRInDaughter;
 				if (totalMPRsPerMPRInNode==0) {
 					whichMPRInDaughter = Long.MAX_VALUE;
-					MesquiteTrunk.mesquiteTrunk.discreetAlert("Number of MPRs exceeds that allowed - calculations can not be completed.");
+					MesquiteTrunk.mesquiteTrunk.logln("Number of MPRs exceeds that allowed - calculations can not be completed.");
 					return;
 				}
 				else{
@@ -178,7 +240,7 @@ public class MPRProcessor {
 				setMPR(tree,results, whichMPRInDaughter, mprsInDaughter, d);
 				if (totalMPRsPerMPRInNode==0) {
 					whichMPROnceFixed = Long.MAX_VALUE;
-					MesquiteTrunk.mesquiteTrunk.discreetAlert("Number of MPRs exceeds that allowed - calculations can not be completed.");
+					MesquiteTrunk.mesquiteTrunk.logln("Number of MPRs exceeds that allowed - calculations can not be completed.");
 					return;
 				}
 				whichMPROnceFixed=whichMPROnceFixed % totalMPRsPerMPRInNode+1;   // have to take the remainder and convert it to 1-based; this is for the next daughter

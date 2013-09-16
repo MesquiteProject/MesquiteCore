@@ -649,6 +649,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 					"clade, and changes are counted only within the clade.";
 				}
 				leadText += "\nSource of Trees: " + treeSourceTask.getName() + "\n";
+				leadText += "Further details about Source of Trees: " + treeSourceTask.getParameters() + "\n";
 				leadText += "Number of Trees: " + processedTrees + "\n";
 				if (minSampled==maxSampled)
 					leadText += "Number of mappings sampled per tree: " + minSampled +"\n";
