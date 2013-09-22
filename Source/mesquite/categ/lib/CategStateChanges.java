@@ -122,6 +122,8 @@ public class CategStateChanges {
 		if (!acceptableMapping(array))
 			return false;
 		numMappings++;
+		if (numStates<array.length)  // added 21 September 2013  DRM
+			adjustNumStates(array.length);
 		for (int i=0; i<numStates && i<array.length; i++)
 			for (int j=0; j<numStates &&j<array[i].length; j++)
 			{
