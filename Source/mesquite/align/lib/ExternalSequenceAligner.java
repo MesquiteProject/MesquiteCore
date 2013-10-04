@@ -60,6 +60,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return true;  
 	}
 	/*.................................................................................................................*/
+	public boolean programOptionsComeFirst(){
+		return false;  
+	}
+	/*.................................................................................................................*/
 	public String getProgramPath(){
 		return programPath;  
 	}
@@ -246,16 +250,27 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
 		shellScript.append(getProgramCommand());
+		StringBuffer argumentsForLogging = new StringBuffer();
+		if (programOptionsComeFirst()){
+			shellScript.append(" " + programOptions + " ");
+			argumentsForLogging.append(" " + programOptions + " ");
+		}
 		appendDefaultOptions(shellScript, fileName,  outFileName,  data);
+		appendDefaultOptions(argumentsForLogging, fileName,  outFileName,  data);
 		
-		shellScript.append(" " + programOptions + StringUtil.lineEnding());
+		if (!programOptionsComeFirst()){
+			shellScript.append(" " + programOptions);
+			argumentsForLogging.append(" " + programOptions);
+		}
+		shellScript.append(StringUtil.lineEnding());
 //		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
 
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
-
+		
 		logln("Requesting the operating system to run " + getProgramName());
 		logln("Location of  " + getProgramName()+ ": " + getProgramPath());
+		logln("Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 
