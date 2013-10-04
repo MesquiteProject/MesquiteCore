@@ -47,7 +47,7 @@ public class MAFFTAlign extends ExternalSequenceAligner{
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;  //put release version
 	}
 	/*.................................................................................................................*/
 	public String getName() {
