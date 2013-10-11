@@ -18,15 +18,7 @@ public class GenCodeMoldProtMito extends GeneticCode {
 
 	public void setCode() {
 		setStandardCode();
-		setCode(A,U,A, ProteinData.MET);
-		setCode(C,U,A, ProteinData.THR);
-		setCode(C,U,C, ProteinData.THR);
-		setCode(C,U,G, ProteinData.THR);
-		setCode(C,U,U, ProteinData.THR);
 		setCode(U,G,A, ProteinData.TRP);
-
-		setCode(C,G,A, ProteinData.ABSENT);
-		setCode(C,G,C, ProteinData.ABSENT);
 }
 
 	public String getName() {
