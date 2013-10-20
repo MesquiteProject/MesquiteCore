@@ -19,6 +19,7 @@ public class BLASTResults {
 	protected int[] frame;
 	protected String[] sequence;
 	protected boolean[] reversed;
+	protected int numHits = 0;
 	int maxHits = 1;
 
 	public BLASTResults (int maxHits) {
@@ -101,6 +102,12 @@ public class BLASTResults {
 	}
 	public String[] getIDs() {
 		return ID;
+	}
+	public void setNumHits(int numHits) {
+		this.numHits = numHits;
+	}
+	public int getNumHits() {
+		return numHits;
 	}
 	public String reversedToString() {
 		String s = "";
@@ -236,7 +243,7 @@ public class BLASTResults {
 		Element blastOutputElement = XMLUtil.getRootXMLElementFromString("BlastOutput",response);
 		if (blastOutputElement==null)
 			return false;
-		int hitCount = 0;
+		numHits = 0;
 		Element blastIterationsElement = blastOutputElement.element("BlastOutput_iterations");
 		if (blastIterationsElement!=null) {
 			Element IterationsElement = blastIterationsElement.element("Iteration");
@@ -244,22 +251,22 @@ public class BLASTResults {
 				Element IterationHitElement = IterationsElement.element("Iteration_hits");
 				if (IterationHitElement!=null) {
 					List hitList = IterationHitElement.elements("Hit");
-					for (Iterator iter = hitList.iterator(); iter.hasNext() && hitCount<maxHits;) {   // this is going through all of the hits
+					for (Iterator iter = hitList.iterator(); iter.hasNext() && numHits<maxHits;) {   // this is going through all of the hits
 						Element hitElement = (Element) iter.next();
 						if (hitElement!=null) {
 
 							String s = hitElement.elementText("Hit_def");
-							setDefinition(s, hitCount);
+							setDefinition(s, numHits);
 							//	Debugg.println("Hit_def: " + s);
 
 							s = hitElement.elementText("Hit_accession");
-							setAccession(s, hitCount);
+							setAccession(s, numHits);
 
 							s = hitElement.elementText("Hit_id");
 							//	Debugg.println("Hit_id: " + s);
 							//s=StringUtil.getItem(s,"|", 2);
 							if (StringUtil.notEmpty(s))
-								setID(s, hitCount);
+								setID(s, numHits);
 
 							Element hithsps = hitElement.element("Hit_hsps");
 							if (hithsps!=null) {
@@ -268,25 +275,25 @@ public class BLASTResults {
 									String eValue = Hsp.elementText("Hsp_evalue");
 									double eValueDouble = MesquiteDouble.fromString(eValue);
 									if (eValueCutoff< 0.0 || eValueDouble<=eValueCutoff) {
-										seteValue(eValueDouble, hitCount);
-										setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), hitCount);
-										setFrame(MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-frame")), hitCount);
+										seteValue(eValueDouble, numHits);
+										setBitScore(MesquiteDouble.fromString(Hsp.elementText("Hsp_bit-score")), numHits);
+										setFrame(MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-frame")), numHits);
 
 										int queryFrame = MesquiteInteger.fromString(Hsp.elementText("Hsp_query-frame"));
-										setReversed(queryFrame<0, hitCount);
+										setReversed(queryFrame<0, numHits);
 
 										if (storeSequences)
-											setSequence(Hsp.elementText("Hsp_hseq"), hitCount);
+											setSequence(Hsp.elementText("Hsp_hseq"), numHits);
 									} else if (eValueCutoff>=0.0 && eValueDouble>eValueCutoff) {
-										setDefinition("", hitCount);
-										setAccession("", hitCount);
-										setID("", hitCount);
-										setFrame(0, hitCount);
-										hitCount--;
+										setDefinition("", numHits);
+										setAccession("", numHits);
+										setID("", numHits);
+										setFrame(0, numHits);
+										numHits--;
 									}
 								}
 							}
-							hitCount++;
+							numHits++;
 						}
 
 					}
