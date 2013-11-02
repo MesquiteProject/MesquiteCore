@@ -31,7 +31,7 @@ public class SquareLineTree extends DrawTree {
 	int fixedTaxonDistance = 0;
 	int ornt;
 	MesquiteString nodeLocsName;
-	MesquiteBoolean showEdgeLines = new MesquiteBoolean(false);
+	MesquiteBoolean showEdgeLines = new MesquiteBoolean(true);  //these needs to be set default true; otherwise Trace Character makes branches disappear in most common cases
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		nodeLocsTask= (NodeLocsVH)hireNamedEmployee(NodeLocsVH.class, "#NodeLocsStandard");
@@ -245,7 +245,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	public int edgewidth = 4;
 	public int preferredEdgeWidth = 4;
 	int oldNumTaxa = 0;
-	public static final int inset=2;
+	float inset=(float)1.0;
 	private boolean ready=false;
 	BasicStroke defaultStroke;
 
@@ -253,7 +253,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 
 	public SquareLineTreeDrawing (TreeDisplay treeDisplay, int numTaxa, SquareLineTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 4); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
@@ -525,7 +525,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			Color c = g.getColor();
-			int fillWidth = edgewidth;
+			float fillWidth = edgewidth;
 			if (ownerModule.getShowEdgeLines())
 				fillWidth = edgewidth-2*inset;
 			int numColors = colors.getNumColors();
@@ -542,6 +542,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			//if (ownerModule.getShowEdgeLines())
 				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), tree, g, node, inset, edgewidth-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;

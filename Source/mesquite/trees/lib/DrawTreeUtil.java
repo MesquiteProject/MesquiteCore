@@ -322,7 +322,7 @@ public class DrawTreeUtil {
 						}
 
 					}
-					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //¥¥¥¥
+					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //ï¿½ï¿½ï¿½ï¿½
 						if (xnM>xN){ //leans left
 							xN += width/2+start;
 							xnM += width/2;
@@ -355,7 +355,7 @@ public class DrawTreeUtil {
 						}
 
 					}
-					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //¥¥¥¥
+					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //ï¿½ï¿½ï¿½ï¿½
 						if (ynM>yN){ //leans right
 							yN += width/2+start;
 							ynM += width/2;
@@ -385,7 +385,7 @@ public class DrawTreeUtil {
 						}
 					}
 
-					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//¥¥¥¥
+					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//ï¿½ï¿½ï¿½ï¿½
 						if (xnM>xN) {  //leans right
 							//g.setColor(Color.blue);
 							arc = new Arc2D.Double(xN, ynM, (xnM-xN)*2,  -(ynM - yN)*2, 90, 90, Arc2D.OPEN); // left
@@ -409,7 +409,7 @@ public class DrawTreeUtil {
 							//g.drawRect(xnM-(xN-xnM), yN - (ynM - yN), (xN-xnM)*2,  (ynM - yN)*2);
 						}
 					}
-					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //¥¥¥¥
+					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //ï¿½ï¿½ï¿½ï¿½
 						if (ynM>yN) { //leans right
 							//g.setColor(Color.blue);
 							arc = new Arc2D.Double(xN - (xnM-xN), yN, -(xN-xnM)*2,  (ynM - yN)*2, 0, 90, Arc2D.OPEN); 
@@ -439,7 +439,7 @@ public class DrawTreeUtil {
 					if (xnM > xN)  ynM += edgewidth-1-start;
 					else ynM+=start;
 				}
-				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //¥¥¥¥
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //ï¿½ï¿½ï¿½ï¿½
 					if (xnM > xN)  ynM -= edgewidth-1-start;
 					else ynM-=start;
 					xnM +=adj; //why this adj is needed, I don't know.  But it seems to work.
@@ -449,7 +449,7 @@ public class DrawTreeUtil {
 					if (ynM > yN)  xnM -= edgewidth-1-start;
 					else xnM-=start;
 				}
-				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //¥¥¥¥
+				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //ï¿½ï¿½ï¿½ï¿½
 					if (ynM > yN) xnM += edgewidth-1-start;
 					else xnM+=start;
 					ynM +=adj;//why this adj is needed, I don't know.  But it seems to work.
@@ -471,7 +471,7 @@ public class DrawTreeUtil {
 						xN++;
 					}
 
-					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//¥¥¥¥
+					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//ï¿½ï¿½ï¿½ï¿½
 						if (xnM>xN) {
 							g.drawArc(xN - start,ynM, (xnM-xN)*2,  (yN -ynM)*2, 90, 90); //right
 							ynM++;
@@ -493,7 +493,7 @@ public class DrawTreeUtil {
 						}
 						yN++;
 					}
-					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //¥¥¥¥
+					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //ï¿½ï¿½ï¿½ï¿½
 						if (ynM>yN) {
 							g.drawArc(xN - (xnM-xN), yN - start, (xnM-xN)*2,  (ynM - yN)*2, 0, 90);  //right
 							xnM--;
@@ -518,7 +518,7 @@ public class DrawTreeUtil {
 	}
 
 	/*_________________________________________________*/
-	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
 			int xN=x[node];
@@ -534,7 +534,7 @@ public class DrawTreeUtil {
 					g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
 					g2.drawLine(xN+halfEdge,ynM,xnM,ynM);
 				}
-				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //¥¥¥¥
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //ï¿½ï¿½ï¿½ï¿½
 					g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
 					g2.drawLine(xN+halfEdge,ynM,xnM,ynM);
 				}
@@ -543,7 +543,7 @@ public class DrawTreeUtil {
 					g2.drawLine(xnM,yN+halfEdge,xnM,ynM);
 
 				}
-				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //¥¥¥¥
+				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //ï¿½ï¿½ï¿½ï¿½
 					g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);
 					g2.drawLine(xnM,yN+halfEdge,xnM,ynM);
 				}
