@@ -3182,14 +3182,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** ¥¥¥¥ */
+	/** ï¿½ï¿½ï¿½ï¿½ */
 	public void redrawColumns(int firstColumn, int lastColumn) {
 		for (int column = firstColumn; column <= lastColumn; column++)
 			redrawColumn(column);
 	}
 
 	/* ............................................................................................................... */
-	/** ¥¥¥¥ */
+	/** ï¿½ï¿½ï¿½ï¿½ */
 	public void redrawRows(int firstRow, int lastRow) {
 		System.out.println("redraw rows not working yet");
 	}
@@ -3216,20 +3216,20 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 	/* ............................................................................................................... */
 	/**
-	 * ¥¥¥¥ HAVE THIS BY COLUMNS; ALSO HAVE COLUMN NAMES AND ROW NAMES JUSTIFYABLE
+	 * ï¿½ï¿½ï¿½ï¿½ HAVE THIS BY COLUMNS; ALSO HAVE COLUMN NAMES AND ROW NAMES JUSTIFYABLE
 	 */
 	public int getJustification() {
 		return justification;
 	}
 
 	/* ............................................................................................................... */
-	/** ¥¥¥¥ */
+	/** ï¿½ï¿½ï¿½ï¿½ */
 	public void setJustification(int justification) {
 		this.justification = justification;
 	}
 
 	/* ............................................................................................................... */
-	/** ¥¥¥¥ */
+	/** ï¿½ï¿½ï¿½ï¿½ */
 	public void drawMatrixCellString(Graphics g, FontMetrics fm, int x, int y, int w, int h, int column, int row, String supplied) {
 		if (!StringUtil.blank(supplied)){
 			Shape clip = null;
@@ -3272,12 +3272,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
-	/** ¥¥¥¥ */
+	/** ï¿½ï¿½ï¿½ï¿½ */
 	public boolean isAttachedNoteAvailable(int column, int row) {
 		return false;
 	}
 	/* ............................................................................................................... */
-	/** ¥¥¥¥ */
+	/** ï¿½ï¿½ï¿½ï¿½ */
 	public boolean useString(int column, int row) {
 		return getMatrixTextForDisplay(column, row) != null;
 	}
