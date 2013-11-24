@@ -1906,7 +1906,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return selectAllCommand;
 	}
 
-	/* ................................................................................................................. */
+	/* ................................................................................................................. *
 	public void setHorizScrollVisible(boolean vis) {
 		horizScroll.setVisible(vis);
 	}
@@ -2274,7 +2274,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				columnNamesSelected[i] = new Bits(numColumnsTotal);
 			}
 			if (firstColumnVisible >= numColumnsTotal || firstColumnVisible < 0)
-				firstColumnVisible = 0;
+				firstColumnVisible = 0; 
 			if (horizScroll != null) {
 				horizScroll.setValue(firstColumnVisible);
 				horizScroll.setMaximum(numColumnsTotal);
