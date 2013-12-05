@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -111,6 +111,8 @@ public String preparePreferencesForXML () {
 		for (int it = 0; it<taxa.getNumTaxa(); it++) {
 			selected[it] = taxa.getSelected(it);
 		}
+		int firstSelected = taxa.firstSelected();
+		String originalTaxonName = taxa.getTaxonName(firstSelected);
 		
 	//now let's merge the taxon names
 		StringBuffer sb = new StringBuffer();
@@ -165,12 +167,18 @@ public String preparePreferencesForXML () {
 				}
 		}
 		*/
-		int firstSelected = taxa.firstSelected();
 	//	selected[firstSelected] = false;
-		
+		String report = "";
 		for (int iM = 0; iM < numMatrices; iM++){
 			CategoricalData data = (CategoricalData)getProject().getCharacterMatrix(taxa, iM);
-			data.mergeTaxa(firstSelected, selected);
+			boolean[] ma = data.mergeTaxa(firstSelected, selected);
+			if (ma!= null){
+				report += "For matrix " + data.getName() + ", the following taxa when merged to taxon \"" + originalTaxonName + "\" required merging of character states:\n";
+				for (int it = 0; it< ma.length; it++){
+					if (ma[it])
+						report += "  " + taxa.getTaxonName(it) + "\n";
+				}
+			}
 		}
 		
 		taxa.setTaxonName(firstSelected, sb.toString());
@@ -181,7 +189,8 @@ public String preparePreferencesForXML () {
 			}
 		}
 
-		
+		if (!StringUtil.blank(report))
+			alert(report);
 		taxa.notifyListeners(this, new Notification(PARTS_DELETED));
 		for (int iM = 0; iM < numMatrices; iM++){
 			CategoricalData data = (CategoricalData)getProject().getCharacterMatrix(taxa, iM);

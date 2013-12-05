@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -135,6 +135,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	public void selectSameColor(int column, int row, boolean restrictToCharacter, boolean restrictToTaxon, boolean contiguous, boolean subtractFromSelection){
 		if (bdw != null)
 			bdw.selectSameColor(column, row, restrictToCharacter, restrictToTaxon, contiguous, subtractFromSelection);
+	}
+	public void selectSameColorRow(int column, int row, boolean subtractFromSelection){
+		if (bdw != null)
+			bdw.selectSameColorRow(column, row, subtractFromSelection);
 	}
 	/*.................................................................................................................*/
 	public void linkEditor(DataWindowMaker mb, boolean linkeeIsNew){
@@ -407,7 +411,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		String selectExplanation = "This tool selects items in the matrix.  By holding down shift while clicking, the selection will be extended from the first to the last touched cell. ";
 		selectExplanation += " A block of cells can be selected either by using shift-click to extend a previous selection, or by clicking on a cell and dragging with the mouse button still down";
 		selectExplanation += " Discontinous selections are allowed, and can be obtained by a \"meta\"-click (right mouse button click, or command-click on a MacOS system). ";
-		arrowTool = new TableTool(this, "arrow", MesquiteModule.getRootImageDirectoryPath(),"arrow.gif", 4,2,"Select", selectExplanation, MesquiteModule.makeCommand("arrowTouchCell",  this) , MesquiteModule.makeCommand("arrowDragCell",  this), MesquiteModule.makeCommand("arrowDropCell",  this));
+		MesquiteCommand dragCommand = MesquiteModule.makeCommand("arrowDragCell",  this);
+		dragCommand.setSuppressLogging(true);
+		arrowTool = new TableTool(this, "arrow", MesquiteModule.getRootImageDirectoryPath(),"arrow.gif", 4,2,"Select", selectExplanation, MesquiteModule.makeCommand("arrowTouchCell",  this) , dragCommand, MesquiteModule.makeCommand("arrowDropCell",  this));
 		arrowTool.setIsArrowTool(true);
 		arrowTool.setUseTableTouchRules(true);
 		addTool(arrowTool);
@@ -1043,6 +1049,25 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 							table.selectCell(ic, it);
 					}
 				}
+			table.repaintAll();
+		}
+
+	}
+	public void selectSameColorRow(int column, int row, boolean subtractFromSelection){
+		if (data == null || table == null || table.rowNamesColorer == null || ((MesquiteModule)table.rowNamesColorer).nameMatches("#NoColor"))
+			return;
+		Color c = table.rowNamesColorer.getCellColor(column, row);
+		int rowStart = 0;
+		int rowEnd = data.getNumTaxa();
+		for (int it = rowStart; it<rowEnd; it++){
+			Color c2 = table.rowNamesColorer.getCellColor(column, it);
+			if (satisfiesCriteria(c, c2)) {
+				if (subtractFromSelection)
+					table.deselectRow( it);
+				else
+					table.selectRow(it);
+			}
+
 			table.repaintAll();
 		}
 
@@ -2475,18 +2500,23 @@ class CellAnnotation implements Annotatable {
 		}
 	}
 	public String getAnnotation(){
-		if (data == null)
+		try {
+			if (data == null)
+				return null;
+			if (row == -1) {
+				if (column == -1)
+					return data.getAnnotation();
+				return data.getAnnotation(column);
+			}
+			else if (column == -1) {
+				return data.getTaxa().getAnnotation(row);
+			}
+			else {
+				return data.getAnnotation(column, row);
+			}
+		}
+		catch (NullPointerException e){
 			return null;
-		if (row == -1) {
-			if (column == -1)
-				return data.getAnnotation();
-			return data.getAnnotation(column);
-		}
-		else if (column == -1) {
-			return data.getTaxa().getAnnotation(row);
-		}
-		else {
-			return data.getAnnotation(column, row);
 		}
 	}
 	public void setAnnotation(String s, boolean notify){
@@ -3134,11 +3164,11 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	/*...............................................................................................................*/
 	public void actUponDroppedFileContents(FileInterpreter fileInterpreter, String path) {
 		if (fileInterpreter!=null) {
-			
+
 			data.setCharNumChanging(true);
 			((ReadFileFromString)fileInterpreter).readFileFromString( data,  taxa,  MesquiteFile.getFileContentsAsString(path),  "");
 			data.setCharNumChanging(false);
-			
+
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, null, null));
 			data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
@@ -3373,8 +3403,8 @@ timer6.end();
 		if (cellColorer !=null) {
 			try {
 				fillColor = cellColorer.getCellColor(column, row);
-			if (paleCellColors && fillColor!=null)
-				fillColor = ColorDistribution.brighter(fillColor, 0.45);
+				if (paleCellColors && fillColor!=null)
+					fillColor = ColorDistribution.brighter(fillColor, 0.45);
 			}
 			catch (Throwable e) {
 			}
@@ -3827,6 +3857,7 @@ timer6.end();
 		}
 		catch (Throwable t){
 			s = "";
+			MesquiteFile.throwableToLog(null, t);
 		}
 		return s;
 	}
@@ -3853,23 +3884,23 @@ timer6.end();
 	boolean suppressSelect = false;
 	public void selectRow(int row){
 		super.selectRow(row);
-	//	data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-	//	notifySelectionChanged();
+		//	data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+		//	notifySelectionChanged();
 	}
 	public void selectRows(int first, int last){
 		super.selectRows(first, last);
-	//	data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-	//	notifySelectionChanged();
+		//	data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+		//	notifySelectionChanged();
 	}
 	public void selectColumn(int column){
 		super.selectColumn(column);
-	//	data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-	//	notifySelectionChanged();
+		//	data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+		//	notifySelectionChanged();
 	}
 	public void selectColumns(int first, int last){
 		super.selectColumns(first, last);
-	//	data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-	//	notifySelectionChanged();
+		//	data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+		//	notifySelectionChanged();
 	}
 	public void selectCell(int column, int row){
 		if (!suppressSelect){
@@ -3935,7 +3966,7 @@ timer6.end();
 		notifySelectionChanged();
 	}
 	void notifySelectionChanged(){
-		
+
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		try {
@@ -4425,6 +4456,8 @@ timer6.end();
 	}
 	/*...............................................................................................................*/
 	public void returnedRowNameText(int row, String s){
+		if (data == null || taxa == null ||window == null)
+			return;
 		String oldTaxonName = taxa.getTaxonName(row);
 		if (s!=null && !s.equals(oldTaxonName)) {
 			String warning = taxa.checkNameLegality(row, s);
@@ -4433,12 +4466,15 @@ timer6.end();
 				taxNC = true;   // for pasting, to discover if taxon names were changed (see pasteIt)
 				window.setUndoer(window.setUndoInstructions(UndoInstructions.SINGLETAXONNAME, -1, row, new MesquiteString(oldTaxonName), new MesquiteString(s)));
 			}
-			else
+			else {
 				window.ownerModule.discreetAlert( warning);
+			}
 		}
 	}
 	/*...............................................................................................................*/
 	public void returnedColumnNameText(int column, String s){
+		if (data == null || taxa == null ||window == null)
+			return;
 		String oldCharacterName = data.getCharacterName(column);
 		if (s!=null && !s.equals(oldCharacterName)) {
 			String warning = data.checkNameLegality(column, s);
@@ -4456,12 +4492,15 @@ timer6.end();
 		return 3;
 	}
 	public void repaintAll(){
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		displayModifications = checkDisplayModifications();
 		if (data !=null){
 			String s = data.checkIntegrity();
 			if (s !=null)
 				MesquiteTrunk.mesquiteTrunk.alert(s + " (" + data + ")");
 		}
+		MesquiteWindow.uncheckDoomed(this);
 		super.repaintAll();
 	}
 	/*...............................................................................................................*/
@@ -4861,6 +4900,10 @@ class CellInfoPanel extends MatrixInfoExtraPanel {
 						attachmentsMessage += ": " + MesquiteLong.toString(d.getValue(ic));
 						attachmentsMessage += "\n";
 					}
+				}
+				Associable tInfo = data.getTaxaInfo(false);
+				if (tInfo != null){
+					attachmentsMessage += tInfo.toString(it) + "\n";
 				}
 			}
 			else {

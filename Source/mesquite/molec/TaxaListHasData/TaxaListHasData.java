@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -46,6 +46,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, CategoricalState.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
+		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
 		return true;
 	}
 
@@ -70,11 +71,23 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		temp.addLine("getMatrixSource", matrixSourceTask);
 		return temp;
 	}
+	
+	
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
 			return matrixSourceTask;
+		}
+		else if (checker.compare(this.getClass(), "Deletes the data for selected taxa", null, commandName, "deleteData")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			if (!AlertDialog.query(containerOfModule(), "Delete Data?", "Are you sure you want to delete the data for these taxa in the matrix \"" + data.getName() + "\"", "No", "Yes"))
+				zapData(data);
+			return null;
 		}
 		else return  super.doCommand(commandName, arguments, checker);
 	}
@@ -113,15 +126,50 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	}
 	boolean hasData(int it){
 		CharacterState cs = null;
+		try {
 		for (int ic=0; ic<observedStates.getNumChars(); ic++) {
 			cs = observedStates.getCharacterState(cs, ic, it);
+			if (cs == null)
+				return false;
 			long s = ((CategoricalState)cs).getValue();
 			if (!CategoricalState.isInapplicable(s) && !CategoricalState.isUnassigned(s)) 
 				return true;
 
 		}
+		}
+		catch (NullPointerException e){
+		}
 		return false;
 	}
+	
+	public String getExplanationForRow(int ic){
+		if (observedStates != null && observedStates.getParentData() != null){
+			CharacterData data = observedStates.getParentData();
+			Associable tInfo = data.getTaxaInfo(false);
+			if (tInfo == null)
+				return null;
+			return "Notes: " + tInfo.toString(ic);
+		}
+		return null;
+	}
+	
+	
+	void zapData(CharacterData data){
+		Taxa taxa = data.getTaxa();
+		Associable tInfo = data.getTaxaInfo(false);
+		for (int it = 0; it<taxa.getNumTaxa(); it++){
+			if (taxa.getSelected(it)){
+				if (tInfo != null)
+					tInfo.deassignAssociated(it);
+				for (int ic=0; ic<data.getNumChars(); ic++)
+					data.deassign(ic, it);
+				
+			}
+		}
+		data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+		outputInvalid();
+	}
+
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		observedStates = null;
@@ -154,7 +202,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			return "No Data";
 	}
 	public String getWidestString(){
-		return "888888888888";
+		return "88888888888";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {

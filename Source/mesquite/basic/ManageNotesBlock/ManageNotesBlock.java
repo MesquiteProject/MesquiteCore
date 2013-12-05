@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -16,6 +16,7 @@ package mesquite.basic.ManageNotesBlock;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
@@ -52,12 +53,18 @@ public class ManageNotesBlock extends FileInit {
 	}
 
 	private NotesBlock makeBlock(MesquiteFile file) {
-		NotesBlock b = new NotesBlock(file, this);
-		b.setName("Notes Block");
-		numBlocks++;
-		if (blocks==null)
-			blocks = new Vector();
-		blocks.addElement(b);
+		NexusBlock[] bs = getProject().getNexusBlocks(NotesBlock.class, file);//added Sept 2011
+		NotesBlock b;
+		if (bs == null || bs.length == 0){
+			b = new NotesBlock(file, this);
+			b.setName("Notes Block");
+			numBlocks++;
+			if (blocks==null)
+				blocks = new Vector();
+			blocks.addElement(b);
+		}
+		else
+			b = (NotesBlock)bs[0];
 		return b;
 	}
 	/*

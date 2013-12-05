@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2010 D. Maddison and W. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -199,6 +199,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	/*.................................................................................................................*/
 	public void readFileFromString(CharacterData data, Taxa taxa, String contents, String arguments) {
 		MesquiteProject mf = getProject();
+		if (taxa == null || StringUtil.blank(contents))
+			return;
 		incrementMenuResetSuppression();
 		ProgressIndicator progIndicator = new ProgressIndicator(mf,"Importing Sequences ", contents.length());
 		progIndicator.start();
@@ -311,7 +313,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		if (simplifyTaxonName)
 			return StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it)+uniqueSuffix,false,true);
 		else 
-			return ParseUtil.tokenize(taxa.getTaxonName(it)+uniqueSuffix);
+			return taxa.getTaxonName(it)+uniqueSuffix;
+			//return ParseUtil.tokenize(taxa.getTaxonName(it)+uniqueSuffix);
 	}
 	protected void saveExtraFiles(CharacterData data){
 	}
@@ -327,7 +330,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	}
 	boolean includeOnlyTaxaWithData = true;// TO DO: also have the option of only writing taxa with data in them
 	
- 	public  StringBuffer getDataAsFileText(CharacterData data) {
+ 	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
@@ -392,10 +395,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			if (!getExportOptions(data.anySelected(), taxa.anySelected()))
 				return false;
 
-		StringBuffer outputBuffer = getDataAsFileText(data);
+		StringBuffer outputBuffer = getDataAsFileText(file, data);
 
 		if (outputBuffer!=null) {
-			saveExportedFileWithExtension(outputBuffer, arguments, "txt");
+			saveExportedFileWithExtension(outputBuffer, arguments, "fas");
 			return true;
 		}
 		saveExtraFiles(data);

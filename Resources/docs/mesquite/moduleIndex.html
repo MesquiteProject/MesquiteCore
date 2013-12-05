@@ -152,6 +152,7 @@
               <ul>
 <li>Absolute Distance (General)  &#8212; Absolute distance from a character matrix.</li>
 <li>ACGT Compositional Bias  &#8212; Returns continuous characters which are the proportion G+C, and separately A, C, G, T, for each taxon in a DNA data set.</li>
+<li>Add Characters from Source  &#8212; Adds characters from a source of characters.</li>
 <li>Add item...  &#8212; Adds an item in each cell of a continuous matrix.</li>
 <li>Add Noise (Gaussian)  &#8212; Adds normally distributed noise to existing states.  Only the first item of a continuous matrix is modified.</li>
 <li>Add Noise to Branch Lengths  &#8212; Adds noise to branch lengths of tree.  Noise is Normally distributed, with variance as selected.  By default the variance is be proportional to current branch length, so that if branch length is 10 and you've indicated a variance multiplier of 0.1, the noise added will have a variance of 1.0.  Negative branch lengths are not allowed, and are changed to zero.</li>
@@ -354,6 +355,7 @@
 <li>Dependent Contained Tree Window  &#8212; Displays a single tree (the same as contained within a tree in a tree window).</li>
 <li>Dependent Tree Window  &#8212; Displays a single tree (the same as in a tree window).</li>
 <li>Diagonal tree  &#8212; Draws trees with standard diagonal branches ("cladogram")</li>
+<li>Discretize Selected Characters...  &#8212; Bins the selected continuous characters to discretize them into categorical characters (ordered if more than two states), and adds them to an existing categorical matrix.  If the continuous matrix is multi-item, only the first item is used.</li>
 <li>Difference in steps in two characters  &#8212; Calculates the difference between two characters in parsimony steps for a given tree.</li>
 <li>Difference in two values for character  &#8212; Coordinates the calculation of the difference in two numbers for a character.</li>
 <li>Difference in two values for tree  &#8212; Coordinates the calculation of the difference in two numbers for a tree.</li>
@@ -397,6 +399,7 @@
 <li>Find Sequence  &#8212; Finds the next occurrence of a sequence in a matrix of molecular data.</li>
 <li>Forward/Backward Rates  &#8212; Uses maximum likelihood to estmate the rates of forward and backward changes (0 to 1 and 1 to 0 changes respectively), or alternatively the overall rate and the bias in gains versus losses, using the AsymmMk model on a tree for a given character.</li>
 <li>Fraction Applicable and Not Missing  &#8212; Calculates the fraction of the matrix that is applicable and not missing data.</li>
+<li>Fraction of Clades that are Shared  &#8212; Calculates the fraction of the total number of clades in two trees that are shared between the  trees (excludes the clade consisting of all taxa).</li>
 <li>Frequency of State  &#8212; Calculates the frequency of a state for a categorical character</li>
 <li>Fused Matrix Export (NEXUS)  &#8212; Exports NEXUS files with matrices fused.</li>
 <li>Gamma Invar Rates Model  &#8212; Defines and maintains Gamma rate variation models with a proportion of invariant characters.</li>
@@ -418,6 +421,7 @@
 <li>Group Membership (taxa)  &#8212; Lists and allows changes to group membership in the current partition of taxa, for List of Taxa window.</li>
 <li>GTR Rate Matrix Model  &#8212; Defines and maintains six-parameter general time-reversible (GTR) rate matrix models.</li>
 <li>Highlight Apparently Slightly Misaligned  &#8212; Colors aligned sequences to emphasize sections that seem slightly misaligned.</li>
+<li>Highlight Gaps in Coding Regions  &#8212; Highlights gaps if site has a codon position, or if both sites to either side have codon positions, and if sites to both sides have states or missing.</li>
 <li>Import and Export Package Introduction  &#8212; Provides file import/export utilities.</li>
 <li>Initialize DNA Submodels  &#8212; Initializes default DNA submodels.</li>
 <li>Initialize Genetic Code  &#8212; Initializes default genetic codes.</li>
@@ -496,6 +500,7 @@
 <li>Manage taxon sets  &#8212; Manages (including NEXUS read/write) taxon sets.</li>
 <li>Manage TREES blocks  &#8212; Manages tree blocks (including read/write TREES block in NEXUS file).</li>
 <li>Map Continuous  &#8212; Supplies a reconstruction of continuous-valued ancestral states on a tree. Differs from the basic reconstruction methods in that it supplies simply numbers for nodes, instead of a CharacterHistory</li>
+<li>Mark Taxa  &#8212; Permits user to mark taxa in the List of Taxa with a specific name.</li>
 <li>Matching Sequence  &#8212; Finds the next occurrence of a sequence in a matrix of molecular data.  Allows a certain number of mismatches.</li>
 <li>Matrices from Ordinations  &#8212; Supplies character matrices from ordinations of existing matrices.</li>
 <li>Matrix from Clipboard  &#8212; Makes a character matrix from text in the clipboard.</li>
@@ -721,6 +726,7 @@
 <li>Show Node Numbers  &#8212; Shows the node numbers on a tree.</li>
 <li>Show Percentile  &#8212; Calculates and shows percentile boundaries.  Finds the upper (right) or lower (left) tail of the distribution that contains the specified percentage of the distribution. If there is not a boundary that exactly matches the specified percentage, then the closest boundary that does not exceed the percentage is shown.</li>
 <li>Show text  &#8212; Shows text in a window</li>
+<li>Show Tree  &#8212; Provides tool in the List of Trees window to request that tree be shown in window.</li>
 <li>Show Y = X  &#8212; Shows the Y=X line on a scattergram</li>
 <li>Shuffle states among taxa  &#8212; Alters data by shuffling states among taxa within a character.</li>
 <li>Side Pusher  &#8212; Pushes all sequences on one side.</li>
@@ -876,7 +882,7 @@
               Home Page</font></a><font size="2"> | <a href="manual.html">Mesquite
               Manual</a></font></span></font></p>
               <p><font face="Trebuchet MS"><span class="smallplain">Copyright 
-                &copy; 2002-2010 by <a href="http://salticidae.org/wpm/home.html">Wayne 
+                &copy; 2002-2011 by <a href="http://salticidae.org/wpm/home.html">Wayne 
                 P. Maddison</a> and <a href="http://david.bembidion.org">David 
                 R. Maddison</a>.<br>
 &nbsp;All rights reserved.</span></font></p></td>

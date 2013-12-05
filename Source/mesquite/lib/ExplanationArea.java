@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -19,7 +19,7 @@ import mesquite.lib.simplicity.InterfaceManager;
 /* ======================================================================== */
 /** A panel at the bottom of windows in which explanations and footnotes can be displayed and edited.*/
 public class ExplanationArea extends MousePanel implements TextListener, MesquiteListener, FocusListener {
-	ExplTextArea textArea;
+	private ExplTextArea explTextArea;
 	ExplanationControl control;
 	static final int grabberHeight = 0;
 	Annotatable annotatable = null;
@@ -32,7 +32,6 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	boolean focusSuppressed = false;
 	boolean hasFocus = false;
 	int fontIncrement = 0;
-
 	public static Image plusImage, minusImage, minusOffImage;
 	boolean isAnnotation = false;
 	public ExplanationArea (MesquiteWindow window, boolean isAnnotation) {
@@ -41,19 +40,24 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		setLayout(null);
 		this.isAnnotation = isAnnotation;
 		this.window = window;
-		textArea = new ExplTextArea("", 2, 8, TextArea.SCROLLBARS_VERTICAL_ONLY, this); 
-		add(textArea);
-		textArea.setBounds(controlWidth, 0, getBounds().width-controlWidth, getBounds().height - grabberHeight);
-		textArea.setVisible(true);
-		textArea.addFocusListener(this);
+
+
+		explTextArea = new ExplTextArea("", 2, 8, TextArea.SCROLLBARS_VERTICAL_ONLY, this); 
+		add(explTextArea);
+		explTextArea.setBounds(controlWidth, 0, getBounds().width-controlWidth, getBounds().height - grabberHeight);
+		explTextArea.setVisible(true);
+		explTextArea.addFocusListener(this);
+
+
 		control = new ExplanationControl(this);
 		controlWidth= control.getMinimumWidth();
 		add(control);
 		control.setBounds(0, 0, controlWidth, getBounds().height);
-		//control.setBackground(Color.blue);
+
 		control.setVisible(true);
 		control.repaint(); //attempt to deal with bug in OS X 10.2
-		textArea.addTextListener(this);
+		explTextArea.addTextListener(this);
+
 		control.setBackground(ColorTheme.getInterfaceBackground());
 		requestFocusInWindow();
 	}
@@ -63,7 +67,13 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		annotatable = null;
 		super.dispose();
 	}
-
+	public TextArea getTextArea(){
+		return explTextArea;
+	}
+	String name;
+	public void setName(String name){  //for Debugging 
+		this.name = name;
+	}
 	public void focusGained(FocusEvent e){
 		if (e.getSource() == this)
 			hasFocus = true;
@@ -77,10 +87,16 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	String explanationSet = "";
 	String tickString = null;
 	public void tickClock(String tickString){
+		if (tickString == null)
+			tickString = "";
 		this.tickString = tickString;
+
 		control.showClock = true;
 		if (lastTick < 0 || (lastTick > 0 && System.currentTimeMillis() - lastTick > 200)){
-			textArea.setText(tickString);
+
+			if (explTextArea != null)
+					explTextArea.setText(tickString);
+			
 			if (lastTick < 0)
 				control.clockCount = 0;
 			else
@@ -93,10 +109,15 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public void hideClock(){
 		this.tickString = null;
 		control.showClock = false;
-		if (annotatable == null)
-			textArea.setText(explanationSet);
-		else
-			textArea.setText(annotatable.getAnnotation());
+		
+		if (explTextArea != null){
+			if (annotatable == null)
+				explTextArea.setText(explanationSet);
+			else
+				explTextArea.setText(annotatable.getAnnotation());
+
+		}
+
 		lastTick = -1;
 		control.repaint();
 	}
@@ -124,17 +145,17 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	public void setBackground(Color c){
-		textArea.setBackground(c);
+		explTextArea.setBackground(c);  
 		super.setBackground(c);
 	}
 	public void setBounds(int x, int y, int w, int h){
 		super.setBounds(x,y,w,h);
-		textArea.setBounds(controlWidth, 0, w-controlWidth, h - grabberHeight);
+		explTextArea.setBounds(controlWidth, 0, w-controlWidth, h - grabberHeight);
 		control.setBounds(0, 0, controlWidth, h);
 	}
 	public void setSize(int w, int h){
 		super.setSize(w,h);
-		textArea.setSize(w-controlWidth, h - grabberHeight);
+		explTextArea.setSize(w-controlWidth, h - grabberHeight);
 		control.setSize(controlWidth, h);
 	}
 	public boolean getIsAnnotation(){
@@ -175,28 +196,28 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		}
 	}
 	public void textValueChanged(TextEvent e){
-		if (textArea !=null && annotatable != null) {
+		if (explTextArea !=null && annotatable != null) {
 			if (suppressNotify>0){
 				suppressNotify--;
 			}
 			else {
-				
-				String s = textArea.getText();
-				int start = textArea.getSelectionStart();
-				int end = textArea.getSelectionEnd();
+
+				String s = explTextArea.getText();
+				int start = explTextArea.getSelectionStart();
+				int end = explTextArea.getSelectionEnd();
 				if ("".equals(s))
 					s = null;
 				annotatable.setAnnotation(s, suppressNotify == 0);
-				textArea.setSelectionStart(start);
-				textArea.setSelectionEnd(end);
+				explTextArea.setSelectionStart(start);
+				explTextArea.setSelectionEnd(end);
 			}
 
 		}
 	}
 	public void setFocusSuppression(boolean suppress){
 		this.focusSuppressed = suppress;
-		if (suppress && textArea.isEditable()){
-			textArea.setEditable(false);
+		if (suppress && explTextArea.isEditable()){
+			explTextArea.setEditable(false);
 			control.setEditable(false);
 		}
 	}
@@ -204,19 +225,23 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		return focusSuppressed;
 	}
 	public void setExplanation(String text){
+		if (text == null)  
+			text = "";
 		annotatable = null;
-		String current = textArea.getText();
+		String current = explTextArea.getText();
 		explanationSet = text;
-		if (text!=null && current!=null && !text.equals(current))
-			textArea.setText(text);
-		if (textArea.isEditable()){
-			textArea.setEditable(false);
+		if (text!=null && current!=null && !text.equals(current)){
+			explTextArea.setText(text);
+		}
+		if (explTextArea.isEditable()){
+			explTextArea.setEditable(false);
 			control.setEditable(false);
 		}
+
 	}
 
 	public void setExplanation(Annotatable annotatable){
-		 String current = textArea.getText();
+		String current = explTextArea.getText();
 		if (annotatable != this.annotatable){
 			if (this.annotatable!=null && this.annotatable instanceof Listened)
 				((Listened)this.annotatable).removeListener(this);
@@ -224,23 +249,30 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 			if (annotatable !=null && annotatable instanceof Listened)
 				((Listened)annotatable).addListener(this);
 		}
-		
+
 		if (annotatable == null) {
 			setExplanation("");
 			return;
 		}
-	
+
 		String newText = annotatable.getAnnotation();
 		if (newText == null)
 			newText = "";
 		if (current!=null && !newText.equals(current))
-			textArea.setText(newText);
-			//textArea.setText(text.getValue()); //todo: change the font to show it's editable!?
-		if (textArea.isEditable() != (isAnnotation && !focusSuppressed)){
-			textArea.setEditable(isAnnotation && !focusSuppressed);
+			explTextArea.setText(newText);
+		if (explTextArea.isEditable() != (isAnnotation && !focusSuppressed)){
+			explTextArea.setEditable(isAnnotation && !focusSuppressed);
 			control.setEditable(isAnnotation && !focusSuppressed);
 		}
-		
+		/*
+		if (current!=null && !newText.equals(current))
+			debuggingPanel.setText(newText);
+		if (debuggingPanel.isEditable() != (isAnnotation && !focusSuppressed)){
+			debuggingPanel.setEditable(isAnnotation && !focusSuppressed);
+			control.setEditable(isAnnotation && !focusSuppressed);
+		}
+		 */
+
 	}
 	public Annotatable getAnnotatable(){
 		return annotatable;
@@ -250,8 +282,11 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public void changed(Object caller, Object obj, Notification notification){
 		if (obj == annotatable && Notification.getCode(notification) == MesquiteListener.ANNOTATION_CHANGED){
 			suppressNotify++;
-			if (textArea != null && annotatable != null)
-			 textArea.setText(annotatable.getAnnotation());
+			if (explTextArea != null && annotatable != null)
+				explTextArea.setText(annotatable.getAnnotation());
+			/*	if (debuggingPanel != null && annotatable != null)
+				debuggingPanel.setText(annotatable.getAnnotation());
+			 */
 		}
 	}
 	/** passes which object was disposed*/
@@ -262,7 +297,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		return true;
 	}
 	public String getExplanation(){
-		return textArea.getText();
+		return explTextArea.getText();
 	}
 
 	int lastTouched = -1;
@@ -434,6 +469,8 @@ class ExplTextArea extends TextArea {
 	ExplanationArea explArea;
 	public ExplTextArea(String text, int rows,  int columns, int scrollbars, ExplanationArea explArea){
 		super(text, rows, columns, scrollbars);
+		setSelectionStart(0);
+		setSelectionEnd(0);
 		this.explArea = explArea;
 	}
 	public void gotFocus(){
@@ -443,6 +480,20 @@ class ExplTextArea extends TextArea {
 		else
 			explArea.hasFocus = true;
 	}
+
+	public void setText(String t){  // and possibly others
+		
+		if (MesquiteTrunk.isMacOSX()){  //this had been a workaround to bug in OS X Snow Leopard, but it slowed alignment too much
+			setSelectionStart(0);
+			setSelectionEnd(0);
+		}
+		super.setText(t);
+		if (MesquiteTrunk.isMacOSX()){
+			setSelectionStart(0);
+			setSelectionEnd(0);
+		}
+	}
+
 	public void processFocusEvent(FocusEvent e) {
 		super.processFocusEvent(e);
 		if (e.getID() == FocusEvent.FOCUS_GAINED && explArea.getFocusSuppression())

@@ -46,16 +46,18 @@
 		<key>ClassPath</key>
 			<string>$APP_PACKAGE/../</string>
 		<key>JVMVersion</key>
-		<string>1.4+</string>
+		<string>1.6+</string>
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
         <key>VMOptions</key>
-        <string>-Xmx500m -Xss2m -Djava.library.path=lib  -Dapple.awt.graphics.UseQuartz=true</string>
+        <string>-d64 -Xmx2000m -Xss8m -Djava.library.path=lib  -Djri.ignore.ule="yes"    -Dapple.awt.graphics.UseQuartz=true</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
 			<string>true</string>
 		</dict>
+		<key>Arguments</key>
+		<string>-mqex</string>
 	</dict>
 </dict>
 </plist>

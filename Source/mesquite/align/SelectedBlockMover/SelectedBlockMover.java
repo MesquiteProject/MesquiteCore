@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -20,7 +20,6 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
@@ -54,7 +53,13 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
-			moveTool = new SelectedBlockTool(this, "selectedBlockMover", getPath(), "SelectedBlockMover.gif", 8,8,"CrossHair.gif",8,8,"Moves a selected block of multiple sequences","This tool moves selected blocks of sequences for manual alignment.", MesquiteModule.makeCommand("moveTouchCell",  this) , MesquiteModule.makeCommand("moveDragCell",  this), MesquiteModule.makeCommand("moveDropCell",  this));
+			MesquiteCommand touchCommand = MesquiteModule.makeCommand("moveTouchCell",  this);
+			touchCommand.setSuppressLogging(true);
+			MesquiteCommand dragCommand = MesquiteModule.makeCommand("moveDragCell",  this);
+			dragCommand.setSuppressLogging(true);
+			MesquiteCommand dropCommand = MesquiteModule.makeCommand("moveDropCell",  this);
+			dropCommand.setSuppressLogging(true);
+			moveTool = new SelectedBlockTool(this, "selectedBlockMover", getPath(), "SelectedBlockMover.gif", 8,8,"CrossHair.gif",8,8,"Moves a selected block of multiple sequences","This tool moves selected blocks of sequences for manual alignment.", touchCommand , dragCommand, dropCommand);
 			setOptionTools();
 			moveTool.setDeselectIfOutsideOfCells(false);
 			moveTool.setAcceptsOutsideDrops(true);

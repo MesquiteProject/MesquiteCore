@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -151,6 +151,10 @@ public class CategoricalData extends CharacterData {
 	public long getDefaultState(){
 		return CategoricalState.unassigned;
 	}
+	/** sets the state of character ic in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
+	public  void deassign(int ic, int it){
+		setState(ic, it, getDefaultState());
+	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns an array of longs for the cells in taxon it, starting at character icStart, for length "length" */
 	public long[] getLongArray(int icStart, int length, int it, boolean includeGaps) {
@@ -291,10 +295,12 @@ public class CategoricalData extends CharacterData {
 			return n;
 		if (matrix == null && matrixShort == null)
 			dataIntegrityAlert("Categorical data with null internal matrix. getNumTaxa() = " + n + " name " + getName() + " file " + getFile());
-		else if (matrix != null && matrix.length>0 && matrix[0] !=null && matrix[0].length != n)
-			dataIntegrityAlert("Categorical matrix with incorrect record of number of taxa. getNumTaxa() = " + n + " matrix[0].length " + matrix[0].length + " name " + getName() + " file " + getFile());
-		else if (matrixShort != null && matrixShort.length>0 && matrixShort[0] !=null && matrixShort[0].length != n)
-			dataIntegrityAlert("Categorical matrix with incorrect record of number of taxa. getNumTaxa() = " + n + " matrixShort[0].length " + matrixShort[0].length + " name " + getName() + " file " + getFile());
+		else if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 ){  //since files read on other thread, suppress warnings
+			if (matrix != null && matrix.length>0 && matrix[0] !=null && matrix[0].length != n)
+				dataIntegrityAlert("Categorical matrix with incorrect record of number of taxa. getNumTaxa() = " + n + " matrix[0].length " + matrix[0].length + " name " + getName() + " file " + getFile());
+			else if (matrixShort != null && matrixShort.length>0 && matrixShort[0] !=null && matrixShort[0].length != n)
+				dataIntegrityAlert("Categorical matrix with incorrect record of number of taxa. getNumTaxa() = " + n + " matrixShort[0].length " + matrixShort[0].length + " name " + getName() + " file " + getFile());
+		}
 		return n;
 	}
 	public int getNumChars(){
@@ -310,7 +316,7 @@ public class CategoricalData extends CharacterData {
 			return 0;
 		}
 		else if (matrix != null && matrix.length !=n){
-			if (notifyIfError && !charNumChanging)
+			if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of characters. getNumChar() = " + n + " matrix.length " + matrix.length + " nAdd = " + nAdd + " nDel = " + nDel + " nMove = " + nMove + " name " + getName() + " file " + getFile());
 			if (matrix.length>n)
 				return n;
@@ -318,7 +324,7 @@ public class CategoricalData extends CharacterData {
 				return matrix.length;
 		}
 		else if (matrixShort != null && matrixShort.length !=n){
-			if (notifyIfError && !charNumChanging)
+			if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of characters. getNumChar() = " + n + " matrixShort.length " + matrixShort.length + " nAdd = " + nAdd + " nDel = " + nDel + " nMove = " + nMove + " name " + getName() + " file " + getFile());
 			if (matrixShort.length>n)
 				return n;
@@ -685,14 +691,14 @@ public class CategoricalData extends CharacterData {
 	/*..........................................  CategoricalData  ..................................................*/
 	/** Get symbol for state st. */
 	public char getSymbol(int st) {
-		if (st <0 || st>=symbols.length)
+		if (symbols == null || st <0 || st>=symbols.length)
 			return getUnassignedSymbol();
 		return symbols[st];
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** Set symbol for state st.  Does not check for duplicate symbols */
 	public void setSymbolDirect(int st, char symbol) {
-		if (st <0 || st>=symbols.length)
+		if (symbols == null ||st <0 || st>=symbols.length)
 			return;
 		setDirty(true);
 		int current = findSymbol(symbol);
@@ -703,7 +709,7 @@ public class CategoricalData extends CharacterData {
 	/*..........................................  CategoricalData  ..................................................*/
 	/** Set symbol for state st.  Returns whether setting implied duplicate symbol */
 	public boolean setSymbol(int st, char symbol) {
-		if (st <0 || st>=symbols.length)
+		if (symbols == null || st <0 || st>=symbols.length)
 			return false;
 		setDirty(true);
 		int current = findSymbol(symbol);
@@ -1226,7 +1232,7 @@ public class CategoricalData extends CharacterData {
 		}
 		else if (v!=getStateRaw(ic, it)) {
 			setState(ic, it, v);
-			setDirty(true, ic, it);
+			//	setDirty(true, ic, it);
 		}
 		if (resultCode.isUnassigned())
 			return OK;
@@ -1309,24 +1315,24 @@ public class CategoricalData extends CharacterData {
 	}
 	/*.................................................................................................................*/
 	public String getChecksumSummaryString(){
-			CategoricalState state=null;
-			long allstates =0L;
-			long allData =0L;
-			double sumSquaresStatesOnly = 0;
-			double sumSquares = 0;
-			for (int ic = 0; ic<numChars; ic++)
-				for (int it=0; it<numTaxa; it++) {
-					state =(CategoricalState)getCharacterState(state, ic, it);
-					long st = state.getValue();
-					sumSquares += st * st;
-					if (!CategoricalState.isUnassigned(st) && !CategoricalState.isInapplicable(st)){
-						allData |= st;
-						st = st & CategoricalState.statesBitsMask;
-						sumSquaresStatesOnly += st * st;
-						allstates |= st;
-					}
+		CategoricalState state=null;
+		long allstates =0L;
+		long allData =0L;
+		double sumSquaresStatesOnly = 0;
+		double sumSquares = 0;
+		for (int ic = 0; ic<numChars; ic++)
+			for (int it=0; it<numTaxa; it++) {
+				state =(CategoricalState)getCharacterState(state, ic, it);
+				long st = state.getValue();
+				sumSquares += st * st;
+				if (!CategoricalState.isUnassigned(st) && !CategoricalState.isInapplicable(st)){
+					allData |= st;
+					st = st & CategoricalState.statesBitsMask;
+					sumSquaresStatesOnly += st * st;
+					allstates |= st;
 				}
-		return "getNumChars " + getNumChars()+ " numChars " + numChars  + " getNumTaxa " + getNumTaxa()  + " numTaxa " + numTaxa + "   short " + usingShortMatrix() + "   bits " + allData + "   states " + allstates + "   sumSquaresStatesOnly " +  sumSquaresStatesOnly + " sumSquares " + sumSquares;
+			}
+		return "getNumChars " + getNumChars()+ " numChars " + numChars  + " getNumTaxa " + getNumTaxa()  + " numTaxa " + numTaxa + "   short " + usingShortMatrix() + "   bits " + allData + "   states " + allstates + "   sumSquaresStatesOnly " +  sumSquaresStatesOnly + " sumSquares " + sumSquares + " longCompressibleToShort " + longCompressibleToShort() + " usingShortMatrix " + usingShortMatrix();
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	public long calculateChecksum(CRC32 crc32, int version){
@@ -1335,6 +1341,11 @@ public class CategoricalData extends CharacterData {
 		if (longCompressibleToShort()){
 			byte[] bytes = new byte[2];
 			crc32.reset();
+			short unc = 0;
+			if (version == 2)
+				unc = (short)(((short)1)<<CategoricalState.uncertainBit);
+			else
+				unc = CategoricalState.compressToShort(1L<<CategoricalState.uncertainBit);
 			for (int ic=0; ic<matrix.length; ic++)
 				for (int it=0; it<matrix[ic].length; it++)  {
 					long longState = matrix[ic][it];
@@ -1346,7 +1357,7 @@ public class CategoricalData extends CharacterData {
 					else if (CategoricalState.isImpossible(state))
 						state = 0;
 					else
-						state &= CategoricalState.statesBitsMaskShort | (((short)1)<<CategoricalState.uncertainBit);
+						state &= CategoricalState.statesBitsMaskShort | unc;
 					bytes = MesquiteNumber.shortToBytes(state, bytes);
 					crc32.update(bytes[0]);
 					crc32.update(bytes[1]);
@@ -1357,6 +1368,11 @@ public class CategoricalData extends CharacterData {
 		else if (usingShortMatrix()){
 			byte[] bytes = new byte[2];
 			crc32.reset();
+			short unc = 0;
+			if (version == 2)
+				unc = (short)(((short)1)<<CategoricalState.uncertainBit);
+			else
+				unc = CategoricalState.compressToShort(1L<<CategoricalState.uncertainBit);
 			for (int ic=0; ic<matrixShort.length; ic++)
 				for (int it=0; it<matrixShort[ic].length; it++)  {
 					short state = matrixShort[ic][it];
@@ -1367,7 +1383,7 @@ public class CategoricalData extends CharacterData {
 					else if (CategoricalState.isImpossible(state))
 						state = 0;
 					else
-						state &= CategoricalState.statesBitsMaskShort | (((short)1)<<CategoricalState.uncertainBit);
+						state &= CategoricalState.statesBitsMaskShort | unc;
 					bytes = MesquiteNumber.shortToBytes(state, bytes);
 					crc32.update(bytes[0]);
 					crc32.update(bytes[1]);
@@ -1500,27 +1516,31 @@ public class CategoricalData extends CharacterData {
 		return crc32.getValue();
 	}
 	boolean anyImpossible(MesquiteInteger icM, MesquiteInteger itM){
-		if (usingShortMatrix()){
-			for (int ic=0; ic<matrixShort.length; ic++)
-				for (int it=0; it<matrixShort[ic].length; it++)  {
-					short state = matrixShort[ic][it];
-					if (CategoricalState.isImpossible(state)) {
-						icM.setValue(ic);
-						itM.setValue(it);
-						return true;
+		try {
+			if (usingShortMatrix()){
+				for (int ic=0; ic<matrixShort.length; ic++)
+					for (int it=0; it<matrixShort[ic].length; it++)  {
+						short state = matrixShort[ic][it];
+						if (CategoricalState.isImpossible(state)) {
+							icM.setValue(ic);
+							itM.setValue(it);
+							return true;
+						}
 					}
-				}
+			}
+			else {
+				for (int ic=0; ic<matrix.length; ic++)
+					for (int it=0; it<matrix[ic].length; it++)  {
+						long state = matrix[ic][it];
+						if (CategoricalState.isImpossible(state)) {
+							icM.setValue(ic);
+							itM.setValue(it);
+							return true;
+						}
+					}
+			}
 		}
-		else {
-			for (int ic=0; ic<matrix.length; ic++)
-				for (int it=0; it<matrix[ic].length; it++)  {
-					long state = matrix[ic][it];
-					if (CategoricalState.isImpossible(state)) {
-						icM.setValue(ic);
-						itM.setValue(it);
-						return true;
-					}
-				}
+		catch (NullPointerException e){  //would happen if matrix being disposed of asynchronously
 		}
 		return false;
 	}
@@ -2358,28 +2378,51 @@ public class CategoricalData extends CharacterData {
 
 	/*..........................................CategoricalData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object */
-	public void mergeSecondTaxonIntoFirst(int it1, int it2) {
+	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
 		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
-			return;
+			return false;
 
+		boolean mergedAssigned = false;
 		for (int ic=0; ic<getNumChars(); ic++) {
 			long s1 = getState(ic,it1);
 			long s2 = getState(ic,it2);
+			if (	(s1& CategoricalState.statesBitsMask) != 0L && (s2& CategoricalState.statesBitsMask) != 0L)
+				mergedAssigned = true;
+
 			long sMerged = CategoricalState.mergeStates(s1,s2);
 			setState(ic,it1,sMerged);
 		}
+		return mergedAssigned;
 	}
 	/*..........................................CategoricalData.....................................*/
-	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object */
-	public void mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
+	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
+	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
+	 * unassigned + assigned or inapplicable + assigned */
+	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
 		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
-			return;
-
+			return null;
+		boolean[] mA = new boolean[taxaToMerge.length];
+		boolean mergedAssigned = false;
+		boolean firstHasData = hasDataForTaxon(sinkTaxon);
 		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
-			if (it!=sinkTaxon && taxaToMerge[it])
-				mergeSecondTaxonIntoFirst(sinkTaxon, it);
-		}
+			if (it!=sinkTaxon && taxaToMerge[it]){
+				boolean mergingHadData = hasDataForTaxon(it);
+				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it);
+				if (mergingHadData && ! firstHasData){
+					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
+					Associable a = getTaxaInfo(false);
+					if (a != null)
+						a.swapParts(sinkTaxon, it);
+				}
+				mA[it] = ma;   
+				mergedAssigned = mergedAssigned | ma;
 
+			}
+		}
+		if (mergedAssigned)
+			return mA;
+		else
+			return null;
 	}
 
 }

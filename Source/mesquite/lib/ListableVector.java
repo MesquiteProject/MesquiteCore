@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -26,6 +26,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public static int totalCreated = 0;
 	public static int totalDisposed = 0;
 	public static int totalFinalized = 0;
+	public static long totalElementsAdded = 0;
 	MesquiteListWindow listWindow;
 	public ListableVector() {
 		super(0);
@@ -262,6 +263,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 				return;
 			}
 			code = 0;
+			totalElementsAdded++;
 			addParts(size(), 1);
 			code = 1;
 			vec.addElement(obj);
@@ -408,8 +410,10 @@ public class ListableVector extends FileElement implements StringLister, Command
 		numElements = vec.size();
 		if (m != null)
 			m.elementsReordered(this);
-		return super.moveParts(starting, num, justAfter);
-		
+		boolean moved = super.moveParts(starting, num, justAfter);
+		if (false)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
+		return moved;
 	}
  	/*.................................................................................................................*/
 	/** notifies listeners that element has been disposed*/

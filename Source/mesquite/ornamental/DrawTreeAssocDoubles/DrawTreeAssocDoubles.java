@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	public Vector extras;
 	public boolean first = true;
-	MesquiteBoolean on, percentage, horizontal, centred;
+	MesquiteBoolean on, percentage, horizontal, centred, whiteEdges;
 	public ListableVector names;
 	static boolean asked= false;
 	int digits = 4;
@@ -40,12 +40,14 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		percentage = new MesquiteBoolean(false);
 		horizontal = new MesquiteBoolean(true);
 		centred = new MesquiteBoolean(true);
+		whiteEdges = new MesquiteBoolean(true);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Values");
 		addItemToSubmenu(null, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
 		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
 		addCheckMenuItemToSubmenu(null, mss, "Show As Percentage", makeCommand("writeAsPercentage",  this), percentage);
 		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
 		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
+		addCheckMenuItemToSubmenu(null, mss, "White Edges", makeCommand("toggleWhiteEdges",  this), whiteEdges);
 		addItemToSubmenu(null, mss, "Font Size...", makeCommand("setFontSize",  this));
 		addItemToSubmenu(null, mss, "Locations...", makeCommand("setOffset",  this));
 		return true;
@@ -76,6 +78,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			temp.addLine("writeAsPercentage " + percentage.toOffOnString());
 			temp.addLine("toggleCentred " + centred.toOffOnString());
 			temp.addLine("toggleHorizontal " + horizontal.toOffOnString());
+			temp.addLine("toggleWhiteEdges " + whiteEdges.toOffOnString());
 			temp.addLine("setFontSize " + fontSize); 
 			temp.addLine("setOffset " + xOffset + "  " + yOffset); 
 		}
@@ -98,7 +101,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		else if (checker.compare(this.getClass(), "Shows dialog box to choose what values to display", null, commandName, "chooseValues")) {
 			if (extras.size() == 0)
 				return null;
-			showChoiceDialog((Associable)((NodeAssocValuesExtra)extras.elementAt(0)).lastTree);
+			showChoiceDialog((Associable)((NodeAssocValuesExtra)extras.elementAt(0)).lastTree, names);
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to write the values as percentage", "[on or off]", commandName, "writeAsPercentage")) {
 			if (StringUtil.blank(arguments))
@@ -107,11 +110,18 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 				percentage.toggleValue(parser.getFirstToken(arguments));
 			if (!MesquiteThread.isScripting()) parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to write the values horizontally", "[on or off]", commandName, "toggleHorizontal")) {
+		else if (checker.compare(this.getClass(), "Sets whether to write the values with horizontally", "[on or off]", commandName, "toggleHorizontal")) {
 			if (StringUtil.blank(arguments))
 				horizontal.setValue(!horizontal.getValue());
 			else
 				horizontal.toggleValue(parser.getFirstToken(arguments));
+			if (!MesquiteThread.isScripting()) parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to write the values white edges", "[on or off]", commandName, "toggleWhiteEdges")) {
+			if (StringUtil.blank(arguments))
+				whiteEdges.setValue(!whiteEdges.getValue());
+			else
+				whiteEdges.toggleValue(parser.getFirstToken(arguments));
 			if (!MesquiteThread.isScripting()) parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to write the values centrally over the branches", "[on or off]", commandName, "toggleCentred")) {
@@ -180,7 +190,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		return null;
 	}
 	/*.................................................................................................................*/
-	void showChoiceDialog(Associable tree) {
+	void showChoiceDialog(Associable tree, ListableVector names) {
 		if (tree == null)
 			return;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -276,7 +286,10 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 			if (MesquiteDouble.isCombinable(d)){
 				if (assocDoublesModule.percentage.getValue())
 					d *= 100;
-				box.setColors(Color.black, Color.white);
+				if (assocDoublesModule.whiteEdges.getValue())
+					box.setColors(Color.black, Color.white);
+				else
+					box.setColors(Color.black, null);
 				box.setString(MesquiteDouble.toStringDigitsSpecified(d, assocDoublesModule.digits));
 
 				int x, y;

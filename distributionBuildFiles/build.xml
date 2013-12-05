@@ -7,6 +7,7 @@
 				<exclude name="${osxdirpath}" />
 				<exclude name="${osxdirpath500M}" />				
 				<exclude name="${osxdirpath1G}" />				
+				<exclude name="${osxdirpath2G}" />				
 				<exclude name="**/*.java"/>
 				<exclude name="**/*.html"/>
 			</fileset>
@@ -70,12 +71,14 @@
 				<include name="${osxdirpath}"/>
 				<include name="${osxdirpath500M}"/>				
 				<include name="${osxdirpath1G}"/>				
+				<include name="${osxdirpath2G}"/>				
 			</fileset>
 		</copy>
 		
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdirname}/Contents/MacOS/Mesquite'"/>
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir500Mname}/Contents/MacOS/Mesquite'"/>		
 		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir1Gname}/Contents/MacOS/Mesquite'"/>		
+		<exec os="Mac OS X,Linux" command="chmod 775 '${mesquitefolder.dir}/${osxdir2Gname}/Contents/MacOS/Mesquite'"/>		
 		
 		<!-- create .dmg -->
 		<exec executable="hdiutil" failonerror="false" os="Mac OS X">
@@ -154,7 +157,7 @@
 	<target name="init"> 
 		<property environment="env" />
 		<property name="dist.dir" location="../dist" />
-		<property name="mesquite.version" value="2.74" />
+		<property name="mesquite.version" value="2.75" />
 		<property name="release.dir" location="${dist.dir}/Mesquite ${mesquite.version}" />
 		<property name="mesquitefoldername" value="Mesquite_Folder"/>
 		<property name="mesquitefolder.dir" location="${release.dir}/${mesquitefoldername}" />
@@ -191,6 +194,8 @@
 		<property name="osxdirpath500M" value="**/${osxdir500Mname}/" />		
 		<property name="osxdir1Gname" value="Mesquite (1GB).app" />				
 		<property name="osxdirpath1G" value="**/${osxdir1Gname}/" />		
+		<property name="osxdir2Gname" value="Mesquite (2GB).app" />				
+		<property name="osxdirpath2G" value="**/${osxdir2Gname}/" />		
 
 		<!-- server destination locations -->
 		<property file="${buildfiles.dir}/serverinfo.properties" />

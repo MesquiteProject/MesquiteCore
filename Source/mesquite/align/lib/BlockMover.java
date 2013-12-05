@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
- Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+ Version 2.75, September 2011.
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -62,7 +62,13 @@ public abstract class BlockMover extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
-			moveTool = new AlignTool(this, getToolName(), getPath(), getCellToolImageFileName(), getCellToolHotSpot().x,getCellToolHotSpot().y,getSplitToolImageFileName(), getSplitToolHotSpot().x,getSplitToolHotSpot().y,getFullDescriptionForTool(),getExplanationForTool(), MesquiteModule.makeCommand("moveTouchCell",  this) , MesquiteModule.makeCommand("moveDragCell",  this), MesquiteModule.makeCommand("moveDropCell",  this));
+			MesquiteCommand touchCommand = MesquiteModule.makeCommand("moveTouchCell",  this);
+			touchCommand.setSuppressLogging(true);
+			MesquiteCommand dragCommand = MesquiteModule.makeCommand("moveDragCell",  this);
+			dragCommand.setSuppressLogging(true);
+			MesquiteCommand dropCommand = MesquiteModule.makeCommand("moveDropCell",  this);
+			dropCommand.setSuppressLogging(true);
+			moveTool = new AlignTool(this, getToolName(), getPath(), getCellToolImageFileName(), getCellToolHotSpot().x,getCellToolHotSpot().y,getSplitToolImageFileName(), getSplitToolHotSpot().x,getSplitToolHotSpot().y,getFullDescriptionForTool(),getExplanationForTool(), touchCommand, dragCommand, dropCommand);
 			setOptionTools();
 			//moveTool.setUseTableTouchRules(true);
 			((MesquiteWindow)containerOfModule()).addTool(moveTool);
@@ -218,7 +224,7 @@ public abstract class BlockMover extends DataWindowAssistantI {
 			MesquiteInteger boundaryOfAvailableSpace = new MesquiteInteger(0);
 
 			if (canMoveRight() && betweenCells && (moveFromOriginal>0 || (moveFromOriginal==0 && previousPercentHorizontal > percentHorizontal)) && (!lastWasMoveRight || pleaseDefineCellBlock)) {  //was dragging left, now switch to dragging right
-	
+
 
 				if (alreadyMoved)
 					cellBlock.restoreCharBlock(dataChanged);
@@ -253,7 +259,7 @@ public abstract class BlockMover extends DataWindowAssistantI {
 				cellBlock.switchCharBlock(cellBlock.getOriginalFirstCharInFullBlock(),effectiveFirstColumnTouched);
 				gapsAvailableToRight = data.checkCellMoveDistanceAvailable(data.getNumChars()-cellBlock.getCurrentLastCharInBlock(), cellBlock.getCurrentFirstCharInBlock(), cellBlock.getCurrentLastCharInBlock(), firstRowTouched,firstRowTouched, isTerminalBlock, boundaryOfAvailableSpace, canExpand.getValue());
 				gapsAvailableToLeft = data.checkCellMoveDistanceAvailable(-cellBlock.getCurrentFirstCharInBlock(), cellBlock.getCurrentFirstCharInBlock(), cellBlock.getCurrentLastCharInBlock(), firstRowTouched,firstRowTouched, isTerminalBlock, boundaryOfAvailableSpace, canExpand.getValue());
-				
+
 				lastWasMoveRight = false;
 				alreadyMoved = false;
 				if (MesquiteInteger.isCombinable(storedPreviousColumnDragged))

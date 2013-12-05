@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
- Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+ Version 2.75, September 2011.
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -30,7 +30,7 @@ public class DNAData extends MolecularData {
 	public static final NameReference complementedRef = NameReference.getNameReference("complemented"); //long: tInfo, data(ch); MesquiteInteger: data(cells)
 
 	public static Color dnaRed, dnaGreen, dnaYellow, dnaBlue;
-	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale;
+	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale, dnaInapplicable, dnaUnassigned;
 
 	CodonPositionsSet codonPositionsSet = null;
 
@@ -48,6 +48,8 @@ public class DNAData extends MolecularData {
 		dnaGreenPale = new Color((float) 0.6, (float) 1, (float) 0.6);
 		dnaYellowPale = new Color((float) 1, (float) 1, (float) 0.6);
 		dnaBluePale = new Color((float) 0.7, (float) 0.7, (float) 1);
+		dnaInapplicable = new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable
+		dnaUnassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
 		A = "A";
 		C = "C";
 		G = "G";
@@ -222,9 +224,9 @@ public class DNAData extends MolecularData {
 			}
 		}
 		else if (isInapplicable(ic,it))
-			return ColorDistribution.inapplicable;
+			return dnaInapplicable;
 		else
-			return ColorDistribution.unassigned;
+			return dnaUnassigned;
 	}
 
 	public static Color getDNAColorOfState(int istate) {
@@ -237,7 +239,7 @@ public class DNAData extends MolecularData {
 		else if (istate == 3)
 			return dnaBlue;
 		else
-			return ColorDistribution.unassigned;
+			return dnaUnassigned;
 	}
 
 	public static Color getDNAColorOfStatePale(int istate) {
@@ -250,7 +252,7 @@ public class DNAData extends MolecularData {
 		else if (istate == 3)
 			return dnaBluePale;
 		else
-			return ColorDistribution.unassigned;
+			return dnaUnassigned;
 	}
 	/** returns the color of character ic; e.g., to indicate codon positions */
 	public Color getDefaultCharacterColor(int ic) {

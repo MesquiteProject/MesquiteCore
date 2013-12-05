@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -13,8 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import java.text.Collator;
+import java.text.*;
 
+import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -47,6 +48,25 @@ public class StringUtil {
 	public static String getUniqueObjectID(){
 		return "Mesquite"+ MesquiteTrunk.mesquiteTrunk.getVersion() + URL+startupTimeMillis;
 	}
+	/*.................................................................................................................*/
+	public static String getDateTime(Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM yyyy,  HH:mm z");
+		return sdf.format(date);
+	}
+	/*.................................................................................................................*/
+	public static String getDateTime() {
+		long startupTime = System.currentTimeMillis();
+		Date dnow = new Date(startupTime);
+		return getDateTime(dnow);
+	}
+	/*.................................................................................................................*/
+	public static String getOutputFileStamp(MesquiteModule m) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Mesquite version " + m.getMesquiteVersion() + m.getBuildVersion() + "\n");
+		sb.append(StringUtil.getDateTime());
+		return sb.toString();
+	}
+
 	/*.................................................................................................................*/
 	public static String secondsToHHMMSS(int sec) {
 

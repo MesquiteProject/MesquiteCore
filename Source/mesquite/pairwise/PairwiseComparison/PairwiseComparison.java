@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -523,7 +523,7 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 	}
 	/*.................................................................................................................*/
 	private void calculateCategories(TaxaPairing pairing, Tree tree) {
-		if (tree == null || pairing == null || cat == null)
+		if (tree == null || pairing == null || cat == null || observedStatesA == null || observedStatesB == null)
 			return;
 		for  (int j=0; j<4; j++)
 			cat[j]=0;
@@ -531,10 +531,10 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 		int numPaths = pairing.getNumPairs();
 		for (int i=0; i<numPaths; i++) {
 			TaxaPath path =pairing.getPath(i);
+			if (path == null)
+				return;
 			int tax1 =path.gettaxon1();
 			int tax2 = path.gettaxon2();
-			int t1 = tree.nodeOfTaxonNumber(tax1);
-			int t2 =  tree.nodeOfTaxonNumber(tax2);
 
 			if (observedStatesA.firstIsGreater(tax1, tax2)) {
 				if (observedStatesB.firstIsGreater(tax1, tax2))

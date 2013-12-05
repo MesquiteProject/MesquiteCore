@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -50,8 +50,14 @@ public class ManageSetsBlock extends FileInit {
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		int c = 0;
 		String s;
-		SETSBlock sB = new SETSBlock(file, this); //TODO: should this store the sets??
-			numBlocks++;
+		NexusBlock[] bs = getProject().getNexusBlocks(SETSBlock.class, file);//added Sept 2011
+		SETSBlock sB = null;
+		if (bs == null || bs.length == 0)
+			sB = new SETSBlock(file, this); //TODO: should this store the sets??
+		else
+			sB= (SETSBlock)bs[0];
+		
+		numBlocks++;
 		int numChars=0;
 		MesquiteString comment = new MesquiteString();
 		while (!StringUtil.blank(s=block.getNextFileCommand(comment))) {

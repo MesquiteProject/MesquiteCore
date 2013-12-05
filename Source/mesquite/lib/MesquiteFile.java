@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -85,6 +85,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static String fileSeparator;
 	public static boolean appendToLog = false;
 	private byte[] lineEndingBytes;
+
+	public ListableVector taxaNameTranslationTable = new ListableVector();
+	public ListableVector characterDataNameTranslationTable = new ListableVector();
 
 	private Author previousSaver;
 
@@ -496,48 +499,52 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		catch(InterruptedException e){}
 		boolean dirty = false;
-		if (fileElements!=null){
-			project.incrementProjectWindowSuppression();
-			int numElements = fileElements.size();
-			Enumeration eD = fileElements.elements();
-			int numDisposed=0;
-			int numToDispose = calcNumToDispose();
-			boolean didOne;
-			while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
-				didOne=false;
-				numToDispose = calcNumToDispose();
-				if (numToDispose>0){
-					Enumeration eDd = fileElements.elements();
-					while (eDd.hasMoreElements()) {
-						FileElement elem = (FileElement)eDd.nextElement();
-						elem.projectClosing = projectClosing;
-						if (projectClosing)
-							elem.incrementNotifySuppress();
-						elem.dispose();
-						if (!elem.isDoomed())
-							MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
-						numDisposed++;
-						project.removeFileElement(elem);
-						numToDispose--;
-						didOne = true;
+		try {
+			if (fileElements!=null){
+				project.incrementProjectWindowSuppression();
+				int numElements = fileElements.size();
+				Enumeration eD = fileElements.elements();
+				int numDisposed=0;
+				int numToDispose = calcNumToDispose();
+				boolean didOne;
+				while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
+					didOne=false;
+					numToDispose = calcNumToDispose();
+					if (numToDispose>0){
+						Enumeration eDd = fileElements.elements();
+						while (eDd.hasMoreElements()) {
+							FileElement elem = (FileElement)eDd.nextElement();
+							elem.projectClosing = projectClosing;
+							if (projectClosing)
+								elem.incrementNotifySuppress();
+							elem.dispose();
+							if (!elem.isDoomed())
+								MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
+							numDisposed++;
+							project.removeFileElement(elem);
+							numToDispose--;
+							didOne = true;
+						}
+						if (!didOne)
+							MesquiteMessage.warnProgrammer("oops, cycle none disposed");
 					}
-					if (!didOne)
-						MesquiteMessage.warnProgrammer("oops, cycle none disposed");
 				}
-			}
-			if (numElements!= numDisposed && fileElements.size()>0) {
-				MesquiteMessage.warnProgrammer("Number elements disposed (" + numDisposed + ") not same as number reference (" + numElements + ") in file " + getName());
-				Enumeration eDe = fileElements.elements();
-				while (eDe.hasMoreElements()) {
-					FileElement elem = (FileElement)eDe.nextElement();
-					if (!elem.isDisposed())
-						MesquiteMessage.warnProgrammer("    Not disposed: " + elem.getName() + " of class " + elem.getClass().getName());
+				if (numElements!= numDisposed && fileElements.size()>0) {
+					MesquiteMessage.warnProgrammer("Number elements disposed (" + numDisposed + ") not same as number reference (" + numElements + ") in file " + getName());
+					Enumeration eDe = fileElements.elements();
+					while (eDe.hasMoreElements()) {
+						FileElement elem = (FileElement)eDe.nextElement();
+						if (!elem.isDisposed())
+							MesquiteMessage.warnProgrammer("    Not disposed: " + elem.getName() + " of class " + elem.getClass().getName());
+					}
 				}
+				fileElements.removeAllElements(false);
+				fileElements.dispose();
+				fileElements = null;
+				project.decrementProjectWindowSuppression();
 			}
-			fileElements.removeAllElements(false);
-			fileElements.dispose();
-			fileElements = null;
-			project.decrementProjectWindowSuppression();
+		}
+		catch (NullPointerException e){
 		}
 		project.removeFile(this);
 		closed = true;
@@ -2123,11 +2130,21 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Checks to see if path leads to a file that is not a directory*/
 	public static String getAvailableFileName(String directoryName, String fileNameBase) {
 		if (!fileExists(directoryName,fileNameBase))
-				return fileNameBase;
+			return fileNameBase;
 		int counter=1;
 		while (fileExists(directoryName,fileNameBase+counter))
 			counter++;
 		return fileNameBase+counter;
+	}	
+	/*.................................................................................................................*/
+	/** Checks to see if path leads to a file that is not a directory*/
+	public static String getAvailableFileName(String directoryName, String fileNameBase, String fileNameExtension) {
+		if (!fileExists(directoryName,fileNameBase+fileNameExtension))
+			return fileNameBase+fileNameExtension;
+		int counter=1;
+		while (fileExists(directoryName,fileNameBase+counter+fileNameExtension))
+			counter++;
+		return fileNameBase+counter+fileNameExtension;
 	}	
 	/*.................................................................................................................*/
 	/** Checks to see if can write to a file*/
@@ -3023,6 +3040,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}
 	/** Returns the explanation (e.g., footnote plus additional information) of this file */
 	public String getExplanation(){
+		if (project == null)
+			return "No project";
 		String extra = "";
 		extra += "This file has " + project.getNumberTaxas(this)+ " block(s) of taxa and  " + project.getNumberCharMatrices(this)+ " character matrices.\n";
 		if (project.getNumberLinkedFiles()>1)

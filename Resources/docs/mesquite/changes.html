@@ -160,6 +160,27 @@
               <p><font face="Trebuchet MS">There is also a short list of <a href="#releaseDates">release
               dates</a>.</font></p>
                 <hr>
+               <h3><font face="Trebuchet MS">Version 2.75</font></h3>
+              <h4><font face="Trebuchet MS">New Features</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+
+                <li>In the List of Trees window, there is now a small magnifying glass cursor. When you touch on a tree in the list, the tree is shown in a Tree Window.</li>
+                <li>In the Balls&amp;Sticks tree drawing mode, you can now turn off the balls on internal nodes. This can be useful to make an illustration with character states shown only at the tips of the tree. First, turn on Trace Character History, then select the menu item <strong>Balls on Internal Nodes</strong> to turn off the display of balls on internal nodes.</li>
+                <li>Continuous characters can now be discretized by selecting the characters in the Character Matrix Editor, then choosing <strong>Discretize Selected Characters</strong> under the Utilities submenu. Before doing that, you need to have a categorical data matrix available to which the discretized characters will be added.</li>
+                <li>There is a new column available in the List of Taxa window, &quot;<strong>Mark Taxa</strong>&quot;. With it you can mark taxa with  a name, and toggle the named mark off or on. Thus if you name the mark &quot;Resequence&quot; then marked taxa will have &quot;Resequence&quot; in their row in that column. To mark a taxon, touch on its row in that column with the arrow cursor. To change the name of the mark, use the drop down menu at the top of the column.</li>
+                <li>It is now possible to rearrange the order of columns in the List windows (List of Taxa, List of Characters, and so on) using the menu item Move Selected Columns... in the Column menu.</li>
+              </ul>
+             <h4><font face="Trebuchet MS">Bug Fixes</font></h4>
+              <font face="Trebuchet MS"> </font> 
+              <ul>
+
+                <li>(<img src="images/prerelease.gif" alt="substantive" width="14" height="14">) There had been a bug with <strong>consensus tree calculation</strong> when not all taxa were included in the input trees. In this situation, the consensus tree insofar as it was shown was correct, but it could have been an incomplete tree, with some taxa missing. This bug has been fixed.</li>
+                <li>If tree blocks were deleted or moved in sequence while a calculation using tree blocks was in effect, and the file saved, on reopening the calculation may have used a different tree block than intended. This bug has been fixed.</li>
+                <li>FASTA file export now handles taxon names with spaces and punctuation without adding underscores or quotes.</li>
+                <li>Alignment using Muscle sometimes failed under Windows; this has been fixed.</li>
+              </ul>
+            <hr>
                <h3><font face="Trebuchet MS">Version 2.74</font></h3>
               <h4><font face="Trebuchet MS">New Features</font></h4>
               <font face="Trebuchet MS"> </font> 
@@ -1384,6 +1405,10 @@
 				<H3><font face="Trebuchet MS"><a name="releaseDates"></a>Release Dates</font></H3>
 				<table width="300" border="0" cellspacing="0" cellpadding="0">
    <tr>
+    <td>2.75</td>
+    <td><font face="Trebuchet MS">30 September 2011</font></td>
+  </tr>
+   <tr>
     <td>2.74</td>
     <td><font face="Trebuchet MS">3 October 2010</font></td>
   </tr>
@@ -1474,7 +1499,7 @@
               Home Page</font></a><font size="2"> | <a href="manual.html">Mesquite
               Manual</a></font></span></font></p>
               <p><font face="Trebuchet MS"><span class="smallplain">Copyright 
-                &copy; 2002-2010 by <a href="http://salticidae.org/wpm/home.html">Wayne 
+                &copy; 2002-2011 by <a href="http://salticidae.org/wpm/home.html">Wayne 
                 P. Maddison</a> and <a href="http://david.bembidion.org">David 
                 R. Maddison</a>.<br>
 &nbsp;All rights reserved.</span></font></p></td>

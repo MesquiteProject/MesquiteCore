@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -98,14 +98,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			mss.setCompatibilityCheck(ownerModule.getAddColumnCompatibility());
 		if (columnsRemovable()){
 			ownerModule.addMenuItem(acm, "-", null);
+			ownerModule.addMenuItem(acm, "Move Selected Columns...", ownerModule.makeCommand("moveSelectedColumns", this));
 			ownerModule.addMenuItem(acm, "Hide Selected Columns", ownerModule.makeCommand("deleteSelectedColumns", this));
 		}
 
-		/*MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Show Column", ownerModule.makeCommand("newAssistant", this),owner.getAssistantClass());
-		mss.setCompatibilityCheck(ownerModule.getAddColumnCompatibility());
-		if (columnsRemovable())
- 			ownerModule.addMenuItem( "Hide Selected Columns", ownerModule.makeCommand("deleteSelectedColumns", this));
-		 */
 
 
 		//ownerModule.addMenuItem( "-", null);
@@ -152,8 +148,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
 	public void changed(Object caller, Object obj, Notification notification){
 		if (obj == getCurrentObject() && getCurrentObject() instanceof Associable && caller != this && caller != table) {
-				table.synchronizeRowSelection((Associable)getCurrentObject());
-			}
+			table.synchronizeRowSelection((Associable)getCurrentObject());
+		}
 		super.changed(caller, obj, notification);
 	}
 	/*.................................................................................................................*/
@@ -233,6 +229,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		}
 		else if (checker.compare(this.getClass(), "Deletes the selected columns", null, commandName, "deleteSelectedColumns")) {
 			deleteSelectedColumns();
+		}
+		else if (checker.compare(this.getClass(), "Moves the selected columns", null, commandName, "moveSelectedColumns")) {
+			moveSelectedColumns();
 		}
 		else if (checker.compare(this.getClass(), "Present the popup menu to select options for magic wand", null, commandName, "wandOptions")) {
 			MesquiteButton button = wandTool.getButton();
@@ -357,6 +356,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						swapParts(assoc, j, j+1, text);
 					}
 				}
+				processPostSwap(assoc);
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -468,6 +468,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		text[first] = text[second];
 		text[second] = temp;
 		assoc.swapParts(first, second); 
+	}
+	public void processPostSwap(Associable assoc){
 	}
 	boolean satisfiesCriteria(String one, String two){
 		if (StringUtil.blank(one) && StringUtil.blank(two))
@@ -652,6 +654,69 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			ownerModule.alert("Columns must be selected before \"Hide\" command is given");
 	}
 
+	void moveSelectedColumns() {
+		int numSelected = 0;
+		for (int ic = table.getNumColumns()-1; ic>=0; ic--){
+			if (table.isColumnSelected(ic)) { 
+				numSelected++;
+			}
+		}
+		if (numSelected>0) {
+			String summary = "[Current columns: ";
+			for (int ic = 0; ic<table.getNumColumns(); ic++){
+				ListAssistant mb =findAssistant(ic);
+				mb.attachments.addElement(new MesquiteInteger("cwi", table.getColumnWidth(ic)), false);
+				mb.attachments.addElement(new MesquiteBoolean("cwb", table.columnAdjusted(ic)), false);
+				summary += " (" + (ic+1) + ") " + mb.getTitle() + ";";
+			}
+			summary += "]";
+
+			int whereToMove = MesquiteInteger.queryInteger(this, "Move column(s) where?", "Indicate the column after which the selected columns are to be moved.  If you want to move them to be the first columns, enter 0. " + summary, 0);  //1-based column number after which selected should be moved  
+			ListAssistant boundaryEmployee = null;  //this is the assistant after which the selected columns should be moved; if null then move to start
+			if (!MesquiteInteger.isCombinable(whereToMove))
+				return;
+			if (whereToMove>0) {
+				if (whereToMove >table.getNumColumns())
+					whereToMove = table.getNumColumns();
+
+				boundaryEmployee = findAssistant(whereToMove-1);
+			}
+
+
+			ListAssistant[] which = new ListAssistant[numSelected];
+			int count = 0;
+			for (int ic = 0; ic<table.getNumColumns(); ic++){
+				if (table.isColumnSelected(ic)) { //columns selected get deleted!
+					which[count++]=findAssistant(ic);
+				}
+			}
+			for (int ic = 0; ic<numSelected; ic++){
+				ListAssistant assistant = which[ic];
+				moveEmployeeAfter(assistant, boundaryEmployee);
+				boundaryEmployee = assistant;
+			}
+			for (int ic = 0; ic<table.getNumColumns(); ic++){
+				ListAssistant mb =findAssistant(ic);
+				MesquiteInteger cwi = (MesquiteInteger)mb.attachments.getElement("cwi");
+				MesquiteBoolean cwb = (MesquiteBoolean)mb.attachments.getElement("cwb");
+				table.setColumnWidth(ic, cwi.getValue(), cwb.getValue());
+				mb.attachments.removeElement(cwi, false);
+				mb.attachments.removeElement(cwb, false);
+			}
+			table.deselectAllColumns(true);
+			for (int ic = 0; ic<numSelected; ic++){
+				int column = findAssistant(which[ic]);
+				table.selectColumns(column, column);
+			}
+			table.repaintAll();
+		}
+		else
+			ownerModule.alert("Columns must be selected before \"Move\" command is given");
+	}
+	void moveEmployeeAfter(ListAssistant toBeMoved, ListAssistant after){
+		//complex because want to keep column widths as is.  Thus, figure out 
+		ownerModule.moveEmployeeAfter(toBeMoved, after);
+	}
 	public void addRowsNotify(int first, int num) {
 	}
 

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -501,14 +501,20 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 		* @author Peter Midford
 		*/
 		public void windowToPDF(MesquitePDFFile pdfFile, int fitToPage) {
-			// These windows don't currently support text mode, so no need to check infoBar (which doesn't seem to be around.
+			try{
+				// These windows don't currently support text mode, so no need to check infoBar (which doesn't seem to be around.
 			if (pdfFile != null) {
 				Graphics g = pdfFile.getPDFGraphicsForComponent(this.getOuterContentsArea(),null);
+				if (g == null || treeDisplays == null || treeDisplays[0] == null || treeDisplays[1]==null)
+					return;
 				sizeDisplays();
 				treeDisplays[0].print(g);
 				g.translate((int)treeDisplays[1].getLocation().getX(),(int)treeDisplays[1].getLocation().getY());
 				treeDisplays[1].print(g);
 				pdfFile.end();
+			}
+			}
+			catch (NullPointerException e){  //seems to be an issue...
 			}
 		}
 		/**

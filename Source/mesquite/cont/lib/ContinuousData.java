@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -812,6 +812,28 @@ public class ContinuousData extends CharacterData implements ItemContainer {
 				incrementStatesVersion();
 			}
 		}
+	}
+	/** sets the state of character ic in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
+	public  void deassign(int ic, int it){
+		setToUnassigned(ic, it);	
+	}
+	/*..........................................  ContinuousData  ..................................................*/
+	/** sets the state of character ic in taxon it to inapplicable*/
+	public  void setToInapplicable(int ic, int it){
+		for (int item = 0; item<getNumItems(); item++){
+			Double2DArray matrix = ((Double2DArray)matrices.elementAt(item));
+					matrix.setValue(ic,it,ContinuousState.inapplicable); //filling with missing data
+		}	
+		setDirty(true, ic, it);
+	}
+	/*..........................................  ContinuousData  ..................................................*/
+	/** sets the state of character ic in taxon it to unassigned*/
+	public  void setToUnassigned(int ic, int it){
+		for (int item = 0; item<getNumItems(); item++){
+			Double2DArray matrix = ((Double2DArray)matrices.elementAt(item));
+					matrix.setValue(ic,it,ContinuousState.unassigned); //filling with missing data
+		}	
+		setDirty(true, ic, it);
 	}
 	/*..........................................ContinuousData................*/
 	public void setState(int ic, int it, String s){

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -231,6 +231,15 @@ public class StringInABox {
 			e.printStackTrace();
 		}
 	}
+	private char getCharAt(StringBuffer sb, int i){
+		try {
+			if (i < sb.length())
+			return sb.charAt(i);
+		}
+		catch (StringIndexOutOfBoundsException e){
+		}
+		return 0;
+	}
 	/* ----------------------------------------------- */
 	/* takes stringBuffer and inserts line breaks as needed to satisfy available width, does some other processing
 	(e.g., tabs to spaces, \r to \n), then converts to an array of strings*/
@@ -258,8 +267,7 @@ public class StringInABox {
 					return;
 				}
 				char nextChar = 0;
-				if (i < sb.length())
-					nextChar = sb.charAt(i);
+					nextChar = getCharAt(sb, i);
 				if (lineEnd(nextChar)) {
 					sMunched.append(linebreak);
 					pos = 0;
@@ -304,24 +312,20 @@ public class StringInABox {
 					int wordLength = 0;
 					int j = i;
 					char c =(char)0;;
-					if (j<sb.length())
-						c = sb.charAt(j);
+						c = getCharAt(sb, j);
 					while (j<sb.length() && !StringUtil.punctuation(c, null) && !StringUtil.whitespace(c, null)) { //measuring next word
 						wordLength +=fm.charWidth(c);
 						j++;
-						if (j<sb.length())
-							c = sb.charAt(j);
+							c = getCharAt(sb, j);
 					}
 					if ((wordLength>=width && pos==0) || pos+wordLength<width){ 
 						//single word wider than width; break into pieces;  or, will fit and og as far as can
-						if (i<sb.length())
-							c = sb.charAt(i);
+							c = getCharAt(sb, i);
 						while (i<sb.length() && !StringUtil.punctuation(c, null) && !StringUtil.whitespace(c, null) && pos<width) {
 							sMunched.append(c);
 							pos += fm.charWidth(c);
 							i++;
-							if (i<sb.length())
-								c = sb.charAt(i);
+								c = getCharAt(sb, i);
 						}
 						if (pos > maxWidthMunched)  //this may be off by one character's worth of width if over
 							maxWidthMunched = pos;

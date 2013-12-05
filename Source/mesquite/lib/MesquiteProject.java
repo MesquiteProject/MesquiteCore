@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -85,6 +85,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		charModels.addListener(this);
 		modelListener = new CentralModelListener();
 		otherElements = new ListableVector();
+		otherElements.setName("other file elements in project");
 		files = new ListableVector();
 		nexusBlocks = new ListableVector( 1);
 		idNumber = totalCreated;
@@ -293,13 +294,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public long getID(){
 		return idNumber;
 	}
-	
+
 	/*.................................................................................................................*/
 	/** Disposes of the components of the project. */
 	public void dispose(){  //TODO: should all the dispose methods be renamed to something  else???
 		isDoomed = true;
 
-		
+
 		for (int i=0; i< files.size(); i++) {
 			((MesquiteFile)files.elementAt(i)).projectClosing = true;
 			((MesquiteFile)files.elementAt(i)).close();
@@ -469,7 +470,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		MesquiteProject newProj = MesquiteTrunk.mesquiteTrunk.newProject(path, 1, true);
 		if (newProj == null)
 			return;
-		
+
 		newProj.getHomeFile().changeLocation(dir, oldHomeFileName);
 		MesquiteFile.deleteFile(dir+ oldHomeFileName);
 		MesquiteFile.rename(path, dir+ oldHomeFileName);
@@ -758,26 +759,32 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/*.................................................................................................................*/
 	/** Sets elements of file as not dirty (i.e. saved).  */
 	public void fileSaved(MesquiteFile f) {
-		f.setDirtiedByCommand(false);
-		for (int i=0; i<taxas.size(); i++) {
-			FileElement fe = (FileElement)taxas.elementAt(i);
-			if (fe.getFile() == f)
-				fe.setDirty(false);
+		try {
+			if (f == null)
+				return;
+			f.setDirtiedByCommand(false);
+			for (int i=0; i<taxas.size(); i++) {
+				FileElement fe = (FileElement)taxas.elementAt(i);
+				if (fe.getFile() == f)
+					fe.setDirty(false);
+			}
+			for (int i=0; i<datas.size(); i++) {
+				FileElement fe = (FileElement)datas.elementAt(i);
+				if (fe.getFile() == f)
+					fe.setDirty(false);
+			}
+			for (int i=0; i<charModels.size(); i++) {
+				FileElement fe = (FileElement)charModels.elementAt(i);
+				if (fe.getFile() == f)
+					fe.setDirty(false);
+			}
+			for (int i=0; i<otherElements.size(); i++) {
+				FileElement fe = (FileElement)otherElements.elementAt(i);
+				if (fe.getFile() == f)
+					fe.setDirty(false);
+			}
 		}
-		for (int i=0; i<datas.size(); i++) {
-			FileElement fe = (FileElement)datas.elementAt(i);
-			if (fe.getFile() == f)
-				fe.setDirty(false);
-		}
-		for (int i=0; i<charModels.size(); i++) {
-			FileElement fe = (FileElement)charModels.elementAt(i);
-			if (fe.getFile() == f)
-				fe.setDirty(false);
-		}
-		for (int i=0; i<otherElements.size(); i++) {
-			FileElement fe = (FileElement)otherElements.elementAt(i);
-			if (fe.getFile() == f)
-				fe.setDirty(false);
+		catch (NullPointerException e){
 		}
 
 	}
@@ -1397,6 +1404,53 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			return getTaxa(0);
 	}
 	/*.................................................................................................................*/
+	public Taxa findTaxa(MesquiteFile file, String token){
+		Taxa t = getTaxaLastFirst(file, token);
+		if (t == null && file != null){
+			Listable ms = file.taxaNameTranslationTable.elementWithName(token);
+			if (ms != null)
+				token = ((MesquiteString)ms).getValue();  //substitute translated name
+		}
+		if (t==null)
+			t = getTaxaLastFirst(token);
+		if (t==null){
+			int wt = MesquiteInteger.fromString(token);
+			if (MesquiteInteger.isCombinable(wt))
+				t = getTaxa(wt-1);
+		}
+		if (t == null && getNumberTaxas(file)==1)
+			t = getTaxa(file, 0);
+		if (t == null && getNumberTaxas(file)>1)
+			t = getTaxa(file, getNumberTaxas(file)-1);
+		if (t == null && getNumberTaxas()==1)
+			t = getTaxa(0);
+		if (t == null && getNumberTaxas()>1)
+			t = getTaxa(getNumberTaxas()-1);
+		return t;
+	}
+	/*.................................................................................................................*/
+	public CharacterData findCharacterMatrix(MesquiteFile file, Taxa defaultTaxa, String token){
+		CharacterData d = getCharacterMatrixReverseOrder(file, token);
+		if (d == null && file != null){
+			Listable ms = file.characterDataNameTranslationTable.elementWithName(token);
+			if (ms != null)
+				token = ((MesquiteString)ms).getValue();  //substitute translated name
+		}
+		if (d==null)
+			d = getCharacterMatrixReverseOrder(token);
+		if (d==null){
+			int wt = MesquiteInteger.fromString(token);
+			if (MesquiteInteger.isCombinable(wt))
+				d = getCharacterMatrix(defaultTaxa, wt-1);
+		}
+		if (d == null && getNumberCharMatrices(file)==1){
+			d = getCharacterMatrix(file, 0);
+		}
+		if (d == null && getNumberCharMatrices()==1){
+			d = getCharacterMatrix(0);
+		}
+		return d;
+	}
 	/*.................................................................................................................*/
 	//TODO: ¥¥¥ have general get number of elements, passing project, or file; counts
 	/** returns the number of Taxa objects stored in project belonging to a file*/
@@ -1462,6 +1516,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return datas;
 	}
 	/*.................................................................................................................*/
+	//NOTE: dataClass to be used is subclass of CharacterState, not of CharacterData
 	public boolean compatibleMatrix(Object dataClass, mesquite.lib.characters.CharacterData data){
 		if (dataClass ==null)
 			return true;
@@ -1600,6 +1655,20 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		return count;
 	}
+	/*---------===---------===---------===---------===---------===---------===-------------------*/
+	/** returns number of data sets of a given data class (CharacterState subclass is passed) belonging to given taxa.  If permitTaxaMatching is true, 
+	 * considers taxa equal if names coincide*/
+	public int  getNumberCharMatricesExactClass(MesquiteFile file, Taxa taxa, Object dataClass, boolean visibleOnly) {  //MesquiteProject
+		int count=0;
+		if (datas == null)
+			return 0;
+		for (int i=0; i<datas.size(); i++) { 
+			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+			if ((!visibleOnly || data.isUserVisible()) && !data.isDoomed() && (file == null || data.getFile()==file) && (taxa == null || taxa == data.getTaxa()) && (dataClass==null || dataClass == data.getStateClass()))
+				count++;
+		}
+		return count;
+	}
 	/*......................*/
 	/** returns the jth of data sets belonging to a given file*/
 	public mesquite.lib.characters.CharacterData getCharacterMatrixVisible(MesquiteFile f, Taxa taxa, Object dataClass, int j) {  //ÃÃÃÃ not used yet
@@ -1618,6 +1687,22 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
 
 			if ((!visibleOnly || data.isUserVisible()) && !data.isDoomed() && (f== null || data.getFile()==f) && (taxa == null || taxa == data.getTaxa()) && (dataClass == null || compatibleMatrix(dataClass, data))) {
+				if (count==j) {
+					return data;
+				}
+				count++;
+			}
+		}
+		return null;
+	}
+	/*......................*/
+	/** returns the jth of data sets belonging to a given file*/
+	public mesquite.lib.characters.CharacterData getCharacterMatrixExactClass(MesquiteFile f, Taxa taxa, Object dataClass, int j, boolean visibleOnly) {  //MesquiteProject only
+		int count=0;
+		for (int i=0; i<datas.size(); i++) { 
+			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+
+			if ((!visibleOnly || data.isUserVisible()) && !data.isDoomed() && (f== null || data.getFile()==f) && (taxa == null || taxa == data.getTaxa()) && (dataClass == null || dataClass == data.getStateClass())) {
 				if (count==j) {
 					return data;
 				}
@@ -1732,6 +1817,19 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		return null;  //CHECK FOR COMPATIBLE
 	}
+	/*.................................................................................................................*/
+	/** returns how many character matrices have this name */
+	public int getNumberCharacterMatricesWithName(MesquiteFile f, Taxa taxa, Object dataClass, String name) {  
+		int count = 0;
+		for (int i=datas.size()-1; i>=0; i--) {
+			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+
+			if (!data.isDoomed() && data.getName().equalsIgnoreCase(name) && (f==null || data.getFile() == f) && (taxa==null || data.getTaxa() == taxa)&& (dataClass == null || compatibleMatrix(dataClass, data)))
+				count++;
+		}
+
+		return count;
+	}
 
 	/*.................................................................................................................*/
 	/** gets the number (index position) of the data set. */
@@ -1786,6 +1884,24 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			return getCharacterMatrix(file, taxa, dataClass, whichData, true);
 		else
 			return getCharacterMatrix(file, taxa, dataClass, 0, true);
+	}
+	/*.................................................................................................................*/
+	public mesquite.lib.characters.CharacterData chooseDataExactClass(MesquiteWindow frame, MesquiteFile file, Taxa taxa, Object dataClass, String message, boolean askEvenIfOne, String okButton, String cancelButton){
+		int num = getNumberCharMatricesExactClass(file, taxa, dataClass, true);
+		if (num==0)
+			return null;
+		else if ((num==1 && !askEvenIfOne) || (MesquiteThread.isScripting() && num>=1))
+			return getCharacterMatrixExactClass(file, taxa, dataClass, 0, true);
+		String[] dataNames = new String[num];
+		for (int i=0; i<num;i++) 
+			dataNames[i] = getCharacterMatrixExactClass(file, taxa, dataClass, i, true).getName();
+		int whichData = ListDialog.queryList(frame, "Select data matrix", message, MesquiteString.helpString, dataNames, 0, okButton, cancelButton);
+		if (!MesquiteInteger.isCombinable(whichData)) 
+			return null;
+		else if (whichData>=0) 
+			return getCharacterMatrixExactClass(file, taxa, dataClass, whichData, true);
+		else
+			return getCharacterMatrixExactClass(file, taxa, dataClass, 0, true);
 	}
 	/* ---------------------------- CHARACTER MODELS ------------------------------*/
 	/*.................................................................................................................*/

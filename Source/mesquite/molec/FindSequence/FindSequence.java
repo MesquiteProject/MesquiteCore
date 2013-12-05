@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -112,7 +112,10 @@ public class FindSequence extends DataWindowAssistantI {
    	 		
 		}
     	 	else if (checker.compare(this.getClass(), "Finds sequence",null, commandName, "findSequenceAgain")) {
-			seek("No more instances found");
+    			if (criterionTask instanceof FindSequenceCriterionG)
+    				seek("No more instances found");
+    			else
+    				discreetAlert("Find Sequence Again is not applicable to the sequence finder you are currently using.  The sequence finder can be chosen under Edit>Find Sequence>");
 		}
     	 	else if (checker.compare(this.getClass(), "Copies sequence without tabs",null, commandName, "copySequence")) {
 				StringBuffer sb = new StringBuffer(100);

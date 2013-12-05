@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -50,11 +50,11 @@ public class aCoalescencePkgIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
  	public String getPackageCitation(){
- 		return "Maddison, W.P. 2010.  Coalescence Package for Mesquite.  Version 2.74. http://mesquiteproject.org";
+ 		return "Maddison, W.P. 2011.  Coalescence Package for Mesquite.  Version 2.75. http://mesquiteproject.org";
  	}
 	/*.................................................................................................................*/
   	 public String getPackageVersion() {
-		return "2.74";
+		return "2.75";
    	 }
 	/*.................................................................................................................*/
   	 public String getPackageAuthors() {

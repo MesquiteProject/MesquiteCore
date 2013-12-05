@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -16,6 +16,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.zip.*;
 
+import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 
@@ -1079,6 +1080,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*-----------------------------------------------------------*/
 	/** Has linked data matrices send out notifications of change. */
 	public final void notifyInLinked(Notification notification){
+		if (linkedDatas == null)
+			return;
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1089,6 +1092,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*-----------------------------------------------------------*/
 	/** Has linked data matrices record current order. */
 	public final void copyCurrentToPreviousOrderInLinked(){
+		if (linkedDatas == null)
+			return;
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1099,6 +1104,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*-----------------------------------------------------------*/
 	/** Has linked data matrices record current order. */
 	public final void recordCurrentOrderInLinked(){
+		if (linkedDatas == null)
+			return;
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1109,6 +1116,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*-----------------------------------------------------------*/
 	/** Has linked data matrices record previous order. */
 	public final void recordPreviousOrderInLinked(){
+		if (linkedDatas == null)
+			return;
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1119,6 +1128,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*-----------------------------------------------------------*/
 	/** Has linked data matrices record previous order. */
 	public final void restoreToPreviousOrderInLinked(){
+		if (linkedDatas == null)
+			return;
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1343,8 +1354,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return null;
 		if (numTaxa != taxa.getNumTaxa()) 
 			warning = "Error in CharacterData: numTaxa (" + numTaxa + ") != taxa.getNumTaxa() (" + taxa.getNumTaxa() + ") ";
-		if (taxaIDs.length !=numTaxa) 
-			warning = "Error in CharacterData: numTaxa (" + numTaxa + ") != taxaIDs.length (" + taxaIDs.length + ") ";
+		if (taxaIDs.length !=numTaxa) {
+			warning = "Error in CharacterData: numTaxa (" + numTaxa + ") != taxaIDs.length (" + taxaIDs.length + ") (taxa.getNumTaxa() " + taxa.getNumTaxa() + ")";
+		}
 		for (int i = 0; i<taxa.getNumTaxa() && warning == null; i++)
 			if (i>= taxaIDs.length || taxa.getTaxon(i).getID() != taxaIDs[i])
 				warning = "Error in CharacterData: id of taxon " + i +" in Taxa doesn't match id recorded in CharacterData";
@@ -1590,6 +1602,22 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public abstract boolean isInapplicable(int ic, int it);
 	/** returns whether the character ic is entirely inapplicable codings*/
 
+	/** sets the state of character ic in taxon it to inapplicable*/
+	public  abstract void setToInapplicable(int ic, int it);
+	/** sets the state of character ic in taxon it to unassigned*/
+	public  abstract void setToUnassigned(int ic, int it);
+	/** sets the state of character ic in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
+	public  abstract void deassign(int ic, int it);
+	
+	public boolean hasDataForTaxon(int it){
+		int numChars = getNumChars();
+		for (int ic=0; ic<numChars; ic++) {
+			if (!isInapplicable(ic, it) && !isUnassigned(ic, it))
+				return true;
+		}		
+		return false;
+	}
+	
 	public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		boolean removedSome = false;
 		for (int ic = getNumChars()-1; ic>=0; ic--){
@@ -2554,7 +2582,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*.................................................................................................................*/
 	public static int getCurrentChecksumVersion(){
-		return 2;
+		return 3;
 	}
 	/*.................................................................................................................*/
 	public long getChecksumForFileRecord(int version){

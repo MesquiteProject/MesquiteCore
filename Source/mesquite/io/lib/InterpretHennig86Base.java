@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2010 D. Maddison and W. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -20,7 +20,6 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -51,6 +50,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	int treeNumber = 0;
 	boolean convertGapsToMissing = false;
 	boolean includeQuotes = true;
+	Class futureDataClass = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		availableCommands = new HennigNonaCommand[numCommands];
@@ -69,6 +69,14 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	/*.................................................................................................................*/
 	public boolean isTNT() {
 		return false;
+	}
+	/*.................................................................................................................*/
+	public Class getFutureDataClass() {
+		return futureDataClass;
+	}
+	/*.................................................................................................................*/
+	public void setFutureDataClass(Class futureDataClass) {
+		this.futureDataClass = futureDataClass;
 	}
 
 	/*.................................................................................................................*/
@@ -112,8 +120,8 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	}
 
 	/*.................................................................................................................*/
-	static final int numCommands = 7;   // number of available commands
-	static final int cnamesElement = 6;
+	static final int numCommands = 8;   // number of available commands
+	static final int cnamesElement = 7;
 	/*.................................................................................................................*/
 	public void initializeCommands() {  
 		for (int j = 0; j<numCommands; j++) {
@@ -126,6 +134,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		availableCommands[3] = new HennigQUOTE(this, parser);
 		availableCommands[4] = new HennigTREAD(this, parser);
 		availableCommands[5] = new HennigCOMMENTS(this, parser);
+		availableCommands[6] = new HennigNSTATES(this, parser);
 		availableCommands[cnamesElement] = new HennigCNAMES(this, parser);
 	}
 	/*...............................................  read tree ....................................................*/
@@ -376,7 +385,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		return exportTotalElements;
 	}
 	/*.................................................................................................................*/
-	public StringBuffer getDataAsFileText(CharacterData data) {
+	public StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
 		CategoricalData catData = (CategoricalData)data;
 		HennigXDREAD dread = (HennigXDREAD)availableCommands[0];
@@ -416,7 +425,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		progIndicator.start();
 
 
-		StringBuffer outputBuffer = getDataAsFileText(data);  //ccode
+		StringBuffer outputBuffer = getDataAsFileText(file, data);  //ccode
 		if (outputBuffer==null)
 			return false;
 
@@ -863,6 +872,45 @@ class HennigQUOTE extends HennigNonaCommand {
 	}
 }
 /*========================================================*/
+
+/*.................................................................................................................*/
+class HennigNSTATES extends HennigNonaCommand {
+	public HennigNSTATES (InterpretHennig86Base ownerModule, Parser parser){
+		super(ownerModule, parser);
+	}
+	/*.................................................................................................................*/
+	public boolean returnData(){
+		return false;
+	}
+	/*.................................................................................................................*/
+	public  String getCommandName(){
+		return "nstates";
+	}
+	/*.................................................................................................................*/
+	public boolean readCommand(MesquiteProject mp, MesquiteFile file, ProgressIndicator progIndicator, CategoricalData data, Taxa taxa, String firstLine){
+		Parser parser = new Parser(firstLine);
+		parser.getFirstToken();
+		String datatype = parser.getNextToken();
+		if ("dna".equalsIgnoreCase(datatype)) {
+			ownerModule.setFutureDataClass(DNAData.class);
+		}
+		else	if ("prot".equalsIgnoreCase(datatype)) {
+			ownerModule.setFutureDataClass(ProteinData.class);
+		}
+
+		return true;
+	}
+	/*.................................................................................................................*/
+	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+		outputBuffer.append(getCommandName()+" ");
+		if (charData instanceof DNAData) 
+			outputBuffer.append("dna");
+		else if (charData instanceof ProteinData) 
+			outputBuffer.append("prot");
+		outputBuffer.append(";"+ fileInterpreter.getLineEnding());
+	}
+}
+/*========================================================*/
 /*.................................................................................................................*/
 class HennigCNAMES extends HennigNonaCommand {
 	public HennigCNAMES (InterpretHennig86Base ownerModule, Parser parser){
@@ -878,6 +926,8 @@ class HennigCNAMES extends HennigNonaCommand {
 	}
 	/*.................................................................................................................*/
 	public boolean readCommand(MesquiteProject mp, MesquiteFile file, ProgressIndicator progIndicator, CategoricalData data, Taxa taxa, String firstLine){
+		if (parser == null || taxa == null || data == null)
+			return false;
 		parser.setPunctuationString("{;");
 		int charNumber = 0;
 		String line = firstLine;
@@ -1128,7 +1178,11 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							long set = 0;
 							c=parser.nextDarkChar();
 							while ((c!=']' && c!='\0')) {
-								long newSet = newData.fromChar(TNTtoMesquite(c)); 
+								long newSet;
+								if (newData instanceof DNAData || newData instanceof ProteinData)
+									newSet= newData.fromChar(c); 
+								else
+									newSet= newData.fromChar(TNTtoMesquite(c)); 
 								set |= newSet;
 								c=parser.nextDarkChar();
 						//		if (c=='[')  give warning
@@ -1137,7 +1191,10 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 							newData.setState(ic, it, set);
 						}
 						else {
-							newData.setState(ic, it, TNTtoMesquite(c));     // setting state to that specified by character c
+							if (newData instanceof DNAData || newData instanceof ProteinData)
+								newData.setState(ic, it, c);     // setting state to that specified by character c
+							else
+								newData.setState(ic, it, TNTtoMesquite(c));     // setting state to that specified by character c
 						}
 					}
 				}
@@ -1384,6 +1441,10 @@ class HennigXREAD extends HennigXDREAD {
 
 	/*.................................................................................................................*/
 	public CharacterData createData(CharactersManager charTask, Taxa taxa) {  
+		if (ownerModule.getFutureDataClass()==DNAData.class)
+			return charTask.newCharacterData(taxa, 0, DNAData.DATATYPENAME);  //
+		if (ownerModule.getFutureDataClass()==ProteinData.class)
+			return charTask.newCharacterData(taxa, 0, ProteinData.DATATYPENAME);  //
 		return charTask.newCharacterData(taxa, 0, CategoricalData.DATATYPENAME);  //
 	}
 

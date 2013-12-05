@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -50,6 +50,8 @@ public class ManageDATAblock extends MesquiteModule {
 	}
 	/*.................................................................................................................*/
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
+		if (block == null || file == null)
+			return null;
 		CharacterData data=null;
 		Parser commandParser = new Parser();
 		commandParser.setString(block.toString());
@@ -101,7 +103,8 @@ public class ManageDATAblock extends MesquiteModule {
 					return null;
 				}
 				taxa.addToFile(file, getProject(), taxaTask);
-				data.setName(dataTitle);
+				if (!fuse)
+					data.setName(dataTitle);
 				b = data.addToFile(file, getProject(), null);
 				}
 			else if (commandName.equalsIgnoreCase("MATRIX")) {
@@ -117,7 +120,10 @@ public class ManageDATAblock extends MesquiteModule {
 					}
 					boolean wassave = data.saveChangeHistory;
 					data.saveChangeHistory = false;
-					data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, true, firstTaxon, false, fuse); 
+					if (data.interleaved)
+						logln("  reading interleaved DATA block");
+
+					data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, true, firstTaxon, false, fuse, file); 
 					if (data.interleaved) 
 						commandParser.setLineEndingsDark(false);
 					startCharC.setValue(commandParser.getPosition());
@@ -152,7 +158,7 @@ public class ManageDATAblock extends MesquiteModule {
 				commandParser.getNextCommand(startCharC); //eating up the full command
 			previousPos = startCharC.getValue();
 		}
-		if (StringUtil.blank(dataTitle))
+		if (!fuse && StringUtil.blank(dataTitle))
 			data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));
 		if (data != null && blockComments!=null && blockComments.length()>0)
 			data.setAnnotation(blockComments.toString(), false);

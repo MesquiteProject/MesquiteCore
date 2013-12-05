@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -92,6 +92,7 @@ public class BasicTreeWindowCoord extends FileInit {
 		}
 		return temp;
 	}
+	/*.................................................................................................................*/
 	public TreeWindowMaker showTreeWindow(Taxa taxa){
 		if (taxa==null)
 			return null;
@@ -104,6 +105,29 @@ public class BasicTreeWindowCoord extends FileInit {
 		}
 		return null;
 	}
+	/*.................................................................................................................*/
+	public TreeWindowMaker makeWindowShowingTrees(Taxa taxa, TreeVector trees){
+		if (taxa==null)
+			return null;
+		TreeWindowMaker treeWindowTask = (TreeWindowMaker)hireNamedEmployee(TreeWindowMaker.class, "$ #BasicTreeWindowMaker edit", taxa);
+		if (treeWindowTask !=null){
+			boolean wasScrip = MesquiteThread.isScripting();
+			CommandRecord rec = MesquiteThread.getCurrentCommandRecord();
+			if (rec != null)
+				rec.setScripting(true);
+			treeWindowTask.doCommand("makeTreeWindow", getProject().getTaxaReferenceInternal(taxa), CommandChecker.defaultChecker);
+			if (rec != null)
+				rec.setScripting(wasScrip);
+			treeWindows.addElement(treeWindowTask.getModuleWindow(), false);
+			TreesManager manager = (TreesManager)findElementManager(TreeVector.class);
+			int whichBlock = manager.getTreeBlockNumber(trees.getTaxa(), trees);
+			TreeSource ts = (TreeSource)treeWindowTask.getTreeSource();
+			ts.doCommand("setTreeBlockInt", Integer.toString(whichBlock), CommandChecker.defaultChecker);
+			resetAllMenuBars();
+		}
+		return treeWindowTask;
+	}
+	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {

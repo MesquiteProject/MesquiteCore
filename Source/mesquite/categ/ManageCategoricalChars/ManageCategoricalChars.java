@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -63,18 +63,24 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			stringPos = new MesquiteInteger(0);
 		//@@@@@@@@@@@@@@@@@@@@
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
-
+		boolean merging = false;
+		
 		if (fuse){
 			String message = "In the file being imported, there is a matrix called \"" + title + "\". Mesquite will either fuse this matrix into the matrix you select below, or it will import that matrix as new, separate matrix.";
 			data = (CategoricalData)getProject().chooseData(containerOfModule(), null, taxa, CategoricalState.class, message,  true, "Fuse with Selected Matrix", "Add as New Matrix");
 			if (data != null && numChars > data.getNumChars())
 				data.addCharacters(data.getNumChars()-1, numChars - data.getNumChars(), false);
+			if (data != null)
+				file.characterDataNameTranslationTable.addElement(new MesquiteString(title, data.getName()), false);
+			
 			
 		}
 		if (data == null) {
 			if (taxa == null)
 				return null;
 			data= new CategoricalData(this, taxa.getNumTaxa(), numChars, taxa);
+			if (fuse)
+				data.setName(title);  //because otherwise titles are not set for fused matrices within ManageCharacters, since on the outside they don't know if it's new
 		}
 		else {
 			if (taxa == null)
@@ -82,7 +88,8 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			data.suppressChecksum = true;
 		}
 		//@@@@@@@@@@@@@@@@@@@@
-
+		data.interleaved = false;   //reset default in case this is fused
+		
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
 		while (tok != null && !tok.equals(";")) {
 			if (tok.equalsIgnoreCase("TRANSPOSE")) {
@@ -518,12 +525,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					}
 					else if ("CHARACTERS".equalsIgnoreCase(subC)) {
 						String token = subcommands[1][i];
-						CharacterData t = getProject().getCharacterMatrixReverseOrder(token);
-						if (t==null){
-							int wt = MesquiteInteger.fromString(token);
-							if (MesquiteInteger.isCombinable(wt))
-								t = getProject().getCharacterMatrix(taxa, wt-1);
-						}
+						 CharacterData t = getProject().findCharacterMatrix(file, taxa, token);
 						if (t!=null)
 							data = t;
 						else
@@ -589,12 +591,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					}
 					else if ("CHARACTERS".equalsIgnoreCase(subC)) {
 						String token = subcommands[1][i];
-						CharacterData t = getProject().getCharacterMatrixReverseOrder(token);
-						if (t==null){
-							int wt = MesquiteInteger.fromString(token);
-							if (MesquiteInteger.isCombinable(wt))
-								t = getProject().getCharacterMatrix(taxa, wt-1);
-						}
+						 CharacterData t = getProject().findCharacterMatrix(file, taxa, token);
 						if (t!=null)
 							data = t;
 						else

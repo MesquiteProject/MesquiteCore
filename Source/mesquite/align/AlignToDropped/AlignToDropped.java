@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -49,7 +49,13 @@ public class AlignToDropped extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
-			alignDropTool = new TableTool(this, "alignToDropped", getPath(), "alignToDropped.gif", 13,14,"Pairwise Aligner: Aligns touched sequences to the sequence on which they are dropped.", "Aligns touched sequences to the sequence on which they are dropped.", MesquiteModule.makeCommand("alignDropTouched",  this) , MesquiteModule.makeCommand("alignDropDragged",  this), MesquiteModule.makeCommand("alignDropDropped",  this));
+			MesquiteCommand touchCommand = MesquiteModule.makeCommand("alignDropTouched",  this);
+			touchCommand.setSuppressLogging(true);
+			MesquiteCommand dragCommand = MesquiteModule.makeCommand("alignDropDragged",  this);
+			dragCommand.setSuppressLogging(true);
+			MesquiteCommand dropCommand = MesquiteModule.makeCommand("alignDropDropped",  this);
+			dropCommand.setSuppressLogging(true);
+			alignDropTool = new TableTool(this, "alignToDropped", getPath(), "alignToDropped.gif", 13,14,"Pairwise Aligner: Aligns touched sequences to the sequence on which they are dropped.", "Aligns touched sequences to the sequence on which they are dropped.", touchCommand, dragCommand, dropCommand);
 			alignDropTool.setWorksOnRowNames(true);
 			//alignDropTool.setWorksAsArrowOnRowColumnNumbers(true);
 			alignDropTool.setPopUpOwner(this);

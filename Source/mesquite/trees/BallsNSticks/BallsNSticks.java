@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -46,6 +46,7 @@ public class BallsNSticks extends DrawTree {
 	static final int SQUARE = 1;
 	static final int CURVED = 2;
 	public MesquiteBoolean cosmic = new MesquiteBoolean(false);
+	public MesquiteBoolean ballsInternal = new MesquiteBoolean(true);
 	MesquiteSubmenuSpec orientationSubmenu;
 	MesquiteSubmenuSpec lineStyleSubmenu;
 	/*.................................................................................................................*/
@@ -78,9 +79,10 @@ public class BallsNSticks extends DrawTree {
 		addItemToSubmenu(null, lineStyleSubmenu, "Diagonal", makeCommand("useDiagonal",  this));
 		addItemToSubmenu(null, lineStyleSubmenu, "Square", makeCommand("useSquare",  this));
 		addItemToSubmenu(null, lineStyleSubmenu, "Curved", makeCommand("useCurved",  this));
-//		addCheckMenuItem( null, "Curved Lines", makeCommand("toggleArc",  this), useArc);
+		//		addCheckMenuItem( null, "Curved Lines", makeCommand("toggleArc",  this), useArc);
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		addMenuItem( "Preferred Spot Size...", makeCommand("setSpotDiameter",  this));
+		addCheckMenuItem( null, "Balls On Internal Nodes", makeCommand("toggleBallsInternal",  this), ballsInternal);
 		addCheckMenuItem( null, "Cosmic", makeCommand("toggleCosmic",  this), cosmic);
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
@@ -92,7 +94,7 @@ public class BallsNSticks extends DrawTree {
 		else
 			treeDisplay.setOrientation(ornt);
 		drawings.addElement(treeDrawing);
-	//	treeDisplay.inhibitStretchByDefault = false;
+		//	treeDisplay.inhibitStretchByDefault = false;
 		return treeDrawing;
 	}
 	public boolean legalOrientation (int orientation){
@@ -139,6 +141,7 @@ public class BallsNSticks extends DrawTree {
 		else if (style== CURVED)
 			temp.addLine("useCurved"); 
 
+		temp.addLine("toggleBallsInternal " + ballsInternal.toOffOnString());
 		temp.addLine("toggleCosmic " + cosmic.toOffOnString());
 
 		return temp;
@@ -183,6 +186,12 @@ public class BallsNSticks extends DrawTree {
 			boolean current = cosmic.getValue();
 			cosmic.toggleValue(parser.getFirstToken(arguments));
 			if (current!=cosmic.getValue())
+				parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not balls are shown on internal nodes", "[on or off]", commandName, "toggleBallsInternal")) {
+			boolean current = ballsInternal.getValue();
+			ballsInternal.toggleValue(parser.getFirstToken(arguments));
+			if (current!=ballsInternal.getValue())
 				parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not arcs are to be used", "[on or off]", commandName, "toggleArc")) {
@@ -447,6 +456,8 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	/** Draw highlight for branch node with current color of graphics context */
 	public void drawHighlight(Tree tree, int node, Graphics g, boolean flip){
+		if (tree.nodeIsInternal(node) && !ownerModule.ballsInternal.getValue())
+			return;
 		Color tC = g.getColor();
 		if (flip)
 			g.setColor(Color.red);
@@ -458,7 +469,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		g.setColor(tC);
 	}
 
-	
+
 	/*_________________________________________________*/
 	public void getMiddleOfBranch(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue, MesquiteDouble angle){
 		if (tree==null || xValue==null || yValue==null)
@@ -554,14 +565,16 @@ class BallsNSticksDrawing extends TreeDrawing  {
 					drawBranches( tree, g, d);
 			if (tree.getRooted() || tree.getRoot()!=node) {
 				drawJustOneBranch(tree,g,node);
-				drawSpot( g, node);
-				if (emphasizeNodes()) {
-					Color prev = g.getColor();
-					g.setColor(Color.red);
+				if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue()){
 					drawSpot( g, node);
-					g.setColor(prev);
+					if (emphasizeNodes()) {
+						Color prev = g.getColor();
+						g.setColor(Color.red);
+						drawSpot( g, node);
+						g.setColor(prev);
+					}
 				}
-		}
+			}
 		}
 	}
 	/*_________________________________________________*/
@@ -627,7 +640,8 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			int numColors = colors.getNumColors();
 			if (numColors==1){
 				g.setColor(colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)));
-				fillSpot(g,node);
+				if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue())
+					fillSpot(g,node);
 			}
 			else if (numColors>0) {
 				int startAngle=90;//was 270
@@ -650,11 +664,13 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	/** Does the basic inverting of the color of a branch **/
 	public  void fillBranchInverted (Tree tree, int node, Graphics g) {
+		if (tree.nodeIsInternal(node) && !ownerModule.ballsInternal.getValue())
+			return;
 		if (GraphicsUtil.useXORMode(g, true))  {
 			g.setColor(Color.black);
 			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
 			//GraphicsUtil.setToXOR(g);
-					g.drawOval(x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
+			g.drawOval(x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
 			g.drawOval(x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
 			g.setPaintMode();
 			g.setColor(Color.black);
@@ -664,7 +680,8 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	public   void fillBranch(Tree tree, int node, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
 			//drawJustOneBranch(tree,g,node);
-			fillSpot(g,node);
+			if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue())
+				fillSpot(g,node);
 		}
 	}
 
@@ -673,11 +690,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		if (ownerModule.style == BallsNSticks.DIAGONAL||ownerModule.style == BallsNSticks.SQUARE) {
 			if (polys!=null && polys[node]!=null && polys[node].contains(x, y))
 				return true;
-	}
+		}
 		else  if (ownerModule.style == BallsNSticks.CURVED)
 			if (DrawTreeUtil.inBranch(treeDisplay, this.x, this.y, getEdgeWidth(), tree, node, x, y))
 				return true;
-			
+
 		return false;
 	}
 	/*_________________________________________________*/
@@ -696,7 +713,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 							fraction.setValue(GraphicsUtil.fractionAlongLine(x, y, this.x[motherNode], this.y[motherNode], this.x[node], this.y[node],isRIGHT()||isLEFT(), isUP()||isDOWN()));
 						}
 					}
-				
+
 			}
 			if (!tree.getAssociatedBit(triangleNameRef, node)) {
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))

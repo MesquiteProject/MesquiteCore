@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -24,6 +24,7 @@ import mesquite.lib.duties.*;
 /** The "vice president" of the Mesquite system (the MesquiteTrunk module "Mesquite" being the president).  One of these is hired to coordinate each project.
 Should actually be named ProjectCoordinator.*/
 public class BasicFileCoordinator extends FileCoordinator implements PackageIntroInterface {
+	public static long totalProjectPanelRefreshes = 0;
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(FileInit.class, "Modules assist with tasks connected to each project or file.",
 		"");
@@ -168,7 +169,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (mw.isVisible() && mw.getOwnerModule()!=null && mw.getOwnerModule().getProject()== getProject())
 				mw.getParentFrame().setVisible(false);
 		}
-		
+
 	}
 	/*.................................................................................................................*/
 	public MesquiteProject initiateProject(String pathName, MesquiteFile homeFile) {
@@ -529,7 +530,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 
 		if (thisFile!=null && !StringUtil.blank(thisFile.getFileName())) {
-			
+
 			logln("Location: " + thisFile.getDirectoryName() + thisFile.getFileName());
 			logln("");
 
@@ -716,6 +717,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			MesquiteThread mt = new MesquiteThread(pt);
 			mt.start();
 		}
+	}
+	/*.................................................................................................................*/
+	public void includeFileFuse(String pathName, String importer, String arguments, int fileType){ //make new/read new linked file  DONE special to put on same thread
+		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null);
+			pt.run();
+		
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 
@@ -915,23 +922,28 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 				else {
 					ListableVector files = getProject().getFiles();
-					Enumeration enumeration=files.elements();
-					MesquiteFile fiP;
-					while (enumeration.hasMoreElements()){
-						Object obj = enumeration.nextElement();
-						if (obj instanceof MesquiteFile) {
-							fiP = (MesquiteFile)obj;
+					if (files != null){
 
-							if (fiP!=null && fiP.isDirty() && fiP.isLocal()) {
-								String message = "Do you want to save changes to \"" + fiP.getName() + "\" before closing?";
-								int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
-								if (q==0) {
-									logln("Writing " + fiP.getName());
-									writeFile(fiP);
-								}
-								else if (q==1) {
-									logln("File close cancelled by user");
-									return false;
+						Enumeration enumeration=files.elements();
+						if (enumeration != null){
+							MesquiteFile fiP;
+							while (enumeration.hasMoreElements()){
+								Object obj = enumeration.nextElement();
+								if (obj instanceof MesquiteFile) {
+									fiP = (MesquiteFile)obj;
+
+									if (fiP!=null && fiP.isDirty() && fiP.isLocal()) {
+										String message = "Do you want to save changes to \"" + fiP.getName() + "\" before closing?";
+										int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
+										if (q==0) {
+											logln("Writing " + fiP.getName());
+											writeFile(fiP);
+										}
+										else if (q==1) {
+											logln("File close cancelled by user");
+											return false;
+										}
+									}
 								}
 							}
 						}
@@ -1388,6 +1400,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			String importer = filterIfMarkedArgument(parser.getNextToken());
 			includeFile(path, importer, arguments, 0);
 		}
+		else if (checker.compare(this.getClass(), "Reads a file and incorporates all of its information into the home file of the current project", "[path to file]", commandName, "includeFileFuse")) {
+			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
+			String importer = filterIfMarkedArgument(parser.getNextToken());
+			includeFileFuse(path, importer, arguments, 0);
+		}
 		else if (checker.compare(this.getClass(), "Reverts to saved by closing ALL files without saving then opening the home file of project", null, commandName, "revert")) {
 			revertToSaved(true);
 		}
@@ -1454,6 +1471,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		else if (checker.compare(this.getClass(), "Save all files in project", null, commandName, "saveFiles")) {  //all files in project
 			String fileNames ="";
+			
 			for (int i = 0; i< proj.getNumberLinkedFiles(); i++)
 				fileNames += "\n\n   " + proj.getFile(i).getFileName();
 			if (MesquiteThread.isScripting() || AlertDialog.query(containerOfModule(), "Save All Files?", "Do you want to save all of the following files?" + fileNames + "\n\n(If you want to save only one, go to the submenu of the File menu.)"))
@@ -1651,7 +1669,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			mb = null;
 			while ((mb = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule (FileAssistantCS.class, mb, null, null, this)) != null){
 				String s = mb.getNameForMenuItem();
-					int inS = v.indexOf(s);
+				int inS = v.indexOf(s);
 				if (inS<0) {
 					v.addElement(s);
 					vW.addElement(new MesquiteInteger(4));
@@ -1872,6 +1890,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 	/*.................................................................................................................*/
 	public MesquiteFile readLinkedFile(String pathName){ //make new/read new linked file//TODO: should say if scripting
 		MesquiteFile linkedFile;
+		if (ownerModule == null || ownerModule.getProject() == null)
+			return null;
 		ownerModule.incrementMenuResetSuppression();
 		if (StringUtil.blank(pathName)) {
 			String message = "Link file to existing project:";
@@ -1992,6 +2012,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 	}
 	/** DOCUMENT */
 	public void run() {
+		MesquiteThread.numFilesBeingRead++;
 		try {
 			readLinkedFile(path);
 		}
@@ -2008,8 +2029,10 @@ class FileRead implements CommandRecordHolder, Runnable {
 				MesquiteFile.throwableToLog(this, e);
 				MesquiteTrunk.mesquiteTrunk.alert("File reading could not be completed because an exception or error occurred (i.e. a crash; " + e.getClass() + "). If you save any files, you might best use Save As... in case data were lost or file saving doesn't work properly. To report this as a bug, PLEASE send along the Mesquite_Log file from Mesquite_Support_Files.");
 			}
+			MesquiteThread.numFilesBeingRead--;
 			throw e;
 		}
+		MesquiteThread.numFilesBeingRead--;
 	}
 
 }

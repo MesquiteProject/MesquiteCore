@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -47,7 +47,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 
 	int mode = TraceCOTOperator.UNIQUELY_BEST;
 	int previousMode = TraceCOTOperator.UNIQUELY_BEST;
-	
+
 	StringArray modes;
 	MesquiteString modeName;
 
@@ -69,7 +69,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 		if (MesquiteThread.isScripting())
 			suppress = true;
 		traces = new Vector();
-		
+
 		historyTask = (CharHistorySource)hireCompatibleEmployee(CharHistorySource.class, CategoricalState.class,"Source of character history (for Trace Character Over Trees)");
 
 		if (historyTask == null) {
@@ -197,7 +197,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Save Values for Node",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Save Values for Node");
 		String helpString = "This will let you save the values for a node for each tree to a text file.  You will need to enter the node number.  "
-					+"To see node numbers, you can choose \"Show Node Numbers\" from the Display menu in the Tree window.";
+			+"To see node numbers, you can choose \"Show Node Numbers\" from the Display menu in the Tree window.";
 
 		dialog.appendToHelpString(helpString);
 
@@ -288,7 +288,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 				nodeInfo=null;
 				recalcAllTraceOperators();
 				if (StringUtil.notEmpty(nodeInfo))
-						MesquiteFile.putFileContentsQuery("Save file containing information about the designated node", nodeInfo,true);
+					MesquiteFile.putFileContentsQuery("Save file containing information about the designated node", nodeInfo,true);
 			}
 		}
 
@@ -467,7 +467,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 		return numTrees;
 	}
 	/*.................................................................................................................*/
-	
+
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (employee == displayTask)
@@ -599,7 +599,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 	public void setNodeToOutput(int nodeToOutput) {
 		this.nodeToOutput = nodeToOutput;
 	}
-	
+
 	public void setNodeOutputString(String s) {
 		nodeInfo =s;
 	}
@@ -622,7 +622,7 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 	static final int NODE_EQUIVOCAL =  1;
 	static final int NODE_ABSENT = 0;
 	static final int numExtraFrequencies = 2;
-//	static int maxFrequencyBin = CategoricalState.maxCategoricalState+1;
+	//	static int maxFrequencyBin = CategoricalState.maxCategoricalState+1;
 	int mode;
 	int[] treeCounts;
 	int[] apparentTrees;
@@ -641,7 +641,7 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 	public void setMode(int mode){
 		this.mode = mode;
 	}
-	
+
 	boolean firstTreeHasAllTaxa = true;
 	/*.................................................................................................................*/
 	public void resetTreeDecorator(int drawnRoot) {
@@ -662,208 +662,237 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 	}
 	int[] nodeInfoTerminals;
 	StringBuffer nodeInfoBuffer = null;
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public   void recalculate(){
-		totalTrees =0;
-		nodeInfoBuffer = null;
-		if (traceModule == null || myTree == null || treeDisplay == null || traceModule.suppress)
-			return;
-		
-		if (MesquiteInteger.isCombinable(traceModule.getNodeToOutput()))
-			nodeInfoBuffer = new StringBuffer();
+		int place = 0;
+		try {
+			totalTrees =0;
+			nodeInfoBuffer = null;
+			if (traceModule == null || myTree == null || treeDisplay == null || traceModule.suppress)
+				return;
 
-		if (!traceModule.suppress && (traceModule.historyTask !=null) && traceModule.treeSourceTask != null && myTree !=null){ 
-			/* preliminaries .......... */
-			if (traceLegend!=null && traceModule.showLegend != null && traceModule.showLegend.getValue()) {
-				traceLegend.onHold();
-				int max = traceModule.historyTask.getNumberOfHistories(myTree);
-				if (traceModule.currentChar >= max)
-					traceModule.currentChar = max-1;
-				traceLegend.adjustScroll(CharacterStates.toExternal(traceModule.currentChar), max);
-				
-			}
-			taxa = myTree.getTaxa();
-			traceModule.currentTaxa = taxa;
-			nodeInfoTerminals=null;
 			if (MesquiteInteger.isCombinable(traceModule.getNodeToOutput()))
-				nodeInfoTerminals = myTree.getTerminalTaxa(traceModule.getNodeToOutput());
-			int drawnRoot = 0;
-			if (treeDisplay.getTreeDrawing() != null){
-				 drawnRoot = treeDisplay.getTreeDrawing().getDrawnRoot();
-				resetTreeDecorator(drawnRoot);
-			}
+				nodeInfoBuffer = new StringBuffer();
+			place = 1;
+			if (!traceModule.suppress && (traceModule.historyTask !=null) && traceModule.treeSourceTask != null && myTree !=null){ 
+				/* preliminaries .......... */
+				place = 2;
+				if (traceLegend!=null && traceModule.showLegend != null && traceModule.showLegend.getValue()) {
+					traceLegend.onHold();
+					int max = traceModule.historyTask.getNumberOfHistories(myTree);
+					if (traceModule.currentChar >= max)
+						traceModule.currentChar = max-1;
+					traceLegend.adjustScroll(CharacterStates.toExternal(traceModule.currentChar), max);
 
-			if (charStates != null)
-				charStates.deassignStates();
-			/*	if (charStates == null)
+				}
+				place = 3;
+				taxa = myTree.getTaxa();
+				traceModule.currentTaxa = taxa;
+				nodeInfoTerminals=null;
+				if (MesquiteInteger.isCombinable(traceModule.getNodeToOutput()))
+					nodeInfoTerminals = myTree.getTerminalTaxa(traceModule.getNodeToOutput());
+				int drawnRoot = 0;
+				if (treeDisplay.getTreeDrawing() != null){
+					drawnRoot = treeDisplay.getTreeDrawing().getDrawnRoot();
+					resetTreeDecorator(drawnRoot);
+				}
+				place = 4;
+
+				if (charStates != null)
+					charStates.deassignStates();
+				/*	if (charStates == null)
  				charStates = new CategoricalHistory(taxa, myTree.getNumNodeSpaces());
  			charStates.adjustSize(myTree);
 			charStates.deassignStates();
-			 */
-			if (resultString != null)
-				resultString.setValue("Please wait; calculating.");
-			if (traceLegend!=null && traceModule.showLegend != null && traceModule.showLegend.getValue()) {
-				traceLegend.refreshSpecsBox();
-			}
-
-			if (treeCounts == null || treeCounts.length != myTree.getNumNodeSpaces())
-				treeCounts = new int[myTree.getNumNodeSpaces()];
-			IntegerArray.zeroArray(treeCounts);
-
-			if (apparentTrees == null || apparentTrees.length != myTree.getNumNodeSpaces())
-				apparentTrees = new int[myTree.getNumNodeSpaces()];
-			IntegerArray.zeroArray(apparentTrees);
-
-			if (validTrees == null || validTrees.length != myTree.getNumNodeSpaces())
-				validTrees = new int[myTree.getNumNodeSpaces()];
-			IntegerArray.zeroArray(validTrees);
-
-			int numTrees = traceModule.treeSourceTask.getNumberOfTrees(taxa);
-			boolean en = !MesquiteInteger.isFinite(numTrees);
-			if (en)
-				numTrees = traceModule.getNumTrees();
-			if (traceModule.numTreesItem != null && en != traceModule.numTreesItem.isEnabled()) {
-				traceModule.numTreesItem.setEnabled(en);
-				MesquiteTrunk.resetMenuItemEnabling();
-			}
-			en = mode == TraceCOTOperator.UNIQUELY_BEST;
-			if (traceModule.showEquivocalItem != null && en != traceModule.showEquivocalItem.isEnabled()) {
-				traceModule.showEquivocalItem.setEnabled(en);
-				MesquiteTrunk.resetMenuItemEnabling();
-			}
-
-
-			if (!myTree.nodeExists(drawnRoot))
-				drawnRoot = myTree.getRoot();
-			CategoricalHistory tempCharStates = null;
-			double[][] frequencies = new double[myTree.getNumNodeSpaces()][CategoricalState.maxCategoricalState+1];
-			for (int i = 0; i<frequencies.length; i++)
-				DoubleArray.zeroArray(frequencies[i]);
-			double[][] extraFrequencies = new double[myTree.getNumNodeSpaces()][numExtraFrequencies];
-			for (int i = 0; i<extraFrequencies.length; i++)
-				DoubleArray.zeroArray(extraFrequencies[i]);
-			if (numEquivocal == null || numEquivocal.length <= myTree.getNumNodeSpaces())
-				numEquivocal = new int[myTree.getNumNodeSpaces()];
-			IntegerArray.zeroArray(numEquivocal);
-
-			Tree tempTree = traceModule.treeSourceTask.getTree(taxa, 0);
-			int maxnum = traceModule.historyTask.getNumberOfHistories(tempTree);
-			allStates = 0L;
-			if (traceModule.currentChar>= maxnum)
-				traceModule.currentChar = maxnum-1;
-			if (traceModule.currentChar<0)
-				traceModule.currentChar = 0;
-			String modeString = "Shown for each state at each node is the number of trees on which the reconstructed state set at the node";
-			if (mode == UNIQUELY_BEST)
-				modeString += " contains that state as uniquely best according to the reconstruction criteria.";
-			else if (mode == COUNT_EQUIVOCAL)
-				modeString += " includes that state (it may also include other states as equally or sufficiently optimal according to the reconstruction criteria).";
-			else if (mode == AVERAGE_FREQUENCIES)
-				modeString = "Shown for each state at each node is the average value (e.g., likelihood) of that state across trees that have that node.";
-			String note =  traceModule.historyTask.getHistoryName(taxa, traceModule.currentChar) + "\n";
-			note += traceModule.historyTask.getNameAndParameters();
-			if (resultString != null){
-				if (MesquiteInteger.isCombinable(numTrees))
-				resultString.setValue(note + " over " + numTrees + " trees (" + traceModule.treeSourceTask.getName() + "; " + traceModule.treeSourceTask.getParameters() + ").  " + modeString);
-			else
-				resultString.setValue(note + " over trees (" + traceModule.treeSourceTask.getName() + "; " + traceModule.treeSourceTask.getParameters() + ").  " + modeString);
-			}
-			totalTrees = numTrees;
-			IntegerArray.zeroArray(validTrees);
-			firstTreeHasAllTaxa = true;
-			boolean firstTree=true;
-
-			ProgressIndicator progIndicator = new ProgressIndicator(ownerModule.getProject(),ownerModule.getName(), "Surveying trees for character histories", numTrees, true);
-			if (progIndicator!=null){
-				progIndicator.setButtonMode(ProgressIndicator.OFFER_CONTINUE);
-				progIndicator.setOfferContinueMessageString("Are you sure you want to stop the survey?");
-				progIndicator.start();
-			}
-			/* checking all trees .......... */
-			int it = 0;
-			boolean warnNoFrequencies = false;
-			
-			
-	
-
-			for (it = 0; it< numTrees && tempTree != null; it++){
-				if (progIndicator != null) {
-					if (progIndicator.isAborted()) {
-						progIndicator.goAway();
-						traceModule.closeAllTraceOperators();
-						return;
-					}
-					progIndicator.setText("Tree " + it);
-					progIndicator.setCurrentValue(it);
+				 */
+				if (resultString != null)
+					resultString.setValue("Please wait; calculating.");
+				if (traceLegend!=null && traceModule.showLegend != null && traceModule.showLegend.getValue()) {
+					traceLegend.refreshSpecsBox();
 				}
-				if (MesquiteInteger.isCombinable(numTrees))
-					CommandRecord.tick("Examining ancestral state reconstruction on tree " + it + " of " + numTrees);
-				else 
-					CommandRecord.tick("Examining ancestral state reconstruction on tree " + it);
-				traceModule.historyTask.prepareHistory(tempTree, traceModule.currentChar);
-//				CharacterHistory currentHistory = historyTask.getMapping(0, null, resultString);
-				tempCharStates = (CategoricalHistory)traceModule.historyTask.getMapping(0, tempCharStates, null);
 
-				
-				if (tempCharStates == null)
+				place = 5;
+				if (treeCounts == null || treeCounts.length != myTree.getNumNodeSpaces())
+					treeCounts = new int[myTree.getNumNodeSpaces()];
+				IntegerArray.zeroArray(treeCounts);
+
+				if (apparentTrees == null || apparentTrees.length != myTree.getNumNodeSpaces())
+					apparentTrees = new int[myTree.getNumNodeSpaces()];
+				IntegerArray.zeroArray(apparentTrees);
+
+				if (validTrees == null || validTrees.length != myTree.getNumNodeSpaces())
+					validTrees = new int[myTree.getNumNodeSpaces()];
+				IntegerArray.zeroArray(validTrees);
+				place = 6;
+
+				int numTrees = traceModule.treeSourceTask.getNumberOfTrees(taxa);
+				boolean en = !MesquiteInteger.isFinite(numTrees);
+				if (en)
+					numTrees = traceModule.getNumTrees();
+				if (traceModule.numTreesItem != null && en != traceModule.numTreesItem.isEnabled()) {
+					traceModule.numTreesItem.setEnabled(en);
+					MesquiteTrunk.resetMenuItemEnabling();
+				}
+				en = mode == TraceCOTOperator.UNIQUELY_BEST;
+				if (traceModule.showEquivocalItem != null && en != traceModule.showEquivocalItem.isEnabled()) {
+					traceModule.showEquivocalItem.setEnabled(en);
+					MesquiteTrunk.resetMenuItemEnabling();
+				}
+				place = 7;
+
+
+				if (!myTree.nodeExists(drawnRoot))
+					drawnRoot = myTree.getRoot();
+				CategoricalHistory tempCharStates = null;
+				double[][] frequencies = new double[myTree.getNumNodeSpaces()][CategoricalState.maxCategoricalState+1];
+				for (int i = 0; i<frequencies.length; i++)
+					DoubleArray.zeroArray(frequencies[i]);
+				double[][] extraFrequencies = new double[myTree.getNumNodeSpaces()][numExtraFrequencies];
+				for (int i = 0; i<extraFrequencies.length; i++)
+					DoubleArray.zeroArray(extraFrequencies[i]);
+				if (numEquivocal == null || numEquivocal.length <= myTree.getNumNodeSpaces())
+					numEquivocal = new int[myTree.getNumNodeSpaces()];
+				IntegerArray.zeroArray(numEquivocal);
+				place = 8;
+
+				Tree tempTree = traceModule.treeSourceTask.getTree(taxa, 0);
+				if (tempTree == null)
 					return;
-				else if (tempCharStates.frequenciesExist() || mode != AVERAGE_FREQUENCIES) {  
-					//this tree has the relevant information to process it
+				place = 9;
+				int maxnum = traceModule.historyTask.getNumberOfHistories(tempTree);
+				allStates = 0L;
+				if (traceModule.currentChar>= maxnum)
+					traceModule.currentChar = maxnum-1;
+				if (traceModule.currentChar<0)
+					traceModule.currentChar = 0;
+				place = 10;
+				String modeString = "Shown for each state at each node is the number of trees on which the reconstructed state set at the node";
+				if (mode == UNIQUELY_BEST)
+					modeString += " contains that state as uniquely best according to the reconstruction criteria.";
+				else if (mode == COUNT_EQUIVOCAL)
+					modeString += " includes that state (it may also include other states as equally or sufficiently optimal according to the reconstruction criteria).";
+				else if (mode == AVERAGE_FREQUENCIES)
+					modeString = "Shown for each state at each node is the average value (e.g., likelihood) of that state across trees that have that node.";
+				place = 11;
+				String note =  traceModule.historyTask.getHistoryName(taxa, traceModule.currentChar) + "\n";
+				note += traceModule.historyTask.getNameAndParameters();
+				if (resultString != null){
+					if (MesquiteInteger.isCombinable(numTrees))
+						resultString.setValue(note + " over " + numTrees + " trees (" + traceModule.treeSourceTask.getName() + "; " + traceModule.treeSourceTask.getParameters() + ").  " + modeString);
+					else
+						resultString.setValue(note + " over trees (" + traceModule.treeSourceTask.getName() + "; " + traceModule.treeSourceTask.getParameters() + ").  " + modeString);
+				}
+				place = 12;
+				totalTrees = numTrees;
+				IntegerArray.zeroArray(validTrees);
+				firstTreeHasAllTaxa = true;
+				boolean firstTree=true;
 
-						charStates = (CategoricalHistory)tempCharStates.adjustHistorySize(myTree, charStates);
+				ProgressIndicator progIndicator = new ProgressIndicator(ownerModule.getProject(),ownerModule.getName(), "Surveying trees for character histories", numTrees, true);
+				if (progIndicator!=null){
+					progIndicator.setButtonMode(ProgressIndicator.OFFER_CONTINUE);
+					progIndicator.setOfferContinueMessageString("Are you sure you want to stop the survey?");
+					progIndicator.start();
+				}
+				place = 13;
+				/* checking all trees .......... */
+				int it = 0;
+				boolean warnNoFrequencies = false;
 
-//					this next section captures the states in the terminal taxa. 
-//					if there are multiple states for a terminal taxon, then each is given equal frequencies
-					if (firstTree || !firstTreeHasAllTaxa) {
-						CharacterDistribution charDist = tempCharStates.getObservedStates();
-						CategoricalState cs = new CategoricalState();
-						for (int i=0; i<taxa.getNumTaxa(); i++) 
-							if (tempTree.taxonInTree(i)) {	//TODO: what if it is in myTree but not in TempTree?
-								cs = (CategoricalState)charDist.getCharacterState (cs,i);
-								if ((cs.isUnassigned() || cs.isInapplicable()) && charStates!=null && myTree!=null) {
-									charStates.setState(myTree.nodeOfTaxonNumber(i), cs.getValue());  // set the charStates value so that the system will know later this was applicable or missing
-								} else {
-									long s = cs.getValue();
-									int numStates = cs.cardinality(s);
-									for (int e = 0; e < cs.getMaxPossibleState(); e++)
-										if (cs.isElement(e)) {
-											frequencies[myTree.nodeOfTaxonNumber(i)][e] = 1.0/numStates;
-										}
-								}
-							} else if (firstTree)
-								firstTreeHasAllTaxa = false;
-						firstTree = false;
+
+
+
+				for (it = 0; it< numTrees && tempTree != null; it++){
+					place = 14;
+					if (progIndicator != null) {
+						if (progIndicator.isAborted()) {
+							progIndicator.goAway();
+							traceModule.closeAllTraceOperators();
+							return;
+						}
+						progIndicator.setText("Tree " + it);
+						progIndicator.setCurrentValue(it);
 					}
+					if (MesquiteInteger.isCombinable(numTrees))
+						CommandRecord.tick("Examining ancestral state reconstruction on tree " + it + " of " + numTrees);
+					else 
+						CommandRecord.tick("Examining ancestral state reconstruction on tree " + it);
+					place = 15;
+					traceModule.historyTask.prepareHistory(tempTree, traceModule.currentChar);
+					//				CharacterHistory currentHistory = historyTask.getMapping(0, null, resultString);
+					tempCharStates = (CategoricalHistory)traceModule.historyTask.getMapping(0, tempCharStates, null);
+
+
+					if (tempCharStates == null)
+						return;
+					else if (tempCharStates.frequenciesExist() || mode != AVERAGE_FREQUENCIES) {  
+						//this tree has the relevant information to process it
+
+						place = 16;
+						charStates = (CategoricalHistory)tempCharStates.adjustHistorySize(myTree, charStates);
+						if (charStates == null)
+							return;
+
+						//					this next section captures the states in the terminal taxa. 
+						//					if there are multiple states for a terminal taxon, then each is given equal frequencies
+						if (firstTree || !firstTreeHasAllTaxa) {
+							CharacterDistribution charDist = tempCharStates.getObservedStates();
+							if (charDist == null)
+								return;
+							place = 17;
+							CategoricalState cs = new CategoricalState();
+							for (int i=0; i<taxa.getNumTaxa(); i++) 
+								if (tempTree.taxonInTree(i)) {	//TODO: what if it is in myTree but not in TempTree?
+									cs = (CategoricalState)charDist.getCharacterState (cs,i);
+									if ((cs.isUnassigned() || cs.isInapplicable()) && charStates!=null && myTree!=null) {
+										charStates.setState(myTree.nodeOfTaxonNumber(i), cs.getValue());  // set the charStates value so that the system will know later this was applicable or missing
+									} else {
+										long s = cs.getValue();
+										int numStates = cs.cardinality(s);
+										for (int e = 0; e < cs.getMaxPossibleState(); e++)
+											if (cs.isElement(e)) {
+												frequencies[myTree.nodeOfTaxonNumber(i)][e] = 1.0/numStates;
+											}
+									}
+								} else if (firstTree)
+									firstTreeHasAllTaxa = false;
+							place = 18;
+							firstTree = false;
+						}
 
 						allStates |= tempCharStates.getAllStates();
 						//survey original nodes to see if node is in tree, and if so record char reconstructed
 						visitOriginalNodes(myTree, drawnRoot, tempTree, tempCharStates, frequencies, extraFrequencies, numEquivocal);
-						
-					if (it+1<numTrees)
-						tempTree = traceModule.treeSourceTask.getTree(taxa, it+1);
-				} 
-				else if (!tempCharStates.frequenciesExist() && mode == AVERAGE_FREQUENCIES) {
-					if (!warnNoFrequencies)
-						MesquiteMessage.discreetNotifyUser("Ancestral state reconstructor does not calculate frequencies, so the Average Frequencies mode is not available");
-					warnNoFrequencies = true;
-					if (progIndicator!=null) 
-						progIndicator.goAway();
-					traceModule.setToPreviousMode();
-					return;
+						place = 19;
+
+						if (it+1<numTrees)
+							tempTree = traceModule.treeSourceTask.getTree(taxa, it+1);
+					} 
+					else if (!tempCharStates.frequenciesExist() && mode == AVERAGE_FREQUENCIES) {
+						place = 20;
+						if (!warnNoFrequencies)
+							MesquiteMessage.discreetNotifyUser("Ancestral state reconstructor does not calculate frequencies, so the Average Frequencies mode is not available");
+						warnNoFrequencies = true;
+						if (progIndicator!=null) 
+							progIndicator.goAway();
+						traceModule.setToPreviousMode();
+						return;
+					}
 				}
-			}
 
 
+				place = 21;
 				if (!firstTree)
 					visitOriginalNodesAgain(myTree, drawnRoot, tempCharStates, frequencies, extraFrequencies, numEquivocal, numTrees);
 
-			totalTrees = it;
-			if (progIndicator!=null) 
-				progIndicator.goAway();
-			
-		
+				totalTrees = it;
+				if (progIndicator!=null) 
+					progIndicator.goAway();
+				place = 22;
 
-			/*for (int n = 0; n<frequencies.length; n++){
+
+
+				/*for (int n = 0; n<frequencies.length; n++){
 				double sum =0;
 				for (int i=0; i<frequencies[n].length; i++)
 					sum += frequencies[n][i];
@@ -872,51 +901,60 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 						frequencies[n][i] /= sum;
 
 			}
-			 */
-			captureFrequencies(myTree, drawnRoot, charStates, frequencies, extraFrequencies);
-			
-			ColorDistribution extraColors = new ColorDistribution();
-			String[] extraNames =null;
-			int numExtraNames = 2;
-			boolean showNodeAbsent = traceModule.getShowNodeAbsentSlice();
-			boolean showEquivocal = mode==UNIQUELY_BEST && traceModule.getShowEquivocalSlice();
-			extraNames = new String[numExtraNames];
-			for (int i = 0; i<numExtraNames; i++)
-				extraNames[i] ="";
-			if (showEquivocal) {
-				extraNames[NODE_EQUIVOCAL] = "Equivocal";
-				extraColors.setColor(NODE_EQUIVOCAL,Color.lightGray);
-			}
-			if (showNodeAbsent){
-				extraNames[NODE_ABSENT] = "Node Absent";
-				extraColors.setColor(NODE_ABSENT,Color.red);
-			}
-			charStates.setExtraFrequencyNames(extraNames);
-			charStates.setExtraFrequencyColors(extraColors);
+				 */
+				captureFrequencies(myTree, drawnRoot, charStates, frequencies, extraFrequencies);
 
-	/*
-	 * 		for (int i=0; i<taxa.getNumTaxa(); i++) 
+				place = 23;
+				ColorDistribution extraColors = new ColorDistribution();
+				String[] extraNames =null;
+				int numExtraNames = 2;
+				boolean showNodeAbsent = traceModule.getShowNodeAbsentSlice();
+				boolean showEquivocal = mode==UNIQUELY_BEST && traceModule.getShowEquivocalSlice();
+				extraNames = new String[numExtraNames];
+				for (int i = 0; i<numExtraNames; i++)
+					extraNames[i] ="";
+				place = 24;
+				if (showEquivocal) {
+					extraNames[NODE_EQUIVOCAL] = "Equivocal";
+					extraColors.setColor(NODE_EQUIVOCAL,Color.lightGray);
+				}
+				if (showNodeAbsent){
+					extraNames[NODE_ABSENT] = "Node Absent";
+					extraColors.setColor(NODE_ABSENT,Color.red);
+				}
+				charStates.setExtraFrequencyNames(extraNames);
+				charStates.setExtraFrequencyColors(extraColors);
+
+				place = 25;
+				/*
+				 * 		for (int i=0; i<taxa.getNumTaxa(); i++) 
 				if (myTree.taxonInTree(i)) {
 					int node = myTree.nodeOfTaxonNumber(i);
 					charStates.setFrequencies(node, stateset);
 					charStates.setState(node, stateset);
 				}
-*/
-			
-			
-			charStates.prepareColors(myTree, drawnRoot);
-			colorTable = charStates.getColorTable(colorTable);
-			treeDisplay.pleaseUpdate(false);
-			if (traceLegend!=null && traceModule.showLegend()) {
-				traceLegend.setColorTable(colorTable);
-				traceLegend.offHold();
-				traceLegend.repaint();
+				 */
+
+
+				charStates.prepareColors(myTree, drawnRoot);
+				colorTable = charStates.getColorTable(colorTable);
+				treeDisplay.pleaseUpdate(false);
+				place = 26;
+				if (traceLegend!=null && traceModule.showLegend()) {
+					traceLegend.setColorTable(colorTable);
+					traceLegend.offHold();
+					traceLegend.repaint();
+				}
 			}
+
+			if (nodeInfoBuffer!=null && (StringUtil.notEmpty(nodeInfoBuffer.toString())))
+				traceModule.setNodeOutputString(nodeInfoBuffer.toString());
+			place = 27;
 		}
-		
-		if (nodeInfoBuffer!=null && (StringUtil.notEmpty(nodeInfoBuffer.toString())))
-			traceModule.setNodeOutputString(nodeInfoBuffer.toString());
-		
+		catch(NullPointerException e){
+			MesquiteMessage.println("NullPointerException in recalculate of TraceCharacterOverTrees " + place);
+		}
+
 	}
 	TreeReference myTreeRef = null;
 	/*.................................................................................................................*/
@@ -974,8 +1012,8 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 				summaryCharStates.setState(node, s);
 		}
 	}
-	
-	
+
+
 	private void visitOriginalNodesAgain(Tree tree,int node, CategoricalHistory tempCharStates, double[][] frequencies, double[][] extraFrequencies, int[] numEquivocal, int numTrees){
 		if (tree.nodeIsInternal(node)){
 			if (mode==COUNT_EQUIVOCAL) {
@@ -988,8 +1026,8 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 					for (int i=0; i<=tempCharStates.getMaxState(); i++)
 						if (MesquiteDouble.isCombinable(frequencies[node][i]))
 							frequencies[node][i] = 1.0*frequencies[node][i] /validTrees[node];
-					
-//frequencies will now sum up to 1.0.  We then want to compensate extraFrequencies by the same amount so that they are relative the same 
+
+					//frequencies will now sum up to 1.0.  We then want to compensate extraFrequencies by the same amount so that they are relative the same 
 					for (int i=0; i<numExtraFrequencies; i++)
 						extraFrequencies[node][i] =  extraFrequencies[node][i] /validTrees[node];  
 				}
@@ -999,7 +1037,7 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 				visitOriginalNodesAgain(tree, daughter, tempCharStates, frequencies, extraFrequencies, numEquivocal, numTrees);
 		}
 	}
-	
+
 	private void visitOriginalNodes(Tree tree,int node,  Tree otherTree, CategoricalHistory tempCharStates, double[][] frequencies, double[][] extraFrequencies, int[] numEquivocal){
 		int[] taxaInClade = tree.getTerminalTaxa(node);
 		boolean outputNodeInfo = false;
@@ -1052,7 +1090,7 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 							frequencies[node][i] += tempFreq[i];
 					}
 				}
-					if (card>1)
+				if (card>1)
 					numEquivocal[node]++;
 
 			} else {
@@ -1359,8 +1397,8 @@ class TraceLegend extends TreeDisplayLegend {
 	public void setStates(CharacterHistory statesAtNodes){
 		numBoxes = statesAtNodes.getLegendStates(legendColors, stateNames, null, colorTable);
 
-//		if (((CategoricalHistory)statesAtNodes).extraFrequenciesExist())
-//			numBoxes += (((CategoricalHistory)statesAtNodes).getExtraNumFreqCategories());
+		//		if (((CategoricalHistory)statesAtNodes).extraFrequenciesExist())
+		//			numBoxes += (((CategoricalHistory)statesAtNodes).getExtraNumFreqCategories());
 		if (numBoxes!=oldNumBoxes) {
 			reviseBounds();
 			oldNumBoxes=numBoxes;

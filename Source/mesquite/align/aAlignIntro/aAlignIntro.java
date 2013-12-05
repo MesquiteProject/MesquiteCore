@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -46,7 +46,7 @@ public class aAlignIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
 	public String getPackageCitation(){
-		return "Maddison, D.R., T.J. Wheeler, and W.P. Maddison. 2010.  Align: A Mesquite package for aligning sequence data. Version 1.52";
+		return "Maddison, D.R., T.J. Wheeler, and W.P. Maddison. 2011.  Align: A Mesquite package for aligning sequence data. Version 1.53";
 	}
 	/*.................................................................................................................*/
 	/** Returns whether there is a splash banner*/

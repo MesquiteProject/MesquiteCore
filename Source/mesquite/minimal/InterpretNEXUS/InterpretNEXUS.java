@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -521,7 +521,10 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 		ListableVector blocks = getProject().getNexusBlocks();
 		if (rM!=null) {
 			logln("Reading block: " + blockName);
+			long startTimeForBlock = System.currentTimeMillis();
 			NexusBlock nb = rM.readNexusBlock( mf, blockName, block, blockComments, fileReadingArguments);
+			if (MesquiteTrunk.debugMode)
+				logln("    time to read:  " + ((System.currentTimeMillis() - startTimeForBlock)/1000.00) + " sec.");
 			if (nb!=null){
 				if (blocks.indexOf(nb)<0) {
 					blocks.addElement(nb, false);

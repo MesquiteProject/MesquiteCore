@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -236,7 +236,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	/*.................................................................................................................*/
 	public void addPage(MesquiteWindow w, int where){
 
-
 		w.inParent();
 
 		w.outerContents.setBackground(ColorTheme.getInterfaceElement());
@@ -246,19 +245,19 @@ public class MesquiteFrame extends Frame implements Commandable {
 		String id = Integer.toString(w.getID());
 		if (where == MAIN){
 			main.add(w.outerContents, id);
-			mainLayout.addLayoutComponent(w.outerContents, id);
+			mainLayout.addLayoutComponent(w.getOuterContentsArea(), id);
 			w.setTileLocation(MAIN);
 		}
 		else if (where == POPTILE){
 			poptile.add(w.outerContents, id);
-			poptileLayout.addLayoutComponent(w.outerContents, id);
+			poptileLayout.addLayoutComponent(w.getOuterContentsArea(), id);
 			w.setTileLocation(POPTILE);
 		}
 		else if (where == RESOURCES){
 			resourcesWidth = defaultResourcesWidth;
 			resources.add(w.outerContents, id);
 			projectWindow = w;
-			resourcesLayout.addLayoutComponent(w.outerContents, id);
+			resourcesLayout.addLayoutComponent(w.getOuterContentsArea(), id);
 			w.setTileLocation(RESOURCES);
 			w.setMinimized(resourcesClosedWhenMinimized);
 		}

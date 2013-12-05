@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2010 D. Maddison and W. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -86,6 +86,10 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export Fused Matrix", buttonPressed);
 		exportDialog.setSuppressLineEndQuery(false);
 		exportDialog.setDefaultButton(null);
+		exportDialog.addLabel("Fusing matrices into a single matrix, and exporting");
+		if (getProject().getNumberTaxas()>1)
+			exportDialog.addLargeOrSmallTextLabel("This exporter uses associations between taxa to be able to blend matrices from different taxa blocks.  Ensure such associations are set up (through Taxa&Trees menu) before attempting to export.");
+		exportDialog.addHorizontalLine(1);
 		Checkbox permitMixedMatrices = exportDialog.addCheckBox("Permit fused matrix with mixed data types (e.g., DNA, protein, standard)", permitMixed);
 		Checkbox generateMB = exportDialog.addCheckBox("Generate MrBayes block", generateMBBlock);
 		Checkbox simplifyNamesCheckBox = exportDialog.addCheckBox("simplify names as required for MrBayes", simplifyNames);
@@ -187,18 +191,45 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 				firstNEXUSpartition = false;
 				datas.addElement(data);
 				totNumChars += data.getNumChars();
+				logln("Fused matrix will contain " + data.getNumChars() + " characters from matrix " + data.getName());
+				
 			}
 		}
 		return totNumChars;
 	}
 
+	int getNumberQueuedCharMatrices(Vector datas, Taxa taxa, Class dataClass){
+		int count=0;
+		if (datas == null)
+			return 0;
+		for (int i=0; i<datas.size(); i++) { 
+			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+			if ((data.isUserVisible()) && !data.isDoomed() && (taxa == null || taxa == data.getTaxa()) && (dataClass==null || getProject().compatibleMatrix(dataClass, data)))
+				count++;
+		}
+		return count;
+	}
+	CharacterData getQueuedCharMatrix(Vector datas, Taxa taxa, int j, Class dataClass){
+		int count=0;
+		for (int i=0; i<datas.size(); i++) { 
+			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+
+			if ((data.isUserVisible()) && !data.isDoomed() && (taxa == null || taxa == data.getTaxa()) && (dataClass == null || getProject().compatibleMatrix(dataClass, data))) {
+				if (count==j) {
+					return data;
+				}
+				count++;
+			}
+		}
+		return null;
+	}
 	/*.................................................................................................................*/
-	void composeForTaxon(Taxon[] components, int iTaxaBlock, StringBuffer buffer, boolean master, Class dataSuperclass){
+	void composeForTaxon(Vector datas, Taxon[] components, int iTaxaBlock, StringBuffer buffer, boolean master, Class dataSuperclass){
 		if (!master && (components == null || components.length == 0)){ //no representatives in this taxa block; write gaps for those matrices
 			Taxa taxa = getProject().getTaxa(iTaxaBlock);
-			int numMatrices = getProject().getNumberCharMatrices(null, taxa, dataSuperclass, true);
+			int numMatrices = getNumberQueuedCharMatrices(datas, taxa, dataSuperclass);
 			for (int iM = 0; iM < numMatrices; iM++){
-				CharacterData data = getProject().getCharacterMatrixVisible( taxa, iM, dataSuperclass);
+				CharacterData data = getQueuedCharMatrix(datas, taxa, iM, dataSuperclass);
 				if (data != null){
 					for (int ic=0; ic<data.getNumChars(); ic++)
 						buffer.append('-');
@@ -208,9 +239,9 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		}
 		Taxon first = components[0];  //this will tell taxa block;
 		Taxa taxa = first.getTaxa();
-		int numMatrices = getProject().getNumberCharMatrices(null, taxa, dataSuperclass, true);
+		int numMatrices = getNumberQueuedCharMatrices(datas, taxa, dataSuperclass);
 		for (int iM = 0; iM < numMatrices; iM++){
-			CharacterData data = getProject().getCharacterMatrixVisible( taxa, iM, dataSuperclass);
+			CharacterData data = getQueuedCharMatrix(datas, taxa, iM, dataSuperclass);
 			CategoricalState cs = (CategoricalState)data.makeCharacterState();
 			CategoricalData categData = (CategoricalData)data;
 			if (data != null){
@@ -242,17 +273,17 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		}
 	}
 	/*.................................................................................................................*/
-	void composeForMasterTaxon(Taxa masterTaxa, int it, Taxon[][] components, StringBuffer buffer, Class dataSuperclass){
+	void composeForMasterTaxon(Vector datas, Taxa masterTaxa, int it, Taxon[][] components, StringBuffer buffer, Class dataSuperclass){
 		String taxonName = masterTaxa.getTaxonName(it);
 		if (simplifyNames)
 			buffer.append(StringUtil.simplifyIfNeededForOutput(taxonName,true)+ "   ");
 		else
 			buffer.append(StringUtil.tokenize(taxonName) + "   ");
-		composeForTaxon(new Taxon[]{masterTaxa.getTaxon(it)}, -1, buffer, true, dataSuperclass);
+		composeForTaxon(datas, new Taxon[]{masterTaxa.getTaxon(it)}, -1, buffer, true, dataSuperclass);
 		if (components != null)
 			for (int iTaxaBlock = 0; iTaxaBlock<components.length; iTaxaBlock++){
 				if (iTaxaBlock != getProject().getTaxaNumber(masterTaxa))
-					composeForTaxon(components[iTaxaBlock], iTaxaBlock, buffer, false, dataSuperclass);
+					composeForTaxon(datas, components[iTaxaBlock], iTaxaBlock, buffer, false, dataSuperclass);
 			}
 	}
 	/*.................................................................................................................*/
@@ -391,7 +422,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 
 		buffer.append(" gap = - missing =?;" + lineEnding + "matrix" + lineEnding);
 		for (int it=0; it< masterTaxa.getNumTaxa(); it++)
-			composeForMasterTaxon(masterTaxa, it, components[it], taxaStrings[it], dataSuperclass);
+			composeForMasterTaxon(datas, masterTaxa, it, components[it], taxaStrings[it], dataSuperclass);
 		buffer.append(lineEnding);
 		for (int i=0; i< masterTaxa.getNumTaxa(); i++){
 			buffer.append(taxaStrings[i]);

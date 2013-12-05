@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -1575,7 +1575,7 @@ class TreeBlockThread extends MesquiteThread {
 	MesquiteFile file;
 	int howManyTrees;
 	boolean suppressAsk = false;
-
+	CommandRecord comRec = null;
 	public TreeBlockThread (ManageTrees ownerModule, TreeBlockFiller fillTask, TreeVector trees, int howManyTrees, MesquiteFile file) {
 		super();
 		this.ownerModule = ownerModule;
@@ -1590,7 +1590,9 @@ class TreeBlockThread extends MesquiteThread {
 			sc = false;
 		else
 			sc = cr.recordIsScripting();
-		setCommandRecord(new CommandRecord(sc));
+		comRec = new CommandRecord(sc);
+		setCommandRecord(comRec);
+		
 	}
 
 	public String getCurrentCommandName(){

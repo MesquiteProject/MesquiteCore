@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -582,17 +582,17 @@ public class ManageCharacters extends CharactersManager {
 				d =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments));
 			if (d == null){ //probably not needed but this used to be here
 				int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (MesquiteInteger.isCombinable(t) && t< getProject().getNumberCharMatrices()) {
-				long id  = MesquiteLong.fromString(parser.getNextToken());
-				d = getProject().getCharacterMatrix(t);
-			}
-			}
-				if (d!=null) {
-					String path = MesquiteFile.saveFileAsDialog("Save copy of matrix to file");
-					if (!StringUtil.blank(path))
-						exportMatrix(d, path);
+				if (MesquiteInteger.isCombinable(t) && t< getProject().getNumberCharMatrices()) {
+					long id  = MesquiteLong.fromString(parser.getNextToken());
+					d = getProject().getCharacterMatrix(t);
 				}
-			
+			}
+			if (d!=null) {
+				String path = MesquiteFile.saveFileAsDialog("Save copy of matrix to file");
+				if (!StringUtil.blank(path))
+					exportMatrix(d, path);
+			}
+
 
 		}
 		else if (checker.compare(this.getClass(), "Sets the ID number of a character data matrix", "[number of matrix][id number of data matrix]", commandName, "setID")) {
@@ -662,7 +662,7 @@ public class ManageCharacters extends CharactersManager {
 						}
 					}
 					String warning = "Error: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  Either the matrix has been modified with a program other than Mesquite, or the file had another issue already reported to you, or there is a bug in Mesquite.  If you are unaware of an intentional change, it is recommended that you use Save As to leave the previous copy of the file intact.";
-					
+
 
 					String diffFileSave = "";
 					double diff = 0;
@@ -670,7 +670,8 @@ public class ManageCharacters extends CharactersManager {
 						diff = Math.abs(getProject().timePreviouslySavedAsRecorded - getProject().timePreviouslySavedByFile)/1000.0;
 					if (diff > 0) 
 						diffFileSave = "\nFile save time difference from recorded: " + diff;
-					String dataDetails = "\nMatrix details:\nChecksumAsRead " + checksumAsRead + "   " + d.getChecksumSummaryString() + getProjectStatus(d) + "\nRecorded details:\nChecksumRecorded " + checksumRecorded + "  " + parser.getRemaining();
+					String remainingDetails = parser.getRemaining();
+					String dataDetails = "\nMatrix details:\nChecksumAsRead " + checksumAsRead + "   " + d.getChecksumSummaryString() + getProjectStatus(d) + "\nRecorded details:\nChecksumRecorded " + checksumRecorded + "  " + remainingDetails;
 					String details = "\n[DETAILS for data matrix " + d.getName() + " (" + d.getDataTypeName() + ")" + dataDetails + diffFileSave + "]";
 					details += "\n[recorded block id: " + blockID + "; and of compared matrix: " + d.getUniqueID() + " usedID? " + usedID + "]";
 					if (MesquiteInteger.isCombinable(lastWriterVersion))
@@ -683,7 +684,7 @@ public class ManageCharacters extends CharactersManager {
 						details += " [NOTE: a crash or other error had been reported in the run of Mesquite in which the file had been saved.  Thus, the checksum error may be a result of that crash or error.]";
 					if (badImport)
 						details += " [NOTE: This matrix was not read successfully when originally imported.]";
-						
+
 					String integrity = d.checkIntegrity();
 					if (integrity != null) 
 						details += "\n[NOTE: the data matrix appears corrupt; it is possible that it had been saved incorrectly in the file [" + integrity + "]]";
@@ -695,8 +696,12 @@ public class ManageCharacters extends CharactersManager {
 							details += "\n    matrix " + dd.getName() + "  ID  " + dd.getUniqueID() + "  for taxa " + dd.getTaxa().getName();
 						}
 					}
-					if (diff>100){//assume file writing is at most 100 seconds off; anything more assumes user fiddling so don't report!!!!
+					if (diff>20){//assume file writing is at most 20 seconds off; anything more assumes user fiddling so don't report!!!!
 						logln("Note: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  This appears to be caused by the file having been modified by a program other than Mesquite.");
+						logln(details);
+					}
+					else if (getProject().timePreviouslySavedAsRecorded == 0){//no record of time saved; may be user fiddling so don't report!!!!
+						logln("Note: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  This may have been caused by the file having been modified by a program other than Mesquite.");
 						logln(details);
 					}
 					else if (errorReported){//assume file writing had had a problem
@@ -711,6 +716,10 @@ public class ManageCharacters extends CharactersManager {
 						logln("Note: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  A crash or other error occurred previously during this current run of Mesquite.  Thus, the checksum error may be a result of that crash or error.");
 						logln(details);
 					}
+					else if (!MesquiteInteger.isCombinable(lastWriterVersion) && StringUtil.blank(remainingDetails)){
+						logln("Note: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  This file appears to be written by an old version of Mesquite, and no details to help diagnose the issue were written.  The checksum error may be innocent.");
+						logln(details);
+					}
 					else if (!warnChecksum)
 						logln(warning + " If this appears to be due to a bug in Mesquite, please report it to info@mesquiteproject.org." + details);
 					else {
@@ -719,10 +728,11 @@ public class ManageCharacters extends CharactersManager {
 							d.problemReading = null;
 						}
 						logln(warning +  details);
+						logln("checksumv arguments as written: " + arguments);
 						reportableAlert(warning, details);
 						if (!errorReported) { // && getProject().timePreviouslySavedAsRecorded != 0){
 							alert("Please send us a copy of your data file.\n\nThe checksum error that was just reported may represent a bug in Mesquite.  It would help us to diagnose this to have a copy of your data file. " +
-									"If possible, please send us a copy of this data file to info@mesquiteproject.org.  We will not release or make any use of your data file except to diagnose possible bugs in Mesquite.");
+							"If possible, please send us a copy of this data file to info@mesquiteproject.org.  We will not release or make any use of your data file except to diagnose possible bugs in Mesquite.");
 						}
 					}
 				}
@@ -998,7 +1008,7 @@ public class ManageCharacters extends CharactersManager {
 			MesquiteModule mb = findNearestColleagueWithName("Data Window Coordinator");
 			if (mb != null)
 				return mb.doCommand("showDataWindow", arguments, checker);
-		/*	int t = MesquiteInteger.fromFirstToken(arguments, pos);
+			/*	int t = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberCharMatrices()) {
 				MesquiteModule mb = findNearestColleagueWithName("Data Window Coordinator");
 				if (mb != null)
@@ -1504,526 +1514,553 @@ public class ManageCharacters extends CharactersManager {
 		defaultData = getProject().getCharacterMatrix(defaultTaxa, 0);
 		return defaultData;
 	}
-	/*...................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
-		if (blockName.equalsIgnoreCase("NOTES")) {
-			boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
-			if (fuse)
-				return true;
-			MesquiteProject project = file.getProject();
-			String commandName = parser.getFirstToken(command);
-			int code = 0;
-			if  (commandName.equalsIgnoreCase("TEXT")) 
-				code = 1;
-			else if  (commandName.equalsIgnoreCase("I") || commandName.equalsIgnoreCase("INTEGER")) 
-				code = 2;
-			else if  (commandName.equalsIgnoreCase("SU") || commandName.equalsIgnoreCase("SUPPLEMENTAL")) 
-				code = 3;
-			else if  (commandName.equalsIgnoreCase("SUTM")) 
-				code = 4;
-			else if  (commandName.equalsIgnoreCase("SUCM")) {
-				code = 5;
-			}
-			else if  (commandName.equalsIgnoreCase("B")) 
-				code = 6;
-			else if  (commandName.equalsIgnoreCase("CHARACTERS")) {
-				String ctoken  = parser.getNextToken(); //=
-				ctoken  = parser.getNextToken();
-				String ttoken  = parser.getNextToken(); //TAXA
-				if ("Taxa".equalsIgnoreCase(ttoken)){
-					parser.getNextToken(); //=
-					ttoken  = parser.getNextToken(); //TAXA block (optional)
-					if (!StringUtil.blank(ttoken)){
-						Taxa t = getProject().getTaxaLastFirst(ttoken);
+	 */NameReference origIndexRef = NameReference.getNameReference("OrigIndex");
+	 /*...................................................................................................................*/
+	 public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+		 if (blockName.equalsIgnoreCase("NOTES")) {
+			 boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
+			 MesquiteProject project = file.getProject();
+			 String commandName = parser.getFirstToken(command);
+			 nBlock.setDefaultTaxa(project.getTaxa(project.getNumberTaxas()-1));
+			 int code = 0;
+			 // if TAXA, CHARACTERS, SUTM then accept even if fuse
+			 if (fuse && !((commandName.equalsIgnoreCase("SUTM")) || commandName.equalsIgnoreCase("CHARACTERS")))
+				 return true;
+			 if  (commandName.equalsIgnoreCase("TEXT")) 
+				 code = 1;
+			 else if  (commandName.equalsIgnoreCase("I") || commandName.equalsIgnoreCase("INTEGER")) 
+				 code = 2;
+			 else if  (commandName.equalsIgnoreCase("SU") || commandName.equalsIgnoreCase("SUPPLEMENTAL")) 
+				 code = 3;
+			 else if  (commandName.equalsIgnoreCase("SUTM")) 
+				 code = 4;
+			 else if  (commandName.equalsIgnoreCase("SUCM")) {
+				 code = 5;
+			 }
+			 else if  (commandName.equalsIgnoreCase("B")) 
+				 code = 6;
+			 else if  (commandName.equalsIgnoreCase("CHARACTERS")) {
+				 String ctoken  = parser.getNextToken(); //=
+				 ctoken  = parser.getNextToken();
+				 String ttoken  = parser.getNextToken(); //TAXA
+				 if ("Taxa".equalsIgnoreCase(ttoken)){
+					 parser.getNextToken(); //=
+					 ttoken  = parser.getNextToken(); //TAXA block (optional)
+					 if (!StringUtil.blank(ttoken)){
+						 Taxa t = getProject().findTaxa(file, ttoken);
+/*
+						 if (t==null){
+							 int wt = MesquiteInteger.fromString(ttoken);
+							 if (MesquiteInteger.isCombinable(wt))
+								 t = getProject().getTaxa(wt-1);
+						 }
+						 if (t == null && getProject().getNumberTaxas(file)==1){
+							 t = getProject().getTaxa(file, 0);
+						 }
+						 if (t == null && getProject().getNumberTaxas()==1){
+							 t = getProject().getTaxa(0);
+						 }
+						 */
+						 if (t!=null) {
+							 nBlock.setDefaultTaxa(t);
+						 }
+						 else
+							 return false;
+					 }
+				 }
+				 if (fuse && getProject().getNumberCharacterMatricesWithName(null, null, null, ctoken) != 1){
+					 CharacterData d = getProject().chooseData(containerOfModule(), null, null, "A NOTES command refers to matrix \"" + ctoken + "\", but this is ambiguous.  Please choose a matrix to which it applies. (command: " + command  + ")");
+					 if (d!=null) {
+						 nBlock.setDefaultCharacters(d);
+						 return true;
+					 }
+				 }
+				 CharacterData d = getProject().findCharacterMatrix(file, nBlock.getDefaultTaxa(), ctoken);
 
-						if (t==null){
-							int wt = MesquiteInteger.fromString(ttoken);
-							if (MesquiteInteger.isCombinable(wt))
-								t = getProject().getTaxa(wt-1);
-						}
-						if (t == null && getProject().getNumberTaxas(file)==1){
-							t = getProject().getTaxa(file, 0);
-						}
-						if (t!=null) {
-							nBlock.setDefaultTaxa(t);
-						}
-						else
-							return false;
-					}
-				}
+				 if (d!=null) {
+					 nBlock.setDefaultCharacters(d);
+					 return true;
+				 }
+				 else
+					 return false;
+			 }
 
-				CharacterData t = getProject().getCharacterMatrixReverseOrder(ctoken);
-				if (t==null){
-					int wt = MesquiteInteger.fromString(ctoken);
-					if (MesquiteInteger.isCombinable(wt))
-						t = getProject().getCharacterMatrix(nBlock.getDefaultTaxa(), wt-1);
-				}
-				if (t == null && getProject().getNumberCharMatrices(file)==1){
-					t = getProject().getCharacterMatrix(file, 0);
-				}
-				if (t!=null) {
-					nBlock.setDefaultCharacters(t);
-					return true;
-				}
-				else
-					return false;
-			}
+			 if (code >0 ) {
+				 int integer = MesquiteInteger.unassigned;
+				 double doub = MesquiteDouble.unassigned;
+				 boolean bool = false;
+				 boolean boolSet = false;
+				 String string = null;
+				 Vector strings = new Vector(); //to store string array
+				 String name = null;
+				 stringPos.setValue(parser.getPosition());
+				 String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
+				 if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
+					 return false;
+				 int whichTaxon = MesquiteInteger.unassigned;
+				 int whichCharacter = MesquiteInteger.unassigned;
+				 String text = null;
+				 Taxa taxa = nBlock.getDefaultTaxa();
+				 CharacterData data = nBlock.getDefaultCharacters();
+				// IntegerArray translationTable = (IntegerArray)taxa.getAttachment("originalIndicesDupRead");
+				 IntegerArray translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
+				 if (fuse && translationTable == null)
+					 return false;
+				 for (int i=0; i<subcommands[0].length; i++){
+					 String subC = subcommands[0][i];
+					 if ("T".equalsIgnoreCase(subC) || "TAXON".equalsIgnoreCase(subC)) {
+						 String token = subcommands[1][i];
+						 whichTaxon = MesquiteInteger.fromString(token);
 
-			if (code >0 ) {
-				int integer = MesquiteInteger.unassigned;
-				double doub = MesquiteDouble.unassigned;
-				boolean bool = false;
-				boolean boolSet = false;
-				String string = null;
-				Vector strings = new Vector(); //to store string array
-				String name = null;
-				stringPos.setValue(parser.getPosition());
-				String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
-				if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
-					return false;
-				int whichTaxon = MesquiteInteger.unassigned;
-				int whichCharacter = MesquiteInteger.unassigned;
-				String text = null;
-				Taxa taxa = nBlock.getDefaultTaxa();
-				CharacterData data = nBlock.getDefaultCharacters();
 
-				for (int i=0; i<subcommands[0].length; i++){
-					String subC = subcommands[0][i];
-					if ("T".equalsIgnoreCase(subC) || "TAXON".equalsIgnoreCase(subC)) {
-						String token = subcommands[1][i];
-						whichTaxon = MesquiteInteger.fromString(token);
-						if (!MesquiteInteger.isCombinable(whichTaxon))
-							return false;
-						whichTaxon = Taxon.toInternal(whichTaxon);
-					}
-					else if ( "C".equalsIgnoreCase(subC) || "CHARACTER".equalsIgnoreCase(subC)) {
-						String token = subcommands[1][i];
-						whichCharacter = MesquiteInteger.fromString(token);
-						if (!MesquiteInteger.isCombinable(whichCharacter))
-							return false;
-						whichCharacter = CharacterStates.toInternal(whichCharacter);
-					}
-					else if ("N".equalsIgnoreCase(subC) || "NAME".equalsIgnoreCase(subC)) {
-						name = subcommands[1][i];
-					}
-					else if ("B".equalsIgnoreCase(subC) || "BOOLEAN".equalsIgnoreCase(subC)) {
-						if ("true".equalsIgnoreCase(subcommands[1][i]))
-							bool = true;
-						boolSet = true;
-					}
-					else if ("I".equalsIgnoreCase(subC) || "INTEGER".equalsIgnoreCase(subC)) {
-						integer = MesquiteInteger.fromString(subcommands[1][i]);
-					}
-					else if ("R".equalsIgnoreCase(subC) || "REAL".equalsIgnoreCase(subC)) {
-						doub = MesquiteDouble.fromString(subcommands[1][i]);
-					}
-					else if ("S".equalsIgnoreCase(subC) || "STRING".equalsIgnoreCase(subC)) {
-						string = subcommands[1][i];
-					}
-					else if ("SE".equalsIgnoreCase(subC)) {
-						strings.addElement(subcommands[1][i]);
-					}
-					else if ("TEXT".equalsIgnoreCase(subC)) {
-						text = subcommands[1][i];
-					}
-					else if ("TAXA".equalsIgnoreCase(subC)) {
-						String token = subcommands[1][i];
-						Taxa t = getProject().getTaxaLastFirst(token);
-						if (t==null){
-							int wt = MesquiteInteger.fromString(token);
-							if (MesquiteInteger.isCombinable(wt))
-								t = getProject().getTaxa(wt-1);
-						}
-						if (t == null && getProject().getNumberTaxas(file)==1)
-							t = getProject().getTaxa(file, 0);
-						if (t!=null) {
-							taxa = t;
-						}
-						else
-							return false;
-					}
-					else if ("CHARACTERS".equalsIgnoreCase(subC)) {
-						String token = subcommands[1][i];
-						CharacterData t = getProject().getCharacterMatrixReverseOrder(token);
-						if (t==null){
-							int wt = MesquiteInteger.fromString(token);
-							if (MesquiteInteger.isCombinable(wt))
-								t = getProject().getCharacterMatrix(taxa, wt-1);
-						}
-						if (t == null && getProject().getNumberCharMatrices(file)==1){
-							t = getProject().getCharacterMatrix(file, 0);
-						}
-						if (t!=null) {
-							data = t;
-						}
-						else
-							return false;
-					}
-				}
+						 if (!MesquiteInteger.isCombinable(whichTaxon))
+							 return false;
+						 whichTaxon = Taxon.toInternal(whichTaxon);
 
-				if (!MesquiteInteger.isCombinable(whichCharacter) && !(code == 4 && MesquiteInteger.isCombinable(whichTaxon)) && code !=5){
-					return false;
-				}
+						 if (fuse){
+							 if (translationTable != null)
+								 whichTaxon = translationTable.getValue(whichTaxon);
+							 
+							 /*
+							 MesquiteInteger oldNumTaxa = (MesquiteInteger)taxa.getAttachment("OLDNUMTAXA" + file.getFileName());
+							 IntegerArray translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
+							 if (oldNumTaxa != null && translationTable != null){
+								 whichTaxon += oldNumTaxa.getValue();
+								 whichTaxon = translationTable.getValue(whichTaxon);
+							 }
+							 */
+						 }
 
-				if (code ==1){ //text
-					if (taxa !=null && text !=null && data !=null) {
+					 }
+					 else if ( "C".equalsIgnoreCase(subC) || "CHARACTER".equalsIgnoreCase(subC)) {
+						 String token = subcommands[1][i];
+						 whichCharacter = MesquiteInteger.fromString(token);
+						 if (!MesquiteInteger.isCombinable(whichCharacter))
+							 return false;
+						 whichCharacter = CharacterStates.toInternal(whichCharacter);
+					 }
+					 else if ("N".equalsIgnoreCase(subC) || "NAME".equalsIgnoreCase(subC)) {
+						 name = subcommands[1][i];
+					 }
+					 else if ("B".equalsIgnoreCase(subC) || "BOOLEAN".equalsIgnoreCase(subC)) {
+						 if ("true".equalsIgnoreCase(subcommands[1][i]))
+							 bool = true;
+						 boolSet = true;
+					 }
+					 else if ("I".equalsIgnoreCase(subC) || "INTEGER".equalsIgnoreCase(subC)) {
+						 integer = MesquiteInteger.fromString(subcommands[1][i]);
+					 }
+					 else if ("R".equalsIgnoreCase(subC) || "REAL".equalsIgnoreCase(subC)) {
+						 doub = MesquiteDouble.fromString(subcommands[1][i]);
+					 }
+					 else if ("S".equalsIgnoreCase(subC) || "STRING".equalsIgnoreCase(subC)) {
+						 string = subcommands[1][i];
+					 }
+					 else if ("SE".equalsIgnoreCase(subC)) {
+						 strings.addElement(subcommands[1][i]);
+					 }
+					 else if ("TEXT".equalsIgnoreCase(subC)) {
+						 text = subcommands[1][i];
+					 }
+					 else if ("TAXA".equalsIgnoreCase(subC)) {
+						 String token = subcommands[1][i];
+						 Taxa t = getProject().findTaxa(file, token);
+						 /*getTaxaLastFirst(token);
+						 if (t==null){
+							 int wt = MesquiteInteger.fromString(token);
+							 if (MesquiteInteger.isCombinable(wt))
+								 t = getProject().getTaxa(wt-1);
+						 }
+						 if (t == null && getProject().getNumberTaxas(file)==1)
+							 t = getProject().getTaxa(file, 0);
+							if (t == null && getProject().getNumberTaxas()==1)
+								t = getProject().getTaxa(0);
+								*/
+						 if (t!=null) {
+							 taxa = t;
+						 }
+						 else
+							 return false;
+					 }
+					 else if ("CHARACTERS".equalsIgnoreCase(subC)) {
+						 String token = subcommands[1][i];
+						 CharacterData t = getProject().findCharacterMatrix(file, taxa, token);
+						 if (t!=null) {
+							 data = t;
+						 }
+						 else
+							 return false;
+					 }
+				 }
 
-						/*&&& the following is a check in place because of a bug in 1.02 and previous in which copies of NOTES blocks would be written in all linked files; 
+				 if (!MesquiteInteger.isCombinable(whichCharacter) && !(code == 4 && MesquiteInteger.isCombinable(whichTaxon)) && code !=5){
+					 return false;
+				 }
+
+				 if (code ==1){ //text
+					 if (taxa !=null && text !=null && data !=null) {
+
+						 /*&&& the following is a check in place because of a bug in 1.02 and previous in which copies of NOTES blocks would be written in all linked files; 
 						this allowed overwriting by old copies of the NOTES block */
-						if (data.getFile() != file && file != getProject().getHomeFile()){
-							if (!MesquiteInteger.isCombinable(whichTaxon)) {
-								String s = data.getAnnotation(whichCharacter) ;
-								if (s != null && !s.equals(text)) {
-									file.notesBugWarn = true;
-									file.notesBugVector.addElement("Character " + (whichCharacter+1));
-								}
+						 if (data.getFile() != file && file != getProject().getHomeFile()){
+							 if (!MesquiteInteger.isCombinable(whichTaxon)) {
+								 String s = data.getAnnotation(whichCharacter) ;
+								 if (s != null && !s.equals(text)) {
+									 file.notesBugWarn = true;
+									 file.notesBugVector.addElement("Character " + (whichCharacter+1));
+								 }
 
-							}
-							else {
-								String s = data.getAnnotation(whichCharacter, whichTaxon) ;
-								if (s != null && !s.equals(text)) {
-									file.notesBugWarn = true;
-									file.notesBugVector.addElement("Character " + (whichCharacter+1) + " in taxon " + (whichTaxon+1));
-								}
-							}
-						}
-						/*&&&*/
+							 }
+							 else {
+								 String s = data.getAnnotation(whichCharacter, whichTaxon) ;
+								 if (s != null && !s.equals(text)) {
+									 file.notesBugWarn = true;
+									 file.notesBugVector.addElement("Character " + (whichCharacter+1) + " in taxon " + (whichTaxon+1));
+								 }
+							 }
+						 }
+						 /*&&&*/
 
-						if (!MesquiteInteger.isCombinable(whichTaxon))
-							data.setAnnotation(whichCharacter, text);
-						else
-							data.setAnnotation(whichCharacter, whichTaxon, text);
-						return true;
-					}
-				}
-				else if (code ==2){ //integer
-					if (taxa !=null  && MesquiteInteger.isCombinable(integer) && data !=null && name !=null) {
-						if (MesquiteInteger.isCombinable(whichTaxon))
-							data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteInteger(integer));
-						else
-							data.setAssociatedLong(NameReference.getNameReference(name), whichCharacter, integer);
-						return true;
-					}
-				}
-				else if (code ==3 || code == 4){ //supplemental
-					if (taxa !=null && data !=null && name !=null) {
-						if (boolSet){
-							if (MesquiteInteger.isCombinable(whichTaxon)) {
-								if (code == 4) {
-									Associable as = data.getTaxaInfo(true);
-									as.setAssociatedBit(NameReference.getNameReference(name), whichTaxon, bool);
-								}
-								else
-									data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteBoolean(bool));
-							}
-							else
-								data.setAssociatedBit(NameReference.getNameReference(name), whichCharacter, bool);
-							return true;
-						}
-						else if (MesquiteInteger.isCombinable(integer)){
-							if (MesquiteInteger.isCombinable(whichTaxon)) {
-								if (code == 4) {
-									Associable as = data.getTaxaInfo(true);
-									as.setAssociatedLong(NameReference.getNameReference(name), whichTaxon, integer);
-								}
-								else
-									data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteInteger(integer));
-							}
-							else
-								data.setAssociatedLong(NameReference.getNameReference(name), whichCharacter, integer);
-							return true;
-						}
-						else if (MesquiteDouble.isCombinable(doub)){
-							if (MesquiteInteger.isCombinable(whichTaxon)){
-								if (code == 4) {
-									Associable as = data.getTaxaInfo(true);
-									as.setAssociatedDouble(NameReference.getNameReference(name), whichTaxon, doub);
-								}
-								else
-									data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteDouble(doub));
-							}
-							else
-								data.setAssociatedDouble(NameReference.getNameReference(name), whichCharacter, doub);
-							return true;
-						}
-						else if (string != null){
-							/*&&& the following is a check in place because of a bug in 1.02 and previous in which copies of NOTES blocks would be written in all linked files; 
+						 if (!MesquiteInteger.isCombinable(whichTaxon))
+							 data.setAnnotation(whichCharacter, text);
+						 else
+							 data.setAnnotation(whichCharacter, whichTaxon, text);
+						 return true;
+					 }
+				 }
+				 else if (code ==2){ //integer
+					 if (taxa !=null  && MesquiteInteger.isCombinable(integer) && data !=null && name !=null) {
+						 if (MesquiteInteger.isCombinable(whichTaxon))
+							 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteInteger(integer));
+						 else
+							 data.setAssociatedLong(NameReference.getNameReference(name), whichCharacter, integer);
+						 return true;
+					 }
+				 }
+				 else if (code ==3 || code == 4){ //supplemental
+					 if (taxa !=null && data !=null && name !=null) {
+						 if (boolSet){
+							 if (MesquiteInteger.isCombinable(whichTaxon)) {
+								 if (code == 4) {
+									 Associable as = data.getTaxaInfo(true);
+									 as.setAssociatedBit(NameReference.getNameReference(name), whichTaxon, bool);
+								 }
+								 else
+									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteBoolean(bool));
+							 }
+							 else
+								 data.setAssociatedBit(NameReference.getNameReference(name), whichCharacter, bool);
+							 return true;
+						 }
+						 else if (MesquiteInteger.isCombinable(integer)){
+							 if (MesquiteInteger.isCombinable(whichTaxon)) {
+								 if (code == 4) {
+									 Associable as = data.getTaxaInfo(true);
+									 as.setAssociatedLong(NameReference.getNameReference(name), whichTaxon, integer);
+								 }
+								 else
+									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteInteger(integer));
+							 }
+							 else
+								 data.setAssociatedLong(NameReference.getNameReference(name), whichCharacter, integer);
+							 return true;
+						 }
+						 else if (MesquiteDouble.isCombinable(doub)){
+							 if (MesquiteInteger.isCombinable(whichTaxon)){
+								 if (code == 4) {
+									 Associable as = data.getTaxaInfo(true);
+									 as.setAssociatedDouble(NameReference.getNameReference(name), whichTaxon, doub);
+								 }
+								 else
+									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, new MesquiteDouble(doub));
+							 }
+							 else
+								 data.setAssociatedDouble(NameReference.getNameReference(name), whichCharacter, doub);
+							 return true;
+						 }
+						 else if (string != null){
+							 /*&&& the following is a check in place because of a bug in 1.02 and previous in which copies of NOTES blocks would be written in all linked files; 
 							this allowed overwriting by old copies of the NOTES block */
-							if (data.getFile() != file && file != getProject().getHomeFile()){
-								if (MesquiteInteger.isCombinable(whichTaxon)) {
-									String s = (String)data.getCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon);
-									if (s != null && !s.equals(string)) {
-										file.notesBugWarn = true;
-										file.notesBugVector.addElement("Character " + (whichCharacter+1) + "(*)");
-									}
-								}
-								else {
-									String s = (String)data.getAssociatedObject(NameReference.getNameReference(name), whichCharacter);
-									if (s != null && !s.equals(string)) {
-										file.notesBugWarn = true;
-										file.notesBugVector.addElement("Character " + (whichCharacter+1) + " in taxon " + (whichTaxon+1) + "(*)");
-									}
-								}
-							}
-							/*&&&*/
+							 if (data.getFile() != file && file != getProject().getHomeFile()){
+								 if (MesquiteInteger.isCombinable(whichTaxon)) {
+									 String s = (String)data.getCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon);
+									 if (s != null && !s.equals(string)) {
+										 file.notesBugWarn = true;
+										 file.notesBugVector.addElement("Character " + (whichCharacter+1) + "(*)");
+									 }
+								 }
+								 else {
+									 String s = (String)data.getAssociatedObject(NameReference.getNameReference(name), whichCharacter);
+									 if (s != null && !s.equals(string)) {
+										 file.notesBugWarn = true;
+										 file.notesBugVector.addElement("Character " + (whichCharacter+1) + " in taxon " + (whichTaxon+1) + "(*)");
+									 }
+								 }
+							 }
+							 /*&&&*/
 
-							if (MesquiteInteger.isCombinable(whichTaxon)) {
-								if (code == 4) {
-									Associable as = data.getTaxaInfo(true);
-									as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);
-								}
-								else
-									data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, string);
-							}
-							else
-								data.setAssociatedObject(NameReference.getNameReference(name), whichCharacter, string);
-							return true;
-						}
-						else if (strings.size()>0){
-							String[] sts = new String[strings.size()];
-							for (int k = 0; k<strings.size(); k++)
-								sts[k] = (String)strings.elementAt(k);
-							if (MesquiteInteger.isCombinable(whichTaxon)) {
-								if (code == 4) {
-									Associable as = data.getTaxaInfo(true);
-									as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, sts);
-								}
-								else
-									data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, sts);
-							}
-							else
-								data.setAssociatedObject(NameReference.getNameReference(name), whichCharacter, sts);
-							return true;
-						}
-					}
-				}
-				else if (code == 5){
+							 if (MesquiteInteger.isCombinable(whichTaxon)) {
+								 if (code == 4) {
+									 Associable as = data.getTaxaInfo(true);
 
-					if (string != null && name != null){
+									 Object previous = as.getAssociatedObject(NameReference.getNameReference(name), whichTaxon);
+									 if (!StringUtil.blank((String)previous))
+										 string = (String)previous + "; " + string;
+									 as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);
+								 }
+								 else
+									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, string);
+							 }
+							 else
+								 data.setAssociatedObject(NameReference.getNameReference(name), whichCharacter, string);
+							 return true;
+						 }
+						 else if (strings.size()>0){
+							 String[] sts = new String[strings.size()];
+							 for (int k = 0; k<strings.size(); k++)
+								 sts[k] = (String)strings.elementAt(k);
+							 if (MesquiteInteger.isCombinable(whichTaxon)) {
+								 if (code == 4) {
+									 Associable as = data.getTaxaInfo(true);
+									 as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, sts);
+								 }
+								 else
+									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, sts);
+							 }
+							 else
+								 data.setAssociatedObject(NameReference.getNameReference(name), whichCharacter, sts);
+							 return true;
+						 }
+					 }
+				 }
+				 else if (code == 5){
 
-						MesquiteString ms = new MesquiteString(name, string);
-						data.attachIfUniqueName(ms);
-						return true;
-					}
-				}
+					 if (string != null && name != null){
 
-			}
-		}
-		return false;
-	}
-	/*.................................................................................................................*/
-	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
-		CharacterData data=null;
-		Parser commandParser = new Parser();
-		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
-		String title=null;
-		//String commandString;
-		Taxa taxa= null;
-		if (getProject().getNumberTaxas(file)==1)
-			taxa = getProject().getTaxa(file, 0); //as default
-		else if (getProject().getNumberTaxas()==1)
-			taxa = getProject().getTaxa(0); //as default
-		NexusBlock b=null;
-		int numChars=0;
-		if (getProject().getNumberCharMatrices(file)>1)
-			title = getProject().getCharacterMatrices().getUniqueName("Matrix " + (getProject().getNumberCharMatrices(file)+1) + " in file \"" + file.getName() + "\"");
-		else
-			title = getProject().getCharacterMatrices().getUniqueName("Matrix in file \"" + file.getName() + "\"");
-		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
+						 MesquiteString ms = new MesquiteString(name, string);
+						 data.attachIfUniqueName(ms);
+						 return true;
+					 }
+				 }
 
-		/*Problem: for most parts of block lineends are white, even if interleaved.  But Matrix must be pulled in
+			 }
+		 }
+		 return false;
+	 }
+	 /*.................................................................................................................*/
+	 public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
+		 CharacterData data=null;
+		 Parser commandParser = new Parser();
+		 commandParser.setString(block.toString());
+		 MesquiteInteger startCharC = new MesquiteInteger(0);
+		 String title=null;
+		 //String commandString;
+		 Taxa taxa= null;
+		 if (getProject().getNumberTaxas(file)==1)
+			 taxa = getProject().getTaxa(file, 0); //as default
+		 else if (getProject().getNumberTaxas()==1)
+			 taxa = getProject().getTaxa(0); //as default
+		 NexusBlock b=null;
+		 int numChars=0;
+		 if (getProject().getNumberCharMatrices(file)>1)
+			 title = getProject().getCharacterMatrices().getUniqueName("Matrix " + (getProject().getNumberCharMatrices(file)+1) + " in file \"" + file.getName() + "\"");
+		 else
+			 title = getProject().getCharacterMatrices().getUniqueName("Matrix in file \"" + file.getName() + "\"");
+		 boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
+
+		 /*Problem: for most parts of block lineends are white, even if interleaved.  But Matrix must be pulled in
 		with lineends as dark if interleave.  How to do this?  Best to remember previous stringpos, and once matrix
 		pulled in, if interleave go back and set stringpos and reread with lineends dark*/
-		int previousPos = startCharC.getValue();
-		boolean taxaLinkFound = false;
-		boolean newTaxaFlag = false;
+		 int previousPos = startCharC.getValue();
+		 boolean taxaLinkFound = false;
+		 boolean newTaxaFlag = false;
 
-		String commandName = null;
-		while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandName(startCharC))) {
-			CommandRecord.tick("Reading " + commandName);
-			if (commandName.equalsIgnoreCase("DIMENSIONS")) {
-				String com = commandParser.getNextCommand(startCharC);
-				if (StringUtil.indexOfIgnoreCase(com, "newtaxa")>=0)
-					newTaxaFlag = true;
-				parser.setString(com); 
-				String tk = null;
-				boolean done = false;
-				while (!done && !StringUtil.blank(tk = parser.getNextToken()))
-					if (tk.equalsIgnoreCase("NCHAR"))
-						done = true;
-				if (done) {
-					tk = parser.getNextToken();
-					numChars = MesquiteInteger.fromString(parser.getNextToken());
-					if (!MesquiteInteger.isCombinable(numChars) || numChars<0){
-						alert("Sorry, the DIMENSIONS statement of the CHARACTERS block appears to be misformatted.  The number of characters is not validly specified.  File reading will fail.");
-						return null;
-					}
-				}
-				log("   " + MesquiteInteger.toString(numChars) + " characters");
-				//numChars = MesquiteInteger.fromString(parser.getTokenNumber(4));
-			}
-			else if (commandName.equalsIgnoreCase("TITLE")) {
-				parser.setString(commandParser.getNextCommand(startCharC)); 
-				title = parser.getTokenNumber(2);
-				logln("Reading CHARACTERS block " + title);
+		 String commandName = null;
+		 while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandName(startCharC))) {
+			 CommandRecord.tick("Reading " + commandName);
+			 if (commandName.equalsIgnoreCase("DIMENSIONS")) {
+				 String com = commandParser.getNextCommand(startCharC);
+				 if (StringUtil.indexOfIgnoreCase(com, "newtaxa")>=0)
+					 newTaxaFlag = true;
+				 parser.setString(com); 
+				 String tk = null;
+				 boolean done = false;
+				 while (!done && !StringUtil.blank(tk = parser.getNextToken()))
+					 if (tk.equalsIgnoreCase("NCHAR"))
+						 done = true;
+				 if (done) {
+					 tk = parser.getNextToken();
+					 numChars = MesquiteInteger.fromString(parser.getNextToken());
+					 if (!MesquiteInteger.isCombinable(numChars) || numChars<0){
+						 alert("Sorry, the DIMENSIONS statement of the CHARACTERS block appears to be misformatted.  The number of characters is not validly specified.  File reading will fail.");
+						 return null;
+					 }
+				 }
+				 log("   " + MesquiteInteger.toString(numChars) + " characters");
+				 //numChars = MesquiteInteger.fromString(parser.getTokenNumber(4));
+			 }
+			 else if (commandName.equalsIgnoreCase("TITLE")) {
+				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 title = parser.getTokenNumber(2);
+				 logln("Reading CHARACTERS block " + title);
 
-			}
-			else if (commandName.equalsIgnoreCase("LINK")) {
-				parser.setString(commandParser.getNextCommand(startCharC)); 
-				if ("TAXA".equalsIgnoreCase(parser.getTokenNumber(2))) {
-					taxaLinkFound = true;
-					String taxaTitle = parser.getTokenNumber(4);
-					//logln("       for taxa " + taxaTitle);
-					taxa = getProject().getTaxaLastFirst(taxaTitle);
-					if (taxa == null) {
-						if (getProject().getNumberTaxas()==1)
-							taxa = getProject().getTaxa(0);
-						else
-							alert("Taxa block not found for characters block (name of taxa block \"" + taxaTitle + "\")");
-					}
-				}
-			}
-			else if (commandName.equalsIgnoreCase("FORMAT")) {
-				if (taxa == null && fuse && !MesquiteThread.isScripting()){
-					taxa = getProject().chooseTaxa(containerOfModule(), "A characters block \"" + title + "\" is without a clear reference to a taxa block.  To which taxa block does it belong?", true);
-				}
-				if (taxa==null) {
-					if (taxaLinkFound)
-						alert("Because taxa block not found, the matrix cannot be read.  The CHARACTERS block will be treated as a foreign block in the file.");
-					else {
-						alert("NEXUS file format error: FORMAT statement in CHARACTERS or DATA block occurs before Taxa have been specified in file with more than one set of taxa");
-					}
-					return null;
-				}
+			 }
+			 else if (commandName.equalsIgnoreCase("LINK")) {
+				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 if ("TAXA".equalsIgnoreCase(parser.getTokenNumber(2))) {
+					 taxaLinkFound = true;
+					 String taxaTitle = parser.getTokenNumber(4);
+					 //logln("       for taxa " + taxaTitle);
+					 taxa = getProject().getTaxaLastFirst(taxaTitle);
+					 if (taxa == null) {
+						 if (getProject().getNumberTaxas()==1)
+							 taxa = getProject().getTaxa(0);
+						 else
+							 alert("Taxa block not found for characters block (name of taxa block \"" + taxaTitle + "\")");
+					 }
+				 }
+			 }
+			 else if (commandName.equalsIgnoreCase("FORMAT")) {
+				 if (taxa == null && fuse && !MesquiteThread.isScripting()){
+					 taxa = getProject().chooseTaxa(containerOfModule(), "A characters block \"" + title + "\" is without a clear reference to a taxa block.  To which taxa block does it belong?", true);
+				 }
+				 if (taxa==null) {
+					 if (taxaLinkFound)
+						 alert("Because taxa block not found, the matrix cannot be read.  The CHARACTERS block will be treated as a foreign block in the file.");
+					 else {
+						 alert("NEXUS file format error: FORMAT statement in CHARACTERS or DATA block occurs before Taxa have been specified in file with more than one set of taxa");
+					 }
+					 return null;
+				 }
 
-				logln(" for taxa block " + taxa.getName());
-				data = processFormat(file, taxa, commandParser.getNextCommand(startCharC), numChars, title, fileReadingArguments);
-				if (data==null) {
-					alert("Sorry, the CHARACTERS block could not be read, possibly because it is of an unrecognized format.  You may need to activate or install other modules that would allow you to read the data block");
-					return null;
-				}
-				if (getProject().getMatrixNumber(data)<0) { // a new block
-					data.setName(title);
-					data.deleteUniqueIDs(); //if read from file, then use file's id's and feel free to leave some blank
-					b = data.addToFile(file, getProject(), this); 
-				}
-				else
-					b = data.getNexusBlock();
-			}
-			else if (commandName.equalsIgnoreCase("OPTIONS")) {
-				stringPos.setValue(0);
-				String commandString = commandParser.getNextCommand(startCharC);
-				String subCommand = ParseUtil.getToken(commandString, stringPos);
-				while ((subCommand = ParseUtil.getToken(commandString, stringPos)) !=null){
-					if ("LINKCHARACTERS".equalsIgnoreCase(subCommand)){
-						ParseUtil.getToken(commandString, stringPos); // =
-						String dataTitle = ParseUtil.getToken(commandString, stringPos);
-						CharacterData other = getProject().getCharacterMatrixReverseOrder(dataTitle);
-						if (other != null && data!=null && other!=data) {
-							other.addToLinkageGroup(data);
-						}
-					}
-				}
-			}
-			else if (commandName.equalsIgnoreCase("CHARLABELS")) {
-				if (data == null){
-					alert("Error in NEXUS file:  CHARLABELS before FORMAT statement");
-				}
-				else {
-					MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
-					parser.setString(commandParser.getNextCommand(stc)); 
-					parser.getNextToken();
-					String cN = parser.getNextToken();
-					int charNumber = 0;
-					while (cN != null && !cN.equals(";") ) {
-						data.setCharacterName(charNumber++, cN);
-						cN = parser.getNextToken();
-					}
-					commandParser.getNextCommand(startCharC); //eating up the full command
-				}
-			}
-			else if (commandName.equalsIgnoreCase("MATRIX")) {
-				if (data==null) {
-					alert("Error in NEXUS file:  Matrix without FORMAT statement");
-				}
-				else if (data.getMatrixManager()!=null) {
-					if (data.interleaved) {
-						startCharC.setValue(previousPos);
-						commandParser.setLineEndingsDark(true);
-						commandParser.setPosition(previousPos);
-						commandParser.getNextToken();
-					}
-					boolean wassave = data.saveChangeHistory;
-					data.saveChangeHistory = false;
-					data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse);
-					if (data.interleaved) 
-						commandParser.setLineEndingsDark(false);
-					startCharC.setValue(commandParser.getPosition());
-					String token = commandParser.getNextCommand();
-					if (token == null || !token.equals(";"))
-						commandParser.setPosition(startCharC.getValue());
-					data.saveChangeHistory = wassave;
-				}
-			}
-			else if (commandName.equalsIgnoreCase("IDS")) {
-				//			parser.setString(commandParser.getNextCommand(startCharC)); 
-				MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
-				parser.setString(commandParser.getNextCommand(stc)); 
-				parser.getNextToken();
-				String cN = parser.getNextToken();
-				int charNumber = 0;
-				while (cN != null && !cN.equals(";") ) {
-					if (!StringUtil.blank(cN))
-						data.setUniqueID(charNumber, cN);
-					charNumber++;
-					cN = parser.getNextToken();
-				}
+				 logln(" for taxa block " + taxa.getName());
+				 data = processFormat(file, taxa, commandParser.getNextCommand(startCharC), numChars, title, fileReadingArguments);
+				 if (data==null) {
+					 alert("Sorry, the CHARACTERS block could not be read, possibly because it is of an unrecognized format.  You may need to activate or install other modules that would allow you to read the data block");
+					 return null;
+				 }
+				 if (getProject().getMatrixNumber(data)<0) { // a new block
+					 if (!fuse)
+						 data.setName(title);
+					 data.deleteUniqueIDs(); //if read from file, then use file's id's and feel free to leave some blank
+					 b = data.addToFile(file, getProject(), this); 
+				 }
+				 else
+					 b = data.getNexusBlock();
+			 }
+			 else if (commandName.equalsIgnoreCase("OPTIONS")) {
+				 stringPos.setValue(0);
+				 String commandString = commandParser.getNextCommand(startCharC);
+				 String subCommand = ParseUtil.getToken(commandString, stringPos);
+				 while ((subCommand = ParseUtil.getToken(commandString, stringPos)) !=null){
+					 if ("LINKCHARACTERS".equalsIgnoreCase(subCommand)){
+						 ParseUtil.getToken(commandString, stringPos); // =
+						 String dataTitle = ParseUtil.getToken(commandString, stringPos);
+						 CharacterData other = getProject().getCharacterMatrixReverseOrder(dataTitle);
+						 if (other != null && data!=null && other!=data) {
+							 other.addToLinkageGroup(data);
+						 }
+					 }
+				 }
+			 }
+			 else if (commandName.equalsIgnoreCase("CHARLABELS")) {
+				 if (data == null){
+					 alert("Error in NEXUS file:  CHARLABELS before FORMAT statement");
+				 }
+				 else {
+					 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+					 parser.setString(commandParser.getNextCommand(stc)); 
+					 parser.getNextToken();
+					 String cN = parser.getNextToken();
+					 int charNumber = 0;
+					 while (cN != null && !cN.equals(";") ) {
+						 data.setCharacterName(charNumber++, cN);
+						 cN = parser.getNextToken();
+					 }
+					 commandParser.getNextCommand(startCharC); //eating up the full command
+				 }
+			 }
+			 else if (commandName.equalsIgnoreCase("MATRIX")) {
+				 if (data==null) {
+					 alert("Error in NEXUS file:  Matrix without FORMAT statement");
+				 }
+				 else if (data.getMatrixManager()!=null) {
+					 if (data.interleaved) {    
+						 startCharC.setValue(previousPos);
+						 commandParser.setLineEndingsDark(true);
+						 commandParser.setPosition(previousPos);
+						 commandParser.getNextToken();
+					 }
+					 boolean wassave = data.saveChangeHistory;
+					 data.saveChangeHistory = false;
+					 data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse, file);
+					 if (data.interleaved) 
+						 commandParser.setLineEndingsDark(false);
+					 startCharC.setValue(commandParser.getPosition());
+					 String token = commandParser.getNextCommand();
+					 if (token == null || !token.equals(";"))
+						 commandParser.setPosition(startCharC.getValue());
+					 data.saveChangeHistory = wassave;
+				 }
+			 }
+			 else if (commandName.equalsIgnoreCase("IDS")) {
+				 //			parser.setString(commandParser.getNextCommand(startCharC)); 
+				 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+				 parser.setString(commandParser.getNextCommand(stc)); 
+				 parser.getNextToken();
+				 String cN = parser.getNextToken();
+				 int charNumber = 0;
+				 while (cN != null && !cN.equals(";") ) {
+					 if (!StringUtil.blank(cN))
+						 data.setUniqueID(charNumber, cN);
+					 charNumber++;
+					 cN = parser.getNextToken();
+				 }
 
-				commandParser.getNextCommand(startCharC); //eating up the full command
-			}
-			else if (commandName.equalsIgnoreCase("BLOCKID")) {
-				MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
-				parser.setString(commandParser.getNextCommand(stc)); 
-				//				parser.setString(commandParser.getNextCommand(startCharC)); 
-				parser.getNextToken();
-				String cN = parser.getNextToken();
-				if (cN != null && !cN.equals(";")){
-					if (!StringUtil.blank(cN))
-						data.setUniqueID(cN);
-					cN = parser.getNextToken();
-				}
-				commandParser.getNextCommand(startCharC); //eating up the full command
-			}
-			else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
-				boolean success = false;
-				String commandString = commandParser.getNextCommand(startCharC);
-				if (data !=null && data.getMatrixManager()!=null)
-					success = data.getMatrixManager().processCommand(data, commandName, commandString);
-				if (!success && b != null) 
-					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
-			}
-			else
-				commandParser.getNextCommand(startCharC); //eating up the full command
-			previousPos = startCharC.getValue();
-		}
-		if (StringUtil.blank(title))
-			data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));
-		if (data != null && blockComments!=null && blockComments.length()>0)
-			data.setAnnotation(blockComments.toString(), false);
-		if (data !=null) {
-			data.resetChangedSinceSave();
-		}
-		if (fuse) {
-			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-		}
-		file.setCurrentData(data);
-		return b;
-	}
-	/*.................................................................................................................*/
-	public String getNameForMenuItem() {
-		return "Character Matrix Manager";
-	}
+				 commandParser.getNextCommand(startCharC); //eating up the full command
+			 }
+			 else if (commandName.equalsIgnoreCase("BLOCKID")) {
+				 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+				 parser.setString(commandParser.getNextCommand(stc)); 
+				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
+				 parser.getNextToken();
+				 String cN = parser.getNextToken();
+				 if (cN != null && !cN.equals(";")){
+					 if (!StringUtil.blank(cN))
+						 data.setUniqueID(cN);
+					 cN = parser.getNextToken();
+				 }
+				 commandParser.getNextCommand(startCharC); //eating up the full command
+			 }
+			 else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
+				 boolean success = false;
+				 String commandString = commandParser.getNextCommand(startCharC);
+				 if (data !=null && data.getMatrixManager()!=null)
+					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
+				 if (!success && b != null) 
+					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
+			 }
+			 else
+				 commandParser.getNextCommand(startCharC); //eating up the full command
+			 previousPos = startCharC.getValue();
+		 }
+		 if (!fuse && StringUtil.blank(title))
+			 data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));
+		 if (data != null && blockComments!=null && blockComments.length()>0)
+			 data.setAnnotation(blockComments.toString(), false);
+		 if (data !=null) {
+			 data.resetChangedSinceSave();
+		 }
+		 if (fuse) {
+			 data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+		 }
+		 file.setCurrentData(data);
+		 return b;
+	 }
+	 /*.................................................................................................................*/
+	 public String getNameForMenuItem() {
+		 return "Character Matrix Manager";
+	 }
 
 }
 

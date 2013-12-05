@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -124,6 +124,8 @@ public class TaxaTool extends MesquiteTool {
 	}
 	public void setDraggedCommand(MesquiteCommand draggedCommand){
 		this.draggedCommand = draggedCommand;
+		if (draggedCommand != null)
+			draggedCommand.setSuppressLogging(true);
 	}
 	public void setDroppedCommand(MesquiteCommand droppedCommand){
 		this.droppedCommand = droppedCommand;
@@ -133,12 +135,16 @@ public class TaxaTool extends MesquiteTool {
 	}
 	public void setMoveOverTaxonCommand(MesquiteCommand moveOverTaxonCommand){
 		this.moveOverTaxonCommand = moveOverTaxonCommand;
+		if (moveOverTaxonCommand != null)
+			moveOverTaxonCommand.setSuppressLogging(true);
 	}
 	public void setMouseUpTaxonCommand(MesquiteCommand mouseUpTaxonCommand){
 		this.mouseUpTaxonCommand = mouseUpTaxonCommand;
 	}
 	public void setDraggedTaxonCommand(MesquiteCommand draggedTaxonCommand){
 		this.draggedTaxonCommand = draggedTaxonCommand;
+		if (draggedTaxonCommand != null)
+			draggedTaxonCommand.setSuppressLogging(true);
 	}
 	public void setTouchedFieldCommand(MesquiteCommand touchedFieldCommand){
 		this.touchedFieldCommand = touchedFieldCommand;
@@ -148,6 +154,8 @@ public class TaxaTool extends MesquiteTool {
 	}
 	public void setMovedCommand(MesquiteCommand movedCommand){
 		this.movedCommand = movedCommand;
+		if (movedCommand != null)
+			movedCommand.setSuppressLogging(true);
 	}
 
 	public void taxonMoveOver (int M, int modifiers) {

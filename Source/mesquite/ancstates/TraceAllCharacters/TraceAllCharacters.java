@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -92,6 +92,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
  				iQuit();
  		}
 	}
+ 	MesquiteWindow window;
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
 		TextDisplayer displayer = (TextDisplayer)hireEmployee(TextDisplayer.class, null);
@@ -99,6 +100,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 			displayer.setWrap(false);
 			displayer.setPoppedOut(1);
 			displayer.showText("Trace All Characters", "Trace All Characters", true);
+			window = displayer.getModuleWindow();
 		}
 		TraceAllOperator newTrace = new TraceAllOperator(this, treeDisplay, displayer);
 		traces.addElement(newTrace);
@@ -217,8 +219,12 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 	}
 	/*.................................................................................................................*/
  	public void endJob() {
-    	 	closeAllTraceOperators();
- 		super.endJob();
+ 		if (window != null){
+ 			window.hide();
+ 		window.dispose();
+ 		}
+   	 	closeAllTraceOperators();
+		super.endJob();
  	}
 	/*.................................................................................................................*/
     	 public String getName() {
@@ -255,6 +261,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	MCharactersDistribution matrix;
 	CharacterData oldData;
 	TextDisplayer displayer;
+	boolean turnedOff = false;
 	public TraceAllOperator (TraceAllCharacters ownerModule, TreeDisplay treeDisplay, TextDisplayer displayer) {
 		super(ownerModule, treeDisplay);
 		traceAllModule = ownerModule;
@@ -263,7 +270,9 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	/*.................................................................................................................*/
 	public   void recalculate(){
 		
- 		if (traceAllModule.allCharsTask!=null) {
+		if (turnedOff)
+			return;
+		if (traceAllModule.allCharsTask!=null) {
 			//note: following doesn't pass MesquiteString for results since does character by character and would only get message from last
  			charsStates = traceAllModule.allCharsTask.calculateStates(myTree, matrix = traceAllModule.characterSourceTask.getCurrentMatrix(myTree), charsStates, null);
 			int drawnRoot = treeDisplay.getTreeDrawing().getDrawnRoot();
@@ -275,6 +284,8 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree){
 		myTree = tree;
+		if (turnedOff)
+			return;
  		if (traceAllModule.allCharsTask!=null) {
 			charsStates = traceAllModule.allCharsTask.calculateStates(tree, matrix = traceAllModule.characterSourceTask.getCurrentMatrix(tree), charsStates, null);
 			refresh();
@@ -282,12 +293,16 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	}
 	
 	public void refresh(){
+		if (turnedOff)
+			return;
 		if (displayer!=null)
 			displayer.showText(composeText(myTree, charsStates), "Trace All Characters", true);
 	}
 	
 	public String composeText(Tree tree, MCharactersHistory charStates){
 		if (traceAllModule == null || tree == null || charStates == null)
+			return null;
+		if (turnedOff)
 			return null;
 		StringBuffer sb = new StringBuffer(100);
 		StringBuffer sb2 = new StringBuffer(100);
@@ -482,6 +497,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	public boolean okToDispose(Object obj, int queryUser){return true;}
 	
 	public void turnOff(){
+		turnedOff = true;
 		if (oldData !=null)
 			oldData.removeListener(this);
 		super.turnOff();

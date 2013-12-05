@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -223,16 +223,19 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	public void refresh(FileElement element){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
+		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh(element);
 	}
 	public void refresh(){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
+		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
 	public void refreshGraphics(){
 		if (bfc.isDoomed())
 			return;
+		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refreshGraphics();
 	}
 	void suppress(){

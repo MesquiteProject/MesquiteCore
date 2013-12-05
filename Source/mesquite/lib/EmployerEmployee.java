@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
- Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+ Version 2.75, September 2011.
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -80,6 +80,8 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	}
 	public void setEmployeesInStartup(boolean i){
 		setInStartup(i);
+		if (employees == null)
+			return;
 		for (int k = 0; k< employees.size(); k++){
 			MesquiteModule mb = (MesquiteModule)employees.elementAt(k);
 			mb.setEmployeesInStartup(i);
@@ -208,7 +210,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 				if (versionString == null)
 					versionString = "?";
 				String t = "Module: " + module.getName() + "     Version: " + versionString + "     Author(s): " + module.getAuthors() + "\nClass: " + module.getClass().getName() + "\nExplanation: " + module.getExplanation() + "\n" + "Current Parameters: " + module
-				.getParameters() + "\n" + "[id: " + module.getID() + "]";
+						.getParameters() + "\n" + "[id: " + module.getID() + "]";
 				((MesquiteWindow) f).setExplanation(t);
 			}
 		}
@@ -1067,14 +1069,16 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 			else if (!(e instanceof ThreadDeath)) {
 				MesquiteFile.throwableToLog(this, e);
-				if (e instanceof AbstractMethodError || e instanceof NoSuchMethodError )
-					module.alert("There has been a problem starting a module (" + e.getClass() + ").  It appears that you have installed a package that is old or otherwise incompatible with this version of Mesquite.  (module: " + mb.getName() + "; arguments: " + arguments + "; module being started: " + nameOfModuleBeingStarted + "; ERROR: " + e.getMessage() + "; error class " + e.getClass() + " [2'])");
+				errorToThrow = e;
+				if (e instanceof AbstractMethodError || e instanceof NoSuchMethodError ){
+					module.alert("There has been a problem starting a module (" + e.getClass() + ").  It appears that you have installed a package that is old or otherwise incompatible with this version of Mesquite.  The incompatible package is probably listed under Extra Packages Installed at the start of the log.  (module: " + mb.getName() + "; arguments: " + arguments + "; module being started: " + nameOfModuleBeingStarted + "; ERROR: " + e.getMessage() + "; error class " + e.getClass() + " [2'])");
+					errorToThrow = null;
+				}
 				else if (e instanceof NoClassDefFoundError )
 					module.alert("There has been a problem starting a module (" + e.getClass() + ").  It appears that a component of Mesquite or a required library is missing; this probably means that something was installed correctly.  (module: " + mb.getName() + "; arguments: " + arguments + "; module being started: " + nameOfModuleBeingStarted + "; ERROR: " + e.getMessage() + "; error class " + e.getClass() + " [2'])");
 				else
 					module.exceptionAlert(e, "There has been a problem starting a module (" + e.getClass() + ").  This may be the result of an old, incompatible package being used, or part of Mesquite was accidentally deleted.  (module: " + mb.getName() + "; arguments: " + arguments  + "; module being started: " + nameOfModuleBeingStarted + "; ERROR: " + e.getMessage() + "; error class " + e.getClass() + " [2])");
 			}
-			errorToThrow = e;
 			MesquiteTrunk.zeroMenuResetSuppression(); //EXCEPTION HANDLER
 			MesquiteTrunk.resetAllMenuBars();
 		}
@@ -1655,8 +1659,9 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		if (rec != null)
 
 			if (rec.getModuleNotFoundWarning()) {
-				if (!AlertDialog.query(module.containerOfModule(), "Module not found", message, "OK", "Suppress similar warnings"))
+				if (!AlertDialog.query(module.containerOfModule(), "Module not found", message, "OK", "Suppress similar warnings")){
 					rec.setModuleNotFoundWarning(false);
+				}
 			}
 		module.logln("\nMODULE REQUESTED BY COMMAND NOT FOUND\n" + message + "\n");
 	}
@@ -1829,6 +1834,27 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			mb.dispose();
 		}
 		// mb.employer.employees.removeElement(mb);
+	}
+	/* ................................................................................................................. */
+	/** Moves first employee to be just after second; if second is null, moves to start. */
+	public void moveEmployeeAfter(MesquiteModule toBeMoved, MesquiteModule targetBefore) {
+		if (toBeMoved == null)
+			return;
+		int mover = employees.indexOf(toBeMoved);
+		if (mover <0)
+			return;
+
+		int target = 0;
+		if (targetBefore != null) {
+			target = employees.indexOf(targetBefore);
+			if (target <0)
+				return;
+			target++; //to come after
+		}
+		employees.removeElement(toBeMoved, false);
+		if (mover < target)
+			target--;
+		employees.insertElementAt(toBeMoved, target, false);
 	}
 
 	/* ................................................................................................................. */

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -316,6 +316,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			if (basicTreeWindow != null)
 				return basicTreeWindow;
 			String tRef = parser.getFirstToken(arguments);
+				
 			int setNumber = MesquiteInteger.fromString(tRef);
 			Taxa taxa = null;
 			if (!MesquiteInteger.isCombinable(setNumber)) {
@@ -452,7 +453,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return treeSourceTask;
 	}
 	/*.................................................................................................................*/
-	public void makeTreeWindow(Taxa taxa){
+	private void makeTreeWindow(Taxa taxa){
 		incrementMenuResetSuppression();
 		this.taxa = taxa;
 		treeSourceTask.setPreferredTaxa(taxa);
@@ -493,6 +494,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		getModuleWindow().setVisible(true);
 		basicTreeWindow.showTree();
 		getModuleWindow().toFront();
+	}
+	public Tree goToTreeNumber(int index){
+		if (basicTreeWindow == null)
+			return null;
+		return basicTreeWindow.goToTreeNumber(index);
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
@@ -4604,6 +4610,8 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 			p.setTree(tree);
 	}
 	void setTree(Tree tree){
+		if (tree == null)
+			return;
 		this.tree = tree;
 		title = "Tree: " + tree.getName();
 		for (int i = 0; i<extras.size(); i++){

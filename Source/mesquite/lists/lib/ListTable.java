@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -113,6 +113,8 @@ public class ListTable extends MesquiteTable {
 					else
 						i++;
 				}
+				if (assoc instanceof TreeVector)
+					((TreeVector)assoc).resetAssignedNumbers();
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
 					 ((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "character moving");
@@ -288,8 +290,16 @@ public class ListTable extends MesquiteTable {
 	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
 		window.setAnnotation("", null);
 		if (!window.interceptCellTouch(column, row, modifiers)){
+		
 			if (window.getCurrentTool()== window.arrowTool)  {
-				rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+				ListAssistant assistant = window.findAssistant(column);
+				if (assistant!=null) {
+						if (!assistant.arrowTouchInRow(row))
+							rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+							
+				}
+				else
+					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
 			}
 			else
 				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);

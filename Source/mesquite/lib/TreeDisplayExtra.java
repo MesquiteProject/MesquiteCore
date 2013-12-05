@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
-Version 2.74, October 2010.
+/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+Version 2.75, September 2011.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -231,9 +231,13 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public void cursorMove(Tree tree, int x, int y, Graphics g){}
 	
 	public void addPanelPlease(Panel p){
+		if (panels == null || treeDisplay == null || ownerModule == null)
+			return;
 		panels.addElement(p);
 		treeDisplay.addPanelPlease(p);
 		MesquiteWindow w = ownerModule.containerOfModule();
+		if (w == null)
+			return;
 		w.checkPanelPositionsLegal();
 		
 	}
