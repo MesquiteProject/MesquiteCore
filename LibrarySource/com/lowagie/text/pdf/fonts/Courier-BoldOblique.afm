@@ -340,3 +340,4 @@ C -1 ; WX 600 ; N imacron ; B 77 0 575 585 ;
 C -1 ; WX 600 ; N Euro ; B 0 0 0 0 ;
 EndCharMetrics
 EndFontMetrics
+

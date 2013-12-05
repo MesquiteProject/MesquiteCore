@@ -72,3 +72,4 @@ public class GrayColor extends ExtendedColor {
     }
 
 }
+

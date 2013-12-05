@@ -1,1 +1,2 @@
-File Format Translation PackageImports data from and exports data to various file formats.
+File Format Translation Package
+Imports data from and exports data to various file formats.

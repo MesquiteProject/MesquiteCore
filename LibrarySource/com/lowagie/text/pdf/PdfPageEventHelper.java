@@ -200,3 +200,4 @@ public class PdfPageEventHelper implements PdfPageEvent {
     public void onGenericTag(PdfWriter writer,Document document,Rectangle rect,String text) {
     }
 }
+

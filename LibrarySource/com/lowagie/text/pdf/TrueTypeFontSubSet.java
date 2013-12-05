@@ -418,3 +418,4 @@ class TrueTypeFontSubSet {
         return v0 + (v1 << 8) + (v2 << 16) + (v3 << 24);
     }
 }
+

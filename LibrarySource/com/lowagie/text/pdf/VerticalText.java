@@ -347,3 +347,4 @@ public class VerticalText {
         return alignment;
     }
 }
+

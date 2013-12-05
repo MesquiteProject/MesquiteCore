@@ -514,3 +514,4 @@ public class Paragraph extends Phrase implements TextElementArray, MarkupAttribu
     }
     
 }
+

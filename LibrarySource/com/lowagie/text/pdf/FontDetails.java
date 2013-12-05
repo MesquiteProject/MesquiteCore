@@ -276,3 +276,4 @@ class FontDetails {
         this.subset = subset;
     }
 }
+

@@ -203,3 +203,4 @@ public class MetaFont extends MetaObject {
         return Math.abs(state.transformY(height) - state.transformY(0)) * 0.86f;
     }
 }
+

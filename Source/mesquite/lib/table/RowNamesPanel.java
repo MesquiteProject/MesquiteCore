@@ -543,3 +543,4 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		if (table!=null) table.stopAutoScrollThread();
 	}
 }
+

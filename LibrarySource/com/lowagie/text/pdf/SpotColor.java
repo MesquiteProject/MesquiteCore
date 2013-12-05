@@ -81,3 +81,4 @@ public class SpotColor extends ExtendedColor {
     }
 
 }
+

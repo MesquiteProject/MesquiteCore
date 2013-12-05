@@ -72,3 +72,4 @@ public class ShadingColor extends ExtendedColor {
         return shadingPattern;
     }
 }
+

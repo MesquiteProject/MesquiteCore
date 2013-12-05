@@ -111,3 +111,4 @@ public class InputMeta {
         return new Color(red, green, blue);
     }
 }
+

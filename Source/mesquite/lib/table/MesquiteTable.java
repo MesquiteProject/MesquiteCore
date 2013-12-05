@@ -5720,3 +5720,4 @@ class ControlStrip extends MousePanel {
 		return message;
 	}
 }
+

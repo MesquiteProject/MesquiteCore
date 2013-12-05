@@ -278,3 +278,4 @@ class PdfImage extends PdfStream {
         hashMap = dup.hashMap;
     }
 }
+

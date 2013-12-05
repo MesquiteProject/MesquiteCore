@@ -459,3 +459,4 @@ public class HyphenationTree extends TernaryTree
         super.printStats();
     }
 }
+

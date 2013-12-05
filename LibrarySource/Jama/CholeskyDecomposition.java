@@ -196,3 +196,4 @@ public class CholeskyDecomposition implements java.io.Serializable {
       return new Matrix(X,n,nx);
    }
 }
+

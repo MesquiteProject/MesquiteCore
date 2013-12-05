@@ -76,3 +76,4 @@ This can handle big matrices and trees, but you'll probably need at least 2 GB m
    java  -Xmx3000M -Xss4m -d64 -Djava.library.path=lib -cp . mesquite.Mesquite
 
 This gives much memory to Mesquite, but 3000 MB (= 3 GB) memory exceeds the ability of 32 bit Java.  For that reason the command -d64 was added, to indicate you want to use 64 bit java.  This is available only on intel-based Macs with Core 2 Duo or better processors and updated versions of Java.
+

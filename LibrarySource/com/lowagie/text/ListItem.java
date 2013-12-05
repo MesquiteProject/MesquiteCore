@@ -289,3 +289,4 @@ public class ListItem extends Paragraph implements TextElementArray, MarkupAttri
         return ElementTags.LISTITEM.equals(tag);
     }
 }
+

@@ -10,3 +10,4 @@ public abstract class AbstractMath extends Object {
         protected AbstractMath() {}
 }
 
+

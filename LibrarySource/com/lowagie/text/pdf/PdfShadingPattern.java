@@ -117,3 +117,4 @@ public class PdfShadingPattern extends PdfDictionary {
     }
 
 }
+

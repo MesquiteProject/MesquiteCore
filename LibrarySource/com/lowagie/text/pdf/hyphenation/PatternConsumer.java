@@ -53,3 +53,4 @@ public interface PatternConsumer {
     void addPattern(String pattern, String values);
 
 }
+

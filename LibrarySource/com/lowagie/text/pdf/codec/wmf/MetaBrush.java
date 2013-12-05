@@ -92,3 +92,4 @@ public class MetaBrush extends MetaObject {
         return color;
     }
 }
+

@@ -470,3 +470,4 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
         return bboxes[m[0]];
     }
 }
+

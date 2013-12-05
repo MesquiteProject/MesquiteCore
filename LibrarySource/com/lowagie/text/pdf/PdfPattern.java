@@ -81,3 +81,4 @@ public class PdfPattern extends PdfStream {
         }
     }
 }
+

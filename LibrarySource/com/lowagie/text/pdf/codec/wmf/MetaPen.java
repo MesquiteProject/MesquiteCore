@@ -89,3 +89,4 @@ public class MetaPen extends MetaObject {
         return color;
     }
 }
+

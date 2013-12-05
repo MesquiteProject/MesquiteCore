@@ -363,3 +363,4 @@ public class Anchor extends Phrase implements TextElementArray, MarkupAttributes
         return ElementTags.ANCHOR.equals(tag);
     }
 }
+

@@ -26,3 +26,4 @@ public class HyphenationException extends Exception {
     }
 
 }
+

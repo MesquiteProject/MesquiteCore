@@ -350,3 +350,4 @@ public class PdfFormField extends PdfAnnotation {
         return dup;
     }
 }
+

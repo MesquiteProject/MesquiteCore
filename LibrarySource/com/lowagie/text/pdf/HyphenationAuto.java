@@ -123,3 +123,4 @@ public class HyphenationAuto implements HyphenationEvent {
     }
     
 }
+

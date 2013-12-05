@@ -161,3 +161,4 @@ public class MagicSquareExample {
       print("Adios\n");
    }
 }
+

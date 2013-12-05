@@ -99,3 +99,4 @@ class ColorDetails {
         return spotcolor.getSpotObject(writer);
     }
 }
+

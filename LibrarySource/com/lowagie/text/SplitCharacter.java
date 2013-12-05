@@ -96,3 +96,4 @@ public interface SplitCharacter {
     
     public boolean isSplitCharacter(int start, int current, int end, char cc[], PdfChunk ck[]);
 }
+

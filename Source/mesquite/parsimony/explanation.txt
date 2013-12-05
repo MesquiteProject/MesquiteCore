@@ -1,1 +1,2 @@
-Parsimony PackageReconstructs character evolution and assess treelength using the parsimony criterion.  Different models of character evolution are provided for both categorical (unordered, ordered, step matrix) and continuous (squared change, linear) characters.
+Parsimony Package
+Reconstructs character evolution and assess treelength using the parsimony criterion.  Different models of character evolution are provided for both categorical (unordered, ordered, step matrix) and continuous (squared change, linear) characters.

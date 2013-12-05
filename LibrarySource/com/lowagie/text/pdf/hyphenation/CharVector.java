@@ -132,3 +132,4 @@ public class CharVector implements Cloneable, Serializable {
     }
 
 }
+

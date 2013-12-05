@@ -216,3 +216,4 @@ public class QRDecomposition implements java.io.Serializable {
       return (new Matrix(X,n,nx).getMatrix(0,n-1,0,nx-1));
    }
 }
+

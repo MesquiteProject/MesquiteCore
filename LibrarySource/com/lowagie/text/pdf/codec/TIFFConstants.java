@@ -294,3 +294,4 @@ public class TIFFConstants {
     public static final int TIFFTAG_DCSHUESHIFTVALUES = 65535;   /* hue shift correction data */
     
 }
+
