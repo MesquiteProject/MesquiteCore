@@ -486,7 +486,8 @@ public class ContinuousData extends CharacterData implements ItemContainer {
 			}
 			newMatrices.addElement(newMatrix);
 		}
-		matrices.removeAllElements();
+		if (matrices!=null)
+			matrices.removeAllElements();
 		matrices = newMatrices;
 		numTaxa = newNumTaxa; 
 		incrementStatesVersion();

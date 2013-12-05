@@ -70,8 +70,7 @@ public class SortTaxa extends DataWindowAssistantI {
 		taxa.swapParts(first, second); 
 	}
 	MesquiteInteger pos = new MesquiteInteger();
-	/*.................................................................................................................*/
-	
+	 
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
     	 	if (checker.compare(this.getClass(), "Touches on a cell with the taxa sort tool to sort the taxa according to the values in the column touched", "[column touched][row touched]", commandName, "taxaSortTouch")) {

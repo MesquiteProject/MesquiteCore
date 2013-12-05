@@ -18,12 +18,36 @@ import mesquite.lib.duties.*;
 
 public class MesquitePopup extends PopupMenu {
 	Container c;
+	int id = 0;
+	MesquiteMenuSpec spec;
+	protected boolean filterable = true;
 	public MesquitePopup(Container c){
 		super();
 		this.c = c;
 	}
+	public MesquitePopup(MesquiteMenuSpec spec, Container c){
+		super(spec.getLabel());  // true to designate as tearoff; doesn't seem to work on macos
+		filterable = spec.isFilterable();
+		if (spec.getLabel() == null) {
+			MesquiteMessage.println("menu with no name: ");
+			setEnabled(false);
+		}
+		if (!spec.isEnabled())
+			setEnabled(false);
+		this.spec = spec;
+	}
+	public static MesquitePopup getPopupMenu(MesquiteMenuSpec spec, Container c) {
+
+		return new MesquitePopup(spec, c);
+	}
 	Container getComponent(){
 		return c;
+	}
+	public void setComponent(Container c){
+		this.c = c;
+	}
+	public MesquiteMenuSpec getSpecification(){
+		return spec;
 	}
 	
 	public static Polygon getDropDownTriangle(){

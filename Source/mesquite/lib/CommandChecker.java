@@ -43,6 +43,8 @@ public class CommandChecker {
 	boolean accumulateMode = false;
 
 	boolean includeParameters = true;
+	
+	boolean warnIfNoResponse = true;
 
 	boolean LIMode = false;
 
@@ -62,12 +64,15 @@ public class CommandChecker {
 	MesquiteFile file = null;
 
 	public static CommandChecker defaultChecker;
+	public static CommandChecker quietDefaultChecker;
 
 	static CommandChecker defaultSkipChecker;
 	static {
 		registeredClasses = new Vector();
 		representingClasses = new Vector();
 		defaultChecker = new CommandChecker();
+		quietDefaultChecker = new CommandChecker();
+		quietDefaultChecker.warnIfNoResponse = false;
 		defaultSkipChecker = new CommandChecker();
 		defaultSkipChecker.skip = true;
 		defaultSkipChecker.accumulateMode = true;

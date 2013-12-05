@@ -1210,6 +1210,10 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	/* ................................................................................................................. */
 	/**
 	 * Hires as employee the first MesquiteModule found that is instance of the given class and that has given name. If name is null, first MesquiteModule found of the class is employeed.
+	 * <p><p>To pass multiple module names in arguments (i.e. for subsequent hiring instructions), use the format:
+	 * <br><br>"$ #NameOfFirstModule supplementaryArguments" <br><br>For example, to hire a TreeSource that is a ConsensusTreesFromBlocks AND
+	 * upon hiring, pass the arguments for the source of trees to consense to be SimulatedTreeBlocks, then the  
+	 * arguments String would be: "$ #ConsensusTreesFromBlocks #SimulatedTreeBlocks"
 	 */
 	public MesquiteModule hireNamedEmployee(Class dutyClass, String arguments, Object condition, boolean warnIfNotFound) {
 		if (startupBailOut)

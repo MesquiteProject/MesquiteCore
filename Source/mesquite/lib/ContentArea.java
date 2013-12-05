@@ -32,7 +32,8 @@ public class ContentArea extends MousePanel {
 	Vector ledgePanels;
 	static int ledgeSpacer = 3;
 	protected int ledgePanelHeight = 0;
-
+	MesquiteWindow window;
+	
 	public ContentArea (MesquiteWindow w) {
 		this(w, false);
 	}
@@ -63,6 +64,7 @@ public class ContentArea extends MousePanel {
 		ledgePanelContainer.setBackground(Color.lightGray);
 		ledgePanelContainer.setBounds(0, getBounds().height,getBounds().width,0);
 		ledgePanelContainer.setVisible(true);
+		window = w;
 	}
 	public void setPalette(ToolPalette palette){
 		if (palette== null) {
@@ -197,7 +199,6 @@ public class ContentArea extends MousePanel {
 		mainPanel.remove(comp);
 		rFocus();
 	}
-
 	public void update (Graphics g) {
 		try {
 			super.update(g);

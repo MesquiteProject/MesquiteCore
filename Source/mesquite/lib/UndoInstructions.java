@@ -71,6 +71,8 @@ public class UndoInstructions implements Undoer {
 	
 	String[][] oldStateNames;
 	String[][] oldStateNotes;
+	
+	MesquiteCommand undoCommand;
 
 
 	/** This is the constructor for single-cell changes. */
@@ -261,6 +263,13 @@ public class UndoInstructions implements Undoer {
 		if (this.newState.getClass().equals(newState.getClass()))
 				this.newState = newState;
 	}
+	
+	public void setUndoCommand(MesquiteCommand command) {
+		undoCommand = command;
+	}
+	public void doCommand(String arguments) {
+		undoCommand.doItMainThread(arguments, "", this);
+	}
 
 	public Object getNewState() {
 		return newState;
@@ -302,6 +311,8 @@ public class UndoInstructions implements Undoer {
 
 	public Undoer undo() {
 		String[] oldNamesList;
+		Notification notification;
+		int[] subcodes=null;
 
 		switch (changeClass) {
 
@@ -310,6 +321,7 @@ public class UndoInstructions implements Undoer {
 				table.offAllEditingSelection();
 				table.setFocusedCell(icStart, itStart, true);
 			}
+			CharacterState csBefore = data.getCharacterState(null, icStart, itStart);
 			if (oldState instanceof MesquiteString){
 				
 				CharacterState cs = data.makeCharacterState();
@@ -326,7 +338,14 @@ public class UndoInstructions implements Undoer {
 			else
 				data.setState(icStart, itStart, (CharacterState) oldState); // receive
 			// errors?
-			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, new int[] { icStart, itStart }));
+			CharacterState csAfter = data.getCharacterState(null, icStart, itStart);
+			notification =new Notification(MesquiteListener.DATA_CHANGED, new int[] { icStart, itStart }) ;
+			subcodes = new int[] {MesquiteListener.SINGLE_CELL};
+			if (csBefore.isInapplicable()==csAfter.isInapplicable())
+				subcodes = new int[] {MesquiteListener.SINGLE_CELL, MesquiteListener.CELL_SUBSTITUTION};
+			notification.setSubcodes(subcodes);
+
+			data.notifyListeners(this, notification);
 			UndoInstructions undoInst =  new UndoInstructions(changeClass, icStart, itStart, newState, oldState, data, table);
 
 			return undoInst;
@@ -394,7 +413,17 @@ public class UndoInstructions implements Undoer {
 			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();
 			data.copyDataBlock(oldData, icStart, icEnd, itStart, itEnd);
-			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+			notification = new Notification(MesquiteListener.DATA_CHANGED);
+			if (itStart==itEnd)
+				subcodes = new int[] {MesquiteListener.SINGLE_TAXON};
+			if (subcodes!=null)
+				notification.setSubcodes(subcodes);
+			data.notifyListeners(this, notification);
+			if (undoCommand!=null)
+				if (itStart==itEnd)
+					doCommand(""+itStart);
+				else
+					doCommand("");
 			return new UndoInstructions(changeClass, newData, data, icStart, icEnd, itStart, itEnd, 0, icEnd-icStart, 0, itEnd-itStart, true);
 
 		case ALLTAXONNAMES:

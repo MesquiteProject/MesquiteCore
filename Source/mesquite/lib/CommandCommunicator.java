@@ -297,6 +297,9 @@ public class CommandCommunicator {
 		else if ("mesquite".equalsIgnoreCase(command)) {
 			setObjectCommanded(MesquiteTrunk.mesquiteTrunk, useQueue, false);
 		}
+		else if ("tellIt".equalsIgnoreCase(command)) {
+			setObjectCommanded(result, useQueue, false);
+		}
 		else if ("jw".equalsIgnoreCase(command)) {
 			int i = MesquiteInteger.fromString(arguments);
 			ListableVector w = MesquiteTrunk.windowVector;
@@ -467,6 +470,13 @@ public class CommandCommunicator {
 				}
 			}
 		}
+		else if ("reportCrash".equalsIgnoreCase(command)) {
+		//	MesquiteTrunk.mesquiteTrunk.reportCrashToHome(new NullPointerException(),  "Reporting to home");
+			MesquiteCommand c = new MesquiteCommand("crash", MesquiteTrunk.mesquiteTrunk);
+			c.doItMainThread(null, null, null);
+		//	PendingCommand pc = new PendingCommand(this,  puppeteer, MesquiteTrunk.mesquiteTrunk, "crash", false);
+		//	MainThread.pendingCommands.addElement(pc, false);
+		}
 		else if (!StringUtil.blank(commandLine)) {
 			boolean useQueueHere = useQueue;
 			boolean dontSleep = false;
@@ -518,7 +528,8 @@ public class CommandCommunicator {
 			else {
 				if (result instanceof String)
 					output += ("    [ result: " + result + " ]");
-				
+				else 
+					output += ("    [ result: " + result + " ]");
 				result = null;
 			}
 			if (captureLog) {

@@ -238,6 +238,29 @@ public class AlignUtil {
 				data.addInLinked(ic-1, newGaps[ic], false);
 			}
 		}
+		start = newGaps.length-1;
+		if (data.getNumChars()<newGaps.length)
+			start = data.getNumChars()-1;
+		for (int ic = start; ic>=0; ic--) {   // go down for start and look for negative values denoting terminals
+			if (newGaps[ic]<0){
+				int numGaps = - newGaps[ic] - (data.getNumChars()-ic);  // are extra characters needed?
+				if (numGaps>0) {
+					data.addCharacters(data.getNumChars(), numGaps, false); 
+					data.addInLinked(data.getNumChars(), numGaps, false);
+				}
+				break;
+			}
+		}
+		for (int ic = 0; ic<data.getNumChars() && ic<newGaps.length; ic++) {   // go down for start and look for negative values denoting terminals
+			if (newGaps[ic]<0){
+				int numGaps = - newGaps[ic] - (ic);  // are extra characters needed?
+				if (numGaps>0) {
+					data.addCharacters(0, numGaps, false); 
+					data.addInLinked(0, numGaps, false);
+				}
+				break;
+			}
+		}
 	}
 	
 	/** This takes the original data matrix "origData", and re-aligns the block from icOrigStart, icOrigEnd, itOrigStart, and itOrigEnd 

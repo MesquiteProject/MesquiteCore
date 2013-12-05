@@ -39,7 +39,7 @@ public class LogWindow extends ConsoleWindow implements SystemWindow {
 		bannerPanel.setSize(getWidth(), bannerHeight);
 		bannerPanel.setLocation(0,0);
 		bannerPanel.setVisible(true);
-		searchStrip = new HelpSearchStrip(this);
+		searchStrip = new HelpSearchStrip(this, false);
 
 		addToWindow(searchStrip);
 		searchStrip.setBounds(searchLeft, getHeight()-searchHeight, getWidth() - searchLeft, searchHeight);
@@ -55,7 +55,7 @@ public class LogWindow extends ConsoleWindow implements SystemWindow {
 	public boolean isCompactible(){
 		return true;
 	}
-	public boolean showInfoTabs(){
+	public boolean permitViewMode(){
 		return false;
 	}
 

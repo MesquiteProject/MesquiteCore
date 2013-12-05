@@ -273,11 +273,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 				return;
 
 		highlightedBranch=N;
-		g.setColor(Color.black);
-		g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
-		treeDisplay.getTreeDrawing().fillBranch(treeDisplay.getTree(), N, g);
-		g.setPaintMode();
-		g.setColor(Color.black);
+		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	}
 
 	/*_________________________________________________*/
@@ -285,11 +281,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		if (ownerModule.isDoomed())
 				return;
 	highlightedBranch=0;
-		g.setColor(Color.black);
-		g.setXORMode(Color.white);//for some reason color makes no difference in MacOS, but is inversion color in Win95
-		treeDisplay.getTreeDrawing().fillBranch(treeDisplay.getTree(), N, g);
-		g.setPaintMode();
-		g.setColor(Color.black);
+	treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	}
 	/*_________________________________________________*/
 	public   void ScanFlash(TreeDisplay treeDisplay, Graphics g, int x, int y, int modifiers) {

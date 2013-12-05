@@ -38,6 +38,18 @@ public class TaxaInclusionSet extends TaxaBitsSet {
 		tis.selectAll();
 		return tis;
 	}
+	/*.................................................................................................................*/
+	/** Add num parts just after "starting" (filling with default values)  */
+  	public boolean addParts(int starting, int num){  
+		boolean success = super.addParts(starting, num); 
+		if (success) {
+			for (int i=starting+1; i< starting+num+1; i++) //default is for the bit to be set
+				setSelected(i, true);
+		}
+		return success;
+	}
+
+
 }
 
 

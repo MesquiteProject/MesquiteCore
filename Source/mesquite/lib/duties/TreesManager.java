@@ -14,6 +14,7 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 
 
@@ -42,6 +43,7 @@ public abstract class TreesManager extends FileElementManager   {
 	public abstract int getTreeBlockNumber(Taxa taxa, TreeVector trees);
 	public abstract TreeVector getTreeBlock(Taxa taxa, int i);
 	public abstract TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i);
+	public abstract TreeVector getTreeBlockByID(long id);  //this uses the temporary run-time id of the tree vector
 	public abstract String getTreeBlock(TreeVector trees, NexusBlock tB);
 	public abstract TreeVector makeNewTreeBlock(Taxa taxa, String name, MesquiteFile f);
 	public abstract Taxa findTaxaMatchingTable(TreeVector trees, MesquiteProject proj, MesquiteFile file, Vector table);

@@ -231,10 +231,21 @@ public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteL
 	private   void downPass(int node, Tree tree, ProbabilityCategCharModel model, CategoricalDistribution observedStates) {
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
+/*Polymorphism starts here OliverZMarg*/
+			int[] states = CategoricalState.expand(observed);
+			DoubleArray.zeroArray(downProbs[node]);
+			if(states.length > 0 && !CategoricalState.isUnassigned(observed) && !CategoricalState.isInapplicable(observed)){
+				for(int i = 0; i < states.length; i++){
+					downProbs[node][states[i]] = 1; //Assign probability of 1 for all observed states at tips.
+				}
+			}/*Polymorphism ends here*/
+			
+/*Original Implementation:
 			int obs = CategoricalState.minimum(observed); //NOTE: just minimum observed!
 			DoubleArray.zeroArray(downProbs[node]);
 			if (obs>=0 && obs < downProbs[node].length && !CategoricalState.isUnassigned(observed) && !CategoricalState.isInapplicable(observed)) 
 				downProbs[node][obs] = 1;
+/*End Original Implementation*/
 		}
 		else {
 			DoubleArray.zeroArray(downProbs[node]);
@@ -460,6 +471,7 @@ public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteL
 	boolean[] deleted;
 
 	boolean warn(CategoricalDistribution observedStates, ProbabilityCategCharModel model, Tree tree, MesquiteString resultString){
+/* Original Implementation OliverZMarg
 		if (observedStates.hasMultipleStatesInTaxon(tree, tree.getRoot())) {
 			String s = "Polymorphic or uncertain taxa are not currently supported by Categorical data likelihood calculations.  Calculations for one or more characters were not completed.";
 			if (!warnedPolymorphic) {
@@ -469,7 +481,7 @@ public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteL
 			if (resultString!=null)
 				resultString.setValue(s);
 			return true;
-		}
+		} End Original Implementation */
 		if (tree.hasSoftPolytomies(tree.getRoot())) {
 			String message = "Trees with soft polytomies not allowed by Categorical data likelihood calculations.  Calculations for one or more trees were not completed.";
 			if (!warnedSoftPoly){

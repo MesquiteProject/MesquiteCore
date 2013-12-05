@@ -21,7 +21,7 @@ import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public abstract class SourceModifiedMatrix extends CharMatrixSource {
-	CharMatrixOneSource dataTask;
+	protected CharMatrixOneSource dataTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (condition!=null) 

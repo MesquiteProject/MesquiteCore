@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.duties;
 
 import java.awt.*;
@@ -33,20 +33,40 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean writeOnlySelectedData = false;
 	public boolean writeOnlyIncludedData = true;
 	public boolean writeOnlySelectedTaxa = false;
-	public boolean writeTaxaWithAllMissing = false;
+	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75
+	public boolean writeExcludedCharacters = true;
+	
+	protected static int REPLACEDATA = 0;
+	protected static int REPLACEIFEMPTY = 1;
+	protected static int ADDASNEW = 2;
 
-   	 public Class getDutyClass() {
-   	 	return FileInterpreter.class;
-   	 }
-	 public String getFunctionIconPath(){
-   		 return getRootImageDirectoryPath() + "functionIcons/fileInterpret.gif";
-   	 }
+//	protected static boolean defaultReplaceDataOfTaxonWithSameName = false;
+	protected static int defaultReplaceDataOfTaxonWithSameNameInt = ADDASNEW;
+	protected static boolean defaultHasQueriedAboutSameNameTaxa = false;
+//	protected boolean replaceDataOfTaxonWithSameName = defaultReplaceDataOfTaxonWithSameName;
+	protected int replaceDataOfTaxonWithSameNameInt = defaultReplaceDataOfTaxonWithSameNameInt;
+	protected boolean hasQueriedAboutSameNameTaxa = defaultHasQueriedAboutSameNameTaxa;
+
+	public Class getDutyClass() {
+		return FileInterpreter.class;
+	}
+	public String getFunctionIconPath(){
+		return getRootImageDirectoryPath() + "functionIcons/fileInterpret.gif";
+	}
 
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
-   	public boolean requestPrimaryChoice(){
-   		return true;  
-   	}
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
+
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public void reset(){
+//		replaceDataOfTaxonWithSameName = defaultReplaceDataOfTaxonWithSameName;
+		replaceDataOfTaxonWithSameNameInt = defaultReplaceDataOfTaxonWithSameNameInt;
+		hasQueriedAboutSameNameTaxa = defaultHasQueriedAboutSameNameTaxa;
+	}
 
 	/** This is deprecated and should not be overridden.  The subsequent methods should be used instead.*/
 	public boolean canExport(){
@@ -60,7 +80,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean canExportProject(MesquiteProject project){
 		return canExport();
 	}
-	
+
 	/** returns whether module can export a character data matrix of the given type.  Should be overridden*/
 	public boolean canExportData(Class dataClass){
 		return canExport();
@@ -86,60 +106,60 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean canImport(String arguments){
 		return canImport(arguments,null);
 	}
-	
+
 	/** reads a file using the methods of MesquiteFile and places its data into the given MesquiteProject
 	which will already have been instantiated.  Recall that a MesquiteProject is not the external file on disk or server,
 	but is rather the collection of taxa, data, trees, etc. that together typically make up the information in
 	a NEXUS file.  The external file is referred to by the MesquiteFile.*/
 	public abstract void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments);
-	
-//	public abstract void readFile();
-	
- 	public String getDutyName() {
- 		return "File Interpreter";
-   	 }
-	
-/*.................................................................................................................*/
-	public String getLineEnding() {
- 		if (lineDelimiter == CURRENTDELIMITER) 
- 			return StringUtil.lineEnding();
- 		else if (lineDelimiter == MACOSDELIMITER) 
- 			return "\r";
- 		else if (lineDelimiter == WINDOWSDELIMITER) 
- 			return "\r\n";
- 		else if (lineDelimiter == UNIXDELIMITER) 
- 			return "\n";
- 		return StringUtil.lineEnding();
-   	 }
 
-/*.................................................................................................................*/
+	//	public abstract void readFile();
+
+	public String getDutyName() {
+		return "File Interpreter";
+	}
+
+	/*.................................................................................................................*/
+	public String getLineEnding() {
+		if (lineDelimiter == CURRENTDELIMITER) 
+			return StringUtil.lineEnding();
+		else if (lineDelimiter == MACOSDELIMITER) 
+			return "\r";
+		else if (lineDelimiter == WINDOWSDELIMITER) 
+			return "\r\n";
+		else if (lineDelimiter == UNIXDELIMITER) 
+			return "\n";
+		return StringUtil.lineEnding();
+	}
+
+	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {
- 		return "";
-   	 }
-   	 
-/*.................................................................................................................*/
+		return "";
+	}
+
+	/*.................................................................................................................*/
 	protected String stripNex(String name) {
- 		if (name == null)
- 			return null;
- 		int length = name.length();
- 		if (length<4)
- 			return name;
- 		String last4 = name.substring(length-4, length);
- 		if (last4.equalsIgnoreCase(".nex")) 
- 			return name.substring(0, length-4);
- 		else
- 			return name;
-   	 }
-   	 
-/*.................................................................................................................*/
+		if (name == null)
+			return null;
+		int length = name.length();
+		if (length<4)
+			return name;
+		String last4 = name.substring(length-4, length);
+		if (last4.equalsIgnoreCase(".nex")) 
+			return name.substring(0, length-4);
+		else
+			return name;
+	}
+
+	/*.................................................................................................................*/
 	public void setLineDelimiter(int newDelimiter) {
- 		lineDelimiter = newDelimiter;
-   	 }
-   	 
-   	public boolean isSubstantive(){
-   		return false;  
-   	}
-/*.................................................................................................................*/
+		lineDelimiter = newDelimiter;
+	}
+
+	public boolean isSubstantive(){
+		return false;  
+	}
+	/*.................................................................................................................*/
 	public void finishImport(ProgressIndicator progIndicator, MesquiteFile file, boolean abort){
 		if (progIndicator!=null)
 			progIndicator.goAway();
@@ -152,8 +172,8 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			//decrementMenuResetSuppression();
 			return;
 		}
-	/*
-	 * 	FileCoordinator fc = getFileCoordinator();
+		/*
+		 * 	FileCoordinator fc = getFileCoordinator();
 		if (fc!=null && getProject().getNumberCharMatrices()>0) {
 			MesquiteModule dwc = (MesquiteModule)fc.doCommand("getEmployee", "'Data Window Coordinator'",CommandChecker.defaultChecker);
 			if (dwc!=null) {
@@ -161,14 +181,14 @@ public abstract class FileInterpreter extends MesquiteModule  {
 					dwc.doCommand("showDataWindow", ""+i,CommandChecker.defaultChecker);
 			}
 		}
-		*/
+		 */
 	}
-/*.................................................................................................................*/
-   	 public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
-   		 if (outputBuffer == null)
-   			 return;
+	/*.................................................................................................................*/
+	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
+		if (outputBuffer == null)
+			return;
 		String output = outputBuffer.toString();
-		
+
 		String name = getProject().getHomeFileName();
 		if (name==null)
 			name = "untitled." + suggestedFileEnding;
@@ -177,40 +197,40 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		else 
 			name = stripNex(name) + "." + suggestedFileEnding;
 		saveExportedFile(output, arguments, name);
-		
-   	 }
-/*.................................................................................................................*/
-   	 public String getPathForExport(String arguments, String suggestedFileName, MesquiteString dir, MesquiteString fn) {
-   	 //check arguments for filename and directory
+
+	}
+	/*.................................................................................................................*/
+	public String getPathForExport(String arguments, String suggestedFileName, MesquiteString dir, MesquiteString fn) {
+		//check arguments for filename and directory
 		String tempFileName=null;
 		String tempDirectoryName=null;
-   	 	String token = parser.getFirstToken(arguments);
-   	 	while (token !=null){
-   	 		if (token.equalsIgnoreCase("file")){
-   	 			parser.getNextToken(); // =
-   	 			tempFileName = parser.getNextToken();
-   	 		}
-   	 		else if (token.equalsIgnoreCase("directory")){
-   	 			parser.getNextToken(); // =
-   	 			tempDirectoryName = parser.getNextToken();
-   	 			if (tempDirectoryName != null && !tempDirectoryName.endsWith(MesquiteFile.fileSeparator)) //(tempDirectoryName.length()-1) != MesquiteFile.fileSeparator.charAt(0))
-   	 				tempDirectoryName += MesquiteFile.fileSeparator;
-   	 		}
-   	 		token = parser.getNextToken();
-   	 	}
-   	 	if (StringUtil.blank(tempFileName)){
-	   	 	String queryMessage = "Export to file";
+		String token = parser.getFirstToken(arguments);
+		while (token !=null){
+			if (token.equalsIgnoreCase("file")){
+				parser.getNextToken(); // =
+				tempFileName = parser.getNextToken();
+			}
+			else if (token.equalsIgnoreCase("directory")){
+				parser.getNextToken(); // =
+				tempDirectoryName = parser.getNextToken();
+				if (tempDirectoryName != null && !tempDirectoryName.endsWith(MesquiteFile.fileSeparator)) //(tempDirectoryName.length()-1) != MesquiteFile.fileSeparator.charAt(0))
+					tempDirectoryName += MesquiteFile.fileSeparator;
+			}
+			token = parser.getNextToken();
+		}
+		if (StringUtil.blank(tempFileName)){
+			String queryMessage = "Export to file";
 			MainThread.incrementSuppressWaitWindow();
 			MesquiteFileDialog fdlg= new MesquiteFileDialog(containerOfModule(), queryMessage, FileDialog.SAVE);   // Save File dialog box
 			if (suggestedFileName == null)
 				suggestedFileName = "untitled";
 			fdlg.setFile(suggestedFileName);
-			
+
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setVisible(true);
 			tempFileName=fdlg.getFile();
 			tempDirectoryName=fdlg.getDirectory();
-		//	fdlg.dispose();
+			//	fdlg.dispose();
 			MainThread.decrementSuppressWaitWindow();
 		}
 		if (!StringUtil.blank(tempFileName)) {
@@ -225,22 +245,22 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		}
 		return null;
 
-}
-/*.................................................................................................................*/
-   	 public void saveExportedFile(String output, String arguments, String suggestedFileName) {
-   		
-   		String path = getPathForExport(arguments, suggestedFileName, null, null);
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFile(String output, String arguments, String suggestedFileName) {
+
+		String path = getPathForExport(arguments, suggestedFileName, null, null);
 		if (path!=null) {
 			logln("Exporting file to " + path);
 			MesquiteFile.putFileContents(path, output, true);
 			logln("Export complete.");
 		}
 	}
-   	 /** Returns the Character data as a StringBuffer in the Interperter's format.  This method should be overridden for those Interpreters that can provide this service. */
- 	/*.................................................................................................................*/
- 	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
- 		return null;
- 	}
+	/** Returns the Character data as a StringBuffer in the Interperter's format.  This method should be overridden for those Interpreters that can provide this service. */
+	/*.................................................................................................................*/
+	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+		return null;
+	}
 
 }
 

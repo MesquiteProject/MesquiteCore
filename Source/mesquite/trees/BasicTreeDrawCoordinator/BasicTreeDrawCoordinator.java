@@ -75,10 +75,6 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		mmis.setList(DrawTree.class);
 		mmis.setSelected(treeDrawName);
 
-		mmis = addSubmenu(MesquiteTrunk.analysisMenu, "Visual Tree Analysis", tdC);
-		mmis.setList(AnalyticalDrawTree.class);
-		mmis.setSelected(treeDrawName);
-		addMenuItem(MesquiteTrunk.analysisMenu, "-", null);
 
 		mmis = addSubmenu(null, "Background Color", makeCommand("setBackground",  this));
 		mmis.setList(ColorDistribution.standardColorNames);

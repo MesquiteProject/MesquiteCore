@@ -106,6 +106,27 @@ public abstract class TreeDrawing  {
 		return Math.abs(lineBaseY[node] + lineTipY[node])/2;
 }
 	
+	public int getNodeValueTextBaseX(int node, int edgewidth,  int stringwidth, int fontHeight, boolean horizontalText){
+		int baseX = x[node];
+		if (horizontalText){
+			baseX = baseX - stringwidth/2;
+		}
+		else {
+			baseX = baseX - fontHeight*2;
+		}
+		return baseX;
+	}
+	public int getNodeValueTextBaseY(int node, int edgewidth, int stringwidth, int fontHeight, boolean horizontalText){
+		int baseY = y[node];
+		if (horizontalText){
+			baseY = baseY - fontHeight;
+		}
+		else {
+			baseY = baseY + stringwidth/2;
+		}
+		return baseY;
+	}
+
 
 	/** Sets the tree.  This is done outside of a paint() call, and is the place that any complex calculations should be performed! */
 	public abstract void recalculatePositions(Tree tree) ;
@@ -124,7 +145,12 @@ public abstract class TreeDrawing  {
 			g.setColor(Color.black);
 			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
 			//GraphicsUtil.setToXOR(g);
-			fillBranch(tree, N, g);
+			try{
+				fillBranch(tree, N, g);
+			}
+			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
+			
+			}
 			g.setPaintMode();
 			g.setColor(Color.black);
 		}

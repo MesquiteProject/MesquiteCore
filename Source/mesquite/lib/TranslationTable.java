@@ -130,14 +130,14 @@ public class TranslationTable {
 		for (int i=0; i<labels.length; i++) {
 			if (labels[i] !=null){
 				while (StringArray.indexOfIgnoreCase(labels, labels[i]) !=StringArray.lastIndexOfIgnoreCase(labels, labels[i]))
-					labels[i] += "t";
+					labels[i] = "t" + labels[i] + "t";
 			}
 		}
 		for (int i=0; i<labels.length; i++) {
 			if (labels[i] ==null){
 				labels[i] = Integer.toString(Taxon.toExternal(i));
 				while (StringArray.indexOfIgnoreCase(labels, labels[i]) !=StringArray.lastIndexOfIgnoreCase(labels, labels[i]))
-					labels[i] += "t";
+					labels[i] = "t" + labels[i] + "t";
 			}
 		}
 	}

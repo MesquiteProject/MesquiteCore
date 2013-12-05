@@ -67,6 +67,82 @@ public class MesquiteTimer {
 		lastCheckedTime = System.currentTimeMillis();
 		return  (1.0*t)/1000.0;
 	}
+	public static String getDayHoursMinutesSecondsFromMilliseconds(long t) {
+		double seconds =  (1.0*t)/1000.0;
+		long minutes = 0;
+		long hours = 0;
+		long days = 0;
+		if (seconds>60.0){
+			minutes = (long)seconds/60;
+			seconds = seconds-minutes*60.0;
+		}
+		if (minutes>60){
+			hours = minutes/60;
+			minutes = minutes-hours*60;
+		}
+		if (hours>24){
+			days = hours/24;
+			hours = hours-days*24;
+		}
+		String s = "";
+		if (days>0){
+			if (days==1)
+				s+= "1 day ";
+			else
+				s+= "" + days + " days ";
+		}
+		if (hours>0) {
+			if (hours==1)
+				s+= "1 hour ";
+			else
+				s+= "" + hours + " hours ";
+		}
+		if (minutes>0) {
+			if (minutes==1)
+				s+= "1 minute ";
+			else
+				s+= "" + minutes + " minutes ";
+		}
+		if (seconds>0.0)
+			s+= "" + MesquiteDouble.toStringDigitsSpecified(seconds, 1) + " seconds ";
+		return s;
+	}
+	public static String getHoursMinutesSecondsFromMilliseconds(long t) {
+		double seconds =  (1.0*t)/1000.0;
+		long minutes = 0;
+		long hours = 0;
+		if (seconds>60.0){
+			minutes = (long)seconds/60;
+			seconds = seconds-minutes*60.0;
+		}
+		if (minutes>60){
+			hours = minutes/60;
+			minutes = minutes-hours*60;
+		}
+		String s = "";
+		if (hours>0) {
+			if (hours==1)
+				s+= "1 hour ";
+			else
+				s+= "" + hours + " hours ";
+		}
+		if (minutes>0) {
+			if (minutes==1)
+				s+= "1 minute ";
+			else
+				s+= "" + minutes + " minutes ";
+		}
+		if (seconds>0.0)
+			s+= "" + MesquiteDouble.toStringDigitsSpecified(seconds, 1) + " seconds ";
+		return s;
+	}
+
+	public String timeSinceVeryStartInHoursMinutesSeconds() {
+		long t =System.currentTimeMillis() -veryStart;
+		lastCheckedTime = System.currentTimeMillis();
+		return getHoursMinutesSecondsFromMilliseconds(t);
+	}
+
 	public long getAccumulatedTime() {
 		return accumulatedTime;
 	}

@@ -34,7 +34,7 @@ public abstract class DrawTree extends MesquiteModule  {
  		return "Draw Tree";
    	}
    	public String[] getDefaultModule() {
-   		return new String[] { "#SquareTree", "#DiagonalDrawTree"};
+   		return new String[] { "#SquareLineTree", "#DiagonalDrawTree"};
    	}
    	   	
 	/** Returns the preferred size (if any) of the tree drawing */

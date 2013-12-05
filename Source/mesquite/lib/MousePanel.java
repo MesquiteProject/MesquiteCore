@@ -137,18 +137,37 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			return null;
 		return ((OuterContentArea)c).ownerWindow;
 	}
-	 boolean fontSet = false;
-	 public void setFont(Font f){
-		 super.setFont(f);
-	 }
-	 public void setPanelFont(Font f){
-		 fontSet = true;
-		 super.setFont(f);
-	 }
-	 public boolean fontExplicitlySet(){
-		 return fontSet;
-	 }
+	boolean fontSet = false;
+	public void setFont(Font f){
+		super.setFont(f);
+	}
+	public void setPanelFont(Font f){
+		fontSet = true;
+		super.setFont(f);
+	}
+	public boolean fontExplicitlySet(){
+		return fontSet;
+	}
+	public void update(Graphics paramGraphics){
+		if (paramGraphics instanceof Graphics2D){
+			Graphics2D g = (Graphics2D) paramGraphics;
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,  //Debugg.println to recover antialiasing in OS X java 1.7 and in Windows.  1.7 broke text rotation when not antialiased on OSX.
+					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		}
+		super.update(paramGraphics);
+	}
+	public Graphics getGraphics(){
+		Graphics gg = super.getGraphics();
+		if (gg instanceof Graphics2D){
 
+			Graphics2D g = (Graphics2D)gg;
+			if (g ==null)
+				return null;
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		}
+		return gg;
+	}
 	/*.................................................................................................................*/
 	public boolean canAutoscrollHorizontally() {
 		return autoscrollDirection == AUTOSCROLLBOTH || autoscrollDirection == AUTOSCROLLHORIZONTAL;
@@ -300,7 +319,7 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			MesquiteException.lastLocation = 101;
 			requestFocus();
 			mouseDown(modifiers, clickCount, when, x, y, getT());
-			
+
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse up", "[modifiers as integer][x][y]", commandName, "mouseUp")) {

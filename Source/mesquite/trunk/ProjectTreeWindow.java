@@ -44,7 +44,7 @@ public class ProjectTreeWindow extends MesquiteWindow implements SystemWindow {
 			//browser.setBackground(ColorDistribution.projectLight[getColorScheme()]);
 			//checking for memory leaks 
 			browser.setRootNode(MesquiteTrunk.mesquiteTrunk.getProjectList());
-			searchStrip = new HelpSearchStrip(this);
+			searchStrip = new HelpSearchStrip(this, false);
 			addToWindow(searchStrip);
 			searchStrip.setBounds(4, getHeight()-searchHeight, getWidth()-4, searchHeight);
 			searchStrip.setVisible(true);
@@ -58,6 +58,9 @@ public class ProjectTreeWindow extends MesquiteWindow implements SystemWindow {
 		resetTitle();
 	}
 	public boolean showInfoTabs(){
+		return false;
+	}
+	public boolean permitViewMode(){
 		return false;
 	}
 	public void repaintSearchStrip(){

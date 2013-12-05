@@ -59,7 +59,11 @@ public class TreeOptimizer {
 				progIndicator.setSecondaryMessage("Adding taxon " + (taxon +1));
 				progIndicator.toFront();
 		}
-			int whichNode = 0;
+			//dJCOs if a Combinable tree score is never encountered, will attempt to graft onto node 0. July.23.2012
+//			int whichNode = 0;
+			/*Assures grafting will take place on a node that exists in initialTree*/
+			int whichNode = initialTree.getRoot();
+			//dJCOe. July.23.2012
 			MesquiteNumber value = new MesquiteNumber();
 			int numNodes = initialTree.getNumNodeSpaces();
 			for (int node = 0; node<numNodes && (progIndicator==null || !progIndicator.isAborted()); node++) {   
@@ -106,7 +110,7 @@ public class TreeOptimizer {
 
 		MesquiteString rs =new MesquiteString("");
 		double oldLength= tempTree.getBranchLength(node);
-		double newLength = adjustBranch(tempTree,node, rng);
+		double newLength = adjustBranch(tempTree,node, rng);//TODO: tempTree is not modified by adjustBranch, so is the new branch length even evaluated?
 		numberTask.calculateNumber(tempTree, tempScore, rs);
 
 
@@ -356,6 +360,7 @@ public class TreeOptimizer {
 		}
 		swapTree.standardize(node,true, false);
 		tree.setToClone(swapTree);
+		swapTree.dispose();
 		if (notify && tree instanceof Listened && !liveUpdates) {
 			((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 		}

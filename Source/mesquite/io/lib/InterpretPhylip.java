@@ -327,7 +327,12 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	
 	/*.................................................................................................................*/
 	protected int taxonNameLength = 10;
+	protected TaxonNamer taxonNamer = null;
 	
+	public void setTaxonNamer(TaxonNamer namer) {
+		this.taxonNamer = namer;
+	}
+
 	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		PhylipExporterDialog exportDialog = new PhylipExporterDialog(this,containerOfModule(), "Export Phylip Options", buttonPressed);
@@ -382,11 +387,15 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		String pad = "          ";
 		while (pad.length() < taxonNameLength)
 			pad += "  ";
-
+		
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it))){
 				if (startChar==0) {   // first block
-					String name = (taxa.getTaxonName(it)+ pad);
+					String name = "";
+					if (taxonNamer!=null)
+						name = taxonNamer.getNameToUse(taxa,it)+pad;
+					else
+						name = (taxa.getTaxonName(it)+ pad);
 					name = name.substring(0,taxonNameLength);
 					name = StringUtil.blanksToUnderline(StringUtil.stripTrailingWhitespace(name));
 					
@@ -398,7 +407,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 				//outputBuffer.append(" ");
 				counter = startChar;
 				for (int ic = startChar; ic<numChars; ic++) {
-					if (!writeOnlySelectedData || (data.getSelected(ic))){
+					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
 						int currentSize = outputBuffer.length();
 						appendPhylipStateToBuffer(data, ic, it, outputBuffer);
 						if (outputBuffer.length()-currentSize>1) {
@@ -421,6 +430,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		Taxa taxa = data.getTaxa();
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
+		if (file != null)
+			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)
 			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it)))
@@ -428,10 +439,17 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		numTaxa = countTaxa;
 		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
 
-		outputBuffer.append(Integer.toString(numTaxa)+" ");
-		outputBuffer.append(Integer.toString(numChars)+this.getLineEnding());		
-		if (file != null)
+		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
+			writeExcludedCharacters = file.writeExcludedCharacters;
+		}
+		outputBuffer.append(Integer.toString(numTaxa)+" ");
+
+		if (!writeExcludedCharacters)
+			outputBuffer.append(Integer.toString(data.getNumCharsIncluded())+this.getLineEnding());		
+		else
+			outputBuffer.append(Integer.toString(numChars)+this.getLineEnding());		
+
 		exportBlock(taxa, data, outputBuffer, 0, numChars);
 		return outputBuffer;
 	}
@@ -464,7 +482,12 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			
 		int numTaxa = taxa.getNumTaxa();
 
-		int numTaxaWrite = taxa.numberSelected(this.writeOnlySelectedTaxa);
+		int numTaxaWrite;
+		int countTaxa = 0;
+		for (int it = 0; it<numTaxa; it++)
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it)))
+				countTaxa++;
+		numTaxaWrite = countTaxa;
 
 		int numChars = 0;
 		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));

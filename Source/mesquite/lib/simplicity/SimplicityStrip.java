@@ -27,9 +27,11 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 	MesquiteWindow window;
 	MesquitePopup popup=null;
 	Image editing, power, simple;
-	public SimplicityStrip(MesquiteWindow window) {
+	boolean showText = true;
+	public SimplicityStrip(MesquiteWindow window, boolean showText) {
 		super();
 		this.window = window;
+		this.showText = showText;
 		setLayout(null);
 		setFont(smallFont);
 		setBackground(ColorTheme.getInterfaceBackground());
@@ -94,13 +96,14 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 			return;
 		int left = 18;
 		//g.drawRect(0, 0, getWidth()-1, getHeight()-1);
-		if (!InterfaceManager.isEditingMode() && !InterfaceManager.isSimpleMode()){
+		if (!InterfaceManager.isEditingMode() && !InterfaceManager.isSimpleMode() && showText){
 			g.drawImage(power, 0, 0, this);
-			g.drawString("Full Interface", left, 13);
+				g.drawString("Full Interface", left, 13);
 		}
 		else if (!InterfaceManager.isEditingMode() && InterfaceManager.isSimpleMode()){
 			g.drawImage(simple, 0, 0, this);
-			g.drawString("Simple Interface", left, 13);
+			if (showText)
+				g.drawString("Simple Interface", left, 13);
 		}
 		else if (InterfaceManager.isEditingMode()){
 			g.setColor(Color.cyan);
@@ -118,6 +121,8 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 	/*.................................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		if (InterfaceManager.locked)
+			return;
+		if (!InterfaceManager.isEditingMode() && !InterfaceManager.isSimpleMode())
 			return;
 		if (MesquiteWindow.checkDoomed(this))
 			return;

@@ -823,7 +823,7 @@ public class ManageTaxa extends TaxaManager {
 					newTaxa.addTaxa( newTaxa.getNumTaxa()-1, numTaxa, true);
 					NameReference colorNameRef = NameReference.getNameReference("color");
 					for (int it = firstNewTaxon; it<newTaxa.getNumTaxa(); it++)
-						newTaxa.setAssociatedLong(colorNameRef, it, 8, true);
+						newTaxa.setAssociatedLong(colorNameRef, it, 10, true);
 				}
 				else {
 
@@ -1147,15 +1147,22 @@ public class ManageTaxa extends TaxaManager {
 				if (t == null || t.getNumTaxa()==0)
 					return false;
 				double matches = 0.0;
-				for (int it=0; it<t.getNumTaxa(); it++)
+				for (int it=0; it<t.getNumTaxa(); it++){
+					if (t.getTaxonName(it).equals("Col.Ade.Bembidion_28S.orig")) {
+						matches = matches + 0.0;
+					}
 					if (taxa.getTaxon(t.getTaxonName(it))!=null)
 						matches+= 1.0;
+					//else logln("unmatched: " + t.getTaxonName(it));
+				}
 				double avg = matches/t.getNumTaxa();
 				double matches2 = 0.0;
 				for (int it=0; it<taxa.getNumTaxa(); it++)
 					if (t.getTaxon(taxa.getTaxonName(it))!=null)
 						matches2+= 1.0;
-				if (MesquiteDouble.minimum( matches2/t.getNumTaxa(), avg) > 0.8)
+					//else logln("unmatched: " + t.getTaxonName(it));
+				double avg2 = matches2/t.getNumTaxa();
+				if (MesquiteDouble.minimum( avg2, avg) > 0.8)
 					return true;
 			}
 		}
@@ -1211,8 +1218,8 @@ public class ManageTaxa extends TaxaManager {
 		if (hasBlankNames(taxa)){
 			discreetAlert("The block of taxa being saved (" + taxa.getName() + ") has blank taxon names.  This will cause problems in saving and reading trees and other functions, and will be fixed (Summary: " +fixBlankNames(taxa) + ")");
 		}
-		CommandRecord.tick("Checking for duplicate taxa names");
-		String d = taxa.hasDuplicateNames();
+		CommandRecord.tick("Checking for duplicate taxon names");
+		String d = taxa.hasDuplicateNames(true);
 		if (d !=null){
 			if (MesquiteThread.isScripting())
 				logln("Summary of name changes:\n" + fixDuplicateNames(taxa));

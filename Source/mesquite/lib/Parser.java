@@ -1303,6 +1303,7 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 	public int getNumberOfTokensRemaining() {
+		int oldPos = pos.getValue();
 		String token=null;
 		int count=0;
 		do {
@@ -1310,6 +1311,7 @@ public class Parser extends StringUtil {
 			if (token!=null)
 				count++;
 		} while (token!=null);
+		pos.setValue(oldPos);
 		return count;
 	}
 	/*.................................................................................................................*/

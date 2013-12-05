@@ -153,12 +153,8 @@ public class ConcatenateMatrices extends DataUtility {
 			}
 		}
 	}
-	/** Called to operate on the data in all cells.  Returns true if data altered*/
-	public boolean operateOnData(CharacterData data){ 
-		this.data = data;
-		CharacterData oData =getDifferentButCompatibleMatrix(data, true,  "Sorry, there are no other compatible data matrices available for concatenation.  If the other matrix is in another file, open the file as a linked file before attempting to concatenate.", "Concatenate which matrix?", true);
-		//modified v. 1.05 to allow matrix of a subclass to be merged into a matrix (e.g. DNA into categorical).
-		//modivied v. 1.2 to allow enlargment of taxa block from new taxa in concatenated matrix
+	
+	boolean concatenate(CharacterData data, CharacterData oData, boolean notify){
 		if (oData==null)
 			return false;
 		if (oData.isLinked(data) || data.isLinked(oData)) {
@@ -207,8 +203,69 @@ public class ConcatenateMatrices extends DataUtility {
 			CommandRecord.tick("Copying character " + (ic+1) + " in concatenation");
 			data.equalizeCharacter(oData, ic, ic+origNumChars);
 		}
-		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {origNumChars, oData.getNumChars()}));
+		if (notify)
+			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {origNumChars, oData.getNumChars()}));
 		return true;
+}
+	
+	/** Called to operate on the data in all cells.  Returns true if data altered*/
+	public boolean operateOnData(CharacterData data){ 
+		this.data = data;
+		CharacterData oData =getDifferentButCompatibleMatrix(data, true,  "Sorry, there are no other compatible data matrices available for concatenation.  If the other matrix is in another file, open the file as a linked file before attempting to concatenate.", "Concatenate which matrix?", true);
+		//modified v. 1.05 to allow matrix of a subclass to be merged into a matrix (e.g. DNA into categorical).
+		//modivied v. 1.2 to allow enlargment of taxa block from new taxa in concatenated matrix
+		if (oData==null)
+			return false;
+		boolean success = data.concatenate(oData, true, true, true);
+		/*
+		if (oData.isLinked(data) || data.isLinked(oData)) {
+			discreetAlert( "Sorry, those two matrices cannot be concatenated because they are linked");
+			return false;
+		}
+		CommandRecord.tick("Concatenating matrices");
+		if (!oData.getTaxa().equals(data.getTaxa(), true, true)){
+			Taxa oTaxa = oData.getTaxa();
+			Taxa taxa = data.getTaxa();
+			boolean extra = false;
+			for (int oit = 0; oit<oTaxa.getNumTaxa() && !extra; oit++)
+				if (taxa.findEquivalentTaxon(oTaxa, oit)<0)
+					extra = true;
+			//different taxa block, with different names.  Offer to add names
+			if (extra){
+				if (AlertDialog.query(containerOfModule(), "Import taxa from other matrix?", "The matrix you are concatenating to this one is based on a different block of taxa, and includes taxa not in this matrix.  Do you want to add these taxa to this matrix before concatenating?")){
+					String names = "";
+					
+					for (int oit = 0; oit<oTaxa.getNumTaxa(); oit++){
+						if (taxa.findEquivalentTaxon(oTaxa, oit)<0){
+							taxa.addTaxa(taxa.getNumTaxa(), 1, false);
+							taxa.equalizeTaxon(oTaxa, oit, taxa.getNumTaxa()-1);
+							names += taxa.getTaxonName(taxa.getNumTaxa()-1) + "\n";
+							CommandRecord.tick("Added taxon " + taxa.getTaxonName(taxa.getNumTaxa()-1));
+							
+						}
+					}
+					if (!StringUtil.blank(names)){
+						logln("Added to taxa block were:\n" + names);
+						taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, null,null));
+					}
+				}
+			}
+
+		}
+		int origNumChars = data.getNumChars();
+		data.addParts(data.getNumChars()+1, oData.getNumChars());
+		CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
+		if (partition==null) // let's give the origjnal ones a group
+			data.setToNewGroup(data.getName(), 0, origNumChars-1, this);  //set group
+		data.setToNewGroup(oData.getName(), origNumChars, data.getNumChars()-1, this);  //set group
+		data.addInLinked(data.getNumChars()+1, oData.getNumChars(), true);
+		CharacterState cs = null;
+		for (int ic = 0; ic<oData.getNumChars(); ic++){
+			CommandRecord.tick("Copying character " + (ic+1) + " in concatenation");
+			data.equalizeCharacter(oData, ic, ic+origNumChars);
+		}
+		*/
+		return success;
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {

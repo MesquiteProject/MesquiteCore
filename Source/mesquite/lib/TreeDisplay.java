@@ -82,6 +82,9 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	/**  Spacing in pixels between taxa*/
 	private int taxonSpacing;
+	
+	/**  Spacing in pixels between taxa as set by user*/
+	private int fixedTaxonSpacing;
 	/**  Orientaton of the tree*/
 	private int treeOrientation = UP;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
@@ -118,7 +121,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	public Color getBranchColor(int N){
 		if (!showBranchColors)
-			return null;
+			return branchColor;
 		long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, N);
 		Color col=null;
 		if (!tree.anySelected() || tree.getSelected(N)) {
@@ -258,6 +261,12 @@ public void setTreeDrawing(TreeDrawing td) {
 	}
 	public int getTaxonSpacing() {
 		return taxonSpacing;
+	}
+	public void setFixedTaxonSpacing(int sp) {
+		this.fixedTaxonSpacing = sp;
+	}
+	public int getFixedTaxonSpacing() {
+		return fixedTaxonSpacing;
 	}
 	public void addExtra(TreeDisplayExtra extra) {
 		if (extras != null)

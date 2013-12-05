@@ -17,6 +17,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
+import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.table.EditorTextField;
 
 import java.awt.event.*;
@@ -1328,6 +1329,56 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		newPanel.add(choice);
 		return choice;
 	}
+	/*.................................................................................................................*/
+	public Choice addPopUpMenu (String message, Class dutyClass, int defaultChoice) {
+		String[] choices = getModuleList(dutyClass);
+		JLabel label = new JLabel (message);
+		return addPopUpMenu(label, choices, defaultChoice);
+	}
+	/*.................................................................................................................*/
+	public String[] getModuleList(Class dutyClass) {
+		StringArray stringArray = new StringArray(5);
+		if (dutyClass!=null) {  //module dutyClass specified; need to create list of modules to choose
+			MesquiteModuleInfo mbi=null;
+			int count = 0;
+			while (count++<128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(dutyClass, mbi))!=null) {
+				if (mbi.getUserChooseable()) {
+					stringArray.addAndFillNextUnassigned(mbi.getName());
+				}
+			}
+			return stringArray.getFilledStrings();
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	public String getModuleClassName(Class dutyClass, int index) {
+		if (dutyClass!=null) { 
+			MesquiteModuleInfo mbi=null;
+			int count = -1;
+			while (count++<128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(dutyClass, mbi))!=null) {
+				if (mbi.getUserChooseable()) {
+					if (count==index)
+						return mbi.getClassName();
+				}
+			}
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	public int getModuleClassNumber(Class dutyClass, String className) {
+		if (dutyClass!=null) { 
+			MesquiteModuleInfo mbi=null;
+			int count = -1;
+			while (count++<128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(dutyClass, mbi))!=null) {
+				if (mbi.getUserChooseable()) {
+					if (className.equalsIgnoreCase(mbi.getClassName()))
+						return count;
+				}
+			}
+		}
+		return 0;
+	}
+
 	/*.................................................................................................................*/
 	public void addBlankLine () {
 		Panel newPanel = addNewDialogPanel();

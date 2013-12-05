@@ -138,6 +138,8 @@ public class SPRRearranger extends TreeSwapper {
 			return numInTree-numInClade;
 	}
 	/* TODO: currently this only works if baseNode = root */
+	//  Bad things (e.g. thread death) can happen if baseNode != tree.getRoot(). J.C. Oliver 2013.
+	/** baseNode <strong>must</strong> be the root of {@code tree}.*/
 	public long numberOfRearrangements(AdjustableTree tree, int baseNode) {
 		nodeIsRoot = baseNode == tree.getRoot();
 		MesquiteLong counter = new MesquiteLong(0); 

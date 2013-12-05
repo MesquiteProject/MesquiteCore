@@ -15,6 +15,7 @@ package mesquite.rhetenor.CharsFromMatrices;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -22,7 +23,7 @@ import mesquite.rhetenor.lib.*;
 
 /* ======================================================================== */
 /* This is a character source used privately by Rhetenor for ShowCharLoadings.  Note that it is not user chooseable. */
-public class CharsFromMatrices extends CharsFromMatrixSource {
+public class CharsFromMatrices extends CharsFromMatrixSource implements Selectionable {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(MatrixSourceCoord.class, getName() + "  needs a source of matrices.",
 		"The source of matrices is selected initially");
@@ -31,12 +32,15 @@ public class CharsFromMatrices extends CharsFromMatrixSource {
 	int currentChar=0;
 	MatrixSourceCoord matrixSource;
 	MCharactersDistribution matrix;
+	Vector indirectListeners;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		indirectListeners = new Vector();
   	 	return true; 
   	 }
 	/*.................................................................................................................*/
 	public boolean startJob(Object condition) {
+		indirectListeners = new Vector();
   	 	return false; 
   	 }
   	 
@@ -63,6 +67,8 @@ public class CharsFromMatrices extends CharsFromMatrixSource {
 		matrix = matrixSource.getCurrentMatrix(taxa); //TODO: don't do this every time!
 		if (matrix == null)
 			return null;
+		
+		//
   		CharacterDistribution dist =  matrix.getCharacterDistribution(ic);
   		if (dist == null)
   			return null;
@@ -77,7 +83,7 @@ public class CharsFromMatrices extends CharsFromMatrixSource {
    				return 0;
 			matrix = matrixSource.getCurrentMatrix(taxa); //TODO: don't do this every time!
    		}
-   		return matrix.getNumChars();
+  		return countIncludedCharacters(matrix); //matrix.getNumChars();
    	}
    	public boolean usesTree(){
    		if (matrixSource==null)
@@ -101,9 +107,256 @@ public class CharsFromMatrices extends CharsFromMatrixSource {
    				return 0;
 			matrix = matrixSource.getCurrentMatrix(tree); //TODO: don't do this every time!
    		}
-   		return matrix.getNumChars();
+  		return countIncludedCharacters(matrix); //matrix.getNumChars();
    	}
-   
+   	
+  	/** zzzzzzzzzzzz*/
+	/*.................................................................................................................*/
+	CharacterPartition colorSet;
+	public void prepareItemColors(Taxa taxa){
+   		if (matrix==null) {
+   			if (matrixSource==null)
+   				return;
+			matrix = matrixSource.getCurrentMatrix(taxa); //TODO: don't do this every time!
+   		}
+   		if (matrix ==null)
+   			return;
+   		CharacterData data = matrix.getParentData();
+   		if (data ==null)
+   			return;
+		if (taxa==null || data == null || data.getTaxa()!=taxa)
+			colorSet=null;
+		else
+			colorSet = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class); 
+	}
+	boolean respectExclusion = true;
+	public int countIncludedCharacters(MCharactersDistribution matrix){
+		if (matrix == null)
+			return 0;
+   		CharacterData data = matrix.getParentData();
+		if (data==null)
+			return 0;
+		if (!respectExclusion)
+			return data.getNumChars();
+		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
+		int numChars = data.getNumChars();
+		if (incl==null)
+			return numChars;
+		int count = 0;
+		for (int i=0; i<numChars; i++)
+			if (incl.isBitOn(i))
+				count++;
+		return count;
+
+	}
+	public int countIncludedCharacters(CharacterData data){
+		if (data==null)
+			return 0;
+		if (!respectExclusion)
+			return data.getNumChars();
+		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
+		int numChars = data.getNumChars();
+		if (incl==null)
+			return numChars;
+		int count = 0;
+		for (int i=0; i<numChars; i++)
+			if (incl.isBitOn(i))
+				count++;
+		return count;
+
+	}
+	public int findIncludedCharacter(CharacterData data, int ic){
+		if (!respectExclusion)
+			return ic;
+		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
+		int numChars = data.getNumChars();
+		if (incl==null)
+			return ic;
+		int count = 0;
+		for (int i=0; i<numChars; i++){
+			if (incl.isBitOn(i)){
+				if (count == ic)
+					return i;
+				count++;
+			}
+		}
+		return -1;
+
+	}
+	public Color getItemColor(Taxa taxa, int ic){
+		if (taxa ==null || matrix == null || colorSet == null)
+			return null;
+		
+		if (colorSet!=null){
+			int whichCharacter = ic;
+	   		CharacterData data = matrix.getParentData();
+	   		if (data ==null)
+	   			return null;
+			if (respectExclusion)
+				whichCharacter = findIncludedCharacter(data, ic);
+			CharactersGroup mi = (CharactersGroup)colorSet.getProperty(whichCharacter);
+			if (mi!=null && mi.getColor()!=null) {
+				return mi.getColor();
+			}
+			return null;
+		}
+		return null;
+	}
+
+	public Selectionable getSelectionable(){
+		return this;  //data or this
+	}
+	
+	CharacterData getData(){
+		if (matrix == null)
+			return null;
+		
+		return matrix.getParentData();
+	}
+	/** Sets whether or not the part is selected */
+	public void setSelected(int part, boolean select){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		int ic = findIncludedCharacter(data, part);
+		if (ic>=0)
+			data.setSelected(ic, select);
+	}
+
+	/** Returns whether the part is selected */
+	public boolean getSelected(int part){
+		CharacterData data = getData();
+		if (data == null)
+			return false;
+		int ic = findIncludedCharacter(data, part);
+		if (ic>=0)
+			return data.getSelected(ic);
+		return false;
+	}
+
+	/** Deselects all parts */
+	public void deselectAll(){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		data.deselectAll();
+	}
+
+	/** Selects all parts */
+	public void selectAll(){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		data.selectAll();
+	}
+
+
+
+	/** Returns whether there are any selected parts */
+	public boolean anySelected(){
+		CharacterData data = getData();
+		if (data == null)
+			return false;
+		if (!respectExclusion)
+			return data.anySelected();
+		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
+		int numChars = data.getNumChars();
+		if (incl==null)
+			return data.anySelected();
+		for (int i=0; i<numChars; i++)
+			if (incl.isBitOn(i)  && data.getSelected(i))
+				return true;
+		return false;
+	}
+
+	/** Returns number of selected parts */
+	public int numberSelected(){
+		CharacterData data = getData();
+		if (data == null)
+			return 0;
+
+		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
+		int numChars = data.getNumChars();
+		if (incl==null)
+			return numChars;
+		int count = 0;
+		for (int i=0; i<numChars; i++)
+			if (incl.isBitOn(i) && data.getSelected(i)) //included and selected
+				count++;
+		return count;
+	}
+
+	/** Returns number of parts that can be selected*/
+	public int getNumberOfSelectableParts(){
+		CharacterData data = getData();
+		if (data == null)
+			return 0;
+		return countIncludedCharacters(data);
+	}
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	/** lists listeners of element*/
+	public boolean amIListening(MesquiteListener obj) {
+		CharacterData data = getData();
+		if (data == null)
+			return false;
+		return data.amIListening(obj);
+	}
+	/** lists listeners of element*/
+	public void listListeners() {
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		data.listListeners();
+	}
+	/** notifies listeners that element has changed*/
+	public void notifyListeners(Object caller, Notification notification){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		data.notifyListeners(caller, notification);
+	}
+	/** adds a listener to notify if the element changes*/
+	public void addListener(MesquiteListener listener){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		if (indirectListeners.indexOf(listener)<0)
+			indirectListeners.addElement(listener);
+		data.addListener(listener);
+	}
+	/** adds a listener to notify if the element changes; add to start of listener vector so it will be notified early*/
+	public void addListenerHighPriority(MesquiteListener listener){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		if (indirectListeners.indexOf(listener)<0)
+			indirectListeners.addElement(listener);
+		data.addListenerHighPriority(listener);
+	}
+	/** removes a listener*/
+	public void removeListener(MesquiteListener listener){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		indirectListeners.removeElement(listener);
+		data.removeListener(listener);
+	}
+	/** Increments the suppression of listener notification*/
+	public void incrementNotifySuppress(){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		data.incrementNotifySuppress();
+	}
+	/** Decrements the suppression of listener notification*/
+	public void decrementNotifySuppress(){
+		CharacterData data = getData();
+		if (data == null)
+			return;
+		data.decrementNotifySuppress();
+	}
+
    	/** returns the name of character ic*/
    	public String getCharacterName(Taxa taxa, int ic){
    		return "Character #" + CharacterStates.toExternal(ic) ;

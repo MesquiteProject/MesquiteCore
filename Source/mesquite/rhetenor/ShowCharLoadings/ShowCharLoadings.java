@@ -15,6 +15,7 @@ package mesquite.rhetenor.ShowCharLoadings;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -81,8 +82,11 @@ public class ShowCharLoadings extends OrdinationAssistant {
 			chartWindowTask.setTaxa(taxa);
 			charSourceConverter.setMatrixSource(matrixSourceTask);
 			chartWindowTask.setItemsSource(charSourceConverter);
+
 			loadingsTask.setOrdination(ordination, taxa);
-			loadingsTask.setCurrentAxis(0);
+			int curr = loadingsTask.getCurrentAxis();
+			if (curr <0 || curr >= loadingsTask.getNumberOfAxes())
+				loadingsTask.setCurrentAxis(0);
 			chartWindowTask.setNumberTask(loadingsTask);
 			if (firstTime){
 				cWindow.setScroller(axisScroll = new MiniScroll(makeCommand("setAxis",  this), true, true, 1, 1, loadingsTask.getNumberOfAxes(),"axis"));
@@ -96,8 +100,9 @@ public class ShowCharLoadings extends OrdinationAssistant {
 				firstTime = false;
 			}
 			else {
-				if (axisScroll != null && loadingsTask != null)
+				if (axisScroll != null && loadingsTask != null){
 					axisScroll.setMaximumValue(loadingsTask.getNumberOfAxes());
+				}
 			}
 			chartWindowTask.doCounts();
 			resetContainingMenuBar();
@@ -163,7 +168,7 @@ public class ShowCharLoadings extends OrdinationAssistant {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 

@@ -80,7 +80,16 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 						data.statesIntoNEXUSStringBuffer(ic, it, blocks);
 						tot++;
 						totInTax++;
-						if (tot % 10000 == 0  && isLogVerbose())
+						if (numTotal>100000000) {
+							if (tot % 1000000 == 0  && isLogVerbose())
+								logln("\nComposing matrix: " + tot + " of " + numTotal);
+							else if (tot % 10000 == 0  && isLogVerbose())
+								log(".");
+						}
+						else if (numTotal>10000000) {
+							if (tot % 100000 == 0  && isLogVerbose())
+								logln("Composing matrix: " + tot + " of " + numTotal);
+						} else if (tot % 10000 == 0  && isLogVerbose())
 							logln("Composing matrix: " + tot + " of " + numTotal);
 					//	27 July 08:  DRM commented out the following two lines.  These cannot be included, as NEXUS files are sensitive to line breaks within the MATRIX command.
 					

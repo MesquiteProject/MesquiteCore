@@ -33,12 +33,12 @@ public class CharacterList extends ListModule {
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(CharListAssistant.class, getName() + " uses various assistants to display columns showing information for each character.",
-		"You can request that columns be shown using the Columns menu of the List of Characters Window. ");
+				"You can request that columns be shown using the Columns menu of the List of Characters Window. ");
 		e.setEntryCommand("newAssistant");
 		EmployeeNeed e2 = registerEmployeeNeed(CharListAssistantI.class, getName() + " uses various assistants to display columns showing information for each character.",
-		"These are activated automatically. ");
+				"These are activated automatically. ");
 		EmployeeNeed e3 = registerEmployeeNeed(CharSelectCoordinator.class, getName() + " uses various criteria to select characters in the List of Characters window.",
-		"You can request selection methods using the List menu of the List of Characters Window. ");
+				"You can request selection methods using the List menu of the List of Characters Window. ");
 	}
 	/*.................................................................................................................*/
 	public int currentDataSet = 0;
@@ -109,26 +109,29 @@ public class CharacterList extends ListModule {
 				assistant.setUseMenubar(false);
 			}
 			/* default columns*/
-			if (!(data instanceof MolecularData)){ //added 1. 06
-				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListPartition"));
+			//	if (!(data instanceof MolecularData)){ //added 1. 06; removed after 2. 75
+			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListPartition"));
+			if (assistant!= null){
+				((CharacterListWindow)window).addListAssistant(assistant);
+				assistant.setUseMenubar(false);
+			}
+			//	}
+			if (!(data instanceof MolecularData)){ 
+				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListParsModels"));
 				if (assistant!= null){
 					((CharacterListWindow)window).addListAssistant(assistant);
 					assistant.setUseMenubar(false);
 				}
 			}
-			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("Current Parsimony Models"));
+			/*
+			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListProbModels"));
 			if (assistant!= null){
 				((CharacterListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("Current Probability Models"));
-			if (assistant!= null){
-				((CharacterListWindow)window).addListAssistant(assistant);
-				assistant.setUseMenubar(false);
-			}
-
+			 */
 			if (data instanceof DNAData) {
-				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("Current Codon Positions"));
+				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListCodonPos"));
 				if (assistant!= null){
 					((CharacterListWindow)window).addListAssistant(assistant);
 					assistant.setUseMenubar(false);
@@ -375,7 +378,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 		String listData = data.searchData(s, commandResult);
 
 		if (!StringUtil.blank(listData))
-				return "<h2>Matches to search string: \"" + s + "\"</h2>" + listData;
+			return "<h2>Matches to search string: \"" + s + "\"</h2>" + listData;
 		else
 			return "<h2>No matches found (searched: \"" + s + "\")</h2>";
 	}
@@ -475,7 +478,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 	}
 	/*...............................................................................................................*/
 	public void setRowNameColor(Graphics g, int row){
-//		g.setColor(Color.black);
+		//		g.setColor(Color.black);
 		if (data!=null) {
 			if (!data.characterHasName(row))
 				g.setColor(Color.gray);

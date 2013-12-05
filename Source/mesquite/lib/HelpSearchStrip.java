@@ -27,6 +27,7 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 	public static final int searchDATA = 2;
 	public static int searchMODE = searchAND;
 	static Image andImage, orImage, dataImage;
+	boolean searchDataOnly = false;
 	Font smallFont = new Font("SanSerif", Font.PLAIN, 10);
 	MesquiteWindow window;
 	static String[] searchModeExplanation;
@@ -34,10 +35,11 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 	static {
 		searchModeExplanation = new String[]{"Search Mesquite features; match all terms", "Search Mesquite features; match at least one term", "Search Data in window; match string"};
 	}
-	public HelpSearchStrip(MesquiteWindow window) {
+	public HelpSearchStrip(MesquiteWindow window, boolean data) {
 		super();
 		this.window = window;
 		setLayout(null);
+		searchDataOnly = data;
 		searchBox = new TextArea("", 1, 8, TextArea.SCROLLBARS_NONE);
 		add(searchBox);
 		searchBox.setBounds(0, 1, 130, 14);
@@ -53,7 +55,9 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 		setBackground(ColorTheme.getInterfaceBackground());
 		setCursor(Cursor.getDefaultCursor());
 	}
-
+	public void setText(String t){
+		searchBox.setText(t);
+	}
 	void enterPressed(){
 		String string = searchBox.getText();
 		if (!StringUtil.blank(string)) {
@@ -70,7 +74,7 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 				string = StringUtil.stripTrailingWhitespace(string);
 				searchBox.setText(string);
 				searchBox.selectAll();
-				if (searchMODE == searchDATA)
+				if (searchDataOnly || searchMODE == searchDATA)
 					MesquiteTrunk.mesquiteTrunk.searchData(string, window);
 				else
 					MesquiteTrunk.mesquiteTrunk.searchKeyword(string, false);
@@ -82,6 +86,8 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void paint (Graphics g) {
+		if (searchDataOnly)
+			return;
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 
@@ -106,6 +112,7 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 			g.drawImage(dataImage, searchBoxAndX, searchBoxAndY, this);
 			g.drawString("Search Data", searchBoxAndX+12, searchBoxAndY+10);
 	}
+		
 	for (int i=0; i<2000; i+=15)
 			g.drawString(Integer.toString(i), i, i);
 		MesquiteWindow.uncheckDoomed(this);
@@ -113,6 +120,8 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 	int count = 0;
 	/*.................................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		if (searchDataOnly)
+			return;
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		if (x> searchBoxAndX && x< searchBoxAndX+12  && y > searchBoxAndY && y< searchBoxAndY +12) {
@@ -131,10 +140,14 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 	}
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseMoved(modifiers, x, y, tool);
+		if (searchDataOnly)
+			return;
 		window.setExplanation(searchModeExplanation[searchMODE]);
 	}
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseEntered(modifiers, x, y, tool);
+		if (searchDataOnly)
+			return;
 		window.setExplanation(searchModeExplanation[searchMODE]);
 	}
 }

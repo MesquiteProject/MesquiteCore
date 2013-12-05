@@ -17,13 +17,18 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
+import mesquite.lib.characters.CentralModelListener;
 import mesquite.lib.duties.*;
+import mesquite.stochchar.lib.AsymmModel;
 
 /* ======================================================================== */
 public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	public Vector extras;
 	public boolean first = true;
 	MesquiteBoolean on, percentage, horizontal, centred, whiteEdges;
+	MesquiteInteger positionAlongBranch;
+	MesquiteSubmenuSpec positionSubMenu;
+	public static final boolean CENTEREDDEFAULT = false;
 	public ListableVector names;
 	static boolean asked= false;
 	int digits = 4;
@@ -39,17 +44,20 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		on = new MesquiteBoolean(true);  //ON is currently true always
 		percentage = new MesquiteBoolean(false);
 		horizontal = new MesquiteBoolean(true);
-		centred = new MesquiteBoolean(true);
+		centred = new MesquiteBoolean(CENTEREDDEFAULT);
 		whiteEdges = new MesquiteBoolean(true);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Values");
 		addItemToSubmenu(null, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
+		MesquiteSubmenuSpec mss2 =  addSubmenu(mss, "Styles");  //Wayne: here it is.   x123y
+		addItemToSubmenu(mss, mss2, "Percentage, Below Branch", makeCommand("setCorvallisStyle",  this));
 		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
 		addCheckMenuItemToSubmenu(null, mss, "Show As Percentage", makeCommand("writeAsPercentage",  this), percentage);
-		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
-		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
-		addCheckMenuItemToSubmenu(null, mss, "White Edges", makeCommand("toggleWhiteEdges",  this), whiteEdges);
 		addItemToSubmenu(null, mss, "Font Size...", makeCommand("setFontSize",  this));
+		addCheckMenuItemToSubmenu(null, mss, "White Edges", makeCommand("toggleWhiteEdges",  this), whiteEdges);
+		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
+//		addItemToSubmenu(null, mss, "Position Along Branch...", makeCommand("setPositionAlongBranch",  this));
 		addItemToSubmenu(null, mss, "Locations...", makeCommand("setOffset",  this));
+		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
 		return true;
 	} 
 	/*.................................................................................................................*/
@@ -77,6 +85,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 			temp.addLine("setDigits " + digits); 
 			temp.addLine("writeAsPercentage " + percentage.toOffOnString());
 			temp.addLine("toggleCentred " + centred.toOffOnString());
+//			temp.addLine("setPositionAlongBranch " + positionAlongBranch); 
 			temp.addLine("toggleHorizontal " + horizontal.toOffOnString());
 			temp.addLine("toggleWhiteEdges " + whiteEdges.toOffOnString());
 			temp.addLine("setFontSize " + fontSize); 
@@ -84,6 +93,22 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		}
 		return temp;
 	}
+	/*.................................................................................................................*
+	public void queryLocationAlongBranch(){
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog settingsDialog = new ExtensibleDialog(containerOfModule(), "Location Along Branch",  buttonPressed);
+		RadioButtons rb = settingsDialog.addRadioButtons(new String[]{"Just apical to node","Just basal to node","Centered on branch"}, positionAlongBranch.getValue());
+		settingsDialog.completeAndShowDialog(true);
+		boolean ok = (settingsDialog.query()==0);
+		
+		if (ok) {
+			positionAlongBranch.setValue(rb.getValue());
+			
+		}
+		settingsDialog.dispose();
+	 	storePreferences();
+	}
+	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -140,6 +165,16 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
+		else if (checker.compare(this.getClass(), "Set's to David's style", "", commandName, "setCorvallisStyle")) {
+			whiteEdges.setValue(false);
+			percentage.setValue(true);
+			centred.setValue(false);
+			horizontal.setValue(true);
+			digits=0;
+			xOffset = 0;
+			yOffset = 9;
+			if (!MesquiteThread.isScripting()) parametersChanged();
+		}
 		else if (checker.compare(this.getClass(), "Sets offset of label from nodes", "[offsetX] [offsetY]", commandName, "setOffset")) {
 			int newX= MesquiteInteger.fromFirstToken(arguments, pos);
 			int newY= MesquiteInteger.fromString(arguments, pos);
@@ -172,6 +207,17 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
+/*		else if (checker.compare(this.getClass(), "Sets the location of the value along the branch", "[location constant]", commandName, "setPositionAlongBranch")) {
+			int newPos= MesquiteInteger.fromFirstToken(arguments, pos);
+			if (!MesquiteInteger.isCombinable(newPos))
+				queryLocationAlongBranch();
+			else
+				positionAlongBranch.setValue(newPos);
+			
+			if (!MesquiteThread.isScripting()) parametersChanged();
+		}
+*/		
+		
 		else if (checker.compare(this.getClass(), "Sets whether to show a node associated values", "[on or off]", commandName, "toggleShow")) {
 			String name = parser.getFirstToken(arguments);
 			if (isShowing(name)){
@@ -293,7 +339,7 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 				box.setString(MesquiteDouble.toStringDigitsSpecified(d, assocDoublesModule.digits));
 
 				int x, y;
-				if (assocDoublesModule.centred.getValue()){
+				if (assocDoublesModule.centred.getValue()){   // center on branch
 					int centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocDoublesModule.xOffset;
 					int centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocDoublesModule.yOffset;
 					/*g.setColor(Color.yellow);
@@ -312,9 +358,16 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 					}
 				}
 				else {
+					int stringWidth = box.getMaxWidthMunched();
+					x= treeDisplay.getTreeDrawing().getNodeValueTextBaseX(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth, assocDoublesModule.fontSize, assocDoublesModule.horizontal.getValue()) + assocDoublesModule.xOffset;
+					y = treeDisplay.getTreeDrawing().getNodeValueTextBaseY(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth,assocDoublesModule.fontSize,assocDoublesModule.horizontal.getValue()) + assocDoublesModule.yOffset;
+				}
+/*				else {
 					x= treeDisplay.getTreeDrawing().x[node] + assocDoublesModule.xOffset;
 					y = treeDisplay.getTreeDrawing().y[node] + assocDoublesModule.yOffset + i*assocDoublesModule.fontSize*2;
 				}
+	
+*/
 				if (assocDoublesModule.horizontal.getValue())
 					box.draw(g,  x, y);
 				else

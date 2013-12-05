@@ -73,6 +73,14 @@ public class ShellScriptUtil  {
 			return "rm -f " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
+	public static String getExitCommand(){
+		if (MesquiteTrunk.isWindows()){
+			return "";
+		}
+		else
+			return "exit " +StringUtil.lineEnding();
+	}
+	/*.................................................................................................................*/
 	public static String getSetFileTypeCommand(String filePath){
 		if (MesquiteTrunk.isMacOSX())
 			return "/Developer/Tools/setFile -t TEXT " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
@@ -86,6 +94,7 @@ public class ShellScriptUtil  {
 		else
 			return "";
 	}
+	/*.................................................................................................................*/
 	public static void sendToProcessInput (Process proc, String input) {
 		
 		OutputStream inputToProcess = proc.getOutputStream();
@@ -101,7 +110,7 @@ public class ShellScriptUtil  {
 		} catch (Exception e) {
 		}
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public static MesquiteExternalProcess startExternalProcess(String executablePath){ 	
 		Process proc=null;
 		try {
@@ -110,10 +119,7 @@ public class ShellScriptUtil  {
 				executablePath = executablePath.replaceAll("//", "/");
 				proc = Runtime.getRuntime().exec(executablePath);
 			} else {
-/*				scriptPath = "\"" + scriptPath + "\"";
-				String[] cmd = {"cmd", "/c", scriptPath};
-				proc = Runtime.getRuntime().exec(cmd);
-*/			}
+			}
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed.");
 			return null;
@@ -125,11 +131,23 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
-	public static Process executeScript(String scriptPath){ 	
+	public static Process executeScript(String scriptPath){ 
+		return executeScript(scriptPath, true);
+	}
+	/*.................................................................................................................*/
+	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
 		Process proc;
 		try {
 			if (MesquiteTrunk.isMacOSX()){
-				proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
+				if (visibleTerminal) {
+					proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
+					
+				}
+				else {
+					scriptPath = scriptPath.replaceAll("//", "/");
+					proc = Runtime.getRuntime().exec(scriptPath);
+					//try {proc.waitFor();} catch (InterruptedException e) {}
+				}
 //				proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
 			}
 			else if (MesquiteTrunk.isLinux()) {
@@ -198,7 +216,8 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher){
+	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
+		Process proc = null;
 		long[] lastModified=null;
 		boolean stillGoing = true;
 		if (outputFilePaths!=null) {
@@ -214,8 +233,9 @@ public class ShellScriptUtil  {
 					MesquiteFile.putFileContents(runningFilePath, runningFileMessage, true);
 				if (appendRemoveCommand && MesquiteFile.fileExists(runningFilePath))
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
+				//+StringUtil.lineEnding()+ShellScriptUtil.getExitCommand()
 			}
-			Process proc = ShellScriptUtil.executeScript(scriptPath);
+			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
 
 			if (proc==null) {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
@@ -247,7 +267,7 @@ public class ShellScriptUtil  {
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name){
-		return executeAndWaitForShell( scriptPath,  runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null);
+		return executeAndWaitForShell( scriptPath,  runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null, true);
 	}
 	/*.................................................................................................................*/
 	public static boolean executeAndWaitForShell(String scriptPath, String name){
@@ -262,7 +282,7 @@ public class ShellScriptUtil  {
 		String runningFilePath = null;
 		if (!StringUtil.blank(scriptPath))
 			runningFilePath=getDefaultRunningFilePath();
-		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher);
+		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true);
 	}
 
 

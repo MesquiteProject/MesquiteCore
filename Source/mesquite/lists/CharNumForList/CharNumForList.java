@@ -14,6 +14,7 @@ package mesquite.lists.CharNumForList;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
 
@@ -131,16 +132,20 @@ public class CharNumForList extends CharListAssistant implements MesquiteListene
 			if (lessThan.isCombinable() && moreThan.isCombinable()) {
 				if ((lessThan.isMoreThan(value)|| lessThan.equals(value)) &&  (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
 					table.selectRow(i);
+					data.setSelected(i, true);
 					table.redrawFullRow(i);
 				}
 			} else if (lessThan.isCombinable() && (lessThan.isMoreThan(value)|| lessThan.equals(value))) {
 				table.selectRow(i);
+				data.setSelected(i, true);
 				table.redrawFullRow(i);
 			} else if (moreThan.isCombinable() && (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
 				table.selectRow(i);
+				data.setSelected(i, true);
 				table.redrawFullRow(i);
 			}
 		}
+		data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {

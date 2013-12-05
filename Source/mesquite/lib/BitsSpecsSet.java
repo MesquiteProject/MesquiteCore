@@ -39,6 +39,7 @@ public abstract class BitsSpecsSet extends SpecsSet  {
  	/** Sets the value for part "part" to be the same as that at part "otherPart" in the incoming specsSet*/
 	public void equalizeSpecs(SpecsSet other, int otherPart, int part){
 		if (other instanceof BitsSpecsSet){
+			//Debugg.println("    part "  + otherPart + " = " + ((BitsSpecsSet)other).isBitOn(otherPart) + "  stamped onto " + part);
 			setSelected(part, ((BitsSpecsSet)other).isBitOn(otherPart));
 		}
 	}
@@ -72,6 +73,11 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 	/** Returns if part ic is on. */
 	public boolean isBitOn(int ic){
 		return myBits.isBitOn(ic);
+	}
+	/*.................................................................................................................*/
+	/** Returns number of bits on. */
+	public int numBitsOn(){
+		return myBits.numBitsOn();
 	}
  	/*------------------------------------------*/
  	public boolean allBitsOn () {

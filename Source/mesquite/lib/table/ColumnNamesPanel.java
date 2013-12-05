@@ -424,7 +424,6 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
 		try {
-			
 			int lineX = 0;
 			int oldLineX=lineX;
 			int resetWidth = getBounds().width;

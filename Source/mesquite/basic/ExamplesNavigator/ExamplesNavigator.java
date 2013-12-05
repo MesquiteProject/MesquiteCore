@@ -334,6 +334,9 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	public boolean showInfoTabs(){
 		return false;
 	}
+	public boolean permitViewMode(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
 	to be self-titling so that when things change (names of files, tree lists, etc.)

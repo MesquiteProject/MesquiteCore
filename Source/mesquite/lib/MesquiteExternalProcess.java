@@ -32,6 +32,8 @@ public class MesquiteExternalProcess  {
 		outputGobbler.start();
 
 	}
+	public MesquiteExternalProcess() {
+	}
 	/*.................................................................................................................*/
 	public Process getProcess() {
 		return proc;
@@ -41,6 +43,11 @@ public class MesquiteExternalProcess  {
 	public void setProcess(Process proc) {
 		this.proc = proc;
 	}
+	/*.................................................................................................................*/
+	public void kill () {
+		proc.destroy();
+	}
+
 	/*.................................................................................................................*/
 
 	public void dispose() {
@@ -54,6 +61,8 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 
 	public boolean processRunning() {
+		if (proc==null)
+			return false;
 		try {
 			proc.exitValue();
 		} catch (IllegalThreadStateException e) {
@@ -64,6 +73,8 @@ public class MesquiteExternalProcess  {
 
 	/*.................................................................................................................*/
 	public void sendStringToProcess(String s) {
+		if (proc==null)
+			return;
 		if (inputToProcess==null)
 			inputToProcess = proc.getOutputStream();
 		if (inputToProcess!=null && inputStreamsWriter==null)

@@ -14,6 +14,7 @@ package mesquite.rhetenor.lib;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.cont.lib.*;
@@ -29,6 +30,7 @@ designed to help with the ordination procedures.
 public class MatrixUtil {
 
 // -----------------MatrixUtil  Version 2.01  By Eric Dyreson and Wayne Maddison
+// --- stripExcluded added
 
 
 
@@ -125,6 +127,34 @@ public static String dimensions(double[][] matrix1,double[][] matrix2,double[][]
 	}
 //..................................................................................................................................................................................//
 
+	public static MContinuousDistribution stripExcluded(MContinuousDistribution original, MesquiteBoolean wasStripped){
+		CharacterData data = original.getParentData();
+		if (data ==null)
+			return original;
+		
+		CharInclusionSet incl = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
+		if (incl == null || incl.numberSelected() == data.getNumChars())
+			return original;
+		MContinuousAdjustable stripped = new MContinuousAdjustable(data.getTaxa());
+		stripped.setItemsAs(original);
+		int strippedNumChars = incl.numberSelected();
+		int numTaxa = data.getNumTaxa();
+		stripped.setSize(strippedNumChars, numTaxa);
+		int count = 0;
+		ContinuousState cs = null;
+		for (int ic = 0; ic<data.getNumChars(); ic++){
+			if (incl.isBitOn(ic)){
+				for (int it = 0; it<numTaxa; it++){
+					cs = (ContinuousState)data.getCharacterState(cs, ic, it);
+					stripped.setState(count, it, cs);
+				}
+				count++;
+			}
+		}
+		if (wasStripped != null)
+			wasStripped.setValue(true);
+		return stripped;
+	}
 
 
 //.............ROW AND COLUMN MANIPTULATIONS............................................................................................................//

@@ -102,6 +102,7 @@ public class ToolPalette extends MesquitePanel implements Commandable, KeyListen
 			paletteWidth =  (buttonSize+singleColumnSpacer);
 		else
 			paletteWidth =  (buttonSize+spacer)*numColumns + spacer;
+		paletteWidth=paletteWidth;
 		if (paletteWidth <minWidth())
 			paletteWidth = minWidth();
 		recheckSize();

@@ -230,7 +230,10 @@ public class ManageTaxaSets extends SpecsSetManager {
 							token = token.substring(1, token.length());
 						}
 						int whichChar = Taxon.toInternal(MesquiteInteger.fromString(token, false));
-						if (MesquiteInteger.isCombinable(whichChar)) {
+						if (!MesquiteInteger.isCombinable(whichChar)) {
+							whichChar = taxa.whichTaxonNumber(token);
+						}
+						if (MesquiteInteger.isCombinable(whichChar) && whichChar>=0) {
 							if (join) {
 								for (int j = lastChar; j<= whichChar; j++)
 									taxaSet.setSelected(j, true);

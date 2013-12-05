@@ -106,7 +106,10 @@ public class InterpretTabbedConts extends FileInterpreterI {
 			
 			while (!StringUtil.blank(line)&& !abort) {
 				parser.setString(line);
-				token = parser.getNextToken();
+
+				token = parser.getRemainingUntilChar('\t');
+				
+//				token = parser.getNextToken();  changed post 2. 75
 				taxa.addTaxa(numTaxa-1, 1, true);
 				Taxon t = taxa.getTaxon(numTaxa);
 				if (t!=null) {

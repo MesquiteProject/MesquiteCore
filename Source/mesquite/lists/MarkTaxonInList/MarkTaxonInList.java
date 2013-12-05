@@ -16,6 +16,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.MarkTaxonInList;
 /*~~  */
 
+import java.awt.Color;
+
 import mesquite.lists.lib.*;
 
 import mesquite.lib.characters.*;
@@ -98,6 +100,13 @@ public class MarkTaxonInList extends TaxonListAssistant {
 			taxa.setAssociatedLong(nameReference,  ic, 0);
 	}
 	 */
+	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
+	public Color getBackgroundColorOfCell(int it, boolean selected){
+		if (isMarked(it))
+			return ColorDistribution.lightGreen;
+		else
+			return super.getBackgroundColorOfCell(it, selected);
+	}
 	/*.................................................................................................................*/
 	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
 		mark (ic, !isMarked(ic));

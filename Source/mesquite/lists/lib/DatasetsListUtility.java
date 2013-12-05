@@ -13,10 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.lib;
 
 import java.awt.*;
+
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.table.*;
 
 
 
@@ -35,6 +37,6 @@ public abstract class DatasetsListUtility extends MesquiteModule  {
    		return false;
    	}
    	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
-   	public abstract boolean operateOnDatas(ListableVector datas);
+   	public abstract boolean operateOnDatas(ListableVector datas, MesquiteTable table);
 }
 

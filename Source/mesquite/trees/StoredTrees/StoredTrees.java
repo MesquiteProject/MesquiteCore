@@ -128,6 +128,25 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				return currentTreeBlock;
 			}
 		}
+		else if (checker.compare(this.getClass(),  "Sets which block of trees to use", "[runtime ID]", commandName, "setTreeBlockByID")) {
+			int whichList = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
+			if (MesquiteInteger.isCombinable(whichList)) {
+				TreeVector tr = manager.getTreeBlockByID(whichList);
+				if (tr == null || (preferredTaxa != null && tr.getTaxa() != preferredTaxa))
+					return null;
+				currentTreeBlock = tr;
+				if (lastUsedTreeBlock !=null) 
+					lastUsedTreeBlock.removeListener(this);
+				blockName.setValue(currentTreeBlock.getName());
+				currentTreeBlock.addListener(this);
+				currentTreeBlockID = currentTreeBlock.getID();
+				currentSourceFile = currentTreeBlock.getFile();
+				lastUsedTreeBlock = currentTreeBlock;
+				currentListNumber = whichList;
+				parametersChanged();
+				return currentTreeBlock;
+			}
+		}
 		else if (checker.compare(this.getClass(),  "Returns current tree block", null, commandName, "getTreeBlock")) {
 			if (currentTreeBlock == null)
 				checkTreeBlock(preferredTaxa);
@@ -582,6 +601,14 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public String getName() {
 		return "Stored Trees";
 	}
+	/*.................................................................................................................*/
+	public String getNameAndParameters() {
+		if (currentTreeBlock ==null)
+			return "Stored Trees";
+
+					
+		return "Trees stored in block \"" + currentTreeBlock.getName() + "\"";
+	}
 
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -596,7 +623,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public String getParameters() {
 		if (currentTreeBlock==null) {
 			if (getProject()== null)
-				return "Stored trees";
+				return "";
 			else
 				return "Trees stored in " + getProject().getName();
 		}

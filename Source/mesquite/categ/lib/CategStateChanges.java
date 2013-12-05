@@ -122,6 +122,8 @@ public class CategStateChanges {
 		if (!acceptableMapping(array))
 			return false;
 		numMappings++;
+		if (numStates<array.length)  // added 21 September 2013  DRM
+			adjustNumStates(array.length);
 		for (int i=0; i<numStates && i<array.length; i++)
 			for (int j=0; j<numStates &&j<array[i].length; j++)
 			{
@@ -187,8 +189,18 @@ public class CategStateChanges {
 				if (MesquiteInteger.isCombinable(newLimit))
 					newSamplingLimit.setValue(newLimit);
 			}
+			ProgressIndicator progIndicator = null;
+			if (((numMappings == MesquiteLong.infinite || !MesquiteLong.isCombinable(numMappings)) && samplingLimit>5000) || (numMappings<samplingLimit && numMappings>5000) || (samplingLimit>5000)){
+					progIndicator = new ProgressIndicator(null,"Examining mappings", samplingLimit, true);
+					progIndicator.start();
+			}
+			
 			if (numMappings == MesquiteLong.infinite || !MesquiteLong.isCombinable(numMappings)) {
 				for (int i=0; i<samplingLimit; i++) {
+					if (progIndicator!=null && i % 1000 == 0)
+						progIndicator.setCurrentValue(i);
+					if (progIndicator.isAborted())
+						break;
 					resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
 					if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
 						array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,null);
@@ -196,11 +208,16 @@ public class CategStateChanges {
 						oneMappingToString(array, fullDetails,lineStart);
 					}
 				}
+
 			}
 			else 
 				if (numMappings<=samplingLimit) {
 					for (int i=0; i<numMappings; i++) {
 						resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
+						if (progIndicator!=null && i % 1000 == 0)
+							progIndicator.setCurrentValue(i);
+						if (progIndicator.isAborted())
+							break;
 						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
 							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,null);
 							if (addOneMapping(array, true)) mappingsAdded++;
@@ -211,6 +228,10 @@ public class CategStateChanges {
 				else {
 					for (int i=0; i<samplingLimit; i++) {
 						resultStates = (CategoricalHistory)historySource.getMapping(RandomBetween.getLongStatic(0,numMappings-1),resultStates,null);
+						if (progIndicator!=null && i % 1000 == 0)
+							progIndicator.setCurrentValue(i);
+						if (progIndicator.isAborted())
+							break;
 						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
 							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, null);
 							if (addOneMapping(array, true)) mappingsAdded++;
@@ -218,6 +239,8 @@ public class CategStateChanges {
 						}
 					}
 				}
+			if (progIndicator!=null)
+				progIndicator.goAway();
 
 		}
 		if (mappingsAdded>0)
@@ -331,7 +354,7 @@ public class CategStateChanges {
 	/*.................................................................................................................*/
 	public String toVerboseString(){
 		StringBuffer sb = new StringBuffer();
-		sb.append("Minimum, maximum, and average number of each kind across all trees\n");
+		sb.append("Minimum, maximum, and average number of each kind across all mappings and trees\n");
 		sb.append("------------------------------------\n");
 		sb.append("change\tmin\tmax\tavg\n");
 		for (int i=0; i<numStates; i++)
@@ -339,7 +362,7 @@ public class CategStateChanges {
 				if (i!=j)
 					sb.append(""+i+"->"+j+" \t"+min[i][j] +"\t"+max[i][j] +"\t"+avg[i][j]+"\n"); 
 			}
-		sb.append("\n\n\nFraction of trees with specific number of changes of each kind\n");
+		sb.append("\n\n\nFraction of mappings on trees with specific number of changes of each kind.  Each tree is weighted equally, and within each tree, the mappings are each weighted equally. Thus, if there is only one tree then the values given are the fractions of mappings with a particular change.\n");
 		sb.append("------------------------------------\n");
 		sb.append("change\t#changes\tfraction\n");
 		for (int i=0; i<numStates; i++)

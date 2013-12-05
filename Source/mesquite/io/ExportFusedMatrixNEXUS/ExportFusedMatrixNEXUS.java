@@ -20,6 +20,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.assoc.lib.*;
+import mesquite.basic.ManageTaxaPartitions.*;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 
@@ -80,6 +81,8 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 	boolean generateMBBlock = true;
 	String lineEnding;
 	boolean simplifyNames = false;
+	
+	boolean removeExcluded = false;
 
 	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -91,8 +94,9 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 			exportDialog.addLargeOrSmallTextLabel("This exporter uses associations between taxa to be able to blend matrices from different taxa blocks.  Ensure such associations are set up (through Taxa&Trees menu) before attempting to export.");
 		exportDialog.addHorizontalLine(1);
 		Checkbox permitMixedMatrices = exportDialog.addCheckBox("Permit fused matrix with mixed data types (e.g., DNA, protein, standard)", permitMixed);
+		Checkbox removeExcludedBox = exportDialog.addCheckBox("Remove excluded characters", removeExcluded);
 		Checkbox generateMB = exportDialog.addCheckBox("Generate MrBayes block", generateMBBlock);
-		Checkbox simplifyNamesCheckBox = exportDialog.addCheckBox("simplify names as required for MrBayes", simplifyNames);
+		Checkbox simplifyNamesCheckBox = exportDialog.addCheckBox("Simplify names as required for MrBayes", simplifyNames);
 		//		Checkbox convertToMissing = exportDialog.addCheckBox("convert partial ambiguities to missing", convertAmbiguities);
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
@@ -102,6 +106,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		//		convertAmbiguities = convertToMissing.getState();
 		permitMixed = permitMixedMatrices.getState();
 		generateMBBlock = generateMB.getState();
+		removeExcluded = removeExcludedBox.getState();
 		simplifyNames = simplifyNamesCheckBox.getState();
 
 		exportDialog.dispose();
@@ -152,12 +157,17 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 					previousClass = ContinuousData.class;
 					buffer.append(" continuous");
 				}
-				buffer.append(": " + (totNumChars+1) + "-" + (totNumChars + data.getNumChars()));
+				int numToAdd = data.getNumChars();
+				if (removeExcluded)
+					numToAdd = data.getNumCharsIncluded();
+				int currentTotNumChars = totNumChars + numToAdd;
+
+				buffer.append(": " + (totNumChars+1) + "-" + numToAdd);
 
 				if (simplifyNames)
-					MBpartitionBuffer.append(lineEnding + "\tcharset " + StringUtil.simplifyIfNeededForOutput(data.getName(),true) + " = " + (totNumChars+1) + "-" + (totNumChars + data.getNumChars()) + ";");
+					MBpartitionBuffer.append(lineEnding + "\tcharset " + StringUtil.simplifyIfNeededForOutput(data.getName(),true) + " = " + (totNumChars+1) + "-" + (currentTotNumChars) + ";");
 				else
-					MBpartitionBuffer.append(lineEnding + "\tcharset " + StringUtil.tokenize(data.getName()) + " = " + (totNumChars+1) + "-" + (totNumChars + data.getNumChars()) + ";");
+					MBpartitionBuffer.append(lineEnding + "\tcharset " + StringUtil.tokenize(data.getName()) + " = " + (totNumChars+1) + "-" + (currentTotNumChars) + ";");
 
 				boolean writeCodPosPartition = false;
 				if (data instanceof DNAData)
@@ -184,14 +194,17 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 				}
 
 
-				NEXUSCharSetBuffer.append(lineEnding + "\tcharset " + StringUtil.tokenize(data.getName()) + " = " + (totNumChars+1) + "-" + (totNumChars + data.getNumChars()) + ";");
+				NEXUSCharSetBuffer.append(lineEnding + "\tcharset " + StringUtil.tokenize(data.getName()) + " = " + (totNumChars+1) + "-" + (currentTotNumChars) + ";");
 				if (!firstNEXUSpartition)
 					NEXUSpartitionBuffer.append(", ");
-				NEXUSpartitionBuffer.append(StringUtil.tokenize(data.getName()) + " : " + (totNumChars+1) + "-" + (totNumChars + data.getNumChars()) + " ");
+				NEXUSpartitionBuffer.append(StringUtil.tokenize(data.getName()) + " : " + (totNumChars+1) + "-" + (currentTotNumChars) + " ");
 				firstNEXUSpartition = false;
 				datas.addElement(data);
-				totNumChars += data.getNumChars();
-				logln("Fused matrix will contain " + data.getNumChars() + " characters from matrix " + data.getName());
+				if (removeExcluded) 
+					totNumChars += data.getNumCharsIncluded();
+				else
+					totNumChars += data.getNumChars();
+				logln("Fused matrix will contain " + numToAdd + " characters from matrix " + data.getName());
 				
 			}
 		}
@@ -232,7 +245,8 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 				CharacterData data = getQueuedCharMatrix(datas, taxa, iM, dataSuperclass);
 				if (data != null){
 					for (int ic=0; ic<data.getNumChars(); ic++)
-						buffer.append('-');
+						if (!removeExcluded || data.isCurrentlyIncluded(ic))
+							buffer.append('-');
 				}
 			}
 			return;
@@ -246,26 +260,28 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 			CategoricalData categData = (CategoricalData)data;
 			if (data != null){
 				for (int ic=0; ic<data.getNumChars(); ic++){
-					if (components.length == 1){
-						int it = components[0].getNumber();  
-						if (heterogeneous && !permitMixed){
-							buffer.append(CategoricalState.toNEXUSString(categData.getState(ic, it)));
-						}
-						else 
-							data.statesIntoNEXUSStringBuffer(ic, it, buffer);
-					}
-					else {
-						long fusedState = categData.getState(ic, components[0].getNumber());
-						for (int itc = 1; itc < components.length; itc++){
-							fusedState = fusedState | categData.getState(ic, components[itc].getNumber());
-						}
-						//CategoricalState.mergeStates(fusedState,categData.getState(ic, components[itc].getNumber()));
-						if (heterogeneous && !permitMixed){
-							buffer.append(CategoricalState.toNEXUSString(fusedState));
+					if (!removeExcluded || data.isCurrentlyIncluded(ic)){
+						if (components.length == 1){
+							int it = components[0].getNumber();  
+							if (heterogeneous && !permitMixed){
+								buffer.append(CategoricalState.toNEXUSString(categData.getState(ic, it)));
+							}
+							else 
+								data.statesIntoNEXUSStringBuffer(ic, it, buffer);
 						}
 						else {
-							cs.setValue(fusedState);
-							buffer.append(cs.toNEXUSString());
+							long fusedState = categData.getState(ic, components[0].getNumber());
+							for (int itc = 1; itc < components.length; itc++){
+								fusedState = fusedState | categData.getState(ic, components[itc].getNumber());
+							}
+							//CategoricalState.mergeStates(fusedState,categData.getState(ic, components[itc].getNumber()));
+							if (heterogeneous && !permitMixed){
+								buffer.append(CategoricalState.toNEXUSString(fusedState));
+							}
+							else {
+								cs.setValue(fusedState);
+								buffer.append(cs.toNEXUSString());
+							}
 						}
 					}
 				}
@@ -313,7 +329,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		return s;
 	}
 	/*.................................................................................................................*/
-	void fillMatrix(Taxa masterTaxa, StringBuffer buffer, StringBuffer mrBayesBlockBuffer, Class dataSuperclass){
+	void fillMatrix(MesquiteFile file, Taxa masterTaxa, StringBuffer buffer, StringBuffer mrBayesBlockBuffer, Class dataSuperclass){
 		if (masterTaxa == null || buffer==null)
 			return;
 		if (mrBayesBlockBuffer == null)
@@ -327,7 +343,18 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		buffer.append("#NEXUS" + lineEnding + lineEnding + "begin data;" + lineEnding);
 		StringBuffer[] taxaStrings = new StringBuffer[masterTaxa.getNumTaxa()];
 		StringBuffer dataTypesBuffer = new StringBuffer();
-		StringBuffer NEXUSpartitionBuffer = new StringBuffer(lineEnding + "BEGIN SETS;" + lineEnding + "\tCHARPARTITION * matrices = ");
+		
+		ManageTaxaPartitions manageTaxaPartitions = (ManageTaxaPartitions)findNearestColleagueWithDuty(mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions.class);
+		StringBuffer labelsBuffer = null;
+		if (manageTaxaPartitions!=null) {
+			labelsBuffer = new StringBuffer(lineEnding + "BEGIN LABELS;"+lineEnding);
+			String labels = manageTaxaPartitions.getNexusCommands(file, "LABELS");
+			labelsBuffer.append(labels + lineEnding + "END;" + lineEnding);
+		}
+		
+		StringBuffer NEXUSpartitionBuffer = new StringBuffer(lineEnding + "BEGIN SETS;" + lineEnding);
+		NEXUSpartitionBuffer.append(lineEnding+ manageTaxaPartitions.getNexusCommands(file, "SETS"));
+		NEXUSpartitionBuffer.append(lineEnding+ "\tCHARPARTITION * matrices = ");
 		StringBuffer NEXUSCharSetBuffer = new StringBuffer();
 
 		Vector datas = new Vector();
@@ -430,6 +457,8 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 			taxaStrings[i].setLength(0);
 		}
 		buffer.append(lineEnding + ";" + lineEnding + "end;" + lineEnding);
+		if (labelsBuffer!=null)
+			buffer.append(labelsBuffer);
 		buffer.append(NEXUSpartitionBuffer);
 
 		if (generateMBBlock)
@@ -447,7 +476,8 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		Taxa masterTaxa = (Taxa)getProject().chooseTaxa(containerOfModule(), "Select master block of taxa", false);
 		StringBuffer buffer = new StringBuffer(500);
 		StringBuffer mrBayesBlockBuffer = new StringBuffer();
-		fillMatrix(masterTaxa, buffer, mrBayesBlockBuffer, CategoricalState.class);
+		fillMatrix(file, masterTaxa, buffer, mrBayesBlockBuffer, CategoricalState.class);
+		
 
 
 		saveExportedFileWithExtension(buffer, arguments, "nex");

@@ -16,7 +16,15 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 
-/*In the current version (as of October 08), some internal nodes of the contained tree that are expected to be contained 
+/*June 28 2012.  There are some methods which encounter problems when a containing tree does not 
+ * contain all nodes (internal or terminal) of the contained tree.  For example, if a containing tree
+ * does not contain all containing taxa in the given association, and there are taxa in the contained
+ * tree that are associated with those missing containing taxa, methods such as deepestNodeThatContainedEnters
+ * will end up in an infinite loop.  A conditional has been added to this method to return 0 for any of these
+ * containing nodes (by asking if locationOfContainedNode == 0).  Other similar methods (shallowestNode...) should
+ * also be investigated for this effect.
+ * 
+ * In the current version (as of October 08), some internal nodes of the contained tree that are expected to be contained 
  * are not.  Specifically, if a node of the contained tree has:
  *   (1) An ancestor node in the containing node j
  *      and
@@ -462,7 +470,9 @@ public class AssociationHistory {
 	}
 	/*_________________________________________________*/
 	/** Returns the node number in the containing tree in which the contained node is placed */
-	public int deepestNodeThatContainedEnters(int contained){
+	public int deepestNodeThatContainedEnters(int contained){ 
+		if (locationOfContainedNode[contained] == 0)// dJCOs Added conditional to just return 0 for any node that isn't contained by any containing nodes.  Without this conditional, some internal gene tree nodes that are not assigned to species tree nodes will result in infinite loop.  Oliver.June.28.2012.
+			return 0;
 		if (illegalContained(contained)||containingTree==null)
 			return 0;
 		for (int k=0; k<enteringContainedBranches.length; k++) {   // going through nodes in containing tree
@@ -516,7 +526,8 @@ public class AssociationHistory {
 			containingDescendant.setValue(containing);
 		if (containingDescendant.isCombinable())
 			return;
-		if (containedTree.nodeIsInternal(containing)) {
+		//if (containedTree.nodeIsInternal(containing)) { // dJCOs This was original implementation. Oliver.July.04.2012
+		if (containedTree.nodeIsInternal(contained)) { // dJCOe Changed so containedTree is looking to see if contained node is internal. Oliver.July.04.2012
 			for (int d = containedTree.firstDaughterOfNode(contained); containedTree.nodeExists(d)&&!containingDescendant.isCombinable(); d = containedTree.nextSisterOfNode(d)) {
 				foundDescendant(d, containingDescendant);
 			}

@@ -139,6 +139,18 @@ public class StringUtil {
 	}
 
 	/*.................................................................................................................*/
+	public static String wrap(String original, int width){
+		String s = "";
+		for (int i=0; i<=original.length()/width; i++) {
+			if ((i+1)*width>original.length())
+				s += original.substring(i*width, original.length()) + lineEnding();
+			else
+				s += original.substring(i*width, (i+1)*width) + lineEnding();
+		}
+		return s;
+	}
+
+	/*.................................................................................................................*/
 	/** truncates string if bigger than given size*/
 	public static String truncateIfLonger(String line, int max) {
 		if (line==null)
@@ -385,6 +397,41 @@ public class StringUtil {
 		int last = MesquiteInteger.maximum(line.lastIndexOf(separator1), line.lastIndexOf(separator2));
 		return line.substring(last+1, line.length());
 	}
+	/*.................................................................................................................*/
+	/** returns the  item number "index" in a string, separated into parts by the separator.  NOT 0-based*/
+	public static String getItem(String line, String separator, int index) {
+		if (line==null)
+			return null;
+		else if (line.equals(""))
+			return "";
+		if (index==1)
+			return getFirstItem(line, separator);
+		String s = line;
+		for (int i=1; i<index; i++){
+			s=s.substring(s.indexOf(separator)+1);
+			if (StringUtil.blank(s))
+				return null;
+		}
+		if (s.indexOf(separator)>=0)
+			return s.substring(0,s.indexOf(separator));
+		return s;
+	}
+	/*.................................................................................................................*/
+	/** returns the  item in a string, JUST after beforeString up until afterString */
+	public static String getPiece(String line, String beforeString, String afterString) {
+		if (line==null || beforeString==null)
+			return null;
+		else if (line.equals(""))
+			return "";
+		String s = line;
+		if (s.indexOf(beforeString)<0)
+			return "";
+		s=s.substring(s.indexOf(beforeString)+beforeString.length());
+		if (s.indexOf(afterString)>=0)
+			return s.substring(0,s.indexOf(afterString));
+		return s;
+	}
+
 	/*.................................................................................................................*/
 	/** returns everything in front of the last item in a string, separated into parts by the separator*/
 	public static String getAllButLastItem(String line, String separator) {
@@ -705,7 +752,7 @@ public class StringUtil {
 		StringBuffer sb = new StringBuffer(token);
 		for (int i = 0; i<token.length(); i++) {
 			if (sb.charAt(i)=='_')
-					sb.setCharAt(i,' ');
+				sb.setCharAt(i,' ');
 		}
 		return sb.toString();
 	}
@@ -913,8 +960,8 @@ public class StringUtil {
 			return true;
 		if (c==0)
 			return false;  
-		
-			
+
+
 		if (whitespaceString!=null)
 			return whitespaceString.indexOf(c)>=0;
 			return defaultWhitespace.indexOf(c)>=0;
@@ -1113,6 +1160,8 @@ public class StringUtil {
 		return buffer.toString();  		 
 	}
 	private static char stripAccent(char a){
+		if ((int)a==65533)
+			return '_';
 		if (a=='Ž')
 			return 'e';
 		else if (a=='‡')
@@ -1411,12 +1460,65 @@ public class StringUtil {
 		return (c=='\r' || c=='\n');
 	}
 	/*.................................................................................................................*/
+	public static boolean isPunctuationOrWhitespace(char c) {
+		if (allPunctuation.indexOf(c)>=0)
+			return true;
+		if (defaultWhitespace.indexOf(c)>=0)
+			return true;
+		return false;
+	}
+	/*.................................................................................................................*/
+	public static int indexOf(String a, String b, boolean caseSensitive, boolean wholeWord) {
+		if (a == null || b == null)
+			return -1;
+		if (!caseSensitive) {
+			a = a.toLowerCase();
+			b = b.toLowerCase();
+		}
+		if (!wholeWord)
+			return a.indexOf(b);
+		else {
+			if (a==b)
+				return 0;
+			int pos = 0;
+			while (pos>=0) {
+				pos = a.indexOf(b,pos);
+				if (pos>=0) {
+					if (pos==0){ // is at start of string
+						if (b.length()<a.length()){  // there is more beyond the search string
+							if (isPunctuationOrWhitespace(a.charAt(b.length())))
+								return pos;
+						}
+					} else {
+						boolean punctBefore = isPunctuationOrWhitespace(a.charAt(pos-1));
+						if (punctBefore) {
+							if (pos+b.length()<a.length()){  // there is more beyond the search string
+								if (isPunctuationOrWhitespace(a.charAt(pos+b.length())))
+									return pos;
+							} else  // it is at the end of the string;
+								return pos;
+						}
+					}
+				} else
+					return -1;
+				if (pos==a.lastIndexOf(b))
+					return -1;
+				pos++;
+			}
+			return -1;
+		}
+	}
+	/*.................................................................................................................*/
 	public static int indexOfIgnoreCase(String a, String b) {
 		if (a == null || b == null)
 			return -1;
 		a = a.toLowerCase();
 		b = b.toLowerCase();
 		return a.indexOf(b);
+	}
+	/*.................................................................................................................*/
+	public static boolean containsIgnoreCase(String a, String b) {
+		return indexOfIgnoreCase(a,b)>=0;
 	}
 	/*.................................................................................................................*/
 	public static boolean stringsEqual(String a, String b) {

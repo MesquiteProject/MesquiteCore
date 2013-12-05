@@ -35,7 +35,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "2.75";
+		return "2.75+";
 	}
 	
 	/*.................................................................................................................*/
@@ -48,7 +48,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "September 2011"; //"April 2007";
+		return "October 2011"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -60,7 +60,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -137,7 +137,9 @@ public class Mesquite extends MesquiteTrunk
 	{
 		boolean verboseStartup = false;
 		long startingTime = System.currentTimeMillis();
-		if (verboseStartup) System.out.println("main init 1");
+		  System.setProperty("awt.useSystemAAFontSettings","on");
+		  System.setProperty("swing.aatext", "true");
+	if (verboseStartup) System.out.println("main init 1");
 		if (isApplet())
 			mesquiteTrunk = this;
 		author.setCurrent(true);
@@ -1569,6 +1571,11 @@ public class Mesquite extends MesquiteTrunk
 
 			Listable[] list = ListDialog.queryListMultiple(containerOfModule(), "Macro Information", "These are the installed macros.  Touch on their names to see an explanation.", MesquiteString.helpString, ud, null);
 		}
+		else if (checker.compare(this.getClass(), "Crashes with a NullPointerException", null, commandName, "crash")) {
+				logln("Mesquite will now crash with a NullPointerException.  Please enjoy.");
+				MesquiteInteger mi = null;
+				logln("This will crash: " +mi.getValue());
+		}
 		else if (checker.compare(this.getClass(), "Checks for notices or installs at the location specified", null, commandName, "checkNotices")) {
 			noticeLocation = MesquiteString.queryString(containerOfModule(), "Notices Location", "Indicate URL to notices file to be checked.  (For instance, for Mesquite the default notices file is at " + getHomePhoneNumber() + ")", noticeLocation);
 			PhoneHomeUtil.checkForNotices(noticeLocation); 
@@ -2177,14 +2184,14 @@ public class Mesquite extends MesquiteTrunk
 	public static void prepareMesquite(){
 		windowVector = new ListableVector();
 		dialogVector = new ListableVector();
-		fileMenu=new MesquiteMenuSpec(null, "File", mesquiteTrunk);
+		fileMenu=new MesquiteMenuSpec(null, "File", mesquiteTrunk, true);
 		fileMenu.setFilterable(false);
-		editMenu=new MesquiteMenuSpec(null, "Edit", mesquiteTrunk);
-		windowsMenu=new MesquiteMenuSpec(null, "Window", mesquiteTrunk);
-		charactersMenu = new MesquiteMenuSpec(null, "Characters", mesquiteTrunk);
-		treesMenu = new MesquiteMenuSpec(null, "Taxa&Trees", mesquiteTrunk);
-		analysisMenu = new MesquiteMenuSpec(null, "Analysis", mesquiteTrunk);
-		helpMenu = new MesquiteMenuSpec(null, "Help", mesquiteTrunk);
+		editMenu=new MesquiteMenuSpec(null, "Edit", mesquiteTrunk, true);
+		windowsMenu=new MesquiteMenuSpec(null, "View", mesquiteTrunk, true);
+		charactersMenu = new MesquiteMenuSpec(null, "Characters", mesquiteTrunk, true);
+		treesMenu = new MesquiteMenuSpec(null, "Taxa&Trees", mesquiteTrunk, true);
+		analysisMenu = new MesquiteMenuSpec(null, "Analysis", mesquiteTrunk, true);
+		helpMenu = new MesquiteMenuSpec(null, "Help", mesquiteTrunk, true);
 		helpMenu.setFilterable(false);
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);

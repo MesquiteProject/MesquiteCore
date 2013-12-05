@@ -23,6 +23,12 @@ import java.util.*;
 public class MesquiteMenuSpec extends MesquiteMenuItemSpec { 
 	String label;
 	Vector guests;
+	boolean universalMenu;
+	public MesquiteMenuSpec(MesquiteMenuSpec whichMenu, String menuName,  MesquiteModule ownerModule, boolean universalMenu) {
+		super(whichMenu, menuName, ownerModule, null);
+		this.label = menuName; 
+		this.universalMenu = universalMenu;
+	}
 	public MesquiteMenuSpec(MesquiteMenuSpec whichMenu, String menuName,  MesquiteModule ownerModule) {
 		super(whichMenu, menuName, ownerModule, null);
 		this.label = menuName; 
@@ -37,6 +43,9 @@ public class MesquiteMenuSpec extends MesquiteMenuItemSpec {
 
 	public String getLabel() {
 		return label;
+	}
+	public boolean isUniversalMenu() {
+		return universalMenu;
 	}
 	public void addGuestModule(MesquiteModule mb) {
 		if (mb == null)

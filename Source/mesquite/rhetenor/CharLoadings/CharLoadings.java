@@ -66,6 +66,7 @@ public class CharLoadings extends CharacterLoadings {
 	public  void calculateNumber(CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString) {
     	 	if (result==null || ord == null || charStates == null)
     	 		return;
+    	 	
     	   	clearResultAndLastResult(result);
     	   	double[][] loads = ord.getEigenvectors();
     	 	if (loads==null){

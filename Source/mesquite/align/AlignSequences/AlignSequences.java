@@ -161,8 +161,16 @@ public class AlignSequences extends MolecDataEditorInit {
 		// whole characters are selected (and they must be contiguous, AND more than one character
 //		if (table.anyCellSelectedAnyWay() && (!this.data.contiguousSelection() || !this.data.anySelected() || this.data.numberSelected()<=1)) {
 		if (table.anyCellSelectedAnyWay() && !table.contiguousColumnsSelected()) {
-			discreetAlert( "Data can be aligned only for the whole matrix or for a contiguous set of selected characters.  Please make sure that nothing in the matrix is selected, or that a contiguous set of characters (sites) is selected.");
-			return false;
+			if (!MesquiteThread.isScripting()) {
+				if (AlertDialog.query(containerOfModule(), "Align entire matrix?", "Some data are currently selected, but not a block of data that can be aligned by Mesquite.  Data can be aligned only for the whole matrix or for a contiguous set of selected characters. If you wish to align only part of the matrix, then press Cancel and select a contiguous set of whole characters. ", "Align entire matrix", "Cancel"))
+					table.deselectAll();
+				else
+					return false;
+			}
+			else {
+				discreetAlert( "Data can be aligned only for the whole matrix or for a contiguous set of selected characters.  Please make sure that nothing in the matrix is selected, or that a contiguous set of characters (sites) is selected.");
+				return false;
+			}
 		}
 		//firstRowWithSelectedCell() != 
 		if (	aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close window before done)","No", "Separate"))){

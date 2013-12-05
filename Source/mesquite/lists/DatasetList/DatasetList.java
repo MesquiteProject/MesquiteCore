@@ -132,14 +132,17 @@ public class DatasetList extends ListLVModule {
 					ListableVector datas = null;
 					if (table.anyRowSelected()){
 						ListableVector alldatas = getProject().getCharacterMatrices();
+						
 						datas = new ListableVector();
-						for (int i=0; i<alldatas.size(); i++)
+						for (int i=0; i<alldatas.size(); i++){
+								
 							if (table.isRowSelected(i))
 								datas.addElement(alldatas.elementAt(i), true);
+						}
 					}
 					else
 						datas = getProject().getCharacterMatrices();
-					boolean a = tda.operateOnDatas(datas);
+					boolean a = tda.operateOnDatas(datas, table);
 					if (!tda.pleaseLeaveMeOn())
 						fireEmployee(tda);
 				}

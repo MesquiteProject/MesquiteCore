@@ -377,6 +377,20 @@ class TaxonListWindow extends ListWindow {
 				taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 		}
+		else if (checker.compare(this.getClass(), "Shows taxon", "[id of taxa block][number of taxon]", commandName, "showTaxon")) {
+			MesquiteInteger pos = new MesquiteInteger(0);
+			long whichTaxaBlock = MesquiteInteger.fromString(arguments, pos);
+			if (whichTaxaBlock != taxa.getID())
+				return null;
+			int which = MesquiteInteger.fromString(arguments, pos);
+			if (which >= 0 && which < taxa.getNumTaxa()){
+				if (!table.isCellVisible(-1, which)) {
+					table.setFocusedCell(-1, which, true);
+					table.repaintAll();
+				}
+			}
+			return null;
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);

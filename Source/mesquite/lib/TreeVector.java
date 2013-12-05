@@ -359,6 +359,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		for(int i=0; i<taxa.getNumTaxa(); i++) {
 			if (i>0)
 				temp += ","+ StringUtil.lineEnding();
+			temp += "[" + i + "] ";
 			String thisLabel = getTranslationLabel(i);
 			temp += "\t\t" + thisLabel + " " + StringUtil.tokenize(taxa.getTaxonName(i)) ;
 		}

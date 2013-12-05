@@ -2261,6 +2261,76 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return null;
 	}
 	/*.................................................................................................................*/
+	private static String[] addStringToEnd(String[] strings, String s) {
+		boolean stringAdded = false;
+		for (int i = 0; i<strings.length; i++) {  //go through strings until you get to the first null one
+			if (strings[i]==null) {
+				strings[i]=s;
+				stringAdded = true;
+				return strings;
+			}
+		}
+		if (!stringAdded) {  //need to move them down and add it at the end
+			for (int i = 0; i<strings.length-1;i++) {
+				strings[i]=strings[i+1];
+			}
+			strings[strings.length-1]=s;
+		}
+		return strings;
+	}
+	/*.................................................................................................................*/
+	private static boolean someStrings(String[] strings) {
+		for (int i = 0; i<strings.length-1;i++) {  //go through strings until you get to the first null one
+			if (strings[i]!=null) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
+	private static String concatStrings(String[] strings) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i<strings.length;i++) {  //go through strings until you get to the first null one
+			if (strings[i]!=null) {
+				sb.append(strings[i]+StringUtil.lineEnding());
+			}
+		}
+		return sb.toString();
+	}
+	/*.................................................................................................................*/
+	/** Returns the last line of the file.  path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
+	public static String getFileLastContents(String relativePath, int numLines) {
+		DataInputStream stream;
+		StringBuffer sBb= new StringBuffer(100);
+		String lastS = null;
+		String[] lastLines = new String[numLines];
+		MesquiteInteger remnant = new MesquiteInteger(-1);
+		if (!MesquiteTrunk.isApplet()) {
+			try {
+				stream = new DataInputStream(new FileInputStream(relativePath));
+				String newS = " ";
+				while (newS != null) {
+					lastLines = addStringToEnd(lastLines, newS);
+					newS =readLine(stream, sBb, remnant);
+				}
+				
+				if (someStrings(lastLines)) {
+					//Debugg.println("\n" + concatStrings(lastLines));
+					return concatStrings(lastLines);
+				}
+			}
+			catch( FileNotFoundException e ) {
+			} 
+			catch( IOException e ) {
+			}
+		}
+		else {
+		}
+
+		return null;
+	}
+	/*.................................................................................................................*/
 	/** Returns the last line of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
 	public static String getFileLastContents(String relativePath) {
@@ -2454,7 +2524,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		try {
 			File fin = new File(relativePath);
 			FileInputStream fis = new FileInputStream(fin);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis, "UTF-8"));  // why not ISO-8859-1? or something newer???
 			int length = (int)fin.length();  //2. 71 restricting to maxCharacters
 			if (maxCharacters>=0 && length>maxCharacters)
 				length = maxCharacters;
@@ -2656,7 +2726,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		} 
 		catch (Exception e) {
 			if (warnIfProblem){
-				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + writePath + "   " + e.getMessage() );
+				MesquiteMessage.warnProgrammer("IO Exception found (6q) : " + writePath + "   " + e.getMessage() );
 				e.printStackTrace();
 			}
 			if (progIndicator!=null)
@@ -2836,6 +2906,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Places to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
 	public synchronized static void putFileContents(String relativePath, String contents, boolean ascii) {
+		putFileContents(relativePath, contents, ascii, true);
+	}
+	/*.................................................................................................................*/
+	/** Places to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
+	public synchronized static void putFileContents(String relativePath, String contents, boolean ascii, boolean warn) {
 		if (contents==null || relativePath==null)
 			return;
 		if (w)

@@ -1066,7 +1066,7 @@ class HSWindow extends MesquiteHTMLWindow implements SystemWindow {
 	public HSWindow(MesquiteModule module, MesquiteCommand linkTouchedCommand, String assignedTitle, boolean showInfoBar) {
 		super(module, linkTouchedCommand, assignedTitle, showInfoBar);
 	}
-	public boolean showInfoTabs(){
+	public boolean permitViewMode(){
 		return false;
 	}
 }

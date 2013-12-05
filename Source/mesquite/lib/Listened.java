@@ -145,6 +145,14 @@ public class Listened implements Listenable {
 	public void setDumpNotified(boolean dn){
 		dumpNotified = dn;
 	}
+	MesquiteTimer[] timers = {new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+										new MesquiteTimer(),new MesquiteTimer()};
+	
 	/*.................................................................................................................*/
  	/** notifies listeners that the element, and in particular part i, has changed.  The ith part may
  	be the ith character (if element is a CharacterData), or the ith tree (if a TreeVector), etc..
@@ -169,9 +177,11 @@ public class Listened implements Listenable {
 		 			if (clss == null || (classOnly && clss.isAssignableFrom(ls[m].getClass())) || (!classOnly && !clss.isAssignableFrom(ls[m].getClass())))
 			 			if (!(ls[m] instanceof Doomable) || !((Doomable)ls[m]).isDoomed()) {
 			 				if (dumpNotified)
-			 					MesquiteTrunk.mesquiteTrunk.logln("notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
+			 					MesquiteTrunk.mesquiteTrunk.logln("(" + m + ") notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
 			 				if (classesNotified !=null)
 			 					classesNotified.record(ls[m].getClass());
+			 				if (dumpNotified && m<timers.length)
+			 					timers[m].start();
 			 				if (MesquiteTrunk.debugMode) {
 			 					ls[m].changed(caller, this, notification);
 			 				} else {
@@ -189,7 +199,16 @@ public class Listened implements Listenable {
 			 						}
 			 					}
 			 				}
+			 				if (dumpNotified && m<timers.length){
+			 					timers[m].end();
+			 				}
 			 			}
+				}
+				if (dumpNotified){
+					System.out.print("timers " );
+					for (int m = 0; m<timers.length; m++)
+						System.out.print(" (" + m + ") " + timers[m].getAccumulatedTime());
+					System.out.println();
 				}
 	 		}
 	 		else {

@@ -35,6 +35,8 @@ public class AlignToDropped extends DataWindowAssistantI {
 	int firstRowTouched = -2;
 	boolean defaultWarnCheckSum  =true;
 	MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
+	boolean defaultAllowNewGaps  =true;
+	MesquiteBoolean allowNewGaps = new MesquiteBoolean(defaultAllowNewGaps);
 	long originalCheckSum;
 	MesquiteInteger gapOpen = new MesquiteInteger();
 	MesquiteInteger gapExtend = new MesquiteInteger();
@@ -68,6 +70,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		addMenuItem("Gap Costs...", MesquiteModule.makeCommand("gapCosts", this));
 		addMenuItem("Substitution Costs...", MesquiteModule.makeCommand("subCosts", this));
 		addCheckMenuItem(null, "Check Data Integrity", makeCommand("toggleWarnCheckSum",  this), warnCheckSum);
+		addCheckMenuItem(null, "Allow New Internal Gaps", makeCommand("toggleAllowNewGaps",  this), allowNewGaps);
 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal); 
 
 		return true;
@@ -90,6 +93,8 @@ public class AlignToDropped extends DataWindowAssistantI {
 		Snapshot temp = new Snapshot();
 		if (warnCheckSum.getValue()!=defaultWarnCheckSum)
 			temp.addLine("toggleWarnCheckSum " + warnCheckSum.toOffOnString());
+		if (allowNewGaps.getValue()!=defaultAllowNewGaps)
+			temp.addLine("toggleAllowNewGaps " + allowNewGaps.toOffOnString());
 		temp.addLine("gapCosts " + gapOpen + " " + gapExtend + " " + gapOpenTerminal + " "+ gapExtendTerminal);
 
 		StringBuffer sb = new StringBuffer();
@@ -120,12 +125,13 @@ public class AlignToDropped extends DataWindowAssistantI {
 	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow){
 		MesquiteNumber score = new MesquiteNumber();
 		if (aligner==null) {
-			aligner = new PairwiseAligner(true,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
+			aligner = new PairwiseAligner(true,allowNewGaps.getValue(), subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 			//aligner.setUseLowMem(true);
 		}
 		if (aligner!=null){
 			//aligner.setUseLowMem(data.getNumChars()>aligner.getCharThresholdForLowMemory());
 			originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign);
+			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
 			long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 			if (aligned==null) {
 				logln("Alignment failed!");
@@ -281,6 +287,10 @@ public class AlignToDropped extends DataWindowAssistantI {
 			boolean current = warnCheckSum.getValue();
 			warnCheckSum.toggleValue(parser.getFirstToken(arguments));
 		}
+		else  if (checker.compare(this.getClass(), "Toggles whether the new gaps can be introduced into one or the other sequence.", "[on; off]", commandName, "toggleAllowNewGaps")) {
+			boolean current = allowNewGaps.getValue();
+			allowNewGaps.toggleValue(parser.getFirstToken(arguments));
+		}
 		else  if (checker.compare(this.getClass(), "Allows one to specify gap opening and extension costs.", "[open; extend]", commandName, "gapCosts")) {
 			MesquiteInteger io = new MesquiteInteger(0);
 			int newGapOpen = MesquiteInteger.fromString(arguments, io);
@@ -333,6 +343,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		if (aligner!=null) {
 			aligner.setGapCosts(gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue());
 			aligner.setSubsCostMatrix(subs);
+			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
 		}
 	}
 	/*.................................................................................................................*/

@@ -39,7 +39,7 @@ public class AssignTaxonNames extends TaxonNameAlterer {
 		dialog.addLabel("Assign Taxon Names");
 		
 		SingleLineTextField baseName = dialog.addTextField("Base for taxon names: ", prefix, 25);
-		IntegerField startingNumberField = dialog.addIntegerField("Starting number", firstSelected+1, 8, 1, taxa.getNumTaxa());
+		IntegerField startingNumberField = dialog.addIntegerField("Starting number", firstSelected+1, 8, 0, 1000000);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {

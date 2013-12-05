@@ -14,11 +14,12 @@ package mesquite.treefarm.GraftTree;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class GraftTree extends TreeAlterer {
+public class GraftTree extends TreeAltererMult {
 	public String getName() {
 		return "Graft Other Tree";
 	}
@@ -26,43 +27,45 @@ public class GraftTree extends TreeAlterer {
 		return "Grafts a tree in a tree window onto given tree; requires that the other tree includes none of the same terminal taxa.  If a taxon in receiving tree is selected, graft occurs there; otherwise, graft occurs at root." ;
 	}
 	OneTreeSource currentTreeSource;
+	int[] termsG = null;
+	String graftTreeDescription = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
- 		currentTreeSource = (OneTreeSource)hireCompatibleEmployee(OneTreeSource.class, new MesquiteBoolean(false), "Source of tree to be modified");
- 		if (currentTreeSource == null) {
- 			return sorry(getName() + " couldn't start because no source of a graftable tree was obtained.");
- 		}
- 		if (currentTreeSource == getEmployer())
- 			return sorry(getName() + " couldn't start because it would be attempting to graft a tree onto itself, resulting in an infinite recursion.");
- 		return true;
+		currentTreeSource = (OneTreeSource)hireCompatibleEmployee(OneTreeSource.class, new MesquiteBoolean(false), "Source of tree to be modified");
+		if (currentTreeSource == null) {
+			return sorry(getName() + " couldn't start because no source of a graftable tree was obtained.");
+		}
+		if (currentTreeSource == getEmployer())
+			return sorry(getName() + " couldn't start because it would be attempting to graft a tree onto itself, resulting in an infinite recursion.");
+		return true;
 	}
 
- 	 public void employeeQuit(MesquiteModule m){
-   	 	iQuit();
-   	 }
- 	/*.................................................................................................................*/
-   	 public Snapshot getSnapshot(MesquiteFile file) { 
-    	 	Snapshot temp = new Snapshot();
-   	 	temp.addLine("setTreeSource ", currentTreeSource); 
-   	 	return temp;
-   	 }
- 	/*.................................................................................................................*/
-     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-     	 	 if (checker.compare(this.getClass(), "Sets the source of the tree to be grafted", "[name of module]", commandName, "setTreeSource")) {
- 			OneTreeSource temp = (OneTreeSource)replaceCompatibleEmployee(OneTreeSource.class, "Source of tree to be grafted", currentTreeSource, new MesquiteBoolean(false));
- 			if (temp !=null){
- 				currentTreeSource = temp;
- 				parametersChanged();
-     	 			return currentTreeSource;
-     	 		}
-     	 	}
-     	 	else
-     	 		return  super.doCommand(commandName, arguments, checker);
-     	 	return null;
-     	 }
+	public void employeeQuit(MesquiteModule m){
+		iQuit();
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setTreeSource ", currentTreeSource); 
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the source of the tree to be grafted", "[name of module]", commandName, "setTreeSource")) {
+			OneTreeSource temp = (OneTreeSource)replaceCompatibleEmployee(OneTreeSource.class, "Source of tree to be grafted", currentTreeSource, new MesquiteBoolean(false));
+			if (temp !=null){
+				currentTreeSource = temp;
+				parametersChanged();
+				return currentTreeSource;
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -85,32 +88,38 @@ public class GraftTree extends TreeAlterer {
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
 		Taxa taxa = tree.getTaxa();
-   		Tree t =  currentTreeSource.getTree(taxa);
-   		if (t == null)
-   			return false;
-   		int[] termsR = tree.getTerminalTaxa(tree.getRoot());
-   		int[] termsG = t.getTerminalTaxa(t.getRoot());
-   		if (overlap(termsR, termsG)){
-   			discreetAlert("Sorry, to graft a tree, it must share NO terminal taxa with the receiving tree");
-   			return false;
-   		}
-  		String descr = t.writeTree(Tree.BY_NAMES);
-   		int node;
-  		if (taxa.numberSelected() ==1){
-  			node = tree.nodeOfTaxonNumber(taxa.firstSelected());
-  			
-   		}
-  		else {
-  			node = tree.insertNode(tree.getRoot(), false);
-  			node = tree.sproutDaughter(node, false);
-  		}
-   		if (!tree.graftCladeFromDescription(descr, node, new MesquiteInteger(0), null))
-   			return false;
+		if (getHiredAs() != TreeAltererMult.class || graftTreeDescription == null){  // if mult, use last one saved
+			Tree t =  currentTreeSource.getTree(taxa);
+			if (t == null)
+				return false;
+			termsG = t.getTerminalTaxa(t.getRoot());
+			graftTreeDescription = t.writeTree(Tree.BY_NAMES);
+			}
+		int[] termsR = tree.getTerminalTaxa(tree.getRoot());
+		if (overlap(termsR, termsG)){
+			if (getHiredAs() != TreeAltererMult.class)
+				discreetAlert("Sorry, to graft a tree, it must share NO terminal taxa with the receiving tree");
+			else
+				MesquiteMessage.warnUser("Sorry, to graft a tree onto " + tree.getName() + ", it must share NO terminal taxa with the receiving tree");
+			return false;
+		}
+ 		int node;
+		if (taxa.numberSelected() ==1 && tree.taxonInTree(taxa.firstSelected())){  
+			//node = tree.nodeOfTaxonNumber(taxa.firstSelected());
+			node = tree.insertNode(tree.nodeOfTaxonNumber(taxa.firstSelected()), false);
+			node = tree.sproutDaughter(node, false);
+		}
+		else {
+			node = tree.insertNode(tree.getRoot(), false);
+			node = tree.sproutDaughter(node, false);
+		}
+		if (!tree.graftCladeFromDescription(graftTreeDescription, node, new MesquiteInteger(0), null))
+			return false;
 
 		if (notify && tree instanceof Listened) ((Listened)tree).notifyListeners(this, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.

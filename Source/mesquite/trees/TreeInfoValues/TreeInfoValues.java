@@ -27,7 +27,7 @@ public class TreeInfoValues extends TreeInfoPanelAssistant  {
 	ValuesPanel panel;
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForTree.class, getName() + " needs methods to calculate values that pertain to the tree in the tree window, such as a parsimony score, an imbalance statistic, and so on.", 
-		"Values for the tree are shown automatically in the Tree Information Panel which is available in the Tree menu of the Tree Window");
+		"Values for the tree can be requested by touching the + button in the Tree Information Panel which is available by touching the blue i button in the Tree Window");
 		e.setPriority(3);
 	}
 

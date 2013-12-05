@@ -17,10 +17,11 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.lang.StringEscapeUtils;
-
 
 import mesquite.lib.duties.*;
 import mesquite.tol.lib.BaseHttpRequestMaker;
@@ -66,12 +67,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "30 September 2011";   
+		return "1 November 2013";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "2.75";
+		return "2.75+";
 	}
 	/*.................................................................................................................*/
 	//this should be mesquiteFeedbackXXX.py where XXX is version as integer if a release version (e.g. mesquiteFeedback273.py)
@@ -87,7 +88,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	564;  
+		return 	581;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -123,6 +124,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//2.73 = 544 released 25 July 10  144981 / 67206 / 7817
 	//2.74 = 550 released 3 October 10  150117 / 71997 / 7980
 	//2.75 = 564 released 30 September 2011  179839 / 91129 / 8939
+	//       = 565 included 4 October 2011  in Chromaseq release; slight changes to UndoInstructions for Chromaseq
+	//       = 566 update 10 October 2011, small fix in this module to re-enable error reporting of NullPointerExceptions and ArrayIndexOutOfBoundsExceptions
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
@@ -886,6 +889,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public String getPath() {  
 		if (this == MesquiteTrunk.mesquiteTrunk)
 			return getRootPath() + "mesquite" + MesquiteFile.fileSeparator;
+		if (moduleInfo == null)
+			return null;
 		return  moduleInfo.getDirectoryPath();
 	}
 	/*.................................................................................................................*/
@@ -989,7 +994,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return true;
 		if (e instanceof IllegalStateException)
 			return true;
-		if (e instanceof RuntimeException)
+		if (e.getClass() == RuntimeException.class)
 			return true;
 		return false;
 	}
@@ -1221,9 +1226,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			CommandRecord.tick(s);
 	}
 	/*.................................................................................................................*/
-	public void echoStringToFile(String s, StringBuffer sb){
+	public void loglnEchoToStringBuffer(String s, StringBuffer sb){
 		logln(s);
-		sb.append(s +  StringUtil.lineEnding());   	
+		if (sb!=null) {
+			sb.append(s);
+			sb.append(StringUtil.lineEnding());   
+		}
 	}
 	/*.................................................................................................................*/
 	/** Places string and newline character in log AND in System.out.println.*/
@@ -1578,14 +1586,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				for (int i=0; commandables!=null && i<commandables.length; i++){
 					checker.addString("<ul><li><strong>Commands for " + getShortClassName(commandables[i].getClass())+ "</strong>");
 					checker.accumulateOnlyFrom(commandables[i].getClass());
-					commandables[i].doCommand(null, null, checker);//�
+					commandables[i].doCommand(null, null, checker);//���
 					checker.addString("</ul>");
 				}
 			}
 		}
 		else {
 			//AFTERDEMO:
-			if (commandName!=null && !checker.getAccumulateMode()) {
+			if (commandName!=null && !checker.getAccumulateMode() && checker.warnIfNoResponse) {
 				MesquiteMessage.warnProgrammer("Module " + getName() + " (" + (getClass().getName()) + ") did not respond to command " + commandName + " with arguments (" + arguments + ")");
 			}
 		}
@@ -2129,8 +2137,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				path = pathToCheck;  //Todo: this is temporary, as the launching methods don't seem to handle within-page anchors
 				String[] browserCommand = null;
 				boolean remote = path.indexOf(":/")>=0;
-
-				if (MesquiteTrunk.isMacOSX()){ //Mac OS X
+				
+				if (MesquiteTrunk.getJavaVersionAsDouble()>= 1.6){
+					Desktop d = Desktop.getDesktop();
+					try {
+						d.browse(new URI(path));
+					}
+					catch (IOException e) {
+						browserString = null;
+						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser." );
+					} catch (URISyntaxException e) {
+						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interprtable." );
+					}
+				}
+				else if (MesquiteTrunk.isMacOSX()){ //Mac OS X
 					if (remote) { //remote OSX file, use browser laucher
 						try {
 							BrowserLauncher.openURL(path);

@@ -113,10 +113,12 @@ public class ParsAncestralStates extends CharStatesForNodes {
 			boolean oldMode = useMPRsMode.getValue();
 			useMPRsMode.setValue(true);
 			resetMode();
+			parametersChanged();
 			long numMPRs = getNumberOfMappings();
 			MesquiteMessage.discreetNotifyUser("Number of MPRs: " + numMPRs);
 			useMPRsMode.setValue(oldMode);
 			resetMode();
+			parametersChanged();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

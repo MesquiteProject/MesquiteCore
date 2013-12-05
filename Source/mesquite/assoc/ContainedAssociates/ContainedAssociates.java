@@ -1694,6 +1694,23 @@ class ContainedAssocExtra extends TreeDisplayDrawnExtra {
 	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}
+	
+	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
+	public void cursorEnterBranch(Tree tree, int N, Graphics g){
+		int numbersAtEnd = drawing.history.getNumberContainedNodes(N);
+		int numbersAtStart = -1;
+		int anc = tree.parentOfNode(N,1);
+		if (anc>=0){
+			numbersAtStart = drawing.history.getNumberContainedNodes(anc);
+			MesquiteMessage.println("Number of contained branches at start: "+numbersAtStart + ",  at end: " + numbersAtEnd);
+		}
+		else 
+			MesquiteMessage.println("Number of contained branches at end: " + numbersAtEnd);
+		super.cursorEnterBranch(tree, N, g);
+	}
+
+	
+	
 }
 
 

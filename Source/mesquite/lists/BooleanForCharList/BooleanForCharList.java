@@ -153,6 +153,7 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 	StringArray explArray = new StringArray(0);
 	int totalYes = 0;
 	int totalNo = 0;
+	int totalUndetermined = 0;
 	/*.................................................................................................................*/
 	public void doCalcs(){
 		if (suppressed || booleanTask==null)
@@ -164,12 +165,15 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 		MesquiteString expl = new MesquiteString();
 		totalYes = 0;
 		totalNo = 0;
+		totalUndetermined = 0;
 		for (int ic=0; ic<numChars; ic++) {
 			CommandRecord.tick("Boolean for character in tree list; examining character " + ic);
 			mb.setToUnassigned();
 			booleanTask.calculateBoolean(data, ic, mb, expl);
-			if (mb.isUnassigned())
+			if (mb.isUnassigned()){
 				booleanList.setValue(ic, -1);
+				totalUndetermined++;
+			}
 			else if (mb.getValue()){
 				booleanList.setValue(ic, 1);
 				totalYes++;
@@ -187,7 +191,7 @@ public class BooleanForCharList extends CharListAssistant implements MesquiteLis
 		String s = explArray.getValue(ic);
 		if (StringUtil.blank(s))
 			s = getStringForCharacter(ic);
-		return s + " [Totals: Yes: " + totalYes + "; No: " + totalNo + "]";
+		return s + " [Totals: Yes: " + totalYes + "; No: " + totalNo + "; Undetermined: " + totalUndetermined + "]";
 	}
 	public String getStringForCharacter(int ic){
 		if (booleanList==null)

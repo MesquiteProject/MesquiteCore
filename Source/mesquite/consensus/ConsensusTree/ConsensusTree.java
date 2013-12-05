@@ -83,6 +83,18 @@ public class ConsensusTree extends TreeSource {
 			return temp;
 		}
 		else if (checker.compare(this.getClass(), "Sets the number of trees", "[number of trees]", commandName, "assignNumTrees")) {
+			//Changed so numTreesAssigned updated if queryNumTrees is called (previous version [see below] did not update numTreesAssigned)
+			//J.C. Oliver Nov.20.2013
+			int newNum = MesquiteInteger.fromFirstToken(arguments, pos);
+			if (!MesquiteInteger.isCombinable(newNum) || newNum < 0){
+				newNum = queryNumTrees();
+			}
+			if(newNum > 0){
+				numTreesAssigned = newNum;
+				assigned = true;
+				parametersChanged();
+			}
+			/*Old way:
 			int newNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newNum)){
 				queryNumTrees();
@@ -92,6 +104,7 @@ public class ConsensusTree extends TreeSource {
 				assigned = true;
 			}
 			parametersChanged();
+			*/
 		}
 		else
 			if (checker.compare(this.getClass(), "Sets the module doing a consensus", "[name of module]", commandName, "setConsenser")) {
@@ -185,12 +198,12 @@ public class ConsensusTree extends TreeSource {
 			//if (count>0)
 				tree = iConsenser.getConsensus();
 				if (tree instanceof MesquiteTree)
-					((MesquiteTree)tree).setName("Consensus tree of " + count + " trees from " + treeSource.getNameAndParameters());
+					((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
 		}
 		else {
 			tree = consenser.consense(trees);
 			if (tree instanceof MesquiteTree)
-				((MesquiteTree)tree).setName("Consensus tree from " + treeSource.getNameAndParameters());
+				((MesquiteTree)tree).setName(consenser.getName() + " from " + treeSource.getNameAndParameters());
 		}
 		logln("");
 
@@ -203,11 +216,11 @@ public class ConsensusTree extends TreeSource {
 
 	/*.................................................................................................................*/
 	public String getTreeNameString(Taxa taxa, int itree) {
-		return "Consensus tree from " + treeSource.getNameAndParameters();
+		return consenser.getName() + " from " + treeSource.getNameAndParameters();
 	}
 	/*.................................................................................................................*/
 	public String getParameters() {
-		return"Consensus tree of trees from " + treeSource.getName();
+		return consenser.getName() + " of trees from " + treeSource.getName();
 	}
 	/*.................................................................................................................*/
 	public String getName() {

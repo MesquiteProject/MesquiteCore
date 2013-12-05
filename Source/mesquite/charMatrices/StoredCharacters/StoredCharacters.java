@@ -576,14 +576,23 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 	public Color getItemColor(Taxa taxa, int ic){
 		if (taxa==null || data == null || data.getTaxa()!=taxa)
 			return null;
+		
+		//DRM 9 Feb 2013   Added this section so that charts were colored correctly
+		int whichCharacter = ic;
+		if (respectExclusion)
+			whichCharacter = findIncludedCharacter(data, ic);
+		if (whichCharacter <0 && countIncludedCharacters(data)>0) {
+			MesquiteMessage.printStackTrace("Error: Character < 0 in StoredCharacters " + currentChar + " " + whichCharacter);
+		}
+		//DRM end
 		if (colorSet!=null){
-			CharactersGroup mi = (CharactersGroup)colorSet.getProperty(ic);
+			CharactersGroup mi = (CharactersGroup)colorSet.getProperty(whichCharacter);
 			if (mi!=null && mi.getColor()!=null) {
 				return mi.getColor();
 			}
 			return null;
 		}
-		return data.getDefaultCharacterColor(ic);
+		return data.getDefaultCharacterColor(whichCharacter);
 	}
 	/*.................................................................................................................*/
 	public String getName() {

@@ -119,15 +119,16 @@ public class CategoricalHistory extends CategoricalAdjustable implements Charact
 					long st = event.getState();
 					int stateHere = CategoricalState.getOnlyElement(st);
 					if (stateBelow >=0 && stateHere >=0 && stateBelow != stateHere)
-						changes[stateBelow][stateHere]++;
+						changes[stateBelow][stateHere]++;						
 					stateBelow = stateHere;
 				}
 			}
 			else {
 				long st=getState(node);
 				int stateHere = CategoricalState.getOnlyElement(st);
-				if (stateBelow >=0 && stateHere >=0 && stateBelow != stateHere)
+				if (stateBelow >=0 && stateHere >=0 && stateBelow != stateHere) {
 					changes[stateBelow][stateHere]++;
+				}
 				stateBelow = stateHere;
 			}
 		}

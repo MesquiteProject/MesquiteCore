@@ -19,6 +19,8 @@ import java.util.zip.*;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
+import mesquite.lists.lib.ListModule;
+import mesquite.lib.table.*;
 
 /* last documented: April 2003 */
 /* ======================================================================== */
@@ -330,6 +332,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 
 	public void setToNewGroup(String name, int icStart, int icEnd, MesquiteModule ownerModule) {
+		if (icEnd<icStart)
+			return;
 		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
 		if (partition==null){
 			partition= new CharacterPartition("Partition", getNumChars(), null, this);
@@ -1618,6 +1622,48 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return false;
 	}
 	
+	public boolean hasDataForTaxa(int itStart, int itEnd){
+		for (int it=itStart; it<=itEnd; it++)
+			if (hasDataForTaxon(it))
+				return true;
+		return false;
+	}
+	
+	public boolean hasDataForCharacter(int ic){
+		int numTaxa = getNumTaxa();
+		for (int it=0; it<numTaxa; it++) {
+			if (!isInapplicable(ic, it) && !isUnassigned(ic, it))
+				return true;
+		}		
+		return false;
+	}
+	
+	public boolean hasDataForCharacters(int icStart, int icEnd){
+		for (int ic=icStart; ic<=icEnd; ic++)
+			if (hasDataForCharacter(ic))
+				return true;
+		return false;
+	}
+	
+	/*.................................................................................................................*/
+	public boolean anyApplicableBefore(int ic, int it){
+		for (int i = 0; i<ic; i++)
+			if (!isInapplicable(i,it))
+				return true;
+
+		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean anyApplicableAfter(int ic, int it) {
+		int numChars = getNumChars();
+		for (int i = ic+1; i<numChars; i++)
+			if (!isInapplicable(i, it))
+				return true;
+		return false;
+	}
+
+
+	
 	public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		boolean removedSome = false;
 		for (int ic = getNumChars()-1; ic>=0; ic--){
@@ -1755,6 +1801,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		CharInclusionSet incl = (CharInclusionSet)getCurrentSpecsSet(CharInclusionSet.class);
 		return (incl==null || incl.isBitOn(ic));
 
+	}
+	/** returns number of currently included characters*/
+	public int numCharsCurrentlyIncluded(){
+		CharInclusionSet incl = (CharInclusionSet)getCurrentSpecsSet(CharInclusionSet.class);
+		if (incl!=null)
+			return incl.numBitsOn();
+		return numChars;
 	}
 	public int firstApplicable(Bits whichTaxa){
 		int first = -1;
@@ -2831,7 +2884,85 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean isLinked(){
 		return (linkedDatas.size()>0);
 	}
+/*------------------*/
+	public boolean concatenate(CharacterData oData, boolean addTaxaIfNew, boolean explainIfProblem, boolean notify){
+		return concatenate(oData, addTaxaIfNew, true, explainIfProblem, notify);
+	}
 
+	/*------------------*/
+	public boolean concatenate(CharacterData oData, boolean addTaxaIfNew, boolean concatExcludedCharacters, boolean explainIfProblem, boolean notify){
+		if (oData==null)
+			return false;
+		if (oData.isLinked(this) || isLinked(oData)) {
+			if (explainIfProblem)
+				discreetAlert( "Sorry, those two matrices cannot be concatenated because they are linked");
+			return false;
+		}
+		if (!((getClass().isAssignableFrom(oData.getClass())) || oData.getClass() == getClass())){
+			if (explainIfProblem)
+				discreetAlert( "Sorry, those two matrices cannot be concatenated because they are of different types");
+			return false;
+		}
+		CommandRecord.tick("Concatenating matrices");
+		MesquiteModule module = MesquiteTrunk.mesquiteTrunk;
+		if (getManager() != null)
+			module = ((MesquiteModule)getManager());
+		if (!oData.getTaxa().equals(getTaxa(), true, true)){
+			Taxa oTaxa = oData.getTaxa();
+			Taxa taxa = getTaxa();
+			boolean extra = false;
+			for (int oit = 0; oit<oTaxa.getNumTaxa() && !extra; oit++)
+				if (taxa.findEquivalentTaxon(oTaxa, oit)<0)
+					extra = true;
+			//different taxa block, with different names.  Offer to add names
+			if (extra && addTaxaIfNew){
+				if (AlertDialog.query(module.containerOfModule(), "Import taxa from other matrix?", "The matrix you are concatenating to this one is based on a different block of taxa, and includes taxa not in this matrix.  Do you want to add these taxa to this matrix before concatenating?")){
+					String names = "";
+					
+					for (int oit = 0; oit<oTaxa.getNumTaxa(); oit++){
+						if (taxa.findEquivalentTaxon(oTaxa, oit)<0){
+							taxa.addTaxa(taxa.getNumTaxa(), 1, false);
+							taxa.equalizeTaxon(oTaxa, oit, taxa.getNumTaxa()-1);
+							names += taxa.getTaxonName(taxa.getNumTaxa()-1) + "\n";
+							CommandRecord.tick("Added taxon " + taxa.getTaxonName(taxa.getNumTaxa()-1));
+							
+						}
+					}
+					if (!StringUtil.blank(names)){
+						logln("Added to taxa block were:\n" + names);
+						taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, null,null));
+					}
+				}
+			}
+
+		}
+		int origNumChars = getNumChars();
+		if (concatExcludedCharacters)
+			addParts(origNumChars+1, oData.getNumChars());
+		else 
+			addParts(origNumChars+1, oData.numCharsCurrentlyIncluded());
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
+		if (partition==null && origNumChars-1>=0) // let's give the origjnal ones a group
+			setToNewGroup(getName(), 0, origNumChars-1, module);  //set group
+		CharacterPartition oPartition = (CharacterPartition) oData.getCurrentSpecsSet(CharacterPartition.class);
+		if (oPartition == null)
+			setToNewGroup(oData.getName(), origNumChars, getNumChars()-1, module);  //set group
+			
+		addInLinked(getNumChars()+1, oData.getNumChars(), true);
+		CharacterState cs = null;
+		int count=0;
+		for (int ic = 0; ic<oData.getNumChars(); ic++){
+			if (concatExcludedCharacters || oData.isCurrentlyIncluded(ic)) {
+				CommandRecord.tick("Copying character " + (ic+1) + " in concatenation");
+				equalizeCharacter(oData, ic, count+origNumChars);
+				count++;
+			}
+		}
+		if (notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {origNumChars, oData.getNumChars()}));
+		return true;
+}
+	/*------------------*/
 	public void setBasisTree(Tree tree){
 		if (tree == null) {
 			basisTree = null;
@@ -2909,7 +3040,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		else if (checker.compare(this.getClass(), "Sets user visibility to true", null, commandName, "setVisible")) {
 			setUserVisible(true);
 		}
-		else if (checker.compare(this.getClass(), "Exports the file element", null, commandName, "exportMe")) {
+		else if (checker.compare(this.getClass(), "Duplicates the matrix", null, commandName, "duplicateMe")) {
+				if (getProject() != null)
+					getProject().incrementProjectWindowSuppression();
+
+				CharacterData starter = makeCharacterData(getMatrixManager(), getTaxa());  
+				if (getMatrixManager() != null)
+				starter.addToFile(getProject().getHomeFile(), getProject(),  getMatrixManager().findElementManager(CharacterData.class));  
+
+				boolean success = starter.concatenate(this, false, true, false, false);
+				if (success){
+					String name = getName() + " (duplicate)";
+					if (getProject()!= null)
+						name = getProject().getCharacterMatrices().getUniqueName(name);
+					starter.setName(name);
+				}
+				if (getProject() != null)
+					getProject().decrementProjectWindowSuppression();
+				return starter;
+		}
+		else if (checker.compare(this.getClass(), "Exports the matrix", null, commandName, "exportMe")) {
 			ElementManager manager = getManager();
 			if (manager!=null) {
 				((Commandable)manager).doCommand("exportMatrix", getFile().getProject().getCharMatrixReferenceInternal(this), CommandChecker.defaultChecker);
@@ -2949,6 +3099,56 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			sb.setLength(0);
 		}
 		return s;
+
+	}
+	
+	public boolean setInclusionExclusion(MesquiteModule module, MesquiteTable table, boolean include){
+		boolean changed=false;
+		if (table !=null) {
+
+			CharInclusionSet inclusionSet = (CharInclusionSet) getCurrentSpecsSet(CharInclusionSet.class);
+			if (inclusionSet == null) {
+				inclusionSet= new CharInclusionSet("Inclusion Set", getNumChars(), this);
+				inclusionSet.selectAll();
+				inclusionSet.addToFile(getFile(), getProject(), module.findElementManager(CharInclusionSet.class)); //THIS
+				setCurrentSpecsSet(inclusionSet, CharInclusionSet.class);
+			}
+			if (inclusionSet != null) {
+				for (int i=0; i<getNumChars(); i++) {
+					if (table.isColumnSelected(i)) {
+						if (include) //include
+							inclusionSet.setSelected(i, true);
+						else if (!include) //exclude
+							inclusionSet.setSelected(i, false);
+						changed = true;
+					}
+				}
+			}
+
+
+			if (changed)
+				notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
+		}
+		return changed;
+	}
+
+	public int getTotalNumApplicable(int it, boolean ignoreExcluded) {
+		CharInclusionSet incl = null;
+		if (ignoreExcluded)
+			incl = (CharInclusionSet)getCurrentSpecsSet(CharInclusionSet.class);
+		int numChars = getNumChars();
+		int seqLen = 0;
+		if (numChars != 0) {
+			CharacterState cs = null;
+			for (int ic=0; ic<numChars; ic++) {
+				if (incl == null || incl.isBitOn(ic)){  // adjusted 2. 01 to consider inclusion
+					cs = getCharacterState(cs, ic, it);
+					if (!cs.isInapplicable())
+						seqLen++;
+				}
+			}
+		}	
+		return seqLen;
 
 	}
 

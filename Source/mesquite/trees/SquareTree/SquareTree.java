@@ -288,7 +288,7 @@ public class SquareTree extends DrawTree {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Square tree";
+		return "Classic Square tree";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -931,7 +931,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 				arc.lineTo(xnM, ynM);
 			}
 
-			else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//¥¥¥¥
+			else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//ï¿½ï¿½ï¿½ï¿½
 				arc = new GeneralPath(); // left
 				arc.moveTo(xN, yN);
 				if (yN - ynM>curveD)
@@ -947,7 +947,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 				arc.curveTo(xnM, yN, xnM, yN, xnM, ynM);
 				arc.lineTo(xnM, ynM);
 			}
-			else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //¥¥¥¥
+			else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //ï¿½ï¿½ï¿½ï¿½
 				arc = new GeneralPath(); // left
 				arc.moveTo(xN, yN);
 				if (xnM - xN>curveD)

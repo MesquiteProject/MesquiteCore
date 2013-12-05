@@ -154,6 +154,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (which == frontWindow) {
 			try {
 			super.setMenuBar(mbar);
+			which.repaintInfoBar();
 			}
 			catch(Exception e){
 			}
@@ -483,6 +484,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 			}
 		}
 		else {
+			 w.poppedOut = true;
 			MesquiteFrame parentFrame = new MesquiteFrame(false, backgroundColor);
 			parentFrame.setOwnerModule(ownerModule);
 			Menu fM = new MesquiteMenu("File");
@@ -506,6 +508,10 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 			 parentFrame.addPage(w); 
 			 parentFrame.setVisible(makeVisible);
+				MesquiteModule mb = w.getOwnerModule();
+				if (mb != null){
+					mb.resetContainingMenuBar();
+				}
 		}
 
 	}
@@ -529,6 +535,10 @@ public class MesquiteFrame extends Frame implements Commandable {
 			addPage(w);
 			setVisible(w, true);
 			w.setParentFrame(this);
+			MesquiteModule mb = w.getOwnerModule();
+			if (mb != null){
+				mb.resetContainingMenuBar();
+			}
 			w.poppedOut = false;
 		}
 		resetSizes(true);
@@ -766,6 +776,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void setWindowSize(MesquiteWindow ww,int width, int height, boolean expandOnly) {
+		
 		Insets insets = getInsets();
 		storeInsets(insets);
 		boolean adjustWidthOnly = !MesquiteInteger.isCombinable(height);
@@ -834,8 +845,12 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void resetSizes(boolean resizeContainedWindows){
+		resetSizes(resizeContainedWindows, false);
+	}
+	/*.................................................................................................................*/
+	public void resetSizes(boolean resizeContainedWindows, boolean force){
 		Insets insets = getInsets();
-		if (getBounds().width != savedFullW || getBounds().height != savedFullH){
+		if (!force && (getBounds().width != savedFullW || getBounds().height != savedFullH)){
 		}
 		else if (oldInsetTop!=insets.top || oldInsetBottom !=insets.bottom || oldInsetRight!= insets.right || oldInsetLeft != insets.left) {
 

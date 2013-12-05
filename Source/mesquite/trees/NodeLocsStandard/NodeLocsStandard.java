@@ -792,6 +792,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (treeDisplay.inhibitStretchByDefault != inhibitStretch.getValue())
 					inhibitStretch.setValue(treeDisplay.inhibitStretchByDefault);
 			}*/
+			int fixedTaxonDistance = treeDisplay.getFixedTaxonSpacing();
 			lastOrientation = treeDisplay.getOrientation();
 			//this.treeDisplay = treeDisplay; 
 			if (!leaveScaleAlone) {
@@ -865,7 +866,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
+				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
+				else
+					treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.width && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2; //TODO: this causes problems for shrunk, since first taxon doesn't move over enough
@@ -925,7 +929,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
+				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
+				else
+					treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.width && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -980,7 +987,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
+				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
+				else
+					treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.height && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -1034,7 +1044,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
+				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
+				else
+					treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.height && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -1098,7 +1111,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 	}
 	/*.................................................................................................................*/
-	public   void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
+	public void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
 		if (g == null)
 			return;
 		boolean narrowScaleOnly = !broadScale.getValue();

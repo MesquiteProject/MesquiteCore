@@ -48,6 +48,7 @@ public class ColorTaxon extends TaxaListAssistantI  {
 		removeColor = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Remove color", makeCommand("removeColor",  this), removeColor);
 		addMenuItem(null, "Remove all color", makeCommand("removeAllColor",  this));
+		MesquiteSubmenuSpec mss2 = addSubmenu(null, "Set Color of Selected", makeCommand("setColorSelected",  this), ColorDistribution.standardColorNames);
 		//addMenuItem(null, "-", null);
 		//addMenuItem(null, "Color Selected", makeCommand("colorSelected",  this));
 		setUseMenubar(false); //menu available by touching button
@@ -99,6 +100,14 @@ public class ColorTaxon extends TaxaListAssistantI  {
 				currentColor = bc;
 				savedColor = bc;
 				colorString = "Color " + ColorDistribution.standardColorNames.getValue(bc);
+			}
+		}
+		else	if (checker.compare(this.getClass(), "Sets the color of selected taxa", "[name of color]", commandName, "setColorSelected")) {
+			int bc = ColorDistribution.standardColorNames.indexOf(parser.getFirstToken(arguments)); 
+			if (bc >=0 && MesquiteLong.isCombinable(bc)){
+				for (int it = 0; it<taxa.getNumTaxa(); it++)
+					if (taxa.getSelected(it))
+						setColor(it, bc);
 			}
 		}
 		else if (checker.compare(this.getClass(), "Removes color from all the cells", null, commandName, "removeAllColor")) {

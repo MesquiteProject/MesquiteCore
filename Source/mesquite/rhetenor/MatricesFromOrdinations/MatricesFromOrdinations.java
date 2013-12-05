@@ -162,6 +162,15 @@ public class MatricesFromOrdinations extends CharMatrixSource {
 	}
 
 	boolean firstWarning = true;
+	private String allCombinable(MContinuousStates originalMatrix, int item){
+		for (int ic = 0; ic < originalMatrix.getNumChars(); ic++)
+			for (int it = 0; it<originalMatrix.getNumNodes(); it++) {
+				if (!MesquiteDouble.isCombinable(originalMatrix.getState(ic, it, item))){
+					return "State " + MesquiteDouble.toString(originalMatrix.getState(ic, it, item)) + " taxon " + (it+1) + " character " + (ic+1);
+				}
+			}
+		return null;
+	}
 	/*.................................................................................................................*/
 	private MCharactersDistribution getM(Taxa taxa, Tree tree){
 		if (dataTask==null)
@@ -197,9 +206,11 @@ public class MatricesFromOrdinations extends CharMatrixSource {
 		}
 		else
 			itemString = "";
-		if (!originalMatrix.allCombinable(currentItem)) {
-			if (firstWarning)
-				discreetAlert( "Matrix to be ordinated has missing data or other illegal values.  Ordination cannot be performed.");
+		String response = allCombinable(originalMatrix, currentItem);
+		if (response != null) {
+			if (firstWarning) {
+				discreetAlert( "Matrix to be ordinated has missing data or other illegal values.  Ordination cannot be performed. " + response);
+			}
 			firstWarning = false;
 			return null;
 		}

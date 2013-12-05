@@ -113,7 +113,7 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 		}
 	}
 	/*..........................................ContinuousHistory................*/
-	private void calcMinMaxStates(Tree tree, int node) {
+	public void calcMinMaxStates(Tree tree, int node) {
 		for (int i=0; i<getNumItems(); i++) {
 			double s=getState(node, i); 
 			maxState = MesquiteDouble.maximum(maxState, s);
@@ -122,7 +122,14 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			calcMinMaxStates(tree, d);
 	}
-
+	/*..........................................................*/
+	public double getMinState(){
+		return minState;
+	}
+	/*..........................................................*/
+	public double getMaxState(){
+		return maxState;
+	}
 	/*..........................................ContinuousHistory................*/
 	/** Must be called before a tree is shaded.  Goes through all nodes to find states present, to set
 	minima and maxima. */

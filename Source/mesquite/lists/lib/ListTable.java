@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.dnd.*;
 import java.awt.event.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -39,7 +40,8 @@ public class ListTable extends MesquiteTable {
 		setEditable(true, true, false, false);
 		//setSelectable(false, true, true, true, false, false);
 		setSelectable(true, true, true, true, true, false);
-		setUserMove(true, false);
+		setUserMove(true, true);
+		setMaximumRowNamesWidth(800);
 	}
 	
 	/* ............................................................................................................... */
@@ -70,6 +72,10 @@ public class ListTable extends MesquiteTable {
 		if (false && getRowAssociable() != null) 
 			getRowAssociable().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 
+	}
+	/*...............................................................................................................*/
+	public void selectedColumnsDropped(int after) {
+			window.selectedColumnsDropped(after+1, true);
 	}
 
 	/*...............................................................................................................*/

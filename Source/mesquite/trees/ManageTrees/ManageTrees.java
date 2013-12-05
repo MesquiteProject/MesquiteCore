@@ -417,8 +417,9 @@ public class ManageTrees extends TreesManager {
 					if (trees!=null)
 						exportTreesBlock(trees, basePath + iBlock + ".nex");
 				}
-				if (!showTreeFiller)
+				if (!showTreeFiller){
 					fireEmployee(treeFillerTask);
+				}
 				resetAllMenuBars();
 			}
 		}
@@ -450,7 +451,7 @@ public class ManageTrees extends TreesManager {
 			}
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
 			if (temp!=null) {
-				treeFillerTask= temp;
+				treeFillerTask = temp;
 			}
 			return treeFillerTask;
 		}
@@ -760,8 +761,9 @@ public class ManageTrees extends TreesManager {
 			trees.addToFile(file, getProject(), this);
 
 			doneQuery(treeFillerTask, taxa, trees, suppressAsk);
-			if (!showTreeFiller)
+			if (!showTreeFiller){
 				fireEmployee(treeFillerTask);
+			}
 			resetAllMenuBars();
 		}
 		return null;
@@ -1025,6 +1027,17 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
+	public TreeVector getTreeBlockByID(long id){  //this uses the temporary run-time id of the tree vector
+		if (treesVector==null)
+			return null;
+		for (int j = 0; j< treesVector.size(); j++) {
+			TreeVector trees = (TreeVector)treesVector.elementAt(j);
+			if (trees.getID() == id)
+					return trees;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){
 		if (treesVector==null)
 			return null;
@@ -1254,8 +1267,16 @@ public class ManageTrees extends TreesManager {
 					}
 				}
 
+				
 				if (taxa==null) {
-					taxa = findTaxaMatchingTable(trees, getProject(), file, table);
+					int tI = parser.tokenIndexOfIgnoreCase(fileReadingArguments, "taxa");//DRM added this 8 April 2012 so that one can specify which taxa block it should belong to
+					if (tI>=0){
+						String ref = parser.getTokenNumber(fileReadingArguments, tI+2);
+						taxa = getProject().getTaxa(ref);
+					}
+
+					if (taxa==null) 
+						taxa = findTaxaMatchingTable(trees, getProject(), file, table);
 					if (taxa!=null) {
 						trees.setTaxa(taxa);
 						trees.setTranslationTable(table);
@@ -1338,7 +1359,6 @@ public class ManageTrees extends TreesManager {
 							 */
 						}
 						if (!translationTableRead && file.useStandardizedTaxonNames){
-
 							for (int it = 0; it<taxa.getNumTaxa(); it++)
 								trees.setTranslationLabel(Integer.toString(it+1), "t" + it, false);
 							trees.checkTranslationTable();
@@ -1615,9 +1635,9 @@ class TreeBlockThread extends MesquiteThread {
 			}
 			else
 				trees.addToFile(file, ownerModule.getProject(), ownerModule);
-			ownerModule.fireEmployee(fillTask);
 			if (trees.size()!=before)
 				ownerModule.doneQuery(fillTask, trees.getTaxa(), trees, suppressAsk);
+			ownerModule.fireEmployee(fillTask);
 			ownerModule.fillingTreesNow = false;
 			ownerModule.resetAllMenuBars();
 		}

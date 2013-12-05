@@ -226,6 +226,15 @@ public class MContinuousAdjustable  extends MContinuousDistribution implements M
 		
 	}
 	/*..........................................MContinuousAdjustable................*/
+	public void setState (int ic, int N,  ContinuousState cs) {  //THIS SHOULD BE ic, it not it, ic
+		if (cs.getNumItems()> matrices.size())
+			return;
+		for (int item = 0; item<cs.getNumItems() && item< matrices.size(); item++){
+			Double2DArray matrix = (Double2DArray)matrices.elementAt(item);
+			matrix.setValue(ic,N, cs.getValue(item));
+		}
+	}
+	/*..........................................MContinuousAdjustable................*/
 	public void setState (int ic, int N,  int item, double d) {  //THIS SHOULD BE ic, it not it, ic
 		if (item>= matrices.size())
 			return;

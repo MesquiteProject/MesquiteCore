@@ -244,7 +244,7 @@ timer6.end();
 		lineY = 0;
 		int oldLineY=lineY;
 
-		int numCells = 0;//¥¥¥
+		int numCells = 0;//ï¿½ï¿½ï¿½
 
 		Shape clip = g.getClip();
 		for (int r=0; (r<table.numRowsTotal); r++) {
@@ -319,7 +319,6 @@ timer6.end();
 
 		try {
 			paints++;
-
 			int lineY;
 			int lineX;
 			width = getBounds().width;//this is here to test if width/height should be reset here
@@ -364,7 +363,7 @@ timer6.end();
 			int resetWidth = getBounds().width;
 			int resetHeight = getBounds().height;
 
-			int numCells = 0;//¥¥¥
+			int numCells = 0;//ï¿½ï¿½ï¿½
 			
 			Font oldFont = g.getFont();
 			FontMetrics fm = g.getFontMetrics(g.getFont());

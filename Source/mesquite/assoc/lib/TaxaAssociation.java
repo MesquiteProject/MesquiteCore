@@ -309,6 +309,43 @@ public class TaxaAssociation extends FileElement  {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public boolean hasSamePattern(TaxaAssociation association){   //taxonA can differ
+		if (association==null)
+			return false;
+		Taxa otherA = association.getTaxa(0);
+		Taxa otherB = association.getTaxa(1);
+		
+		if (taxaA.getNumTaxa() != otherA.getNumTaxa() || taxaB.getNumTaxa() != otherB.getNumTaxa())
+			return false;
+		
+
+		int[] otherEquivalentToLocal = new int[otherA.getNumTaxa()];
+		for (int a=0; a<taxaA.getNumTaxa(); a++) {
+			boolean foundOne = false;
+			otherEquivalentToLocal[a]=a;  // default set it to be the same
+			for (int b=0;b<taxaB.getNumTaxa() && !foundOne; b++){
+				if (areAssociated(a,b)){ // find something that is in this bin in taxonA
+					//now see where it is in otherA
+					for (int c=0; c<otherA.getNumTaxa()&& !foundOne; c++) {
+						if (association.areAssociated(c, b)){  // here it is
+							otherEquivalentToLocal[a]=c;
+							foundOne=true;
+						}
+					}
+
+				}
+			}
+		}
+		
+		for (int a=0;a<taxaA.getNumTaxa() ; a++){
+			for (int b=0;b<taxaB.getNumTaxa(); b++){
+				if (areAssociated(a,b) !=association.areAssociated(otherEquivalentToLocal[a],b))
+					return false;
+			}
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
 	private void setAssociated(int a, int b, boolean assoc){
 		if (a >=0 && a < taxaA.getNumTaxa() && b >= 0 && b < taxaB.getNumTaxa()) {
 			Taxon taxonA = taxaA.getTaxon(a);

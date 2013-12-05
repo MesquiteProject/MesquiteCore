@@ -77,7 +77,6 @@ public class TextRotator {
 	public void drawFreeRotatedText(String s, Graphics g, int horizPosition, int vertPosition, double rotation, Point offsets, boolean alignBottom, Polygon poly) {
 			if (s==null)
 				return;
-			
 			Font font = g.getFont();
 			FontMetrics fontMet = g.getFontMetrics(font);
 			int height = fontMet.getHeight();

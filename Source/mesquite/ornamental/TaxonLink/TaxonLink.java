@@ -60,7 +60,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 	public TaxonLinkToolExtra (TaxonLink ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		taxonLinkModule = ownerModule;
-		taxonLinkTool = new TreeTool(this, "taxonLink", ownerModule.getPath(), "link.gif", 4,0,"Go to link", "This tool follows a hypertext link to another file or to a web page.  Hold down Control when using to set the link to a local file; hold down shift to enter a URL.  If filename ends in .htm or .html, it is opened in a web browser; otherwise it is opened in Mesquite."); //; hold down shift to enter a URL
+		taxonLinkTool = new TreeTool(this, "taxonLink", ownerModule.getPath(), "link.gif", 4,0,"Go to link", "This tool follows a hypertext link to another file or to a web page.  Hold down Control when using to set the link to a local file; hold down shift to enter a URL.  If filename ends in .htm or .html or contains http:// or https://, it is opened in a web browser; otherwise it is opened in Mesquite."); //; hold down shift to enter a URL
 		taxonCommand = MesquiteModule.makeCommand("goToLinkedTaxon",  this);
 		cladeCommand = MesquiteModule.makeCommand("goToLinkedClade",  this);
 		taxonLinkTool.setTouchedTaxonCommand(taxonCommand);
@@ -249,7 +249,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 			else {
 				String link = (String)tree.getTaxa().getAssociatedObject(linkNameRef, M);
 				if (link!=null) {
-					if (link.endsWith(".html") || link.endsWith(".htm") || link.endsWith(".HTML") || link.endsWith(".HTM")) {  //assumed to be web page
+					if (StringUtil.startsWithIgnoreCase(link, "http:") || StringUtil.startsWithIgnoreCase(link, "https:") || link.endsWith(".html") || link.endsWith(".htm") || link.endsWith(".HTML") || link.endsWith(".HTM")) {  //assumed to be web page
 						if (StringUtil.startsWithIgnoreCase(link, "http:")) 
 							taxonLinkModule.showWebPage(link, false);
 						else

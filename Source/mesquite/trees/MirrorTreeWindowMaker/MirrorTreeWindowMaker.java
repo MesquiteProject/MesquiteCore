@@ -377,25 +377,13 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 	public   void InvertBranch(TreeDisplay treeDisplay, Graphics g, int N) {
 		
 		highlightedBranch=N;
-		if (!GraphicsUtil.useXORMode(g, true))
-			return;
-		g.setColor(Color.black);
-		g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
-		treeDisplay.getTreeDrawing().fillBranch(treeDisplay.getTree(), N, g);
-		g.setPaintMode();
-		g.setColor(Color.black);
+		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	   }
 	   
 	/*_________________________________________________*/
 	public   void RevertBranch(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=0;
-		if (!GraphicsUtil.useXORMode(g, true))
-			return;
-		g.setColor(Color.black);
-		g.setXORMode(Color.white);//for some reason color makes no difference in MacOS, but is inversion color in Win95
-		treeDisplay.getTreeDrawing().fillBranch(treeDisplay.getTree(), N, g);
-		g.setPaintMode();
-		g.setColor(Color.black);
+		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	   }
 	/*_________________________________________________*/
 	public   void ScanFlash(TreeDisplay treeDisplay, Graphics g, int x, int y, int modifiers) {
