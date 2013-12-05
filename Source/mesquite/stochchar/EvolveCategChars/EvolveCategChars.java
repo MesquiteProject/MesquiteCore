@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -26,13 +26,11 @@ public class EvolveCategChars extends CharacterSimulator implements MesquiteList
 	CategoricalHistory evolvingStates;
 	ProbPhenCategCharModel probabilityModel, originalProbabilityModel;
 	MesquiteString modelName;
-	long rootStateSim = 0L;  //state set for simulations; 0 = no state, use model's prior
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (condition!=null && condition!= CategoricalData.class && condition!=CategoricalState.class){
   	 		return sorry("Evolve Categorical cannot be used because it supplies only categorical characters");
 		}
-        loadPreferences();
 		ProbPhenCategCharModel m = null;
 		m = chooseModel();
 		if (m==null) {
@@ -47,17 +45,7 @@ public class EvolveCategChars extends CharacterSimulator implements MesquiteList
 		getProject().getCentralModelListener().addListener(this);
 		return true;
   	 }
-	public String preparePreferencesForXML () {
-		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "rootStateSim", (int)rootStateSim);   
-		return buffer.toString();
-	}
-
-	public void processSingleXMLPreference (String tag, String content) {
-		if ("rootStateSim".equalsIgnoreCase(tag))
-			rootStateSim = MesquiteLong.fromString(content);
-	}
- 	 
+  	 
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
@@ -71,7 +59,6 @@ public class EvolveCategChars extends CharacterSimulator implements MesquiteList
   	}
 	/*.................................................................................................................*/
 	public void endJob() {
-		storePreferences();
 		getProject().getCentralModelListener().removeListener(this);
 		super.endJob();
   	 }
@@ -213,9 +200,7 @@ public class EvolveCategChars extends CharacterSimulator implements MesquiteList
    		if (seed!=null)
    			probabilityModel.setSeed(seed.getValue());
    		long rootstate = probabilityModel.getRootState(tree);
-   		if (rootStateSim != 0L)
-   			rootstate = rootStateSim;
-   		evolvingStates.setState(tree.getRoot(), rootstate);  //starting rootCategoricalState.makeSet(0)); //
+ 	evolvingStates.setState(tree.getRoot(), rootstate);  //starting rootCategoricalState.makeSet(0)); //
    		evolve(tree, (CategoricalAdjustable)statesAtTips, tree.getRoot());
    		if (seed!=null)
    			seed.setValue(probabilityModel.getSeed());

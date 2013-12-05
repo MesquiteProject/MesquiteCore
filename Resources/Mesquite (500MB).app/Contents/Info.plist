@@ -50,7 +50,7 @@
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
         <key>VMOptions</key>
-        <string>-Xmx500m -Xss2m -Djava.library.path=lib -Djri.ignore.ule="yes"</string>
+        <string>-Xmx500m -Xss2m -Djava.library.path=lib -Djri.ignore.ule="yes"  -Dapple.awt.graphics.UseQuartz=true</string>
 		<key>Arguments</key>
 		<string>-mqex</string>
 		<key>Properties</key>

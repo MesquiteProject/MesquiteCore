@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -32,10 +32,8 @@ public class PairwiseAligner  {
 	private int gapOpenTerminal;
 	private int gapExtendTerminal;
 	private int subs[][];
-	private boolean keepGaps = false;  
-	private boolean allowNewInternalGaps = true;
+	private boolean keepGaps = false;
 	private boolean maintainOrder = false;
-	private boolean flagGapArrayTerminals = true;
 	
 	public int totalGapChars = 0;
 		
@@ -52,15 +50,6 @@ public class PairwiseAligner  {
 	private boolean subCostsInitialized = false;
 	private boolean seqsWereExchanged = false;
 		
-	public PairwiseAligner (boolean keepGaps, boolean allowNewInternalGaps, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
-	    setSubsCostMatrix(subs);
-		setGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);
-		setKeepGaps (keepGaps);
-	    setAllowNewInternalGaps(allowNewInternalGaps);
-		this.alphabetLength=alphabetLength;
-		gapCostsInitialized = subCostsInitialized = true;
-	}	
-
 	public PairwiseAligner (boolean keepGaps, int[][] subs, int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal, int alphabetLength) {
 		setSubsCostMatrix(subs);
 		setGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);
@@ -81,7 +70,7 @@ public class PairwiseAligner  {
 		// not much to do here ???
 	}
 
-	public static PairwiseAligner getDefaultAligner(boolean keepGaps, MolecularData data){
+	public static PairwiseAligner getDefaultAligner(MolecularData data){
 		MesquiteInteger gapOpen = new MesquiteInteger();
 		MesquiteInteger gapExtend = new MesquiteInteger();
 		MesquiteInteger gapOpenTerminal = new MesquiteInteger();
@@ -89,13 +78,9 @@ public class PairwiseAligner  {
 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal);  
 		int alphabetLength = ((CategoricalState)data.makeCharacterState()).getMaxPossibleState()+1;	  
 		int subs[][] = AlignUtil.getDefaultSubstitutionCosts(alphabetLength);  
-		PairwiseAligner aligner = new PairwiseAligner(keepGaps,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
+		PairwiseAligner aligner = new PairwiseAligner(false,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 		aligner.setUseLowMem(true);
 		return aligner;
-	}
-	
-	public static PairwiseAligner getDefaultAligner(MolecularData data){
-		return getDefaultAligner(false,data);
 	}
 	
 	
@@ -121,36 +106,6 @@ public class PairwiseAligner  {
 
 	}
 	
-	private void doFlagGapArrayTerminals(long[] recipientSequence) {
-		if (gapInsertionArray==null)
-			return;
-		for (int i=0; i<gapInsertionArray.length; i++) {
-			if (gapInsertionArray[i]>0) {
-				boolean terminal=true;
-				for (int j=0; j<=i+1 && j<recipientSequence.length; j++) {
-					if (recipientSequence[j]!=MolecularState.inapplicable)
-						terminal=false;
-				}
-				if (terminal)
-					gapInsertionArray[i] = -gapInsertionArray[i];
-				break;
-			}
-		}
-		for (int i=gapInsertionArray.length-1; i>=0; i--) {
-			if (gapInsertionArray[i]>0) {
-				boolean terminal=true;
-				for (int j=recipientSequence.length-1; j>i && j>=0; j--) {
-					if (recipientSequence[j]!=MolecularState.inapplicable)
-						terminal=false;
-				}
-				if (terminal)
-					gapInsertionArray[i] = -gapInsertionArray[i];
-				break;
-			}
-		}
-	}
-	
-	
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the passed sequences.
 	 * If object has been told to retain gaps, gaps in A_withGaps will remain intact (new ones  may be added)*/
 	public synchronized long[][] alignSequences( long[] A_withGaps, long[] B_withGaps, boolean returnAlignment, MesquiteNumber score) {
@@ -161,14 +116,6 @@ public class PairwiseAligner  {
 			return null;
 		}
 		
-		int gO  = gapOpen;
-		int gE  = gapExtend;
-        int gOt = gapOpenTerminal;
-        int gEt = gapExtendTerminal;
-        if (! this.allowNewInternalGaps)  // make internal gaps impossibly expensive .. but not high enough to cause wrap around of the capacity of an int
-            gE = Integer.MAX_VALUE / 10 ;
-
-        
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		
 		if ( returnAlignment) { 
@@ -177,14 +124,16 @@ public class PairwiseAligner  {
 			long charThreshold = getCharThresholdForLowMemory();
 			if ((lengthA*lengthB)>charThreshold) { 
 				//low memory (but slower, due to recursion) alignment
-			    AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength, keepGaps, followsGapSize);
+				AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength, keepGaps, followsGapSize);
+				
 				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
+		
 				ret = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
-				gapInsertionArray = helper.getGapInsertionArray();  
+				gapInsertionArray = helper.getGapInsertionArray();   
 
 			} else {
 //				 fast (but quadratic space) alignment
-			    AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength);
+				AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal, alphabetLength);
 				ret = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
 				gapInsertionArray = helper.getGapInsertionArray();
 			}
@@ -199,11 +148,8 @@ public class PairwiseAligner  {
 			}
 			
 			if (ret.length>lengthA && ret.length>lengthB)
-				ret = stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
+				return stripEmptyBases(ret, MesquiteInteger.maximum(lengthA, lengthB));
 			
-			if (flagGapArrayTerminals && gapInsertionArray!=null) {
-				doFlagGapArrayTerminals(A_withGaps);
-			}
 			return ret;
 
 		} else { 
@@ -212,8 +158,8 @@ public class PairwiseAligner  {
 					score.setToUnassigned(  );
 				return null;
 			}
-			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.
-			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, alphabetLength, true, keepGaps, followsGapSize);
+			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.	
+			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gapOpen, gapExtend, alphabetLength, true, keepGaps, followsGapSize);
 			helper.fillForward(0,lengthA,0,lengthB,helper.noGap);			
 			int myScore = Math.min(helper.fH[lengthA], Math.min (helper.fD[lengthA], helper.fV[lengthA])) ;
 			
@@ -288,12 +234,11 @@ public class PairwiseAligner  {
 	
 	/** If object wasn't called with gap cost arguments, this must be called or alignment will fail*/
 	public void setGapCosts(int gapOpen, int gapExtend){
-        //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
+	    //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
 		this.gapOpenTerminal = gapOpen;
 		this.gapExtendTerminal = gapExtend;
-
 		gapCostsInitialized = true;
 	}
 
@@ -350,16 +295,7 @@ public class PairwiseAligner  {
 		return gapInsertionArray;
 	}			
 	
-	public boolean isFlagGapArrayTerminals() {
-		return flagGapArrayTerminals;
-	}
-
-	public void setFlagGapArrayTerminals(boolean flagGapArrayTerminals) {
-		this.flagGapArrayTerminals = flagGapArrayTerminals;
-	}
-
-
-		
+	
 	/** This method returns true if better alignment scores are higher.  Override if needed. */
 	public boolean getHigherIsBetter() {
 		return false;
@@ -468,8 +404,6 @@ public class PairwiseAligner  {
 			extracted2[ic-firstSite] = data.getState(ic, taxon2);
 		}
 		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
-		
-		
 		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
 	
 		return aligned;
@@ -481,14 +415,6 @@ public class PairwiseAligner  {
 
 	public void setMaintainOrder(boolean maintainOrder) {
 		this.maintainOrder = maintainOrder;
-	}
-
-	public boolean getAllowNewInternalGaps() {
-		return allowNewInternalGaps;
-	}
-
-	public void setAllowNewInternalGaps(boolean allowNewInternalGaps) {
-		this.allowNewInternalGaps = allowNewInternalGaps;
 	}
 
 }

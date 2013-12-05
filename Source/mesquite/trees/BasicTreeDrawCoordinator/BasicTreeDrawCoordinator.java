@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -75,6 +75,10 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		mmis.setList(DrawTree.class);
 		mmis.setSelected(treeDrawName);
 
+		mmis = addSubmenu(MesquiteTrunk.analysisMenu, "Visual Tree Analysis", tdC);
+		mmis.setList(AnalyticalDrawTree.class);
+		mmis.setSelected(treeDrawName);
+		addMenuItem(MesquiteTrunk.analysisMenu, "-", null);
 
 		mmis = addSubmenu(null, "Background Color", makeCommand("setBackground",  this));
 		mmis.setList(ColorDistribution.standardColorNames);
@@ -268,7 +272,6 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				else {
 					treeDisplay.setVisible(vis);
 					treeDisplay.suppressDrawing(suppression);
-					decrementMenuResetSuppression();
 					return null;
 			}
 			}

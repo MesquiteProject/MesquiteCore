@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -17,11 +17,10 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.lang.StringEscapeUtils;
+
 
 import mesquite.lib.duties.*;
 import mesquite.tol.lib.BaseHttpRequestMaker;
@@ -67,16 +66,16 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "1 November 2013";   
+		return "3 October 2010";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "2.75+";
+		return "2.74";
 	}
 	/*.................................................................................................................*/
 	//this should be mesquiteFeedbackXXX.py where XXX is version as integer if a release version (e.g. mesquiteFeedback273.py)
-	public static String errorReportURL =  "http://mesquiteproject.org/cgi-bin/mesquiteFeedback275.py";
+	public static String errorReportURL =  "http://mesquiteproject.org/cgi-bin/mesquiteFeedback274.py";
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
 	public final static String getBuildLetter() {
@@ -88,7 +87,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	581;  
+		return 	550;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -123,9 +122,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//2.72 = 527 released 11 Dec 09  129448/ 58128 / 7207;  528 released 20 Dec 09 to fix non-substantive bugs
 	//2.73 = 544 released 25 July 10  144981 / 67206 / 7817
 	//2.74 = 550 released 3 October 10  150117 / 71997 / 7980
-	//2.75 = 564 released 30 September 2011  179839 / 91129 / 8939
-	//       = 565 included 4 October 2011  in Chromaseq release; slight changes to UndoInstructions for Chromaseq
-	//       = 566 update 10 October 2011, small fix in this module to re-enable error reporting of NullPointerExceptions and ArrayIndexOutOfBoundsExceptions
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
@@ -163,7 +159,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** true if does extra check for module compatibility at startup.*/
 	public static boolean checkMethodsAtStartup = false;
 
-	public static final int NEXTRELEASE = Integer.MAX_VALUE;
+	public static final int NEXTRELEASE = -2;
 
 	/** this is for modules to store their last MesquiteNumber result for later use; intended for NumberForItem subclasses */
 	protected  Object lastResult;
@@ -193,7 +189,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	Vector pagingsPersistent = new Vector();
 
 	Vector subfunctions = new Vector();
-	public ListableVector attachments = new ListableVector();
+
 
 	public static boolean textEdgeRemembered = false;
 	public static int textEdgeCompensationHeight = 5; //6 on mac; 7 on pc
@@ -889,8 +885,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public String getPath() {  
 		if (this == MesquiteTrunk.mesquiteTrunk)
 			return getRootPath() + "mesquite" + MesquiteFile.fileSeparator;
-		if (moduleInfo == null)
-			return null;
 		return  moduleInfo.getDirectoryPath();
 	}
 	/*.................................................................................................................*/
@@ -987,17 +981,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void alert(String s) {
 		alert(s,"Alert", "ALERT");
 	}
-	
-	/*.................................................................................................................*/
-	private boolean isNonReportable(Throwable e){  //here keep a list of exceptions that are not Mesquite's problem...
-		if (e == null)
-			return true;
-		if (e instanceof IllegalStateException)
-			return true;
-		if (e.getClass() == RuntimeException.class)
-			return true;
-		return false;
-	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to a detected error and offers to send to server*/
 	public void reportableProblemAlert(String s) {
@@ -1040,16 +1023,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return;
 		}
 		String addendum = "";
-		if (isNonReportable(e)){
-			StackTraceElement[] stack = e.getStackTrace();
-			String report = MesquiteException.lastLocMessage() + "\n";
-			report += e + "\n";
-			report += s + "\n";
-			for (int i= 0; i< stack.length; i++)
-				report += stack[i] + "\n";
-			logln(report);
-		}
-		else if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
+		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 
@@ -1062,7 +1036,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 		}
 	}
-	
 	/*.................................................................................................................*/
 	/** Reports crash or error to Mesquite server*/
 	public void reportCrashToHome(Throwable e, String s) {
@@ -1108,9 +1081,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 
 	/** posts a Bean to the bean log on the MesquiteServer*/
 	public void postBean(String notes, boolean notifyUser) {
-		if (!MesquiteTrunk.reportUse){
-			return;
-		}
 		if (MesquiteTrunk.noBeans) {
 			if (notifyUser) 
 				logln("No beans were sent as the -nb flag was set.");
@@ -1226,12 +1196,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			CommandRecord.tick(s);
 	}
 	/*.................................................................................................................*/
-	public void loglnEchoToStringBuffer(String s, StringBuffer sb){
+	public void echoStringToFile(String s, StringBuffer sb){
 		logln(s);
-		if (sb!=null) {
-			sb.append(s);
-			sb.append(StringUtil.lineEnding());   
-		}
+		sb.append(s +  StringUtil.lineEnding());   	
 	}
 	/*.................................................................................................................*/
 	/** Places string and newline character in log AND in System.out.println.*/
@@ -1586,14 +1553,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				for (int i=0; commandables!=null && i<commandables.length; i++){
 					checker.addString("<ul><li><strong>Commands for " + getShortClassName(commandables[i].getClass())+ "</strong>");
 					checker.accumulateOnlyFrom(commandables[i].getClass());
-					commandables[i].doCommand(null, null, checker);//���
+					commandables[i].doCommand(null, null, checker);//�
 					checker.addString("</ul>");
 				}
 			}
 		}
 		else {
 			//AFTERDEMO:
-			if (commandName!=null && !checker.getAccumulateMode() && checker.warnIfNoResponse) {
+			if (commandName!=null && !checker.getAccumulateMode()) {
 				MesquiteMessage.warnProgrammer("Module " + getName() + " (" + (getClass().getName()) + ") did not respond to command " + commandName + " with arguments (" + arguments + ")");
 			}
 		}
@@ -1804,13 +1771,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	so that on file save, a Mesquite block can be saved that will return the user more or less to previous state. */
 	public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with
 		Snapshot temp = new Snapshot();
-		
-/* examples
- 		temp.addLine("toggleMesquiteBoolean " + mesquiteBoolean.toOffOnString());
-		temp.addLine("setPrimerInfoSource " +  StringUtil.tokenize(primerInfoTask.getClassName()));  
-
-*/
-
 		return temp;
 	}
 
@@ -2137,20 +2097,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				path = pathToCheck;  //Todo: this is temporary, as the launching methods don't seem to handle within-page anchors
 				String[] browserCommand = null;
 				boolean remote = path.indexOf(":/")>=0;
-				
-				if (MesquiteTrunk.getJavaVersionAsDouble()>= 1.6){
-					Desktop d = Desktop.getDesktop();
-					try {
-						d.browse(new URI(path));
-					}
-					catch (IOException e) {
-						browserString = null;
-						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser." );
-					} catch (URISyntaxException e) {
-						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interprtable." );
-					}
-				}
-				else if (MesquiteTrunk.isMacOSX()){ //Mac OS X
+
+				if (MesquiteTrunk.isMacOSX()){ //Mac OS X
 					if (remote) { //remote OSX file, use browser laucher
 						try {
 							BrowserLauncher.openURL(path);
@@ -2395,8 +2343,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package. 
-	 * Use NEXTRELEASE if bound for the next release version of Mesquite.*/
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
 		return 0;  
 	}

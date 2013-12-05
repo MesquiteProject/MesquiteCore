@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -119,16 +119,15 @@ public class CategoricalHistory extends CategoricalAdjustable implements Charact
 					long st = event.getState();
 					int stateHere = CategoricalState.getOnlyElement(st);
 					if (stateBelow >=0 && stateHere >=0 && stateBelow != stateHere)
-						changes[stateBelow][stateHere]++;						
+						changes[stateBelow][stateHere]++;
 					stateBelow = stateHere;
 				}
 			}
 			else {
 				long st=getState(node);
 				int stateHere = CategoricalState.getOnlyElement(st);
-				if (stateBelow >=0 && stateHere >=0 && stateBelow != stateHere) {
+				if (stateBelow >=0 && stateHere >=0 && stateBelow != stateHere)
 					changes[stateBelow][stateHere]++;
-				}
 				stateBelow = stateHere;
 			}
 		}

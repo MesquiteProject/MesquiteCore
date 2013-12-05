@@ -1,6 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -31,24 +30,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2011.  Mesquite: A modular system for evolutionary analysis.  Version 2.75.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2010.  Mesquite: A modular system for evolutionary analysis.  Version 2.74.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "2.75+";
+		return "2.74";
 	}
 	
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 275;
+		return 274;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 2.75;
+		return 2.74;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "October 2011"; //"April 2007";
+		return "October 2010"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -60,7 +59,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -136,10 +135,7 @@ public class Mesquite extends MesquiteTrunk
 	public void init()
 	{
 		boolean verboseStartup = false;
-		long startingTime = System.currentTimeMillis();
-		  System.setProperty("awt.useSystemAAFontSettings","on");
-		  System.setProperty("swing.aatext", "true");
-	if (verboseStartup) System.out.println("main init 1");
+		if (verboseStartup) System.out.println("main init 1");
 		if (isApplet())
 			mesquiteTrunk = this;
 		author.setCurrent(true);
@@ -284,7 +280,7 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2011 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2010 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 			+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 			+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
@@ -359,8 +355,7 @@ public class Mesquite extends MesquiteTrunk
 		//logln(notice);
 		startupTime = System.currentTimeMillis();
 		Date dnow = new Date(startupTime);
-		logln(StringUtil.getDateTime(dnow));
-		//logln( dnow.toString());
+		logln( dnow.toString());
 		if (startupTime <1100000000000L) {
 			discreetAlert("The clock on your computer appears to be set incorrectly.  This version of Mesquite was compiled after November 2004, but your computer's date appears to be " + dnow.toString());
 		}
@@ -456,10 +451,11 @@ public class Mesquite extends MesquiteTrunk
 		}
 
 		ModuleLoader mBL = new ModuleLoader(this);
-		boolean minimalStartup = MesquiteFile.fileExists(MesquiteModule.getRootPath() + "minimalStartup");
-		if (minimalStartup)
-			logln("File called \"minimalStartup\" detected at " + MesquiteModule.getRootPath()+ ".  Mesquite will start with a minimal configuration of modules.");
-	
+		boolean minimalStartup = false;
+		if (logWindow.keyDown())
+			minimalStartup = true;
+		else
+			minimalStartup = MesquiteFile.fileExists(MesquiteModule.getRootPath() + "minimalStartup");
 
 		if (verboseStartup) System.out.println("main init 26");
 		mBL.init(configFile, configurations, minimalStartup);
@@ -625,8 +621,7 @@ public class Mesquite extends MesquiteTrunk
 		storePreferences();
 
 
-		if (verboseStartup) System.out.println("main init 32 ");
-		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
+		if (verboseStartup) System.out.println("main init 32");
 	} 
 
 	/*.................................................................................................................*/
@@ -1571,11 +1566,6 @@ public class Mesquite extends MesquiteTrunk
 
 			Listable[] list = ListDialog.queryListMultiple(containerOfModule(), "Macro Information", "These are the installed macros.  Touch on their names to see an explanation.", MesquiteString.helpString, ud, null);
 		}
-		else if (checker.compare(this.getClass(), "Crashes with a NullPointerException", null, commandName, "crash")) {
-				logln("Mesquite will now crash with a NullPointerException.  Please enjoy.");
-				MesquiteInteger mi = null;
-				logln("This will crash: " +mi.getValue());
-		}
 		else if (checker.compare(this.getClass(), "Checks for notices or installs at the location specified", null, commandName, "checkNotices")) {
 			noticeLocation = MesquiteString.queryString(containerOfModule(), "Notices Location", "Indicate URL to notices file to be checked.  (For instance, for Mesquite the default notices file is at " + getHomePhoneNumber() + ")", noticeLocation);
 			PhoneHomeUtil.checkForNotices(noticeLocation); 
@@ -1764,10 +1754,7 @@ public class Mesquite extends MesquiteTrunk
 				/**/
 				logln("==vvvvvvvvvvvvvvvvvvvv==");
 				logln("The following is used to to check efficiencies.");
-				logln("Associable.totalPartsAdded " + Associable.totalPartsAdded);
-				logln("ListableVector.totalElementsAdded " + Associable.totalPartsAdded);
 				logln("MesquiteWindow.totalCheckDoomedCount " + MesquiteWindow.totalCheckDoomedCount);
-				logln("mesquite.minimal.BasicFileCoordinator.BasicFileCoordinator.totalProjectPanelRefreshes " + mesquite.minimal.BasicFileCoordinator.BasicFileCoordinator.totalProjectPanelRefreshes);
 				logln("--Classes painted\n" + MesquiteWindow.componentsPainted.recordsToString());
 				logln("Listened.notifications " + Listened.notifications);
 				logln("--Classes notifying\n" + Listened.classes.recordsToString());
@@ -2184,14 +2171,14 @@ public class Mesquite extends MesquiteTrunk
 	public static void prepareMesquite(){
 		windowVector = new ListableVector();
 		dialogVector = new ListableVector();
-		fileMenu=new MesquiteMenuSpec(null, "File", mesquiteTrunk, true);
+		fileMenu=new MesquiteMenuSpec(null, "File", mesquiteTrunk);
 		fileMenu.setFilterable(false);
-		editMenu=new MesquiteMenuSpec(null, "Edit", mesquiteTrunk, true);
-		windowsMenu=new MesquiteMenuSpec(null, "View", mesquiteTrunk, true);
-		charactersMenu = new MesquiteMenuSpec(null, "Characters", mesquiteTrunk, true);
-		treesMenu = new MesquiteMenuSpec(null, "Taxa&Trees", mesquiteTrunk, true);
-		analysisMenu = new MesquiteMenuSpec(null, "Analysis", mesquiteTrunk, true);
-		helpMenu = new MesquiteMenuSpec(null, "Help", mesquiteTrunk, true);
+		editMenu=new MesquiteMenuSpec(null, "Edit", mesquiteTrunk);
+		windowsMenu=new MesquiteMenuSpec(null, "Window", mesquiteTrunk);
+		charactersMenu = new MesquiteMenuSpec(null, "Characters", mesquiteTrunk);
+		treesMenu = new MesquiteMenuSpec(null, "Taxa&Trees", mesquiteTrunk);
+		analysisMenu = new MesquiteMenuSpec(null, "Analysis", mesquiteTrunk);
+		helpMenu = new MesquiteMenuSpec(null, "Help", mesquiteTrunk);
 		helpMenu.setFilterable(false);
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -132,17 +132,14 @@ public class DatasetList extends ListLVModule {
 					ListableVector datas = null;
 					if (table.anyRowSelected()){
 						ListableVector alldatas = getProject().getCharacterMatrices();
-						
 						datas = new ListableVector();
-						for (int i=0; i<alldatas.size(); i++){
-								
+						for (int i=0; i<alldatas.size(); i++)
 							if (table.isRowSelected(i))
 								datas.addElement(alldatas.elementAt(i), true);
-						}
 					}
 					else
 						datas = getProject().getCharacterMatrices();
-					boolean a = tda.operateOnDatas(datas, table);
+					boolean a = tda.operateOnDatas(datas);
 					if (!tda.pleaseLeaveMeOn())
 						fireEmployee(tda);
 				}

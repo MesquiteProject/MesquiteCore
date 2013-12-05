@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -181,7 +181,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 				iQuit();
 				return;
 			}
-			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + " used by \"" + getEmployer().getEmployer().getName() + "\") has been deleted.  Another matrix will be sought.");
+			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");
 
 			if (dataClass!=null) {
 				if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
@@ -576,23 +576,14 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 	public Color getItemColor(Taxa taxa, int ic){
 		if (taxa==null || data == null || data.getTaxa()!=taxa)
 			return null;
-		
-		//DRM 9 Feb 2013   Added this section so that charts were colored correctly
-		int whichCharacter = ic;
-		if (respectExclusion)
-			whichCharacter = findIncludedCharacter(data, ic);
-		if (whichCharacter <0 && countIncludedCharacters(data)>0) {
-			MesquiteMessage.printStackTrace("Error: Character < 0 in StoredCharacters " + currentChar + " " + whichCharacter);
-		}
-		//DRM end
 		if (colorSet!=null){
-			CharactersGroup mi = (CharactersGroup)colorSet.getProperty(whichCharacter);
+			CharactersGroup mi = (CharactersGroup)colorSet.getProperty(ic);
 			if (mi!=null && mi.getColor()!=null) {
 				return mi.getColor();
 			}
 			return null;
 		}
-		return data.getDefaultCharacterColor(whichCharacter);
+		return data.getDefaultCharacterColor(ic);
 	}
 	/*.................................................................................................................*/
 	public String getName() {

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -145,14 +145,6 @@ public class Listened implements Listenable {
 	public void setDumpNotified(boolean dn){
 		dumpNotified = dn;
 	}
-	MesquiteTimer[] timers = {new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer()};
-	
 	/*.................................................................................................................*/
  	/** notifies listeners that the element, and in particular part i, has changed.  The ith part may
  	be the ith character (if element is a CharacterData), or the ith tree (if a TreeVector), etc..
@@ -177,11 +169,9 @@ public class Listened implements Listenable {
 		 			if (clss == null || (classOnly && clss.isAssignableFrom(ls[m].getClass())) || (!classOnly && !clss.isAssignableFrom(ls[m].getClass())))
 			 			if (!(ls[m] instanceof Doomable) || !((Doomable)ls[m]).isDoomed()) {
 			 				if (dumpNotified)
-			 					MesquiteTrunk.mesquiteTrunk.logln("(" + m + ") notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
+			 					MesquiteTrunk.mesquiteTrunk.logln("notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
 			 				if (classesNotified !=null)
 			 					classesNotified.record(ls[m].getClass());
-			 				if (dumpNotified && m<timers.length)
-			 					timers[m].start();
 			 				if (MesquiteTrunk.debugMode) {
 			 					ls[m].changed(caller, this, notification);
 			 				} else {
@@ -199,16 +189,7 @@ public class Listened implements Listenable {
 			 						}
 			 					}
 			 				}
-			 				if (dumpNotified && m<timers.length){
-			 					timers[m].end();
-			 				}
 			 			}
-				}
-				if (dumpNotified){
-					System.out.print("timers " );
-					for (int m = 0; m<timers.length; m++)
-						System.out.print(" (" + m + ") " + timers[m].getAccumulatedTime());
-					System.out.println();
 				}
 	 		}
 	 		else {

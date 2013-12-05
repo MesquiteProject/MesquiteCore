@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -29,14 +29,11 @@ public class NumberStopsInTaxon extends NumberForTaxon {
 	MatrixSourceCoord matrixSourceTask;
 	Taxa currentTaxa = null;
 	MCharactersDistribution observedStates =null;
-	MesquiteBoolean countEvenIfOthers;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for number of stops)"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
-		countEvenIfOthers = new MesquiteBoolean(false);
-		addCheckMenuItem(null, "Count for Ambiguous Sites even if Other AAs ", makeCommand("toggleCountEvenIfOthers", this), countEvenIfOthers);
 		return true;
 	}
 
@@ -58,27 +55,6 @@ public class NumberStopsInTaxon extends NumberForTaxon {
 		currentTaxa = taxa;
 		matrixSourceTask.initialize(currentTaxa);
 	}
-	/*.................................................................................................................*/
-	public Snapshot getSnapshot(MesquiteFile file) { 
-		Snapshot temp = new Snapshot();
-		temp.addLine("getMatrixSource", matrixSourceTask);
-		temp.addLine("toggleCountEvenIfOthers " + countEvenIfOthers.toOffOnString());
-		return temp;
-	}
-	MesquiteInteger pos = new MesquiteInteger();
-	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets whether or not to count stops in regions with ambiguous nucleotides that imply a stop OR an amino acid", "[on; off]", commandName, "toggleCountEvenIfOthers")) {
-			countEvenIfOthers.toggleValue(parser.getFirstToken(arguments));
-			parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
-			return matrixSourceTask;
-		}
-		else return  super.doCommand(commandName, arguments, checker);
-		return null;
-	}
-
 
 	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString){
 		if (result==null)
@@ -93,7 +69,7 @@ public class NumberStopsInTaxon extends NumberForTaxon {
 		if (observedStates==null || !(observedStates.getParentData() instanceof DNAData))
 			return;
 		DNAData data = (DNAData)observedStates.getParentData();
-		int count = data.getAminoAcidNumbers(it,ProteinData.TER,countEvenIfOthers.getValue());
+		int count = data.getAminoAcidNumbers(it,ProteinData.TER);
 		if (result !=null)
 			result.setValue(count);
 		if (resultString!=null)

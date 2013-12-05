@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -87,7 +87,24 @@ public abstract class AlignmentHelper {
 			gappedSeq2return[i+usedGaps][0] = inputSequence[i][0] ;
 			gappedSeq2return[i+usedGaps][1] = inputSequence[i][1] ;
 		}		
-
+/*		
+		long gap_seqA[] = new long[gappedSeq2return.length];
+		long gap_seqB[] = new long[gappedSeq2return.length];
+		
+		for (i=0; i<gappedSeq2return.length; i++) {
+			gap_seqA[i] = gappedSeq2return[i][0];
+			gap_seqB[i] = gappedSeq2return[i][1];
+		}		
+		long input_seqA[] = new long[inputSequence.length];
+		long input_seqB[] = new long[inputSequence.length];
+		
+		for (i=0; i<inputSequence.length; i++) {
+			input_seqA[i] = inputSequence[i][0];
+			input_seqB[i] = inputSequence[i][0];
+		}		
+	
+		*/
+		
 		return gappedSeq2return;	
 	}
 

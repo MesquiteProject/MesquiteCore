@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -27,11 +27,9 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 	MesquiteWindow window;
 	MesquitePopup popup=null;
 	Image editing, power, simple;
-	boolean showText = true;
-	public SimplicityStrip(MesquiteWindow window, boolean showText) {
+	public SimplicityStrip(MesquiteWindow window) {
 		super();
 		this.window = window;
-		this.showText = showText;
 		setLayout(null);
 		setFont(smallFont);
 		setBackground(ColorTheme.getInterfaceBackground());
@@ -96,14 +94,13 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 			return;
 		int left = 18;
 		//g.drawRect(0, 0, getWidth()-1, getHeight()-1);
-		if (!InterfaceManager.isEditingMode() && !InterfaceManager.isSimpleMode() && showText){
+		if (!InterfaceManager.isEditingMode() && !InterfaceManager.isSimpleMode()){
 			g.drawImage(power, 0, 0, this);
-				g.drawString("Full Interface", left, 13);
+			g.drawString("Full Interface", left, 13);
 		}
 		else if (!InterfaceManager.isEditingMode() && InterfaceManager.isSimpleMode()){
 			g.drawImage(simple, 0, 0, this);
-			if (showText)
-				g.drawString("Simple Interface", left, 13);
+			g.drawString("Simple Interface", left, 13);
 		}
 		else if (InterfaceManager.isEditingMode()){
 			g.setColor(Color.cyan);
@@ -121,8 +118,6 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 	/*.................................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		if (InterfaceManager.locked)
-			return;
-		if (!InterfaceManager.isEditingMode() && !InterfaceManager.isSimpleMode())
 			return;
 		if (MesquiteWindow.checkDoomed(this))
 			return;

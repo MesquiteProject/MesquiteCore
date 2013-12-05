@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
- Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+ Version 2.74, October 2010.
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -43,8 +43,6 @@ public class CommandChecker {
 	boolean accumulateMode = false;
 
 	boolean includeParameters = true;
-	
-	boolean warnIfNoResponse = true;
 
 	boolean LIMode = false;
 
@@ -64,15 +62,12 @@ public class CommandChecker {
 	MesquiteFile file = null;
 
 	public static CommandChecker defaultChecker;
-	public static CommandChecker quietDefaultChecker;
 
 	static CommandChecker defaultSkipChecker;
 	static {
 		registeredClasses = new Vector();
 		representingClasses = new Vector();
 		defaultChecker = new CommandChecker();
-		quietDefaultChecker = new CommandChecker();
-		quietDefaultChecker.warnIfNoResponse = false;
 		defaultSkipChecker = new CommandChecker();
 		defaultSkipChecker.skip = true;
 		defaultSkipChecker.accumulateMode = true;

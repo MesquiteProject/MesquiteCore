@@ -1,5 +1,5 @@
-/* Mesquite source code, Treefarm package.  Copyright 1997-2011 W. Maddison, D. Maddison and P. Midford. 
-Version 2.75, September 2011.
+/* Mesquite source code, Treefarm package.  Copyright 1997-2010 W. Maddison, D. Maddison and P. Midford. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -54,48 +54,10 @@ public class BLfromDivergenceTimes extends BranchLengthsAltererMult {
 		return depth;
 	}
 	/*.................................................................................................................*/
-	public double cleanInversions(int node, AdjustableTree tree, MesquiteBoolean clean) {
-		if (!clean.isUnassigned() && !clean.getValue())
-			return 0;
-		double depth = tree.getBranchLength(node);
-		if (tree.nodeIsTerminal(node)){
-			if (!MesquiteDouble.isCombinable(depth))
-				depth = 0;
-			return depth;
-		}
-		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d) && (clean.getValue() || clean.isUnassigned()); d = tree.nextSisterOfNode(d)) {
-			double daughterDepth = cleanInversions(d, tree, clean);
-			boolean 	inverted = MesquiteDouble.isCombinable(daughterDepth) && MesquiteDouble.isCombinable(depth) && daughterDepth>depth;
-			boolean missing = MesquiteDouble.isCombinable(daughterDepth) && !MesquiteDouble.isCombinable(depth);
-
-			if (inverted || missing){
-					if (clean.isUnassigned()){
-						if (!MesquiteThread.isScripting()){
-							if (AlertDialog.query(containerOfModule(), "Clean up divergences?", "This tree has inverted divergence times (with a daughter node older than a parent node) or missing divergence times.  Do you want to interpret branch lengths with these problems cleaned up, if possible?", "Clean Up", "Don't Clean Up"))
-								clean.setValue(true);
-							else
-								clean.setValue(false);
-						}
-					}
-					if (!clean.isUnassigned() && !clean.getValue())
-						return 0;
-					tree.setBranchLength(node, daughterDepth, false);
-					depth = daughterDepth;
-				}
-
-
-		}
-		return depth;
-	}
-	/*.................................................................................................................*/
 	//Should be overridden; when previous version is deleted in future, this will be abstract.  returns whether successfully transformed.
 	public boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
 		if (tree == null)
 			return false;
-		MesquiteBoolean clean = new MesquiteBoolean(true);
-		clean.setToUnassigned();
-		
-		cleanInversions(tree.getRoot(), tree, clean);
 
 		visitNodes(tree.getRoot(), tree);
 

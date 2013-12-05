@@ -50,7 +50,7 @@
 		<key>MainClass</key>
 		<string>mesquite.Mesquite</string>
         <key>VMOptions</key>
-        <string>-Xmx1000m -Xss4m -Djava.library.path=lib  -Djri.ignore.ule="yes" </string>
+        <string>-Xmx1000m -Xss4m -Djava.library.path=lib  -Djri.ignore.ule="yes"    -Dapple.awt.graphics.UseQuartz=true</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>

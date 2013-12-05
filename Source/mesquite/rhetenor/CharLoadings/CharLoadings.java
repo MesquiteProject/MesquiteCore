@@ -1,5 +1,5 @@
-/* Mesquite source code (Rhetenor package).  Copyright 1997-2011 E. Dyreson and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code (Rhetenor package).  Copyright 1997-2010 E. Dyreson and W. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -66,7 +66,6 @@ public class CharLoadings extends CharacterLoadings {
 	public  void calculateNumber(CharacterDistribution charStates, MesquiteNumber result, MesquiteString resultString) {
     	 	if (result==null || ord == null || charStates == null)
     	 		return;
-    	 	
     	   	clearResultAndLastResult(result);
     	   	double[][] loads = ord.getEigenvectors();
     	 	if (loads==null){

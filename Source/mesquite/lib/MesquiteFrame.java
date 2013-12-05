@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -154,7 +154,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (which == frontWindow) {
 			try {
 			super.setMenuBar(mbar);
-			which.repaintInfoBar();
 			}
 			catch(Exception e){
 			}
@@ -237,6 +236,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	/*.................................................................................................................*/
 	public void addPage(MesquiteWindow w, int where){
 
+
 		w.inParent();
 
 		w.outerContents.setBackground(ColorTheme.getInterfaceElement());
@@ -246,19 +246,19 @@ public class MesquiteFrame extends Frame implements Commandable {
 		String id = Integer.toString(w.getID());
 		if (where == MAIN){
 			main.add(w.outerContents, id);
-			mainLayout.addLayoutComponent(w.getOuterContentsArea(), id);
+			mainLayout.addLayoutComponent(w.outerContents, id);
 			w.setTileLocation(MAIN);
 		}
 		else if (where == POPTILE){
 			poptile.add(w.outerContents, id);
-			poptileLayout.addLayoutComponent(w.getOuterContentsArea(), id);
+			poptileLayout.addLayoutComponent(w.outerContents, id);
 			w.setTileLocation(POPTILE);
 		}
 		else if (where == RESOURCES){
 			resourcesWidth = defaultResourcesWidth;
 			resources.add(w.outerContents, id);
 			projectWindow = w;
-			resourcesLayout.addLayoutComponent(w.getOuterContentsArea(), id);
+			resourcesLayout.addLayoutComponent(w.outerContents, id);
 			w.setTileLocation(RESOURCES);
 			w.setMinimized(resourcesClosedWhenMinimized);
 		}
@@ -484,7 +484,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 			}
 		}
 		else {
-			 w.poppedOut = true;
 			MesquiteFrame parentFrame = new MesquiteFrame(false, backgroundColor);
 			parentFrame.setOwnerModule(ownerModule);
 			Menu fM = new MesquiteMenu("File");
@@ -508,10 +507,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 			 parentFrame.addPage(w); 
 			 parentFrame.setVisible(makeVisible);
-				MesquiteModule mb = w.getOwnerModule();
-				if (mb != null){
-					mb.resetContainingMenuBar();
-				}
 		}
 
 	}
@@ -535,10 +530,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 			addPage(w);
 			setVisible(w, true);
 			w.setParentFrame(this);
-			MesquiteModule mb = w.getOwnerModule();
-			if (mb != null){
-				mb.resetContainingMenuBar();
-			}
 			w.poppedOut = false;
 		}
 		resetSizes(true);
@@ -776,7 +767,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void setWindowSize(MesquiteWindow ww,int width, int height, boolean expandOnly) {
-		
 		Insets insets = getInsets();
 		storeInsets(insets);
 		boolean adjustWidthOnly = !MesquiteInteger.isCombinable(height);
@@ -845,12 +835,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void resetSizes(boolean resizeContainedWindows){
-		resetSizes(resizeContainedWindows, false);
-	}
-	/*.................................................................................................................*/
-	public void resetSizes(boolean resizeContainedWindows, boolean force){
 		Insets insets = getInsets();
-		if (!force && (getBounds().width != savedFullW || getBounds().height != savedFullH)){
+		if (getBounds().width != savedFullW || getBounds().height != savedFullH){
 		}
 		else if (oldInsetTop!=insets.top || oldInsetBottom !=insets.bottom || oldInsetRight!= insets.right || oldInsetLeft != insets.left) {
 

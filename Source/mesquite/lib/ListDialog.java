@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 2001-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 2001-2010 D. Maddison and W. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -500,7 +500,6 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 			}
 			else if (result>=0 && result<vector.size()) {
 				id.dispose();
-				MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + ((Listable)vector.elementAt(result)).getName());
 				return (Listable)vector.elementAt(result);
 			}
 			else {
@@ -524,10 +523,8 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		int result = io.getValue();
 		if (io.isUnassigned())
 			return null;
-		if (result>=0 && result<vector.size()){
-			MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + ((Listable)vector.elementAt(result)).getName());
+		if (result>=0 && result<vector.size())
 			return (Listable)vector.elementAt(result);
-		}
 		else return null;
 	}
 	public static Listable[] queryListMultiple(MesquiteWindow parent, String title, String message, String helpString, ListableVector vector, boolean[] selected) {
@@ -581,10 +578,8 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		int result = io.getValue();
 		if (io.isUnassigned())
 			return MesquiteInteger.unassigned;
-		if (result>=0 && result<objects.length){ ///ERROR here it's returning item in original list even if prioritized!!!!!!!!!!
-			MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + objects[result].getName());
+		if (result>=0 && result<objects.length) ///ERROR here it's returning item in original list even if prioritized!!!!!!!!!!
 			return result;
-		}
 		else return MesquiteInteger.unassigned;
 	}
 	public static Listable queryModuleList(MesquiteModule employer, String title, String message, String helpString, Listable[] objects, boolean prioritize, Class priorityClass, int current) {
@@ -598,10 +593,8 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		int result = io.getValue();
 		if (io.isUnassigned())
 			return null;
-		if (result>=0 && result<objects.length){ ///ERROR here it's returning item in original list even if prioritized!!!!!!!!!!
-			MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + objects[result].getName());
+		if (result>=0 && result<objects.length) ///ERROR here it's returning item in original list even if prioritized!!!!!!!!!!
 			return objects[result];
-		}
 		else return null;
 	}
 	public static Listable queryList(MesquiteWindow parent, String title, String message, String helpString, Listable[] objects, boolean prioritize, Class priorityClass, int current) {
@@ -614,10 +607,8 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		int result = io.getValue();
 		if (io.isUnassigned())
 			return null;
-		if (result>=0 && result<objects.length){ ///ERROR here it's returning item in original list even if prioritized!!!!!!!!!!
-			MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + objects[result].getName());
+		if (result>=0 && result<objects.length) ///ERROR here it's returning item in original list even if prioritized!!!!!!!!!!
 			return objects[result];
-		}
 		else return null;
 	}
 	public static Listable queryList(MesquiteWindow parent, String title, String message, String helpString, Listable[] objects, int current) {
@@ -630,10 +621,8 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		int result = io.getValue();
 		if (io.isUnassigned())
 			return null;
-		if (result>=0 && result<objects.length){
-				MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + objects[result].getName());
+		if (result>=0 && result<objects.length)
 			return objects[result];
-		}
 		else return null;
 	}
 	public static int queryList(MesquiteWindow parent, String title, String message, String helpString, Context[] contexts, int current, boolean doShow) {
@@ -678,8 +667,6 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		ListDialog id = new ListDialog(parent, title, message, true,helpString, names, io, null,true, false, okButton, cancelButton);
 		id.setVisible(true);
 		id.dispose();
-		if (io.isCombinable() && io.getValue()>=0 && io.getValue()<names.length)
-			MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + names[io.getValue()]);
 		return io.getValue();
 	}
 	public static int queryList(MesquiteWindow parent, String title, String message, String helpString, String[] names, int current) {
@@ -689,8 +676,6 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		ListDialog id = new ListDialog(parent, title, message, true,helpString, names, io, null,true, false);
 		id.setVisible(true);
 		id.dispose();
-		if (io.isCombinable() && io.getValue()>=0 && io.getValue()<names.length)
-			MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + names[io.getValue()]);
 		return io.getValue();
 	}
 	public static String queryList(MesquiteWindow parent, String title, String message, String helpString, Class dutyClass, Object condition, MesquiteModule prospectiveEmployer) {
@@ -703,10 +688,8 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		id.dispose();
 		if (io.isUnassigned())
 			return null;
-		if (io.getValue()>=0){
-			MesquiteTrunk.mesquiteTrunk.logln("Chosen: " + names[io.getValue()].getName());
+		if (io.getValue()>=0)
 			return names[io.getValue()].getName();
-		}
 		else
 			return null;
 	}

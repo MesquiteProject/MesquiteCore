@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -208,8 +208,8 @@ public class Installer extends MesquiteInit {
 			buff.append("\t</installationReceipt>\n");
 		}
 		buff.append("\n</mesquite>");
-		MesquiteFile.createDirectory(getInstallationSettingsPath() );  //Debugg.println : this is a problem if user doesn't have write permission
-		MesquiteFile.putFileContents(getInstallationSettingsPath() + "receipts.xml", buff.toString(), true, false);
+		MesquiteFile.createDirectory(getInstallationSettingsPath() );
+		MesquiteFile.putFileContents(getInstallationSettingsPath() + "receipts.xml", buff.toString(), true);
 	}
 
 	/*.................................................................................................................*/

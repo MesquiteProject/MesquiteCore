@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -138,8 +138,6 @@ public class SPRRearranger extends TreeSwapper {
 			return numInTree-numInClade;
 	}
 	/* TODO: currently this only works if baseNode = root */
-	//  Bad things (e.g. thread death) can happen if baseNode != tree.getRoot(). J.C. Oliver 2013.
-	/** baseNode <strong>must</strong> be the root of {@code tree}.*/
 	public long numberOfRearrangements(AdjustableTree tree, int baseNode) {
 		nodeIsRoot = baseNode == tree.getRoot();
 		MesquiteLong counter = new MesquiteLong(0); 

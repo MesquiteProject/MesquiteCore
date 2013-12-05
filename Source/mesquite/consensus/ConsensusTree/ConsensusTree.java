@@ -1,5 +1,5 @@
-/* Mesquite source code, Treefarm package.  Copyright 1997-2011 W. Maddison, D. Maddison and P. Midford. 
-Version 2.75, September 2011.
+/* Mesquite source code, Treefarm package.  Copyright 1997-2010 W. Maddison, D. Maddison and P. Midford. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -83,18 +83,6 @@ public class ConsensusTree extends TreeSource {
 			return temp;
 		}
 		else if (checker.compare(this.getClass(), "Sets the number of trees", "[number of trees]", commandName, "assignNumTrees")) {
-			//Changed so numTreesAssigned updated if queryNumTrees is called (previous version [see below] did not update numTreesAssigned)
-			//J.C. Oliver Nov.20.2013
-			int newNum = MesquiteInteger.fromFirstToken(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newNum) || newNum < 0){
-				newNum = queryNumTrees();
-			}
-			if(newNum > 0){
-				numTreesAssigned = newNum;
-				assigned = true;
-				parametersChanged();
-			}
-			/*Old way:
 			int newNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newNum)){
 				queryNumTrees();
@@ -104,7 +92,6 @@ public class ConsensusTree extends TreeSource {
 				assigned = true;
 			}
 			parametersChanged();
-			*/
 		}
 		else
 			if (checker.compare(this.getClass(), "Sets the module doing a consensus", "[name of module]", commandName, "setConsenser")) {
@@ -194,16 +181,15 @@ public class ConsensusTree extends TreeSource {
 						log(".");
 				}
 			}
-			logln("Trees consensed");
 			//if (count>0)
 				tree = iConsenser.getConsensus();
 				if (tree instanceof MesquiteTree)
-					((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
+					((MesquiteTree)tree).setName("Consensus tree of " + count + " trees from " + treeSource.getNameAndParameters());
 		}
 		else {
 			tree = consenser.consense(trees);
 			if (tree instanceof MesquiteTree)
-				((MesquiteTree)tree).setName(consenser.getName() + " from " + treeSource.getNameAndParameters());
+				((MesquiteTree)tree).setName("Consensus tree from " + treeSource.getNameAndParameters());
 		}
 		logln("");
 
@@ -216,11 +202,11 @@ public class ConsensusTree extends TreeSource {
 
 	/*.................................................................................................................*/
 	public String getTreeNameString(Taxa taxa, int itree) {
-		return consenser.getName() + " from " + treeSource.getNameAndParameters();
+		return "Consensus tree from " + treeSource.getNameAndParameters();
 	}
 	/*.................................................................................................................*/
 	public String getParameters() {
-		return consenser.getName() + " of trees from " + treeSource.getName();
+		return"Consensus tree of trees from " + treeSource.getName();
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -239,8 +225,8 @@ public class ConsensusTree extends TreeSource {
 			parametersChanged();
 		}
 		else {
-			startTree =  0;
 			parametersChanged();
+			startTree =  0;
 		}
 	}
 

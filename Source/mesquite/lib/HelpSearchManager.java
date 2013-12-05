@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 2001-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 2001-2010 D. Maddison and W. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -231,8 +231,6 @@ public class HelpSearchManager implements Commandable {
 				int end = loc + 90;
 				if (end >= page.contents.length())
 					end =page.contents.length()-1;
-				if (end<loc)
-					end = loc;
 				String excerpt = page.contents.substring(loc, end);
 				results += "<li><img src =\"" + MesquiteFile.massageFilePathToURL(MesquiteModule.getRootImageDirectoryPath() + "mesquiteIcon16.gif") + "\">&nbsp;<a href = \"" + arefStart +page.path + "\">" + page.title + "</a> ..." + excerpt + "... </li>";
 			}
@@ -1066,7 +1064,7 @@ class HSWindow extends MesquiteHTMLWindow implements SystemWindow {
 	public HSWindow(MesquiteModule module, MesquiteCommand linkTouchedCommand, String assignedTitle, boolean showInfoBar) {
 		super(module, linkTouchedCommand, assignedTitle, showInfoBar);
 	}
-	public boolean permitViewMode(){
+	public boolean showInfoTabs(){
 		return false;
 	}
 }

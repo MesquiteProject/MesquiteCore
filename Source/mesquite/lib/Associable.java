@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -131,78 +131,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return sT;
 		sT += "<li>Associated: <ul>" + s + "</ul></li>";
 		return sT;
-	}
-	public String toString(int part){
-		String s = "";
-		String add = "";
-		if (bits == null && longs == null && doubles == null && objects == null)
-			return s;
-		if (bits!=null) {
-			for (int i=0; i<bits.size(); i++) {
-				Bits b = (Bits)bits.elementAt(i);
-				s += add + "Bit \"" + b.getName()+ "\": ";	
-				if (((Bits)b).isBitOn(part))
-					s += " ON" ;
-				else
-					s += " OFF";
-				add = "; ";
-			}
-		}
-		if (longs!=null) {
-			for (int i=0; i<longs.size(); i++) {
-				Object obj = longs.elementAt(i);
-				LongArray b = (LongArray)longs.elementAt(i);
-				s += add + "\"" + b.getName()+ "\": " + b.getValue(part);	
-				add = "; ";
-			}
-		}
-		if (doubles!=null){
-			for (int i=0; i<doubles.size(); i++) {
-				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				s += add + "\"" + b.getName()+ "\": " + b.getValue(part);	
-				add = "; ";
-			}
-		}
-		if (objects!=null) {
-			for (int i=0; i<objects.size(); i++) {
-				boolean changeAdd = true;
-				Object obja = objects.elementAt(i);
-				if (obja instanceof ObjectArray){
-					Object obj = ((ObjectArray)obja).getValue(part);
-					if (obj instanceof MesquiteString){
-						MesquiteString b = (MesquiteString)obj;
-						s += add + "\"" + b.getName()+ "\": " + b.getValue();	
-					}
-					else if (obj instanceof Listable){
-						Listable b = (Listable)obj;
-						s += add + "Object \"" + b.getName()+ "\"" + "  " + obj.getClass().getName();	
-					}
-					else if (obj instanceof String){
-						s += add + ((ObjectArray)obja).getName() + ": " + obj;	
-					}
-					else if (obj != null)
-						s += add +  "Object of class " + obj.getClass().getName();	
-					else
-						changeAdd = false;
-				}
-				else if (obja instanceof MesquiteString){
-					MesquiteString b = (MesquiteString)obja;
-					s += add + "\"" + b.getName()+ "\": " + b.getValue();	
-				}
-				else if (obja instanceof Listable){
-					Listable b = (Listable)obja;
-					s += add + "Object \"" + b.getName()+ "\"" + "  " + obja.getClass().getName();	
-				}
-				else if (obja instanceof String){
-					s += add + "String: " + obja + add;	
-				}
-				else 
-					s += add + "Object of class " + obja.getClass().getName();	
-				if (changeAdd)
-					add = "; ";
-			}
-		}
-		return s + ".  ";
 	}
 	public void equalizeParts(Associable other, int otherPart, int part){
 		if (other==null || part >= getNumberOfParts() || otherPart >= other.getNumberOfParts())
@@ -836,11 +764,9 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		r += " previousOrder " + previousOrder + "\n";
 		return r;
 	}
-	public static long totalPartsAdded = 0;
 	public boolean addParts(int starting, int num){
 		if (num==0)
 			return false;
-		totalPartsAdded+=num;
 		if (starting<0) starting = -1;
 		if (starting>numParts) starting = numParts;
 
@@ -1184,6 +1110,27 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		int nextNotSelected = selected.nextBit(firstSelected+1,false);  // first one, after the block, that is not selected
 		if (nextNotSelected>0) {
 			return (selected.nextBit(nextNotSelected+1,true)==-1);  //no more have been found
+		}
+		return true;
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are selected parts that form a contiguous selection.  VERY SLOW.  */
+	public boolean contiguousSelectionOld() {
+		if (!anySelected())
+			return false;
+		for (int i = 0; i<getNumberOfParts(); i++) {
+			if (selected.isBitOn(i)) {  //it's on, so now look for the next one off
+				for (int j = i+1; j<getNumberOfParts(); j++) {
+					if (!selected.isBitOn(j)) {  // once we've found one that's off, let's look for one that is on
+						for (int k = j+1; k<getNumberOfParts(); k++) {
+							if (selected.isBitOn(k)) {
+								return false;
+							}
+						}
+					}
+				}
+
+			}
 		}
 		return true;
 	}
@@ -1597,8 +1544,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
 	public void setAssociatedObject(NameReference nRef, int index, Object value, boolean setAsBetween){
-		if (value instanceof String && value != null && ((String)value).equals(""))  // a filter so a blank string is not saved
-			value = null;
 		if (objects!=null && nRef!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);

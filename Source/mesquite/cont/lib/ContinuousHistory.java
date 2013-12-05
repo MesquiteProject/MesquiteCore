@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -113,7 +113,7 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 		}
 	}
 	/*..........................................ContinuousHistory................*/
-	public void calcMinMaxStates(Tree tree, int node) {
+	private void calcMinMaxStates(Tree tree, int node) {
 		for (int i=0; i<getNumItems(); i++) {
 			double s=getState(node, i); 
 			maxState = MesquiteDouble.maximum(maxState, s);
@@ -122,14 +122,7 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			calcMinMaxStates(tree, d);
 	}
-	/*..........................................................*/
-	public double getMinState(){
-		return minState;
-	}
-	/*..........................................................*/
-	public double getMaxState(){
-		return maxState;
-	}
+
 	/*..........................................ContinuousHistory................*/
 	/** Must be called before a tree is shaded.  Goes through all nodes to find states present, to set
 	minima and maxima. */
@@ -158,14 +151,14 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 	}
 
 	/*..........................................  ContinuousHistory  ..................................................*/
-	public double getBinBoundary(int i, MesquiteColorTable colorTable){  //the boundary after bin i
+	public double getBinBoundary(int i, MesquiteColorTable colorTable){
 
 		int numBinBoundaries = 10;
 		double[] binBoundaries = colorTable.getPreferredBinBoundaries();
 		if (binBoundaries != null)
 			numBinBoundaries = binBoundaries.length;
 		else
-			return minState + (i+1)*(maxState-minState)/numBinBoundaries;
+			return minState + (i-1)*(maxState-minState)/numBinBoundaries;
 
 
 		double localMin, localMax;

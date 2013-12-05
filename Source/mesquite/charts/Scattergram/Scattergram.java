@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -44,7 +44,7 @@ public class Scattergram extends DrawChart {
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(ScattergramAssistantA.class, getName() + " can optionally display extra information (such as regression lines).",
-				"You can request such extra information under the Analysis submenu of the Chart menu of a Scattergram.");
+		"You can request such extra information under the Analysis submenu of the Chart menu of a Scattergram.");
 	}
 	/*.................................................................................................................*/
 	Vector charters;
@@ -1496,43 +1496,36 @@ class ScattergramCharter extends Charter {
 				g.drawLine(firstX, firstY, lastX, lastY);
 		}
 		if (showSpots){
-			boolean doSelected = false;
-			boolean someAreSelected= chart.getSelected().anyBitsOn();
-			for (int pass = 0; (pass<=1 && someAreSelected) || (pass<1); pass++){ // if any are selected, do two passes, first unselected ones, second selected ones so they sit on top.
-				for (int i= 0; i<chart.getNumPoints(); i++) {
-					if (getSuspendDrawing())
-						return;
-					if (!chart.getXArray().isUnassigned(i) && !chart.getYArray().isUnassigned(i)) {
-						if (!someAreSelected || (someAreSelected && doSelected && chart.getSelected().isBitOn(i)) || (someAreSelected && !doSelected && !chart.getSelected().isBitOn(i))){
-							chart.getXArray().placeValue(i, valueX);
-							chart.getYArray().placeValue(i, valueY);
-							int xPixel = xToPixel(valueX.getDoubleValue(), chart); //margin+valueX.setWithinBounds(chart.getAxisMinimumX(), chart.getAxisMaximumX(), coreWidth)-markerWidth/2;
-							int yPixel = yToPixel(valueY.getDoubleValue(), chart); //fieldHeight-margin-valueY.setWithinBounds(chart.getAxisMinimumY(), chart.getAxisMaximumY(), coreHeight)-markerHeight/2;
-							if (!chart.isMinimumXConstrained() && !chart.isMaximumXConstrained()) {
-								if (xPixel < 0 || xPixel > chart.getField().getBounds().width && problem == null)
-									problem = "x " + valueX + " pixel " + xPixel + " field width " + chart.getField().getBounds().width + " axis Max " + chart.getAxisMaximumX();
-							}
-							if (!chart.isMinimumYConstrained() && !chart.isMaximumYConstrained()) {
-								if (yPixel < 0 || yPixel > chart.getField().getBounds().height && problem == null)
-									problem = "y " + valueY + " pixel " + yPixel + " field height " + chart.getField().getBounds().height+ " axis Max " + chart.getAxisMaximumY();
-							}
-							g.setColor(getPointColor(chart, i));
-							int markerW;
-							int markerH;
-							markerW = markerWidth;
-							markerH = markerHeight;
-							if (useCircle){
-								g.fillOval(xPixel - markerWidth/2, yPixel - markerWidth/2, markerWidth, markerHeight);
-								g.setColor(getPointFrameColor(chart, i));
-								g.drawOval(xPixel - markerWidth/2, yPixel - markerWidth/2, markerWidth, markerHeight);
-							}
-							else {
-								g.fillRect(xPixel - markerWidth/2, yPixel - markerWidth/2, markerWidth+1, markerHeight+1);
-							}
-						}
+			for (int i= 0; i<chart.getNumPoints(); i++) {
+				if (getSuspendDrawing())
+					return;
+				if (!chart.getXArray().isUnassigned(i) && !chart.getYArray().isUnassigned(i)) {
+					chart.getXArray().placeValue(i, valueX);
+					chart.getYArray().placeValue(i, valueY);
+					int xPixel = xToPixel(valueX.getDoubleValue(), chart); //margin+valueX.setWithinBounds(chart.getAxisMinimumX(), chart.getAxisMaximumX(), coreWidth)-markerWidth/2;
+					int yPixel = yToPixel(valueY.getDoubleValue(), chart); //fieldHeight-margin-valueY.setWithinBounds(chart.getAxisMinimumY(), chart.getAxisMaximumY(), coreHeight)-markerHeight/2;
+					if (!chart.isMinimumXConstrained() && !chart.isMaximumXConstrained()) {
+						if (xPixel < 0 || xPixel > chart.getField().getBounds().width && problem == null)
+							problem = "x " + valueX + " pixel " + xPixel + " field width " + chart.getField().getBounds().width + " axis Max " + chart.getAxisMaximumX();
+					}
+					if (!chart.isMinimumYConstrained() && !chart.isMaximumYConstrained()) {
+						if (yPixel < 0 || yPixel > chart.getField().getBounds().height && problem == null)
+							problem = "y " + valueY + " pixel " + yPixel + " field height " + chart.getField().getBounds().height+ " axis Max " + chart.getAxisMaximumY();
+					}
+					g.setColor(getPointColor(chart, i));
+					int markerW;
+					int markerH;
+					markerW = markerWidth;
+					markerH = markerHeight;
+					if (useCircle){
+						g.fillOval(xPixel - markerWidth/2, yPixel - markerWidth/2, markerWidth, markerHeight);
+						g.setColor(getPointFrameColor(chart, i));
+						g.drawOval(xPixel - markerWidth/2, yPixel - markerWidth/2, markerWidth, markerHeight);
+					}
+					else {
+						g.fillRect(xPixel - markerWidth/2, yPixel - markerWidth/2, markerWidth+1, markerHeight+1);
 					}
 				}
-				doSelected = true;
 			}
 		}
 		if (problem != null)

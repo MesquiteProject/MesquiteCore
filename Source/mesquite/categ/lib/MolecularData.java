@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -17,7 +17,6 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
-import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.DefaultReference;
 import mesquite.lib.characters.ModelSet;
 import mesquite.lib.duties.*;
@@ -30,7 +29,7 @@ import java.util.*;
 public class MolecularData extends CategoricalData {
 	GenCodeModelSet genCodeModelSet =null;
 	public static final NameReference reversedRef = NameReference.getNameReference("reversed"); //long: tInfo, data(ch); MesquiteInteger: data(cells)
-	public static final NameReference genBankNumberRef = NameReference.getNameReference("genBankNumber");//String: tInfo
+	public static final NameReference genBankNumberRef = NameReference.getNameReference("genBankNumber");//long: tInfo
 
 	/*vectors, one for each taxon, of 3D Points indicating inversions in sequence
 	x = site marking left boundary of inverted region
@@ -361,7 +360,7 @@ public class MolecularData extends CategoricalData {
 			//Wayne: should see if there is a matching element and simply flip it!
 			inversions[it].addElement(new Mesquite3DIntPoint(icStart, icEnd, 0));
 		}
-		if ((icStart==0 && icEnd==getNumChars()-1) || (!anyApplicableBefore(icStart, it)&& !anyApplicableAfter(icEnd,it))) {
+		if (icStart==0 && icEnd==getNumChars()-1) {
 			Associable tInfo = getTaxaInfo(true);
 			if (tInfo!=null) {
 				boolean prevValue = tInfo.getAssociatedBit(reversedRef,it);
@@ -488,44 +487,6 @@ public class MolecularData extends CategoricalData {
 			}
 		}
 	}
-	
- 	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
-		Taxa taxa = getTaxa();
-
-		int numTaxa = taxa.getNumTaxa();
-		int numChars = getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
-		boolean isProtein = this instanceof ProteinData;
-
-		int counter = 1;
-		if (hasDataForTaxon(it)){
-				counter = 1;
-				outputBuffer.append(">");
-				outputBuffer.append(taxa.getTaxonName(it));
-				outputBuffer.append(StringUtil.lineEnding());
-				for (int ic = 0; ic<numChars; ic++) {
-						int currentSize = outputBuffer.length();
-						boolean wroteMoreThanOneSymbol = false;
-						if (isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && isMultistateOrUncertainty(ic, it)))
-							outputBuffer.append(getUnassignedSymbol());
-						else if (includeGaps || (!isInapplicable(ic,it))) {
-							statesIntoStringBuffer(ic, it, outputBuffer, false);
-							wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-							counter ++;
-							if ((counter % 50 == 1) && (counter > 1)) {    // modulo
-								outputBuffer.append(StringUtil.lineEnding());
-							}
-						}
-						if (wroteMoreThanOneSymbol) {
-							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-							return null;
-						}
-					
-				}
-				outputBuffer.append(StringUtil.lineEnding());
-			}
-		return outputBuffer;
- 	}
 }
 
 

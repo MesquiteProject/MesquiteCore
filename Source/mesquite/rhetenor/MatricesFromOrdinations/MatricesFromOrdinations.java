@@ -1,5 +1,5 @@
-/* Mesquite source code (Rhetenor package).  Copyright 1997-2011 E. Dyreson and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code (Rhetenor package).  Copyright 1997-2010 E. Dyreson and W. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -162,15 +162,6 @@ public class MatricesFromOrdinations extends CharMatrixSource {
 	}
 
 	boolean firstWarning = true;
-	private String allCombinable(MContinuousStates originalMatrix, int item){
-		for (int ic = 0; ic < originalMatrix.getNumChars(); ic++)
-			for (int it = 0; it<originalMatrix.getNumNodes(); it++) {
-				if (!MesquiteDouble.isCombinable(originalMatrix.getState(ic, it, item))){
-					return "State " + MesquiteDouble.toString(originalMatrix.getState(ic, it, item)) + " taxon " + (it+1) + " character " + (ic+1);
-				}
-			}
-		return null;
-	}
 	/*.................................................................................................................*/
 	private MCharactersDistribution getM(Taxa taxa, Tree tree){
 		if (dataTask==null)
@@ -206,11 +197,9 @@ public class MatricesFromOrdinations extends CharMatrixSource {
 		}
 		else
 			itemString = "";
-		String response = allCombinable(originalMatrix, currentItem);
-		if (response != null) {
-			if (firstWarning) {
-				discreetAlert( "Matrix to be ordinated has missing data or other illegal values.  Ordination cannot be performed. " + response);
-			}
+		if (!originalMatrix.allCombinable(currentItem)) {
+			if (firstWarning)
+				discreetAlert( "Matrix to be ordinated has missing data or other illegal values.  Ordination cannot be performed.");
 			firstWarning = false;
 			return null;
 		}

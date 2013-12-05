@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -93,10 +93,10 @@ public class Taxa extends FileElement {
 			if (name != null && StringUtil.foundIgnoreCase(name, s)) {
 				list += "<li>Taxon " + (it + 1) + ": <strong>"
 				+ StringUtil.protectForXML(name)
-				+ "</strong>. <a href=\"touchTaxon:" + it + " "
+				+ "</strong>. <a href=\"selectTaxon:" + it + " "
 				+ getID() + "\">Touch taxon</a></li>";
 				numFound++;
-				fc = "touchTaxon:" + it + " " + getID();
+				fc = "selectTaxon:" + it + " " + getID();
 			}
 		}
 		if (commandResult != null && numFound == 1)
@@ -404,10 +404,9 @@ public class Taxa extends FileElement {
 				if (taxonName.equals(taxon[i].getName()))
 					return i;
 			}
-			for (int i = 0; i < numTaxa; i++) {
+			for (int i = 0; i < numTaxa; i++)
 				if (taxonName.equalsIgnoreCase(taxon[i].getName()))
 					return i;
-			}
 		}
 		for (int i = 0; i < numTaxa; i++){  //check UniqueID's
 			String uniqueID = taxon[i].getUniqueID();
@@ -543,7 +542,7 @@ public class Taxa extends FileElement {
 			if (count == 1)
 				candidate = base;
 			else
-				candidate = base + "." + count;  //Debugg.println  Is addition of period OK?
+				candidate = base + count;
 			if (whichTaxonNumber(candidate) < 0)
 				return candidate;
 			count++;
@@ -677,32 +676,22 @@ public class Taxa extends FileElement {
 	}
 	/*.................................................................................................................*/
 	public String hasDuplicateNames (){
-		return hasDuplicateNames(false);
-	}
-	/*.................................................................................................................*/
-	public String hasDuplicateNames (boolean report){
-		StringBuffer list = new StringBuffer();
-		int numTaxa = getNumTaxa();
-		if (report && numTaxa>1000)  MesquiteMessage.println("");
-		for (int i=0; i<numTaxa; i++){
+		String list = "";
+		for (int i=0; i<getNumTaxa(); i++){
 			String name = getTaxonName(i);
 			long iChecksum = taxon[i].getNameChecksum();
-			if (report && numTaxa>1000 && i % 500 == 0) 
-				MesquiteMessage.print(".");
-			for (int j=i+1; j<numTaxa; j++){
+			for (int j=i+1; j<getNumTaxa(); j++){
 				long jChecksum = taxon[j].getNameChecksum();
 				if (iChecksum == jChecksum){
 					String name2 = getTaxonName(j);
-					if (name!=null && name.equalsIgnoreCase(name2)) {
-						list.append(" [" + i + "-" + j + "] " + name);
-						MesquiteMessage.println(name);
-					}
+					if (name!=null && name.equalsIgnoreCase(name2)) 
+						list += " [" + i + "-" + j + "] " + name;
 				}
 			}
 		}
 		if (list.length() == 0)
 			return null;
-		return list.toString();
+		return list;
 	}
 	/* ................................................................................................................. */
 	/**
@@ -1068,11 +1057,6 @@ public class Taxa extends FileElement {
 		setDirty(true);
 		taxon[it] = t;
 		notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
-	}
-
-	/* ................................................................................................................. */
-	public static String getStandardizedTaxonName(int it) {
-		return "t"+it;
 	}
 
 	/* ................................................................................................................. */

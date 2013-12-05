@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -44,7 +44,7 @@ public class ProjectTreeWindow extends MesquiteWindow implements SystemWindow {
 			//browser.setBackground(ColorDistribution.projectLight[getColorScheme()]);
 			//checking for memory leaks 
 			browser.setRootNode(MesquiteTrunk.mesquiteTrunk.getProjectList());
-			searchStrip = new HelpSearchStrip(this, false);
+			searchStrip = new HelpSearchStrip(this);
 			addToWindow(searchStrip);
 			searchStrip.setBounds(4, getHeight()-searchHeight, getWidth()-4, searchHeight);
 			searchStrip.setVisible(true);
@@ -58,9 +58,6 @@ public class ProjectTreeWindow extends MesquiteWindow implements SystemWindow {
 		resetTitle();
 	}
 	public boolean showInfoTabs(){
-		return false;
-	}
-	public boolean permitViewMode(){
 		return false;
 	}
 	public void repaintSearchStrip(){

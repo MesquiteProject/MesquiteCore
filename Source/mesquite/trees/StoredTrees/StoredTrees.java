@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -25,15 +25,13 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	TreeVector lastUsedTreeBlock = null;
 	TreesManager manager;
 	Taxa preferredTaxa =null;
-
 	int currentListNumber = MesquiteInteger.unassigned;
 	MesquiteSubmenuSpec listSubmenu;
 	MesquiteBoolean weightsEnabled, useWeights;
 	MesquiteMenuItemSpec weightsItem;
 	MesquiteFile currentSourceFile = null;
 	MesquiteString blockName;
-	ListableVector managerVectorOfTreeBlocks = null;
-	long currentTreeBlockID = MesquiteLong.unassigned;
+	long tbID = -1;
 	boolean laxMode = false; //mode where default tree given without complaint, empty trees block prepared automatically on store
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -50,14 +48,12 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (!laxMode && manager.getNumberTreeBlocks(preferredTaxa)==0 && !MesquiteThread.isScripting()) {
 			return sorry("No stored trees are available.");
 		}
-		managerVectorOfTreeBlocks = manager.getTreeBlockVector();
-		managerVectorOfTreeBlocks.addListener(this);
 
 		//can leave a hint in terms of an id of a treeblock to use
 		String whichBlock = MesquiteThread.retrieveAndDeleteHint(this);
 		long wB = MesquiteLong.fromString(whichBlock);
 		if (MesquiteLong.isCombinable(wB)){
-			currentTreeBlockID = wB;
+			tbID = wB;
 		}
 		listSubmenu = addSubmenu(null, "Tree Block (" + whatIsMyPurpose() + ")", makeCommand("setTreeBlockInt",  this), manager.getTreeBlockVector());
 		blockName = new MesquiteString();
@@ -75,7 +71,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public boolean isPrerelease(){
 		return false;
 	}
-	
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -104,7 +99,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				currentTreeBlock.addListener(this);
 				lastUsedTreeBlock = currentTreeBlock;
 				currentListNumber = whichList;
-				currentTreeBlockID = currentTreeBlock.getID();
 				currentSourceFile = currentTreeBlock.getFile();
 				parametersChanged();
 				return currentTreeBlock;
@@ -120,26 +114,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					lastUsedTreeBlock.removeListener(this);
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
-				currentTreeBlockID = currentTreeBlock.getID();
-				currentSourceFile = currentTreeBlock.getFile();
-				lastUsedTreeBlock = currentTreeBlock;
-				currentListNumber = whichList;
-				parametersChanged();
-				return currentTreeBlock;
-			}
-		}
-		else if (checker.compare(this.getClass(),  "Sets which block of trees to use", "[runtime ID]", commandName, "setTreeBlockByID")) {
-			int whichList = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
-			if (MesquiteInteger.isCombinable(whichList)) {
-				TreeVector tr = manager.getTreeBlockByID(whichList);
-				if (tr == null || (preferredTaxa != null && tr.getTaxa() != preferredTaxa))
-					return null;
-				currentTreeBlock = tr;
-				if (lastUsedTreeBlock !=null) 
-					lastUsedTreeBlock.removeListener(this);
-				blockName.setValue(currentTreeBlock.getName());
-				currentTreeBlock.addListener(this);
-				currentTreeBlockID = currentTreeBlock.getID();
 				currentSourceFile = currentTreeBlock.getFile();
 				lastUsedTreeBlock = currentTreeBlock;
 				currentListNumber = whichList;
@@ -188,7 +162,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (preferredTaxa != null){
 			preferredTaxa.removeListener(this);
 		}
-		managerVectorOfTreeBlocks.removeListener(this);
 
 		super.endJob();
 	}
@@ -196,6 +169,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	long previous = -1;
 	/** passes which object changed*/
 	public void changed(Object caller, Object obj, Notification notification){
+
 		int code = Notification.getCode(notification);
 		if (notification != null && notification.getNotificationNumber() == previous)
 			return;
@@ -203,34 +177,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			previous = notification.getNotificationNumber();
 		if (doomed)
 			return;
-
 		if (code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_DELETED && code != MesquiteListener.ANNOTATION_ADDED && !(obj instanceof TreeVector && code == MesquiteListener.SELECTION_CHANGED)) {
-			if (obj == managerVectorOfTreeBlocks){
-				if (code == MesquiteListener.PARTS_MOVED){
-					if (MesquiteLong.isCombinable(currentTreeBlockID))
-						currentListNumber = indexOfTreeBlockWithID(preferredTaxa, currentTreeBlockID);
-				}
-				else if (code == MesquiteListener.PARTS_DELETED){
-					if (currentTreeBlock != null && managerVectorOfTreeBlocks.indexOf(currentTreeBlock)<0){
-						int index = indexOfTreeBlockWithID(preferredTaxa, currentTreeBlockID);
-						if (index>0)
-							currentListNumber = index;
-						else if (MesquiteLong.isCombinable(currentTreeBlockID)){
-							discreetAlert( "The current tree block used by Stored Trees (for " + getEmployer().getName() + ") has apparently been deleted.  You might be asked to select another tree block, or this might force use of default trees, and also may yield error messages when rereading the file.");
-							if (currentTreeBlock != null)
-								currentTreeBlock.removeListener(this);
-							currentTreeBlock = null;
-							lastUsedTreeBlock = null;
-							currentListNumber = MesquiteInteger.unassigned;
-							currentTreeBlockID = MesquiteLong.unassigned;
-							parametersChanged(notification);
-						}
-					}
-				}
-
-
-			}
-			else if (obj instanceof Taxa){
+			if (obj instanceof Taxa){
 				boolean respond = (code==MesquiteListener.ITEMS_ADDED || code==MesquiteListener.PARTS_CHANGED || code==MesquiteListener.PARTS_ADDED || code==MesquiteListener.PARTS_DELETED || code==MesquiteListener.PARTS_MOVED);
 				if (respond)
 					parametersChanged(notification);
@@ -242,7 +190,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					currentTreeBlock = null;
 					lastUsedTreeBlock = null;
 					currentListNumber = MesquiteInteger.unassigned;
-					currentTreeBlockID = MesquiteLong.unassigned;
 				}
 				parametersChanged(notification);
 			}
@@ -346,15 +293,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	}
 	boolean first = true;
 
-	int indexOfTreeBlockWithID(Taxa taxa, long treeBlockID){
-		int nt = manager.getNumberTreeBlocks(taxa);
-		for (int i=0; i< nt; i++){
-			TreeVector tv =manager.getTreeBlock(taxa, i);
-			if (tv.getID() == treeBlockID)
-				return i;
-		}
-		return -1;
-	}
 	/*.................................................................................................................*/
 	private int checkTreeBlock(Taxa taxa){
 		if (taxa == null) {
@@ -366,17 +304,15 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			return -1;
 		resetMenu(taxa);
 		int nt = manager.getNumberTreeBlocks(taxa);
-		if (MesquiteLong.isCombinable(currentTreeBlockID))
-			currentListNumber = indexOfTreeBlockWithID(taxa, currentTreeBlockID);
 		if ((!MesquiteInteger.isCombinable(currentListNumber) || currentListNumber>=nt || currentListNumber<0)) {
 			if (MesquiteThread.isScripting())
 				currentListNumber = 0;
 			else if (nt<=1)
 				currentListNumber = 0;
-			else if (MesquiteLong.isCombinable(currentTreeBlockID)){
+			else if (tbID >=0){
 				for (int i=0; i< nt; i++){
 					TreeVector tv =manager.getTreeBlock(taxa, i);
-					if (tv.getID() == currentTreeBlockID)
+					if (tv.getID() == tbID)
 						currentListNumber = i;
 				}
 			}
@@ -389,6 +325,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					currentListNumber = 0;
 			}
 		}
+
 		int code = 0;
 		if (lastUsedTreeBlock == null || lastUsedTreeBlock.getTaxa() == null || !lastUsedTreeBlock.getTaxa().equals(taxa)) {
 			currentTreeBlock =  manager.getTreeBlock(taxa, currentListNumber);
@@ -396,9 +333,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		else
 			currentTreeBlock = lastUsedTreeBlock;
-
-		if (currentTreeBlock != null)
-			currentTreeBlockID = currentTreeBlock.getID();
 
 		if (blockName != null && currentTreeBlock != null)
 			blockName.setValue(currentTreeBlock.getName());
@@ -418,9 +352,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		currentSourceFile = currentTreeBlock.getFile();
 		laxMode = false;
 		return code;
-	}
-	public boolean showing(TreeVector v){
-		return v == currentTreeBlock;
 	}
 	boolean warned = false;
 	/*.................................................................................................................*/
@@ -601,14 +532,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public String getName() {
 		return "Stored Trees";
 	}
-	/*.................................................................................................................*/
-	public String getNameAndParameters() {
-		if (currentTreeBlock ==null)
-			return "Stored Trees";
-
-					
-		return "Trees stored in block \"" + currentTreeBlock.getName() + "\"";
-	}
 
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -623,7 +546,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public String getParameters() {
 		if (currentTreeBlock==null) {
 			if (getProject()== null)
-				return "";
+				return "Stored trees";
 			else
 				return "Trees stored in " + getProject().getName();
 		}

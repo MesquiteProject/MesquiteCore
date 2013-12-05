@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -38,9 +38,7 @@ public class DataPainter extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
-			MesquiteCommand dragCommand = MesquiteModule.makeCommand("fillDragCell",  this);
-			dragCommand.setSuppressLogging(true);
-			fillTool = new TableTool(this, "fill", MesquiteModule.getRootImageDirectoryPath(), "bucket.gif", 13,14,"Fill with missing data", "This tool fills selected cells with text.  The text to be used can be determined by touching the tool button and selecting the menu item, or by using the dropper tool.", MesquiteModule.makeCommand("fillTouchCell",  this) , dragCommand, MesquiteModule.makeCommand("fillDropCell",  this));
+			fillTool = new TableTool(this, "fill", MesquiteModule.getRootImageDirectoryPath(), "bucket.gif", 13,14,"Fill with missing data", "This tool fills selected cells with text.  The text to be used can be determined by touching the tool button and selecting the menu item, or by using the dropper tool.", MesquiteModule.makeCommand("fillTouchCell",  this) , MesquiteModule.makeCommand("fillDragCell",  this), MesquiteModule.makeCommand("fillDropCell",  this));
 			fillTool.setOptionsCommand(MesquiteModule.makeCommand("fillOptions",  this));
 			dropperTool = new TableTool(this, "dropper", MesquiteModule.getRootImageDirectoryPath(),"dropper.gif", 1,14,"Copy states", "This tool fills the paint bucket with the text in the cell touched on", MesquiteModule.makeCommand("dropperTouchCell",  this) , null, null);
 			((MesquiteWindow)containerOfModule()).addTool(fillTool);
@@ -216,7 +214,7 @@ public class DataPainter extends DataWindowAssistantI {
 
 		}
 		else if (checker.compare(this.getClass(), "Sets the paint states to those in the cell touched", "[column touched] [row touched]", commandName, "dropperTouchCell")) {
-			if (table!=null && data !=null && fillTool != null && dropperTool != null){
+			if (table!=null && data !=null){
 				if (data.getEditorInhibition()){
 					discreetAlert( "This matrix is marked as locked against editing.");
 					return null;
@@ -230,8 +228,7 @@ public class DataPainter extends DataWindowAssistantI {
 				fillState = data.getCharacterState(fillState,column, row);
 				fillTool.setDescription("Fill with \"" + fillState.toString()+ " \"");
 				dropperTool.setDescription("Copy state (current: " + fillState.toString() + ")");
-				if (((MesquiteWindow)containerOfModule()) != null)
-					((MesquiteWindow)containerOfModule()).toolTextChanged();
+				((MesquiteWindow)containerOfModule()).toolTextChanged();
 			}
 		}
 

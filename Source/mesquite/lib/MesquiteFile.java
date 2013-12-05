@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -85,9 +85,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static String fileSeparator;
 	public static boolean appendToLog = false;
 	private byte[] lineEndingBytes;
-
-	public ListableVector taxaNameTranslationTable = new ListableVector();
-	public ListableVector characterDataNameTranslationTable = new ListableVector();
 
 	private Author previousSaver;
 
@@ -499,52 +496,48 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		catch(InterruptedException e){}
 		boolean dirty = false;
-		try {
-			if (fileElements!=null){
-				project.incrementProjectWindowSuppression();
-				int numElements = fileElements.size();
-				Enumeration eD = fileElements.elements();
-				int numDisposed=0;
-				int numToDispose = calcNumToDispose();
-				boolean didOne;
-				while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
-					didOne=false;
-					numToDispose = calcNumToDispose();
-					if (numToDispose>0){
-						Enumeration eDd = fileElements.elements();
-						while (eDd.hasMoreElements()) {
-							FileElement elem = (FileElement)eDd.nextElement();
-							elem.projectClosing = projectClosing;
-							if (projectClosing)
-								elem.incrementNotifySuppress();
-							elem.dispose();
-							if (!elem.isDoomed())
-								MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
-							numDisposed++;
-							project.removeFileElement(elem);
-							numToDispose--;
-							didOne = true;
-						}
-						if (!didOne)
-							MesquiteMessage.warnProgrammer("oops, cycle none disposed");
+		if (fileElements!=null){
+			project.incrementProjectWindowSuppression();
+			int numElements = fileElements.size();
+			Enumeration eD = fileElements.elements();
+			int numDisposed=0;
+			int numToDispose = calcNumToDispose();
+			boolean didOne;
+			while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
+				didOne=false;
+				numToDispose = calcNumToDispose();
+				if (numToDispose>0){
+					Enumeration eDd = fileElements.elements();
+					while (eDd.hasMoreElements()) {
+						FileElement elem = (FileElement)eDd.nextElement();
+						elem.projectClosing = projectClosing;
+						if (projectClosing)
+							elem.incrementNotifySuppress();
+						elem.dispose();
+						if (!elem.isDoomed())
+							MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
+						numDisposed++;
+						project.removeFileElement(elem);
+						numToDispose--;
+						didOne = true;
 					}
+					if (!didOne)
+						MesquiteMessage.warnProgrammer("oops, cycle none disposed");
 				}
-				if (numElements!= numDisposed && fileElements.size()>0) {
-					MesquiteMessage.warnProgrammer("Number elements disposed (" + numDisposed + ") not same as number reference (" + numElements + ") in file " + getName());
-					Enumeration eDe = fileElements.elements();
-					while (eDe.hasMoreElements()) {
-						FileElement elem = (FileElement)eDe.nextElement();
-						if (!elem.isDisposed())
-							MesquiteMessage.warnProgrammer("    Not disposed: " + elem.getName() + " of class " + elem.getClass().getName());
-					}
-				}
-				fileElements.removeAllElements(false);
-				fileElements.dispose();
-				fileElements = null;
-				project.decrementProjectWindowSuppression();
 			}
-		}
-		catch (NullPointerException e){
+			if (numElements!= numDisposed && fileElements.size()>0) {
+				MesquiteMessage.warnProgrammer("Number elements disposed (" + numDisposed + ") not same as number reference (" + numElements + ") in file " + getName());
+				Enumeration eDe = fileElements.elements();
+				while (eDe.hasMoreElements()) {
+					FileElement elem = (FileElement)eDe.nextElement();
+					if (!elem.isDisposed())
+						MesquiteMessage.warnProgrammer("    Not disposed: " + elem.getName() + " of class " + elem.getClass().getName());
+				}
+			}
+			fileElements.removeAllElements(false);
+			fileElements.dispose();
+			fileElements = null;
+			project.decrementProjectWindowSuppression();
 		}
 		project.removeFile(this);
 		closed = true;
@@ -2130,21 +2123,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Checks to see if path leads to a file that is not a directory*/
 	public static String getAvailableFileName(String directoryName, String fileNameBase) {
 		if (!fileExists(directoryName,fileNameBase))
-			return fileNameBase;
+				return fileNameBase;
 		int counter=1;
 		while (fileExists(directoryName,fileNameBase+counter))
 			counter++;
 		return fileNameBase+counter;
-	}	
-	/*.................................................................................................................*/
-	/** Checks to see if path leads to a file that is not a directory*/
-	public static String getAvailableFileName(String directoryName, String fileNameBase, String fileNameExtension) {
-		if (!fileExists(directoryName,fileNameBase+fileNameExtension))
-			return fileNameBase+fileNameExtension;
-		int counter=1;
-		while (fileExists(directoryName,fileNameBase+counter+fileNameExtension))
-			counter++;
-		return fileNameBase+counter+fileNameExtension;
 	}	
 	/*.................................................................................................................*/
 	/** Checks to see if can write to a file*/
@@ -2256,76 +2239,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				catch( IOException e ) {MesquiteModule.mesquiteTrunk.discreetAlert(MesquiteThread.isScripting(),"IO exception" );}
 			}
 		 */
-		}
-
-		return null;
-	}
-	/*.................................................................................................................*/
-	private static String[] addStringToEnd(String[] strings, String s) {
-		boolean stringAdded = false;
-		for (int i = 0; i<strings.length; i++) {  //go through strings until you get to the first null one
-			if (strings[i]==null) {
-				strings[i]=s;
-				stringAdded = true;
-				return strings;
-			}
-		}
-		if (!stringAdded) {  //need to move them down and add it at the end
-			for (int i = 0; i<strings.length-1;i++) {
-				strings[i]=strings[i+1];
-			}
-			strings[strings.length-1]=s;
-		}
-		return strings;
-	}
-	/*.................................................................................................................*/
-	private static boolean someStrings(String[] strings) {
-		for (int i = 0; i<strings.length-1;i++) {  //go through strings until you get to the first null one
-			if (strings[i]!=null) {
-				return true;
-			}
-		}
-		return false;
-	}
-	/*.................................................................................................................*/
-	private static String concatStrings(String[] strings) {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i<strings.length;i++) {  //go through strings until you get to the first null one
-			if (strings[i]!=null) {
-				sb.append(strings[i]+StringUtil.lineEnding());
-			}
-		}
-		return sb.toString();
-	}
-	/*.................................................................................................................*/
-	/** Returns the last line of the file.  path is relative to the root of the package heirarchy; i.e. for file in
-	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
-	public static String getFileLastContents(String relativePath, int numLines) {
-		DataInputStream stream;
-		StringBuffer sBb= new StringBuffer(100);
-		String lastS = null;
-		String[] lastLines = new String[numLines];
-		MesquiteInteger remnant = new MesquiteInteger(-1);
-		if (!MesquiteTrunk.isApplet()) {
-			try {
-				stream = new DataInputStream(new FileInputStream(relativePath));
-				String newS = " ";
-				while (newS != null) {
-					lastLines = addStringToEnd(lastLines, newS);
-					newS =readLine(stream, sBb, remnant);
-				}
-				
-				if (someStrings(lastLines)) {
-					//Debugg.println("\n" + concatStrings(lastLines));
-					return concatStrings(lastLines);
-				}
-			}
-			catch( FileNotFoundException e ) {
-			} 
-			catch( IOException e ) {
-			}
-		}
-		else {
 		}
 
 		return null;
@@ -2524,7 +2437,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		try {
 			File fin = new File(relativePath);
 			FileInputStream fis = new FileInputStream(fin);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis, "UTF-8"));  // why not ISO-8859-1? or something newer???
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
 			int length = (int)fin.length();  //2. 71 restricting to maxCharacters
 			if (maxCharacters>=0 && length>maxCharacters)
 				length = maxCharacters;
@@ -2726,7 +2639,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		} 
 		catch (Exception e) {
 			if (warnIfProblem){
-				MesquiteMessage.warnProgrammer("IO Exception found (6q) : " + writePath + "   " + e.getMessage() );
+				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + writePath + "   " + e.getMessage() );
 				e.printStackTrace();
 			}
 			if (progIndicator!=null)
@@ -2906,12 +2819,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Places to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
 	public synchronized static void putFileContents(String relativePath, String contents, boolean ascii) {
-		putFileContents(relativePath, contents, ascii, true);
-	}
-	/*.................................................................................................................*/
-	/** Places to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in
-	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
-	public synchronized static void putFileContents(String relativePath, String contents, boolean ascii, boolean warn) {
 		if (contents==null || relativePath==null)
 			return;
 		if (w)
@@ -3116,8 +3023,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}
 	/** Returns the explanation (e.g., footnote plus additional information) of this file */
 	public String getExplanation(){
-		if (project == null)
-			return "No project";
 		String extra = "";
 		extra += "This file has " + project.getNumberTaxas(this)+ " block(s) of taxa and  " + project.getNumberCharMatrices(this)+ " character matrices.\n";
 		if (project.getNumberLinkedFiles()>1)

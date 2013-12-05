@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -137,37 +137,18 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			return null;
 		return ((OuterContentArea)c).ownerWindow;
 	}
-	boolean fontSet = false;
-	public void setFont(Font f){
-		super.setFont(f);
-	}
-	public void setPanelFont(Font f){
-		fontSet = true;
-		super.setFont(f);
-	}
-	public boolean fontExplicitlySet(){
-		return fontSet;
-	}
-	public void update(Graphics paramGraphics){
-		if (paramGraphics instanceof Graphics2D){
-			Graphics2D g = (Graphics2D) paramGraphics;
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,  //Debugg.println to recover antialiasing in OS X java 1.7 and in Windows.  1.7 broke text rotation when not antialiased on OSX.
-					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		}
-		super.update(paramGraphics);
-	}
-	public Graphics getGraphics(){
-		Graphics gg = super.getGraphics();
-		if (gg instanceof Graphics2D){
+	 boolean fontSet = false;
+	 public void setFont(Font f){
+		 super.setFont(f);
+	 }
+	 public void setPanelFont(Font f){
+		 fontSet = true;
+		 super.setFont(f);
+	 }
+	 public boolean fontExplicitlySet(){
+		 return fontSet;
+	 }
 
-			Graphics2D g = (Graphics2D)gg;
-			if (g ==null)
-				return null;
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		}
-		return gg;
-	}
 	/*.................................................................................................................*/
 	public boolean canAutoscrollHorizontally() {
 		return autoscrollDirection == AUTOSCROLLBOTH || autoscrollDirection == AUTOSCROLLHORIZONTAL;
@@ -319,7 +300,7 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			MesquiteException.lastLocation = 101;
 			requestFocus();
 			mouseDown(modifiers, clickCount, when, x, y, getT());
-
+			
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse up", "[modifiers as integer][x][y]", commandName, "mouseUp")) {

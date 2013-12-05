@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -59,11 +59,7 @@ public class TreeOptimizer {
 				progIndicator.setSecondaryMessage("Adding taxon " + (taxon +1));
 				progIndicator.toFront();
 		}
-			//dJCOs if a Combinable tree score is never encountered, will attempt to graft onto node 0. July.23.2012
-//			int whichNode = 0;
-			/*Assures grafting will take place on a node that exists in initialTree*/
-			int whichNode = initialTree.getRoot();
-			//dJCOe. July.23.2012
+			int whichNode = 0;
 			MesquiteNumber value = new MesquiteNumber();
 			int numNodes = initialTree.getNumNodeSpaces();
 			for (int node = 0; node<numNodes && (progIndicator==null || !progIndicator.isAborted()); node++) {   
@@ -110,7 +106,7 @@ public class TreeOptimizer {
 
 		MesquiteString rs =new MesquiteString("");
 		double oldLength= tempTree.getBranchLength(node);
-		double newLength = adjustBranch(tempTree,node, rng);//TODO: tempTree is not modified by adjustBranch, so is the new branch length even evaluated?
+		double newLength = adjustBranch(tempTree,node, rng);
 		numberTask.calculateNumber(tempTree, tempScore, rs);
 
 
@@ -360,7 +356,6 @@ public class TreeOptimizer {
 		}
 		swapTree.standardize(node,true, false);
 		tree.setToClone(swapTree);
-		swapTree.dispose();
 		if (notify && tree instanceof Listened && !liveUpdates) {
 			((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 		}

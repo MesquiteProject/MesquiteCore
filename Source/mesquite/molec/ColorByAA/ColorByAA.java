@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -92,30 +92,9 @@ public class ColorByAA extends DataWindowAssistantI implements CellColorer, Cell
 	public void viewChanged(){
 	}
 	public String getCellString(int ic, int it){
-
 		if (!isActive())
 			return null;
-		if (ic<0 || it<0)
-			return "Cells colored to show translated amino acids";
-		if (data == null)
-			return null;
-		else if (!data.isCoding(ic)) {
-			return "Cells colored to show translated amino acids";
-		}
-		else {
-			long s = data.getAminoAcid(ic,it,true);
-			if (!CategoricalState.isImpossible(s)) {
-				String st = "Translated amino acid: " + ProteinState.toString(s, false) + " (followed by ";
-				for (int i = ic+3; i<data.getNumChars() && i< ic+60; i+=3){
-					s = data.getAminoAcid(i, it, true);
-					st += ProteinState.toString(s, false);
-				}
-				return st + ")";
-			}
-			else {
-				return "Cells colored to show translated amino acids";
-			}
-		}
+		return "Colored to show translated amino acid";
 	}
 	ColorRecord[] legend;
 	/*.................................................................................................................*/

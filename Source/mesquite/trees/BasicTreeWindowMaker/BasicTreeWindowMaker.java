@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -36,54 +36,54 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TreeDisplayAssistantA.class, "A Tree Window displays trees, and can use various assistants to do analyses.",
-				"You can request this under the <strong>Analysis</strong> menu of the <strong>Tree Window.</strong>");
+		"You can request this under the <strong>Analysis</strong> menu of the <strong>Tree Window.</strong>");
 		e.setPriority(2);
 		e.setAsEntryPoint("newAssistant");
 		EmployeeNeed e111 = registerEmployeeNeed(TreeDisplayAssistantAO.class, "A Tree Window displays trees, and can use various assistants to do analyses.",
-				"You can request this under the <strong>Analysis (Other)</strong> submenu of the <strong>Tree Window.</strong>");
+		"You can request this under the <strong>Analysis (Other)</strong> submenu of the <strong>Tree Window.</strong>");
 		e111.setPriority(2);
 		e111.setAsEntryPoint("newAssistant");
 
 		EmployeeNeed e2 = registerEmployeeNeed(TreeDisplayAssistantD.class, "A Tree Window displays trees, and can use various assistants to modify the display.",
-				"You can request this under the <strong>Tree</strong> menu of the <strong>Tree Window.</strong>");
+		"You can request this under the <strong>Tree</strong> menu of the <strong>Tree Window.</strong>");
 		e2.setAsEntryPoint("newAssistant");
 
 
 		EmployeeNeed e3 = registerEmployeeNeed(TreeWindowAssistantA.class, "A Tree Window displays trees, and can use various assistants to do analyses.",
-				"You can request this under the <strong>Analysis</strong> menu of the <strong>Tree Window.</strong>");
+		"You can request this under the <strong>Analysis</strong> menu of the <strong>Tree Window.</strong>");
 		e3.setAsEntryPoint("newWindowAssistant");
 
 
 		EmployeeNeed e4 = registerEmployeeNeed(TreeWindowAssistantC.class, "A Tree Window displays trees, and can use various assistants to do analyses.",
-				"You can request this under the <strong>New Chart for Tree submenu of the Analysis</strong> menu of the <strong>Tree Window. </strong>");
+		"You can request this under the <strong>New Chart for Tree submenu of the Analysis</strong> menu of the <strong>Tree Window. </strong>");
 		e4.setAsEntryPoint("newWindowAssistant");
 
 
 		EmployeeNeed e5 = registerEmployeeNeed(TreeWindowAssistantN.class, "A Tree Window displays trees, and can use various assistants.",
-				"You can request this under the <strong>Tree</strong> menu of the <strong>Tree Window.</strong>");
+		"You can request this under the <strong>Tree</strong> menu of the <strong>Tree Window.</strong>");
 		e5.setAsEntryPoint("newWindowAssistant");
 
 
 
 		EmployeeNeed e6 = registerEmployeeNeed(TreeSource.class, "A Tree Window needs a source of trees.",
-				"You can request the source of trees when the Tree Window starts, or later using the Tree Source submenu of the Tree menu of the Tree Window.");
+		"You can request the source of trees when the Tree Window starts, or later using the Tree Source submenu of the Tree menu of the Tree Window.");
 		e6.setPriority(2);
 		e6.setAsEntryPoint("setTreeSource");
 		EmployeeNeed e20 = registerEmployeeNeed(TreeDisplayAssistantDI.class, "A Tree Window uses various assistants.",
-				"This is activated automatically.");
+		"This is activated automatically.");
 		EmployeeNeed e7 = registerEmployeeNeed(TreeDisplayAssistantI.class, "A Tree Window uses various assistants.",
-				"This is activated automatically.");
+		"This is activated automatically.");
 		EmployeeNeed e8 = registerEmployeeNeed(TreeWindowAssistantI.class, "A Tree Window uses various assistants.",
-				"This is activated automatically.");
+		"This is activated automatically.");
 		EmployeeNeed e9 = registerEmployeeNeed(DrawTreeCoordinator.class, "A Tree Window displays a tree drawn in various possible styles.",
-				"This is activated automatically.");
+		"This is activated automatically.");
 		e9.setPriority(2);
 		EmployeeNeed e10 = registerEmployeeNeed(TreeAlterer.class, "Trees can be altered within the Tree Window.",
-				"Tree altering methods are available in the Alter/Transform Tree submenu of the Tree menu of the Tree Window.<br>");
+		"Tree altering methods are available in the Alter/Transform Tree submenu of the Tree menu of the Tree Window.<br>");
 		e10.setAsEntryPoint("alterTree");
 		e10.setPriority(3);
 		EmployeeNeed e11 = registerEmployeeNeed(BranchLengthsAlterer.class, "The branch lengths of trees can be altered within the Tree Window.",
-				"Methods to alter branch lengths are available in the Alter/Transform Branch Lengths submenu of the Tree menu of the Tree Window.<br>");
+		"Methods to alter branch lengths are available in the Alter/Transform Branch Lengths submenu of the Tree menu of the Tree Window.<br>");
 		e11.setAsEntryPoint("alterBranchLengths");
 		e11.setPriority(3);
 
@@ -316,7 +316,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			if (basicTreeWindow != null)
 				return basicTreeWindow;
 			String tRef = parser.getFirstToken(arguments);
-
 			int setNumber = MesquiteInteger.fromString(tRef);
 			Taxa taxa = null;
 			if (!MesquiteInteger.isCombinable(setNumber)) {
@@ -453,7 +452,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return treeSourceTask;
 	}
 	/*.................................................................................................................*/
-	private void makeTreeWindow(Taxa taxa){
+	public void makeTreeWindow(Taxa taxa){
 		incrementMenuResetSuppression();
 		this.taxa = taxa;
 		treeSourceTask.setPreferredTaxa(taxa);
@@ -469,22 +468,18 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 		}
 		btw.sizeDisplay();
-		MesquiteMenuSpec aux = addAuxiliaryMenu("Analyze");
+
+		addMenuItem(MesquiteTrunk.analysisMenu, "-", null);
 		MesquiteCommand mC = makeCommand("newWindowAssistant",  basicTreeWindow);
-		MesquiteSubmenuSpec mms = addSubmenu(aux, "New Chart for Tree", mC); 
+		MesquiteSubmenuSpec mms = addSubmenu(MesquiteTrunk.analysisMenu, "New Chart for Tree", mC); 
 		mms.setZone(0);
 		mms.setList(TreeWindowAssistantC.class);
-		addMenuItem(aux, "-", null);
-		addModuleMenuItems( aux, makeCommand("newAssistant",  basicTreeWindow), TreeDisplayAssistantA.class);
-		addModuleMenuItems( aux, makeCommand("newWindowAssistant",  basicTreeWindow), TreeWindowAssistantA.class);
-		addMenuItem(aux, "-", null);
-		MesquiteSubmenuSpec mmsO = addSubmenu(aux, "Other Analyses with Tree", makeCommand("newWindowAssistant", basicTreeWindow)); 
+		addModuleMenuItems( MesquiteTrunk.analysisMenu, makeCommand("newAssistant",  basicTreeWindow), TreeDisplayAssistantA.class);
+		addModuleMenuItems( MesquiteTrunk.analysisMenu, makeCommand("newWindowAssistant",  basicTreeWindow), TreeWindowAssistantA.class);
+		MesquiteSubmenuSpec mmsO = addSubmenu(MesquiteTrunk.analysisMenu, "Other Analyses with Tree", makeCommand("newWindowAssistant", basicTreeWindow)); 
 		mmsO.setList(TreeWindowAssistantOA.class);
-		addMenuItem(aux, "-", null);
-		MesquiteSubmenuSpec mmis = addSubmenu(aux, "Visual Tree Analysis", makeCommand("setTreeDrawer",  treeDrawCoordTask));
-		mmis.setList(AnalyticalDrawTree.class);
-	//	addMenuItem(aux, "-", null);
-	//	addMenuItem(null, "Force Repaint", makeCommand("forceRepaint", basicTreeWindow));
+		addMenuItem(MesquiteTrunk.analysisMenu, "-", null);
+		addMenuItem(null, "Force Repaint", makeCommand("forceRepaint", basicTreeWindow));
 
 
 		if (!MesquiteThread.isScripting()) {
@@ -498,11 +493,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		getModuleWindow().setVisible(true);
 		basicTreeWindow.showTree();
 		getModuleWindow().toFront();
-	}
-	public Tree goToTreeNumber(int index){
-		if (basicTreeWindow == null)
-			return null;
-		return basicTreeWindow.goToTreeNumber(index);
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
@@ -782,7 +772,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		listButton.setButtonExplanation("Show List of Taxa window");
 		controlStrip.addButton(listButton);
 		MesquiteButton infoButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("toggleInfoPanel",  this), null, true, MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", 12, 16);
-		//infoBar.addExtraButton(MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", MesquiteModule.makeCommand("toggleInfoPanel",  this));
+		infoBar.addExtraButton(MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", MesquiteModule.makeCommand("toggleInfoPanel",  this));
 		infoButton.setUseWaitThread(false);
 		infoButton.setShowBackground(false);
 		infoButton.setButtonExplanation("Show Tree Info Panel");
@@ -1067,9 +1057,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			int y = td.y[treeDisplay.getTree().nodeOfTaxonNumber(i)];
 			int w = getTreePaneWidth();
 			int h = getTreePaneHeight();
-			setOrigin(x - w/2, y - h/2, true);
+			setOrigin(-x + w/2, -y + h/2, true);
 			treeDisplay.pleaseUpdate(true);
-			sizeDisplay();
 		}
 	}
 	/*.................................................................................................................*/
@@ -1835,8 +1824,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
-	
-	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hires a tree display assistant module", "[name of assistant module]", commandName, "newAssistant")) {
@@ -1864,17 +1851,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				return null;
 			String s = treeDisplay.getTableVersion();
 			ownerModule.logln(s);
-		}
-		else if (checker.compare(this.getClass(), "Shows taxon", "[id of taxa block][number of taxon]", commandName, "showTaxon")) {
-			pos.setValue(0);
-			long whichTaxaBlock = MesquiteInteger.fromString(arguments, pos);
-			if (whichTaxaBlock != taxa.getID())
-				return null;
-			int which = MesquiteInteger.fromString(arguments, pos);
-			if (which >= 0 && which < taxa.getNumTaxa()){
-				makeTaxonVisible(which);
-			}
-			return null;
 		}
 		else if (checker.compare(this.getClass(), "Selects taxon", "[number of taxon]", commandName, "selectTaxon")) {
 			int which = MesquiteInteger.fromFirstToken(arguments, pos);
@@ -2938,11 +2914,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			g.setColor(Color.black);
 			if (GraphicsUtil.useXORMode(g, true)) {
 				g.setXORMode(Color.white);
-				try{
 				treeDisplay.fillTaxon(g, M);
-				}
-				catch (InternalError e){ //workaround to bug in Windows Java 1.7_45
-				}
 				g.setPaintMode();
 				g.setColor(Color.black);
 			}
@@ -2966,11 +2938,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			g.setColor(Color.black);
 			if (GraphicsUtil.useXORMode(g, true)) {
 				g.setXORMode(Color.white);
-				try{
 				treeDisplay.fillTaxon(g, highlightedTaxon);
-				}
-				catch (InternalError e){ //workaround to bug in Windows Java 1.7_45
-				}
 				g.setPaintMode();
 			}
 			highlightedTaxon=-1;
@@ -3123,13 +3091,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					InvertTaxon(g, nameFound);
 					notifyExtrasOfTaxonExit(g, wasHighlighted);
 					notifyExtrasOfTaxonEnter(g, nameFound);
-					setExplanation(" Taxon: " + taxa.getTaxonName(nameFound));
 				}
 			}
 			else if (nameFound!=-1) {
 				InvertTaxon(g, nameFound); 
 				notifyExtrasOfTaxonEnter(g, nameFound);
-				setExplanation(" Taxon: " + taxa.getTaxonName(nameFound));
 			}
 			else {
 				currentTreeTool.moved(x,y,tree,modifiers);
@@ -3581,7 +3547,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	private void treeChanged( boolean notifyContextListeners){ 
 		if (tree == null || previousTree == null || undoTree == null)
 			return;
-
+		
 		if (tree.upToDateWithTaxa() && previousTree.upToDateWithTaxa()){
 			canUndo = true;
 		}
@@ -3767,25 +3733,17 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	public void setTreeName(){
 		String treename;
 		if (treeEdited && treeSourceLocked()) {
-			if (tree!=null) {
+			if (tree!=null)
 				treename= tree.getName();
-			}
 			else
 				treename = "Untitled Tree";
 		}
 		else if (usingDefaultBush)
 			treename = "DEFAULT BUSH SHOWN BECAUSE TREE SOURCE NOT SUPPLYING TREE";
-		else {
-			if (tree != null && tree.hasName())
-				treename = tree.getName();
-			else
-				treename = treeSourceTask.getTreeNameString(taxa, MesquiteTree.toInternal(palette.paletteScroll.getCurrentValue())); 
-			if (treeSourceTask != null && !treeEdited){
-				String s = treeSourceTask.getNameAndParameters();
-				if (!StringUtil.blank(s))
-					treename +=  "   [" + s + "]";
-			}
-		}
+		else if (tree != null && tree.hasName())
+			treename = tree.getName();
+		else
+			treename = treeSourceTask.getTreeNameString(taxa, MesquiteTree.toInternal(palette.paletteScroll.getCurrentValue())); 
 
 		messagePanel.setMessage(treename);  
 		if (treeInfoPanel != null)
@@ -4646,8 +4604,6 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 			p.setTree(tree);
 	}
 	void setTree(Tree tree){
-		if (tree == null)
-			return;
 		this.tree = tree;
 		title = "Tree: " + tree.getName();
 		for (int i = 0; i<extras.size(); i++){

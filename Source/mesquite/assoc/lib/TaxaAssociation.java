@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
- Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+ Version 2.74, October 2010.
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -303,43 +303,6 @@ public class TaxaAssociation extends FileElement  {
 		for (int a=0;a<taxaA.getNumTaxa() ; a++){
 			for (int b=0;b<taxaB.getNumTaxa(); b++){
 				if (areAssociated(a,b) !=association.areAssociated(a,b))
-					return false;
-			}
-		}
-		return true;
-	}
-	/*.................................................................................................................*/
-	public boolean hasSamePattern(TaxaAssociation association){   //taxonA can differ
-		if (association==null)
-			return false;
-		Taxa otherA = association.getTaxa(0);
-		Taxa otherB = association.getTaxa(1);
-		
-		if (taxaA.getNumTaxa() != otherA.getNumTaxa() || taxaB.getNumTaxa() != otherB.getNumTaxa())
-			return false;
-		
-
-		int[] otherEquivalentToLocal = new int[otherA.getNumTaxa()];
-		for (int a=0; a<taxaA.getNumTaxa(); a++) {
-			boolean foundOne = false;
-			otherEquivalentToLocal[a]=a;  // default set it to be the same
-			for (int b=0;b<taxaB.getNumTaxa() && !foundOne; b++){
-				if (areAssociated(a,b)){ // find something that is in this bin in taxonA
-					//now see where it is in otherA
-					for (int c=0; c<otherA.getNumTaxa()&& !foundOne; c++) {
-						if (association.areAssociated(c, b)){  // here it is
-							otherEquivalentToLocal[a]=c;
-							foundOne=true;
-						}
-					}
-
-				}
-			}
-		}
-		
-		for (int a=0;a<taxaA.getNumTaxa() ; a++){
-			for (int b=0;b<taxaB.getNumTaxa(); b++){
-				if (areAssociated(a,b) !=association.areAssociated(otherEquivalentToLocal[a],b))
 					return false;
 			}
 		}

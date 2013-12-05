@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -801,24 +801,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return false;
 	}
 	/*-----------------------------------------*/
-	/** Returns number of terminal taxa in clade.*/
-	public  int numberOfNegativeTerminalsInClade(int node) {
-		if (!inBounds(node))
-			return 0;
-		if (nodeIsTerminal(node) && taxonNumberOfNode(node)<0)
-			return 1; //count node itself
-		else{
-			int count = 0;
-			for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
-				count += numberOfNegativeTerminalsInClade(d);
-			return count;
-		}
-	}
-	/*-----------------------------------------*/
-	public boolean isValid(){
-		return !isEmpty() && (numberOfNegativeTerminalsInClade(getRoot())<=0);
-	}
-	/*-----------------------------------------*/
 	public boolean isDefined(){
 		return exists;
 	}
@@ -937,44 +919,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				return MesquiteBoolean.TRUE;
 			}
 		}
-		else if (checker.compare(this.getClass(), "Set length of indicated branch", "[length][node number]", commandName, "setBranchLength")) {
-			pos.setValue(0);
-			double L = MesquiteDouble.fromString(arguments, pos);
-			int node = MesquiteInteger.fromString(arguments, pos);
-			if (MesquiteDouble.isCombinable(L) && MesquiteInteger.isCombinable(node) && nodeExists(node)) {
-				setBranchLength(node, L, false);
-				return MesquiteBoolean.TRUE;
-			}
-		}
-		else if (checker.compare(this.getClass(), "Set label of indicated branch", "[label][node number]", commandName, "setBranchLabel")) {
-			String name = ParseUtil.getFirstToken(arguments, pos);
-			int node = MesquiteInteger.fromString(arguments, pos);
-			if (MesquiteInteger.isCombinable(node) && nodeExists(node)) {
-				setNodeLabel(name, node);
-				return MesquiteBoolean.TRUE;
-			}
-		}
-		else if (checker.compare(this.getClass(), "Gets node number that corresponds to a taxon", "[taxon]", commandName, "getNodeOfTaxonNumber")) {
-			pos.setValue(0);
-			int tax1 = MesquiteInteger.fromString(arguments, pos);
-
-			if (MesquiteInteger.isCombinable(tax1)) {
-				int node1 = nodeOfTaxonNumber(tax1);
-				return new MesquiteInteger(node1);
-			}
-		}
-		else if (checker.compare(this.getClass(), "Gets node number that is MRCA of two taxa", "[taxon1][taxon2]", commandName, "getMRCAofTaxa")) {
-			pos.setValue(0);
-			int tax1 = MesquiteInteger.fromString(arguments, pos);
-			int tax2 = MesquiteInteger.fromString(arguments, pos);
-
-			if (MesquiteInteger.isCombinable(tax1) && MesquiteInteger.isCombinable(tax2)) {
-				int node1 = nodeOfTaxonNumber(tax1);
-				int node2 = nodeOfTaxonNumber(tax2);
-
-				return new MesquiteInteger(mrca(node1, node2));
-			}
-		}
 		else if (checker.compare(this.getClass(), "Sets all branch lengths of the tree to unassigned", null, commandName, "deassignAllBranchLengths")) {
 			for (int i=0; i<numNodeSpaces; i++)
 				if (nodeExists(i))
@@ -1078,12 +1022,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (nodeOfTaxon == null || taxa.getNumTaxa() != nodeOfTaxon.length){
 			nodeOfTaxon = new int[taxa.getNumTaxa()];
 		}
-		for (int i=1; i<nodeOfTaxon.length; i++)// Nov 2013 initialize
-				nodeOfTaxon[i] = -1;
-
 
 		for (int i=1; i<numNodeSpaces; i++)
-			if (nodeInTree(i) && taxonNumber[i]>=0 && taxonNumber[i]<taxa.getNumTaxa() ){  // Nov 2013 check if in tree
+			if (taxonNumber[i]>=0 && taxonNumber[i]<taxa.getNumTaxa() ){  //2. 72: a bit dangerous; don't check if in tree //&& nodeInTree(i)
 				nodeOfTaxon[taxonNumber[i]] = i;
 			}
 	}
@@ -1883,24 +1824,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				findTerm(d, n, ar, count);
 	}
 	/*-----------------------------------------*/
-	public void cleanTree(){
-		for (int i=0; i<firstDaughter.length; i++){	
-			if (!nodeInTree(i)){
-				firstDaughter[i]=0;
-				nextSister[i]=0;
-				mother[i]=0;
-				setTaxonNumber(i, -1);
-			}
-		}
-		firstDaughter[0]=-1;
-		nextSister[0]=-1;
-		mother[0]=-1;
-		setTaxonNumber(0, -1);
-		mother[subRoot] = -1;
-		mother[root] = subRoot;
-		firstDaughter[subRoot]=root;
-	}
-	/*-----------------------------------------*/
 	private boolean nodeWasFound;
 	private void findNodeInTree(int node, int sought){
 		if (node==sought)
@@ -2598,7 +2521,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if ("(".equals(c)){  //internal node
 			int sprouted = sproutDaughter(node, false);
 			int result = readClade(TreeDescription, sprouted,stringLoc, namer);
-			if (result == FAILED)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			if (result == FAILED)//¥¥¥¥¥¥¥¥
 				return FAILED;
 			c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma
 			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c) || "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
@@ -2634,7 +2557,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				if (result == CONTINUE)
 					sprouted = sproutDaughter(node, false);
 				result = readClade(TreeDescription, sprouted,stringLoc, namer);
-				if (result == FAILED) //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				if (result == FAILED) //¥¥¥¥¥¥¥¥
 					return FAILED;
 				c = ParseUtil.getToken(TreeDescription, stringLoc); //skip parens or next comma
 				if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c)|| "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
@@ -2672,25 +2595,18 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else {
 			int path = 0;
 			int taxonNumber = -1;
-			int fromWhichNamer = -1;
 			if (namer != null){
 				taxonNumber = namer.whichTaxonNumber(taxa, c);
-				fromWhichNamer = 1;
 			}
 			if (taxonNumber < 0){
 				if (treeVector !=null) {
 					taxonNumber = treeVector.whichTaxonNumber(c, permitTruncTaxNames && !permitTaxaBlockEnlargement); //use treeVector's translation table if one is available
-					fromWhichNamer = 2;
-					if (taxonNumber <0) {
+					if (taxonNumber <0)
 						taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
-						fromWhichNamer = 3;
-					}
 					path += 1;
 				}
-				else {  //if (taxonNumber == -1) {
+				else  //if (taxonNumber == -1) {
 					taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
-					fromWhichNamer = 4;
-				}
 
 			}
 			if (taxonNumber >=0){ //taxon successfully found
@@ -2713,13 +2629,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						String s = "";
 						if (permitTruncTaxNames)
 							s =" (This may have occured because tree reading is set to permit truncated taxon names -- see Defaults menu to turn this off.)"; 
-						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names interpreted as belonging to same taxon). [" + c + "] " +s + " " + TreeDescription);
+						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names interpreted as belonging to same taxon)." + s + " " + TreeDescription);
 						setParentOfNode(termN, motherOfNode(termN), false);
 						setParentOfNode(termN, motherOfNode(node), false);
 						return DONT_SPROUT; //don't continue up tree
 					}
 					else {//redundant
-						MesquiteMessage.warnUser("Redundant taxon or node name in tree  (" + c + ", taxon number " + taxonNumber + "; number from " + fromWhichNamer + " permitTruncTaxNames " + permitTruncTaxNames + "); attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
+						MesquiteMessage.warnUser("Redundant taxon or node name in tree description; attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
 						//snip last daughter added, as redundant
 						int prev = previousSisterOfNode(node);
 						if (prev>=0 && prev<nextSister.length)
@@ -2735,14 +2651,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						String s = "";
 						if (permitTruncTaxNames)
 							s =" (This may have occured because tree reading is set to permit truncated taxon names -- see Defaults menu to turn this off.)"; 
-						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names interpreted as belonging to same taxon). [" + c + "] " + s+ " " + TreeDescription);
+						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names interpreted as belonging to same taxon)." + s+ " " + TreeDescription);
 						setParentOfNode(labNode, motherOfNode(labNode), false);
 						setParentOfNode(labNode, motherOfNode(node), false);
 						//c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip internal node name
 						return DONT_SPROUT; //don't continue up tree
 					}
 					else {  //redundant
-						MesquiteMessage.warnUser("Redundant taxon or node name in tree description  (" + c + ", internal node); attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
+						MesquiteMessage.warnUser("Redundant taxon or node name in tree description; attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
 						//snip last daughter added, as redundant
 						int prev = previousSisterOfNode(node);
 						if (prev>=0 && prev<nextSister.length)
@@ -2787,20 +2703,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		try {
 			if (readClade(TreeDescription, node, stringLoc, namer) == FAILED){
 				if (lastUnrecognizedName != null)
-					MesquiteMessage.warnProgrammer("graft clade failed; taxon name unrecognized: " + lastUnrecognizedName);
+					MesquiteMessage.warnProgrammer("read clade failed; taxon name unrecognized: " + lastUnrecognizedName);
 				else
-					MesquiteMessage.printStackTrace("graft clade failed");
+					MesquiteMessage.printStackTrace("read clade failed");
 
-					
-				return false;
-			}
-			if (!checkTreeIntegrity(root)) {
-				MesquiteMessage.printStackTrace("graft clade failed (integrity check)");
 				return false;
 			}
 		}
 		catch (Throwable e){
-			MesquiteTrunk.mesquiteTrunk.logln("Problem grafting clade " + TreeDescription);
+			MesquiteTrunk.mesquiteTrunk.logln("Problem reading tree " + TreeDescription);
 
 			MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "Problem reading tree");
 			return false;
@@ -2904,28 +2815,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
 		return true;
-	}
-	/*-----------------------------------------*/
-	/** Sets the tree to be a default bush.*/
-	public void setToDefaultBush(Bits whichTaxa, boolean notify) {
-		int numTaxa = whichTaxa.numBitsOn();
-		if (numTaxa == 0)
-			return;
-		String temp = "(";
-		boolean first=true;
-		for (int it=0; it<whichTaxa.getSize(); it++) {
-			if (whichTaxa.isBitOn(it)){
-				if (first)
-					first=false;
-				else
-					temp+=",";
-				temp+=Integer.toString(Taxon.toExternal(it));
-			}
-		}
-		temp+=");";
-		readTree(temp);
-		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-		setName("Default Bush");
 	}
 	/*-----------------------------------------*/
 	/** Sets the tree to be a default bush.*/
@@ -4112,7 +4001,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			}
 			locked = false;
 
-			resetNodeOfTaxonNumbers();  //added Nov 2013
 			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 
 			return true;
@@ -4197,9 +4085,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Move branch so as to excise branchFrom from its current position, and attach it to branch beneath
 	node branchTo.  If successful, rename as given (to ensure renamed before notified).
 	Preserve heights indicates that height of descendants from ancestor is preserved.
-	Preserve proportion indicates how the branch lengths are distributed; if 0 then new branches are 0 length; 0.5 means the new branch is 
-	half the length of the shortest of the two branches from/to.  preserveProportion is <strong>only</strong> considered when {@code preserveHeights=true};
-	if {@code preserveHeights=false} the branch receiving the new branch is effectively split in half by the newly grafted branch.*/
+	Preserve proportion indicates how the branch lengths are distributed; if 0 then new branches are 0 length; 0.5 means the new branch is half the length of the shortest of the two branches from/to */
 	public synchronized boolean moveBranch(int branchFrom, int branchTo, boolean notify, boolean preserveHeights, double preserveProportion) {
 		if (branchFrom==branchTo)
 			return false;
@@ -4277,7 +4163,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			nextSister[node] = 0;
 			nextSister[newN] = youngerSister;
 			firstDaughter[newN]= node;
-			taxonNumber[newN] = -1;  //Nov 2013
 			mother[node]=newN;
 			mother[newN]=mom;
 			if (node==root)
@@ -4693,10 +4578,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return false;
 
 	}
-
+	
 	/*-----------------------------------------*/
 	void collapseRootwardUnbranched(int node){
-
+		
 		if (nodeIsUnbranchedInternal(node)){
 			collapseRootwardUnbranched(firstDaughterOfNode(node));
 		}
@@ -4721,10 +4606,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				return false;
 			}
 			//delete all unbranched descendants of root
-			collapseRootwardUnbranched(root);
-			if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
-				return true;
-
+				collapseRootwardUnbranched(root);
+				if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
+					return true;
+	
 
 			if (descendantOf(atNode, cladeRoot)) { 
 				int anc = atNode;
@@ -4841,21 +4726,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Outputs to console the mother, firstDaughter and nextSister storage */
-	public void dump (){
+	private void dump (){
 		System.out.println("------------------------------------->");
 		System.out.println("tree: " +writeTree());
 		System.out.println("root: " + root);
-		System.out.println("numNodeSpaces: " + numNodeSpaces);
-		System.out.println("nodes not indicated have label[i] == null && mother[i] == 0 && firstDaughter[i] != 0 && nextSister[i] == 0 && taxonNumber[i] == -1");
-		for (int i=0; i<numNodeSpaces; i++) {
-		if (label != null){
-			if (label[i] != null && mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
-				System.out.println("node " + i + " (label "+ label[i] + " ) (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
-		}
-		else
-			if (mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
-				System.out.println("node " + i + " (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
-			
+		for (int i=1; i<numNodeSpaces; i++) {
+			System.out.println("node " + i + " (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ")");
 		}
 		System.out.println("<-------------------------------------");
 	}
@@ -5821,26 +5697,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	public void setFileIndex(int index){
 		fileIndex =index;
-	}
-	/*_________________________________________________*/
-	public boolean ancestorHasNameReference(NameReference nameRef, int node) {
-		if (!nodeExists(node))
-			return false;
-		if (getAssociatedBit(nameRef, motherOfNode(node)))
-			return true;
-		if (getRoot() == node || getSubRoot() == node)
-			return false;
-		return ancestorHasNameReference(nameRef, motherOfNode(node));
-	}
-	/*_________________________________________________*/
-	public int ancestorWithNameReference(NameReference nameRef, int node) {
-		if (!nodeExists(node))
-			return 0;
-		if (getAssociatedBit(nameRef, motherOfNode(node)))
-			return motherOfNode(node);
-		if (getRoot() == node || getSubRoot() == node)
-			return 0;
-		return ancestorWithNameReference(nameRef, motherOfNode(node));
 	}
 
 }

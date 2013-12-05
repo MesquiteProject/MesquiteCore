@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -60,7 +60,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 	public TaxonLinkToolExtra (TaxonLink ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		taxonLinkModule = ownerModule;
-		taxonLinkTool = new TreeTool(this, "taxonLink", ownerModule.getPath(), "link.gif", 4,0,"Go to link", "This tool follows a hypertext link to another file or to a web page.  Hold down Control when using to set the link to a local file; hold down shift to enter a URL.  If filename ends in .htm or .html or contains http:// or https://, it is opened in a web browser; otherwise it is opened in Mesquite."); //; hold down shift to enter a URL
+		taxonLinkTool = new TreeTool(this, "taxonLink", ownerModule.getPath(), "link.gif", 4,0,"Go to link", "This tool follows a hypertext link to another file or to a web page.  Hold down Control when using to set the link to a local file; hold down shift to enter a URL.  If filename ends in .htm or .html, it is opened in a web browser; otherwise it is opened in Mesquite."); //; hold down shift to enter a URL
 		taxonCommand = MesquiteModule.makeCommand("goToLinkedTaxon",  this);
 		cladeCommand = MesquiteModule.makeCommand("goToLinkedClade",  this);
 		taxonLinkTool.setTouchedTaxonCommand(taxonCommand);
@@ -249,7 +249,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 			else {
 				String link = (String)tree.getTaxa().getAssociatedObject(linkNameRef, M);
 				if (link!=null) {
-					if (StringUtil.startsWithIgnoreCase(link, "http:") || StringUtil.startsWithIgnoreCase(link, "https:") || link.endsWith(".html") || link.endsWith(".htm") || link.endsWith(".HTML") || link.endsWith(".HTM")) {  //assumed to be web page
+					if (link.endsWith(".html") || link.endsWith(".htm") || link.endsWith(".HTML") || link.endsWith(".HTM")) {  //assumed to be web page
 						if (StringUtil.startsWithIgnoreCase(link, "http:")) 
 							taxonLinkModule.showWebPage(link, false);
 						else

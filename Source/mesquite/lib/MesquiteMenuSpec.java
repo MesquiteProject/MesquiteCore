@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -23,12 +23,6 @@ import java.util.*;
 public class MesquiteMenuSpec extends MesquiteMenuItemSpec { 
 	String label;
 	Vector guests;
-	boolean universalMenu;
-	public MesquiteMenuSpec(MesquiteMenuSpec whichMenu, String menuName,  MesquiteModule ownerModule, boolean universalMenu) {
-		super(whichMenu, menuName, ownerModule, null);
-		this.label = menuName; 
-		this.universalMenu = universalMenu;
-	}
 	public MesquiteMenuSpec(MesquiteMenuSpec whichMenu, String menuName,  MesquiteModule ownerModule) {
 		super(whichMenu, menuName, ownerModule, null);
 		this.label = menuName; 
@@ -43,9 +37,6 @@ public class MesquiteMenuSpec extends MesquiteMenuItemSpec {
 
 	public String getLabel() {
 		return label;
-	}
-	public boolean isUniversalMenu() {
-		return universalMenu;
 	}
 	public void addGuestModule(MesquiteModule mb) {
 		if (mb == null)

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -137,13 +137,10 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		return traces.size()<2;
 	}
 	public Object getWritableResults(){
-		if (traces == null || traces.size() != 1)
+		if (traces.size() != 1)
 			return null;
 		TraceCharacterOperator trace = (TraceCharacterOperator)traces.elementAt(0);
-		if (trace.history == null)
-			return null;
 		String results = historyTask.getName();
-		
 		results += "\t" + trace.history.toStringWithDetails();
 		return results;
 	}
@@ -258,7 +255,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			whichColorsModified = new Point[64];
 			newColors = new Color[64];
 			int count = 0;
-			while (MesquiteInteger.isCombinable(i= MesquiteInteger.fromString(arguments, pos)) && count<64){
+			while (MesquiteInteger.isCombinable(i= MesquiteInteger.fromString(arguments, pos))){
 				int j =  MesquiteInteger.fromString(arguments, pos);
 				int red =  MesquiteInteger.fromString(arguments, pos);
 				int green =  MesquiteInteger.fromString(arguments, pos);

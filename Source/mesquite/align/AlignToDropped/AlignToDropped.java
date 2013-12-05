@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -35,8 +35,6 @@ public class AlignToDropped extends DataWindowAssistantI {
 	int firstRowTouched = -2;
 	boolean defaultWarnCheckSum  =true;
 	MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
-	boolean defaultAllowNewGaps  =true;
-	MesquiteBoolean allowNewGaps = new MesquiteBoolean(defaultAllowNewGaps);
 	long originalCheckSum;
 	MesquiteInteger gapOpen = new MesquiteInteger();
 	MesquiteInteger gapExtend = new MesquiteInteger();
@@ -51,13 +49,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
-			MesquiteCommand touchCommand = MesquiteModule.makeCommand("alignDropTouched",  this);
-			touchCommand.setSuppressLogging(true);
-			MesquiteCommand dragCommand = MesquiteModule.makeCommand("alignDropDragged",  this);
-			dragCommand.setSuppressLogging(true);
-			MesquiteCommand dropCommand = MesquiteModule.makeCommand("alignDropDropped",  this);
-			dropCommand.setSuppressLogging(true);
-			alignDropTool = new TableTool(this, "alignToDropped", getPath(), "alignToDropped.gif", 13,14,"Pairwise Aligner: Aligns touched sequences to the sequence on which they are dropped.", "Aligns touched sequences to the sequence on which they are dropped.", touchCommand, dragCommand, dropCommand);
+			alignDropTool = new TableTool(this, "alignToDropped", getPath(), "alignToDropped.gif", 13,14,"Pairwise Aligner: Aligns touched sequences to the sequence on which they are dropped.", "Aligns touched sequences to the sequence on which they are dropped.", MesquiteModule.makeCommand("alignDropTouched",  this) , MesquiteModule.makeCommand("alignDropDragged",  this), MesquiteModule.makeCommand("alignDropDropped",  this));
 			alignDropTool.setWorksOnRowNames(true);
 			//alignDropTool.setWorksAsArrowOnRowColumnNumbers(true);
 			alignDropTool.setPopUpOwner(this);
@@ -70,7 +62,6 @@ public class AlignToDropped extends DataWindowAssistantI {
 		addMenuItem("Gap Costs...", MesquiteModule.makeCommand("gapCosts", this));
 		addMenuItem("Substitution Costs...", MesquiteModule.makeCommand("subCosts", this));
 		addCheckMenuItem(null, "Check Data Integrity", makeCommand("toggleWarnCheckSum",  this), warnCheckSum);
-		addCheckMenuItem(null, "Allow New Internal Gaps", makeCommand("toggleAllowNewGaps",  this), allowNewGaps);
 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal); 
 
 		return true;
@@ -93,8 +84,6 @@ public class AlignToDropped extends DataWindowAssistantI {
 		Snapshot temp = new Snapshot();
 		if (warnCheckSum.getValue()!=defaultWarnCheckSum)
 			temp.addLine("toggleWarnCheckSum " + warnCheckSum.toOffOnString());
-		if (allowNewGaps.getValue()!=defaultAllowNewGaps)
-			temp.addLine("toggleAllowNewGaps " + allowNewGaps.toOffOnString());
 		temp.addLine("gapCosts " + gapOpen + " " + gapExtend + " " + gapOpenTerminal + " "+ gapExtendTerminal);
 
 		StringBuffer sb = new StringBuffer();
@@ -125,13 +114,12 @@ public class AlignToDropped extends DataWindowAssistantI {
 	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow){
 		MesquiteNumber score = new MesquiteNumber();
 		if (aligner==null) {
-			aligner = new PairwiseAligner(true,allowNewGaps.getValue(), subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
+			aligner = new PairwiseAligner(true,subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 			//aligner.setUseLowMem(true);
 		}
 		if (aligner!=null){
 			//aligner.setUseLowMem(data.getNumChars()>aligner.getCharThresholdForLowMemory());
 			originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign);
-			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
 			long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 			if (aligned==null) {
 				logln("Alignment failed!");
@@ -287,10 +275,6 @@ public class AlignToDropped extends DataWindowAssistantI {
 			boolean current = warnCheckSum.getValue();
 			warnCheckSum.toggleValue(parser.getFirstToken(arguments));
 		}
-		else  if (checker.compare(this.getClass(), "Toggles whether the new gaps can be introduced into one or the other sequence.", "[on; off]", commandName, "toggleAllowNewGaps")) {
-			boolean current = allowNewGaps.getValue();
-			allowNewGaps.toggleValue(parser.getFirstToken(arguments));
-		}
 		else  if (checker.compare(this.getClass(), "Allows one to specify gap opening and extension costs.", "[open; extend]", commandName, "gapCosts")) {
 			MesquiteInteger io = new MesquiteInteger(0);
 			int newGapOpen = MesquiteInteger.fromString(arguments, io);
@@ -343,7 +327,6 @@ public class AlignToDropped extends DataWindowAssistantI {
 		if (aligner!=null) {
 			aligner.setGapCosts(gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue());
 			aligner.setSubsCostMatrix(subs);
-			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
 		}
 	}
 	/*.................................................................................................................*/

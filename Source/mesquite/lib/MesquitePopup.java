@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -18,36 +18,12 @@ import mesquite.lib.duties.*;
 
 public class MesquitePopup extends PopupMenu {
 	Container c;
-	int id = 0;
-	MesquiteMenuSpec spec;
-	protected boolean filterable = true;
 	public MesquitePopup(Container c){
 		super();
 		this.c = c;
 	}
-	public MesquitePopup(MesquiteMenuSpec spec, Container c){
-		super(spec.getLabel());  // true to designate as tearoff; doesn't seem to work on macos
-		filterable = spec.isFilterable();
-		if (spec.getLabel() == null) {
-			MesquiteMessage.println("menu with no name: ");
-			setEnabled(false);
-		}
-		if (!spec.isEnabled())
-			setEnabled(false);
-		this.spec = spec;
-	}
-	public static MesquitePopup getPopupMenu(MesquiteMenuSpec spec, Container c) {
-
-		return new MesquitePopup(spec, c);
-	}
 	Container getComponent(){
 		return c;
-	}
-	public void setComponent(Container c){
-		this.c = c;
-	}
-	public MesquiteMenuSpec getSpecification(){
-		return spec;
 	}
 	
 	public static Polygon getDropDownTriangle(){

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -36,7 +36,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 	static final int totalHeight = 0;
 	static final int stretchfactor = 1;
 	static final int  scaling = 2;
-	
 
 //	double namesAngle = MesquiteDouble.unassigned;
 
@@ -59,7 +58,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		inhibitStretch = new MesquiteBoolean(false);
 		center = new MesquiteBoolean(false);
 		even = new MesquiteBoolean(false);
-		if (getEmployer()!=null && ("Square Tree".equalsIgnoreCase(getEmployer().getName()) || "Square Line Tree".equalsIgnoreCase(getEmployer().getName()))){ //a bit non-standard but a helpful service to use different defaults for square
+		if (getEmployer()!=null && "Square Tree".equalsIgnoreCase(getEmployer().getName())){ //a bit non-standard but a helpful service to use different defaults for square
 			even.setValue(true);
 			center.setValue(true);
 		}
@@ -313,19 +312,19 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void UPCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, boolean inTriangle, int numInTriangle, int triangleBase) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal
-			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3 && treeDisplay.getSimpleTriangle()){
+			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3){
 				if (tree.leftmostTerminalOfNode(triangleBase)==N)
-					lastleft+= getSpacing(treeDisplay, tree, N, inTriangle); 
+					lastleft+= getSpacing(treeDisplay, tree, N); 
 				else {
 					//more than 2 in triangle; triangle as wide as 3.  Thus each 
 					if (tree.rightmostTerminalOfNode(triangleBase)==N)
 						lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(triangleBase)] + 2*treeDisplay.getTaxonSpacing();
 					else 
-						lastleft+= (getSpacing(treeDisplay, tree, N, inTriangle)*2)/(numInTriangle-1);
+						lastleft+= (getSpacing(treeDisplay, tree, N)*2)/(numInTriangle-1);
 				}
 			}
 			else
-				lastleft+= getSpacing(treeDisplay, tree, N, inTriangle);
+				lastleft+= getSpacing(treeDisplay, tree, N);
 			treeDrawing.y[N] = treeDisplay.getTipsMargin();
 			treeDrawing.x[N] = lastleft;
 		}
@@ -396,19 +395,19 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void DOWNCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, int margin,  boolean inTriangle, int numInTriangle, int triangleBase) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal
-			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3 && treeDisplay.getSimpleTriangle()){
+			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3){
 				if (tree.leftmostTerminalOfNode(triangleBase)==N)
-					lastleft+= getSpacing(treeDisplay, tree, N, inTriangle); 
+					lastleft+= getSpacing(treeDisplay, tree, N); 
 				else {
 					//more than 2 in triangle; triangle as wide as 3.  Thus each 
 					if (tree.rightmostTerminalOfNode(triangleBase)==N)
-						lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(triangleBase)] + 2*getSpacing(treeDisplay, tree, N, inTriangle);
+						lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(triangleBase)] + 2*getSpacing(treeDisplay, tree, N);
 					else 
-						lastleft+= (getSpacing(treeDisplay, tree, N,inTriangle)*2)/(numInTriangle-1);
+						lastleft+= (getSpacing(treeDisplay, tree, N)*2)/(numInTriangle-1);
 				}
 			}
 			else
-				lastleft+= getSpacing(treeDisplay, tree, N, inTriangle);
+				lastleft+= getSpacing(treeDisplay, tree, N);
 			treeDrawing.y[N] = margin;
 			treeDrawing.x[N] = lastleft;
 		}
@@ -491,19 +490,19 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void RIGHTCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, int margin,  boolean inTriangle, int numInTriangle, int triangleBase) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal
-			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3 && treeDisplay.getSimpleTriangle()){
+			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3){
 				if (tree.leftmostTerminalOfNode(triangleBase)==N)
-					lastleft+= getSpacing(treeDisplay, tree, N, inTriangle); 
+					lastleft+= getSpacing(treeDisplay, tree, N); 
 				else {
 					//more than 2 in triangle; triangle as wide as 3.  Thus each 
 					if (tree.rightmostTerminalOfNode(triangleBase)==N)
-						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(triangleBase)] + 2*getSpacing(treeDisplay, tree, N, inTriangle);
+						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(triangleBase)] + 2*getSpacing(treeDisplay, tree, N);
 					else 
-						lastleft+= (getSpacing(treeDisplay, tree, N, inTriangle)*2)/(numInTriangle-1);
+						lastleft+= (getSpacing(treeDisplay, tree, N)*2)/(numInTriangle-1);
 				}
 			}
 			else
-				lastleft+= getSpacing(treeDisplay, tree, N, inTriangle);
+				lastleft+= getSpacing(treeDisplay, tree, N);
 			treeDrawing.x[N] = margin;
 			treeDrawing.y[N] = lastleft;
 		}
@@ -572,19 +571,19 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void LEFTCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, int margin,  boolean inTriangle, int numInTriangle, int triangleBase) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal
-			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3 && treeDisplay.getSimpleTriangle()){
+			if (inTriangle && tree.numberOfTerminalsInClade(triangleBase)>3){
 				if (tree.leftmostTerminalOfNode(triangleBase)==N)
-					lastleft+= getSpacing(treeDisplay, tree, N, inTriangle); 
+					lastleft+= getSpacing(treeDisplay, tree, N); 
 				else {
 					//more than 2 in triangle; triangle as wide as 3.  Thus each 
 					if (tree.rightmostTerminalOfNode(triangleBase)==N)
-						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(triangleBase)] + 2*getSpacing(treeDisplay, tree, N, inTriangle);
+						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(triangleBase)] + 2*getSpacing(treeDisplay, tree, N);
 					else 
-						lastleft+= (getSpacing(treeDisplay, tree, N, inTriangle)*2)/(numInTriangle-1);
+						lastleft+= (getSpacing(treeDisplay, tree, N)*2)/(numInTriangle-1);
 				}
 			}
 			else
-				lastleft+= getSpacing(treeDisplay, tree, N, inTriangle);
+				lastleft+= getSpacing(treeDisplay, tree, N);
 			treeDrawing.x[N] = margin;
 			treeDrawing.y[N] = lastleft;
 		}
@@ -758,12 +757,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		zoomFactor = factor;
 		parametersChanged();
 	}
-	int getSpacing(TreeDisplay treeDisplay, Tree tree, int node, boolean inTriangle){
-		if (inTriangle && !treeDisplay.getSimpleTriangle()) {
-			int ancestralNode = tree.ancestorWithNameReference(triangleNameRef, node);
-			if (ancestralNode==0 ||  node != tree.leftmostTerminalOfNode(ancestralNode))
-				return 4;
-		}
+	int getSpacing(TreeDisplay treeDisplay, Tree tree, int node){
 		int baseSpacing =treeDisplay.getTaxonSpacing();
 		if (zoomNode > 0){
 			int inZoom = tree.numberOfTerminalsInClade(zoomNode);
@@ -784,7 +778,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		return baseSpacing;
 	}
-	
 	/*.................................................................................................................*/
 	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { //Graphics g removed as parameter May 02
 		if (MesquiteTree.OK(tree)) {
@@ -792,7 +785,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (treeDisplay.inhibitStretchByDefault != inhibitStretch.getValue())
 					inhibitStretch.setValue(treeDisplay.inhibitStretchByDefault);
 			}*/
-			int fixedTaxonDistance = treeDisplay.getFixedTaxonSpacing();
 			lastOrientation = treeDisplay.getOrientation();
 			//this.treeDisplay = treeDisplay; 
 			if (!leaveScaleAlone) {
@@ -866,10 +858,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
-					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
-				else
-					treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
+				treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.width && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2; //TODO: this causes problems for shrunk, since first taxon doesn't move over enough
@@ -929,10 +918,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
-					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
-				else
-					treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
+				treeDisplay.setTaxonSpacing( (rect.width - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.width && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -987,10 +973,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
-					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
-				else
-					treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
+				treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.height && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -1044,10 +1027,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = effectiveNumberOfTerminals(tree, root);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
-					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
-				else
-					treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
+				treeDisplay.setTaxonSpacing( (rect.height - 30) / numTerms);
 				if (numTerms*treeDisplay.getTaxonSpacing()>.95*rect.height && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
 					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
@@ -1111,7 +1091,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 	}
 	/*.................................................................................................................*/
-	public void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
+	public   void drawGrid(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, Graphics g) {
 		if (g == null)
 			return;
 		boolean narrowScaleOnly = !broadScale.getValue();

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -417,9 +417,8 @@ public class ManageTrees extends TreesManager {
 					if (trees!=null)
 						exportTreesBlock(trees, basePath + iBlock + ".nex");
 				}
-				if (!showTreeFiller){
+				if (!showTreeFiller)
 					fireEmployee(treeFillerTask);
-				}
 				resetAllMenuBars();
 			}
 		}
@@ -451,7 +450,7 @@ public class ManageTrees extends TreesManager {
 			}
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
 			if (temp!=null) {
-				treeFillerTask = temp;
+				treeFillerTask= temp;
 			}
 			return treeFillerTask;
 		}
@@ -761,9 +760,8 @@ public class ManageTrees extends TreesManager {
 			trees.addToFile(file, getProject(), this);
 
 			doneQuery(treeFillerTask, taxa, trees, suppressAsk);
-			if (!showTreeFiller){
+			if (!showTreeFiller)
 				fireEmployee(treeFillerTask);
-			}
 			resetAllMenuBars();
 		}
 		return null;
@@ -1027,17 +1025,6 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public TreeVector getTreeBlockByID(long id){  //this uses the temporary run-time id of the tree vector
-		if (treesVector==null)
-			return null;
-		for (int j = 0; j< treesVector.size(); j++) {
-			TreeVector trees = (TreeVector)treesVector.elementAt(j);
-			if (trees.getID() == id)
-					return trees;
-		}
-		return null;
-	}
-	/*.................................................................................................................*/
 	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){
 		if (treesVector==null)
 			return null;
@@ -1267,16 +1254,8 @@ public class ManageTrees extends TreesManager {
 					}
 				}
 
-				
 				if (taxa==null) {
-					int tI = parser.tokenIndexOfIgnoreCase(fileReadingArguments, "taxa");//DRM added this 8 April 2012 so that one can specify which taxa block it should belong to
-					if (tI>=0){
-						String ref = parser.getTokenNumber(fileReadingArguments, tI+2);
-						taxa = getProject().getTaxa(ref);
-					}
-
-					if (taxa==null) 
-						taxa = findTaxaMatchingTable(trees, getProject(), file, table);
+					taxa = findTaxaMatchingTable(trees, getProject(), file, table);
 					if (taxa!=null) {
 						trees.setTaxa(taxa);
 						trees.setTranslationTable(table);
@@ -1359,6 +1338,7 @@ public class ManageTrees extends TreesManager {
 							 */
 						}
 						if (!translationTableRead && file.useStandardizedTaxonNames){
+
 							for (int it = 0; it<taxa.getNumTaxa(); it++)
 								trees.setTranslationLabel(Integer.toString(it+1), "t" + it, false);
 							trees.checkTranslationTable();
@@ -1595,7 +1575,7 @@ class TreeBlockThread extends MesquiteThread {
 	MesquiteFile file;
 	int howManyTrees;
 	boolean suppressAsk = false;
-	CommandRecord comRec = null;
+
 	public TreeBlockThread (ManageTrees ownerModule, TreeBlockFiller fillTask, TreeVector trees, int howManyTrees, MesquiteFile file) {
 		super();
 		this.ownerModule = ownerModule;
@@ -1610,9 +1590,7 @@ class TreeBlockThread extends MesquiteThread {
 			sc = false;
 		else
 			sc = cr.recordIsScripting();
-		comRec = new CommandRecord(sc);
-		setCommandRecord(comRec);
-		
+		setCommandRecord(new CommandRecord(sc));
 	}
 
 	public String getCurrentCommandName(){
@@ -1635,9 +1613,9 @@ class TreeBlockThread extends MesquiteThread {
 			}
 			else
 				trees.addToFile(file, ownerModule.getProject(), ownerModule);
+			ownerModule.fireEmployee(fillTask);
 			if (trees.size()!=before)
 				ownerModule.doneQuery(fillTask, trees.getTaxa(), trees, suppressAsk);
-			ownerModule.fireEmployee(fillTask);
 			ownerModule.fillingTreesNow = false;
 			ownerModule.resetAllMenuBars();
 		}

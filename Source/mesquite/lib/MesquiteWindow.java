@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -83,13 +83,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	protected TextContentArea[]  text;
 	protected InfoBar infoBar;
 	protected Cursor waitCursor, restoreCursor;
-	public static final int infoBarHeightAllowance = 22;
+	public static final int infoBarHeightAllowance = 17;
 	protected int infoBarHeight = infoBarHeightAllowance;
 	boolean queryMode = false;
 	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem;
 	private MesquiteMenuItemSpec ptfMMIS;
 	private MesquiteMenuItemSpec pPDFMMIS;
-	private boolean showInfoBar = false;
+	//	MesquiteCheckMenuItem infoBarMenuItem;
 	private StringBuffer logText;
 	public static Frame dialogAnchor;
 	public static MesquiteTimer startingTime, resetMenuTime, windowShowTime, windowTimer;
@@ -131,7 +131,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		readyToPaint = false;
 		totalCreated++;
 		id = numWindowsTotal++;
-		this.showInfoBar = showInfoBar;
 		if ((compactWindows || this instanceof SystemWindow) && ownerModule != null){
 			MesquiteProject proj = ownerModule.getProject();
 			MesquiteFrame frame = null;
@@ -179,13 +178,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		outerContents.setInfoArea(infoBar);
 
 		explanationArea = new ExplanationArea(this, false); 
-		explanationArea.setName("EXPL");  //for debugging purposes, so explanation area knows what sort it is
 
 		outerContents.setExplanationArea(explanationArea);
 		outerContents.add(explanationArea, "ExplanationArea"); 
 		explanationArea.setBackground(ColorTheme.getInterfaceBackground());
 		annotationArea = new ExplanationArea(this, true);
-		annotationArea.setName("ANOT");  //for debugging purposes, so explanation area knows what sort it is
 		annotationArea.setBackground(Color.white);
 		outerContents.setAnnotationArea(annotationArea);
 		setAnnotation(null);
@@ -259,7 +256,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		closeWindowMenuItem.disconnectable = false;
 		closeWindowMenuItem.setShortcut(closeWindowShortcut);	
 		menuBar = new MesquiteMenuBar(this);
-		//setMenuBar(menuBar);  //ï¿½ï¿½ï¿½
+		//setMenuBar(menuBar);  //¥¥¥
 		parentFrame.setWindowLocation(60, 10, false, false); //default window position
 		addKeyListenerToAll(graphics[0], palette, true);
 		outerContents.requestFocusInWindow(); //this may address a MRJ 2.2.3 bug
@@ -289,8 +286,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public boolean isCompactible(){
 		return compactWindows;
 	}
-	
-	public boolean permitViewMode(){
+	public boolean showInfoTabs(){
 		return true;
 	}
 	public int getTileLocation(){
@@ -327,7 +323,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 
 	public boolean isLoneWindow(){
-		return (isPoppedOut() && !popAsTile) || (parentFrame == null && parentFrame.getNumWindows()<=1);
+		return (isPoppedOut() && !popAsTile) || parentFrame.getNumWindows()<=1;
 	}
 	public boolean isCompacted(){
 		return (compactWindows || this instanceof SystemWindow) && !poppedOut;
@@ -596,7 +592,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (windowOfItem(c) == null)
 			return false;
 		totalCheckDoomedCount++;
-		
 		if (c!=null && componentsPainted!=null)
 			componentsPainted.recordWithTime(c.getClass());
 		if (checkcheck){
@@ -695,12 +690,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			graphics[1].repaint();
 		//	if (showInfoBar)
 		infoBar.repaint();
-	}
-	/*.................................................................................................................*/
-	public void repaintInfoBar() {
-		if (infoBar != null){
-			rpAll(infoBar);
-		}
 	}
 	/*.................................................................................................................*/
 	/** calls repaint of all components*/
@@ -1088,8 +1077,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** The method to be called to add a component for display (adds it to the graphics[0] content area) */
 	public Component addToWindow(Component c) {
-		if (c == null || graphics == null || graphics[0] == null)
-			return null;
 		if (currentTool!=null) {
 			removeKeyListener(graphics[0], currentTool);
 		}
@@ -1105,8 +1092,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** The method to be called to remove a component from display (removes if from the graphics[0] content area) */
 	public void removeFromWindow(Component c) {
-		if (c == null || graphics == null || graphics[0] == null)
-			return;
 		if (currentTool!=null) {
 			removeKeyListener(graphics[0], currentTool);
 		}
@@ -1322,7 +1307,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			palette.toolTextChanged(); //fixed Apr 02
 	}
 	/*.................................................................................................................*/
-	/** Gets the visibility of the InfoBar */
+	/** Gets the visibility of the InfoBar *
 	public boolean getShowInfoBar() {
 		return showInfoBar;
 	}
@@ -1630,11 +1615,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		parentFrame.setWindowSize(this, outerWidth, outerHeight, !isLoneWindow());
 	}
 	/*.................................................................................................................*/
-	/** Forces a reset of the window size. */
-	public void resetWindowSizeForce() {
-		setWindowSizeForce(getContentsWidth(), getContentsHeight());
-	}
-	/*.................................................................................................................*/
 	/** Sets the window size.  To be used instead of setSize. */
 	public void setWindowSizeForce(int width, int height) {
 		//before telling parent, indicate all the things I need
@@ -1766,27 +1746,19 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		return (getBounds().height - infoBarHeight -explanationHeight -annotationHeight);
 	}
 	/*.................................................................................................................*/
-	/** Gets the content width of the graphics content area of the window (excluding the insets).  Also included tool palette if asked */
-	
-	public int getWidth(boolean includePalette){
+	/** Gets the content width of the graphics content area of the window (excluding the insets AND any palette) */
+	public int getWidth(){
 		if (graphics==null)
 			return 0;
 		if (graphics[0] == null || getBounds() == null)
 			return 0;
+		ToolPalette palette =graphics[0].getPalette();
 		int baseWidth = getBounds().width;
-		if (!includePalette) {
-			ToolPalette palette =graphics[0].getPalette();
-			if (palette != null && palette.isVisible())
-				baseWidth -= palette.getWidth();
-		}
+		if (palette != null && palette.isVisible())
+			baseWidth -= palette.getWidth();
 		baseWidth -= graphics[0].getSidePanelWidth();
 
 		return baseWidth;
-	}
-	/*.................................................................................................................*/
-	/** Gets the content width of the graphics content area of the window (excluding the insets AND any palette) */
-	public int getWidth(){
-		return getWidth(false);
 	}
 	/*.................................................................................................................*/
 	/** Gets the content height of the window (excluding the insets) */
@@ -2065,7 +2037,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	public void selectAll() {
 		if (annotationHasFocus()){
-			annotationArea.getTextArea().selectAll();
+			annotationArea.textArea.selectAll();
 		}
 		else if (infoBar.getMode()==InfoBar.GRAPHICS) {
 			selectAllGraphicsPanel();
@@ -2083,7 +2055,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	public void copy(){
 		if (annotationHasFocus()){
-			String s = annotationArea.getTextArea().getSelectedText();
+			String s = annotationArea.textArea.getSelectedText();
 			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 			StringSelection ss = new StringSelection(s);
 			clip.setContents(ss, ss);
@@ -2357,7 +2329,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				}
 			}
 			else {
-				TextArea ta = annotationArea.getTextArea();
+				TextArea ta = annotationArea.textArea;
 				String s = ta.getSelectedText();
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				StringSelection ss = new StringSelection(s);
@@ -2373,7 +2345,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 					com.doItMainThread("", null, this);  // command invoked
 			}
 			else {
-				TextArea ta = annotationArea.getTextArea();
+				TextArea ta = annotationArea.textArea;
 				ta.replaceRange("", ta.getSelectionStart(), ta.getSelectionEnd());
 				setAnnotation(ta.getText(), null);
 			}
@@ -2391,7 +2363,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				try {
 					String s = (String)t.getTransferData(DataFlavor.stringFlavor);
 					if (s!=null) {
-						TextArea ta = annotationArea.getTextArea();
+						TextArea ta = annotationArea.textArea;
 						int st = ta.getSelectionStart();
 						ta.replaceRange(s, ta.getSelectionStart(), ta.getSelectionEnd());
 						Annotatable a = annotationArea.getAnnotatable();
@@ -2633,26 +2605,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			selectPart(TreeVector.class, whichPart, whichBlock);		
 			return null;
 		}
-		else if (checker.compare(this.getClass(), "Touches taxon (selects it and shows it if possible)", "[number of taxon][id of taxa block]", commandName, "touchTaxon")) {
+		else if (checker.compare(this.getClass(), "Selects taxon", "[number of taxon][id of taxa block]", commandName, "selectTaxon")) {
 			int whichPart = MesquiteInteger.fromFirstToken(arguments, pos);
 			int whichBlock = MesquiteInteger.fromString(arguments, pos);
-			selectPart(Taxa.class, whichPart, whichBlock);
-			Projects projects = MesquiteTrunk.getProjectList();
-			for (int i = 0; i<projects.getNumProjects(); i++){
-				MesquiteProject project = projects.getProject(i);
-				FileElement elem = project.getElementByID(Taxa.class, whichBlock);
-				if (elem != null && elem instanceof Taxa){
-					//taxa block found.  Tell all windows in project to select that 
-					Enumeration e = MesquiteTrunk.mesquiteTrunk.windowVector.elements();
-					while (e.hasMoreElements()) {
-						Object obj = e.nextElement();
-						MesquiteWindow mw = (MesquiteWindow)obj;
-						if (mw.isVisible() && mw.getOwnerModule()!=null && mw.getOwnerModule().getProject()== project)
-							mw.doCommand("showTaxon", "" + whichBlock + " " + whichPart, CommandChecker.quietDefaultChecker);
-					}
-				}
-			}
-			
+			selectPart(Taxa.class, whichPart, whichBlock);		
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Selects character", "[number of character][id of character matrix]", commandName, "selectCharacter")) {
@@ -2663,14 +2619,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 		else {
 			//AFTERDEMO:
-			if (commandName!=null && !checker.getAccumulateMode() && checker.warnIfNoResponse) {
+			if (commandName!=null && !checker.getAccumulateMode()) {
 				MesquiteMessage.warnProgrammer("Window " + getName() + " did not respond to command " + commandName + " with arguments (" + arguments + ")");
 			}
 		}
 		return null;
 	}
 
-	
 	private void selectPart(Class c, int whichPart, int whichBlock){
 		Projects projects = MesquiteTrunk.getProjectList();
 		for (int i = 0; i<projects.getNumProjects(); i++){
@@ -2732,15 +2687,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*.................................................................................................................*/
 	public static void repaintAllSearchStrips(){
-		/*
-		 * Enumeration e = MesquiteTrunk.windowVector.elements();
+		Enumeration e = MesquiteTrunk.windowVector.elements();
 		while (e.hasMoreElements()) {
 			Object obj = e.nextElement();
 			MesquiteWindow mw = (MesquiteWindow)obj;
 			if (mw.infoBar!= null && mw.infoBar.isVisible())
 				mw.infoBar.repaintSearchStrip();
 		}
-		*/
 		MesquiteTrunk.mesquiteTrunk.repaintSearchStrip();
 	}
 
@@ -3029,8 +2982,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void setTitle(String name) {
 
 		title = name;
-		if (parentFrame != null)
-			parentFrame.windowTitleChanged(this);
+		parentFrame.windowTitleChanged(this);
 	}
 	public String getTitle() {
 		return title;

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -32,8 +32,6 @@ public class MesquiteExternalProcess  {
 		outputGobbler.start();
 
 	}
-	public MesquiteExternalProcess() {
-	}
 	/*.................................................................................................................*/
 	public Process getProcess() {
 		return proc;
@@ -43,11 +41,6 @@ public class MesquiteExternalProcess  {
 	public void setProcess(Process proc) {
 		this.proc = proc;
 	}
-	/*.................................................................................................................*/
-	public void kill () {
-		proc.destroy();
-	}
-
 	/*.................................................................................................................*/
 
 	public void dispose() {
@@ -61,8 +54,6 @@ public class MesquiteExternalProcess  {
 	/*.................................................................................................................*/
 
 	public boolean processRunning() {
-		if (proc==null)
-			return false;
 		try {
 			proc.exitValue();
 		} catch (IllegalThreadStateException e) {
@@ -73,8 +64,6 @@ public class MesquiteExternalProcess  {
 
 	/*.................................................................................................................*/
 	public void sendStringToProcess(String s) {
-		if (proc==null)
-			return;
 		if (inputToProcess==null)
 			inputToProcess = proc.getOutputStream();
 		if (inputToProcess!=null && inputStreamsWriter==null)

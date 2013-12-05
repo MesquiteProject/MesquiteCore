@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -33,12 +33,12 @@ public class CharacterList extends ListModule {
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(CharListAssistant.class, getName() + " uses various assistants to display columns showing information for each character.",
-				"You can request that columns be shown using the Columns menu of the List of Characters Window. ");
+		"You can request that columns be shown using the Columns menu of the List of Characters Window. ");
 		e.setEntryCommand("newAssistant");
 		EmployeeNeed e2 = registerEmployeeNeed(CharListAssistantI.class, getName() + " uses various assistants to display columns showing information for each character.",
-				"These are activated automatically. ");
+		"These are activated automatically. ");
 		EmployeeNeed e3 = registerEmployeeNeed(CharSelectCoordinator.class, getName() + " uses various criteria to select characters in the List of Characters window.",
-				"You can request selection methods using the List menu of the List of Characters Window. ");
+		"You can request selection methods using the List menu of the List of Characters Window. ");
 	}
 	/*.................................................................................................................*/
 	public int currentDataSet = 0;
@@ -109,29 +109,26 @@ public class CharacterList extends ListModule {
 				assistant.setUseMenubar(false);
 			}
 			/* default columns*/
-			//	if (!(data instanceof MolecularData)){ //added 1. 06; removed after 2. 75
-			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListPartition"));
-			if (assistant!= null){
-				((CharacterListWindow)window).addListAssistant(assistant);
-				assistant.setUseMenubar(false);
-			}
-			//	}
-			if (!(data instanceof MolecularData)){ 
-				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListParsModels"));
+			if (!(data instanceof MolecularData)){ //added 1. 06
+				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListPartition"));
 				if (assistant!= null){
 					((CharacterListWindow)window).addListAssistant(assistant);
 					assistant.setUseMenubar(false);
 				}
 			}
-			/*
-			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListProbModels"));
+			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("Current Parsimony Models"));
 			if (assistant!= null){
 				((CharacterListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-			 */
+			assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("Current Probability Models"));
+			if (assistant!= null){
+				((CharacterListWindow)window).addListAssistant(assistant);
+				assistant.setUseMenubar(false);
+			}
+
 			if (data instanceof DNAData) {
-				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListCodonPos"));
+				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("Current Codon Positions"));
 				if (assistant!= null){
 					((CharacterListWindow)window).addListAssistant(assistant);
 					assistant.setUseMenubar(false);
@@ -378,7 +375,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 		String listData = data.searchData(s, commandResult);
 
 		if (!StringUtil.blank(listData))
-			return "<h2>Matches to search string: \"" + s + "\"</h2>" + listData;
+				return "<h2>Matches to search string: \"" + s + "\"</h2>" + listData;
 		else
 			return "<h2>No matches found (searched: \"" + s + "\")</h2>";
 	}
@@ -478,7 +475,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 	}
 	/*...............................................................................................................*/
 	public void setRowNameColor(Graphics g, int row){
-		//		g.setColor(Color.black);
+//		g.setColor(Color.black);
 		if (data!=null) {
 			if (!data.characterHasName(row))
 				g.setColor(Color.gray);

@@ -1,7 +1,7 @@
 package mesquite.align.lib;
 
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -58,10 +58,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
-	}
-	/*.................................................................................................................*/
-	public boolean programOptionsComeFirst(){
-		return false;  
 	}
 	/*.................................................................................................................*/
 	public String getProgramPath(){
@@ -250,27 +246,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
 		shellScript.append(getProgramCommand());
-		StringBuffer argumentsForLogging = new StringBuffer();
-		if (programOptionsComeFirst()){
-			shellScript.append(" " + programOptions + " ");
-			argumentsForLogging.append(" " + programOptions + " ");
-		}
 		appendDefaultOptions(shellScript, fileName,  outFileName,  data);
-		appendDefaultOptions(argumentsForLogging, fileName,  outFileName,  data);
 		
-		if (!programOptionsComeFirst()){
-			shellScript.append(" " + programOptions);
-			argumentsForLogging.append(" " + programOptions);
-		}
-		shellScript.append(StringUtil.lineEnding());
+		shellScript.append(" " + programOptions + StringUtil.lineEnding());
 //		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
 
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
-		
+
 		logln("Requesting the operating system to run " + getProgramName());
 		logln("Location of  " + getProgramName()+ ": " + getProgramPath());
-		logln("Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 

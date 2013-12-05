@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -82,9 +82,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	/**  Spacing in pixels between taxa*/
 	private int taxonSpacing;
-	
-	/**  Spacing in pixels between taxa as set by user*/
-	private int fixedTaxonSpacing;
 	/**  Orientaton of the tree*/
 	private int treeOrientation = UP;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
@@ -94,9 +91,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/**  Is the orientation fixed, or can reorientation be done?*/
 	private boolean allowReorient = true;
 	private MesquiteInteger highlightedBranch  = new MesquiteInteger(0);
-	
-	/**  whether "triangled" clades are shown as simple triangles or not*/
-	private boolean simpleTriangle=true;
 	
 	
 	public TreeDisplay (MesquiteModule ownerModule, Taxa taxa) { 
@@ -121,7 +115,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	public Color getBranchColor(int N){
 		if (!showBranchColors)
-			return branchColor;
+			return null;
 		long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, N);
 		Color col=null;
 		if (!tree.anySelected() || tree.getSelected(N)) {
@@ -261,12 +255,6 @@ public void setTreeDrawing(TreeDrawing td) {
 	}
 	public int getTaxonSpacing() {
 		return taxonSpacing;
-	}
-	public void setFixedTaxonSpacing(int sp) {
-		this.fixedTaxonSpacing = sp;
-	}
-	public int getFixedTaxonSpacing() {
-		return fixedTaxonSpacing;
 	}
 	public void addExtra(TreeDisplayExtra extra) {
 		if (extras != null)
@@ -412,14 +400,6 @@ public void setTreeDrawing(TreeDrawing td) {
 	public void setOrientation(int orient) {
 		if (allowReorient)
 			treeOrientation = orient;
-	}
-	/*_________________________________________________*/
-	public void setSimpleTriangle(boolean simpleTriangle) {
-		this.simpleTriangle=simpleTriangle;
-	}
-	/*_________________________________________________*/
-	public boolean getSimpleTriangle() {
-		return simpleTriangle;
 	}
 	/*.................................................................................................................*/
 	public int getOrientation() {

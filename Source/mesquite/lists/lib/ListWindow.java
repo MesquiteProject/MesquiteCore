@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -36,7 +36,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	boolean defaultWithinSelection = false;
 
 	MesquiteCollator collator;
-	MesquiteCommand deleteCommand, deleteColumnCommand;
+	MesquiteCommand deleteCommand;
 
 	/** constructor to be used only for accumulating list of commands*/
 	public ListWindow () {
@@ -98,11 +98,14 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			mss.setCompatibilityCheck(ownerModule.getAddColumnCompatibility());
 		if (columnsRemovable()){
 			ownerModule.addMenuItem(acm, "-", null);
-			ownerModule.addMenuItem(acm, "Move Selected Columns...", ownerModule.makeCommand("moveSelectedColumns", this));
-			ownerModule.addMenuItem(acm, "Hide Selected Columns", deleteColumnCommand = ownerModule.makeCommand("deleteSelectedColumns", this));
-			
+			ownerModule.addMenuItem(acm, "Hide Selected Columns", ownerModule.makeCommand("deleteSelectedColumns", this));
 		}
 
+		/*MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Show Column", ownerModule.makeCommand("newAssistant", this),owner.getAssistantClass());
+		mss.setCompatibilityCheck(ownerModule.getAddColumnCompatibility());
+		if (columnsRemovable())
+ 			ownerModule.addMenuItem( "Hide Selected Columns", ownerModule.makeCommand("deleteSelectedColumns", this));
+		 */
 
 
 		//ownerModule.addMenuItem( "-", null);
@@ -132,11 +135,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			if (getMode() != InfoBar.GRAPHICS || annotationHasFocus())
 				return;
 
-			if (owner.rowsDeletable() && (table == null || (table.anyRowSelected() && !table.editingAnything())) && (e.getKeyChar()== '\b' || e.getKeyCode()== KeyEvent.VK_BACK_SPACE || e.getKeyCode()== KeyEvent.VK_DELETE)) {
+			if (!owner.rowsDeletable())
+				return;
+			if ((table == null || (table.anyRowSelected() && !table.editingAnything())) && (e.getKeyChar()== '\b' || e.getKeyCode()== KeyEvent.VK_BACK_SPACE || e.getKeyCode()== KeyEvent.VK_DELETE)) {
 				deleteCommand.doItMainThread(null, "", this);
-			}
-			else if (columnsRemovable() && (table == null || (table.anyColumnSelected() && !table.editingAnything())) && (e.getKeyChar()== '\b' || e.getKeyCode()== KeyEvent.VK_BACK_SPACE || e.getKeyCode()== KeyEvent.VK_DELETE)) {
-				deleteColumnCommand.doItMainThread(null, "", this);
 			}
 		}
 
@@ -150,8 +152,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
 	public void changed(Object caller, Object obj, Notification notification){
 		if (obj == getCurrentObject() && getCurrentObject() instanceof Associable && caller != this && caller != table) {
-			table.synchronizeRowSelection((Associable)getCurrentObject());
-		}
+				table.synchronizeRowSelection((Associable)getCurrentObject());
+			}
 		super.changed(caller, obj, notification);
 	}
 	/*.................................................................................................................*/
@@ -225,34 +227,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		return 0;
 	}
 	/*.................................................................................................................*/
-	
-	public static void BubbleSort( int [ ] num )
-	{
-	     boolean swapOccurred = true;   
-	     int temp;  
-	     while (swapOccurred) {
-	    	 swapOccurred= false;    //set flag to false awaiting a possible swap
-	            for(int j=0;  j < num.length -1;  j++) {
-	                   if ( num[ j ] < num[j+1] )  {
-	                           temp = num[ j ];                //swap elements
-	                           num[ j ] = num[ j+1 ];
-	                           num[ j+1 ] = temp;
-	                           swapOccurred = true;              //shows a swap occurred  
-	                  } 
-	            } 
-	      } 
-	} 
-
-	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hides the list window", null, commandName, "hideWindow")) {
 			hide();
 		}
 		else if (checker.compare(this.getClass(), "Deletes the selected columns", null, commandName, "deleteSelectedColumns")) {
 			deleteSelectedColumns();
-		}
-		else if (checker.compare(this.getClass(), "Moves the selected columns", null, commandName, "moveSelectedColumns")) {
-			moveSelectedColumns();
 		}
 		else if (checker.compare(this.getClass(), "Present the popup menu to select options for magic wand", null, commandName, "wandOptions")) {
 			MesquiteButton button = wandTool.getButton();
@@ -367,20 +347,16 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						if (!AlertDialog.query(this, "Sort Characters", "These are molecular sequences. Are you sure you want to reorder the sites?  It cannot be undone.", "Sort", "Cancel", 2))
 							return null;
 				}
-				
 				String[] text = new String[assoc.getNumberOfParts()];
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
 					text[i] = table.getMatrixText(column, i);
 				}
 
-			    
 				for (int i=1; i<assoc.getNumberOfParts(); i++) {
 					for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {
 						swapParts(assoc, j, j+1, text);
 					}
 				}
-				
-				processPostSwap(assoc);
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -492,8 +468,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		text[first] = text[second];
 		text[second] = temp;
 		assoc.swapParts(first, second); 
-	}
-	public void processPostSwap(Associable assoc){
 	}
 	boolean satisfiesCriteria(String one, String two){
 		if (StringUtil.blank(one) && StringUtil.blank(two))
@@ -678,93 +652,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			ownerModule.alert("Columns must be selected before \"Hide\" command is given");
 	}
 
-	void moveSelectedColumns() {
-		int numSelected = 0;
-		for (int ic = table.getNumColumns()-1; ic>=0; ic--){
-			if (table.isColumnSelected(ic)) { 
-				numSelected++;
-			}
-		}
-		if (numSelected>0) {
-			String summary = "[Current columns: ";
-			for (int ic = 0; ic<table.getNumColumns(); ic++){
-				ListAssistant mb =findAssistant(ic);
-				mb.attachments.addElement(new MesquiteInteger("cwi", table.getColumnWidth(ic)), false);
-				mb.attachments.addElement(new MesquiteBoolean("cwb", table.columnAdjusted(ic)), false);
-				summary += " (" + (ic+1) + ") " + mb.getTitle() + ";";
-			}
-			summary += "]";
-
-			int whereToMove = MesquiteInteger.queryInteger(this, "Move column(s) where?", "Indicate the column after which the selected columns are to be moved.  If you want to move them to be the first columns, enter 0. " + summary, 0);  //1-based column number after which selected should be moved  
-			
-			
-			if (!MesquiteInteger.isCombinable(whereToMove))
-				return;
-			
-			selectedColumnsDropped(whereToMove, false);
-		}
-		else
-			ownerModule.alert("Columns must be selected before \"Move\" command is given");
-	}
-	void selectedColumnsDropped(int whereToMove, boolean mouseDrop){
-		if (!owner.rowsMovable())
-			return;
-		if (mouseDrop){
-			for (int ic = 0; ic<table.getNumColumns(); ic++){
-				ListAssistant mb =findAssistant(ic);
-				mb.attachments.addElement(new MesquiteInteger("cwi", table.getColumnWidth(ic)), false);
-				mb.attachments.addElement(new MesquiteBoolean("cwb", table.columnAdjusted(ic)), false);
-			}
-		}
-		int numSelected = 0;
-		for (int ic = table.getNumColumns()-1; ic>=0; ic--){
-			if (table.isColumnSelected(ic)) { 
-				numSelected++;
-			}
-		}
-		ListAssistant boundaryEmployee = null;  //this is the assistant after which the selected columns should be moved; if null then move to start
-		if (whereToMove>0) {
-			if (whereToMove >table.getNumColumns())
-				whereToMove = table.getNumColumns();
-
-			boundaryEmployee = findAssistant(whereToMove-1);
-		}
-
-
-		ListAssistant[] which = new ListAssistant[numSelected];
-		int count = 0;
-		for (int ic = 0; ic<table.getNumColumns(); ic++){
-			if (table.isColumnSelected(ic)) { //columns selected get deleted!
-				which[count++]=findAssistant(ic);
-			}
-		}
-		for (int ic = 0; ic<numSelected; ic++){
-			ListAssistant assistant = which[ic];
-			moveEmployeeAfter(assistant, boundaryEmployee);
-			boundaryEmployee = assistant;
-		}
-		for (int ic = 0; ic<table.getNumColumns(); ic++){
-			ListAssistant mb =findAssistant(ic);
-			MesquiteInteger cwi = (MesquiteInteger)mb.attachments.getElement("cwi");
-			MesquiteBoolean cwb = (MesquiteBoolean)mb.attachments.getElement("cwb");
-			if (cwi != null && cwb != null)
-				table.setColumnWidth(ic, cwi.getValue(), cwb.getValue());
-			if (cwi != null)
-				mb.attachments.removeElement(cwi, false);
-			if (cwb != null)
-				mb.attachments.removeElement(cwb, false);
-		}
-		table.deselectAllColumns(true);
-		for (int ic = 0; ic<numSelected; ic++){
-			int column = findAssistant(which[ic]);
-			table.selectColumns(column, column);
-		}
-		table.repaintAll();
-	}
-	void moveEmployeeAfter(ListAssistant toBeMoved, ListAssistant after){
-		//complex because want to keep column widths as is.  Thus, figure out 
-		ownerModule.moveEmployeeAfter(toBeMoved, after);
-	}
 	public void addRowsNotify(int first, int num) {
 	}
 
@@ -939,12 +826,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		super.windowResized();
 		if (MesquiteWindow.checkDoomed(this))
 			return;
-		//if (true || (getHeight()!=windowHeight) || (getWidth()!=windowWidth)) {
+		if ((getHeight()!=windowHeight) || (getWidth()!=windowWidth)) {
 			windowHeight =getHeight();
 			windowWidth = getWidth();
 			if (table !=null)
 				table.setSize(windowWidth, windowHeight);
-	//	}
+		}
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*.................................................................................................................*/

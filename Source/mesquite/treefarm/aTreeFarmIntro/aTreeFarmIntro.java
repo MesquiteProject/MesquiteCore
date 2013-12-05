@@ -1,5 +1,5 @@
-/* Mesquite source code, Treefarm package.  Copyright 1997-2011 W. Maddison, D. Maddison and P. Midford. 
-Version 2.75, September 2011.
+/* Mesquite source code, Treefarm package.  Copyright 1997-2010 W. Maddison, D. Maddison and P. Midford. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -92,11 +92,11 @@ public class aTreeFarmIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
  	public String getPackageCitation(){
- 		return "Maddison, W.P.,  D.R. Maddison and P. Midford, 2011.  Tree Farm package for Mesquite, version 2.75.";
+ 		return "Maddison, W.P.,  D.R. Maddison and P. Midford, 2010.  Tree Farm package for Mesquite, version 2.74.";
  	}
 	/*.................................................................................................................*/
   	 public String getPackageVersion() {
-		return "2.75";
+		return "2.74";
    	 }
 	/*.................................................................................................................*/
   	 public String getPackageAuthors() {

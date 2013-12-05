@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -73,28 +73,6 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 			trees.addElement(elementAt(i), false);
 			
 		}
-	}
-	public boolean swapParts(int first, int second) {
-		
-		return swapParts(first, second, false);  //NOTE DEFAULT IS FALSE. The reason is to avoid time cost on multiple swaps
-	}
-	public boolean swapParts(int first, int second, boolean resetNumbers) {
-		
-		boolean success = super.swapParts(first, second);
-		if (resetNumbers)
-			resetAssignedNumbers();
-		return success;
-	}
-	/*...........................................................*/
-	public boolean moveParts(int starting, int num, int justAfter) {
-		return moveParts(starting, num, justAfter, false);  //NOTE DEFAULT IS FALSE The reason is to avoid time cost on multiple moves
-	}
-	/*...........................................................*/
-	public boolean moveParts(int starting, int num, int justAfter, boolean resetNumbers) {
-		boolean success =  super.moveParts(starting, num, justAfter);
-		if (resetNumbers)
-			resetAssignedNumbers();
-		return success;
 	}
 	/*.................................................................................................................*/
 	public void addElement(Listable obj, boolean notify) {
@@ -173,7 +151,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 	}
 
-	public void resetAssignedNumbers(){
+	private void resetAssignedNumbers(){
 		for (int i=0; i<size(); i++)
 			if (elementAt(i) instanceof MesquiteTree)
 				((MesquiteTree)elementAt(i)).setAssignedNumber(i);
@@ -359,7 +337,6 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		for(int i=0; i<taxa.getNumTaxa(); i++) {
 			if (i>0)
 				temp += ","+ StringUtil.lineEnding();
-			temp += "[" + i + "] ";
 			String thisLabel = getTranslationLabel(i);
 			temp += "\t\t" + thisLabel + " " + StringUtil.tokenize(taxa.getTaxonName(i)) ;
 		}

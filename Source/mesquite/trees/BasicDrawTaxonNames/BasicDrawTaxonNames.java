@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -50,7 +50,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected int descent;
 	protected int oldNumTaxa=0;
 	protected MesquiteString fontSizeName, fontName;
-	protected MesquiteBoolean colorPartition, colorAssigned, shadePartition, showFootnotes;
+	protected MesquiteBoolean colorPartition, shadePartition, showFootnotes;
 	/*New code added Feb.15.07 centerNodeLabels oliver*/ //TODO: delete new code comments
 	protected MesquiteBoolean showNodeLabels, showTaxonNames, centerNodeLabels; /*deleted centerNodeLables declaration Feb.26.07 oliver*/
 	/*end new code added Feb.15.07 oliver*/
@@ -87,10 +87,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		mmis.setSelected(fontColorName);
 
 		//MesquiteSubmenuSpec mssNames = addSubmenu(null, "Names");
-		colorPartition = new MesquiteBoolean(false);
-		colorAssigned = new MesquiteBoolean(true);
+		colorPartition = new MesquiteBoolean(true);
 		addCheckMenuItemToSubmenu(null, namesMenu, "Color by Taxon Group", makeCommand("toggleColorPartition", this), colorPartition);
-		addCheckMenuItemToSubmenu(null, namesMenu, "Color by Assigned Color", makeCommand("toggleColorAssigned",  this), colorAssigned);
 		addItemToSubmenu(null, namesMenu, "Shade by Value...", makeCommand("shadeByNumber",  this));
 		offShadeMI = addItemToSubmenu(null, namesMenu, "Turn off Shading", makeCommand("offShading",  this));
 		offShadeMI.setEnabled(false);
@@ -134,7 +132,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			temp.addLine("setFontSize " + myFontSize);  //TODO: this causes problem since charts come before tree window
 		temp.addLine("setColor " + ParseUtil.tokenize(fontColorName.toString()));  //TODO: this causes problem since charts come before tree window
 		temp.addLine("toggleColorPartition " + colorPartition.toOffOnString());
-		temp.addLine("toggleColorAssigned " + colorAssigned.toOffOnString());
 		if (shader != null)
 			temp.addLine("shadeByNumber ", shader);
 		temp.addLine("toggleShadePartition " + shadePartition.toOffOnString());
@@ -197,18 +194,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			boolean current = colorPartition.getValue();
 
 			colorPartition.toggleValue(parser.getFirstToken(arguments));
-			if (colorAssigned.getValue() && colorPartition.getValue())
-				colorAssigned.setValue(false);
 			if (current!=colorPartition.getValue())
-				parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Toggles whether taxon names are colored according to their current assigned color", "[on or off]", commandName, "toggleColorAssigned")) {
-			boolean current = colorAssigned.getValue();
-
-			colorAssigned.toggleValue(parser.getFirstToken(arguments));
-			if (colorAssigned.getValue() && colorPartition.getValue())
-				colorPartition.setValue(false);
-			if (current!=colorAssigned.getValue())
 				parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether taxon names are given a background color according to their group in the current taxa partition", "[on or off]", commandName, "toggleShadePartition")) {
@@ -384,7 +370,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 
 		return true;
 	}
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	/*.................................................................................................................*/
 	protected void drawNamesOnTree(Tree tree, int N, TreeDisplay treeDisplay, TaxaPartition partitions, int triangleBase) {
 		if (triangleBase < 0 && tree.getAssociatedBit(triangleNameRef, N))
@@ -448,11 +433,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						textRotator.assignBackground(bgColor);
 					}
 				}
-			}
-			if (colorAssigned.getValue()){
-				long c = taxa.getAssociatedLong(colorNameRef, taxonNumber);
-				if (MesquiteLong.isCombinable(c))
-					taxonColor= ColorDistribution.getStandardColor((int)c);
 			}
 			if (showFootnotes.getValue()){
 				ListableVector extras = treeDisplay.getExtras();

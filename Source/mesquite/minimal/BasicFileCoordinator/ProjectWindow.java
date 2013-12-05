@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -207,7 +207,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 			setTitle(ownerModule.getProject().getName());
 		repaint();
 	}
-	public boolean permitViewMode(){
+	public boolean showInfoTabs(){
 		return false;
 	}
 	public void dispose(){
@@ -223,19 +223,16 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	public void refresh(FileElement element){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
-		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh(element);
 	}
 	public void refresh(){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
-		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
 	public void refreshGraphics(){
 		if (bfc.isDoomed())
 			return;
-		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refreshGraphics();
 	}
 	void suppress(){
@@ -722,49 +719,32 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 /*======================================================================== */
 class ScrollPanel extends MousePanel {
 	ProjectPanel p;
-	Image up, down; // query;
+	Image up, down, query;
 	int scrollLeft = 38;
-	HelpSearchStrip searchStrip;
-
 	public ScrollPanel(ProjectPanel p){
 		super();
 		this.p = p;
 		p.scroll = this;
-		setLayout(null);
-		searchStrip = new HelpSearchStrip(p.w, true);
-		add(searchStrip);
-		searchStrip.setSize(120, 15);
-		searchStrip.setLocation(4, 0);
-		searchStrip.setVisible(true);
-		searchStrip.setText("Search data");
 		up = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "uparrow.gif");
 		down = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "downarrow.gif");
-	//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
+		query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}
 	public void paint(Graphics g){
-	//	g.drawImage(query, 8, 8, this);
+		g.drawImage(query, 8, 8, this);
 		if (!p.canScrollUp() && !p.canScrollDown())
 			return;
 		g.setColor(ColorDistribution.veryLightGray);
 		g.fillRect(0,0,getWidth(), getHeight());
-	//	g.drawImage(query, 8, 8, this);
+		g.drawImage(query, 8, 8, this);
 		if (p.canScrollUp())
-			g.drawImage(up, scrollLeft, 18, this);
+			g.drawImage(up, scrollLeft, 8, this);
 		if (p.canScrollDown())
-			g.drawImage(down, scrollLeft+22, 18, this);
+			g.drawImage(down, scrollLeft+22, 8, this);
 		g.setColor(Color.gray);
 		g.fillRect(0,0,getWidth(), 3);
 		//g.fillRect(getWidth()-3,0,3, getHeight());
 	}
-	/*public void setSize(int w, int h){
-		super.setSize(w, h);
-		searchStrip.setSize(w, 15);
-	}
-	public void setBounds(int x, int y, int w, int h){
-		super.setBounds(x, y, w, h);
-		searchStrip.setSize(w, 15);
-	}*/
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		//if modifiers include right click/control, then do dropdown menu
 		if (y>=8 && y<=26 && x>= scrollLeft && x < scrollLeft + 18) {
@@ -772,6 +752,9 @@ class ScrollPanel extends MousePanel {
 		}
 		else if (y>=8 && y<=26 && x>= scrollLeft+22 && x < scrollLeft + 40) {
 			p.scrollDown();
+		}
+		else if (y>=8 && y<=26 && x>= 8 && x < 26) {
+			p.explainProjectWindow();
 		}
 	}
 
@@ -1060,7 +1043,6 @@ class MElementPanel extends ElementPanel {
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Rename Matrix", "Rename Matrix", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Matrix", "Delete Matrix", new MesquiteCommand("deleteMe", element));
-		addCommand(true, null, "Delete Matrix", "Duplicate Matrix", new MesquiteCommand("duplicateMe", element));
 		addCommand(true, null, "Export Matrix", "Export Matrix", new MesquiteCommand("exportMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));

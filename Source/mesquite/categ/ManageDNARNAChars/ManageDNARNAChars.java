@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -60,8 +60,6 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		MesquiteProject proj=null;
 		if (file!=null)
 			proj = file.getProject();
-		else
-			proj = getProject();
 		CategoricalData data= null;
 		
 		//@@@@@@@@@@@@@@@@@@@@
@@ -73,14 +71,9 @@ public class ManageDNARNAChars extends CategMatrixManager {
 				data = (DNAData)getProject().chooseData(containerOfModule(), null, taxa, RNAState.class, message,  true,"Fuse with Selected Matrix", "Add as New Matrix");
 				if (data != null && numChars > data.getNumChars())
 					data.addCharacters(data.getNumChars()-1, numChars - data.getNumChars(), false);
-				if (data != null)
-					file.characterDataNameTranslationTable.addElement(new MesquiteString(title, data.getName()), false);
 			}
-			if (data == null) {
+			if (data == null)
 				data= new RNAData(this, taxa.getNumTaxa(), numChars, taxa);  //RNA DATA????
-				if (fuse)
-					data.setName(title);  //because otherwise titles are not set for fused matrices within ManageCharacters, since on the outside they don't know if it's new
-			}
 			else
 				data.suppressChecksum = true;
 			((DNAData)data).setDisplayAsRNA(true);
@@ -91,18 +84,12 @@ public class ManageDNARNAChars extends CategMatrixManager {
 				data = (DNAData)getProject().chooseData(containerOfModule(), null, taxa, DNAState.class, message,  true,"Fuse with Selected Matrix", "Add as New Matrix");
 				if (data != null && numChars > data.getNumChars())
 					data.addCharacters(data.getNumChars()-1, numChars - data.getNumChars(), false);
-				if (data != null)
-					file.characterDataNameTranslationTable.addElement(new MesquiteString(title, data.getName()), false);
 			}
-			if (data == null){
+			if (data == null)
 				data= new DNAData(this, taxa.getNumTaxa(), numChars, taxa);
-				if (fuse)
-					data.setName(title);  //because otherwise titles are not set for fused matrices within ManageCharacters, since on the outside they don't know if it's new
-			}
 		else
 			data.suppressChecksum = true;
 		}
-		data.interleaved = false;   //reset default in case this is fused
 		//@@@@@@@@@@@@@@@@@@@@
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
 		while (!tok.equals(";")) {
@@ -155,7 +142,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 				String t = ParseUtil.getToken(formatCommand, stringPos); //eating up "
 				if (t!=null && t.equalsIgnoreCase("\"")){
 					t = ParseUtil.getToken(formatCommand, stringPos); //getting next token
-					int count = 4;   // 16 March '10 changed to 4 so that it adds these on to the end
+					int count = 4;   // 16 March 2010 changed to 4 so that it adds these on to the end
 					while (t!=null && !t.equals("\"") &&  !t.equals(";")){
 						for (int i = 0; i<t.length(); i++){ //process entire string
 							char c = t.charAt(i);

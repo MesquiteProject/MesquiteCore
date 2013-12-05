@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -41,9 +41,6 @@ public class SquareTree extends DrawTree {
 	MesquiteString cornerModeName;
 	int cornerMode = 0;
 	int curvature = 50;
-	MesquiteBoolean simpleTriangle = new MesquiteBoolean(true);
-	
-	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		drawings = new Vector();
@@ -76,7 +73,6 @@ public class SquareTree extends DrawTree {
 		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
 		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
-	//	addCheckMenuItem(null, "Simple Triangle for Triangled Clades", makeCommand("toggleSimpleTriangle",  this), simpleTriangle);
 		return true;
 	}
 
@@ -270,25 +266,12 @@ public class SquareTree extends DrawTree {
 			orientationName.setValue(orient(ornt));
 			parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to draw triangled clades as simple triangles or not.", "", commandName, "toggleSimpleTriangle")) {
- 			boolean current = simpleTriangle.getValue();
- 			simpleTriangle.toggleValue(parser.getFirstToken(arguments));
- 			if (current!=simpleTriangle.getValue()) {
- 				Enumeration e = drawings.elements();
- 				while (e.hasMoreElements()) {
- 					Object obj = e.nextElement();
- 					SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
- 					treeDrawing.setSimpleTriangle(simpleTriangle.getValue());
- 				}
- 				parametersChanged();
- 			}
-		}
 		else return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Classic Square tree";
+		return "Square tree";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -327,7 +310,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 	NameReference triangleNameRef;
 	int cornerMode;
 	BasicStroke defaultStroke;
-	
 
 	public SquareTreeDrawing(TreeDisplay treeDisplay, int numTaxa, SquareTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
@@ -467,7 +449,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void UPCalcFillBranchPolys(Tree tree, int node, int nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcFillBranchPolys(tree, d, dShortcut);
@@ -478,7 +460,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void UPCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcBranchPolys(tree, d, dShortcut, polys, width);
@@ -543,7 +525,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void DOWNCalcFillBranchPolys(Tree tree, int node, int nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcFillBranchPolys(tree, d, dShortcut);
@@ -553,7 +535,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void DOWNCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcBranchPolys(tree, d, dShortcut, polys, width);
@@ -618,7 +600,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void RIGHTCalcFillBranchPolys(Tree tree, int node, int nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcFillBranchPolys(tree, d, dShortcut);
@@ -628,7 +610,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void RIGHTCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
+		if (!tree.getAssociatedBit(triangleNameRef,node)){
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcBranchPolys(tree, d, dShortcut, polys, width);
@@ -690,7 +672,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void LEFTCalcFillBranchPolys(Tree tree, int node, int nShortcut)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcFillBranchPolys(tree, d, dShortcut);
@@ -700,7 +682,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	private void LEFTCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
 	{
-		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
+		if (!tree.getAssociatedBit(triangleNameRef,node)){
 			int dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcBranchPolys(tree, d, dShortcut, polys, width);
@@ -824,22 +806,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 			angle.setValue(Math.PI);
 		}
 	}*/
-	/*_________________________________________________*
-	private   void drawLeftSideOfClade(Tree tree, Graphics g, int node) {
-		if (tree.nodeIsInternal(node)) {
-			int firstDaughter = tree.firstDaughterOfNode(node);
-			if (tree.nodeExists(firstDaughter)) {
-				g.drawLine(x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
-				g.drawLine(x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
-				g.drawLine(x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
-				g.drawLine(x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
-			}
-		}
-		
-
-		
-	}
-
 	/*_________________________________________________*/
 	private   void drawOneBranch(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
@@ -867,19 +833,16 @@ class SquareTreeDrawing extends TreeDrawing   {
 						}
 					}
 				}
-				if (tree.getAssociatedBit(triangleNameRef,node)) 
-					if (treeDisplay.getSimpleTriangle()) {
-						for (int j=0; j<2; j++)
-							for (int i=0; i<2; i++) {
-								g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
-								g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-								g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-							}
-					} else {
-					//	drawLeftSideOfClade(tree, g, node);
-					}
+				if (tree.getAssociatedBit(triangleNameRef,node)) {
+					for (int j=0; j<2; j++)
+						for (int i=0; i<2; i++) {
+							g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
+							g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
+							g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
+						}
+				}
 			}
-			if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle())
+			if (!tree.getAssociatedBit(triangleNameRef,node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawOneBranch(tree, g, d);
 			//g.setColor(Color.green);//for testing
@@ -931,7 +894,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 				arc.lineTo(xnM, ynM);
 			}
 
-			else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//ï¿½ï¿½ï¿½ï¿½
+			else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//¥¥¥¥
 				arc = new GeneralPath(); // left
 				arc.moveTo(xN, yN);
 				if (yN - ynM>curveD)
@@ -947,7 +910,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 				arc.curveTo(xnM, yN, xnM, yN, xnM, ynM);
 				arc.lineTo(xnM, ynM);
 			}
-			else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //ï¿½ï¿½ï¿½ï¿½
+			else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //¥¥¥¥
 				arc = new GeneralPath(); // left
 				arc.moveTo(xN, yN);
 				if (xnM - xN>curveD)
@@ -1069,7 +1032,13 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	private boolean ancestorIsTriangled(Tree tree, int node) {
-		return tree.ancestorHasNameReference(triangleNameRef, node);
+		if (!tree.nodeExists(node))
+			return false;
+		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
+			return true;
+		if (tree.getRoot() == node || tree.getSubRoot() == node)
+			return false;
+		return ancestorIsTriangled(tree, tree.motherOfNode(node));
 	}
 	public boolean branchIsVisible(int node){
 		try {
@@ -1302,7 +1271,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 						}
 					}
 			}
-			if (!tree.getAssociatedBit(triangleNameRef, node) || !treeDisplay.getSimpleTriangle()) 
+			if (!tree.getAssociatedBit(triangleNameRef, node)) 
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					ScanBranches(tree, polys, d, x, y, fraction);
 
@@ -1328,13 +1297,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 		if (treeDisplay == null)
 			return;
 		treeDisplay.setOrientation(orientation);
-		treeDisplay.pleaseUpdate(true);
-	}
-	/*_________________________________________________*/
-	public void setSimpleTriangle(boolean simpleTriangle) {
-		if (treeDisplay == null)
-			return;
-		treeDisplay.setSimpleTriangle(simpleTriangle);
 		treeDisplay.pleaseUpdate(true);
 	}
 	/*_________________________________________________*/

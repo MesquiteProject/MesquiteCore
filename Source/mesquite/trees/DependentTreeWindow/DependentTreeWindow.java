@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -369,13 +369,25 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 	public   void InvertBranch(TreeDisplay treeDisplay, Graphics g, int N) {
 
 		highlightedBranch=N;
-		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
+		if (!GraphicsUtil.useXORMode(g, true))
+			return;
+		g.setColor(Color.black);
+		g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
+		treeDisplay.getTreeDrawing().fillBranch(treeDisplay.getTree(), N, g);
+		g.setPaintMode();
+		g.setColor(Color.black);
 	}
 
 	/*_________________________________________________*/
 	public   void RevertBranch(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=0;
-		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
+		if (!GraphicsUtil.useXORMode(g, true))
+			return;
+		g.setColor(Color.black);
+		g.setXORMode(Color.white);//for some reason color makes no difference in MacOS, but is inversion color in Win95
+		treeDisplay.getTreeDrawing().fillBranch(treeDisplay.getTree(), N, g);
+		g.setPaintMode();
+		g.setColor(Color.black);
 	}
 	/*_________________________________________________*/
 	public   void ScanFlash(TreeDisplay treeDisplay, Graphics g, int x, int y, int modifiers) {

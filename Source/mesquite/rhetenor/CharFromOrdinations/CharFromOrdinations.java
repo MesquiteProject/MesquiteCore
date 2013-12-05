@@ -1,5 +1,5 @@
-/* Mesquite source code (Rhetenor package).  Copyright 1997-2011 E. Dyreson and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code (Rhetenor package).  Copyright 1997-2010 E. Dyreson and W. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -188,15 +188,6 @@ public class CharFromOrdinations extends CharacterSource {
 		super.employeeParametersChanged(employee, source, notification);
 	}
 	boolean firstWarning = true;
-	private String allCombinable(MContinuousStates originalMatrix, int item){
-		for (int ic = 0; ic < originalMatrix.getNumChars(); ic++)
-			for (int it = 0; it<originalMatrix.getNumNodes(); it++) {
-				if (!MesquiteDouble.isCombinable(originalMatrix.getState(ic, it, item))){
-					return "State " + MesquiteDouble.toString(originalMatrix.getState(ic, it, item)) + " taxon " + (it+1) + " character " + (ic+1);
-				}
-			}
-		return null;
-	}
 	/*.................................................................................................................*/
 	private void getM(Taxa taxa, Tree tree){
 		originalMatrix = null;
@@ -222,9 +213,7 @@ public class CharFromOrdinations extends CharacterSource {
 		if (input==null || !(input instanceof MContinuousDistribution)) {
 			return;
 		}
-		MesquiteBoolean wasStripped = new MesquiteBoolean(false);
-		originalMatrix = MatrixUtil.stripExcluded(((MContinuousDistribution)input), wasStripped);  //new after 2. 75
-		
+		originalMatrix = ((MContinuousDistribution)input);
 		if (currentItem<0 || currentItem>= originalMatrix.getNumItems()) {
 			discreetAlert( "Request to use item that doesn't exist for ordination.  Item to be used will be reset to 0.");
 			currentItem = 0;
@@ -237,11 +226,9 @@ public class CharFromOrdinations extends CharacterSource {
 		}
 		else
 			itemString = "";
-		String response = allCombinable(originalMatrix, currentItem);
-		if (response != null) {
-			if (firstWarning) {
-				discreetAlert( "Matrix to be ordinated has missing data or other illegal values.  Ordination cannot be performed. " + response);
-			}
+		if (!originalMatrix.allCombinable(currentItem)) {
+			if (firstWarning)
+				discreetAlert( "originalMatrix to be ordinated has missing data or other illegal values.  Ordination cannot be performed.");
 			firstWarning = false;
 			return;
 		}
@@ -257,10 +244,6 @@ public class CharFromOrdinations extends CharacterSource {
 		}
 		transformedMatrix = new MContinuousAdjustable(taxa); //making an empty matrix to be filled
 		transformedMatrix.setStates(new Double2DArray(ord.getScores()));
-		String tName = "Ordination from " + originalMatrix.getName();
-		if (wasStripped.getValue())
-			tName += "(excluded characters deleted)";
-		transformedMatrix.setName(tName);
 	}
 	/*.................................................................................................................*/
 	private void dataCheck(Taxa taxa, Tree tree) {

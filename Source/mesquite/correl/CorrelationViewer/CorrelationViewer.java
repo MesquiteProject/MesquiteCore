@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -33,14 +33,13 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 	int currentY = 1;
 	Tree tree;
 	NumberFor2CharAndTree numberTask;
-	CharSourceCoordObed characterSourceTaskX, characterSourceTaskY;
+	CharSourceCoordObed characterSourceTask;
 	Taxa taxa;
 	MesquiteString numberTaskName;
 	MesquiteCommand ntC;
 	Class stateClass;
 	MesquiteWindow containingWindow;
 	CorrelPanel panel;
-	boolean askedForXY = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		numberTask = (NumberFor2CharAndTree)hireEmployee(NumberFor2CharAndTree.class, "Correlation analysis");
@@ -57,37 +56,21 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 			mss.setSelected(numberTaskName);
 		}
 
-		characterSourceTaskX = (CharSourceCoordObed)hireCompatibleEmployee(CharSourceCoordObed.class, numberTask.getCompatibilityTest(), "Source of characters (independent variable X for correlation analysis)");
-		if (characterSourceTaskX == null)
+		characterSourceTask = (CharSourceCoordObed)hireCompatibleEmployee(CharSourceCoordObed.class, numberTask.getCompatibilityTest(), "Source of  characters (for correlation analysis)");
+		if (characterSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of characters was obtained.");
-
-		characterSourceTaskY = (CharSourceCoordObed)hireCompatibleEmployee(CharSourceCoordObed.class, numberTask.getCompatibilityTest(), "Source of characters (dependent variable Y for correlation analysis)");
-		if (characterSourceTaskY == null)
-			return sorry(getName() + " couldn't start because no source of characters was obtained.");
-
 		MesquiteWindow f = containerOfModule();
 		if (f instanceof MesquiteWindow){
 			containingWindow = (MesquiteWindow)f;
 			containingWindow.addSidePanel(panel = new CorrelPanel(), 200);
 		}
-		
-		addMenuItem( "Choose Both Characters...", makeCommand("chooseBoth",  this));
+
 		addMenuItem( "Choose Character X...", makeCommand("chooseX",  this));
 		addMenuItem( "Choose Character Y...", makeCommand("chooseY",  this));
-		addMenuItem( "Re-run analysis", makeCommand("rerun",  this));
 		addMenuItem( "Close Correlation Analysis", makeCommand("close",  this));
 		addMenuItem( "-", null);
 
 		return true;
-	}
-	/* ................................................................................................................. */
-	/** Returns the purpose for which the employee was hired (e.g., "to reconstruct ancestral states" or "for X axis"). */
-	public String purposeOfEmployee(MesquiteModule employee) {
-		if (employee ==  characterSourceTaskX)
-			return "for X variable, correlation analysis"; 
-		if (employee ==  characterSourceTaskY)
-			return "for Y variable, correlation analysis"; 
-		return super.purposeOfEmployee(employee);
 	}
 	public String nameForWritableResults(){
 		if (numberTask == null)
@@ -143,8 +126,7 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setCorrelationCalculator ", numberTask); 
-		temp.addLine("setCharSourceX ", characterSourceTaskX); 
-		temp.addLine("setCharSourceY ", characterSourceTaskY); 
+		temp.addLine("setCharSource ", characterSourceTask); 
 		temp.addLine("setX " + CharacterStates.toInternal(currentX)); 
 		temp.addLine("setY " + CharacterStates.toInternal(currentY)); 
 		temp.addLine("doCounts");
@@ -174,35 +156,14 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 			}
 		}
 		else   	if (checker.compare(this.getClass(), "Returns employee", null, commandName, "getCharSource")) {
-			return characterSourceTaskX;
-		}
-		else   	if (checker.compare(this.getClass(), "Returns employee", null, commandName, "getCharSourceX")) {
-			return characterSourceTaskX;
-		}
-		else   	if (checker.compare(this.getClass(), "Returns employee", null, commandName, "getCharSourceY")) {
-			return characterSourceTaskY;
+			return characterSourceTask;
 		}
 		else   	if (checker.compare(this.getClass(), "Sets character source", null, commandName, "setCharSource")) {
-			CharSourceCoordObed temp  = (CharSourceCoordObed)replaceCompatibleEmployee(CharSourceCoordObed.class, arguments, characterSourceTaskX, numberTask.getCompatibilityTest());
+			CharSourceCoordObed temp  = (CharSourceCoordObed)replaceCompatibleEmployee(CharSourceCoordObed.class, arguments, characterSourceTask, numberTask.getCompatibilityTest());
 			if (temp!=null) {
-				characterSourceTaskX = temp;
-				characterSourceTaskY = temp;  //assuming this is an old script, using the same character source for both X and Y
+				characterSourceTask = temp;
 			}
-			return characterSourceTaskX;
-		}
-		else   	if (checker.compare(this.getClass(), "Sets character source for X", null, commandName, "setCharSourceX")) {
-			CharSourceCoordObed temp  = (CharSourceCoordObed)replaceCompatibleEmployee(CharSourceCoordObed.class, arguments, characterSourceTaskX, numberTask.getCompatibilityTest());
-			if (temp!=null) {
-				characterSourceTaskX = temp;
-			}
-			return characterSourceTaskX;
-		}
-		else   	if (checker.compare(this.getClass(), "Sets character source for Y", null, commandName, "setCharSourceY")) {
-			CharSourceCoordObed temp  = (CharSourceCoordObed)replaceCompatibleEmployee(CharSourceCoordObed.class, arguments, characterSourceTaskY, numberTask.getCompatibilityTest());
-			if (temp!=null) {
-				characterSourceTaskY = temp;
-			}
-			return characterSourceTaskY;
+			return characterSourceTask;
 		}
 		else   	if (checker.compare(this.getClass(), "Gets text in panel", null, commandName, "getText")) {
 			if (panel == null)
@@ -214,27 +175,10 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 			if (panel != null)
 				log( panel.getText());
 		}
-		else if (checker.compare(this.getClass(), "Queries the user about what characters to use", null, commandName, "chooseBoth")) {
-			int ic=characterSourceTaskX.queryUserChoose(taxa, " (X, for Correlation analysis) ");
-			boolean redo = false;
-			if (MesquiteInteger.isCombinable(ic)) {
-				currentX = ic;
-				redo = true;
-			}
-			ic=characterSourceTaskY.queryUserChoose(taxa, " (Y, for Correlation analysis) ");
-			if (MesquiteInteger.isCombinable(ic)) {
-				currentY = ic;
-				redo = true;
-			}
-			askedForXY = true;
-			if (redo)
-				doCounts();
-		}
 		else if (checker.compare(this.getClass(), "Queries the user about what character to use", null, commandName, "chooseX")) {
-			int ic=characterSourceTaskX.queryUserChoose(taxa, " (X, for Correlation analysis) ");
+			int ic=characterSourceTask.queryUserChoose(taxa, " (X, for Correlation analysis) ");
 			if (MesquiteInteger.isCombinable(ic)) {
 				currentX = ic;
-				askedForXY = true;
 				doCounts();
 			}
 		}
@@ -242,40 +186,34 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
-			askedForXY = true;
 			int ic = CharacterStates.toInternal(icNum);
-			if ((ic>=0) && characterSourceTaskX.getNumberOfCharacters(taxa)==0) {
+			if ((ic>=0) && characterSourceTask.getNumberOfCharacters(taxa)==0) {
 				currentX = ic;
 
 			}
-			else if ((ic>=0) && (ic<=characterSourceTaskX.getNumberOfCharacters(taxa)-1)) {
+			else if ((ic>=0) && (ic<=characterSourceTask.getNumberOfCharacters(taxa)-1)) {
 				currentX = ic;
 
 			}
 		}
 		else if (checker.compare(this.getClass(), "Queries the user about what character to use", null, commandName, "chooseY")) {
-			int ic=characterSourceTaskY.queryUserChoose(taxa, " (Y, for Correlation analysis) ");
+			int ic=characterSourceTask.queryUserChoose(taxa, " (Y, for Correlation analysis) ");
 			if (MesquiteInteger.isCombinable(ic)) {
 				currentY = ic;
-				askedForXY = true;
 				doCounts();
 			}
-		}
-		else if (checker.compare(this.getClass(), "Forces a rerunning", null, commandName, "rerun")) {
-				doCounts();
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use for X", "[character number]", commandName, "setY")) {
 			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);
-			if ((ic>=0) && characterSourceTaskY.getNumberOfCharacters(taxa)==0) {
+			if ((ic>=0) && characterSourceTask.getNumberOfCharacters(taxa)==0) {
 				currentY = ic;
 			}
-			else if ((ic>=0) && (ic<=characterSourceTaskY.getNumberOfCharacters(taxa)-1)) {
+			else if ((ic>=0) && (ic<=characterSourceTask.getNumberOfCharacters(taxa)-1)) {
 				currentY = ic;
 			}
-			askedForXY = true;
 		}
 		else if (checker.compare(this.getClass(), "Provokes Calculation", null, commandName, "doCounts")) {
 			doCounts();
@@ -318,18 +256,8 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 	public void doCounts() {
 		if (taxa == null || panel == null)
 			return;
-		if (!askedForXY && !MesquiteThread.isScripting()){
-			int ic=characterSourceTaskX.queryUserChoose(taxa, " (X, for Correlation analysis) ");
-			if (MesquiteInteger.isCombinable(ic))
-				currentX = ic;
-			ic=characterSourceTaskY.queryUserChoose(taxa, " (Y, for Correlation analysis) ");
-			if (MesquiteInteger.isCombinable(ic))
-				currentY = ic;
-			askedForXY = true;
-		}
-
-		CharacterDistribution statesX = characterSourceTaskX.getCharacter(taxa, currentX);
-		CharacterDistribution statesY = characterSourceTaskY.getCharacter(taxa, currentY);
+		CharacterDistribution statesX = characterSourceTask.getCharacter(taxa, currentX);
+		CharacterDistribution statesY = characterSourceTask.getCharacter(taxa, currentY);
 		if (statesX == null || statesY == null)
 			return;
 		stateClass = statesX.getStateClass();
@@ -338,8 +266,8 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 //		window.setText("");
 		panel.setStatus(true);
 		panel.repaint();
-		panel.setText("\nX: " + characterSourceTaskX.getCharacterName(taxa, currentX) +  "\n");
-		panel.append("Y: " + characterSourceTaskY.getCharacterName(taxa, currentY) +  "\n");
+		panel.setText("\nX: " + characterSourceTask.getCharacterName(taxa, currentX) +  "\n");
+		panel.append("Y: " + characterSourceTask.getCharacterName(taxa, currentY) +  "\n");
 		panel.append("Calculation: " + numberTask.getNameAndParameters() + "\n");
 		if (statesX == null || statesY == null)
 			rs.setValue("Sorry, one or both of the characters was not obtained.  The correlation analysis could not be completed.");

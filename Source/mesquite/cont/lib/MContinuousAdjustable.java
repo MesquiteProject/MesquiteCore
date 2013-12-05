@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -224,15 +224,6 @@ public class MContinuousAdjustable  extends MContinuousDistribution implements M
 			numChars = firstMatrix.getSizeC();
 		}
 		
-	}
-	/*..........................................MContinuousAdjustable................*/
-	public void setState (int ic, int N,  ContinuousState cs) {  //THIS SHOULD BE ic, it not it, ic
-		if (cs.getNumItems()> matrices.size())
-			return;
-		for (int item = 0; item<cs.getNumItems() && item< matrices.size(); item++){
-			Double2DArray matrix = (Double2DArray)matrices.elementAt(item);
-			matrix.setValue(ic,N, cs.getValue(item));
-		}
 	}
 	/*..........................................MContinuousAdjustable................*/
 	public void setState (int ic, int N,  int item, double d) {  //THIS SHOULD BE ic, it not it, ic

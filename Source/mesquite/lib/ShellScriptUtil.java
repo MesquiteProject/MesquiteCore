@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -73,14 +73,6 @@ public class ShellScriptUtil  {
 			return "rm -f " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
 	}
 	/*.................................................................................................................*/
-	public static String getExitCommand(){
-		if (MesquiteTrunk.isWindows()){
-			return "";
-		}
-		else
-			return "exit " +StringUtil.lineEnding();
-	}
-	/*.................................................................................................................*/
 	public static String getSetFileTypeCommand(String filePath){
 		if (MesquiteTrunk.isMacOSX())
 			return "/Developer/Tools/setFile -t TEXT " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
@@ -94,7 +86,6 @@ public class ShellScriptUtil  {
 		else
 			return "";
 	}
-	/*.................................................................................................................*/
 	public static void sendToProcessInput (Process proc, String input) {
 		
 		OutputStream inputToProcess = proc.getOutputStream();
@@ -110,7 +101,7 @@ public class ShellScriptUtil  {
 		} catch (Exception e) {
 		}
 	}
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public static MesquiteExternalProcess startExternalProcess(String executablePath){ 	
 		Process proc=null;
 		try {
@@ -119,7 +110,10 @@ public class ShellScriptUtil  {
 				executablePath = executablePath.replaceAll("//", "/");
 				proc = Runtime.getRuntime().exec(executablePath);
 			} else {
-			}
+/*				scriptPath = "\"" + scriptPath + "\"";
+				String[] cmd = {"cmd", "/c", scriptPath};
+				proc = Runtime.getRuntime().exec(cmd);
+*/			}
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed.");
 			return null;
@@ -131,23 +125,11 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
-	public static Process executeScript(String scriptPath){ 
-		return executeScript(scriptPath, true);
-	}
-	/*.................................................................................................................*/
-	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
+	public static Process executeScript(String scriptPath){ 	
 		Process proc;
 		try {
 			if (MesquiteTrunk.isMacOSX()){
-				if (visibleTerminal) {
-					proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
-					
-				}
-				else {
-					scriptPath = scriptPath.replaceAll("//", "/");
-					proc = Runtime.getRuntime().exec(scriptPath);
-					//try {proc.waitFor();} catch (InterruptedException e) {}
-				}
+				proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
 //				proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
 			}
 			else if (MesquiteTrunk.isLinux()) {
@@ -216,8 +198,7 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
-		Process proc = null;
+	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher){
 		long[] lastModified=null;
 		boolean stillGoing = true;
 		if (outputFilePaths!=null) {
@@ -233,9 +214,8 @@ public class ShellScriptUtil  {
 					MesquiteFile.putFileContents(runningFilePath, runningFileMessage, true);
 				if (appendRemoveCommand && MesquiteFile.fileExists(runningFilePath))
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
-				//+StringUtil.lineEnding()+ShellScriptUtil.getExitCommand()
 			}
-			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
+			Process proc = ShellScriptUtil.executeScript(scriptPath);
 
 			if (proc==null) {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
@@ -267,7 +247,7 @@ public class ShellScriptUtil  {
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
 	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name){
-		return executeAndWaitForShell( scriptPath,  runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null, true);
+		return executeAndWaitForShell( scriptPath,  runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null);
 	}
 	/*.................................................................................................................*/
 	public static boolean executeAndWaitForShell(String scriptPath, String name){
@@ -282,7 +262,7 @@ public class ShellScriptUtil  {
 		String runningFilePath = null;
 		if (!StringUtil.blank(scriptPath))
 			runningFilePath=getDefaultRunningFilePath();
-		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true);
+		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher);
 	}
 
 

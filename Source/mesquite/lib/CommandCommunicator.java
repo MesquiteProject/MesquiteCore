@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -297,9 +297,6 @@ public class CommandCommunicator {
 		else if ("mesquite".equalsIgnoreCase(command)) {
 			setObjectCommanded(MesquiteTrunk.mesquiteTrunk, useQueue, false);
 		}
-		else if ("tellIt".equalsIgnoreCase(command)) {
-			setObjectCommanded(result, useQueue, false);
-		}
 		else if ("jw".equalsIgnoreCase(command)) {
 			int i = MesquiteInteger.fromString(arguments);
 			ListableVector w = MesquiteTrunk.windowVector;
@@ -470,13 +467,6 @@ public class CommandCommunicator {
 				}
 			}
 		}
-		else if ("reportCrash".equalsIgnoreCase(command)) {
-		//	MesquiteTrunk.mesquiteTrunk.reportCrashToHome(new NullPointerException(),  "Reporting to home");
-			MesquiteCommand c = new MesquiteCommand("crash", MesquiteTrunk.mesquiteTrunk);
-			c.doItMainThread(null, null, null);
-		//	PendingCommand pc = new PendingCommand(this,  puppeteer, MesquiteTrunk.mesquiteTrunk, "crash", false);
-		//	MainThread.pendingCommands.addElement(pc, false);
-		}
 		else if (!StringUtil.blank(commandLine)) {
 			boolean useQueueHere = useQueue;
 			boolean dontSleep = false;
@@ -528,8 +518,7 @@ public class CommandCommunicator {
 			else {
 				if (result instanceof String)
 					output += ("    [ result: " + result + " ]");
-				else 
-					output += ("    [ result: " + result + " ]");
+				
 				result = null;
 			}
 			if (captureLog) {

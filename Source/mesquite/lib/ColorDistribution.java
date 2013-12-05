@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -29,7 +29,7 @@ public class ColorDistribution {
 	public static int numberOfRed = 5;
 	public static int numberOfGreen = 11;
 	public static int numberOfBlue = 14;
-	public static Color lightGreen, veryLightGreen, darkGreen, lightGreenYellow, lightGreenYellowish, lightBlue, veryLightBlue, violetBlue, veryLightGray, veryVeryLightGray, veryVeryVeryLightGray, lightRed, darkRed, veryVeryLightGreen;
+	public static Color lightGreen, veryLightGreen, darkGreen, lightBlue, veryLightBlue, violetBlue, veryLightGray, veryVeryLightGray, veryVeryVeryLightGray, lightRed, darkRed, veryVeryLightGreen;
 	public static Color darkBrown, brown, lightOrange, lightPurple, orange, straw, lightYellow, veryLightYellow, tabLineBrown, mesquiteBrown, darkMesquiteBrown, veryDarkMesquiteBrown, lightMesquiteBrown, brightMesquiteBrown;
 	public static Color uneditable;
 	public static Color unassigned;
@@ -48,22 +48,17 @@ public class ColorDistribution {
 	static {
 		spinLight = new Color((float)0.3, (float)0.6, (float)0.99);
 		spinDark = new Color((float)0.1, (float)0.1, (float)0.70);
+		unassigned = new Color(230, 230, 230);
 		veryLightGray = brighter(Color.lightGray, 0.5);
 		veryVeryLightGray = brighter(veryLightGray, 0.5);
 
-		//inapplicable = veryLightGray;
-		inapplicable =  new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable;
-
-		//unassigned = new Color(230, 230, 230);
-		unassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
+		inapplicable = veryLightGray;
 		
 		veryVeryVeryLightGray = new Color((float)0.98, (float)0.98, (float)0.98);
 		darkRed = new Color((float)0.5, (float)0.2, (float)0.1);
 		lightRed = new Color((float)0.9, (float)0.48, (float)0.35);
 		darkGreen = new Color((float)0.1, (float)0.5, (float)0.2);
 		lightGreen = new Color((float)0.35, (float)0.9, (float)0.48);
-		lightGreenYellowish =  new Color((float)0.50, (float)0.99, (float)0.46);  
-		lightGreenYellow =  new Color((float)0.46, (float)0.99, (float)0.25);  
 		veryLightGreen = new Color((float)0.55, (float)0.99, (float)0.68);
 		veryVeryLightGreen = new Color((float)0.70, (float)0.99, (float)0.83);
 		lightBlue = new Color((float)0.35, (float)0.48, (float)0.9);

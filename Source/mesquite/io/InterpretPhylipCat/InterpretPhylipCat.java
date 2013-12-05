@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite (package mesquite.io).  Copyright 2000-2010 D. Maddison and W. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -79,8 +79,6 @@ public class InterpretPhylipCat extends InterpretPhylip {
 /*.................................................................................................................*/
 	public CharacterData findDataToExport(MesquiteFile file, String arguments) { 
 		CharacterData dataToExport = getProject().chooseData(containerOfModule(), file, null, CategoricalState.class, "Select data to export");
-		if (dataToExport == null)
-			return null;
 		if (((CategoricalData)dataToExport).getMaxState()>2) {
 			AlertDialog.notice(containerOfModule(), "Can't export", "This matrix has some characters with states greater than 1, and thus it cannot be exported in Phylip categorical format.");
 			return null;

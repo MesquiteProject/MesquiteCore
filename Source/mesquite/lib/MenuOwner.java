@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,7 +14,6 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.applet.Applet;
-import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.*;
 import java.awt.event.*;
@@ -93,9 +92,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 	private static MenuShortcut newShortcut, openShortcut, saveShortcut, printShortcut, getInfoShortcut, quitShortcut, ccShortcut, previousToolShortcut;
 	private static MenuShortcut undoShortcut, copyShortcut, cutShortcut, clearShortcut, selectAllShortcut, pasteShortcut;
-
-	public static String blackBox, whiteBox;
-
 	static {
 
 		// A list of keyboard equivalents is at the bottom of this file
@@ -115,20 +111,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		clearShortcut = new MenuShortcut(KeyEvent.VK_CLEAR);
 		selectAllShortcut = new MenuShortcut(KeyEvent.VK_A);
 		pasteShortcut = new MenuShortcut(KeyEvent.VK_V);
-		byte[] b = {(byte) 226, (byte)150, (byte)160};  //black box
-		try {
-			blackBox = new String(b, "UTF-8");
-			//blackBox = "||";
-		} catch (UnsupportedEncodingException e1) {
-			blackBox= "╤";
-		}
-		byte[] bb = {(byte) 226, (byte)150, (byte)161};
-		try {
-			whiteBox = new String(bb, "UTF-8");
-			//whiteBox = "|";
-		} catch (UnsupportedEncodingException e1) {
-			whiteBox= "╤";
-		}
 	}
 	/** The constructor in general is to be avoided, because modules are instantiated momentarily on startup to gather
 	information.  The usual functions of a constructor are performed by startJob*/
@@ -349,7 +331,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	employees, will be placed there.*/
 	public final MesquiteMenuSpec makeMenu(String menuName){
 		if (moduleMenuSpec!=null)
-			MesquiteMessage.warnProgrammer("Error: module requesting second menu: " + menuName + " (module " + getClass().getName());
+			MesquiteMessage.warnProgrammer("Error: module requesting second menu");
 		return moduleMenuSpec = new MesquiteMenuSpec(null, menuName, module);
 	}
 
@@ -425,11 +407,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			popUp.removeAll();
 		composeMenuDescendants(popUp);
 		cont.add(popUp);
-		try {
-			popUp.show(cont, x,y);
-		}
-		catch (RuntimeException e){
-		}
+		popUp.show(cont, x,y);
 		//cont.remove(popUp); //todo: this is zapping the menu on linux immediately
 	}
 	/*.................................................................................................................*/
@@ -642,6 +620,11 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		 			menuBar.remove(i);
 		 	}
 			/**/
+			MesquiteMenu menu;
+			if (moduleMenuSpec!=null) {
+				menu = MesquiteMenu.getMenu(moduleMenuSpec);
+			}
+			else menu = null;
 			if (MesquiteTrunk.fileMenu==null)
 				MesquiteMessage.warnProgrammer("WARNING: file menu null in composeMenuBar for " + module.getName());
 			/*else if (window==null) {
@@ -666,46 +649,23 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				return;
 			composeSpecificMenu(menuBar, null, MesquiteTrunk.treesMenu, true);
 
-			//MENUS FORMERLY TO RIGHT OF WINDOW=SPECIFIC
-			if (module.isDoomed())
-				return;
-			MesquiteMenu cMenu = composeSpecificMenuByZones(menuBar, null, MesquiteTrunk.analysisMenu, true);
-			//MesquiteMenu.add(cMenu, new MesquiteMenuItem("Save Window as Macro...", module, MesquiteModule.makeCommand("saveMacroForAnalysis", whichWindow)));  //commandArgument
-			//	MesquiteSubmenu macrosSubmenu = makeMacrosSubmenu(cMenu, module.getFileCoordinator(), MesquiteMacro.ANALYSIS, "Macros Making Windows");
-			//	cMenu.add(macrosSubmenu);
-			//addBottom(cMenu, null, "!");
-			if (module.isDoomed())
-				return;
-			MesquiteMenu wMenu = fillWindowsMenu(menuBar, null, whichWindow);
-			menuBar.add(wMenu);
-			if (module.isDoomed())
-				return;
-			//=============MENUS FORMERLY TO RIGHT OF WINDOW=SPECIFIC
-
-			//@@@@@@@@========  menus that are specific to this module/window
-			if (window.getShowInfoBar() && (MesquiteTrunk.isMacOSX() || !whichWindow.isLoneWindow())) // && MesquiteTrunk.isMacOSX())   //these menus belong in the window, as long as an info bar is shown
-				embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
-			else
-				embeddedMenusVector = null;
-
-			//else {
-			//	if (MesquiteTrunk.isMacOSX()){
-			Menu spot = new Menu(blackBox);
-			spot.add(new MenuItem("."));
-			menuBar.add(spot);
-
-			MesquiteMenu menu;  //Debugg.println if no menus added delete white and black boxes
-			if (moduleMenuSpec!=null) {
-				menu = MesquiteMenu.getMenu(moduleMenuSpec);
-			}
-			else menu = null;
 			MesquiteMenu ancestralMenu=null;
 			if (module.isDoomed())
 				return;
 			if (module.getEmployer()!=null)
 				ancestralMenu= module.getEmployer().composeMenuAncestors(menuBar);
+			/*if (menuSpec!=null) {
+		 		for (int i=menu.getItemCount()-1; i>=0; i--) 
+		 			menu.remove(i);
+		 		// 1.1 use menu.removeAll();
+		 	}
+			 */
 
 			MesquiteMenu menuToUse=null;
+			/*if (menu!=null)
+		 		menuToUse=menu;
+		 	else if (ancestralMenu!=null)
+		 		menuToUse=ancestralMenu; */
 			menuToUse=menu;
 
 			if (menuToUse !=null  && !module.isDoomed())
@@ -744,164 +704,51 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 					}
 				}
 			}
-			//}
-		if (!MesquiteTrunk.isMacOSX() && whichWindow.isLoneWindow()){
-			MesquiteMenu wwMenu = fillWindowMenu(menuBar, whichWindow);
-			menuBar.add(wwMenu);
-		}
-		Menu spot2 = new Menu(whiteBox);
-		spot2.add(new MenuItem("."));
-		menuBar.add(spot2);
-		//		}
-		MesquiteMenu hMenu = composeSpecificMenu(menuBar, null, MesquiteTrunk.helpMenu, false);
-
-		menuBar.setHelpMenu(hMenu);
-		//@@@@@@@@========  menus that are specific to this module/window
 
 
+			if (module.isDoomed())
+				return;
+			MesquiteMenu cMenu = composeSpecificMenuByZones(menuBar, null, MesquiteTrunk.analysisMenu, true);
+			MesquiteMenu.add(cMenu, new MesquiteMenuItem("Save Window as Macro...", module, MesquiteModule.makeCommand("saveMacroForAnalysis", whichWindow)));  //commandArgument
+			MesquiteSubmenu macrosSubmenu = makeMacrosSubmenu(cMenu, module.getFileCoordinator(), MesquiteMacro.ANALYSIS, "Macros Making Windows");
+			cMenu.add(macrosSubmenu);
+			//addBottom(cMenu, null, "!");
 
-		//RIGHT MENUS USED TO GO HERE
 
+			if (module.isDoomed())
+				return;
+			MesquiteMenu wMenu = fillWindowsMenu(menuBar, null, whichWindow);
+			menuBar.add(wMenu);
+			if (module.isDoomed())
+				return;
+			MesquiteMenu hMenu = composeSpecificMenu(menuBar, null, MesquiteTrunk.helpMenu, false);
 
-		if (module.isDoomed())
-			return;
-		if (menuBar!=null) {
-			for (int i=menuBar.getMenuCount()-1; i>=1; i--){  //leave first (file menu) in place
-				try{
-					if (menuEmpty(menuBar.getMenu(i))) {
-						menuBar.remove(i);
+			menuBar.setHelpMenu(hMenu);
+
+			if (module.isDoomed())
+				return;
+			if (menuBar!=null) {
+				for (int i=menuBar.getMenuCount()-1; i>=1; i--){  //leave first (file menu) in place
+					try{
+						if (menuEmpty(menuBar.getMenu(i))) {
+							menuBar.remove(i);
+						}
+					}
+					catch (Exception e){
 					}
 				}
-				catch (Exception e){
-				}
 			}
-		}
-		if (menuBar!=null) {
-			for (int i=0; i<menuBar.getMenuCount(); i++)  
-				sortSubmenusBySpecsOrder(menuBar.getMenu(i));  //this is a kludge to repair an issue of ordering: submenus of submenus floating to top
-		}
+			if (menuBar!=null) {
+				for (int i=0; i<menuBar.getMenuCount(); i++)  
+					sortSubmenusBySpecsOrder(menuBar.getMenu(i));  //this is a kludge to repair an issue of ordering: submenus of submenus floating to top
+			}
 
 		}
 		catch (NullPointerException e){
 			e.printStackTrace();
 		}
 	}
-	/*-------------------------------------------------------------*/
-	public Vector getEmbeddedMenusVector(){
-		return embeddedMenusVector;
-	}
-	Vector embeddedMenusVector = null;
-	public Vector composeEmbeddedMenuBar(MesquiteWindow whichWindow){
-		MesquitePopup menu;
-		Vector menuVector = new Vector();
-
-			if (moduleMenuSpec!=null) {
-				menu = MesquitePopup.getPopupMenu(moduleMenuSpec, whichWindow.infoBar);
-			}
-			else menu = null;
-			MesquitePopup ancestralMenu=null;
-			if (module.isDoomed())
-				return null;
-			if (module.getEmployer()!=null)
-				ancestralMenu= module.getEmployer().composeMenuAncestors(menuVector);
-
-			MesquitePopup menuToUse=menu;
-
-			if (menuToUse !=null  && !module.isDoomed())
-				addMyMenuItems(menuToUse);
-
-			ListableVector L =module.getEmployeeVector();
-			if (L!=null) {
-				int num = L.size();
-				for (int i=0; i<num; i++){
-					Object obj = L.elementAt(i);
-					MesquiteModule mb = (MesquiteModule)obj;
-					if (mb !=null && !mb.isDoomed() && mb.getUseMenubar() && mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) 
-						mb.composeMenuDescendants(menuToUse);
-				}
-			}
-
-
-			addBottom(menu, null, "%");
-			if (menu!=null && menu.getItemCount()>0) {  //why is this menu and not menuToUse????
-				menuVector.add(menu);
-			}
-
-			if (module.isDoomed())
-				return null;
-			composeMenusOfDescendants(menuVector);
-
-			if (module.isDoomed())
-				return null;
-			if (auxiliaryMenus!=null) {
-				int num = auxiliaryMenus.size();
-				for (int i=0; i<num; i++){
-					Object obj = auxiliaryMenus.elementAt(i);
-					MesquiteMenuSpec m = (MesquiteMenuSpec)obj;
-					if (m!=null) {
-						composeSpecificMenu(menuVector, null, m, true);
-					}
-				}
-			}
-		
-		if (module != MesquiteTrunk.mesquiteTrunk){  //Window menu
-			MesquitePopup windowMenu = fillWindowMenu(menuVector, whichWindow);
-			menuVector.add(windowMenu);
-		}
-		return menuVector;
-		/*
-		 * MesquiteMenu ancestralMenu=null;
-		if (module.isDoomed())
-			return;
-		if (module.getEmployer()!=null)
-			ancestralMenu= module.getEmployer().composeMenuAncestors(menuBar);
-
-		MesquiteMenu menuToUse=null;
-		menuToUse=menu;
-
-		if (menuToUse !=null  && !module.isDoomed())
-			addMyMenuItems(menuToUse);
-
-		ListableVector L =module.getEmployeeVector();
-		if (L!=null) {
-			int num = L.size();
-			for (int i=0; i<num; i++){
-				Object obj = L.elementAt(i);
-				MesquiteModule mb = (MesquiteModule)obj;
-				if (mb !=null && !mb.isDoomed() && mb.getUseMenubar() && mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) 
-					mb.composeMenuDescendants(menuToUse);
-			}
-		}
-
-
-		addBottom(menu, null, "%");
-		if (menu!=null && menu.getItemCount()>0) {  //why is this menu and not menuToUse????
-			menuBar.add(menu);
-		}
-
-		if (module.isDoomed())
-			return;
-		composeMenusOfDescendants(menuBar);
-
-		if (module.isDoomed())
-			return;
-		if (auxiliaryMenus!=null) {
-			int num = auxiliaryMenus.size();
-			for (int i=0; i<num; i++){
-				Object obj = auxiliaryMenus.elementAt(i);
-				MesquiteMenuSpec m = (MesquiteMenuSpec)obj;
-				if (m!=null) {
-					composeSpecificMenu(menuBar, null, m, true);
-				}
-			}
-		}
-		if (module != MesquiteTrunk.mesquiteTrunk){
-			MesquiteMenu windowMenu = fillWindowMenu(menuBar, whichWindow);
-			menuBar.add(windowMenu);
-		}
-		 */
-	}
-	void addBottom(Menu menu, MesquiteModule mb, String e){
+	void addBottom(MesquiteMenu menu, MesquiteModule mb, String e){
 		if (menu == null)
 			return;
 		long menuOwnerID = -1;
@@ -911,12 +758,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		long moduleID = useModule.getID();
 		boolean myMenu = false;
 		Vector guests=null;
-
-		MesquiteMenuSpec mms = null;
-		if (menu instanceof MesquitePopup)
-			mms = ((MesquitePopup)menu).getSpecification();
-		else if (menu instanceof MesquiteMenu)
-			mms = ((MesquiteMenu)menu).getSpecification();
+		MesquiteMenuSpec mms = menu.getSpecification();
 		if (mms!=null) {
 			menuOwnerID = mms.getOwnerModuleID();
 			myMenu = (mms == useModule.moduleMenuSpec || mms == useModule.assignedMenuSpec);
@@ -934,7 +776,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			}
 
 	}
-	private void addMacrosMenus(Menu menu, MesquiteModule useModule){
+	private void addMacrosMenus(MesquiteMenu menu, MesquiteModule useModule){
 		if (useModule.getAutoSaveMacros()) {
 			MesquiteMenu.add(menu, new MenuItem("-"));
 			MesquiteMenu.add(menu, new MesquiteMenuItem("Save Macro for " +  useModule.getNameForMenuItem() + "...", useModule, useModule.makeCommand("saveMacro", useModule)));  //commandArgument
@@ -967,100 +809,18 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		}
 		fillWindowsMenu(menuBar, currentWindowsMenu, whichWindow);
 	}
-	private MesquitePopup fillWindowMenu(Vector menuBar, MesquiteWindow whichWindow){
-		MesquitePopup wMenu = MesquitePopup.getPopupMenu(new MesquiteMenuSpec(null, "Window", module), whichWindow.infoBar);  
-		if (whichWindow!=null) {
-			if (whichWindow.permitViewMode()){   //Debugg.println  menuchange  these should belong to window itself
-				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
-				setViewModeMenu.add(new MesquiteMenuItem("Graphics (Standard)", module, MesquiteModule.makeCommand("showPage", whichWindow), Integer.toString(0)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Text", module, module.makeCommand("showPage", whichWindow), Integer.toString(1)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Parameters", module, module.makeCommand("showPage", whichWindow), Integer.toString(2)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Modules", module, module.makeCommand("showPage", whichWindow), Integer.toString(3)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Citations", module, module.makeCommand("showPage", whichWindow), Integer.toString(4)));  //commandArgument
-				wMenu.add(setViewModeMenu);
-			}
-			//wMenu.add(whichWindow.infoBarMenuItem);
-			if (module.getEmployer()!=null && module.getEmployer().getClonableEmployeeCommand(module)!=null) {
-				wMenu.add(whichWindow.cloneWindowMenuItem);
-			}
-			//experimental
-			wMenu.add("-");
-			wMenu.add(whichWindow.saveRecipeMenuItem);
-
-
-			MesquiteSubmenu macrosSubmenu = makeMacrosSubmenu(wMenu, module.getFileCoordinator(), 0, "Macros");
-			if (macrosSubmenu !=null) {
-				wMenu.add(macrosSubmenu);
-			}
-			MesquiteSubmenu scriptingSubmenu=MesquiteSubmenu.getSubmenu("Scripting", wMenu, module);  //make submenu
-			scriptingSubmenu.add(whichWindow.snapshotMenuItem); //еее scripting
-			scriptingSubmenu.add(whichWindow.sendScriptMenuItem);  //еее scripting
-			wMenu.add(scriptingSubmenu);
-
-			//wMenu.add("-", insertPoint);
-		}
-		return wMenu;
-	}
-	private MesquiteMenu fillWindowMenu(MesquiteMenuBar menuBar, MesquiteWindow whichWindow){
-		MesquiteMenu wMenu = MesquiteMenu.getMenu(new MesquiteMenuSpec(null, "Window", module));  
-		if (whichWindow!=null) {
-			if (whichWindow.permitViewMode()){   //Debugg.println  menuchange  these should belong to window itself
-				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
-				setViewModeMenu.add(new MesquiteMenuItem("Graphics (Standard)", module, MesquiteModule.makeCommand("showPage", whichWindow), Integer.toString(0)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Text", module, module.makeCommand("showPage", whichWindow), Integer.toString(1)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Parameters", module, module.makeCommand("showPage", whichWindow), Integer.toString(2)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Modules", module, module.makeCommand("showPage", whichWindow), Integer.toString(3)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Citations", module, module.makeCommand("showPage", whichWindow), Integer.toString(4)));  //commandArgument
-				wMenu.add(setViewModeMenu);
-			}
-			//wMenu.add(whichWindow.infoBarMenuItem);
-			if (module.getEmployer()!=null && module.getEmployer().getClonableEmployeeCommand(module)!=null) {
-				wMenu.add(whichWindow.cloneWindowMenuItem);
-			}
-			//experimental
-			wMenu.add("-");
-			wMenu.add(whichWindow.saveRecipeMenuItem);
-
-
-			MesquiteSubmenu macrosSubmenu = makeMacrosSubmenu(wMenu, module.getFileCoordinator(), 0, "Macros");
-			if (macrosSubmenu !=null) {
-				wMenu.add(macrosSubmenu);
-			}
-			MesquiteSubmenu scriptingSubmenu=MesquiteSubmenu.getSubmenu("Scripting", wMenu, module);  //make submenu
-			scriptingSubmenu.add(whichWindow.snapshotMenuItem); //еее scripting
-			scriptingSubmenu.add(whichWindow.sendScriptMenuItem);  //еее scripting
-			wMenu.add(scriptingSubmenu);
-
-			//wMenu.add("-", insertPoint);
-		}
-		return wMenu;
-	}	
-
 	private MesquiteMenu fillWindowsMenu(MesquiteMenuBar menuBar, MesquiteMenu currentWindowsMenu, MesquiteWindow whichWindow){
 		MesquiteMenu wMenu = currentWindowsMenu; //composeSpecificMenu(menuBar, currentWindowsMenu, MesquiteTrunk.windowsMenu, false);
 		if (wMenu ==null)
 			wMenu= MesquiteMenu.getMenu(MesquiteTrunk.windowsMenu);
 		if (whichWindow!=null) {
-			/*
-			 * if (whichWindow.permitViewMode()){   //Debugg.println  menuchange  these should belong to window itself
-				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
-				setViewModeMenu.add(new MesquiteMenuItem("Graphics (Standard)", module, module.makeCommand("showPage", whichWindow), Integer.toString(0)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Text", module, module.makeCommand("showPage", whichWindow), Integer.toString(1)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Parameters", module, module.makeCommand("showPage", whichWindow), Integer.toString(2)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Modules", module, module.makeCommand("showPage", whichWindow), Integer.toString(3)));  //commandArgument
-				setViewModeMenu.add(new MesquiteMenuItem("Citations", module, module.makeCommand("showPage", whichWindow), Integer.toString(4)));  //commandArgument
-				wMenu.add(setViewModeMenu);
-			}
 			//wMenu.add(whichWindow.infoBarMenuItem);
-			 */
 			wMenu.add(whichWindow.explanationsMenuItem);
-			/*if (module.getEmployer()!=null && module.getEmployer().getClonableEmployeeCommand(module)!=null) {
+			if (module.getEmployer()!=null && module.getEmployer().getClonableEmployeeCommand(module)!=null) {
 				wMenu.add(whichWindow.cloneWindowMenuItem);
 			}
-			 */
 			//experimental
 			wMenu.add("-");
-			/*
 			wMenu.add(whichWindow.saveRecipeMenuItem);
 
 
@@ -1072,7 +832,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			scriptingSubmenu.add(whichWindow.snapshotMenuItem); //еее scripting
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem);  //еее scripting
 			wMenu.add(scriptingSubmenu);
-			 */
+
 			//wMenu.add("-", insertPoint);
 		}
 		wMenu.add("-");
@@ -1126,27 +886,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		return null;
 	}
 	/*.................................................................................................................*/
-	final MesquitePopup composeMenuAncestors(Vector menuBar) {
-		MesquitePopup putHere;
-		if (moduleMenuSpec!=null) {
-			putHere = MesquitePopup.getPopupMenu(moduleMenuSpec, null);
-			addMyMenuItems(putHere);
-			//addBottom(putHere, null, "^");
-			menuBar.addElement(putHere);
-			if (module.getEmployer()!=null) 
-				module.getEmployer().composeMenuAncestors(menuBar);
-			return putHere;
-		}
-		else if (module.getEmployer()!=null) {
-			putHere = module.getEmployer().composeMenuAncestors(menuBar);
-			if (putHere!=null) {
-				addMyMenuItems(putHere);
-			}
-			return putHere;
-		}
-		return null;
-	}
-	/*.................................................................................................................*/
 	final boolean inMenuBar(Menu menu) {  
 		if (menu==null)
 			return false;
@@ -1186,44 +925,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		}
 	}
 	/*.................................................................................................................*/
-	final void composeMenusOfDescendants(Vector menuBar) {  
-		if (doomed) 
-			;//MesquiteMessage.println("Error: composing menu of module that has been turned off: " + getName());
-		else {
-			if (menuTracing) MesquiteMessage.notifyProgrammer("Composing menu of " + module.getName());
-			ListableVector L =module.getEmployeeVector();
-			if (L!=null) {
-				int num = L.size();
-				for (int i=0; i<num; i++){
-					Object obj = L.elementAt(i);
-					MesquiteModule mb = (MesquiteModule)obj;
-					if (mb.getUseMenubar() && mb.window==null ) {
-						if (mb.moduleMenuSpec!=null) {
-							MesquitePopup menu = MesquitePopup.getPopupMenu(mb.moduleMenuSpec, null);
-							mb.composeMenuDescendants(menu);
-							addBottom(menu, mb, "@");
-							if (menu.getItemCount()>0) {
-								menuBar.add(menu);
-							}
-						}
-						if (mb.auxiliaryMenus!=null) {
-							num = mb.auxiliaryMenus.size();
-							for (int j=0; j<num; j++){
-								obj = mb.auxiliaryMenus.elementAt(j);
-								MesquiteMenuSpec m = (MesquiteMenuSpec)obj;
-								if (m!=null) {
-									mb.composeSpecificMenu(menuBar, null, m, true);
-								}
-							}
-						}
-						mb.composeMenusOfDescendants(menuBar);
-					}
-				}
-			}
-		}
-	}
-	/*.................................................................................................................*/
-	final void composeMenusOfDescendants(MesquiteMenuBar menuBar) {    ///TO BE DELETED
+	final void composeMenusOfDescendants(MesquiteMenuBar menuBar) {  
 		if (doomed) 
 			;//MesquiteMessage.println("Error: composing menu of module that has been turned off: " + getName());
 		else {
@@ -2249,38 +1951,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	This and the methods it calls below compose a single menu with specification menuSpec.
 	This is used for the special File and Windows menus, and the auxiliary menus that MesquiteModules
 	can have  */
-	final Menu composeSpecificMenu(Vector menuBar, MesquitePopup newMenu, MesquiteMenuSpec menuSpec, boolean addToMenuBar) {
-		if (menuSpec!=null) {
-			if (newMenu ==null)
-				newMenu= MesquitePopup.getPopupMenu(menuSpec, null);
-
-			//for (int i=menu.getItemCount()-1; i>=0; i--)   // 1.1 use menu.removeAll();
-			//	menu.remove(i);
-
-			composeSpecificMenuAncestors(menuSpec, newMenu);
-			addMySpecificMenuItems(menuSpec, newMenu);
-			ListableVector L =module.getEmployeeVector();
-			if (L!=null) {
-				int num = L.size();
-				for (int i=0; i<num; i++) {
-					Object obj = L.elementAt(i);
-					MesquiteModule mb = (MesquiteModule)obj;
-					if (mb.window==null)
-						mb.composeSpecificMenuDescendants(menuSpec, newMenu);
-				}
-			}
-			//	composeSpecificMenuDescendants(menu, newMenu);
-			addBottom(newMenu, null, "#");
-			if (newMenu.getItemCount()>0 && addToMenuBar)
-				menuBar.add(newMenu);
-			return newMenu;
-		}
-		return null;
-	}
-	/*.................................................................................................................
-	This and the methods it calls below compose a single menu with specification menuSpec.
-	This is used for the special File and Windows menus, and the auxiliary menus that MesquiteModules
-	can have  */
 	final MesquiteMenu composeSpecificMenuByZones(MesquiteMenuBar menuBar, MesquiteMenu newMenu, MesquiteMenuSpec menuSpec, boolean addToMenuBar) {
 		if (menuSpec!=null) {
 			if (newMenu ==null)
@@ -2307,7 +1977,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		return null;
 	}
 	/*.................................................................................................................*/
-	final void composeSpecificMenuAncestors(MesquiteMenuSpec menuSpec, Menu menu) {
+	final void composeSpecificMenuAncestors(MesquiteMenuSpec menuSpec, MesquiteMenu menu) {
 		if (module.getEmployer()!=null) {
 			module.getEmployer().composeSpecificMenuAncestors(menuSpec, menu);
 			if (module.getEmployer()!=null)
@@ -2337,7 +2007,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		}
 	}
 	/*.................................................................................................................*/
-	final void composeSpecificMenuDescendants(MesquiteMenuSpec menuSpec, Menu menu) {
+	final void composeSpecificMenuDescendants(MesquiteMenuSpec menuSpec, MesquiteMenu menu) {
 		addMySpecificMenuItems(menuSpec, menu);
 		ListableVector L =module.getEmployeeVector();
 		if (L!=null) {
@@ -2444,7 +2114,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		}
 	}
 	/*.................................................................................................................*/
-	final void addMySpecificMenuItems(MesquiteMenuSpec menuSpec, Menu menu){
+	final void addMySpecificMenuItems(MesquiteMenuSpec menuSpec, MesquiteMenu menu){
 		if (menuItemsSpecs!=null) {
 			for (int i=0; menuItemsSpecs!=null && i<menuItemsSpecs.size(); i++) {
 				if (menuItemsSpecs==null)
@@ -2535,24 +2205,24 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 	private void surveySpecs(Menu menu, MenuItem[] specsOrder, MesquiteInteger count, MenuItemsSpecsVector miSpecsVector){
 		try {
-			if (miSpecsVector!=null) {
-				for (int i=0; miSpecsVector!=null && i<miSpecsVector.size(); i++) {
-					if (miSpecsVector==null)
-						return;
-					MesquiteMenuItemSpec mmi = (MesquiteMenuItemSpec)miSpecsVector.elementAt(i);
-					MenuItem mi = inMenu(menu, mmi);
-					if (mi != null){
-						specsOrder[count.getValue()] = mi;
-						count.increment();
-					}
+		if (miSpecsVector!=null) {
+			for (int i=0; miSpecsVector!=null && i<miSpecsVector.size(); i++) {
+				if (miSpecsVector==null)
+					return;
+				MesquiteMenuItemSpec mmi = (MesquiteMenuItemSpec)miSpecsVector.elementAt(i);
+				MenuItem mi = inMenu(menu, mmi);
+				if (mi != null){
+					specsOrder[count.getValue()] = mi;
+					count.increment();
 				}
 			}
-
 		}
-		catch (Exception e){
-			MesquiteMessage.warnProgrammer("Exception in ListableVector");
-		}
-
+		
+	}
+	catch (Exception e){
+		MesquiteMessage.warnProgrammer("Exception in ListableVector");
+	}
+		
 	}
 	/*.................................................................................................................*/
 	void surveyDescendents(Menu menu, MenuItem[] specsOrder, MesquiteInteger count) {

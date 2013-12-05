@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -35,8 +35,6 @@ public interface Tree extends Listable {
 	public void setToClone(MesquiteTree tree);
 	public boolean isDefined();
 	/** Returns false if tree is null, has no nodes, or is locked.*/
-	public boolean isValid();
-	/** Returns false if tree is null, has no nodes, or is locked, or if some taxonNumbers are negative.*/
 	public boolean isLocked();
 	public long getID();
  	public long getVersionNumber();
@@ -291,9 +289,6 @@ public interface Tree extends Listable {
 	public Object getAssociatedObject(NameReference nRef, int index);
 	public boolean hasName();
 	public String writeTree();
-	
-	public boolean ancestorHasNameReference(NameReference nameRef, int node);
-	public int ancestorWithNameReference(NameReference nameRef, int node);
 
 	/** Returns a simple string describing the tree in standard parenthesis notation (Newick standard), excluding associated information except branch lengths.
 	To be used for output to user, not internally (as it may lose information).*/

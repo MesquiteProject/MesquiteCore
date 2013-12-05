@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -32,8 +32,7 @@ public class ContentArea extends MousePanel {
 	Vector ledgePanels;
 	static int ledgeSpacer = 3;
 	protected int ledgePanelHeight = 0;
-	MesquiteWindow window;
-	
+
 	public ContentArea (MesquiteWindow w) {
 		this(w, false);
 	}
@@ -64,7 +63,6 @@ public class ContentArea extends MousePanel {
 		ledgePanelContainer.setBackground(Color.lightGray);
 		ledgePanelContainer.setBounds(0, getBounds().height,getBounds().width,0);
 		ledgePanelContainer.setVisible(true);
-		window = w;
 	}
 	public void setPalette(ToolPalette palette){
 		if (palette== null) {
@@ -199,6 +197,7 @@ public class ContentArea extends MousePanel {
 		mainPanel.remove(comp);
 		rFocus();
 	}
+
 	public void update (Graphics g) {
 		try {
 			super.update(g);

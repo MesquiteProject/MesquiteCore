@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -197,10 +197,11 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		
 	}
 	public void fillReverse(int firstRow, int lastRow, int firstColumn, int lastColumn, int shape) {
-
-	    int i,j;
-		int gapExtendOnA;
-		int gapOpenOnA;	
+		//int lengthA = lastRow - firstRow +1;
+		//int lengthB = lastColumn - firstColumn +1;		
+		int i,j;
+		int gapExtendOnB, gapExtendOnA;
+		int gapOpenOnB, gapOpenOnA;		
 		
 		
 		rH[lastColumn] = rV[lastColumn] = (lengthB==lastColumn) ? gapOpenTerminal : gapOpen;;
@@ -220,7 +221,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		}
 		
 		int tmp1H, tmp1D, tmp1V, tmp2H, tmp2D, tmp2V;
-		//reuse the arrays, treating it as the next row in the DP table. Keep one temp variable for each array
+	//reuse the arrays, treating it as the next row in the DP table. Keep one temp variable for each array
 		for (i=lastRow-1; i>=firstRow; i--) { // for each "row" in DP table
 			tmp1H = rH[lastColumn];
 			tmp1D = rD[lastColumn];
@@ -231,7 +232,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			
 			gapOpenOnA =  (0==i) ? gapOpenTerminal : gapOpen;
 			gapExtendOnA = (0==i) ? gapExtendTerminal : gapExtend ;
-
+//			gapOpenOnA = gapOpen; 
 			if (keepGaps &&  i<followsGapSize.length && followsGapSize[i]>0) // followsGapSize[i] means reversePrecedsGapSize[i-1]
 				gapOpenOnA = 0;
 			
@@ -240,6 +241,9 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				tmp2D = rD[j];
 				tmp2V = rV[j];
 
+				gapOpenOnB =  (0==j) ? gapOpenTerminal : gapOpen;
+				gapExtendOnB = (0==j) ? gapExtendTerminal : gapExtend ;
+				
 				
 				if (isMinimize) {
 					rV[j] = Math.min(  rH[j] + gapOpen + gapExtend,  

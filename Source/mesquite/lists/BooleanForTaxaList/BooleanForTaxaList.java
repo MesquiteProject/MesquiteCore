@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -156,7 +156,6 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 	StringArray explArray = new StringArray(0);
 	int totalYes = 0;
 	int totalNo = 0;
-	int totalUndetermined = 0;
 	/*.................................................................................................................*/
 	public void doCalcs(){
 		if (suppressed || booleanTask==null)
@@ -172,10 +171,8 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 			CommandRecord.tick("Boolean for taxon in tree list; examining taxon " + ic);
 			mb.setToUnassigned();
 			booleanTask.calculateBoolean(taxa, ic, mb, expl);
-			if (mb.isUnassigned()) {
+			if (mb.isUnassigned())
 				booleanList.setValue(ic, -1);
-				totalUndetermined++;
-			}
 			else if (mb.getValue()){
 				booleanList.setValue(ic, 1);
 				totalYes++;
@@ -193,7 +190,7 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 		String s = explArray.getValue(it);
 		if (StringUtil.blank(s))
 			s = getStringForTaxon(it);
-		return s + " [Totals: Yes: " + totalYes + "; No: " + totalNo + "; Undetermined: " + totalUndetermined + "]";
+		return s + " [Totals: Yes: " + totalYes + "; No: " + totalNo + "]";
 	}
 	public String getStringForTaxon(int it){
 		if (booleanList==null)

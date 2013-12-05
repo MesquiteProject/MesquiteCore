@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -112,21 +112,7 @@ public class XMLUtil {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public static String stripSchema(String contents) {
-		if (contents==null)
-			return null;
-		int pos = contents.indexOf("<!DOCTYPE");
-		if (pos>=0) {
-			int pos2 = contents.indexOf(">", pos+1);
-			String newVersion = contents.substring(0, pos) + contents.substring(pos2+1,contents.length());
-			return newVersion;
-		}
-		return contents;
-	}
-	/*.................................................................................................................*/
-	public static Document getDocumentFromString(String rootElementName, String contents,boolean stripSchema) {
-		if (stripSchema)
-			contents = stripSchema(contents);
+	public static Document getDocumentFromString(String rootElementName, String contents) {
 		Document doc = null;
 		try { 
 			doc = DocumentHelper.parseText(contents); 
@@ -142,27 +128,19 @@ public class XMLUtil {
 		return doc;
 	}
 	/*.................................................................................................................*/
-	public static Document getDocumentFromString(String rootElementName, String contents) {
-		return getDocumentFromString(rootElementName,contents, true);
-	}
-	/*.................................................................................................................*/
 	public static Document getDocumentFromString(String contents) {
-		return getDocumentFromString("",contents, true);
+		return getDocumentFromString("",contents);
 	}
 	/*.................................................................................................................*/
-	public static Element getRootXMLElementFromString(String rootElementName, String contents, boolean stripSchema) {
-		Document doc = getDocumentFromString(rootElementName, contents, stripSchema);
+	public static Element getRootXMLElementFromString(String rootElementName, String contents) {
+		Document doc = getDocumentFromString(rootElementName, contents);
 		if (doc==null)
 			return null;
 		return doc.getRootElement();
 	}
 	/*.................................................................................................................*/
-	public static Element getRootXMLElementFromString(String rootElementName, String contents) {
-		return getRootXMLElementFromString(rootElementName,contents, true);
-	}
-	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromString(String contents) {
-		return getRootXMLElementFromString("",contents, true);
+		return getRootXMLElementFromString("",contents);
 	}
 	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromURL(String rootElementName, String url) {

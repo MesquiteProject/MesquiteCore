@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
- Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+ Version 2.74, October 2010.
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -236,29 +236,6 @@ public class AlignUtil {
 			if (newGaps[ic]>0){
 				data.addCharacters(ic-1, newGaps[ic], false); 
 				data.addInLinked(ic-1, newGaps[ic], false);
-			}
-		}
-		start = newGaps.length-1;
-		if (data.getNumChars()<newGaps.length)
-			start = data.getNumChars()-1;
-		for (int ic = start; ic>=0; ic--) {   // go down for start and look for negative values denoting terminals
-			if (newGaps[ic]<0){
-				int numGaps = - newGaps[ic] - (data.getNumChars()-ic);  // are extra characters needed?
-				if (numGaps>0) {
-					data.addCharacters(data.getNumChars(), numGaps, false); 
-					data.addInLinked(data.getNumChars(), numGaps, false);
-				}
-				break;
-			}
-		}
-		for (int ic = 0; ic<data.getNumChars() && ic<newGaps.length; ic++) {   // go down for start and look for negative values denoting terminals
-			if (newGaps[ic]<0){
-				int numGaps = - newGaps[ic] - (ic);  // are extra characters needed?
-				if (numGaps>0) {
-					data.addCharacters(0, numGaps, false); 
-					data.addInLinked(0, numGaps, false);
-				}
-				break;
 			}
 		}
 	}

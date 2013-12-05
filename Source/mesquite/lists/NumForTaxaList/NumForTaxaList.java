@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,7 +14,6 @@ package mesquite.lists.NumForTaxaList;
 /*~~  */
 
 import mesquite.lists.lib.*;
-
 import java.util.*;
 import java.awt.*;
 
@@ -62,7 +61,6 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 		shadeCells = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
-		addMenuItem(null, "Recalculate", makeCommand("recalculate",  this));
 		return true;
 	}
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
@@ -130,22 +128,16 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			if (lessThan.isCombinable() && moreThan.isCombinable()) {
 				if ((lessThan.isMoreThan(value)|| lessThan.equals(value)) &&  (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
 					table.selectRow(i);
-					taxa.setSelected(i, true);
 					table.redrawFullRow(i);
 				}
 			} else if (lessThan.isCombinable() && (lessThan.isMoreThan(value)|| lessThan.equals(value))) {
 				table.selectRow(i);
-				taxa.setSelected(i, true);
 				table.redrawFullRow(i);
 			} else if (moreThan.isCombinable() && (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
 				table.selectRow(i);
-				taxa.setSelected(i, true);
 				table.redrawFullRow(i);
 			}
 		}
-		
-			taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-
 	}
 
 	/*.................................................................................................................*/
@@ -162,10 +154,6 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			}
 		}
 
-		else if (checker.compare(this.getClass(), "Requests a recalculation of the numbers (this may be unnecessary)", null, commandName, "recalculate")) {
-			doCalcs();
-			parametersChanged();
-		}
 
 		else if (checker.compare(this.getClass(), "Selects list rows based on value of this column", null, commandName, "selectBasedOnValue")) {
 			SelectBasedOnValue();

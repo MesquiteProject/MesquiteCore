@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
- Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997-2010 W. Maddison and D. Maddison.
+ Version 2.74, October 2010.
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -17,7 +17,6 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
-import mesquite.lib.table.MesquiteTable;
 import mesquite.lists.lib.ListModule;
 import mesquite.molec.lib.*;
 
@@ -31,7 +30,7 @@ public class DNAData extends MolecularData {
 	public static final NameReference complementedRef = NameReference.getNameReference("complemented"); //long: tInfo, data(ch); MesquiteInteger: data(cells)
 
 	public static Color dnaRed, dnaGreen, dnaYellow, dnaBlue;
-	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale, dnaInapplicable, dnaUnassigned;
+	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale;
 
 	CodonPositionsSet codonPositionsSet = null;
 
@@ -49,8 +48,6 @@ public class DNAData extends MolecularData {
 		dnaGreenPale = new Color((float) 0.6, (float) 1, (float) 0.6);
 		dnaYellowPale = new Color((float) 1, (float) 1, (float) 0.6);
 		dnaBluePale = new Color((float) 0.7, (float) 0.7, (float) 1);
-		dnaInapplicable = new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable
-		dnaUnassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
 		A = "A";
 		C = "C";
 		G = "G";
@@ -225,9 +222,9 @@ public class DNAData extends MolecularData {
 			}
 		}
 		else if (isInapplicable(ic,it))
-			return dnaInapplicable;
+			return ColorDistribution.inapplicable;
 		else
-			return dnaUnassigned;
+			return ColorDistribution.unassigned;
 	}
 
 	public static Color getDNAColorOfState(int istate) {
@@ -240,7 +237,7 @@ public class DNAData extends MolecularData {
 		else if (istate == 3)
 			return dnaBlue;
 		else
-			return dnaUnassigned;
+			return ColorDistribution.unassigned;
 	}
 
 	public static Color getDNAColorOfStatePale(int istate) {
@@ -253,7 +250,7 @@ public class DNAData extends MolecularData {
 		else if (istate == 3)
 			return dnaBluePale;
 		else
-			return dnaUnassigned;
+			return ColorDistribution.unassigned;
 	}
 	/** returns the color of character ic; e.g., to indicate codon positions */
 	public Color getDefaultCharacterColor(int ic) {
@@ -564,94 +561,6 @@ public class DNAData extends MolecularData {
 		return getAminoAcid(getCodon(ic, it), genCode);
 	}
 	/* ................................................................................................................. */
-	/** Returns whether or not ic participates in partial coding triplet, i.e., one not containing all three nucleotides*/
-	public boolean isInPartialTriplet(int ic, int it, MesquiteInteger matchLength){
-		int icPos = getCodonPosition(ic);
-		boolean checkIfAnyApplicable = false;
-		int startCheck = 0;
-		int endCheck = 0;
-		switch (icPos) {
-		case 1:  {// we are at a first position
-			if (ic + 2 >= getNumChars()){
-				checkIfAnyApplicable = true;
-				startCheck = ic;
-				endCheck = getNumChars()-1;
-			}
-			else {
-				startCheck = ic;
-				endCheck = ic+2;
-			}
-			break;
-		}
-		case 2: {
-			 if (ic + 1 >= getNumChars() || ic-1<0){
-				checkIfAnyApplicable = true;
-				if (ic-1<0)
-					startCheck = 0;
-				else
-					startCheck = ic-1;
-				if (ic + 1 >= getNumChars())
-					endCheck = getNumChars()-1;
-				else 
-					endCheck = ic+1;
-				
-			}
-				else {
-					startCheck = ic-1;
-					endCheck = ic+1;
-				}
-
-			break;
-		}
-		case 3: {
-			if (ic - 2 <0){
-				checkIfAnyApplicable = true;
-				startCheck = 0;
-				endCheck = ic;
-			}
-			else {
-				startCheck = ic-2;
-				endCheck = ic;
-			}
-
-			break;
-		}
-		default:
-			return false;
-
-		}
-		if (matchLength!=null)
-			matchLength.setValue(endCheck-startCheck+1);
-		if (checkIfAnyApplicable) {
-			for (int i=startCheck; i<=endCheck; i++) 
-				if (!isInapplicable(i,it))
-					return true;
-		} else {
-			if (getCodonPosition(startCheck)==1 && getCodonPosition(startCheck+1)==2 && getCodonPosition(startCheck+2)==3) {  // it is a triplet
-				if (isInapplicable(startCheck,it) && isInapplicable(startCheck+1,it) && isInapplicable(startCheck+2,it))
-					return false;
-				if (!isInapplicable(startCheck,it) && !isInapplicable(startCheck+1,it) && !isInapplicable(startCheck+2,it))
-					return false;
-				return true;
-			}
-		}
-		return false;
-
-	}
-
-	/*.................................................................................................................*/
-	/** Returns whether or not ic is start of a partial coding triplet, i.e., one not containing all three nucleotides*/
-	public boolean isStartOfPartialTriplet(int ic, int it, MesquiteInteger matchLength){
-		if (!someCoding()) 
-			return false;
-	
-		if (getCodonPosition(ic)==1) {
-			return isInPartialTriplet(ic,it,matchLength);
-		}
-		return false;
-	}
-
-	/* ................................................................................................................. */
 	public  Color alterColorToDeemphasizeDegeneracy(int aa, Color color){
 		int degeneracy = getAminoAcidDegeneracy(0,aa);
 		if (degeneracy==1)
@@ -745,33 +654,18 @@ public class DNAData extends MolecularData {
 	}
 	/* ................................................................................................................. */
 	/** Returns the number of amino acids who state value is "aa" in taxon it */
-	public int getAminoAcidNumbers(int it, int aa, boolean countEvenIfOthersInUncertain) {
+	public int getAminoAcidNumbers(int it, int aa) {
 		int count = 0;
 		/*
 		 * long s = 0; int ic=0; while (ic<getNumChars()&& ic>=0) { s = getAminoAcid(ic,it); if (CategoricalState.isElement(s,aa)) count++; ic = getStartOfNextCodon(ic); //returns -1 when no more codons }
 		 */
 		boolean variableCodes = getVariableCodes();
-		if (countEvenIfOthersInUncertain) {
-			for (int ic = 0; ic < getNumChars() && ic >= 0; ic = getStartOfNextCodon(ic)) {
-				if (CategoricalState.isElement(getAminoAcid(ic, it, variableCodes), aa))
-					count++;
-			}
-		}
-		else {
-			for (int ic = 0; ic < getNumChars() && ic >= 0; ic = getStartOfNextCodon(ic)) {
-				long cellAA = getAminoAcid(ic, it, variableCodes);
-				if (CategoricalState.isOnlyElement(cellAA, aa)) {
-					count++;
-				}
-			}
+		for (int ic = 0; ic < getNumChars() && ic >= 0; ic = getStartOfNextCodon(ic)) {
+			if (CategoricalState.isElement(getAminoAcid(ic, it, variableCodes), aa))
+				count++;
 		}
 
 		return count;
-	}
-	/* ................................................................................................................. */
-	/** Returns the number of amino acids who state value is "aa" in taxon it */
-	public int getAminoAcidNumbers(int it, int aa) {
-		return getAminoAcidNumbers(it,aa,true);
 	}
 
 	/*.................................................................................................................*  Deleted Oct 09 in favour of method in CodonPositionsSet
@@ -1223,7 +1117,7 @@ public class DNAData extends MolecularData {
 	/* .......................................... DNAData .................................................. */
 	/** Complements a stretch of DNA and complements linked data matrices too. */
 	public void complement(int icStart, int icEnd, int it, boolean adjustComplementLinked) {
-		if ((icStart==0 && icEnd==getNumChars()-1) || (!anyApplicableBefore(icStart, it)&& !anyApplicableAfter(icEnd,it))) {
+		if (icStart==0 && icEnd==getNumChars()-1) {
 			Associable tInfo = getTaxaInfo(true);
 			if (tInfo!=null) {
 				boolean prevValue = tInfo.getAssociatedBit(complementedRef,it);

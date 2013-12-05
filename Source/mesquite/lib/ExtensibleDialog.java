@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 2001-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 2001-2010 D. Maddison and W. Maddison. 
+Version 2.74, October 2010.
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -17,7 +17,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
-import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.table.EditorTextField;
 
 import java.awt.event.*;
@@ -1330,56 +1329,6 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return choice;
 	}
 	/*.................................................................................................................*/
-	public Choice addPopUpMenu (String message, Class dutyClass, int defaultChoice) {
-		String[] choices = getModuleList(dutyClass);
-		JLabel label = new JLabel (message);
-		return addPopUpMenu(label, choices, defaultChoice);
-	}
-	/*.................................................................................................................*/
-	public String[] getModuleList(Class dutyClass) {
-		StringArray stringArray = new StringArray(5);
-		if (dutyClass!=null) {  //module dutyClass specified; need to create list of modules to choose
-			MesquiteModuleInfo mbi=null;
-			int count = 0;
-			while (count++<128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(dutyClass, mbi))!=null) {
-				if (mbi.getUserChooseable()) {
-					stringArray.addAndFillNextUnassigned(mbi.getName());
-				}
-			}
-			return stringArray.getFilledStrings();
-		}
-		return null;
-	}
-	/*.................................................................................................................*/
-	public String getModuleClassName(Class dutyClass, int index) {
-		if (dutyClass!=null) { 
-			MesquiteModuleInfo mbi=null;
-			int count = -1;
-			while (count++<128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(dutyClass, mbi))!=null) {
-				if (mbi.getUserChooseable()) {
-					if (count==index)
-						return mbi.getClassName();
-				}
-			}
-		}
-		return null;
-	}
-	/*.................................................................................................................*/
-	public int getModuleClassNumber(Class dutyClass, String className) {
-		if (dutyClass!=null) { 
-			MesquiteModuleInfo mbi=null;
-			int count = -1;
-			while (count++<128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(dutyClass, mbi))!=null) {
-				if (mbi.getUserChooseable()) {
-					if (className.equalsIgnoreCase(mbi.getClassName()))
-						return count;
-				}
-			}
-		}
-		return 0;
-	}
-
-	/*.................................................................................................................*/
 	public void addBlankLine () {
 		Panel newPanel = addNewDialogPanel();
 	}
@@ -1479,9 +1428,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (message!=null)
 			constraints.fill=GridBagConstraints.NONE;
 		Panel newPanel = addNewDialogPanel();
-		Label fieldLabel = null;
 		if (message!=null) {
-			newPanel.add(fieldLabel = new Label(message));
+			newPanel.add(new Label(message));
 		}
 		SingleLineTextField textField;
 		if (initialString == null)
@@ -1496,7 +1444,6 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			newPanel.setSize(textField.getSize());
 		}
 		textField.setBackground(Color.white);
-		textField.setLabel(fieldLabel);
 		newPanel.add(textField);
 		focalComponent = textField;
 		textField.selectAll();
