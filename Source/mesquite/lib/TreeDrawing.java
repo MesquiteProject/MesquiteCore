@@ -36,7 +36,13 @@ public abstract class TreeDrawing  {
 	public final static int MINNODEWIDTH = 6;
 	public final static int ACCEPTABLETOUCHWIDTH = 10;
 	public final static boolean SHOWTOUCHPOLYS = false;
-	public int[] x; //x positions of nodes
+    public final static int UP = 0;
+    public final static int DOWN = 1;
+    public final static int RIGHT = 2;
+    public final static int LEFT = 3;
+    public final static int ALLNODES = -1;
+
+    public int[] x; //x positions of nodes
 	public int[] y; //y positions of nodes
 	public double[] z; //z positions of nodes (closeness to viewer, smaller numbers closer)
 	public int[] lineBaseX; //base of line on which to draw labels etc.
@@ -93,6 +99,10 @@ public abstract class TreeDrawing  {
 		}
 	}
 
+    public void setProperty(int node, String property, String value) {
+        MesquiteModule.mesquiteTrunk.logln("setProperty called on "+property+", but this property does not exist in "+this.getClass().toString());
+    }
+
 	public int getDrawnRoot(){
 		return drawnRoot;
 	}
@@ -138,7 +148,57 @@ public abstract class TreeDrawing  {
 	public abstract void fillBranch(Tree tree, int N, Graphics g);
 	
 
-	/*_________________________________________________*/
+    public void rotateFromUp(Polygon poly, int to_orientation, Point origin) {
+        poly.translate(-origin.x,-origin.y);
+        for(int i=0;i<poly.npoints;i++) {
+            int old_x = poly.xpoints[i];
+            int old_y = poly.ypoints[i];
+            if (to_orientation == RIGHT) {
+                poly.xpoints[i] = -old_y;
+                poly.ypoints[i] = old_x;
+            } else if (to_orientation == DOWN) {
+                poly.xpoints[i] = -old_x;
+                poly.ypoints[i] = -old_y;
+            } else if (to_orientation == LEFT) {
+                poly.xpoints[i] = old_y;
+                poly.ypoints[i] = -old_x;
+            }
+        }
+        poly.translate(origin.x,origin.y);
+        poly.invalidate();
+    }
+
+    public Point pointRotatedFromUp(int to_orientation, Point origin, Point point) {
+        int old_x = point.x-origin.x;
+        int old_y = point.y-origin.y;
+        Point result = new Point(old_x,old_y);
+        if (to_orientation == RIGHT) {
+            result.move(-old_y,old_x);
+        } else if (to_orientation == DOWN) {
+            result.move(-old_x, -old_y);
+        } else if (to_orientation == LEFT) {
+            result.move(old_y, -old_x);
+        }
+        result.translate(origin.x, origin.y);
+        return result;
+    }
+
+    public Point pointRotatedToUp(int from_orientation, Point origin, Point point) {
+        int old_x = point.x-origin.x;
+        int old_y = point.y-origin.y;
+        Point result = new Point(old_x,old_y);
+        if (from_orientation == RIGHT) {
+            result.move(old_y, -old_x);
+        } else if (from_orientation == DOWN) {
+            result.move(-old_x, -old_y);
+        } else if (from_orientation == LEFT) {
+            result.move(-old_y, old_x);
+        }
+        result.translate(origin.x, origin.y);
+        return result;
+    }
+
+    /*_________________________________________________*/
 	/** Does the basic inverting of the color of a branch **/
 	public  void fillBranchInverted (Tree tree, int N, Graphics g) {
 		if (GraphicsUtil.useXORMode(g, true))  {
