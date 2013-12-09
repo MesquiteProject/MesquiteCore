@@ -148,7 +148,7 @@ public abstract class TreeDrawing  {
 	public abstract void fillBranch(Tree tree, int N, Graphics g);
 	
 
-    public void rotateFromUp(Polygon poly, int to_orientation, Point origin) {
+    public void rotateFromUp(Polygon poly, Point origin, int to_orientation) {
         poly.translate(-origin.x,-origin.y);
         for(int i=0;i<poly.npoints;i++) {
             int old_x = poly.xpoints[i];
@@ -167,6 +167,42 @@ public abstract class TreeDrawing  {
         poly.translate(origin.x,origin.y);
         poly.invalidate();
     }
+
+    public void rotatePoly(Polygon poly, Point origin, double angle) {
+        poly.translate(-origin.x,-origin.y);
+        for(int i=0;i<poly.npoints;i++) {
+            double old_x = poly.xpoints[i];
+            double old_y = poly.ypoints[i];
+            double radius = 0;
+            double old_angle = 0;
+            if (old_x == 0) {
+                if (old_y > 0) {
+                    old_angle = Math.PI * 0.5;
+                    radius = old_y;
+                } else if (old_y < 0) {
+                    old_angle = Math.PI * 1.5;
+                    radius = -old_y;
+                }
+            } else if (old_y == 0) {
+                if (old_x >= 0) {
+                    radius = old_x;
+                } else {
+                    radius = -old_x;
+                    old_angle = Math.PI;
+                }
+            } else {
+                double t = old_y/old_x;
+                old_angle = Math.atan(t);
+                radius = Math.sqrt((old_x*old_x)+(old_y*old_y));
+            }
+            double new_angle = angle - old_angle;
+            poly.xpoints[i] = (int)(radius * (Math.cos(new_angle)));
+            poly.ypoints[i] = (int)(radius * (Math.sin(new_angle)));
+        }
+        poly.translate(origin.x,origin.y);
+        poly.invalidate();
+    }
+
 
     public Point pointRotatedFromUp(int to_orientation, Point origin, Point point) {
         int old_x = point.x-origin.x;
