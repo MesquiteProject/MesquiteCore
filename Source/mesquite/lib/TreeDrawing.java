@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 import mesquite.lib.duties.*;
 import mesquite.trees.lib.TaxonPolygon;
@@ -201,6 +202,49 @@ public abstract class TreeDrawing  {
         }
         poly.translate(origin.x,origin.y);
         poly.invalidate();
+    }
+
+    public void rotateLine2D(Line2D.Double line, Point origin, double angle) {
+
+        Polygon poly = new Polygon();
+        poly.addPoint((int)line.x1,(int)line.y1);
+        poly.addPoint((int)line.x2,(int)line.y2);
+        poly.translate(-origin.x,-origin.y);
+        for(int i=0;i<poly.npoints;i++) {
+            double old_x = poly.xpoints[i];
+            double old_y = poly.ypoints[i];
+            double radius = 0;
+            double old_angle = 0;
+            if (old_x == 0) {
+                if (old_y > 0) {
+                    old_angle = Math.PI * 0.5;
+                    radius = old_y;
+                } else if (old_y < 0) {
+                    old_angle = Math.PI * 1.5;
+                    radius = -old_y;
+                }
+            } else if (old_y == 0) {
+                if (old_x >= 0) {
+                    radius = old_x;
+                } else {
+                    radius = -old_x;
+                    old_angle = Math.PI;
+                }
+            } else {
+                double t = old_y/old_x;
+                old_angle = Math.atan(t);
+                radius = Math.sqrt((old_x*old_x)+(old_y*old_y));
+            }
+            double new_angle = angle - old_angle;
+            poly.xpoints[i] = (int)(radius * (Math.cos(new_angle)));
+            poly.ypoints[i] = (int)(radius * (Math.sin(new_angle)));
+        }
+        poly.translate(origin.x,origin.y);
+        poly.invalidate();
+        line.x1 = poly.xpoints[0];
+        line.x2 = poly.xpoints[1];
+        line.y1 = poly.ypoints[0];
+        line.y2 = poly.ypoints[1];
     }
 
 
