@@ -227,7 +227,6 @@ public class StyledSquareTree extends DrawTree {
 /* ======================================================================== */
 class StyledSquareTreeDrawing extends TreeDrawing   {
     public Shape[] branchPolys;
-    public int[] branchWidths;
 
 	public StyledSquareTree ownerModule;
 	private int branchwidth = 2;
@@ -259,11 +258,9 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
         branchPolys = new Line2D.Double[numNodes];
-        branchWidths = new int[numNodes];
 
         for (int i=0; i<numNodes; i++) {
             branchPolys[i] = new Line2D.Double();
-            branchWidths[i] = branchwidth;
         }
 	}
 
@@ -293,13 +290,12 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 		return treeDisplay.getOrientation()==TreeDisplay.RIGHT;
 	}
 
-	private void calcBranchPolys(Tree tree, int node, int width) {
-        int newwidth = treeDisplay.getBranchWidth(node) + width;
+	private void calcBranchPolys(Tree tree, int node) {
         if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
             for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-                calcBranchPolys(tree, d, width);
+                calcBranchPolys(tree, d);
         }
-        definePolyForNode(tree, node, newwidth);
+        definePolyForNode(tree, node);
 	}
 
 	/*_________________________________________________*/
@@ -317,7 +313,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 				branchwidth =2;
 		}
 		treeDisplay.setMinimumTaxonNameDistance(branchwidth, 5);
-		calcBranchPolys(tree, drawnRoot, branchwidth);
+		calcBranchPolys(tree, drawnRoot);
     }
 
     public void getMiddleOfBranch(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue, MesquiteDouble angle){
@@ -336,7 +332,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
         yValue.setValue(middle.y);
 	}
 
-    private void definePolyForNode(Tree tree, int node, int width) {
+    private void definePolyForNode(Tree tree, int node) {
         int direction = getOrientation();
         Point parent = new Point(x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
         Point child = new Point(x[node],y[node]);
@@ -351,7 +347,6 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
         newParent = pointRotatedFromUp(direction,parent,newParent);
 
         branchPolys[node] = new Line2D.Double(newChild,newParent);
-        branchWidths[node] = width;
     }
 /*_________________________________________________*/
 	private void drawOneBranch(Tree tree, Graphics g, int node) {
@@ -383,21 +378,14 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
                 triangle.addPoint(x[leftTerminal],y[leftTerminal]);
                 triangle.addPoint(x[rightTerminal],y[rightTerminal]);
                 triangle.addPoint(x[node],y[node]);
-                Color prev = g.getColor();
-                g.setColor(treeDisplay.branchColor);
                 ((Graphics2D)g).setStroke(new BasicStroke(branchwidth,BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND));
                 ((Graphics2D)g).draw(triangle);
-                g.setColor(prev);
             } else {
-                if (tree.numberOfDaughtersOfNode(node) > 1) { // if this node has daughters, draw the stem bar.
-                    Color prev = g.getColor();
-                    g.setColor(treeDisplay.branchColor);
-                    ((Graphics2D)g).setStroke(new BasicStroke(stemwidth,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER));
-                    ((Graphics2D)g).draw(stemLine(tree, node));
-                    g.setColor(prev);
-                }
                 for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
                     drawOneBranch(tree, g, d);
+                }
+                if (tree.numberOfDaughtersOfNode(node) > 1) { // if this node has daughters, draw the stem bar.
+                    ((Graphics2D)g).fill(stemLine(tree, node));
                 }
             }
 		}
@@ -405,7 +393,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 
 	/*_________________________________________________*/
 	public void drawTree(Tree tree, int drawnRoot, Graphics g) {
-		if (MesquiteTree.OK(tree)) {
+        if (MesquiteTree.OK(tree)) {
 			if (treeDisplay == null)
 				return;
 			if (tree.getNumNodeSpaces()!=numNodes)
@@ -500,19 +488,14 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	public void fillBranch(Tree tree, int node, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && node< branchPolys.length && branchIsVisible(node)){
-            ownerModule.logln("fillBranch "+node);
-            Shape outlined = nodePoly(node);
-            ((Graphics2D)g).fill(outlined);
-            g.setColor(Color.black);
-            ((Graphics2D)g).setStroke(new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER));
-            ((Graphics2D)g).draw(outlined);
+		if ((tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)){
+            ((Graphics2D)g).fill(nodePoly(node));
         }
 	}
 
 	/** Fill branch N with indicated set of colors as a sequence, e.g. for stochastic character mapping.  This is not abstract because many tree drawers would have difficulty implementing it */
 	public void fillBranchWithColorSequence(Tree tree, int node, ColorEventVector colors, Graphics g){
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if ((tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
 			Color c = g.getColor();
 			int numEvents = colors.size();
 			g.setColor(Color.lightGray);
@@ -531,7 +514,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+		if ((tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
 				for (int i=0; i<numColors; i++) {
@@ -549,7 +532,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	public Shape nodePoly(int node) {
-        BasicStroke stroke = new BasicStroke(branchWidths[node],BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER);
+        BasicStroke stroke = new BasicStroke(getBranchWidth(node),BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER);
         return stroke.createStrokedShape(branchPolys[node]);
 	}
 
@@ -560,19 +543,23 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
         Point rightEnd = new Point(x[rightNode],y[rightNode]);
         Point parent = new Point(x[node],y[node]);
         int direction = getOrientation();
-
         leftEnd = pointRotatedToUp(direction,parent,leftEnd);
         rightEnd = pointRotatedToUp(direction,parent,rightEnd);
-        double leftwidth = (treeDisplay.getBranchWidth(leftNode) + branchwidth)/2;
-        double rightwidth = (treeDisplay.getBranchWidth(rightNode) + branchwidth)/2;
+        double leftwidth = (getBranchWidth(leftNode))/2;
+        double rightwidth = (getBranchWidth(rightNode))/2;
         leftEnd.y = parent.y;
         rightEnd.y = parent.y;
-        leftEnd.x -= leftwidth;
-        rightEnd.x += rightwidth;
-
+        if (((rightEnd.x-leftEnd.x)<0) || ((rightEnd.y-leftEnd.y)<0)) {
+            leftEnd.x += leftwidth;
+            rightEnd.x -= rightwidth;
+        } else {
+            leftEnd.x -= leftwidth;
+            rightEnd.x += rightwidth;
+        }
         leftEnd = pointRotatedFromUp(direction,parent,leftEnd);
         rightEnd = pointRotatedFromUp(direction,parent,rightEnd);
-        return new Line2D.Double(leftEnd,rightEnd);
+        BasicStroke stroke = new BasicStroke(stemwidth,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER);
+        return stroke.createStrokedShape(new Line2D.Double(leftEnd,rightEnd));
     }
 
     /*_________________________________________________*/
@@ -581,13 +568,13 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 		return (nodeP!=null && nodeP.contains(x,y));
 	}
 	/*_________________________________________________*/
-	private int ScanBranchesNew(Tree tree, Shape[] polys, int node, int x, int y, int found) {
+	private int ScanBranches(Tree tree, int node, int x, int y, int found) {
 		if (found==0) {
-			if (polys != null && polys[node] != null && polys[node].contains(x, y) || inNode(node,x,y)){
+			if (branchPolys[node] != null && inNode(node,x,y)){
                 found = node;
 			} else if (!tree.getAssociatedBit(triangleNameRef, node) || !treeDisplay.getSimpleTriangle()) {
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-					found = ScanBranchesNew(tree, polys, d, x, y, found);
+					found = ScanBranches(tree, d, x, y, found);
                 }
             }
 		}
@@ -595,10 +582,9 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
     public int findBranch(Tree tree, int drawnRoot, int x, int y, MesquiteDouble fraction) {
-
         int found = 0;
 		if (MesquiteTree.OK(tree) && ready) {
-            found=ScanBranchesNew(tree, branchPolys, drawnRoot, x, y,found);
+            found = ScanBranches(tree, drawnRoot, x, y, found);
 			if (found == tree.getRoot() && !tree.getRooted())
 				return 0;
 			else
@@ -648,8 +634,12 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
         setProperty(ALLNODES,"branchwidth",String.valueOf(edw));
     }
 
-    public int getBranchWidth() {
-        return branchwidth;
+    public int getBranchWidth(int node) {
+        int width = treeDisplay.getBranchWidth(node);
+        if (width==0) {
+            width = defaultBranchWidth;
+        }
+        return width;
     }
 	/*_________________________________________________*/
 	public int getEdgeWidth() {
