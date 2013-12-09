@@ -12,6 +12,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.StyledCircularTree;
 
+import java.awt.geom.Line2D;
 import java.util.*;
 import java.awt.*;
 
@@ -204,6 +205,8 @@ public class StyledCircularTree extends DrawTree {
 
 /* ======================================================================== */
 class StyledCircularTreeDrawing extends TreeDrawing   {
+    public Shape[] branchPolys;
+
     public int highlightedBranch;
     public StyledCircularTree ownerModule;
     public int edgewidth = 15;
@@ -243,7 +246,9 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
 		branchPoly= new Polygon[numNodes];
-		touchPoly= new Polygon[numNodes];
+        branchPolys = new Line2D.Double[numNodes];
+
+        touchPoly= new Polygon[numNodes];
 		for (int i=0; i<numNodes; i++) {
 			branchPoly[i] = new Polygon();
 			branchPoly[i].xpoints = new int[16];
@@ -257,10 +262,6 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
 	}
 
     /********/
-    private void nodePolarToLoc (double polarlength, double angle, Point center, Point loc){
-        loc.x = center.x + (int)Math.round(polarlength * Math.sin(angle));
-        loc.y = center.y - (int)Math.round(polarlength * Math.cos(angle));
-    }
 
 
 	private void calcBranchPolys(Tree tree, int node, Polygon[] polys, int width) {
@@ -314,19 +315,33 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
         if (tree.nodeIsTerminal(node)) {
             childRadius += 2;
         }
-        double offset = (double)width/2;
-        //draw a rectangle of the appropriate size/radius
-        //should start from parent radius to child radius
-        //then rotate it to the angle of child
-        poly.reset();
-        poly.addPoint((int)childRadius,(int)-offset);
-        poly.addPoint((int)childRadius,(int)offset);
-        poly.addPoint((int)parentRadius,(int)offset);
-        poly.addPoint((int)parentRadius,(int)-offset);
-        poly.addPoint((int)childRadius,(int)-offset);
-        poly.translate(ownerModule.nodeLocsTask.treeCenter.x, ownerModule.nodeLocsTask.treeCenter.y);
-        rotatePoly(poly,ownerModule.nodeLocsTask.treeCenter,childAngle);
-	}
+//        double offset = (double)width/2;
+//        //draw a rectangle of the appropriate size/radius
+//        //should start from parent radius to child radius
+//        //then rotate it to the angle of child
+//        poly.reset();
+//        poly.addPoint((int)childRadius,(int)-offset);
+//        poly.addPoint((int)childRadius,(int)offset);
+//        poly.addPoint((int)parentRadius,(int)offset);
+//        poly.addPoint((int)parentRadius,(int)-offset);
+//        poly.addPoint((int)childRadius,(int)-offset);
+//        poly.translate(ownerModule.nodeLocsTask.treeCenter.x, ownerModule.nodeLocsTask.treeCenter.y);
+//        rotatePoly(poly,ownerModule.nodeLocsTask.treeCenter,childAngle);
+
+////        Point parent = new Point(x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
+////        Point child = new Point(x[node],y[node]);
+////        child = pointRotatedToUp(direction,parent,child);
+//        if (tree.nodeIsTerminal(node)) {
+//            child.y -= 2;
+//        }
+
+        Point newChild = new Point((int)childRadius+ownerModule.nodeLocsTask.treeCenter.x,ownerModule.nodeLocsTask.treeCenter.y);
+        Point newParent = new Point((int)parentRadius+ownerModule.nodeLocsTask.treeCenter.x,ownerModule.nodeLocsTask.treeCenter.y);
+        Shape newshape = new Line2D.Double(newChild,newParent);
+        rotateLine2D((Line2D.Double)newshape,ownerModule.nodeLocsTask.treeCenter,childAngle);
+
+        branchPolys[node] = newshape;
+    }
 
     public Polygon stemPoly(Tree tree, int node) {
         int leftNode = tree.firstDaughterOfNode(node);
@@ -376,7 +391,8 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
 				if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node] != null){
                     Color prev = g.getColor();
                     g.setColor(treeDisplay.getBranchColor(node));
-                    g.fillPolygon(branchPoly[node]);
+//                    g.fillPolygon(branchPoly[node]);
+                    ((Graphics2D)g).fill(nodePoly(node));
                     g.setColor(prev);
                 }
 				if (tree.numberOfParentsOfNode(node)>1) {
@@ -512,7 +528,7 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
 			fillBranch(tree, node, g);
             for (int i=numEvents-1; i>=0; i--) {
                 ColorEvent e = (ColorEvent)colors.elementAt(i);
-                utilityPolygon = nodePoly(node);
+//                utilityPolygon = nodePoly(node);
                 g.setColor(e.getColor());
                 g.fillPolygon(utilityPolygon);
                 g.setColor(Color.black);
@@ -527,7 +543,7 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
 				for (int i=0; i<numColors; i++) {
-                    utilityPolygon = nodePoly(node);
+//                    utilityPolygon = nodePoly(node);
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
@@ -539,14 +555,15 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
 		}
 	}
 	/*_________________________________________________*/
-	public Polygon nodePoly(int node) {
-		return branchPoly[node];
-	}
+    public Shape nodePoly(int node) {
+        BasicStroke stroke = new BasicStroke(getBranchWidth(node),BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER);
+        return stroke.createStrokedShape(branchPolys[node]);
+    }
 
 
     /*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){
-		Polygon nodeP = nodePoly(node);
+        Shape nodeP = nodePoly(node);
 		return (nodeP!=null && nodeP.contains(x,y));
 	}
 	/*_________________________________________________*/
@@ -628,10 +645,14 @@ class StyledCircularTreeDrawing extends TreeDrawing   {
         setProperty(ALLNODES,"branchwidth",String.valueOf(edw));
     }
 
-    public int getBranchWidth() {
-        return branchwidth;
+    public int getBranchWidth(int node) {
+        int width = treeDisplay.getBranchWidth(node);
+        if (width==0) {
+            width = defaultBranchWidth;
+        }
+        return width;
     }
-	/*_________________________________________________*/
+    /*_________________________________________________*/
 	public int getEdgeWidth() {
         return 0;
 	}
