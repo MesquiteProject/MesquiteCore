@@ -25,16 +25,14 @@ public class StyledSquareTree extends DrawTree {
 		"The calculator for node locations is chosen automatically or initially");
 	}
 	NodeLocsVH nodeLocsTask;
-	MesquiteCommand edgeWidthCommand;
 	MesquiteString orientationName;
 	Vector drawings;
-	int oldEdgeWidth = 6;
-    int oldStemWidth = 2;
-    int ornt;
+	int defaultBranchWidth = 2;
+    int defaultStemWidth = 2;
+    int defaultBranchColor;
+    int orientation;
 	MesquiteString nodeLocsName;
 	MesquiteBoolean simpleTriangle = new MesquiteBoolean(true);
-
-    MesquiteInteger pos = new MesquiteInteger();
 
     /*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -48,13 +46,12 @@ public class StyledSquareTree extends DrawTree {
 			mss.setSelected(nodeLocsName);
 		}
 
-
 		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		ornt = nodeLocsTask.getDefaultOrientation();
+		orientation = nodeLocsTask.getDefaultOrientation();
 		orientationName = new MesquiteString("Up");
-		if (ornt != TreeDisplay.UP &&  ornt != TreeDisplay.DOWN && ornt != TreeDisplay.LEFT && ornt != TreeDisplay.RIGHT)
-			ornt = TreeDisplay.UP;
-		orientationName.setValue(orient(ornt));
+		if (orientation != TreeDisplay.UP &&  orientation != TreeDisplay.DOWN && orientation != TreeDisplay.LEFT && orientation != TreeDisplay.RIGHT)
+			orientation = TreeDisplay.UP;
+		orientationName.setValue(orient(orientation));
 		orientationSubmenu.setSelected(orientationName);
 		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
 		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
@@ -69,15 +66,12 @@ public class StyledSquareTree extends DrawTree {
 	public void employeeQuit(MesquiteModule m){
 		iQuit();
 	}
-	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
-		StyledSquareTreeDrawing treeDrawing =  new StyledSquareTreeDrawing (treeDisplay, numTaxa, this);
+	public TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
+		StyledSquareTreeDrawing treeDrawing = new StyledSquareTreeDrawing (treeDisplay, numTaxa, this);
 		if (legalOrientation(treeDisplay.getOrientation())){
 			orientationName.setValue(orient(treeDisplay.getOrientation()));
-			ornt = treeDisplay.getOrientation();
+			orientation = treeDisplay.getOrientation();
 		}
-		else
-			treeDisplay.setOrientation(ornt);
-		//treeDisplay.inhibitStretchByDefault = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
@@ -100,20 +94,22 @@ public class StyledSquareTree extends DrawTree {
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		temp.addLine("setNodeLocs", nodeLocsTask);
-		temp.addLine("setEdgeWidth " + oldEdgeWidth);
-		if (ornt== TreeDisplay.UP)
+		temp.addLine("setEdgeWidth " + defaultBranchWidth);
+        temp.addLine("setStemWidth " + defaultStemWidth);
+        if (orientation == TreeDisplay.UP)
 			temp.addLine("orientUp");
-		else if (ornt== TreeDisplay.DOWN)
+		else if (orientation == TreeDisplay.DOWN)
 			temp.addLine("orientDown");
-		else if (ornt== TreeDisplay.LEFT)
+		else if (orientation == TreeDisplay.LEFT)
 			temp.addLine("orientLeft");
-		else if (ornt== TreeDisplay.RIGHT)
+		else if (orientation == TreeDisplay.RIGHT)
 			temp.addLine("orientRight");
 		return temp;
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the node locations calculator", "[name of module]", commandName, "setNodeLocs")) {
+        boolean reorient = false;
+        if (checker.compare(this.getClass(), "Sets the node locations calculator", "[name of module]", commandName, "setNodeLocs")) {
 			NodeLocsVH temp = (NodeLocsVH)replaceEmployee(NodeLocsVH.class, arguments, "Node Locations Calculator", nodeLocsTask);
 			if (temp != null) {
 				nodeLocsTask = temp;
@@ -121,133 +117,87 @@ public class StyledSquareTree extends DrawTree {
 				parametersChanged();
 			}
 			return nodeLocsTask;
-		}
-		else if (checker.compare(this.getClass(), "Sets the thickness of branches", "[width in pixels]", commandName, "setEdgeWidth")) {
-			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
+		} else if (checker.compare(this.getClass(), "Sets the thickness of branches", "[width in pixels]", commandName, "setEdgeWidth")) {
+			int newWidth = MesquiteInteger.fromString(arguments);
 			if (!MesquiteInteger.isCombinable(newWidth))
-				newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set branch width", "Branch Width:", oldEdgeWidth, 1, 99);
-			if (newWidth>0 && newWidth<100 && newWidth!=oldEdgeWidth) {
-				oldEdgeWidth=newWidth;
-				if (drawings == null)
-					return null;
-				Enumeration e = drawings.elements();
-				while (e.hasMoreElements()) {
-					Object obj = e.nextElement();
-					StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing)obj;
-                    treeDrawing.setProperty(TreeDrawing.ALLNODES,"edgewidth",String.valueOf(newWidth));
-                    if (treeDrawing.treeDisplay != null)
-						treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.edgewidth, 5); //better if only did this if tracing on
-				}
-				if (!MesquiteThread.isScripting()) parametersChanged();
-			}
-
-		}
-        else if (checker.compare(this.getClass(), "Sets the color of the branches", "[color]", commandName, "setBranchColor")) {
-            int newColor= MesquiteInteger.fromFirstToken(arguments, pos);
-            if (drawings == null)
-                return null;
-            Enumeration e = drawings.elements();
-            while (e.hasMoreElements()) {
-                Object obj = e.nextElement();
-                StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing)obj;
-                treeDrawing.treeDisplay.branchColor = ColorDistribution.getStandardColor(newColor);
-            }
-            if (!MesquiteThread.isScripting()) parametersChanged();
-        }
-        else if (checker.compare(this.getClass(), "Sets the thickness of the branch stems", "[width in pixels]", commandName, "setStemWidth")) {
-            int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
-            if (!MesquiteInteger.isCombinable(newWidth))
-                newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set stem width", "Stem Width:", oldStemWidth, 1, 99);
-            if (newWidth>0 && newWidth<100 && newWidth!=oldStemWidth) {
-                oldStemWidth=newWidth;
-                if (drawings == null)
-                    return null;
-                Enumeration e = drawings.elements();
-                while (e.hasMoreElements()) {
-                    Object obj = e.nextElement();
-                    StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing) obj;
-                    treeDrawing.setProperty(TreeDrawing.ALLNODES,"stemwidth",String.valueOf(newWidth));
+				newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set branch width", "Branch Width:", defaultBranchWidth, 1, 99);
+			if ((newWidth != defaultBranchWidth) && (newWidth > 0)) {
+				defaultBranchWidth = newWidth;
+                if (drawings == null) return null;
+                for (Enumeration e = drawings.elements(); e.hasMoreElements();) {
+                    StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing) e.nextElement();
+                    treeDrawing.setProperty(TreeDrawing.ALLNODES,"branchwidth",String.valueOf(defaultBranchWidth));
                 }
                 if (!MesquiteThread.isScripting()) parametersChanged();
             }
-
-        }
-        else if (checker.compare(this.getClass(), "Gets the thickness of the branch stems", "[width in pixels]", commandName, "getStemWidth")) {
-            return String.valueOf(oldStemWidth);
-        }
-        else if (checker.compare(this.getClass(), "Gets the thickness of the branches", "[width in pixels]", commandName, "getBranchWidth")) {
-            return String.valueOf(oldEdgeWidth);
-        }
-        else if (checker.compare(this.getClass(), "Returns the module calculating node locations", null, commandName, "getNodeLocsEmployee")) {
+        } else if (checker.compare(this.getClass(), "Sets the thickness of the branch stems", "[width in pixels]", commandName, "setStemWidth")) {
+            int newWidth= MesquiteInteger.fromString(arguments) ;
+            if (!MesquiteInteger.isCombinable(newWidth))
+                newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set stem width", "Stem Width:", defaultStemWidth, 1, 99);
+            if ((newWidth != defaultStemWidth) && (newWidth > 0)){
+                defaultStemWidth = newWidth;
+                if (drawings == null) return null;
+                for (Enumeration e = drawings.elements(); e.hasMoreElements();) {
+                    StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing) e.nextElement();
+                    treeDrawing.setProperty(TreeDrawing.ALLNODES,"stemwidth",String.valueOf(defaultStemWidth));
+                }
+                if (!MesquiteThread.isScripting()) parametersChanged();
+            }
+        } else if (checker.compare(this.getClass(), "Sets the color of the branches", "[color]", commandName, "setBranchColor")) {
+            int newColor= MesquiteInteger.fromString(arguments);
+            if (drawings == null) return null;
+            for (Enumeration e = drawings.elements(); e.hasMoreElements();) {
+                StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing) e.nextElement();
+                defaultBranchColor = newColor;
+                treeDrawing.setProperty(TreeDrawing.ALLNODES,"branchcolor",String.valueOf(newColor));
+            }
+            if (!MesquiteThread.isScripting()) parametersChanged();
+        } else if (checker.compare(this.getClass(), "Gets the thickness of the branch stems", "[width in pixels]", commandName, "getStemWidth")) {
+            return String.valueOf(defaultStemWidth);
+        } else if (checker.compare(this.getClass(), "Gets the thickness of the branches", "[width in pixels]", commandName, "getBranchWidth")) {
+            return String.valueOf(defaultBranchWidth);
+        } else if (checker.compare(this.getClass(), "Returns the module calculating node locations", null, commandName, "getNodeLocsEmployee")) {
 			return nodeLocsTask;
-		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.UP;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.UP);
-				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-				orientationName.setValue(orient(ornt));
-			parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.DOWN;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.DOWN);
-				if (treeDrawing.treeDisplay != null)
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.RIGHT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.RIGHT);
-				if (treeDrawing.treeDisplay != null)
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
-			Enumeration e = drawings.elements();
-			ornt = TreeDisplay.LEFT;
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing)obj;
-				treeDrawing.reorient(TreeDisplay.LEFT);
-				if (treeDrawing.treeDisplay != null)
-				ornt = treeDrawing.treeDisplay.getOrientation();
-			}
-			orientationName.setValue(orient(ornt));
-			parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Sets whether to draw triangled clades as simple triangles or not.", "", commandName, "toggleSimpleTriangle")) {
+		} else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are on top", null, commandName, "orientUp")) {
+			orientation = TreeDisplay.UP;
+            reorient = true;
+		} else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
+			orientation = TreeDisplay.DOWN;
+            reorient = true;
+        } else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at right", null, commandName, "orientRight")) {
+			orientation = TreeDisplay.RIGHT;
+            reorient = true;
+        } else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at left", null, commandName, "orientLeft")) {
+			orientation = TreeDisplay.LEFT;
+            reorient = true;
+        } else if (checker.compare(this.getClass(), "Sets whether to draw triangled clades as simple triangles or not.", "", commandName, "toggleSimpleTriangle")) {
  			boolean current = simpleTriangle.getValue();
  			simpleTriangle.toggleValue(parser.getFirstToken(arguments));
  			if (current!=simpleTriangle.getValue()) {
- 				Enumeration e = drawings.elements();
- 				while (e.hasMoreElements()) {
+                 Enumeration e = drawings.elements();
+                 while (e.hasMoreElements()) {
  					Object obj = e.nextElement();
  					StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing)obj;
  					treeDrawing.setSimpleTriangle(simpleTriangle.getValue());
  				}
  				parametersChanged();
  			}
-		}
-		else return super.doCommand(commandName, arguments, checker);
-		return null;
+		} else {
+            return super.doCommand(commandName, arguments, checker);
+        }
+
+		if (reorient) {
+            Enumeration e = drawings.elements();
+            while (e.hasMoreElements()) {
+                StyledSquareTreeDrawing treeDrawing = (StyledSquareTreeDrawing) e.nextElement();
+                treeDrawing.reorient(orientation);
+                if (treeDrawing.treeDisplay != null)
+                    orientation = treeDrawing.treeDisplay.getOrientation();
+            }
+            orientationName.setValue(orient(orientation));
+            parametersChanged();
+        }
+        return null;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -279,13 +229,12 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	public Polygon[] touchPoly;
 
 	public StyledSquareTree ownerModule;
-	public int edgewidth = 6;
-	public int preferredEdgeWidth = 6;
-    public int stemwidth = 2;
+	private int branchwidth = 2;
+	private int defaultBranchWidth = 2;
+    private int stemwidth = 2;
     int oldNumTaxa = 0;
 	private int foundBranch;
 	private boolean ready=false;
-	private static final int  inset=1;
 	private Polygon utilityPolygon;
 	NameReference triangleNameRef;
     BasicStroke defaultStroke;
@@ -293,7 +242,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 
 	public StyledSquareTreeDrawing(TreeDisplay treeDisplay, int numTaxa, StyledSquareTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 5); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistance(branchwidth, 5); //better if only did this if tracing on
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		triangleNameRef = NameReference.getNameReference("triangled");
@@ -370,14 +319,14 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 
 		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField());
-		edgewidth = preferredEdgeWidth;
-		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {
-			edgewidth= treeDisplay.getTaxonSpacing()-2;
-			if (edgewidth<2)
-				edgewidth=2;
+		branchwidth = defaultBranchWidth;
+		if (treeDisplay.getTaxonSpacing()< branchwidth +2) {
+			branchwidth = treeDisplay.getTaxonSpacing()-2;
+			if (branchwidth <2)
+				branchwidth =2;
 		}
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 5);
-		calcBranchPolys(tree, drawnRoot, branchPoly, edgewidth);
+		treeDisplay.setMinimumTaxonNameDistance(branchwidth, 5);
+		calcBranchPolys(tree, drawnRoot, branchPoly, branchwidth);
 		calcBranchPolys(tree, drawnRoot, touchPoly, getNodeWidth());
         calculateLines(tree, drawnRoot);
     }
@@ -454,7 +403,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
                 poly.addPoint(child.x-left_offset, child.y); //return to daughter left
             }
         }
-        rotateFromUp(poly,direction,parent);
+        rotateFromUp(poly, direction, parent);
 	}
 
 /*_________________________________________________*/
@@ -462,10 +411,12 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 		if (tree.nodeExists(node)) {
 			boolean draw = branchIsVisible(node);
 			if (draw){
-				g.setColor(treeDisplay.getBranchColor(node));
 				if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node] != null){
+                    Color prev = g.getColor();
+                    g.setColor(treeDisplay.getBranchColor(node));
                     g.fillPolygon(branchPoly[node]);
-				}
+                    g.setColor(prev);
+                }
 				if (tree.numberOfParentsOfNode(node)>1) {
 					for (int i=1; i<=tree.numberOfParentsOfNode(node); i++) {
 						int anc =tree.parentOfNode(node, i);
@@ -542,7 +493,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
 		Rectangle box;
-		int ew = edgewidth-1;
+		int ew = branchwidth -1;
 		if (isUP())
 			box = new Rectangle(x[node], y[node]-ew-3, ew, ew);
 		else if (isDOWN())
@@ -561,7 +512,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		Rectangle box;
 		int numColors = colors.getNumColors();
-		int ew = edgewidth-1;
+		int ew = branchwidth -1;
 		if (isUP())
 			box = new Rectangle(x[node], y[node]-ew-3, ew, ew);
 		else if (isDOWN())
@@ -616,7 +567,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 //                else {
 //                    ColorEvent ec = (ColorEvent)colors.elementAt(i+1);
 //                }
-                definePolyForNode(tree, utilityPolygon, node, edgewidth);
+                definePolyForNode(tree, utilityPolygon, node, branchwidth);
                 g.setColor(e.getColor());
                 g.fillPolygon(utilityPolygon);
                 g.setColor(Color.black);
@@ -631,7 +582,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
 				for (int i=0; i<numColors; i++) {
-                    definePolyForNode(tree, utilityPolygon, node, edgewidth);
+                    definePolyForNode(tree, utilityPolygon, node, branchwidth);
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
@@ -684,7 +635,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 		if (MesquiteTree.OK(tree) && ready) {
 			foundBranch=0;
 			ScanBranches(tree, branchPoly, drawnRoot, x, y, fraction);
-			if (edgewidth<ACCEPTABLETOUCHWIDTH)
+			if (branchwidth <ACCEPTABLETOUCHWIDTH)
 				ScanBranches(tree, touchPoly, drawnRoot, x, y, fraction);  //then scan through thicker versions
 			if (foundBranch == tree.getRoot() && !tree.getRooted())
 				return 0;
@@ -710,15 +661,19 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
     public void setProperty(int node, String property, String value) {
-        if (property.equals("edgewidth")) {
+        if (property.equals("branchwidth")) {
             int edw =Integer.parseInt(value);
             if (node==ALLNODES) {
-                edgewidth = edw;
-                preferredEdgeWidth = edw;
+                branchwidth = edw;
+                defaultBranchWidth = edw;
             }
         } else if (property.equals("stemwidth")) {
             if (node==ALLNODES) {
                 stemwidth = Integer.parseInt(value);
+            }
+        } else if (property.equals("branchcolor")) {
+            if (node==ALLNODES) {
+                treeDisplay.branchColor = ColorDistribution.getStandardColor(value);
             }
         } else if (property.equals("setsimpletriangle")) {
             setSimpleTriangle(Boolean.parseBoolean(value));
@@ -728,16 +683,19 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
     }
 
     public void setEdgeWidth(int edw) {
-        setProperty(ALLNODES,"edgewidth",String.valueOf(edw));
+        setProperty(ALLNODES,"branchwidth",String.valueOf(edw));
     }
 
+    public int getBranchWidth() {
+        return branchwidth;
+    }
 	/*_________________________________________________*/
 	public int getEdgeWidth() {
         return 0;
 	}
 
     public int getNodeWidth() {
-        int w = edgewidth+4;
+        int w = branchwidth +4;
         if (w<MINNODEWIDTH) return MINNODEWIDTH;
         return w;
     }
