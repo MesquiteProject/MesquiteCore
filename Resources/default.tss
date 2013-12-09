@@ -1,0 +1,60 @@
+canvas {
+	background-color: white;
+	width: 500px;
+	height: 500px;
+	font: 12pt "Helvetica",serif;
+}
+
+tree {
+	border: 2px black solid;
+	layout: rectangular;
+	tip-orientation: right;
+	scaled: true;
+}
+
+scale {
+	visible: false;
+}
+
+trophic_level.herbivore {
+	color: green;
+}
+
+trophic_level.carnivore {
+	color: red;
+}
+
+posterior_prob[min=0][max=50] {
+	text: "<50";
+	font-style: italic;
+}
+
+posterior_prob[min=51][max=90] {
+	text: value;
+	font-style: italic;
+}
+
+posterior_prob[min=91][max=100] {
+	text: "*";
+	border: 10px;
+	font-style: italic;
+	font-size: 200%;
+}
+
+bootstrap[min=91][max=100] {
+	border: 10px;
+	font-style: italic;
+	font-size: 200%;
+}
+
+majortransition {
+	border: 5px green solid;
+}
+
+colored_branch {
+    border: 10px value;
+}
+
+clade {
+    collapsed: true;
+}
