@@ -12,6 +12,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.StyledSquareTree;
 
+import java.awt.geom.Line2D;
 import java.util.*;
 import java.awt.*;
 
@@ -226,7 +227,8 @@ public class StyledSquareTree extends DrawTree {
 /* ======================================================================== */
 class StyledSquareTreeDrawing extends TreeDrawing   {
 	public Polygon[] branchPoly;
-	public Polygon[] touchPoly;
+    public Line2D.Double[] branchLines;
+    public int[] branchWidths;
 
 	public StyledSquareTree ownerModule;
 	private int branchwidth = 2;
@@ -250,7 +252,8 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 			defaultStroke = new BasicStroke();
 		}
 		catch (Throwable t){
-		}
+            MesquiteMessage.notifyUser(ownerModule.getName() + " couldn't start because Graphics2D is not available. " + t.toString());
+        }
 
 		oldNumTaxa = numTaxa;
 		ready = true;
@@ -263,17 +266,16 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
 		branchPoly= new Polygon[numNodes];
-		touchPoly= new Polygon[numNodes];
-		for (int i=0; i<numNodes; i++) {
+        branchLines = new Line2D.Double[numNodes];
+        branchWidths = new int[numNodes];
+
+        for (int i=0; i<numNodes; i++) {
 			branchPoly[i] = new Polygon();
 			branchPoly[i].xpoints = new int[16];
 			branchPoly[i].ypoints = new int[16];
 			branchPoly[i].npoints=16;
-			touchPoly[i] = new Polygon();
-			touchPoly[i].xpoints = new int[16];
-			touchPoly[i].ypoints = new int[16];
-			touchPoly[i].npoints=16;
-		}
+            branchWidths[i] = branchwidth;
+        }
 	}
 
     public int getOrientation() {
@@ -327,23 +329,6 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 		}
 		treeDisplay.setMinimumTaxonNameDistance(branchwidth, 5);
 		calcBranchPolys(tree, drawnRoot, branchPoly, branchwidth);
-		calcBranchPolys(tree, drawnRoot, touchPoly, getNodeWidth());
-        calculateLines(tree, drawnRoot);
-    }
-
-    private void calculateLines(Tree tree, int node) {
-        for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-            calculateLines( tree, d);
-        }
-        lineTipY[node]=y[node];
-        lineTipX[node]=x[node];
-        if (isUP() || isDOWN()) {
-            lineBaseY[node]=y[tree.motherOfNode(node)];
-            lineBaseX[node]=x[node];
-        } else if (isRIGHT() || isLEFT()) {
-            lineBaseY[node]=y[node];
-            lineBaseX[node]=x[tree.motherOfNode(node)];
-        }
     }
 
     public void getMiddleOfBranch(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue, MesquiteDouble angle){
@@ -371,50 +356,53 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
             sign = -1;
         }
         child = pointRotatedToUp(direction,parent,child);
-        poly.reset();
+        if (tree.nodeIsTerminal(node)) {
+            child.y -= 2;
+        }
         int right_offset = sign*width/2;
         int left_offset = sign*width/2;
         if (right_offset == 0) {
             right_offset = sign;
             left_offset = 0;
         }
-        if (node==tree.getRoot()) {
-            poly.addPoint(child.x-left_offset, child.y); //root left
-            poly.addPoint(child.x+right_offset, child.y);	 //root right
-            poly.addPoint(child.x+right_offset, parent.y); //subroot right
-            poly.addPoint(child.x-left_offset, parent.y); //subroot left
-            poly.addPoint(child.x-left_offset, child.y); //return to root left
-        } else {
-            if (child.x<parent.x) {       // branch on the left of the parent node
-                poly.addPoint(child.x-left_offset, child.y); // daughter left
-                poly.addPoint(child.x+right_offset, child.y);	//daughter right
-                poly.addPoint(child.x+right_offset, parent.y); //corner right
-                poly.addPoint(parent.x, parent.y); //mother up
-                poly.addPoint(parent.x, parent.y+(sign*stemwidth)); //mother down
-                poly.addPoint(child.x-left_offset, parent.y+(sign*stemwidth)); //corner left
-                poly.addPoint(child.x-left_offset, child.y); //return to daughter left
-            } else {       // branch on the right of the parent node
-                poly.addPoint(child.x-left_offset, child.y);// daughter left
-                poly.addPoint(child.x+right_offset, child.y);// daughter right
-                poly.addPoint(child.x+right_offset, parent.y+(sign*stemwidth));// corner right
-                poly.addPoint(parent.x, parent.y+(sign*stemwidth)); //mother down
-                poly.addPoint(parent.x, parent.y); //mother up
-                poly.addPoint(child.x-left_offset, parent.y); //corner left
-                poly.addPoint(child.x-left_offset, child.y); //return to daughter left
-            }
-        }
-        rotateFromUp(poly, direction, parent);
-	}
+//        int left_offset = 0;
+//        int right_offset = 0;
+        poly.reset();
+        poly.addPoint(child.x-left_offset, child.y);     //daughter left
+        poly.addPoint(child.x+right_offset, child.y);	 //daughter right
+        poly.addPoint(child.x+right_offset, parent.y);   //mother right
+        poly.addPoint(child.x-left_offset, parent.y);    //mother left
+        poly.addPoint(child.x-left_offset, child.y); //return to daughter left
 
+        Point newChild = new Point(child.x,child.y);
+        newChild = pointRotatedFromUp(direction,parent,newChild);
+//        rotatePointFromUp(newChild, parent, direction);
+        Point newParent = new Point(child.x,parent.y);
+//        rotatePointFromUp(newParent, parent, direction);
+        newParent = pointRotatedFromUp(direction,parent,newParent);
+
+        branchLines[node] = new Line2D.Double(newChild,newParent);
+        branchWidths[node] = width;
+    }
 /*_________________________________________________*/
 	private void drawOneBranch(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
-			boolean draw = branchIsVisible(node);
-			if (draw){
+            // if this node has daughters, draw the stem bar.
+            if (tree.numberOfDaughtersOfNode(node) > 1) {
+                Color prev = g.getColor();
+                g.setColor(treeDisplay.branchColor);
+                ((Graphics2D)g).setStroke(new BasicStroke(stemwidth,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER));
+                ((Graphics2D)g).draw(stemLine(tree,node));
+                g.setColor(prev);
+            }
+
+			if (branchIsVisible(node)){
 				if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node] != null){
                     Color prev = g.getColor();
                     g.setColor(treeDisplay.getBranchColor(node));
-                    g.fillPolygon(branchPoly[node]);
+//                    g.fillPolygon(branchPoly[node]);
+                    ((Graphics2D)g).setStroke(new BasicStroke(branchWidths[node],BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER));
+                    ((Graphics2D)g).draw(branchLines[node]);
                     g.setColor(prev);
                 }
 				if (tree.numberOfParentsOfNode(node)>1) {
@@ -428,21 +416,24 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 						}
 					}
 				}
-				if (tree.getAssociatedBit(triangleNameRef,node))
+				if (tree.getAssociatedBit(triangleNameRef,node)) {
 					if (treeDisplay.getSimpleTriangle()) {
-						for (int j=0; j<2; j++)
+						for (int j=0; j<2; j++) {
 							for (int i=0; i<2; i++) {
 								g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
 								g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 								g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 							}
+                        }
 					}
+                }
 			}
-			if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle())
-				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+			if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
+				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 					drawOneBranch(tree, g, d);
-
-			if (draw && emphasizeNodes()) {
+                }
+            }
+			if (emphasizeNodes()) {
 				Color prev = g.getColor();
 				g.setColor(Color.red);//for testing
 				g.fillPolygon(branchPoly[node]);
@@ -491,7 +482,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 		g.setColor(tC);
 	}
 	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
+	public void fillTerminalBox(Tree tree, int node, Graphics g) {
 		Rectangle box;
 		int ew = branchwidth -1;
 		if (isUP())
@@ -563,11 +554,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 			fillBranch(tree, node, g);
             for (int i=numEvents-1; i>=0; i--) {
                 ColorEvent e = (ColorEvent)colors.elementAt(i);
-//                if (i == numEvents-1)
-//                else {
-//                    ColorEvent ec = (ColorEvent)colors.elementAt(i+1);
-//                }
-                definePolyForNode(tree, utilityPolygon, node, branchwidth);
+                utilityPolygon = nodePoly(node);
                 g.setColor(e.getColor());
                 g.fillPolygon(utilityPolygon);
                 g.setColor(Color.black);
@@ -582,7 +569,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
 				for (int i=0; i<numColors; i++) {
-                    definePolyForNode(tree, utilityPolygon, node, branchwidth);
+                    utilityPolygon = nodePoly(node);
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
@@ -597,7 +584,32 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	public Polygon nodePoly(int node) {
 		return branchPoly[node];
 	}
-	/*_________________________________________________*/
+
+    public Line2D.Double stemLine(Tree tree, int node) {
+        int leftNode = tree.firstDaughterOfNode(node);
+        int rightNode = tree.lastDaughterOfNode(node);
+        Point leftEnd = new Point(x[leftNode],y[leftNode]);
+        Point rightEnd = new Point(x[rightNode],y[rightNode]);
+        Point parent = new Point(x[node],y[node]);
+        int direction = getOrientation();
+
+        leftEnd = pointRotatedToUp(direction,parent,leftEnd);
+        rightEnd = pointRotatedToUp(direction,parent,rightEnd);
+        double leftwidth = (treeDisplay.getBranchWidth(leftNode) + branchwidth)/2;
+        double rightwidth = (treeDisplay.getBranchWidth(rightNode) + branchwidth)/2;
+        leftEnd.y = parent.y;
+        rightEnd.y = parent.y;
+        leftEnd.x -= leftwidth;
+        rightEnd.x += rightwidth;
+
+//        rotatePointFromUp(leftEnd, parent, direction);
+        leftEnd = pointRotatedFromUp(direction,parent,leftEnd);
+        rightEnd = pointRotatedFromUp(direction,parent,rightEnd);
+//        rotatePointFromUp(rightEnd, parent, direction);
+        return new Line2D.Double(leftEnd,rightEnd);
+    }
+
+    /*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){
 		Polygon nodeP = nodePoly(node);
 		return (nodeP!=null && nodeP.contains(x,y));
@@ -636,7 +648,7 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 			foundBranch=0;
 			ScanBranches(tree, branchPoly, drawnRoot, x, y, fraction);
 			if (branchwidth <ACCEPTABLETOUCHWIDTH)
-				ScanBranches(tree, touchPoly, drawnRoot, x, y, fraction);  //then scan through thicker versions
+				ScanBranches(tree, branchPoly, drawnRoot, x, y, fraction);  //then scan through thicker versions
 			if (foundBranch == tree.getRoot() && !tree.getRooted())
 				return 0;
 			else
@@ -704,7 +716,6 @@ class StyledSquareTreeDrawing extends TreeDrawing   {
 	public void dispose() {
 		for (int i=0; i<numNodes; i++) {
 			branchPoly[i] = null;
-			touchPoly[i] = null;
 		}
 		super.dispose();
 	}
