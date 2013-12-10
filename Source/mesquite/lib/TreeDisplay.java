@@ -138,7 +138,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		}
 	}
 
-	public Composite setBranchTransparency(Graphics g, int N){
     public int getBranchWidth(int node){
         long result = tree.getAssociatedLong(NameReference.getNameReference("width"), node);
 
