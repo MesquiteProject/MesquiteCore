@@ -290,15 +290,15 @@
 			<classpath refid="compile.classpath" />
 		</javac>
 	</target>
-	<target name="callwindowsinstaller"  if="windows">
     <target depends="init,clean" name="DEVcompile">
         <description>Compiles the mesquite source and sends the output to the DEV directory</description>
         <mkdir dir="${DEVmesquitefolder.dir}" />
         <mkdir dir="${DEVmesquitefolder.dir}/jars"/>
         <javac debug="false" destdir="${DEVmesquitefolder.dir}" srcdir="${srcpath}" nowarn="true" memorymaximumsize="500m" fork="true" memoryinitialsize="100m">
             <classpath refid="compile.classpath" />
-        </javac>
+         </javac>
     </target>
+    <target name="callwindowsinstaller"  if="windows">
 		<description>
 			Calls the windows installer build script.  This only executes if the machine executing the build
 			is running windows.
