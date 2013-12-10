@@ -429,15 +429,15 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
 		Rectangle box;
 		int ew = edgewidth-1;
-		int nudge = 2;
+		int halfEW = edgewidth/2+2;
 		if (treeDisplay.getOrientation()==treeDisplay.UP) 
-			box = new Rectangle(x[node], y[node]-ew-ew, ew, ew);
+			box = new Rectangle(x[node], y[node]-ew-halfEW, ew, ew);
 		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
-			box = new Rectangle(x[node], y[node]+1+ew, ew, ew);
+			box = new Rectangle(x[node], y[node]+halfEW, ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
-			box = new Rectangle(x[node]+ew, y[node], ew, ew);
+			box = new Rectangle(x[node]+halfEW, y[node], ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
-			box = new Rectangle(x[node]-ew-ew, y[node], ew, ew);
+			box = new Rectangle(x[node]-ew-halfEW, y[node], ew, ew);
 		else 
 			box = new Rectangle(x[node], y[node], ew, ew);
 		g.fillRect(box.x, box.y, box.width, box.height);
@@ -449,15 +449,15 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		Rectangle box;
 		int numColors = colors.getNumColors();
 		int ew = edgewidth-1;
-		int nudge = 2;
+		int halfEW = edgewidth/2+2;
 		if (treeDisplay.getOrientation()==treeDisplay.UP) 
-			box = new Rectangle(x[node], y[node]-ew-ew, ew, ew);
+			box = new Rectangle(x[node], y[node]-ew-halfEW, ew, ew);
 		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
-			box = new Rectangle(x[node], y[node]+1+ew, ew, ew);
+			box = new Rectangle(x[node], y[node]+halfEW, ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
-			box = new Rectangle(x[node]+ew, y[node], ew, ew);
+			box = new Rectangle(x[node]+halfEW, y[node], ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
-			box = new Rectangle(x[node]-ew-ew, y[node], ew, ew);
+			box = new Rectangle(x[node]-ew-halfEW, y[node], ew, ew);
 		else 
 			box = new Rectangle(x[node], y[node], ew, ew);
 		for (int i=0; i<numColors; i++) {
