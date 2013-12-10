@@ -524,28 +524,32 @@ public class DrawTreeUtil {
 			int xN=x[node];
 			int xnM = x[nM];
 			int yN =y[node];
-			int ynM = y[nM];
+			int ynM = y[nM];  // y position of mother of node
 			int halfEdge = edgewidth/2;
 			if ( g instanceof Graphics2D) {
 				BasicStroke wideStroke = new BasicStroke(width);
 				Graphics2D g2 = (Graphics2D)g;
 				g2.setStroke(wideStroke);
 				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-					g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
-					g2.drawLine(xN+halfEdge,ynM,xnM,ynM);
+					if (yN!=ynM)
+						g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
+					g2.drawLine(xN+halfEdge,ynM,xnM+halfEdge,ynM);
 				}
 				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //����
-					g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
-					g2.drawLine(xN+halfEdge,ynM,xnM,ynM);
+					if (yN!=ynM)
+						g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
+					g2.drawLine(xN+halfEdge,ynM,xnM+halfEdge,ynM);
 				}
 				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-					g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);
-					g2.drawLine(xnM,yN+halfEdge,xnM,ynM);
+					if (xN!=xnM)
+						g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);  // draws the horizontal lines
+					g2.drawLine(xnM,yN+halfEdge,xnM,ynM+halfEdge);  // draws the vertical lines
 
 				}
 				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //����
-					g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);
-					g2.drawLine(xnM,yN+halfEdge,xnM,ynM);
+					if (xN!=xnM)
+						g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);
+					g2.drawLine(xnM,yN+halfEdge,xnM,ynM+halfEdge);
 				}
 				g2.setStroke(defaultStroke);
 			}
