@@ -15,6 +15,7 @@ package mesquite.search.TreeSearch;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -48,6 +49,12 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 		return true;
 	}
 
+   	public Reconnectable getReconnectable(){
+   		if (searchTask instanceof Reconnectable)
+   			return (Reconnectable)searchTask;
+   		return null;
+   	}
+   	
 	 public String getExtraTreeWindowCommands (){
 		 if (searchTask!=null)
 			 return searchTask.getExtraTreeWindowCommands();
@@ -143,6 +150,7 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 	}
 	/*.................................................................................................................*/
 	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
+		//DISCONNECTABLE
 		searchTask.fillTreeBlock(treeList);
 	}
 	/*.................................................................................................................*/

@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 
 
@@ -53,6 +54,10 @@ public abstract class TreeBlockFiller extends MesquiteModule  {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract void initialize(Taxa taxa);
 
+   	public Reconnectable getReconnectable(){
+   		return null;
+   	}
+   	
    	 /** Returns whether there is a limited (e.g. stored trees) or unlimited (e.g., simulated trees) number of trees available.
    	 If this is a TreeSource, this method checks the getNumberOfTrees method.  Otherwise, the module should
    	 override it.*/

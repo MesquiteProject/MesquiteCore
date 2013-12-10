@@ -47,7 +47,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	public void setNumberTask(NumberForTree numTask){
 	}
   	
- 	 public boolean canGiveIntermediateResults(){
+   	public boolean isReconnectable(){
+   		return false;
+   	}
+	 public boolean canGiveIntermediateResults(){
    		 return false;
    	 }
  	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
