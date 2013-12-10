@@ -395,7 +395,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			if (tree.getRooted() || tree.getRoot()!=node) {
-				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
+				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, null, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
 			}
 
 			int thisSister = tree.firstDaughterOfNode(node);
@@ -431,13 +431,13 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		int ew = edgewidth-1;
 		int halfEW = edgewidth/2+2;
 		if (treeDisplay.getOrientation()==treeDisplay.UP) 
-			box = new Rectangle(x[node], y[node]-ew-halfEW, ew, ew);
+			box = new Rectangle(x[node], y[node]-ew-1, ew, ew);
 		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
-			box = new Rectangle(x[node], y[node]+halfEW, ew, ew);
+			box = new Rectangle(x[node], y[node]+1, ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
-			box = new Rectangle(x[node]+halfEW, y[node], ew, ew);
+			box = new Rectangle(x[node]+1, y[node], ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
-			box = new Rectangle(x[node]-ew-halfEW, y[node], ew, ew);
+			box = new Rectangle(x[node]-ew-1, y[node], ew, ew);
 		else 
 			box = new Rectangle(x[node], y[node], ew, ew);
 		g.fillRect(box.x, box.y, box.width, box.height);
@@ -451,13 +451,13 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		int ew = edgewidth-1;
 		int halfEW = edgewidth/2+2;
 		if (treeDisplay.getOrientation()==treeDisplay.UP) 
-			box = new Rectangle(x[node], y[node]-ew-halfEW, ew, ew);
+			box = new Rectangle(x[node], y[node]-ew-1, ew, ew);
 		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
-			box = new Rectangle(x[node], y[node]+halfEW, ew, ew);
+			box = new Rectangle(x[node], y[node]+1, ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
-			box = new Rectangle(x[node]+halfEW, y[node], ew, ew);
+			box = new Rectangle(x[node]+1, y[node], ew, ew);
 		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
-			box = new Rectangle(x[node]-ew-halfEW, y[node], ew, ew);
+			box = new Rectangle(x[node]-ew-1, y[node], ew, ew);
 		else 
 			box = new Rectangle(x[node], y[node], ew, ew);
 		for (int i=0; i<numColors; i++) {
@@ -479,14 +479,21 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			if (ownerModule.getShowEdgeLines())
 				fillWidth = edgewidth-2*inset;
 			int numColors = colors.getNumColors();
-			for (int i=0; i<numColors; i++) {
-				Color color;
-				if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
+			Color color;
+			if (numColors<=1) {
+				if ((color = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)))!=null)
 					g.setColor(color);
-				//			public static   void drawOneBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
-
-				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, node, inset + i*fillWidth/numColors,  (i+1)*fillWidth/numColors -i*fillWidth/numColors, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, colors, node, inset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 			}
+			else
+				for (int i=0; i<numColors; i++) {
+					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
+						g.setColor(color);
+					//			public static   void drawOneBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+					float thickness = fillWidth/numColors;
+					float start = i*thickness-inset;
+					DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+				}
 			if (c!=null) g.setColor(c);
 		}
 	}
@@ -495,7 +502,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			//if (ownerModule.getShowEdgeLines())
-				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), tree, g, node, inset, edgewidth-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), tree, g, null, node, inset, edgewidth-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 		}
 	}
 

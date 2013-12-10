@@ -518,7 +518,7 @@ public class DrawTreeUtil {
 	}
 
 	/*_________________________________________________*/
-	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
 			int xN=x[node];
@@ -529,29 +529,105 @@ public class DrawTreeUtil {
 			if ( g instanceof Graphics2D) {
 				BasicStroke wideStroke = new BasicStroke(width);
 				Graphics2D g2 = (Graphics2D)g;
+				Stroke stroke = g2.getStroke();
 				g2.setStroke(wideStroke);
 				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 					if (yN!=ynM)
-						g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
-					g2.drawLine(xN+halfEdge,ynM,xnM+halfEdge,ynM);
+						g2.drawLine(xN+halfEdge,yN+halfEdge,xN+halfEdge,ynM+halfEdge);
+					g2.drawLine(xN+halfEdge,ynM+halfEdge,xnM+halfEdge,ynM+halfEdge);
 				}
 				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //����
 					if (yN!=ynM)
-						g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
-					g2.drawLine(xN+halfEdge,ynM,xnM+halfEdge,ynM);
+						g2.drawLine(xN+halfEdge,yN-halfEdge,xN+halfEdge,ynM-halfEdge);
+					g2.drawLine(xN+halfEdge,ynM-halfEdge,xnM+halfEdge,ynM-halfEdge);
 				}
 				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
 					if (xN!=xnM)
-						g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);  // draws the horizontal lines
-					g2.drawLine(xnM,yN+halfEdge,xnM,ynM+halfEdge);  // draws the vertical lines
-
+						g2.drawLine(xN-halfEdge,yN+halfEdge,xnM-halfEdge,yN+halfEdge);  // draws the horizontal lines
+					g2.drawLine(xnM-halfEdge,yN+halfEdge,xnM-halfEdge,ynM+halfEdge);  // draws the vertical lines
 				}
 				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //����
 					if (xN!=xnM)
-						g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);
-					g2.drawLine(xnM,yN+halfEdge,xnM,ynM+halfEdge);
+						g2.drawLine(xN+halfEdge,yN+halfEdge,xnM+halfEdge,yN+halfEdge);
+					g2.drawLine(xnM+halfEdge,yN+halfEdge,xnM+halfEdge,ynM+halfEdge);
 				}
-				g2.setStroke(defaultStroke);
+				g2.setStroke(stroke);
+			}
+
+			if (emphasizeNodes && nodePoly!=null) {
+				Color prev = g.getColor();
+				g.setColor(Color.red);//for testing
+				g.fillPolygon(nodePoly);
+				g.setColor(prev);
+			}
+		}
+	}
+
+	/*_________________________________________________*/
+	public static void fillOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+		if (tree.nodeExists(node)) {
+			int nM = tree.motherOfNode(node);
+			int xN=x[node];
+			int xnM = x[nM];
+			int yN =y[node];
+			int ynM = y[nM];  // y position of mother of node
+			int halfLine = (int)width/2;
+			int startInt = (int)(start-edgewidth/2);
+			int yOffset = (int)(start+edgewidth/2);
+			if (g instanceof Graphics2D) {
+				BasicStroke wideStroke = new BasicStroke(width);
+				Graphics2D g2 = (Graphics2D)g;
+				Stroke stroke = g2.getStroke();
+				g2.setStroke(wideStroke);
+				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
+					if (xN>xnM){ // branch going to right
+						if (yN!=ynM)
+							g2.drawLine(xN-halfLine+edgewidth+startInt,yN+halfLine+1,xN-halfLine+edgewidth+startInt,ynM-halfLine+yOffset);  // draws the vertical lines
+						g2.drawLine(xN-halfLine+edgewidth+startInt,ynM-halfLine+yOffset,xnM+edgewidth,ynM-halfLine+yOffset);  // draws the horizontal lines
+					}
+					else { // branch going to left
+						if (yN!=ynM)
+							g2.drawLine(xN+edgewidth-halfLine+startInt,yN+halfLine+1,xN+edgewidth-halfLine+startInt,ynM+edgewidth+halfLine-yOffset);  // draws the vertical lines
+						g2.drawLine(xN+edgewidth-halfLine+startInt,ynM+edgewidth+halfLine-yOffset,xnM+halfLine,ynM+edgewidth+halfLine-yOffset);  // draws the horizontal lines
+					}
+				}
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //����
+					if (xN>xnM){ // branch going to right
+						if (yN!=ynM)
+							g2.drawLine(xN-halfLine+edgewidth+startInt,yN-halfLine-1,xN-halfLine+edgewidth+startInt,ynM+halfLine-yOffset);  // draws the vertical lines
+						g2.drawLine(xN-halfLine+edgewidth+startInt,ynM+halfLine-yOffset,xnM+edgewidth,ynM+halfLine-yOffset);  // draws the horizontal lines
+					}
+					else { // branch going to left
+						if (yN!=ynM)
+							g2.drawLine(xN+edgewidth-halfLine+startInt,yN-halfLine-1,xN+edgewidth-halfLine+startInt,ynM-edgewidth-halfLine+yOffset);  // draws the vertical lines
+						g2.drawLine(xN+edgewidth-halfLine+startInt,ynM-edgewidth-halfLine+yOffset,xnM+halfLine,ynM-edgewidth-halfLine+yOffset);  // draws the horizontal lines
+					}
+				}
+				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+					if (yN>ynM){ // branch going down
+						if (xN!=xnM)
+							g2.drawLine(xN-halfLine-1,yN-halfLine+yOffset,xnM+halfLine-edgewidth-startInt,yN-halfLine+yOffset);  // draws the horizontal lines
+						g2.drawLine(xnM+halfLine-edgewidth-startInt,yN-halfLine+yOffset,xnM+halfLine-edgewidth-startInt,ynM+edgewidth+halfLine-1);  // draws the vertical lines
+					}
+					else { // branch going up
+						if (xN!=xnM)
+							g2.drawLine(xN-halfLine-1,yN-halfLine+yOffset,xnM-halfLine+startInt,yN-halfLine+yOffset);  // draws the horizontal lines
+						g2.drawLine(xnM-halfLine+startInt,yN-halfLine+yOffset,xnM-halfLine+startInt,ynM-halfLine);  // draws the vertical lines
+					}
+				}
+				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //����
+					if (yN>ynM){ // branch going down
+						if (xN!=xnM)
+							g2.drawLine(xN+halfLine+1,yN-halfLine+yOffset,xnM-halfLine+edgewidth+startInt,yN-halfLine+yOffset);  // draws the horizontal lines
+						g2.drawLine(xnM-halfLine+edgewidth+startInt,yN-halfLine+yOffset,xnM-halfLine+edgewidth+startInt,ynM+edgewidth+halfLine-1);  // draws the vertical lines
+					}
+					else { // branch going up
+						if (xN!=xnM)
+							g2.drawLine(xN+halfLine+1,yN-halfLine+yOffset,xnM+halfLine-startInt,yN-halfLine+yOffset);  // draws the horizontal lines
+						g2.drawLine(xnM+halfLine-startInt,yN-halfLine+yOffset,xnM+halfLine-startInt,ynM-halfLine);  // draws the vertical lines
+					}
+				}
+				g2.setStroke(stroke);
 			}
 
 			if (emphasizeNodes && nodePoly!=null) {
