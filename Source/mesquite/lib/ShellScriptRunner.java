@@ -43,6 +43,8 @@ public class ShellScriptRunner implements Commandable  {
 	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
 		this.scriptPath=scriptPath;
 		this.runningFilePath=runningFilePath;
+		if (runningFilePath == null && !StringUtil.blank(scriptPath))
+			runningFilePath=ShellScriptUtil.getDefaultRunningFilePath();
 		this.runningFileMessage=runningFileMessage;
 		this.appendRemoveCommand =appendRemoveCommand;
 		this.name = name;
@@ -112,12 +114,6 @@ public class ShellScriptRunner implements Commandable  {
 	 * serve as a flag to Mesquite that the script is running.   */
 	public boolean executeInShell(){
 		proc = null;
-		lastModified=null;
-		boolean stillGoing = true;
-		if (outputFilePaths!=null) {
-			lastModified = new long[outputFilePaths.length];
-			LongArray.deassignArray(lastModified);
-		}
 		try{
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
 			if (!StringUtil.blank(runningFilePath)) {
