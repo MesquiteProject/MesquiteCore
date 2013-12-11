@@ -1155,9 +1155,9 @@ public class StringUtil {
 				buffer.append("\\'");
 			else if (s.charAt(i)=='/')
 				buffer.append("\\/");
-			else if (s.charAt(i)=='�')
+			else if (s.charAt(i)=='“')
 				buffer.append("\\\"");
-			else if (s.charAt(i)=='�')
+			else if (s.charAt(i)=='”')
 				buffer.append("\\\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
@@ -1169,82 +1169,82 @@ public class StringUtil {
 	private static char stripAccent(char a){
 		if ((int)a==65533)
 			return '_';
-		if (a=='�')
+		if (a=='é')  //accute
 			return 'e';
-		else if (a=='�')
+		else if (a=='á')
 			return 'a';
-		else if (a=='�')
+		else if (a=='ó')
 			return 'o';
-		else if (a=='�')
+		else if (a=='ú')
 			return 'u';
-		else if (a=='�')
+		else if (a=='í')
 			return 'i';
-		else if (a=='�')
+		else if (a=='É')
 			return 'E';
-		else if (a=='�')
+		else if (a=='Á')
 			return 'A';
-		else if (a=='�')
+		else if (a=='Í')
 			return 'I';
-		else if (a=='�')
+		else if (a=='Ó')
 			return 'O';
-		else if (a=='�')
+		else if (a=='Ú')
 			return 'U';
 
-		else if (a=='�')
+		else if (a=='è') //grave
 			return 'e';
-		else if (a=='�')
+		else if (a=='à')
 			return 'a';
-		else if (a=='�')
+		else if (a=='ò')
 			return 'o';
-		else if (a=='�')
+		else if (a=='ù')
 			return 'u';
-		else if (a=='�')
+		else if (a=='ì')
 			return 'i';
-		else if (a=='�')
+		else if (a=='È')
 			return 'E';
-		else if (a=='�')
+		else if (a=='À')
 			return 'A';
-		else if (a=='�')
+		else if (a=='Ì')
 			return 'I';
-		else if (a=='�')
+		else if (a=='Ò')
 			return 'O';
-		else if (a=='�')
+		else if (a=='Ù')
 			return 'U';
 
-		else if (a=='�')
+		else if (a=='ë') //umlaut
 			return 'e';
-		else if (a=='�')
+		else if (a=='ä')
 			return 'a';
-		else if (a=='�')
+		else if (a=='ö')
 			return 'o';
-		else if (a=='�')
+		else if (a=='ü')
 			return 'u';
-		else if (a=='�')
+		else if (a=='ï')
 			return 'i';
-		else if (a=='�')
+		else if (a=='Ë')
 			return 'E';
-		else if (a=='�')
+		else if (a=='Ä')
 			return 'A';
-		else if (a=='�')
+		else if (a=='Ï')
 			return 'I';
-		else if (a=='�')
+		else if (a=='Ö')
 			return 'O';
-		else if (a=='�')
+		else if (a=='Ü')
 			return 'U';
 
-		else if (a=='�')
+		else if (a=='ø')
 			return 'o';
 
-		else if (a=='�')
-			return '�';
+		else if (a=='Ø')
+			return 'Ø';
 
-		else if (a=='�')
+		else if (a=='ñ') 
 			return 'n';
-		else if (a=='�')
+		else if (a=='Ñ')
 			return 'N';
-		else if (a=='�')
-			return 'C';
-		else if (a=='�')
+		else if (a=='ç')
+			return 'c';
+		else if (a=='Ç')
 			return 'C';
 		return 0;
 	}
