@@ -1155,9 +1155,9 @@ public class StringUtil {
 				buffer.append("\\'");
 			else if (s.charAt(i)=='/')
 				buffer.append("\\/");
-			else if (s.charAt(i)=='“')
+			else if (s.charAt(i)=='‚Äú')
 				buffer.append("\\\"");
-			else if (s.charAt(i)=='”')
+			else if (s.charAt(i)=='‚Äù')
 				buffer.append("\\\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
@@ -1169,82 +1169,82 @@ public class StringUtil {
 	private static char stripAccent(char a){
 		if ((int)a==65533)
 			return '_';
-		if (a=='é')
+		if (a=='√©')
 			return 'e';
-		else if (a=='á')
+		else if (a=='√°')
 			return 'a';
-		else if (a=='ó')
+		else if (a=='√≥')
 			return 'o';
-		else if (a=='ú')
+		else if (a=='√∫')
 			return 'u';
-		else if (a=='í')
+		else if (a=='√≠')
 			return 'i';
-		else if (a=='É')
+		else if (a=='√â')
 			return 'E';
-		else if (a=='Á')
+		else if (a=='√Å')
 			return 'A';
-		else if (a=='Í')
+		else if (a=='√ç')
 			return 'I';
-		else if (a=='Ó')
+		else if (a=='√ì')
 			return 'O';
-		else if (a=='Ú')
+		else if (a=='√ö')
 			return 'U';
 
-		else if (a=='è')
+		else if (a=='√®')
 			return 'e';
-		else if (a=='à')
+		else if (a=='√†')
 			return 'a';
-		else if (a=='ò')
+		else if (a=='√≤')
 			return 'o';
-		else if (a=='ù')
+		else if (a=='√π')
 			return 'u';
-		else if (a=='ì')
+		else if (a=='√¨')
 			return 'i';
-		else if (a=='È')
+		else if (a=='√à')
 			return 'E';
-		else if (a=='À')
+		else if (a=='√Ä')
 			return 'A';
-		else if (a=='Ì')
+		else if (a=='√å')
 			return 'I';
-		else if (a=='Ò')
+		else if (a=='√í')
 			return 'O';
-		else if (a=='Ù')
+		else if (a=='√ô')
 			return 'U';
 
-		else if (a=='ë')
+		else if (a=='√´')
 			return 'e';
-		else if (a=='ä')
+		else if (a=='√§')
 			return 'a';
-		else if (a=='ö')
+		else if (a=='√∂')
 			return 'o';
-		else if (a=='ü')
+		else if (a=='√º')
 			return 'u';
-		else if (a=='ï')
+		else if (a=='√Ø')
 			return 'i';
-		else if (a=='Ë')
+		else if (a=='√ã')
 			return 'E';
-		else if (a=='Ä')
+		else if (a=='√Ñ')
 			return 'A';
-		else if (a=='Ï')
+		else if (a=='√è')
 			return 'I';
-		else if (a=='Ö')
+		else if (a=='√ñ')
 			return 'O';
-		else if (a=='Ü')
+		else if (a=='√ú')
 			return 'U';
 
-		else if (a=='ø')
+		else if (a=='√∏')
 			return 'o';
 
-		else if (a=='Ø')
-			return 'Ø';
+		else if (a=='√ò')
+			return '√ò';
 
-		else if (a=='ñ')
+		else if (a=='√±')
 			return 'n';
-		else if (a=='Ñ')
+		else if (a=='√ë')
 			return 'N';
-		else if (a=='ç')
+		else if (a=='√ß')
 			return 'C';
-		else if (a=='Ç')
+		else if (a=='√á')
 			return 'C';
 		return 0;
 	}
@@ -1423,9 +1423,9 @@ public class StringUtil {
 				else 
 					buffer.append('_');
 			}
-			else if (s.charAt(i)=='“')
+			else if (s.charAt(i)=='‚Äú')
 				buffer.append("\"");
-			else if (s.charAt(i)=='”')
+			else if (s.charAt(i)=='‚Äù')
 				buffer.append("\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
