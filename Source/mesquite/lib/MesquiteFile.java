@@ -436,10 +436,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			else if (directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))
 				directoryName = MesquiteTrunk.suggestedDirectory + directoryName;
 			else
-				directoryName = MesquiteTrunk.suggestedDirectory + fileSeparator + directoryName;
+				directoryName = MesquiteTrunk.suggestedDirectory + directoryName + fileSeparator;  //Dec 2013 this was backwards!
+				
+
 
 		}
-		if (fileExists(directoryName+ fileName)) {
+		if ((directoryName.indexOf("//")<0) && fileExists(directoryName+ fileName)) { //Dec 2013 added check on double //
 			MesquiteFile mF = new MesquiteFile();
 			mF.local = true;
 			mF.fileName = fileName;

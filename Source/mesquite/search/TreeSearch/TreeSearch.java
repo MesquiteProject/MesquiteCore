@@ -125,6 +125,7 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		temp.addLine("setSearcher " , searchTask);
+		temp.incorporate(super.getSnapshot(file), false);
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();

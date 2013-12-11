@@ -1751,6 +1751,7 @@ class TreeBlockMonitorThread extends MesquiteThread {
 		if (reconnectable != null){
 			reconnectable.reconnectToRequester(new MesquiteCommand("treesReady", ownerModule));
 		}
+		threadGoodbye();
 
 	}
 	/*.............................................*/
