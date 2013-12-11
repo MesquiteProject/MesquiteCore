@@ -235,14 +235,14 @@ public class ManageTrees extends TreesManager {
 				temp.addLine("showTreeBlocks ", e); 
 			}
 		}
-		/*
+	
 		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){
 			temp.addLine("restartTreeSource ", treeFillerTask);
 			temp.addLine("reconnectTreeSource ");
 		}
 		else if (showTreeFiller && treeFillerTask !=null)
 			temp.addLine("setTreeSource ", treeFillerTask);
-			*/
+	
 		return temp;
 	}
 
@@ -459,14 +459,25 @@ public class ManageTrees extends TreesManager {
 			return treeFillerTask;
 		}
 		else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
-			Reconnectable reconnectable = treeFillerTask.getReconnectable();
-			if (reconnectable != null){
-				reconnectable.reconnectToRequester(new MesquiteCommand("treesReady " + treeFillerTask.getID(), this));
-			}
-			return reconnectable;
+			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, treeFillerTask);
+			fillingTreesNow = true;
+
+			thread.start();
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Informs Manage trees that trees are ready", "[ID of tree block filler module]", commandName, "treesReady")) { 
+			// may need to pass more info to be able to connect to right filltask etc, especially if multithreading
 			Debugg.println("Yay! trees are ready");
+			if (treeFillerTask != null){
+				TreeVector trees = new TreeVector(getProject().getTaxa(0));  //Debugg.println   temporary -- need to get right taxa block!
+				treeFillerTask.retrieveTreeBlock(trees, 100);
+				trees.addToFile(getProject().getHomeFile(), getProject(), this);
+				doneQuery(treeFillerTask, trees.getTaxa(), trees, true);
+				fireEmployee(treeFillerTask);
+				fillingTreesNow = false;
+				resetAllMenuBars();
+			}
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Fires the tree source for use in filling newly created tree blocks",null, commandName, "fireTreeSource")) { 
 			if (treeFillerTask!=null) {
@@ -1707,7 +1718,48 @@ class TreeBlockThread extends MesquiteThread {
 	}
 
 }
-/*===============================================*/
+/* ======================================================================== */
+class TreeBlockMonitorThread extends MesquiteThread {
+	ManageTrees ownerModule;
+	TreeBlockFiller fillTask;
+	CommandRecord comRec = null;
+	public TreeBlockMonitorThread (ManageTrees ownerModule, TreeBlockFiller fillTask) {
+		super();
+		this.ownerModule = ownerModule;
+		this.fillTask = fillTask;
+		setCurrent(1);
+		CommandRecord cr = MesquiteThread.getCurrentCommandRecord();
+		boolean sc;
+		if (cr == null)
+			sc = false;
+		else
+			sc = cr.recordIsScripting();
+		comRec = new CommandRecord(sc);
+		setCommandRecord(comRec);
+		
+	}
+
+	public String getCurrentCommandName(){
+		return "Making trees";
+	}
+	public String getCurrentCommandExplanation(){
+		return null;
+	}
+	/*.............................................*/
+	public void run() {
+		Reconnectable reconnectable = fillTask.getReconnectable();
+		if (reconnectable != null){
+			reconnectable.reconnectToRequester(new MesquiteCommand("treesReady", ownerModule));
+		}
+
+	}
+	/*.............................................*/
+	public void dispose(){
+		ownerModule = null;
+		fillTask = null;
+	}
+
+}/*===============================================*/
 class TreeBlock extends NexusBlock {
 	TreeVector trees = null;
 	public TreeBlock(MesquiteFile f, MesquiteModule mb){

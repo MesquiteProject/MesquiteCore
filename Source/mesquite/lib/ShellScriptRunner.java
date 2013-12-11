@@ -44,7 +44,8 @@ public class ShellScriptRunner implements Commandable  {
 		this.scriptPath=scriptPath;
 		this.runningFilePath=runningFilePath;
 		if (runningFilePath == null && !StringUtil.blank(scriptPath))
-			runningFilePath=ShellScriptUtil.getDefaultRunningFilePath();
+			this.runningFilePath=ShellScriptUtil.getDefaultRunningFilePath();
+
 		this.runningFileMessage=runningFileMessage;
 		this.appendRemoveCommand =appendRemoveCommand;
 		this.name = name;
@@ -69,7 +70,7 @@ public class ShellScriptRunner implements Commandable  {
 		if (outputFilePaths != null){
 			String files = " ";
 			for (int i = 0; i< outputFilePaths.length; i++){
-				files += " " + outputFilePaths[i];
+				files += " " + ParseUtil.tokenize(outputFilePaths[i]);
 			}
 			temp.addLine("setOutputFilePaths " + files);
 		}
@@ -132,8 +133,6 @@ public class ShellScriptRunner implements Commandable  {
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
 			return false;
 		}
-		if (outputFileProcessor!=null)
-			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -146,7 +145,6 @@ public class ShellScriptRunner implements Commandable  {
 			lastModified = new long[outputFilePaths.length];
 			LongArray.deassignArray(lastModified);
 		}
-
 
 		if (!StringUtil.blank(runningFilePath))   // is file at runningFilePath; watch for its disappearance
 			while (MesquiteFile.fileExists(runningFilePath) && stillGoing){

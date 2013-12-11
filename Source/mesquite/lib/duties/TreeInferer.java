@@ -88,10 +88,13 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 				p.execute(w, commands, new MesquiteInteger(0), "end;", false);
 			}
 		}
-		if (tWindowMaker != null)
+		if (tWindowMaker != null){
 			tWindowMaker.setWindowVisible(true);
+		}
 		
 	}
+	
+
 }
 
 

@@ -153,7 +153,12 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 		//DISCONNECTABLE
 		searchTask.fillTreeBlock(treeList);
 	}
-	/*.................................................................................................................*/
+
+	//TEMPORARY Debugg.println  Should be only in disconnectable tree block fillers
+	public void retrieveTreeBlock(TreeVector treeList, int numberIfUnlimited){
+		searchTask.retrieveTreeBlock(treeList);
+	}
+/*.................................................................................................................*/
 	public String getParameters() {
 		if (searchTask==null)
 			return("");
