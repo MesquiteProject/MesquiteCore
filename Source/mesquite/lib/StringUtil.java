@@ -49,6 +49,13 @@ public class StringUtil {
 		return "Mesquite"+ MesquiteTrunk.mesquiteTrunk.getVersion() + URL+startupTimeMillis;
 	}
 	/*.................................................................................................................*/
+	public static String getDateDayOnly() {
+		long startupTime = System.currentTimeMillis();
+		Date dnow = new Date(startupTime);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		return sdf.format(dnow);
+	}
+	/*.................................................................................................................*/
 	public static String getDateTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM yyyy,  HH:mm z");
 		return sdf.format(date);
@@ -1148,9 +1155,9 @@ public class StringUtil {
 				buffer.append("\\'");
 			else if (s.charAt(i)=='/')
 				buffer.append("\\/");
-			else if (s.charAt(i)=='Ò')
+			else if (s.charAt(i)=='ï¿½')
 				buffer.append("\\\"");
-			else if (s.charAt(i)=='Ó')
+			else if (s.charAt(i)=='ï¿½')
 				buffer.append("\\\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
@@ -1162,82 +1169,82 @@ public class StringUtil {
 	private static char stripAccent(char a){
 		if ((int)a==65533)
 			return '_';
-		if (a=='')
+		if (a=='ï¿½')
 			return 'e';
-		else if (a=='‡')
+		else if (a=='ï¿½')
 			return 'a';
-		else if (a=='—')
+		else if (a=='ï¿½')
 			return 'o';
-		else if (a=='œ')
+		else if (a=='ï¿½')
 			return 'u';
-		else if (a=='’')
+		else if (a=='ï¿½')
 			return 'i';
-		else if (a=='ƒ')
+		else if (a=='ï¿½')
 			return 'E';
-		else if (a=='ç')
+		else if (a=='ï¿½')
 			return 'A';
-		else if (a=='ê')
+		else if (a=='ï¿½')
 			return 'I';
-		else if (a=='î')
+		else if (a=='ï¿½')
 			return 'O';
-		else if (a=='ò')
+		else if (a=='ï¿½')
 			return 'U';
 
-		else if (a=='')
+		else if (a=='ï¿½')
 			return 'e';
-		else if (a=='ˆ')
+		else if (a=='ï¿½')
 			return 'a';
-		else if (a=='˜')
+		else if (a=='ï¿½')
 			return 'o';
-		else if (a=='')
+		else if (a=='ï¿½')
 			return 'u';
-		else if (a=='“')
+		else if (a=='ï¿½')
 			return 'i';
-		else if (a=='é')
+		else if (a=='ï¿½')
 			return 'E';
-		else if (a=='Ë')
+		else if (a=='ï¿½')
 			return 'A';
-		else if (a=='í')
+		else if (a=='ï¿½')
 			return 'I';
-		else if (a=='ñ')
+		else if (a=='ï¿½')
 			return 'O';
-		else if (a=='ô')
+		else if (a=='ï¿½')
 			return 'U';
 
-		else if (a=='‘')
+		else if (a=='ï¿½')
 			return 'e';
-		else if (a=='Š')
+		else if (a=='ï¿½')
 			return 'a';
-		else if (a=='š')
+		else if (a=='ï¿½')
 			return 'o';
-		else if (a=='Ÿ')
+		else if (a=='ï¿½')
 			return 'u';
-		else if (a=='•')
+		else if (a=='ï¿½')
 			return 'i';
-		else if (a=='è')
+		else if (a=='ï¿½')
 			return 'E';
-		else if (a=='€')
+		else if (a=='ï¿½')
 			return 'A';
-		else if (a=='ì')
+		else if (a=='ï¿½')
 			return 'I';
-		else if (a=='…')
+		else if (a=='ï¿½')
 			return 'O';
-		else if (a=='†')
+		else if (a=='ï¿½')
 			return 'U';
 
-		else if (a=='¿')
+		else if (a=='ï¿½')
 			return 'o';
 
-		else if (a=='¯')
-			return '¯';
+		else if (a=='ï¿½')
+			return 'ï¿½';
 
-		else if (a=='–')
+		else if (a=='ï¿½')
 			return 'n';
-		else if (a=='„')
+		else if (a=='ï¿½')
 			return 'N';
-		else if (a=='')
+		else if (a=='ï¿½')
 			return 'C';
-		else if (a=='‚')
+		else if (a=='ï¿½')
 			return 'C';
 		return 0;
 	}
@@ -1416,9 +1423,9 @@ public class StringUtil {
 				else 
 					buffer.append('_');
 			}
-			else if (s.charAt(i)=='Ò')
+			else if (s.charAt(i)=='ï¿½')
 				buffer.append("\"");
-			else if (s.charAt(i)=='Ó')
+			else if (s.charAt(i)=='ï¿½')
 				buffer.append("\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
