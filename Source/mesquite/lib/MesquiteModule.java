@@ -347,7 +347,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			Object obj = e.nextElement();
 			MesquiteModule mbe = (MesquiteModule)obj;
 			if (mbe!=null) {
-				mbe.fileCloseRequested();
+				mbe.fileCloseRequested(); 
 			}
 		}
 	}
