@@ -534,22 +534,26 @@ public class DrawTreeUtil {
 				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 					if (yN!=ynM)
 						g2.drawLine(xN+halfEdge,yN+halfEdge,xN+halfEdge,ynM+halfEdge);
-					g2.drawLine(xN+halfEdge,ynM+halfEdge,xnM+halfEdge,ynM+halfEdge);
+					if (node!=tree.getRoot())
+						g2.drawLine(xN+halfEdge,ynM+halfEdge,xnM+halfEdge,ynM+halfEdge);
 				}
-				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //����
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ 
 					if (yN!=ynM)
 						g2.drawLine(xN+halfEdge,yN-halfEdge,xN+halfEdge,ynM-halfEdge);
-					g2.drawLine(xN+halfEdge,ynM-halfEdge,xnM+halfEdge,ynM-halfEdge);
+					if (node!=tree.getRoot())
+						g2.drawLine(xN+halfEdge,ynM-halfEdge,xnM+halfEdge,ynM-halfEdge);
 				}
 				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
 					if (xN!=xnM)
 						g2.drawLine(xN-halfEdge,yN+halfEdge,xnM-halfEdge,yN+halfEdge);  // draws the horizontal lines
-					g2.drawLine(xnM-halfEdge,yN+halfEdge,xnM-halfEdge,ynM+halfEdge);  // draws the vertical lines
+					if (node!=tree.getRoot())
+						g2.drawLine(xnM-halfEdge,yN+halfEdge,xnM-halfEdge,ynM+halfEdge);  // draws the vertical lines
 				}
-				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //����
+				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ 
 					if (xN!=xnM)
 						g2.drawLine(xN+halfEdge,yN+halfEdge,xnM+halfEdge,yN+halfEdge);
-					g2.drawLine(xnM+halfEdge,yN+halfEdge,xnM+halfEdge,ynM+halfEdge);
+					if (node!=tree.getRoot())
+						g2.drawLine(xnM+halfEdge,yN+halfEdge,xnM+halfEdge,ynM+halfEdge);
 				}
 				g2.setStroke(stroke);
 			}
