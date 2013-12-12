@@ -2535,6 +2535,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public boolean getUserChooseable(){
 		return true;
 	}
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+	}
+
 	/*.................................................................................................................*/
 	/** Returns duty Class that module would like to hire immediately upon hiring. If a module wants to present a user with a choice of 
 	employees to hire, it can request a submenu listing these possible employees.  However, if one of these employees would like to immediately

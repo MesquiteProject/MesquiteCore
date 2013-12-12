@@ -1020,6 +1020,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			ladderizeAfterReroot.setValue(MesquiteBoolean.fromTrueFalseString(content));
 	}
 	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String flavor, String content) {
+	}
+
+	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "toggleRerootLadderize", ladderizeAfterReroot);   

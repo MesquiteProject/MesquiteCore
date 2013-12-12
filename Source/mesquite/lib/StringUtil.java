@@ -1297,21 +1297,34 @@ public class StringUtil {
 		sb.append("<?xml version=\"1.0\"?>\n");
 	}
 	/*.................................................................................................................*/
-	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, boolean addLineFeed){
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute, boolean addLineFeed){
 		if (sb!=null) {
 			for (int i=1; i<=numTabs; i++){
 				sb.append("\t");
 			}
 			sb.append("<");
 			sb.append(tag);
+			if (StringUtil.notEmpty(attributeName) && StringUtil.notEmpty(attribute)){
+				sb.append(" \"");
+				sb.append(attribute);
+				sb.append(" \"");
+			}
 			sb.append(">");
 			if (addLineFeed)
 				sb.append("\n");
 		}
 	}
 	/*.................................................................................................................*/
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, boolean addLineFeed){
+		appendStartXMLTag(sb,numTabs,tag, null, null, false);
+	}
+	/*.................................................................................................................*/
 	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag){
 		appendStartXMLTag(sb,numTabs,tag,false);
+	}
+	/*.................................................................................................................*/
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute){
+		appendStartXMLTag(sb,numTabs,tag,attributeName, attribute, false);
 	}
 	/*.................................................................................................................*/
 	public static void appendEndXMLTag(StringBuffer sb, int numTabs, String tag){
@@ -1336,6 +1349,24 @@ public class StringUtil {
 	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String content){
 		if (sb!=null) {
 			appendStartXMLTag(sb,numTabs,tag);
+			if (content!=null)
+				sb.append(StringUtil.protectForXML(content));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String flavor, String content){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, XMLUtil.FLAVOR, StringUtil.protectForXML(flavor));
+			if (content!=null)
+				sb.append(StringUtil.protectForXML(content));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute, String content){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, attributeName, StringUtil.protectForXML(attribute));
 			if (content!=null)
 				sb.append(StringUtil.protectForXML(content));
 			appendEndXMLTag(sb,tag);
