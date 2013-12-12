@@ -533,7 +533,6 @@ public class DrawTreeUtil {
 				g2.setStroke(wideStroke);
 				Shape line;
 				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-<<<<<<< HEAD
 					if (yN!=ynM){
 						line = new Line2D.Double(xN+halfEdge,yN+halfEdge,xN+halfEdge,ynM+halfEdge);
 						g2.draw(line);
@@ -568,30 +567,6 @@ public class DrawTreeUtil {
 					line = new Line2D.Double(xnM+halfEdge,yN+halfEdge,xnM+halfEdge,ynM+halfEdge);
 					if (node!=tree.getRoot())
 						g2.draw(line);
-=======
-					if (yN!=ynM)
-						g2.drawLine(xN+halfEdge,yN+halfEdge,xN+halfEdge,ynM+halfEdge);
-					if (node!=tree.getRoot())
-						g2.drawLine(xN+halfEdge,ynM+halfEdge,xnM+halfEdge,ynM+halfEdge);
-				}
-				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ 
-					if (yN!=ynM)
-						g2.drawLine(xN+halfEdge,yN-halfEdge,xN+halfEdge,ynM-halfEdge);
-					if (node!=tree.getRoot())
-						g2.drawLine(xN+halfEdge,ynM-halfEdge,xnM+halfEdge,ynM-halfEdge);
-				}
-				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-					if (xN!=xnM)
-						g2.drawLine(xN-halfEdge,yN+halfEdge,xnM-halfEdge,yN+halfEdge);  // draws the horizontal lines
-					if (node!=tree.getRoot())
-						g2.drawLine(xnM-halfEdge,yN+halfEdge,xnM-halfEdge,ynM+halfEdge);  // draws the vertical lines
-				}
-				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ 
-					if (xN!=xnM)
-						g2.drawLine(xN+halfEdge,yN+halfEdge,xnM+halfEdge,yN+halfEdge);
-					if (node!=tree.getRoot())
-						g2.drawLine(xnM+halfEdge,yN+halfEdge,xnM+halfEdge,ynM+halfEdge);
->>>>>>> disconnectablity1
 				}
 				g2.setStroke(stroke);
 			}
