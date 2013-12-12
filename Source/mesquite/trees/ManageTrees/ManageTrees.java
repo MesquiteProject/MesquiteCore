@@ -467,7 +467,6 @@ public class ManageTrees extends TreesManager {
 		}
 		else if (checker.compare(this.getClass(), "Informs Manage trees that trees are ready", "[ID of tree block filler module]", commandName, "treesReady")) { 
 			// may need to pass more info to be able to connect to right filltask etc, especially if multithreading
-			Debugg.println("Yay! trees are ready");
 			if (treeFillerTask != null){
 				TreeVector trees = new TreeVector(getProject().getTaxa(0));  //Debugg.println   temporary -- need to get right taxa block!
 				treeFillerTask.retrieveTreeBlock(trees, 100);

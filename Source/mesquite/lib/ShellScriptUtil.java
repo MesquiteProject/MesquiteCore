@@ -237,7 +237,6 @@ public class ShellScriptUtil  {
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
 
-			Debugg.println(" runningFilePath " + runningFilePath);
 			if (proc==null) {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
 				return false;
