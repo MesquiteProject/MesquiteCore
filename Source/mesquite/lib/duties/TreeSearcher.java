@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 
 
@@ -47,7 +48,13 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	public void setNumberTask(NumberForTree numTask){
 	}
   	
- 	 public boolean canGiveIntermediateResults(){
+   	public boolean isReconnectable(){
+   		return false;
+   	}
+	//TEMPORARY Debugg.println  Should be only in disconnectable tree block fillers
+	public void retrieveTreeBlock(TreeVector treeList){
+	}
+	 public boolean canGiveIntermediateResults(){
    		 return false;
    	 }
  	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){

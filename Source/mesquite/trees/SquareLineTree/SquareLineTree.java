@@ -374,7 +374,6 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	/** Draw highlight for branch node with current color of graphics context */
 	public void drawHighlight(Tree tree, int node, Graphics g, boolean flip){
-		Debugg.println("drawHighlight " + node);
 		Color tC = g.getColor();
 		if (flip)
 			g.setColor(Color.yellow);

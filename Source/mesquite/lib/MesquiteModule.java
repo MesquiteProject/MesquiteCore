@@ -67,7 +67,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
+<<<<<<< HEAD
 		return "12 December 2013";   
+=======
+		return "11 December 2013";   
+>>>>>>> disconnectablity1
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -88,7 +92,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
+<<<<<<< HEAD
 		return 	583;  
+=======
+		return 	582;  
+>>>>>>> disconnectablity1
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -336,6 +344,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			decrementMenuResetSuppression();
 		proj = null;
 		totalDisposed++;
+	}
+	/*.................................................................................................................*/
+	/** Notifies all employees that a file is about to be closed.*/
+	public void fileCloseRequested () {
+		if (employees==null || doomed)
+			return;
+		Enumeration e = employees.elements();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			MesquiteModule mbe = (MesquiteModule)obj;
+			if (mbe!=null) {
+				mbe.fileCloseRequested(); 
+			}
+		}
 	}
 	/*.................................................................................................................*/
 	/** To be called by a module to close down on its own (as opposed to being fired).  This might happen, for
