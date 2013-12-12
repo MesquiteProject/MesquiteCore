@@ -338,6 +338,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		totalDisposed++;
 	}
 	/*.................................................................................................................*/
+	/** Notifies all employees that a file is about to be closed.*/
+	public void fileCloseRequested () {
+		if (employees==null || doomed)
+			return;
+		Enumeration e = employees.elements();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			MesquiteModule mbe = (MesquiteModule)obj;
+			if (mbe!=null) {
+				mbe.fileCloseRequested();
+			}
+		}
+	}
+	/*.................................................................................................................*/
 	/** To be called by a module to close down on its own (as opposed to being fired).  This might happen, for
 	example, if conditions change so that the module can no longer function (e.g. all stored matrices are deleted 
 	from a file, and so StoredMatrices can no longer supply matrices). A module could
