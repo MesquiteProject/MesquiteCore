@@ -55,6 +55,7 @@ public class ShellScriptRunner implements Commandable  {
 		this.visibleTerminal = visibleTerminal;
 	}
 	public ShellScriptRunner(){  //to be used for reconnecting
+		Debugg.println("constructor for ShellScriptRunner");
 	}
 
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){

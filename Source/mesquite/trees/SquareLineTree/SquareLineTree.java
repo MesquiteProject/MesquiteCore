@@ -426,9 +426,6 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		float localInset = 0;
-		if (ownerModule.getShowEdgeLines())
-			localInset=inset;
 		Rectangle2D box;
 		double ew = edgewidth-1;
 		double xN = x[node];
@@ -503,11 +500,6 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 					//			public static   void drawOneBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
 					float thickness = fillWidth/numColors;
 					float start = i*thickness+localInset;
-					/*	if (i==0)
-						g.setColor(Color.red);
-					if (i==1)
-						g.setColor(Color.blue);
-					 */
 					DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, inset,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 				}
 			if (c!=null) g.setColor(c);
