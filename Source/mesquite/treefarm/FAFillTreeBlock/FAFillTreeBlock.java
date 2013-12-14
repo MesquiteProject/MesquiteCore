@@ -85,6 +85,7 @@ public class FAFillTreeBlock extends FileAlterer {
 			return false;
 		boolean success = true;
 		Taxa taxa = proj.getTaxa(0);
+		Debugg.println(this.getName() + " using taxa " + taxa.getID());
 		if (taxa == null)
 			return false;
 		TreeVector trees = new TreeVector(taxa);

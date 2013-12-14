@@ -92,7 +92,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
-		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying options"))
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
