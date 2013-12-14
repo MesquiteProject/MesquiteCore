@@ -95,6 +95,8 @@ public class AlterAllMatrices extends FileAlterer {
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
    			//Debugg.println checkCompatibility
+   			
+   			Debugg.println("Altering matrix " + im + " (" + data.getName() + ", id = " + data.getID() + ")");
    			success = success && alterTask.alterData(data, null, null);
    		}
    			

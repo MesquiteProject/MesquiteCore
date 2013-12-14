@@ -959,6 +959,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return null;
 	}
 	/*.................................................................................................................*/
+	/** An employee can call this to know if it's ok to query for options or do any other UI interaction involving a user response.
+	 * An employer can override this to say "no".*/
+	public boolean okToInteractWithUser(int howImportant, String messageToUser){
+		if (employer!= null)
+			return okToInteractWithUser(howImportant, messageToUser);
+		return true;
+	}
+	public static final int CAN_PROCEED_ANYWAY = 0;
+	public static final int WILL_FAIL_OTHERWISE = 1;
+
+	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
 	public void alert(String s, String windowTitle, String logTitle) {
 		if (s == null)

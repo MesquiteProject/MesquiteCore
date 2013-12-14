@@ -153,12 +153,19 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				data = null;
 				return;
 			}
+			
 			if (taxa !=null && taxa.isDoomed()) {
-				logln("Taxa null or being disposed; StoredMatrices will quit.");
+				taxa = null;
+				/*
+				logln("Taxa null or being disposed; StoredMatrices will quit.");//Debugg.println
 				iQuit();
 				return;
+				*/
 			}
-			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");
+			data = null;
+			dataName.setValue("No matrix is currently in use");
+			/*
+			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");  //Debugg.println
 			if (dataClass!=null) {
 				if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
 					alert("No compatible character matrices were found, and so Stored Matrices cannot be used.");
@@ -177,6 +184,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 			}
 			data.addListener(this);
 			dataName.setValue(data.getName());
+			*/
 			parametersChanged();
 		}
 	}
