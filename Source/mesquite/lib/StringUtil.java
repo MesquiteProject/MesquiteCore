@@ -52,7 +52,7 @@ public class StringUtil {
 	public static String getDateDayOnly() {
 		long startupTime = System.currentTimeMillis();
 		Date dnow = new Date(startupTime);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 		return sdf.format(dnow);
 	}
 	/*.................................................................................................................*/
