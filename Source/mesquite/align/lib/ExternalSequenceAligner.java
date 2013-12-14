@@ -92,6 +92,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
+		if (queryOptionsOnceOnly && optionsQueried)
+			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel(getProgramName() + " - File Locations & Options");
@@ -113,6 +115,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			storePreferences();
 		}
 		dialog.dispose();
+		optionsQueried = true;
 		return (buttonPressed.getValue()==0);
 	}
 

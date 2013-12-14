@@ -24,6 +24,8 @@ import mesquite.categ.lib.*;
 public abstract class MultipleSequenceAligner extends MesquiteModule {
 	protected Class characterDataClass = null;
 	protected boolean isProtein = true;
+	protected boolean queryOptionsOnceOnly = false;
+	protected boolean optionsQueried = false;
 
 	public Class getDutyClass() {
 		return MultipleSequenceAligner.class;
@@ -38,6 +40,9 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
 
 	public boolean permitSeparateThread(){
 		return true;
+	}
+	public void setQueryOptionsOnceOnly(boolean onceOnly){
+		queryOptionsOnceOnly = onceOnly;
 	}
 	/**
 	 * Subclasses can override this to have access to full information about

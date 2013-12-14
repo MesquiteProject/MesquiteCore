@@ -48,7 +48,7 @@ public class ZapGapsRight extends MolecularDataAlterer {
 		MesquiteInteger row= new MesquiteInteger();
 		MesquiteInteger firstColumn= new MesquiteInteger();
 		MesquiteInteger lastColumn= new MesquiteInteger();
-		if (!table.anythingSelected()){
+		if (table == null || !table.anythingSelected()){
 			for (int it = 0; it<data.getNumTaxa(); it++)
 				data.collapseGapsInCellBlockRight(it, 0, data.getNumChars()-1, false);
 		}

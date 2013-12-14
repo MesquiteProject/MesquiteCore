@@ -98,6 +98,9 @@ public class AlignSequences extends MolecDataEditorInit {
 		if (alignedMatrix == null || data == null)
 			return false;
 		getProject().incrementProjectWindowSuppression();
+		boolean success = AlignUtil.integrateAlignment(alignedMatrix, data,  icStart,  icEnd,  itStart,  itEnd);
+		
+		/*
 		AlignUtil util = new AlignUtil();
 		Rectangle problem = null;
 		//alignedMatrix.setName("Aligned (" + data.getName() + ")");
@@ -119,39 +122,12 @@ public class AlignSequences extends MolecDataEditorInit {
 				data.setSelected(i, true);
 
 		}
-		/*
-		MesquiteModule mb = data.showMatrix();
-		if (problem != null) {
-			MolecularData alignedData = (MolecularData)data.makeCharacterData(data.getNumTaxa(), alignedMatrix.length);
-			alignedData.addToFile(data.getFile(), getProject(), null);
-			for (int ic = 0; ic<alignedMatrix.length; ic++)
-				for (int it=0; it<data.getNumTaxa(); it++)
-					alignedData.setState(ic, it, alignedMatrix[ic][it]);
-			MesquiteModule mbAligned = alignedData.showMatrix();
-			if (mbAligned != null) {
-				MesquiteTable tableAligned = ((TableWindow)mbAligned.getModuleWindow()).getTable();
-				tableAligned.deselectAll();
-				tableAligned.selectCell(problem.width, problem.height);
-				tableAligned.setFocusedCell(problem.width, problem.height);
-				MesquiteTable table = ((TableWindow)mb.getModuleWindow()).getTable();
-				table.deselectAll();
-				table.selectCell(problem.x, problem.y);
-				table.setFocusedCell(problem.x, problem.y);
-			}
-		}
-
-
-		if (separateThread) {
-			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-			MesquiteTable table = ((TableWindow)mb.getModuleWindow()).getTable();
-			table.repaintAll();
-		}
-		 */
-
+		
+	*/
 		getProject().decrementProjectWindowSuppression();
 		if (separateThread)
 			fireEmployee(aligner);
-		return true;
+		return success;
 	}	
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
