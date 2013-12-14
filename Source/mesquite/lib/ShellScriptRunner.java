@@ -55,6 +55,7 @@ public class ShellScriptRunner implements Commandable  {
 		this.visibleTerminal = visibleTerminal;
 	}
 	public ShellScriptRunner(){  //to be used for reconnecting
+		Debugg.println("constructor for ShellScriptRunner");
 	}
 
 	public void setOutputProcessor(OutputFileProcessor outputFileProcessor){
@@ -136,8 +137,7 @@ public class ShellScriptRunner implements Commandable  {
 		return true;
 	}
 	/*.................................................................................................................*/
-	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
-	 * serve as a flag to Mesquite that the script is running.   */
+	/** monitors the run.   */
 	public boolean monitorAndCleanUpShell(){
 		lastModified=null;
 		boolean stillGoing = true;

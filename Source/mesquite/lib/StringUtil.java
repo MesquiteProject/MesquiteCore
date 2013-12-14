@@ -1305,9 +1305,9 @@ public class StringUtil {
 			sb.append("<");
 			sb.append(tag);
 			if (StringUtil.notEmpty(attributeName) && StringUtil.notEmpty(attribute)){
-				sb.append(" \"");
+				sb.append(" " + attributeName +"=\"");
 				sb.append(attribute);
-				sb.append(" \"");
+				sb.append("\"");
 			}
 			sb.append(">");
 			if (addLineFeed)
