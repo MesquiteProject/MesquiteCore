@@ -49,6 +49,13 @@ public class StringUtil {
 		return "Mesquite"+ MesquiteTrunk.mesquiteTrunk.getVersion() + URL+startupTimeMillis;
 	}
 	/*.................................................................................................................*/
+	public static String getDateDayOnly() {
+		long startupTime = System.currentTimeMillis();
+		Date dnow = new Date(startupTime);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+		return sdf.format(dnow);
+	}
+	/*.................................................................................................................*/
 	public static String getDateTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM yyyy,  HH:mm z");
 		return sdf.format(date);
@@ -1148,9 +1155,9 @@ public class StringUtil {
 				buffer.append("\\'");
 			else if (s.charAt(i)=='/')
 				buffer.append("\\/");
-			else if (s.charAt(i)=='“')
+			else if (s.charAt(i)=='‚Äú')
 				buffer.append("\\\"");
-			else if (s.charAt(i)=='”')
+			else if (s.charAt(i)=='‚Äù')
 				buffer.append("\\\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
@@ -1162,82 +1169,82 @@ public class StringUtil {
 	private static char stripAccent(char a){
 		if ((int)a==65533)
 			return '_';
-		if (a=='é')
+		if (a=='√©')
 			return 'e';
-		else if (a=='á')
+		else if (a=='√°')
 			return 'a';
-		else if (a=='ó')
+		else if (a=='√≥')
 			return 'o';
-		else if (a=='ú')
+		else if (a=='√∫')
 			return 'u';
-		else if (a=='í')
+		else if (a=='√≠')
 			return 'i';
-		else if (a=='É')
+		else if (a=='√â')
 			return 'E';
-		else if (a=='Á')
+		else if (a=='√Å')
 			return 'A';
-		else if (a=='Í')
+		else if (a=='√ç')
 			return 'I';
-		else if (a=='Ó')
+		else if (a=='√ì')
 			return 'O';
-		else if (a=='Ú')
+		else if (a=='√ö')
 			return 'U';
 
-		else if (a=='è')
+		else if (a=='√®')
 			return 'e';
-		else if (a=='à')
+		else if (a=='√†')
 			return 'a';
-		else if (a=='ò')
+		else if (a=='√≤')
 			return 'o';
-		else if (a=='ù')
+		else if (a=='√π')
 			return 'u';
-		else if (a=='ì')
+		else if (a=='√¨')
 			return 'i';
-		else if (a=='È')
+		else if (a=='√à')
 			return 'E';
-		else if (a=='À')
+		else if (a=='√Ä')
 			return 'A';
-		else if (a=='Ì')
+		else if (a=='√å')
 			return 'I';
-		else if (a=='Ò')
+		else if (a=='√í')
 			return 'O';
-		else if (a=='Ù')
+		else if (a=='√ô')
 			return 'U';
 
-		else if (a=='ë')
+		else if (a=='√´')
 			return 'e';
-		else if (a=='ä')
+		else if (a=='√§')
 			return 'a';
-		else if (a=='ö')
+		else if (a=='√∂')
 			return 'o';
-		else if (a=='ü')
+		else if (a=='√º')
 			return 'u';
-		else if (a=='ï')
+		else if (a=='√Ø')
 			return 'i';
-		else if (a=='Ë')
+		else if (a=='√ã')
 			return 'E';
-		else if (a=='Ä')
+		else if (a=='√Ñ')
 			return 'A';
-		else if (a=='Ï')
+		else if (a=='√è')
 			return 'I';
-		else if (a=='Ö')
+		else if (a=='√ñ')
 			return 'O';
-		else if (a=='Ü')
+		else if (a=='√ú')
 			return 'U';
 
-		else if (a=='ø')
+		else if (a=='√∏')
 			return 'o';
 
-		else if (a=='Ø')
-			return 'Ø';
+		else if (a=='√ò')
+			return '√ò';
 
-		else if (a=='ñ')
+		else if (a=='√±')
 			return 'n';
-		else if (a=='Ñ')
+		else if (a=='√ë')
 			return 'N';
-		else if (a=='ç')
+		else if (a=='√ß')
 			return 'C';
-		else if (a=='Ç')
+		else if (a=='√á')
 			return 'C';
 		return 0;
 	}
@@ -1290,21 +1297,34 @@ public class StringUtil {
 		sb.append("<?xml version=\"1.0\"?>\n");
 	}
 	/*.................................................................................................................*/
-	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, boolean addLineFeed){
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute, boolean addLineFeed){
 		if (sb!=null) {
 			for (int i=1; i<=numTabs; i++){
 				sb.append("\t");
 			}
 			sb.append("<");
 			sb.append(tag);
+			if (StringUtil.notEmpty(attributeName) && StringUtil.notEmpty(attribute)){
+				sb.append(" " + attributeName +"=\"");
+				sb.append(attribute);
+				sb.append("\"");
+			}
 			sb.append(">");
 			if (addLineFeed)
 				sb.append("\n");
 		}
 	}
 	/*.................................................................................................................*/
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, boolean addLineFeed){
+		appendStartXMLTag(sb,numTabs,tag, null, null, false);
+	}
+	/*.................................................................................................................*/
 	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag){
 		appendStartXMLTag(sb,numTabs,tag,false);
+	}
+	/*.................................................................................................................*/
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute){
+		appendStartXMLTag(sb,numTabs,tag,attributeName, attribute, false);
 	}
 	/*.................................................................................................................*/
 	public static void appendEndXMLTag(StringBuffer sb, int numTabs, String tag){
@@ -1329,6 +1349,24 @@ public class StringUtil {
 	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String content){
 		if (sb!=null) {
 			appendStartXMLTag(sb,numTabs,tag);
+			if (content!=null)
+				sb.append(StringUtil.protectForXML(content));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String flavor, String content){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, XMLUtil.FLAVOR, StringUtil.protectForXML(flavor));
+			if (content!=null)
+				sb.append(StringUtil.protectForXML(content));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute, String content){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, attributeName, StringUtil.protectForXML(attribute));
 			if (content!=null)
 				sb.append(StringUtil.protectForXML(content));
 			appendEndXMLTag(sb,tag);
@@ -1416,9 +1454,9 @@ public class StringUtil {
 				else 
 					buffer.append('_');
 			}
-			else if (s.charAt(i)=='“')
+			else if (s.charAt(i)=='‚Äú')
 				buffer.append("\"");
-			else if (s.charAt(i)=='”')
+			else if (s.charAt(i)=='‚Äù')
 				buffer.append("\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
