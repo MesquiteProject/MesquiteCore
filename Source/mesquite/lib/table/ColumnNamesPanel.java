@@ -738,6 +738,11 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 			if (subRow>=0) {  // touch on subrow
 				table.subRowTouched(subRow, possibleTouch,regionInCellH, regionInCellV, x, y, modifiers);
 			}
+			else if (table.touchColumnNameEvenIfSelected() && (table.showColumnGrabbers) && (y>=table.getColumnGrabberWidth())) {
+				if (((TableTool)tool).getIsBetweenRowColumnTool())
+					possibleTouch = findColumnBeforeBetween(x, y);
+				table.columnNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers, clickCount);
+			}
 			else if (tool != null && isArrowEquivalent && table.getUserAdjustColumn()==MesquiteTable.RESIZE && nearColumnBoundary(x, y)  && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 				touchX=x;
 				touchColumn=nearWhichColumnBoundary(x, y);

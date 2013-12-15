@@ -381,6 +381,9 @@ public class ListTable extends MesquiteTable {
 		else
 			return false;
 	}
+	public boolean touchColumnNameEvenIfSelected(){
+		return true;
+	}
 	/*...............................................................................................................*/
 	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
 		window.setAnnotation("", null);

@@ -332,7 +332,6 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				}				
 			}
 		}
-		
 		lastB_BeforeNextA[midRow] = bestCol;
 		shapeLeavingPosInA[midRow] = bestColShape;
 				

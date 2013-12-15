@@ -71,7 +71,7 @@ public class MAFFTAlign extends ExternalSequenceAligner{
 	public String getHelpString() {
 	  String s =  " In the MAFFT Options field, place any MAFFT options you wish to use.  For example, if you wished to change the"
 		  + " gap opening cost to 3 and the gap extension cost to 8, the options would be \"-gapopen -8.0  -gapextend -3.0\".";
-	  return s;
+	  return s;   //linsi option:  --localpair --maxiterate 1000
 	}
 
 	/*.................................................................................................................*/
