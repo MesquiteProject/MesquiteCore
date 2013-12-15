@@ -12,6 +12,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.align.lib;
 
 import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.Debugg;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteNumber;
@@ -203,6 +204,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		int gapExtendOnA;
 		int gapOpenOnA;	
 		
+		Debugg.println(" lastColumn " + lastColumn + " lastRow " + lastRow + " lengthA " + lengthA + " lengthB " + lengthB);
 		
 		rH[lastColumn] = rV[lastColumn] = (lengthB==lastColumn) ? gapOpenTerminal : gapOpen;;
 		rD[lastColumn] = 0;
@@ -330,7 +332,6 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				}				
 			}
 		}
-		
 		lastB_BeforeNextA[midRow] = bestCol;
 		shapeLeavingPosInA[midRow] = bestColShape;
 				
