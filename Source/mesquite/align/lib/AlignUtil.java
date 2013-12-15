@@ -19,6 +19,7 @@ import java.lang.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -532,6 +533,33 @@ public class AlignUtil {
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
+	/*.................................................................................................................*/
+	public static boolean integrateAlignment(long[][] alignedMatrix, MolecularData data, int icStart, int icEnd, int itStart, int itEnd){
+		if (alignedMatrix == null || data == null)
+			return false;
+		AlignUtil util = new AlignUtil();
+		Rectangle problem = null;
+		//alignedMatrix.setName("Aligned (" + data.getName() + ")");
+		boolean wasSel;
+		if (data.anySelected()) {
+			wasSel = true;
+		}
+		else {
+			wasSel = false;
+		}
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment for " + (icEnd-icStart+1) + " sites; aligned to " + alignedMatrix.length + " sites.");
+		problem = util.forceAlignment(data, icStart, icEnd, itStart, itEnd, 0, alignedMatrix);
+		if (wasSel) {
+			data.deselectAll();
+			int numCharsOrig = icEnd-icStart+1;
+			if (alignedMatrix.length>numCharsOrig)
+				numCharsOrig = alignedMatrix.length;
+			for (int i = icStart; i<icStart + numCharsOrig; i++)
+				data.setSelected(i, true);
+
+		}
+		return true;
+	}	
 
 }
 

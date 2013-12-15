@@ -40,6 +40,32 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 			score.setToUnassigned();
 		return null;
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("setWindowMaker " , tWindowMaker);
+		return temp;
+	}
+	MesquiteInteger pos = new MesquiteInteger();
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the module showing the tree", "[name of module]", commandName, "setWindowMaker")) {
+			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
+			String commands = getExtraTreeWindowCommands();
+			MesquiteWindow w = tWindowMaker.getModuleWindow();
+			
+			if (w != null){
+				if (w instanceof SimpleTreeWindow)
+					((SimpleTreeWindow)w).setWindowTitle("Most Recent Tree");
+				Puppeteer p = new Puppeteer(this);
+				p.execute(w, commands, new MesquiteInteger(0), "end;", false);
+			}
+			return tWindowMaker;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+	}
+
 	public void registerListener(MesquiteListener listener){
 		if (listened == null)
 			listened = new Listened();
@@ -88,10 +114,13 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 				p.execute(w, commands, new MesquiteInteger(0), "end;", false);
 			}
 		}
-		if (tWindowMaker != null)
+		if (tWindowMaker != null){
 			tWindowMaker.setWindowVisible(true);
+		}
 		
 	}
+	
+
 }
 
 

@@ -151,7 +151,7 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 	public void update(Graphics paramGraphics){
 		if (paramGraphics instanceof Graphics2D){
 			Graphics2D g = (Graphics2D) paramGraphics;
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,  //Debugg.println to recover antialiasing in OS X java 1.7 and in Windows.  1.7 broke text rotation when not antialiased on OSX.
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,  // to recover antialiasing in OS X java 1.7 and in Windows.  1.7 broke text rotation when not antialiased on OSX.
 					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		}
 		super.update(paramGraphics);
