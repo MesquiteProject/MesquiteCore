@@ -921,7 +921,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					iQuit();
 				}
 				else {
-					fileCloseRequested();
 					ListableVector files = getProject().getFiles();
 					if (files != null){
 
@@ -959,7 +958,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					fi.close();
 				}
 				else if (fi.isLocal()){
-					fileCloseRequested();
 					String message = "Do you want to save changes to \"" + fi.getName() + "\" before closing?";
 					int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
 					if (q==0) 

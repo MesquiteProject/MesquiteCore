@@ -20,8 +20,6 @@ import org.dom4j.io.*;
 
 public class XMLUtil {
 	
-	public static final String FLAVOR = "flavor";
-	
 	/*.................................................................................................................*/
 	public static Element addFilledElement(Element containingElement, String name, String content) {
 		if (content == null || name == null)
@@ -216,11 +214,7 @@ public class XMLUtil {
 		List prefElement = element.elements();
 		for (Iterator iter = prefElement.iterator(); iter.hasNext();) {   // this is going through all of the notices
 			Element messageElement = (Element) iter.next();
-			String flavor = messageElement.attributeValue(FLAVOR);
-			if (StringUtil.notEmpty(flavor))
-				xmlPrefProcessor.processSingleXMLPreference(messageElement.getName(), flavor, messageElement.getText());
-			else
-				xmlPrefProcessor.processSingleXMLPreference(messageElement.getName(), messageElement.getText());
+			xmlPrefProcessor.processSingleXMLPreference(messageElement.getName(), messageElement.getText());
 		}
 		
 	}

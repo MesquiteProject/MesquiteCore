@@ -100,7 +100,7 @@ public class RecAncestralStates extends CharHistorySource {
 		Snapshot temp = new Snapshot();
 		temp.addLine("getCharacterSource ",characterSourceTask);
 		temp.addLine("setMethod ",assignTask);
-		temp.addLine("toggleShowSelectedOnly " + showSelectedOnly.toOffOnString());  
+		temp.addLine("toggleShowLegend " + showSelectedOnly.toOffOnString());  //Debugg.println
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();

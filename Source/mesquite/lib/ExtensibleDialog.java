@@ -1430,17 +1430,13 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	/*.................................................................................................................*/
 	public List addList (Object names, MesquiteInteger selected, String message) {
-		return addList(names, selected, message, 4);
-	}
-	/*.................................................................................................................*/
-	public List addList (Object names, MesquiteInteger selected, String message, int numLines) {
 		if (message!=null)
 			constraints.fill=GridBagConstraints.NONE;
 		Panel newPanel = addNewDialogPanel();
 		if (message!=null) {
 			newPanel.add(new Label(message));
 		}
-		List list = new List(numLines,false);
+		List list = new List(4,false);
 
 		newPanel.setLayout(new GridLayout(1,1));
 		newPanel.add(list);

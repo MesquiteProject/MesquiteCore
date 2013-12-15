@@ -543,7 +543,7 @@ public class Taxa extends FileElement {
 			if (count == 1)
 				candidate = base;
 			else
-				candidate = base + "." + count;  
+				candidate = base + "." + count;  //Debugg.println  Is addition of period OK?
 			if (whichTaxonNumber(candidate) < 0)
 				return candidate;
 			count++;

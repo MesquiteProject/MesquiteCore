@@ -2879,13 +2879,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return linkedDatas;
 	}
 	public boolean isLinked(CharacterData other){
-		if (linkedDatas == null)
-			return false;
 		return (other!=null && linkedDatas.indexOf(other)>=0);
 	}
 	public boolean isLinked(){
-		if (linkedDatas == null)
-			return false;
 		return (linkedDatas.size()>0);
 	}
 /*------------------*/

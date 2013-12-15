@@ -16,7 +16,6 @@ package mesquite.trees.ManageTrees;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
-
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -235,14 +234,8 @@ public class ManageTrees extends TreesManager {
 				temp.addLine("showTreeBlocks ", e); 
 			}
 		}
-	
-		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){
-			temp.addLine("restartTreeSource ", treeFillerTask);
-			temp.addLine("reconnectTreeSource ");
-		}
-		else if (showTreeFiller && treeFillerTask !=null)
+		if (showTreeFiller && treeFillerTask !=null)
 			temp.addLine("setTreeSource ", treeFillerTask);
-	
 		return temp;
 	}
 
@@ -451,39 +444,6 @@ public class ManageTrees extends TreesManager {
 				lister.getModuleWindow().setVisible(true);
 			return lister;
 		}
-		else if (checker.compare(this.getClass(), "Restarts to unfinished tree block filling", "[name of tree block filler module]", commandName, "restartTreeSource")) { 
-			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
-			if (temp!=null) {
-				treeFillerTask = temp;
-			}
-			return treeFillerTask;
-		}
-		else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
-			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, treeFillerTask);
-			fillingTreesNow = true;
-
-			thread.start();
-			return null;
-		}
-		else if (checker.compare(this.getClass(), "Informs Manage trees that trees are ready", "[ID of tree block filler module]", commandName, "treesReady")) { 
-			// may need to pass more info to be able to connect to right filltask etc, especially if multithreading
-			if (treeFillerTask != null){
-				TreeVector trees = new TreeVector(getProject().getTaxa(0));  //Debugg.println   temporary -- need to get right taxa block!
-				treeFillerTask.retrieveTreeBlock(trees, 100);
-				trees.addToFile(getProject().getHomeFile(), getProject(), this);
-				doneQuery(treeFillerTask, trees.getTaxa(), trees, true);
-				fireEmployee(treeFillerTask);
-				fillingTreesNow = false;
-				resetAllMenuBars();
-			}
-			return null;
-		}
-		else if (checker.compare(this.getClass(), "Fires the tree source for use in filling newly created tree blocks",null, commandName, "fireTreeSource")) { 
-			if (treeFillerTask!=null) {
-				fireEmployee(treeFillerTask);
-				treeFillerTask = null;
-			}
-		}
 		else if (checker.compare(this.getClass(), "Sets the tree source for use in filling newly created tree blocks", "[name of tree block filler module]", commandName, "setTreeSource")) { 
 			if (fillingTreesNow){
 				discreetAlert( "Sorry, a new tree block is currently being filled.  You must wait for that to finish before setting a new tree source.");
@@ -640,22 +600,6 @@ public class ManageTrees extends TreesManager {
 			if (separateThread==1) {  //separateThread
 				fillingTreesNow = true;
 				TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, file);
-				/*DISCONNECTABLE: have third option, Run and Come Back (Disconnect).  This is available only for some tree block fillers that say they can do it.
-				Add to tree block filler a method startTreeFilling(TreesDoneListener this) that is called 
-				(not on a separate thread -- that is the responsibility of the tree block filler, as sometimes it will be the filler's own time involved, sometimes
-				an external program, and it will be the tree block filler's responsibility to poll for the external being done, and it will have to do that on its own thread.)
-				
-				When the tree block filler detects the trees are ready, it calls a method to notify the TreesDoneListener that the trees are ready.  
-				This perhaps will be done via an intermediary command on the main thread so that the response is on the main thread.  
-				ManageTrees will therefore get notified that the trees are ready, and will therefore ask the tree block filler to actually fill the block of trees, and continue.
-				
-				If the file is saved and closed before it's done, ManageTrees should snapshot setOngoingTreeBlockFiller in which it hires the tree block filler and then
-				re-registers as the TreesDoneListener.  The tree block filler would save a snapshot to remember what are the locations of the files and external searcher, 
-				and the criteria for its being done (e.g. the presence of a file).  When rehired it would load all that and check to see if the criterion was met, starting
-				a thread to check, and when done, would notify the TreesDoneListener
-
-
-				*/
 				tLT.start();
 			}
 			else if (separateThread == 0) {// same thread
@@ -1717,49 +1661,7 @@ class TreeBlockThread extends MesquiteThread {
 	}
 
 }
-/* ======================================================================== */
-class TreeBlockMonitorThread extends MesquiteThread {
-	ManageTrees ownerModule;
-	TreeBlockFiller fillTask;
-	CommandRecord comRec = null;
-	public TreeBlockMonitorThread (ManageTrees ownerModule, TreeBlockFiller fillTask) {
-		super();
-		this.ownerModule = ownerModule;
-		this.fillTask = fillTask;
-		setCurrent(1);
-		CommandRecord cr = MesquiteThread.getCurrentCommandRecord();
-		boolean sc;
-		if (cr == null)
-			sc = false;
-		else
-			sc = cr.recordIsScripting();
-		comRec = new CommandRecord(sc);
-		setCommandRecord(comRec);
-		
-	}
-
-	public String getCurrentCommandName(){
-		return "Making trees";
-	}
-	public String getCurrentCommandExplanation(){
-		return null;
-	}
-	/*.............................................*/
-	public void run() {
-		Reconnectable reconnectable = fillTask.getReconnectable();
-		if (reconnectable != null){
-			reconnectable.reconnectToRequester(new MesquiteCommand("treesReady", ownerModule));
-		}
-		threadGoodbye();
-
-	}
-	/*.............................................*/
-	public void dispose(){
-		ownerModule = null;
-		fillTask = null;
-	}
-
-}/*===============================================*/
+/*===============================================*/
 class TreeBlock extends NexusBlock {
 	TreeVector trees = null;
 	public TreeBlock(MesquiteFile f, MesquiteModule mb){

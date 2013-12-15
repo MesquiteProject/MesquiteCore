@@ -98,9 +98,6 @@ public class AlignSequences extends MolecDataEditorInit {
 		if (alignedMatrix == null || data == null)
 			return false;
 		getProject().incrementProjectWindowSuppression();
-		boolean success = AlignUtil.integrateAlignment(alignedMatrix, data,  icStart,  icEnd,  itStart,  itEnd);
-		
-		/*
 		AlignUtil util = new AlignUtil();
 		Rectangle problem = null;
 		//alignedMatrix.setName("Aligned (" + data.getName() + ")");
@@ -122,12 +119,39 @@ public class AlignSequences extends MolecDataEditorInit {
 				data.setSelected(i, true);
 
 		}
-		
-	*/
+		/*
+		MesquiteModule mb = data.showMatrix();
+		if (problem != null) {
+			MolecularData alignedData = (MolecularData)data.makeCharacterData(data.getNumTaxa(), alignedMatrix.length);
+			alignedData.addToFile(data.getFile(), getProject(), null);
+			for (int ic = 0; ic<alignedMatrix.length; ic++)
+				for (int it=0; it<data.getNumTaxa(); it++)
+					alignedData.setState(ic, it, alignedMatrix[ic][it]);
+			MesquiteModule mbAligned = alignedData.showMatrix();
+			if (mbAligned != null) {
+				MesquiteTable tableAligned = ((TableWindow)mbAligned.getModuleWindow()).getTable();
+				tableAligned.deselectAll();
+				tableAligned.selectCell(problem.width, problem.height);
+				tableAligned.setFocusedCell(problem.width, problem.height);
+				MesquiteTable table = ((TableWindow)mb.getModuleWindow()).getTable();
+				table.deselectAll();
+				table.selectCell(problem.x, problem.y);
+				table.setFocusedCell(problem.x, problem.y);
+			}
+		}
+
+
+		if (separateThread) {
+			data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+			MesquiteTable table = ((TableWindow)mb.getModuleWindow()).getTable();
+			table.repaintAll();
+		}
+		 */
+
 		getProject().decrementProjectWindowSuppression();
 		if (separateThread)
 			fireEmployee(aligner);
-		return success;
+		return true;
 	}	
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
@@ -151,12 +175,10 @@ public class AlignSequences extends MolecDataEditorInit {
 		//firstRowWithSelectedCell() != 
 		if (	aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close window before done)","No", "Separate"))){
 			AlignThread alignThread = new AlignThread(this, aligner, this.data, this.table);
-			alignThread.separateThread = true;
 			alignThread.start();
 		}
 		else {
 			AlignThread alignThread = new AlignThread(this, aligner, this.data, this.table);
-			alignThread.separateThread = false;
 			alignThread.run();  
 			return true;
 		}
@@ -188,7 +210,7 @@ class AlignThread extends Thread {
 	MultipleSequenceAligner aligner;
 	MolecularData data;
 	MesquiteTable table;
-	boolean separateThread = false;
+
 	public AlignThread(AlignSequences ownerModule, MultipleSequenceAligner aligner, MolecularData data, MesquiteTable table){
 		this.aligner = aligner;
 		this.ownerModule = ownerModule;
@@ -221,8 +243,6 @@ class AlignThread extends Thread {
 				data.setSelected(ic,ic>=firstColumn.getValue() && ic<=lastColumn.getValue()- (oldNumChars - data.getNumChars()));
 			table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
 		}
-		if (separateThread)
-			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
 		table.repaintAll();
 
 	}

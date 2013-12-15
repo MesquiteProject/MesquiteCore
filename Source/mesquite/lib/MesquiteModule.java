@@ -67,7 +67,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "13 December 2013";   
+		return "1 November 2013";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -88,7 +88,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	583;  
+		return 	581;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -336,20 +336,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			decrementMenuResetSuppression();
 		proj = null;
 		totalDisposed++;
-	}
-	/*.................................................................................................................*/
-	/** Notifies all employees that a file is about to be closed.*/
-	public void fileCloseRequested () {
-		if (employees==null || doomed)
-			return;
-		Enumeration e = employees.elements();
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			MesquiteModule mbe = (MesquiteModule)obj;
-			if (mbe!=null) {
-				mbe.fileCloseRequested(); 
-			}
-		}
 	}
 	/*.................................................................................................................*/
 	/** To be called by a module to close down on its own (as opposed to being fired).  This might happen, for
@@ -957,23 +943,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
  	check on startup and issues warning if not found . */
 	public String  getExpectedPath(){ 
 		return null;
-	}
-	/*.................................................................................................................*/
-	/** An employee can call this to know if it's ok to query for options or do any other UI interaction involving a user response.
-	 * An employer can override this to say "no".*/
-	public boolean okToInteractWithUser(int howImportant, String messageToUser){
-		if (whomToAskIfOKToInteractWithUser!=null)
-			return whomToAskIfOKToInteractWithUser.okToInteractWithUser(howImportant, messageToUser);
-		if (employer!= null)
-			return employer.okToInteractWithUser(howImportant, messageToUser);
-		return true;
-	}
-	public static final int CAN_PROCEED_ANYWAY = 0;
-	public static final int WILL_FAIL_OTHERWISE = 1;
-
-	MesquiteModule whomToAskIfOKToInteractWithUser = null;
-	public void setWhomToAskIfOKToInteractWithUser(MesquiteModule m){
-		whomToAskIfOKToInteractWithUser = m;
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
@@ -2552,9 +2521,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public boolean getUserChooseable(){
 		return true;
 	}
-	public void processSingleXMLPreference (String tag, String flavor, String content){
-	}
-
 	/*.................................................................................................................*/
 	/** Returns duty Class that module would like to hire immediately upon hiring. If a module wants to present a user with a choice of 
 	employees to hire, it can request a submenu listing these possible employees.  However, if one of these employees would like to immediately
