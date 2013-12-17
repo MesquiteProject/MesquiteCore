@@ -2693,7 +2693,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					taxonNumber = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
 					fromWhichNamer = 4;
 				}
-
+				if (taxonNumber<0){
+					if (MesquiteTree.permitT0Names && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
+						String number = c.substring(1, c.length());
+						int num = MesquiteInteger.fromString(number);
+						if (MesquiteInteger.isCombinable(num) && num>=0 && num<taxa.getNumTaxa())
+							taxonNumber = num;
+				}
+				}
 			}
 			if (taxonNumber >=0){ //taxon successfully found
 				if (taxonNumber>= nodeOfTaxon.length)
