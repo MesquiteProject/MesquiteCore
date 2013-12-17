@@ -129,6 +129,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public static boolean polytomyDefaultHard = true;
 	/** True if tree reading permits truncated taxon names */
 	public static boolean permitTruncTaxNames = true;
+	/** True if tree reading permits taxon names to be expressed as t0, t1, etc.*/
+	public static boolean permitT0Names = true;
 	/** If true, then taxa block is enlarged when unfamiliar taxon name encountered */
 	private boolean permitTaxaBlockEnlargement = false;
 	/** 0 if polytomies in tree treated as hard, 1 if soft, 2 if not yet assigned */
