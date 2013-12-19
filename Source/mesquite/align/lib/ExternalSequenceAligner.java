@@ -19,6 +19,7 @@ import java.lang.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -91,6 +92,19 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return "";
 	}
 	/*.................................................................................................................*/
+	/** If a subclass wishes to add more options to the GUI dialog box, the GUI elements (CheckBoxes, etc.) should created in an override of this method. */
+	public void queryProgramOptions(ExtensibleDialog dialog) {
+	}
+	/*.................................................................................................................*/
+	/** Any GUI elements (CheckBoxes, etc.) that were created in queryProgramOptions should have their values harvested here. */
+	public void processQueryProgramOptions(ExtensibleDialog dialog) {
+	}
+	/*.................................................................................................................*/
+	/** The command-line flags for the queryProgramOptions should be entered here. */
+	public String getQueryProgramOptions() {
+		return "";
+	}
+	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
 			return true;
@@ -104,14 +118,19 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		programBrowseButton.setActionCommand("programBrowse");
 
 		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
+		
+		queryProgramOptions(dialog);
 
-		SingleLineTextField programOptionsField = dialog.addTextField(getProgramName() + " options:", programOptions, 26, true);
+		SingleLineTextField programOptionsField = dialog.addTextField("Additional " + getProgramName() + " options:", programOptions, 26, true);
+		
+
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			programPath = programPathField.getText();
 			programOptions = programOptionsField.getText();
 			includeGaps = includeGapsCheckBox.getState();
+			processQueryProgramOptions(dialog);
 			storePreferences();
 		}
 		dialog.dispose();
@@ -253,16 +272,17 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
 		shellScript.append(getProgramCommand());
 		StringBuffer argumentsForLogging = new StringBuffer();
+		logln("Options: " + programOptions + " " + getQueryProgramOptions());
 		if (programOptionsComeFirst()){
-			shellScript.append(" " + programOptions + " ");
-			argumentsForLogging.append(" " + programOptions + " ");
+			shellScript.append(" " + programOptions + " " + getQueryProgramOptions() + " ");
+			argumentsForLogging.append(" " + programOptions + " " + getQueryProgramOptions() + " ");
 		}
 		appendDefaultOptions(shellScript, fileName,  outFileName,  data);
 		appendDefaultOptions(argumentsForLogging, fileName,  outFileName,  data);
 		
 		if (!programOptionsComeFirst()){
-			shellScript.append(" " + programOptions);
-			argumentsForLogging.append(" " + programOptions);
+			shellScript.append(" " + programOptions + " "+ getQueryProgramOptions());
+			argumentsForLogging.append(" " + programOptions + " "+ getQueryProgramOptions());
 		}
 		shellScript.append(StringUtil.lineEnding());
 //		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));

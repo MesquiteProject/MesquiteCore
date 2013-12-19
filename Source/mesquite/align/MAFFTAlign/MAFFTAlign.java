@@ -19,6 +19,9 @@ import java.lang.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import javax.swing.JLabel;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -27,7 +30,7 @@ import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public class MAFFTAlign extends ExternalSequenceAligner{
+public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
@@ -62,16 +65,148 @@ public class MAFFTAlign extends ExternalSequenceAligner{
 	public String getExplanation() {
 		return "Sends the selected sequence to MAFFT to align." ;
 	}
-	
+
 	public String getProgramName(){
-		 return "mafft.bat";
-	 }
-	
+		return "mafft";
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("alignmentMethod".equalsIgnoreCase(tag)) {
+			alignmentMethod = MesquiteInteger.fromString(content);
+		}
+		else if ("alignmentMethodText".equalsIgnoreCase(tag)) {
+			alignmentMethodText = StringUtil.cleanXMLEscapeCharacters(content);
+		}
+		else if ("useMaxCores".equalsIgnoreCase(tag))
+			useMaxCores = MesquiteBoolean.fromTrueFalseString(content);
+
+		super.processSingleXMLPreference(tag, content);
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "alignmentMethod", alignmentMethod);  
+		StringUtil.appendXMLTag(buffer, 2, "alignmentMethodText", alignmentMethodText);  
+		StringUtil.appendXMLTag(buffer, 2, "useMaxCores", useMaxCores);  
+
+		return super.preparePreferencesForXML()+buffer.toString();
+	}
+
 	/*.................................................................................................................*/
 	public String getHelpString() {
-	  String s =  " In the MAFFT Options field, place any MAFFT options you wish to use.  For example, if you wished to change the"
-		  + " gap opening cost to 3 and the gap extension cost to 8, the options would be \"-gapopen -8.0  -gapextend -3.0\".";
-	  return s;   //linsi option:  --localpair --maxiterate 1000
+		String s =  " In the MAFFT Options field, place any MAFFT options you wish to use.  For example, if you wished to "
+				+ " invoke the linsi option (for more thorough alignment search), you would use \"--localpair --maxiterate 1000\".";
+		return s;   //linsi option:  --localpair --maxiterate 1000 --thread -1
+	}
+
+	static int DEFAULTSUGGESTEDMETHOD=0;
+	static final int LINSI = 1;
+	static final int GINSI = 2;
+	static final int EINSI = 3; 
+	static final int FFTNSI2 = 4; 
+	static final int FFTNSI1000 = 5; 
+	static final int FFTNS2 =6; 
+	static final int FFTNS1 = 7; 
+	static final int NWNSI = 8; 
+	static final int NWNS2 = 9; 
+	static final int NWNSPT1 = 10; 
+	boolean useMaxCores = true;
+	int alignmentMethod = DEFAULTSUGGESTEDMETHOD;
+	String alignmentMethodText = "";
+	Checkbox useMaxThreadsCheckBox;
+	Choice alignmentMethodChoice;
+	SingleLineTextField alignmentTextField;
+
+	/*.................................................................................................................*/
+	public String getAlignmentText(int value) {
+		String alignmentText="";
+		switch (value) {
+		case LINSI:
+			alignmentText=" --localpair --maxiterate 1000 ";
+			break;
+		case GINSI:
+			alignmentText=" --globalpair --maxiterate 1000 ";
+			break;
+		case EINSI:
+			alignmentText=" --ep 0 --genafpair --maxiterate 1000 ";
+			break;
+		case FFTNSI2:
+			alignmentText=" --retree 2 --maxiterate 2 ";
+			break;
+		case FFTNSI1000:
+			alignmentText=" --retree 2 --maxiterate 1000 ";
+			break;
+		case FFTNS2:
+			alignmentText=" --retree 2 --maxiterate 0 ";
+			break;
+		case FFTNS1:
+			alignmentText=" --retree 1 --maxiterate 0 ";
+			break;
+		case NWNSI:
+			alignmentText=" --retree 2 --maxiterate 2 --nofft ";
+			break;
+		case NWNS2:
+			alignmentText=" --retree 2 --maxiterate 0 --nofft ";
+			break;
+		case NWNSPT1:
+			alignmentText=" --retree 1 --maxiterate 0 --nofft --parttree ";
+			break;
+		default: 
+			alignmentText="";
+		}
+		return alignmentText;
+	}
+/*.................................................................................................................*/
+	public void setAlignmentTextFromChoice() {
+		String alignmentText=getAlignmentText(alignmentMethodChoice.getSelectedIndex());
+		if (alignmentTextField!=null)
+			alignmentTextField.setText(alignmentText);
+	}
+	/*.................................................................................................................*/
+	public void itemStateChanged(ItemEvent e) {
+		if (e.getItemSelectable() == alignmentMethodChoice){
+			setAlignmentTextFromChoice();
+		}				
+	}
+/*.................................................................................................................*/
+	public void queryProgramOptions(ExtensibleDialog dialog) {
+		useMaxThreadsCheckBox = dialog.addCheckBox("use maximum number of computer cores", useMaxCores);
+		
+		alignmentMethodChoice = dialog.addPopUpMenu("Suggested Methods", new String[] {"Default",  "L-INS-i", "G-INSI-i", "E-INS-i", "FFT-NS-i 2", "FFT-NS-i 1000", "FFT-NS-2", "FFT-NS-1", "NW-NS-i", "NW-NS-2", "NW-NS-PartTree-1"}, alignmentMethod);
+		alignmentTextField = dialog.addTextField("Basic alignment method", alignmentMethodText, 40);
+		alignmentMethodChoice.addItemListener(this);
+		//linsi --localpair --maxiterate 1000
+		//ginsi --globalpair --maxiterate 1000
+		//einsi --ep 0 --genafpair --maxiterate 1000
+
+		//fftnsi2 --retree 2 --maxiterate 2
+		//fftnsi1000 --retree 2 --maxiterate 1000
+		//fftns2 --retree 2 --maxiterate 0
+		//fftns1--retree 1 --maxiterate 0
+		//nwnsi --retree 2 --maxiterate 2 --nofft
+		//nwns2 --retree 2 --maxiterate 0 --nofft
+		//nwnsPT1 --retree 1 --maxiterate 0 --nofft --parttree
+
+	}
+	/*.................................................................................................................*/
+	public void processQueryProgramOptions(ExtensibleDialog dialog) {
+		useMaxCores = useMaxThreadsCheckBox.getState();
+		int temp = alignmentMethodChoice.getSelectedIndex();
+		if (temp>=0)
+			alignmentMethod = temp;
+		alignmentMethodText = alignmentTextField.getText();
+		storePreferences();
+
+	}
+
+	/*.................................................................................................................*/
+	public String getQueryProgramOptions() {
+		String options = "";
+		if (useMaxCores)
+			options+=" --thread -1 ";
+		options += " " + alignmentMethodText + " ";
+		return options;
 	}
 
 	/*.................................................................................................................*/
@@ -88,15 +223,15 @@ public class MAFFTAlign extends ExternalSequenceAligner{
 	public String getDefaultProgramOptions(){
 		return "";
 	}
-	
+
 	public void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data) {
-	if (!MesquiteTrunk.isWindows())
-		shellScript.append("  " + StringUtil.protectForUnix(inFilePath) + " > " + StringUtil.protectForUnix(outFilePath));
-	else
-		shellScript.append("  " + StringUtil.protectForWindows(inFilePath) + " > " + StringUtil.protectForWindows(outFilePath));  //Debugg.println need to check MAFFT windows format
+		if (!MesquiteTrunk.isWindows())
+			shellScript.append("  " + StringUtil.protectForUnix(inFilePath) + " > " + StringUtil.protectForUnix(outFilePath));
+		else
+			shellScript.append("  " + StringUtil.protectForWindows(inFilePath) + " > " + StringUtil.protectForWindows(outFilePath));  //Debugg.println need to check MAFFT windows format
 	}
 
-	
+
 	public String getDNAExportInterpreter () {
 		return "#InterpretFastaDNA";
 	}
@@ -122,7 +257,7 @@ public class MAFFTAlign extends ExternalSequenceAligner{
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 276;  
+		return NEXTRELEASE;  
 	}
 
 }
