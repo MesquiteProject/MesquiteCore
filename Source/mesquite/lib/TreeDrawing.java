@@ -14,6 +14,7 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 import mesquite.lib.duties.*;
 import mesquite.trees.lib.TaxonPolygon;
 /*===  Mesquite Basic Class Library:  Trees    ===*/
@@ -155,6 +156,20 @@ public abstract class TreeDrawing  {
 			g.setColor(Color.black);
 		}
 	}
+	
+	/** Fill branch N to indicate missing data */
+	public  void fillBranchWithMissingData(Tree tree, int N, Graphics g){  //default; to be overridden for better indication of equivocal
+		Color c = g.getColor();
+		if (g instanceof Graphics2D){
+			Graphics2D g2 = (Graphics2D)g;
+			g2.setPaint(GraphicsUtil.missingDataTexture);
+		}
+		else
+			g.setColor(Color.lightGray);
+		fillBranch(tree, N, g);
+		if (c!=null) g.setColor(c);
+	}
+
 	
 	/** Fill branch N with indicated set of colors */
 	public abstract void fillBranchWithColors(Tree tree, int N, ColorDistribution colors, Graphics g);

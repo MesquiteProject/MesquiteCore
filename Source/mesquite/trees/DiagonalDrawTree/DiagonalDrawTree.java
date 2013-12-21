@@ -45,11 +45,8 @@ public class DiagonalDrawTree extends DrawTree {
 		}
 		drawings = new Vector();
 		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		ornt = nodeLocsTask.getDefaultOrientation();
-		orientationName = new MesquiteString("Up");
-		if (ornt != TreeDisplay.UP &&  ornt != TreeDisplay.DOWN && ornt != TreeDisplay.LEFT && ornt != TreeDisplay.RIGHT)
-			ornt = TreeDisplay.UP;
-		orientationName.setValue(orient(ornt));
+		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
+		orientationName = new MesquiteString(orient(ornt));
 		orientationSubmenu.setSelected(orientationName);
 		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
 		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
@@ -1035,6 +1032,32 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
 		return -1;
+	}
+	/*_________________________________________________*
+	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
+
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
+			Color c = g.getColor();
+			if (g instanceof Graphics2D){
+				Graphics2D g2 = (Graphics2D)g;
+				g2.setPaint(GraphicsUtil.missingDataTexture);
+			}
+			else
+				g.setColor(Color.lightGray);
+			//					UPdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], i+1, colors.getNumColors());
+
+			if (isUP())
+				UPdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
+			else if (isDOWN()) 
+				DOWNdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
+			else if (isRIGHT()) 
+				RIGHTdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
+			else if (isLEFT())
+				LEFTdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
+
+			g.fillPolygon(utilityPolygon);
+			if (c!=null) g.setColor(c);
+		}	
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {

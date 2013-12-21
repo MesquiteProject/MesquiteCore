@@ -44,8 +44,9 @@ public class SquareLineTree extends DrawTree {
 			mss.setSelected(nodeLocsName);
 		}
 		drawings = new Vector();
-		orientationName = new MesquiteString("Up");
-		ornt = TreeDisplay.UP;
+		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
+		
+		orientationName = new MesquiteString(orient(ornt));
 		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
 		orientationSubmenu.setSelected(orientationName);
 		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
@@ -478,6 +479,25 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
 		return -1;
+	}
+	/*_________________________________________________*
+	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
+		
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
+			Color c = g.getColor();
+			if (g instanceof Graphics2D){
+				Graphics2D g2 = (Graphics2D)g;
+				g2.setPaint(GraphicsUtil.missingDataTexture);
+			}
+			else
+				g.setColor(Color.lightGray);
+			float localInset = 0;
+			if (ownerModule.getShowEdgeLines())
+				localInset=inset;
+			float fillWidth = edgewidth-2*localInset;
+			DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, null, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+			if (c!=null) g.setColor(c);
+		}
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {

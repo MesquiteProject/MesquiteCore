@@ -55,10 +55,10 @@ public class BallsNSticks extends DrawTree {
 		if (nodeLocsTask == null)
 			return sorry(getName() + " couldn't start because no node location module was obtained.");
 		drawings = new Vector();
-		ornt = TreeDisplay.UP;
 		//addMenuItem("Display", "Edge width...", makeCommand("edgeWidth"));
 		defineMenus(false);
-		orientationName = new MesquiteString("Up");
+		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
+		orientationName = new MesquiteString(orient(ornt));
 		orientationSubmenu.setSelected(orientationName);
 		lineStyleName = new MesquiteString("Diagonal");
 		style = DIAGONAL;
@@ -615,9 +615,14 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
+		fillBranch(tree, node, g);
+		//Debugg.println ???take this over to fill terminal spot rather than box, to avoid predicted/reconstructed being confused with observed
+		// need to show more informative terminal information
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
+		fillBranchWithColors(tree, node, colors, g);
+		//Debugg.println ???take this over to fill terminal spot rather than box, to avoid predicted/reconstructed being confused with observed
 	}
 	/*_________________________________________________*/
 	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
@@ -633,6 +638,21 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		return ancestorIsTriangled(tree, tree.motherOfNode(node));
 	}
 
+	/*_________________________________________________*
+	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
+		
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+			Color c = g.getColor();
+			if (g instanceof Graphics2D){
+				Graphics2D g2 = (Graphics2D)g;
+				g2.setPaint(GraphicsUtil.missingDataTexture);
+			}
+			else
+				g.setColor(Color.lightGray);
+			GraphicsUtil.fillOval(g, x[node]- spotSize/2, y[node]- spotSize/2, spotSize, spotSize, false);
+			if (c!=null) g.setColor(c);
+		}
+	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {

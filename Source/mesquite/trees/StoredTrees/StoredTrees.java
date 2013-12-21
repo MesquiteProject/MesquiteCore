@@ -560,6 +560,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	/*.................................................................................................................*/
 	public int getNumberOfTrees(Taxa taxa) {
 		setPreferredTaxa(taxa);
+		if (currentTreeBlock == null && laxMode)
+			return 0;
 		int code = checkTreeBlock(taxa);
 		if (currentTreeBlock != null)
 			return currentTreeBlock.size();
