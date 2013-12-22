@@ -140,7 +140,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				//parser.setPunctuationString(null);
 
 				token = subParser.getRemaining();  //taxon Name
-				taxonNumber = taxa.whichTaxonNumber(token);
+				taxonNumber = taxa.whichTaxonNumber(token);   // checking to see if a taxon of that name already exists in the file
 				replaceExisting = false;
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
@@ -151,7 +151,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					hasQueriedAboutSameNameTaxa= true;
 				}
 				boolean replace = false;
-				if (taxonNumber>=0) {
+				if (taxonNumber>=0) {   // a taxon number of the same name exists
 					if (replaceDataOfTaxonWithSameNameInt==REPLACEDATA) 
 						replace=true;
 					else if (replaceDataOfTaxonWithSameNameInt==REPLACEIFEMPTY && !data.hasDataForTaxon(taxonNumber)) {
@@ -159,6 +159,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					}
 				}
 				
+//				Debugg.println("num to import: " + getTotalFilesToImport() + "\n current: " + getImportFileNumber());
 				if (replace) {
 					CharacterState cs = data.makeCharacterState(); //so as to get the default state
 					int numChars = data.getNumChars();
@@ -167,32 +168,40 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						for (int ic=0; ic<numChars; ic++)
 							data.setState(ic, taxonNumber, cs);
 					added=false;
-				} else {
-					if (data.getNumTaxa()<=lastTaxonNumber) {
-						int numTaxaAdded = 1;
-						if (lastTaxonNumber>10000)
-							numTaxaAdded=500;
-						else if (lastTaxonNumber>5000)
-							numTaxaAdded=200;
-						else if (lastTaxonNumber>2500) 
-							numTaxaAdded=100;
-						else if (lastTaxonNumber>1000)
-							numTaxaAdded=50;
-						else if (lastTaxonNumber>500)
-							numTaxaAdded=10;
-						taxa.addTaxa(lastTaxonNumber-1, numTaxaAdded, false);
+				} else {  // adding to end.
+					if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
+						taxonNumber = getLastNewTaxonFilled()+1;
+						setLastNewTaxonFilled(taxonNumber);
+						if (data.hasDataForTaxa(taxonNumber, taxonNumber)) {
+							MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to overwrite existing data, and so failed.");
+							taxonNumber = -1;
+						}
+					}
+					else 
+						taxonNumber = taxa.getNumTaxa();
+					setLastNewTaxonFilled(taxonNumber);
+
+					if (data.getNumTaxa()<=taxonNumber) {
+						int numTaxaAdded = getTotalFilesToImport();
+						if (numTaxaAdded<1) numTaxaAdded =1;
+						taxa.addTaxa(taxonNumber-1, numTaxaAdded, false);
+//	Debugg.println("numTaxaAdded: "+ numTaxaAdded);
 						added=true;
 						if (newFile)
-							data.addTaxa(lastTaxonNumber-1, numTaxaAdded);
-						else
+							data.addTaxa(taxonNumber-1, numTaxaAdded);
+						else {
 							taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true);
+						}
 					}
-					taxonNumber = lastTaxonNumber;
 				}
 				
-				Taxon t = taxa.getTaxon(taxonNumber);
+				Taxon t = null;
+				
+				if (taxonNumber>=0)
+					t = taxa.getTaxon(taxonNumber);
 				
 				if (t!=null) {
+					checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber if it is the biggest yet.
 					t.setName(token);
 					if (progIndicator!=null) {
 						progIndicator.setText("Reading taxon " + taxonNumber+": "+token);
@@ -207,6 +216,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					subParser.setString(line); 
 					int ic = 0;
 					progIndicator.setSecondaryMessage("Reading character 1");
+					
+					
 
 					while (subParser.getPosition()<line.length()) {
 						char c=subParser.nextDarkChar();
@@ -254,16 +265,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					abort = true;
 				}
 			}
-			if (lastTaxonNumber<taxa.getNumTaxa())
-				if (data.hasDataForTaxa(lastTaxonNumber+1, taxa.getNumTaxa()-1))
-					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra taxa, but these contained data, and so were not deleted");
-				else
-					taxa.deleteTaxa(lastTaxonNumber, taxa.getNumTaxa()-lastTaxonNumber, true);   // add a character if needed
+			if (getImportFileNumber()>=getTotalFilesToImport()-1)  // last import
+				if (getMaximumTaxonFilled()<taxa.getNumTaxa()-1)
+					if (!data.hasDataForTaxa(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
+						taxa.deleteTaxa(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-getMaximumTaxonFilled(), true);   // delete a character if needed
 			if (numFilledChars<data.getNumChars())
 				if (data.hasDataForCharacters(numFilledChars+1, data.getNumChars()-1))
 					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra characters, but these contained data, and so were not deleted");
 				else
-					data.deleteCharacters(numFilledChars+1, data.getNumChars()-numFilledChars, true);   // add a character if needed
+					data.deleteCharacters(numFilledChars+1, data.getNumChars()-numFilledChars, true);   // delete a character if needed
 
 /*		
 	 		if (charAdded>0) {

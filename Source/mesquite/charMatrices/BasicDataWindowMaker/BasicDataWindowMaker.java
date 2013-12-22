@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.text.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -3396,13 +3397,19 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		dialog.dispose();
 		return (buttonPressed.getValue() == 0);
 	}
-
+	public int numIters (Iterator iter) {
+		int count = 0;
+		for ( ; iter.hasNext() ; ++count ) iter.next();
+		return count;
+	}
 	/* ................................................................................................................. */
 	public void processFilesDroppedOnPanel(List files) {
 		int count = 0;
 		// boolean adjustNewSequences = false;
 
 		FileInterpreter fileInterpreter = null;
+		
+		int numFiles = numIters(files.iterator());
 		for (Iterator iter = files.iterator(); iter.hasNext();) {
 			File nextFile = (File) iter.next();
 			if (!askListenersToProcess(nextFile, true)) {
@@ -3411,11 +3418,15 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					fileInterpreter = findFileInterpreter(MesquiteFile.getFileContentsAsString(nextFile.getAbsolutePath()), nextFile.getName());
 					if (fileInterpreter == null)
 						return;
+					fileInterpreter.setTotalFilesToImport(numFiles);
+					fileInterpreter.setMultiFileImport(numFiles>1);
+					fileInterpreter.setMaximumTaxonFilled(-1);
 					if (!MesquiteThread.isScripting() && false) {
 						if (data instanceof MolecularData)
 							adjustNewSequences = queryOptions();
 					}
 				}
+				fileInterpreter.setImportFileNumber(count);
 				// system.out.println("next file dropped is: " + nextFile);
 				MesquiteMessage.println("\n\nReading file " + nextFile.getName());
 				CommandRecord.tick("\n\nReading file " + nextFile.getName());
@@ -3430,6 +3441,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				count++;
 			}
 		}
+		 if (fileInterpreter!=null) {
+				fileInterpreter.setMaximumTaxonFilled(-1);
+		}
+
 		if (fileInterpreter != null)
 			fileInterpreter.reset();
 

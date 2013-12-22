@@ -46,6 +46,11 @@ public abstract class FileInterpreter extends MesquiteModule  {
 //	protected boolean replaceDataOfTaxonWithSameName = defaultReplaceDataOfTaxonWithSameName;
 	protected int replaceDataOfTaxonWithSameNameInt = defaultReplaceDataOfTaxonWithSameNameInt;
 	protected boolean hasQueriedAboutSameNameTaxa = defaultHasQueriedAboutSameNameTaxa;
+	protected int totalFilesToImport = 1;
+	protected int importFileNumber = 0;
+	protected boolean multiFileImport = false;
+	protected int lastNewTaxonFilled = -1;
+	protected int maximumTaxonFilled =-1;
 
 	public Class getDutyClass() {
 		return FileInterpreter.class;
@@ -165,7 +170,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			progIndicator.goAway();
 		if (file!=null) 
 			file.closeReading();
-		if (abort){ //¥¥¥		
+		if (abort){ //ï¿½ï¿½ï¿½		
 			if (file!=null)
 				file.close();
 			resetAllMenuBars();
@@ -261,6 +266,42 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		return null;
 	}
+	public int getTotalFilesToImport() {
+		return totalFilesToImport;
+	}
+	public void setTotalFilesToImport(int totalFilesToImport) {
+		this.totalFilesToImport = totalFilesToImport;
+	}
+	public int getImportFileNumber() {
+		return importFileNumber;
+	}
+	public void setImportFileNumber(int importFileNumber) {
+		this.importFileNumber = importFileNumber;
+	}
+	public boolean getMultiFileImport() {
+		return multiFileImport;
+	}
+	public void setMultiFileImport(boolean multiFileImport) {
+		this.multiFileImport = multiFileImport;
+	}
+	public int getLastNewTaxonFilled() {
+		return lastNewTaxonFilled;
+	}
+	public void setLastNewTaxonFilled(int lastNewTaxonFilled) {
+		this.lastNewTaxonFilled = lastNewTaxonFilled;
+		maximumTaxonFilled = lastNewTaxonFilled;
+	}
+	public int getMaximumTaxonFilled() {
+		return maximumTaxonFilled;
+	}
+	public void setMaximumTaxonFilled(int maximumTaxonFilled) {
+		this.maximumTaxonFilled = maximumTaxonFilled;
+	}
+	public void checkMaximumTaxonFilled(int taxonFilled) {
+		if (taxonFilled> this.maximumTaxonFilled)
+			 maximumTaxonFilled = taxonFilled;
+	}
+
 
 }
 
