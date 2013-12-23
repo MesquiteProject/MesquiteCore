@@ -20,6 +20,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
+import mesquite.cont.lib.ContinuousData;
 
 
 /* ============  a file interpreter for FASTA files ============*/
@@ -129,11 +130,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			subParser.setPunctuationString(">");
 			parser.setPunctuationString(">");
 			String token = subParser.getFirstToken(line); //should be >
-			int charAdded = 0;
 			int numFilledChars = data.getNumChars();
 			boolean added = false;
-			boolean replaceExisting = false;
-			int originalLastTaxonNumber = data.getNumTaxa();
 			
 			while (!StringUtil.blank(line) && !abort) {
 
@@ -141,7 +139,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 				token = subParser.getRemaining();  //taxon Name
 				taxonNumber = taxa.whichTaxonNumber(token);   // checking to see if a taxon of that name already exists in the file
-				replaceExisting = false;
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
 					if (!MesquiteThread.isScripting()){
@@ -162,7 +159,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (replace) {
 					CharacterState cs = data.makeCharacterState(); //so as to get the default state
 					int numChars = data.getNumChars();
-					replaceExisting = true;
 					if (taxonNumber<lastTaxonNumber)
 						for (int ic=0; ic<numChars; ic++)
 							data.setState(ic, taxonNumber, cs);
@@ -199,7 +195,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					t = taxa.getTaxon(taxonNumber);
 				
 				if (t!=null) {
-					checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber if it is the biggest yet.
+					checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber to see if it is the biggest yet.
 					t.setName(token);
 					if (progIndicator!=null) {
 						progIndicator.setText("Reading taxon " + taxonNumber+": "+token);
@@ -221,7 +217,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						char c=subParser.nextDarkChar();
 						if (c!= '\0') {
 							if (data.getNumChars() <= ic) {
-								charAdded ++;
 								int numChars = data.getNumChars();
 								int numToAdd = 1;
 								if (numChars>10000) {
@@ -263,9 +258,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					abort = true;
 				}
 			}
-			if (getImportFileNumber()>=getTotalFilesToImport()-1)  // last import
-				if (getMaximumTaxonFilled()<taxa.getNumTaxa()-1)
-					if (!data.hasDataForTaxa(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
+			if (getMultiFileImport() && getImportFileNumber()>=getTotalFilesToImport()-1)  // last import
+				if (getOriginalNumTaxa()>0 && getMaximumTaxonFilled()>=getOriginalNumTaxa() && getMaximumTaxonFilled()<taxa.getNumTaxa()-1)    
+					if (!taxa.taxaHaveAnyData(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
 						taxa.deleteTaxa(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-getMaximumTaxonFilled(), true);   // delete a character if needed
 			if (numFilledChars<data.getNumChars())
 				if (data.hasDataForCharacters(numFilledChars+1, data.getNumChars()-1))

@@ -1223,6 +1223,20 @@ public class Taxa extends FileElement {
 		return duplicate;
 	}
 
+	
+	/**
+	 * Returns whether this there is any data matrix containing data for taxa itStart through itEnd inclusive.
+	 */
+	public boolean taxaHaveAnyData( int itStart, int itEnd){
+		int numMatrices = getProject().getNumberCharMatrices(null, this, CharacterData.class, true);
+		for (int iM = 0; iM < numMatrices; iM++){
+			CharacterData data = getProject().getCharacterMatrixVisible( this, iM, CharacterData.class);
+			if (data.hasDataForTaxa(itStart, itEnd))
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * sets whether this taxa is marked as a duplicate of another. This is used
 	 * for merging taxa and subsequently saving the file. The system is kludgey

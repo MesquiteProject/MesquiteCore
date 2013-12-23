@@ -3420,6 +3420,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 						return;
 					fileInterpreter.setTotalFilesToImport(numFiles);
 					fileInterpreter.setMultiFileImport(numFiles>1);
+					fileInterpreter.setOriginalNumTaxa(data.getNumTaxa());
 					fileInterpreter.setMaximumTaxonFilled(-1);
 					if (!MesquiteThread.isScripting() && false) {
 						if (data instanceof MolecularData)

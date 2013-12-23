@@ -51,6 +51,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	protected boolean multiFileImport = false;
 	protected int lastNewTaxonFilled = -1;
 	protected int maximumTaxonFilled =-1;
+	protected int originalNumTaxa =-1;
 
 	public Class getDutyClass() {
 		return FileInterpreter.class;
@@ -300,6 +301,12 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public void checkMaximumTaxonFilled(int taxonFilled) {
 		if (taxonFilled> this.maximumTaxonFilled)
 			 maximumTaxonFilled = taxonFilled;
+	}
+	public int getOriginalNumTaxa() {
+		return originalNumTaxa;
+	}
+	public void setOriginalNumTaxa(int originalNumTaxa) {
+		this.originalNumTaxa = originalNumTaxa;
 	}
 
 
