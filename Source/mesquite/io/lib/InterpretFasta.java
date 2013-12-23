@@ -159,7 +159,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					}
 				}
 				
-//				Debugg.println("num to import: " + getTotalFilesToImport() + "\n current: " + getImportFileNumber());
 				if (replace) {
 					CharacterState cs = data.makeCharacterState(); //so as to get the default state
 					int numChars = data.getNumChars();
@@ -168,7 +167,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						for (int ic=0; ic<numChars; ic++)
 							data.setState(ic, taxonNumber, cs);
 					added=false;
-				} else {  // adding to end.
+				} else {  // adding to end, not replacing an existing one
 					if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
 						taxonNumber = getLastNewTaxonFilled()+1;
 						setLastNewTaxonFilled(taxonNumber);
@@ -185,7 +184,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						int numTaxaAdded = getTotalFilesToImport();
 						if (numTaxaAdded<1) numTaxaAdded =1;
 						taxa.addTaxa(taxonNumber-1, numTaxaAdded, false);
-//	Debugg.println("numTaxaAdded: "+ numTaxaAdded);
 						added=true;
 						if (newFile)
 							data.addTaxa(taxonNumber-1, numTaxaAdded);
