@@ -625,9 +625,6 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		//Debugg.println ???take this over to fill terminal spot rather than box, to avoid predicted/reconstructed being confused with observed
 	}
 	/*_________________________________________________*/
-	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
-		return -1;
-	}
 	private boolean ancestorIsTriangled(Tree tree, int node) {
 		if (!tree.nodeExists(node))
 			return false;
@@ -705,6 +702,9 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		}
 	}
 
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		return inBranch(tree, touchPoly, node, xPos, yPos);
+	}
 	/*_________________________________________________*/
 	private boolean inBranch(Tree tree, Polygon[] polys, int node, int x, int y){
 		if (ownerModule.style == BallsNSticks.DIAGONAL||ownerModule.style == BallsNSticks.SQUARE) {

@@ -986,6 +986,21 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 
 	/*_________________________________________________*/
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		int ew = branchEdgeWidth(node, false)-2;
+		if (isUP()){ 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
+		}
+		else if (isDOWN())
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]+2 && yPos < y[node]+ew+2;
+		else  if (isRIGHT()) 
+			return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node] && yPos < y[node] + ew;
+		else  if (isLEFT())
+			return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node] && yPos < y[node] + ew;
+		else 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
+	}
+	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
 		Rectangle box;
 		int ew = branchEdgeWidth(node, false)-2;
@@ -1028,10 +1043,6 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		}
 		g.setColor(treeDisplay.getBranchColor(node));
 		g.drawRect(box.x, box.y, box.width, box.height);
-	}
-	/*_________________________________________________*/
-	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
-		return -1;
 	}
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {

@@ -1061,9 +1061,21 @@ class SquareTreeDrawing extends TreeDrawing   {
 		g.drawRect(box.x, box.y, box.width, box.height);
 	}
 	/*_________________________________________________*/
-	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
-		return -1;
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		int ew = edgewidth-1;
+		if (isUP()){ 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
+		}
+		else if (isDOWN())
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]+1 && yPos < y[node]+ew+1;
+		else  if (isRIGHT()) 
+			return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node] && yPos < y[node] + ew;
+		else  if (isLEFT())
+			return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node] && yPos < y[node] + ew;
+		else 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
 	}
+	/*_________________________________________________*
 	/*_________________________________________________*/
 	private boolean ancestorIsTriangled(Tree tree, int node) {
 		return tree.ancestorHasNameReference(triangleNameRef, node);

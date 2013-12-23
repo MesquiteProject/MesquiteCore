@@ -430,10 +430,6 @@ int count = 0;
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 	}
 	/*_________________________________________________*/
-	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
-		return -1;
-	}
-	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
 			if (MesquiteInteger.isCombinable(x[node]) && MesquiteInteger.isCombinable(y[node])) {

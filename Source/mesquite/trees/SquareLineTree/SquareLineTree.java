@@ -45,7 +45,7 @@ public class SquareLineTree extends DrawTree {
 		}
 		drawings = new Vector();
 		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		
+
 		orientationName = new MesquiteString(orient(ornt));
 		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
 		orientationSubmenu.setSelected(orientationName);
@@ -448,6 +448,20 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		g2.draw(box);
 	}
 	/*_________________________________________________*/
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		int ew = edgewidth-1;
+		if (treeDisplay.getOrientation()==treeDisplay.UP) 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
+		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]+1 && yPos < y[node]+ew+1;
+		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
+			return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node] && yPos < y[node] + ew;
+		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
+			return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node] && yPos < y[node] + ew;
+		else 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
+	}
+	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		float localInset = 0;
 		if (ownerModule.getShowEdgeLines())
@@ -476,13 +490,9 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		g2.setColor(treeDisplay.getBranchColor(node));
 		g2.draw(box);
 	}
-	/*_________________________________________________*/
-	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
-		return -1;
-	}
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
-		
+
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			Color c = g.getColor();
 			if (g instanceof Graphics2D){
