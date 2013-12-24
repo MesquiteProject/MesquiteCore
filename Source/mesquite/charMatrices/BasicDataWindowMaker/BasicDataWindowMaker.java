@@ -314,7 +314,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		table.setVisible(true);
 		table.setColumnAssociable(data);
 		table.setRowAssociable(data.getTaxa());
-		setIcon(MesquiteModule.getRootImageDirectoryPath() + "matrix.gif");
+		if (data instanceof MolecularData)
+			setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/matrixSequence.gif");
+		else
+			setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/matrix.gif");
+
 		MesquiteButton infoButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("toggleInfoPanel", this), null, true, MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", 12, 16);
 		infoButton.setUseWaitThread(false);
 		infoButton.setShowBackground(false);

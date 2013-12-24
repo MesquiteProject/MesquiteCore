@@ -298,7 +298,7 @@ class TaxonListWindow extends ListWindow {
 				init.setTableAndTaxa(getTable(), taxa, true);
 			}
 		}
-		setIcon(MesquiteModule.getRootImageDirectoryPath() + "listT.gif");
+		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/listT.gif");
 		ownerModule.hireAllEmployees(TaxaListAssistantI.class); 
 		enumeration=ownerModule.getEmployeeVector().elements();
 		while (enumeration.hasMoreElements()){

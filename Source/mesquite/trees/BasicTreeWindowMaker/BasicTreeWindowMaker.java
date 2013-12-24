@@ -770,6 +770,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		treeDrawCoordTask = windowModule.hireTreeDrawCoordTask();  // do this here to ensure that any modules hired by the task have a window into which to put things
 		if (treeDrawCoordTask==null)
 			return;
+		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/tree.gif");
 
 		recentEditedTrees = new TreeVector(taxa);
 		this.ownerModule = ownerModule;
