@@ -15,6 +15,7 @@ package mesquite.trees.StoredTrees;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -599,6 +600,19 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		else
 			return "Tree # " + Integer.toString(MesquiteTree.toExternal(currentTree))  + " from file " + currentTreeBlock.getFileName();
 	}
+ 	 /**Returns name to show in windows etc. for tree block or source of trees.*/
+ 	public String getTreesDescriptiveString(Taxa taxa){
+		setPreferredTaxa(taxa);
+		try {
+			Tree tree;
+			int code = checkTreeBlock(taxa);
+			if (currentTreeBlock != null)
+				return currentTreeBlock.getName();
+		}
+		catch (NullPointerException e) {
+		}
+		return getNameForMenuItem();
+ 	}
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Stored Trees";

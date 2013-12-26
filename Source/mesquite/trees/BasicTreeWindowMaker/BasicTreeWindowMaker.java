@@ -1103,7 +1103,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (treeSourceTask==null)
 			t = "Tree Window " + windowNum + " for taxa \"" +taxa.getName() + "\"";
 		else
-			t = "Tree Window " + windowNum + " showing " + treeSourceTask.getNameForMenuItem();
+			t = treeSourceTask.getTreesDescriptiveString(taxa);
 		setTitle(t);
 	}
 
