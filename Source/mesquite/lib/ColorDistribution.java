@@ -176,6 +176,10 @@ public class ColorDistribution {
 		standardColorsDimmed.setValue(17, brighter(Color.pink, dimmingConstant));
 		//DO NOT ASSIGN A COLOR TO 18
 	}
+	public ColorDistribution( Color c) {
+		this();
+		setColor(0, c);
+	}
 	public ColorDistribution() {
 		colors = new Color[MAXCOLORS];
 		colorsDimmed = new Color[MAXCOLORS];

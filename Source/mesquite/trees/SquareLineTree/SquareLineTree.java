@@ -44,8 +44,9 @@ public class SquareLineTree extends DrawTree {
 			mss.setSelected(nodeLocsName);
 		}
 		drawings = new Vector();
-		orientationName = new MesquiteString("Up");
-		ornt = TreeDisplay.UP;
+		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
+
+		orientationName = new MesquiteString(orient(ornt));
 		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
 		orientationSubmenu.setSelected(orientationName);
 		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
@@ -464,6 +465,20 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		}
 	}
 	/*_________________________________________________*/
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		int ew = edgewidth-1;
+		if (treeDisplay.getOrientation()==treeDisplay.UP) 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
+		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]+1 && yPos < y[node]+ew+1;
+		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
+			return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node] && yPos < y[node] + ew;
+		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
+			return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node] && yPos < y[node] + ew;
+		else 
+			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
+	}
+	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		Rectangle box;
 		int numColors = colors.getNumColors();
@@ -517,9 +532,24 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			g.drawArc(box.x, box.y, box.width, box.height, 0, 360);
 		}
 	}
-	/*_________________________________________________*/
-	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
-		return -1;
+	/*_________________________________________________*
+	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
+
+		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
+			Color c = g.getColor();
+			if (g instanceof Graphics2D){
+				Graphics2D g2 = (Graphics2D)g;
+				g2.setPaint(GraphicsUtil.missingDataTexture);
+			}
+			else
+				g.setColor(Color.lightGray);
+			float localInset = 0;
+			if (ownerModule.getShowEdgeLines())
+				localInset=inset;
+			float fillWidth = edgewidth-2*localInset;
+			DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, null, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+			if (c!=null) g.setColor(c);
+		}
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {

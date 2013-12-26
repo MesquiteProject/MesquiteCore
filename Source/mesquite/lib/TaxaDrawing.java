@@ -17,7 +17,7 @@ import mesquite.lib.duties.*;
 
 
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ taxa ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ taxa ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* ======================================================================== */
 /**This is the base class for the drawing of taxa.  It contains the information about
 the number of nodes, and the x and y positions of the nodes.  It should be subclassed by taxa drawing modules, 
@@ -124,8 +124,6 @@ public abstract class TaxaDrawing  {
 	/** Fill terminal box of node "node" with indicated set of colors */
 	public abstract void fillTerminalBoxWithColors(Taxa taxa, int node, ColorDistribution colors, Graphics g);
 	
-	/** Find which terminal box is at x,y */
-	public abstract int findTerminalBox(Taxa taxa, int x, int y);
 	
 	
 
