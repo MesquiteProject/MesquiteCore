@@ -103,8 +103,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	public Vector contextListeners;
 	Taxa taxa;
 	static boolean warnUnsaved;
-	boolean 	editMode = false;
-
 	BasicTreeWindow basicTreeWindow;
 	MesquiteString treeSourceName;
 	MagnifyExtra magnifyExtra;
@@ -126,10 +124,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		resetContainingMenuBar();
 		if (MesquiteThread.isScripting() || (arguments == null || !arguments.equalsIgnoreCase("edit")))
 			treeSourceTask= (TreeSource)hireCompatibleEmployee(TreeSource.class, condition, "Source of trees (Tree window)");
-		else {
+		else
 			treeSourceTask= (TreeSource)hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false);
-			editMode = true;
-		}
 
 		if (treeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees was obtained.");
@@ -461,7 +457,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		incrementMenuResetSuppression();
 		this.taxa = taxa;
 		treeSourceTask.setPreferredTaxa(taxa);
-		BasicTreeWindow btw = new BasicTreeWindow( this, treeSourceTask, taxa, xmlPrefsString, editMode);
+		BasicTreeWindow btw = new BasicTreeWindow( this, treeSourceTask, taxa, xmlPrefsString);
 		setModuleWindow(btw);
 		basicTreeWindow = (BasicTreeWindow) getModuleWindow();
 		Enumeration e = getEmployeeVector().elements();
@@ -487,8 +483,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		addMenuItem(aux, "-", null);
 		MesquiteSubmenuSpec mmis = addSubmenu(aux, "Visual Tree Analysis", makeCommand("setTreeDrawer",  treeDrawCoordTask));
 		mmis.setList(AnalyticalDrawTree.class);
-		//	addMenuItem(aux, "-", null);
-		//	addMenuItem(null, "Force Repaint", makeCommand("forceRepaint", basicTreeWindow));
+	//	addMenuItem(aux, "-", null);
+	//	addMenuItem(null, "Force Repaint", makeCommand("forceRepaint", basicTreeWindow));
 
 
 		if (!MesquiteThread.isScripting()) {
@@ -754,7 +750,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	public BasicTreeWindow(){
 	}
-	public BasicTreeWindow ( BasicTreeWindowMaker ownerModule, TreeSource tsT,  Taxa taxa, String xmlPrefsString, boolean editMode){
+	public BasicTreeWindow ( BasicTreeWindowMaker ownerModule, TreeSource tsT,  Taxa taxa, String xmlPrefsString){
 		super(ownerModule, true); //INFOBAR
 		windowModule = ownerModule;
 		//this.ownerModule = ownerModule;
@@ -770,7 +766,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		treeDrawCoordTask = windowModule.hireTreeDrawCoordTask();  // do this here to ensure that any modules hired by the task have a window into which to put things
 		if (treeDrawCoordTask==null)
 			return;
-		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/tree.gif");
 
 		recentEditedTrees = new TreeVector(taxa);
 		this.ownerModule = ownerModule;
@@ -795,18 +790,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		addToWindow(controlStrip);
 		ownerModule.addCheckMenuItem(null, "Show Tree Info Panel", ownerModule.makeCommand("toggleInfoPanel",  this), infoPanelOn);
 		tree = null;
-		Tree tempTree = null;
-		if (!editMode){
+		Tree tempTree = treeSourceTask.getTree(taxa, 0);
+		//in case treeSourceTask quits at this point, will reset tree source task
+		if (tempTree == null || treeSourceTask != ownerModule.treeSourceTask){
+			treeSourceTask = ownerModule.treeSourceTask;
 			tempTree = treeSourceTask.getTree(taxa, 0);
-			//in case treeSourceTask quits at this point, will reset tree source task
-			if (tempTree == null || treeSourceTask != ownerModule.treeSourceTask){
-				treeSourceTask = ownerModule.treeSourceTask;
-				tempTree = treeSourceTask.getTree(taxa, 0);
-			}
 		}
-		else
-			tempTree = taxa.getDefaultTree();
-
 		originalTree = tempTree;
 		if (tempTree == null) {
 			tree = taxa.getDefaultTree();
@@ -1031,6 +1020,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			ladderizeAfterReroot.setValue(MesquiteBoolean.fromTrueFalseString(content));
 	}
 	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String flavor, String content) {
+	}
+
+	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "toggleRerootLadderize", ladderizeAfterReroot);   
@@ -1099,7 +1092,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (treeSourceTask==null)
 			t = "Tree Window " + windowNum + " for taxa \"" +taxa.getName() + "\"";
 		else
-			t = treeSourceTask.getTreesDescriptiveString(taxa);
+			t = "Tree Window " + windowNum + " showing " + treeSourceTask.getNameForMenuItem();
 		setTitle(t);
 	}
 
@@ -1846,8 +1839,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
-
-
+	
+	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hires a tree display assistant module", "[name of assistant module]", commandName, "newAssistant")) {
@@ -2075,7 +2068,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						showTreeListOnSave = false;
 
 						if (treeSourceTask!=null && "Stored Trees".equalsIgnoreCase(treeSourceTask.getName())){
-							TreeVector v = (TreeVector)treeSourceTask.doCommand("setTreeBlockByID", "" + trees.getID(), CommandChecker.defaultChecker);
+							TreeVector v = (TreeVector)treeSourceTask.doCommand("getTreeBlock", null, CommandChecker.defaultChecker);
 							if (v == trees) {
 								goToTreeNumber(trees.size()-1);
 							}
@@ -2950,7 +2943,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (GraphicsUtil.useXORMode(g, true)) {
 				g.setXORMode(Color.white);
 				try{
-					treeDisplay.fillTaxon(g, M);
+				treeDisplay.fillTaxon(g, M);
 				}
 				catch (InternalError e){ //workaround to bug in Windows Java 1.7_45
 				}
@@ -2978,7 +2971,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (GraphicsUtil.useXORMode(g, true)) {
 				g.setXORMode(Color.white);
 				try{
-					treeDisplay.fillTaxon(g, highlightedTaxon);
+				treeDisplay.fillTaxon(g, highlightedTaxon);
 				}
 				catch (InternalError e){ //workaround to bug in Windows Java 1.7_45
 				}
@@ -3007,15 +3000,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	NameReference branchNotesRef = NameReference.getNameReference("note");
 	private int countinvert = 0;
 	public   void InvertBranch(Graphics g, int N, MesquiteInteger highlight) {
+
 		Tree t = treeDisplay.getTree();
 		if (t!=null){
 			MesquiteDouble fraction = new MesquiteDouble();
 			if (findBranch(treeDisplay.getMouseX(), treeDisplay.getMouseY(), fraction) == N){ //still in N
 				TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 				highlight.setValue(N);   // sets the highlighed branch
-				if (treeDrawing!=null && !treeDisplay.repaintPending()){
+				if (treeDrawing!=null && !treeDisplay.repaintPending())
 					treeDrawing.fillBranchInverted(t, N, g);
-				}
 				//colorInvertBranch(t,N,g);
 				showBranchExplanation(N);
 			}

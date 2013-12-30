@@ -21,7 +21,7 @@ import java.awt.image.*;
 /* ======================================================================== */
 /** This class provides general graphics utilities */
 public class GraphicsUtil {
-	public static TexturePaint missingDataTexture = null;
+
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns how far along the line (x,y) is */
 	public static double fractionAlongLine(int x, int y, int xStart, int yStart, int xEnd, int yEnd, boolean xBias, boolean yBias) {

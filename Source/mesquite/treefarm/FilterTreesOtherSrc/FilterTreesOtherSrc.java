@@ -15,7 +15,6 @@ package mesquite.treefarm.FilterTreesOtherSrc;
 
 import java.util.*;
 import java.awt.*;
-
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.treefarm.lib.*;
@@ -43,7 +42,6 @@ public class FilterTreesOtherSrc extends SourceFromTreeSource {
 	BooleanForTree booleanTask;
 	MesquiteString booleanName;
 	MesquiteCommand stC;
-	MesquiteBoolean positiveFilter;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (!super.startJob(arguments, condition, hiredByName))
@@ -52,7 +50,6 @@ public class FilterTreesOtherSrc extends SourceFromTreeSource {
 		if (booleanTask == null) {
 			return sorry(getName() + " couldn't start because no tree filter was obtained.");
 		}
-		positiveFilter = new MesquiteBoolean(true);
 		stC = makeCommand("setBoolean",  this);
 		booleanTask.setHiringCommand(stC);
 		booleanName = new MesquiteString();
@@ -61,11 +58,6 @@ public class FilterTreesOtherSrc extends SourceFromTreeSource {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Filter of Trees", stC, BooleanForTree.class);
 			mss.setSelected(booleanName);
 		}
-		if (!MesquiteThread.isScripting())
-			positiveFilter.setValue(AlertDialog.query(containerOfModule(), "Keep Trees that Satisfy?", "The filter can either keep those trees that satisfy the criterion, or those trees that fail the criterion.  Which to keep?", 
-					"Satisfy", "Fail", 0, null));
-					
-		addCheckMenuItem(null, "Keep Trees Satisfying Criterion", makeCommand("togglePositiveFilter", this), positiveFilter);
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -84,7 +76,6 @@ public class FilterTreesOtherSrc extends SourceFromTreeSource {
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = super.getSnapshot(file);
 		temp.addLine("setBoolean ", booleanTask); 
-		temp.addLine("togglePositiveFilter " + positiveFilter.toOffOnString());
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -101,10 +92,6 @@ public class FilterTreesOtherSrc extends SourceFromTreeSource {
 				parametersChanged();
 				return booleanTask;
 			}
-		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to keep those trees that satisfy the criterion, or not", "[on or off]", commandName, "togglePositiveFilter")) {
-			positiveFilter.toggleValue(parser.getFirstToken(arguments));
-			parametersChanged();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -141,7 +128,7 @@ public class FilterTreesOtherSrc extends SourceFromTreeSource {
 				return null;
 			}
 			booleanTask.calculateBoolean(tree, result, null);	
-			if ((result.getValue() && positiveFilter.getValue()) || (!result.getValue() && !positiveFilter.getValue())){
+			if (result.getValue()){
 				count++;
 			}		
 			else

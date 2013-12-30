@@ -44,6 +44,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteMenuItemSpec fixedScalingMenuItem, showScaleMenuItem, broadScaleMenuItem;
 	MesquiteMenuItemSpec offFixedScalingMenuItem, stretchMenuItem, evenMenuItem;
 	NameReference triangleNameRef;
+	static int defaultOrientation = TreeDisplay.UP;
 	MesquiteBoolean center;
 	boolean[] fixedSettings = null;
 	MesquiteBoolean even;

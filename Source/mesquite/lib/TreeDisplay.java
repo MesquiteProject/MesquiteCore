@@ -50,8 +50,6 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public static final int DOWN = 3;
 	/** Tree is drawn in circular arrangement of nodes */
 	public static final int CIRCULAR = 4;
-	/** Tree orientation is not yet set; take from node locs module */
-	public static final int NOTYETSET = -1;
 	
 
 	/**  The margin from the tips to the edge of the drawing field*/
@@ -88,7 +86,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/**  Spacing in pixels between taxa as set by user*/
 	private int fixedTaxonSpacing;
 	/**  Orientaton of the tree*/
-	private int treeOrientation = NOTYETSET;
+	private int treeOrientation = UP;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
 //	public boolean inhibitStretchByDefault = false;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree window*/

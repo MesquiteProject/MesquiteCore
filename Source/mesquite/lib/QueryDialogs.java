@@ -23,6 +23,10 @@ public class QueryDialogs  {
 	}
 	/*.................................................................................................................*/
 	public static boolean queryInteger(MesquiteWindow parent, String title, String message, String help, boolean allowCancel, MesquiteInteger value) {
+		return queryInteger(parent, title, message, null, help, allowCancel, value);
+	}
+	/*.................................................................................................................*/
+	public static boolean queryInteger(MesquiteWindow parent, String title, String message, String secondaryMessage, String help, boolean allowCancel, MesquiteInteger value) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(parent, title,buttonPressed);
 		queryDialog.addLargeOrSmallTextLabel(message);
@@ -33,6 +37,8 @@ public class QueryDialogs  {
 		
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
+		if (StringUtil.notEmpty(secondaryMessage))
+			queryDialog.addLabelSmallText(secondaryMessage);
 		
 		if (allowCancel)
 			queryDialog.completeAndShowDialog(true);

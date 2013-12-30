@@ -181,6 +181,9 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 				iQuit();
 				return;
 			}
+			data = null;
+			dataName.setValue("No matrix is currently in use");
+		/*
 			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + " used by \"" + getEmployer().getEmployer().getName() + "\") has been deleted.  Another matrix will be sought.");
 
 			if (dataClass!=null) {
@@ -200,6 +203,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 			}
 			data.addListener(this);
 			dataName.setValue(data.getName());
+			*/
 			parametersChanged();
 		}
 	}

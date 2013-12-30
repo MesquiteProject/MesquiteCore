@@ -14,9 +14,12 @@ Modified May 02 especially for annotations*/
 package mesquite.lib;
 
 import java.awt.*;
+
+
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.util.*;
+
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
@@ -2711,15 +2714,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	public String getName(){
 		return getTitle();
-	}
-
-	/*.................................................................................................................*/
-	Image icon;
-	public Image getIcon(){
-		return icon;
-	}
-	public void setIcon(String s){
-		icon = MesquiteImage.getImage(s);
 	}
 
 	/*.................................................................................................................*/

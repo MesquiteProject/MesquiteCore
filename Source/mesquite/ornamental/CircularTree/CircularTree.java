@@ -402,6 +402,10 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*----------------------------------------------------------------------------*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 	}
+	/*----------------------------------------------------------------------------*/
+	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
+		return -1;
+	}
 	/*_________________________________________________*/
 	private boolean ancestorIsTriangled(Tree tree, int node) {
 		if (!tree.nodeExists(node))

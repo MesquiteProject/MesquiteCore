@@ -45,8 +45,11 @@ public class DiagonalDrawTree extends DrawTree {
 		}
 		drawings = new Vector();
 		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		orientationName = new MesquiteString(orient(ornt));
+		ornt = nodeLocsTask.getDefaultOrientation();
+		orientationName = new MesquiteString("Up");
+		if (ornt != TreeDisplay.UP &&  ornt != TreeDisplay.DOWN && ornt != TreeDisplay.LEFT && ornt != TreeDisplay.RIGHT)
+			ornt = TreeDisplay.UP;
+		orientationName.setValue(orient(ornt));
 		orientationSubmenu.setSelected(orientationName);
 		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
 		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
@@ -986,21 +989,6 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 
 	/*_________________________________________________*/
-	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
-		int ew = branchEdgeWidth(node, false)-2;
-		if (isUP()){ 
-			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
-		}
-		else if (isDOWN())
-			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]+2 && yPos < y[node]+ew+2;
-		else  if (isRIGHT()) 
-			return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node] && yPos < y[node] + ew;
-		else  if (isLEFT())
-			return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node] && yPos < y[node] + ew;
-		else 
-			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
-	}
-	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
 		Rectangle box;
 		int ew = branchEdgeWidth(node, false)-2;
@@ -1044,31 +1032,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		g.setColor(treeDisplay.getBranchColor(node));
 		g.drawRect(box.x, box.y, box.width, box.height);
 	}
-	/*_________________________________________________*
-	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
-
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
-			Color c = g.getColor();
-			if (g instanceof Graphics2D){
-				Graphics2D g2 = (Graphics2D)g;
-				g2.setPaint(GraphicsUtil.missingDataTexture);
-			}
-			else
-				g.setColor(Color.lightGray);
-			//					UPdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], i+1, colors.getNumColors());
-
-			if (isUP())
-				UPdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
-			else if (isDOWN()) 
-				DOWNdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
-			else if (isRIGHT()) 
-				RIGHTdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
-			else if (isLEFT())
-				LEFTdefineFillPoly(node, utilityPolygon, false, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1);
-
-			g.fillPolygon(utilityPolygon);
-			if (c!=null) g.setColor(c);
-		}	
+	/*_________________________________________________*/
+	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
+		return -1;
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {

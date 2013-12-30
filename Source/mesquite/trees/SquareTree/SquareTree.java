@@ -26,7 +26,7 @@ import mesquite.trees.lib.*;
 public class SquareTree extends DrawTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NodeLocsVH.class, getName() + "  needs the locations of nodes to be calculated.",
-				"The calculator for node locations is chosen automatically or initially");
+		"The calculator for node locations is chosen automatically or initially");
 	}
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
@@ -42,8 +42,8 @@ public class SquareTree extends DrawTree {
 	int cornerMode = 0;
 	int curvature = 50;
 	MesquiteBoolean simpleTriangle = new MesquiteBoolean(true);
-
-
+	
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		drawings = new Vector();
@@ -65,15 +65,18 @@ public class SquareTree extends DrawTree {
 
 
 		MesquiteSubmenuSpec orientationSubmenu = addSubmenu(null, "Orientation");
-		ornt = NodeLocsVH.defaultOrientation;  //should take out of preferences
-		orientationName = new MesquiteString(orient(ornt));
+		ornt = nodeLocsTask.getDefaultOrientation();
+		orientationName = new MesquiteString("Up");
+		if (ornt != TreeDisplay.UP &&  ornt != TreeDisplay.DOWN && ornt != TreeDisplay.LEFT && ornt != TreeDisplay.RIGHT)
+			ornt = TreeDisplay.UP;
+		orientationName.setValue(orient(ornt));
 		orientationSubmenu.setSelected(orientationName);
 		addItemToSubmenu(null, orientationSubmenu, "Up", makeCommand("orientUp",  this));
 		addItemToSubmenu(null, orientationSubmenu, "Right", makeCommand("orientRight",  this));
 		addItemToSubmenu(null, orientationSubmenu, "Down", makeCommand("orientDown",  this));
 		addItemToSubmenu(null, orientationSubmenu, "Left", makeCommand("orientLeft",  this));
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
-		//	addCheckMenuItem(null, "Simple Triangle for Triangled Clades", makeCommand("toggleSimpleTriangle",  this), simpleTriangle);
+	//	addCheckMenuItem(null, "Simple Triangle for Triangled Clades", makeCommand("toggleSimpleTriangle",  this), simpleTriangle);
 		return true;
 	}
 
@@ -225,7 +228,7 @@ public class SquareTree extends DrawTree {
 				if (treeDrawing.treeDisplay != null)
 					ornt = treeDrawing.treeDisplay.getOrientation();
 			}
-			orientationName.setValue(orient(ornt));
+				orientationName.setValue(orient(ornt));
 			parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Orients the tree drawing so that the terminal taxa are at the bottom", null, commandName, "orientDown")) {
@@ -236,7 +239,7 @@ public class SquareTree extends DrawTree {
 				SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
 				treeDrawing.reorient(TreeDisplay.DOWN);
 				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
+				ornt = treeDrawing.treeDisplay.getOrientation();
 			}
 			orientationName.setValue(orient(ornt));
 			parametersChanged();
@@ -249,7 +252,7 @@ public class SquareTree extends DrawTree {
 				SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
 				treeDrawing.reorient(TreeDisplay.RIGHT);
 				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
+				ornt = treeDrawing.treeDisplay.getOrientation();
 			}
 			orientationName.setValue(orient(ornt));
 			parametersChanged();
@@ -262,23 +265,23 @@ public class SquareTree extends DrawTree {
 				SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
 				treeDrawing.reorient(TreeDisplay.LEFT);
 				if (treeDrawing.treeDisplay != null)
-					ornt = treeDrawing.treeDisplay.getOrientation();
+				ornt = treeDrawing.treeDisplay.getOrientation();
 			}
 			orientationName.setValue(orient(ornt));
 			parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to draw triangled clades as simple triangles or not.", "", commandName, "toggleSimpleTriangle")) {
-			boolean current = simpleTriangle.getValue();
-			simpleTriangle.toggleValue(parser.getFirstToken(arguments));
-			if (current!=simpleTriangle.getValue()) {
-				Enumeration e = drawings.elements();
-				while (e.hasMoreElements()) {
-					Object obj = e.nextElement();
-					SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
-					treeDrawing.setSimpleTriangle(simpleTriangle.getValue());
-				}
-				parametersChanged();
-			}
+ 			boolean current = simpleTriangle.getValue();
+ 			simpleTriangle.toggleValue(parser.getFirstToken(arguments));
+ 			if (current!=simpleTriangle.getValue()) {
+ 				Enumeration e = drawings.elements();
+ 				while (e.hasMoreElements()) {
+ 					Object obj = e.nextElement();
+ 					SquareTreeDrawing treeDrawing = (SquareTreeDrawing)obj;
+ 					treeDrawing.setSimpleTriangle(simpleTriangle.getValue());
+ 				}
+ 				parametersChanged();
+ 			}
 		}
 		else return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -324,7 +327,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	NameReference triangleNameRef;
 	int cornerMode;
 	BasicStroke defaultStroke;
-
+	
 
 	public SquareTreeDrawing(TreeDisplay treeDisplay, int numTaxa, SquareTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
@@ -832,9 +835,9 @@ class SquareTreeDrawing extends TreeDrawing   {
 				g.drawLine(x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
 			}
 		}
+		
 
-
-
+		
 	}
 
 	/*_________________________________________________*/
@@ -873,7 +876,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 								g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 							}
 					} else {
-						//	drawLeftSideOfClade(tree, g, node);
+					//	drawLeftSideOfClade(tree, g, node);
 					}
 			}
 			if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle())
@@ -1061,29 +1064,17 @@ class SquareTreeDrawing extends TreeDrawing   {
 		g.drawRect(box.x, box.y, box.width, box.height);
 	}
 	/*_________________________________________________*/
-	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
-		int ew = edgewidth-1;
-		if (isUP()){ 
-			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
-		}
-		else if (isDOWN())
-			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]+1 && yPos < y[node]+ew+1;
-		else  if (isRIGHT()) 
-			return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node] && yPos < y[node] + ew;
-		else  if (isLEFT())
-			return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node] && yPos < y[node] + ew;
-		else 
-			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
+	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
+		return -1;
 	}
-	/*_________________________________________________*
 	/*_________________________________________________*/
 	private boolean ancestorIsTriangled(Tree tree, int node) {
 		return tree.ancestorHasNameReference(triangleNameRef, node);
 	}
 	public boolean branchIsVisible(int node){
 		try {
-			if (node >=0 && node <  branchPoly.length)
-				return treeDisplay.getVisRect() == null || branchPoly[node].intersects(treeDisplay.getVisRect());
+		if (node >=0 && node <  branchPoly.length)
+			return treeDisplay.getVisRect() == null || branchPoly[node].intersects(treeDisplay.getVisRect());
 		}
 		catch (Throwable t){
 		}
@@ -1206,35 +1197,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 			}
 			if (c!=null) g.setColor(c);
 		}
-	}
-	/*_________________________________________________*
-	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
-
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
-			Color c = g.getColor();
-			if (g instanceof Graphics2D){
-				Graphics2D g2 = (Graphics2D)g;
-				g2.setPaint(GraphicsUtil.missingDataTexture);
-			}
-			else
-				g.setColor(Color.lightGray);
-			int nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
-			if (cornerMode == 2){
-				int fillWidth = edgewidth-2*inset;
-				drawOneCurvedBranch(treeDisplay.getTree(), g, node, inset,  fillWidth) ;
-			}
-			else if (isUP())
-				UPdefineFillPoly(utilityPolygon, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1, nShortcut, true);
-			else if (isDOWN()) 
-				DOWNdefineFillPoly(utilityPolygon, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1, nShortcut, true);
-			else if (isRIGHT()) 
-				RIGHTdefineFillPoly(utilityPolygon, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1, nShortcut, true);
-			else if (isLEFT())
-				LEFTdefineFillPoly(utilityPolygon, (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 1, 1, nShortcut, true);
-
-			g.fillPolygon(utilityPolygon);
-			if (c!=null) g.setColor(c);
-		}	
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {

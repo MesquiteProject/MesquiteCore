@@ -14,11 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
 
-import javax.imageio.ImageIO;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -304,15 +302,6 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else
 			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquite.gif");
-		
-		BufferedImage equiv = null;
-		try {
-		    equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
-		} catch (IOException e) {
-			Debugg.println(" IOException trying to read equivocal texture ");
-		}
-		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
-
 		if (verboseStartup) System.out.println("main init 14");
 		MediaTracker mt = new MediaTracker(logWindow.getOuterContentsArea());
 		mt.addImage(logo, 0);

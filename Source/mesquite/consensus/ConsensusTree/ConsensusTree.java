@@ -15,7 +15,6 @@ package mesquite.consensus.ConsensusTree;
 
 import java.util.*;
 import java.awt.*;
-
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -218,10 +217,6 @@ public class ConsensusTree extends TreeSource {
 	/*.................................................................................................................*/
 	public String getTreeNameString(Taxa taxa, int itree) {
 		return consenser.getName() + " from " + treeSource.getNameAndParameters();
-	}
-	 /**Returns name to show in windows etc. for tree block or source of trees.*/
-	public String getTreesDescriptiveString(Taxa taxa){
-		return "Consensus of " + treeSource.getTreesDescriptiveString(taxa);
 	}
 	/*.................................................................................................................*/
 	public String getParameters() {

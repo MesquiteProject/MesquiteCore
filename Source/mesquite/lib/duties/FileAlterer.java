@@ -14,25 +14,34 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
-
+import mesquite.lib.table.*;
+import mesquite.lib.characters.*;
 
 
 /* ======================================================================== */
-/**This class of modules assigns node locations for trees with orientations UP, DOWN, LEFT, or RIGHT.
-Example Module: NodeLocsStandard*/
+/**This is superclass of modules to alter a file (e.g. to process matrices within the file).*/
 
-public abstract class NodeLocsVH extends NodeLocs  {
- 	public String getDutyName() {
- 		return "Node Location (Vert/Horiz)";
-   	 }
+public abstract class FileAlterer extends MesquiteModule  {
+
    	 public Class getDutyClass() {
-   	 	return NodeLocsVH.class;
+   	 	return FileAlterer.class;
    	 }
-	/** gets the module's default tree display orientation.*/
-   	public int getDefaultOrientation(){
-   		return TreeDisplay.UP;
+ 	public String getDutyName() {
+ 		return "File Alterer";
    	}
    	
+   	/** if returns true, then requests to remain on even after alterFile is called.  Default is false*/
+   	public boolean pleaseLeaveMeOn(){
+   		return false;
+   	}
+	/*.................................................................................................................*/
+   	/** Called to alter file. */
+   	public  abstract boolean alterFile(MesquiteFile file);
+   	
+
 }
+
+
+
 
 

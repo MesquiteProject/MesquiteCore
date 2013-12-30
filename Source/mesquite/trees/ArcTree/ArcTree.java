@@ -27,7 +27,7 @@ public class ArcTree extends DrawTree {
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NodeLocsVH.class, getName() + "  needs the locations of nodes to be calculated.",
-				"The calculator for node locations is chosen automatically or initially");
+		"The calculator for node locations is chosen automatically or initially");
 	}
 	/*.................................................................................................................*/
 
@@ -328,20 +328,6 @@ class ArcTreeDrawing extends TreeDrawing  {
 			calcBranchStuff(tree, getDrawnRoot());
 		}
 	}
-	/*_________________________________________________*/
-	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
-		int ew = edgewidth;
-		if (treeDisplay.getOrientation()==TreeDisplay.UP) 
-			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
-			else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) 
-				return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]+2 && yPos < y[node]+ew+2;
-				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) 
-					return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node] && yPos < y[node] + ew;
-					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT) 
-						return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node] && yPos < y[node] + ew;
-						else 
-							return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
-	}
 
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
@@ -434,6 +420,10 @@ class ArcTreeDrawing extends TreeDrawing  {
 			g.setColor(treeDisplay.getBranchColor(node));
 			g.drawArc(box.x, box.y, box.width, box.height, 0, 360);
 		}
+	}
+	/*_________________________________________________*/
+	public  int findTerminalBox(Tree tree, int drawnRoot, int x, int y){
+		return -1;
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {

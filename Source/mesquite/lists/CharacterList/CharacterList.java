@@ -14,10 +14,8 @@ package mesquite.lists.CharacterList;
 /*~~  */
 
 import mesquite.lists.lib.*;
-
 import java.util.*;
 import java.awt.*;
-
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -319,7 +317,6 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 		MesquiteButton matrixButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("showMatrix",  ownerModule), null, true, MesquiteModule.getRootImageDirectoryPath() + "matrix.gif", 12, 16);
 		matrixButton.setShowBackground(false);
 		matrixButton.setButtonExplanation("Show Character Matrix Editor");
-		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/listC.gif");
 
 		table.addControlButton(matrixButton);
 		ownerModule.hireAllCompatibleEmployees(CharTableAssistantI.class, data.getStateClass()); 
