@@ -236,7 +236,7 @@ public class InfoBar extends MousePanel implements Commandable {
 				else {
 					MesquiteMenu menu = (MesquiteMenu)menus.elementAt(i);
 					//if (menu.getItemCount()>0))
-					MesquiteMessage.warnProgrammer("MENU PROBLEM: MesquiteMenu where popup should be " + menu.getLabel());
+					Debugg.println("MENU PROBLEM: MesquiteMenu where popup should be " + menu.getLabel());
 				}
 			}
 

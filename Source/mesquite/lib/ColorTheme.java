@@ -76,7 +76,7 @@ public class ColorTheme {
 	static Color[] ExtInterfaceElementContrast = new Color[4];
 	static {
 		ExtInterfaceElementContrast[ORIGINAL] = ColorDistribution.bisque;
-		ExtInterfaceElementContrast[DARKCHOCOLATE] = new Color(102, 98, 86); //chocolate theme
+		ExtInterfaceElementContrast[DARKCHOCOLATE] = new Color(113, 108, 96); //chocolate theme   //formerly new Color(102, 98, 86); //chocolate theme
 		ExtInterfaceElementContrast[SLATE] = new Color(221,221,232);//slate theme
 		ExtInterfaceElementContrast[MILKCHOCOLATE] = new Color(102, 98, 86); //chocolate theme
 	}
@@ -87,7 +87,7 @@ public class ColorTheme {
 	static Color[] ExtInterfaceEdgeContrast = new Color[4];
 	static {
 		ExtInterfaceEdgeContrast[ORIGINAL] = ColorDistribution.sienna;
-		ExtInterfaceEdgeContrast[DARKCHOCOLATE] = new Color(190,185,175);//chocolate theme
+		ExtInterfaceEdgeContrast[DARKCHOCOLATE] = new Color(210,205,195);//chocolate theme  //formerly new Color(190,185,175);//chocolate theme
 		ExtInterfaceEdgeContrast[SLATE] = new Color(80,80,90);//slate theme
 		ExtInterfaceEdgeContrast[MILKCHOCOLATE] = new Color(190,185,175);//chocolate theme
 	}

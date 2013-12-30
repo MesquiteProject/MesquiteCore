@@ -3504,9 +3504,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			defocusCell();
 	}
 
-	public boolean touchColumnNameEvenIfSelected(){
-		return false;
-	}
 	/* ............................................................................................................... */
 	/** Called if column name is touched. Can be overridden in subclasses to change response to touch. */
 	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {

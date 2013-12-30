@@ -259,57 +259,31 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 	// BasicDataWindowMaker ownerModule;
 	protected TableTool scrollTool;
-
 	MatrixTable table;
-
 	int windowWidth = 420;
-
 	int windowHeight = 280;
-
 	int columnWidth = 12;
-
 	boolean widthsSet = false;
-
 	TableTool arrowTool, ibeamTool;// , charWandTool;//, taxaWandTool
-
 	MesquiteString cellColorerName, textColorerName, rowNamesColorerName, columnNamesColorerName, bgColorName;
-
 	private int findNumber = 0;
-
 	private String findFootnoteString = "";
-
 	MesquiteBoolean constrainedCW = new MesquiteBoolean(true);
-
 	MesquiteBoolean scrollLinkedTables = new MesquiteBoolean(false);
-
 	MesquiteBoolean linkedScrolling = new MesquiteBoolean(true);
-
 	MesquiteBoolean showTaxonNames = new MesquiteBoolean(true);
-
 	MesquiteBoolean useDiagonal = new MesquiteBoolean(false);
-
 	MesquiteBoolean allowAutosize;
-
 	boolean oldShowStates;
-
 	boolean oldSuppress;
-
 	int oldColumnsWidths;
-
 	MesquiteMenuItemSpec linkedScrollingItem = null;
-
 	MesquiteButton colorLegendButton;
-
 	MesquiteButton birdsEyeButton;
-
 	MesquiteBoolean interleaved;
-
 	MatrixInfoPanel matrixInfoPanel;
-
 	boolean matrixInfoPanelEverShown = false;
-
 	MesquiteBoolean infoPanelOn;
-
 	MesquiteBoolean showPaleExcluded = new MesquiteBoolean(false);
 
 	public BasicDataWindow() {
@@ -341,6 +315,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		table.setVisible(true);
 		table.setColumnAssociable(data);
 		table.setRowAssociable(data.getTaxa());
+		if (data instanceof MolecularData)
+			setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/matrixSequence.gif");
+		else
+			setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/matrix.gif");
 
 		MesquiteButton infoButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("toggleInfoPanel", this), null, true, MesquiteModule.getRootImageDirectoryPath() + "showInfo.gif", 12, 16);
 		infoButton.setUseWaitThread(false);
@@ -597,9 +575,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		String t;
 		if (data != null && data.hasTitle()) {
 			if (data.uniquelyNamed())
-				t = "Character Matrix \"" + data.getName() + "\"";
+				t = "Matrix \"" + data.getName() + "\"";
 			else
-				t = "Character Matrix \"" + data.getName() + "\" [" + data.getID() + "]";
+				t = "Matrix \"" + data.getName() + "\" [" + data.getID() + "]";
 		}
 		else {
 			t = "Character Matrix";

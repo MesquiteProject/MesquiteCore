@@ -34,10 +34,8 @@ public class ShuffleStates extends DataAlterer {
    	/** Called to alter data in those cells selected in table*/
    	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
    			boolean did=false;
-   			if (data == null)
-   				return false;
    			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
-   	 		if (table==null){
+   	 		if (table==null && data!=null){
 					for (int i=0; i<data.getNumChars(); i++)
 						shuffleCells(data, i, 0, data.getNumTaxa()-1);
 					return true;

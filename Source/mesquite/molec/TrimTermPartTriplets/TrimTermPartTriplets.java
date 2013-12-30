@@ -27,7 +27,7 @@ public class TrimTermPartTriplets extends DNADataAlterer {
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
-		if (dData==null)
+		if (dData==null || table==null)
 			return false;
 	
 		if (!(dData instanceof DNAData)){
@@ -42,7 +42,7 @@ public class TrimTermPartTriplets extends DNADataAlterer {
 		boolean changed = false;
 		
 		for (int it = 0; it<data.getNumTaxa(); it++)
-			if (table == null || !table.anyRowSelected()||table.wholeRowSelectedAnyWay(it)) {
+			if (!table.anyRowSelected()||table.wholeRowSelectedAnyWay(it)) {
 				for (int ic = 0; ic<data.getNumChars(); ic++){  // check start
 					if (!data.isInapplicable(ic, it)) {
 						if (data.getCodonPosition(ic)==2) {

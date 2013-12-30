@@ -291,10 +291,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		if (this.file == null)
 			return null;
 		Snapshot temp = new Snapshot();
-		String arguments = StringUtil.tokenize(MesquiteFile.decomposePath(getProject().getHomeFile().getDirectoryName(), this.file.getPath())) + " remain ";
-		if (this.file.useStandardizedTaxonNames)
-			arguments += " useStandardizedTaxonNames";
-		temp.addLine("setFilePath " + arguments);  //quote //todo: should parse name relative to path to home file!!!!!
+		temp.addLine("setFilePath " + StringUtil.tokenize(MesquiteFile.decomposePath(getProject().getHomeFile().getDirectoryName(), this.file.getPath())));  //quote //todo: should parse name relative to path to home file!!!!!
 		temp.addLine("toggleReread " + rereadWholeFileIfGrows.toOffOnString());
 		if (canDoLiveUpdate())
 			temp.addLine("toggleLive " + live.toOffOnString());

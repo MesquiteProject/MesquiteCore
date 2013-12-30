@@ -739,48 +739,6 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		//TODO: shouldn't broadcase of deletion be here?
 	}
 	/*.................................................................................................................*/
-	/** DOCUMENT */
-	public void removeAllFileElements(Class c, boolean notify) {
-		if (Taxa.class.isAssignableFrom(c)) {
-		if (taxas != null){
-			for (int i = 0; i< taxas.size(); i++){
-				FileElement element = (FileElement)taxas.elementAt(i);
-				element.deleteMe(false);
-			}
-			taxas.removeAllElements(notify);
-		}
-		}
-		else if (mesquite.lib.characters.CharacterData.class.isAssignableFrom(c)){
-
-		if (datas != null){
-			for (int i = 0; i< datas.size(); i++){
-				FileElement element = (FileElement)datas.elementAt(i);
-				element.deleteMe(false);
-			}
-			datas.removeAllElements(notify);
-		}
-		}
-		else if (CharacterModel.class.isAssignableFrom(c)) {
-		if (charModels != null){
-			for (int i = 0; i< charModels.size(); i++){
-				FileElement element = (FileElement)charModels.elementAt(i);
-				element.deleteMe(false);
-			}
-			charModels.removeAllElements(notify);
-		}
-		}
-		else {
-		if (otherElements != null){
-			for (int i = 0; i< otherElements.size(); i++){
-				FileElement element = (FileElement)otherElements.elementAt(i);
-				if (element.getClass().isAssignableFrom(c))
-					element.deleteMe(false);
-			}
-		}
-		}
-	}	
-
-	/*.................................................................................................................*/
 	/** Returns the number of FileElements that are subclasses of the given class.  */
 	public int getNumberOfFileElements(Class c) {
 		if (c ==null)
@@ -1494,7 +1452,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return d;
 	}
 	/*.................................................................................................................*/
-	//TODO: ï¿½ï¿½ï¿½ have general get number of elements, passing project, or file; counts
+	//TODO: ¥¥¥ have general get number of elements, passing project, or file; counts
 	/** returns the number of Taxa objects stored in project belonging to a file*/
 	public int  getNumberTaxas(MesquiteFile f) {
 		int count = 0;
@@ -1538,11 +1496,18 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				trees = manager.getTreeBlock(tree.getTaxa(), 0);
 			}
 			else {
-				Listable[] lists = new Listable[numLists];
+				Listable[] lists = new Listable[numLists+1];
 				for (int i=0; i<numLists; i++)
 					lists[i] = manager.getTreeBlock(tree.getTaxa(), i);
+				lists[numLists] = new MesquiteString("New Trees Block...", "New Trees Block...");
 				Object obj = ListDialog.queryList(parent, "Where to store tree?", "Choose tree block in which to store tree:",MesquiteString.helpString, lists, 0);
-				trees = (TreeVector)obj;
+				if (obj instanceof MesquiteString){
+					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", "Trees");
+					MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
+					trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
+				}
+				else
+					trees = (TreeVector)obj;
 			}
 			if (trees!=null) {
 				trees.addElement(tree, true);
@@ -1603,7 +1568,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets in file*/
-	public int  getNumberCharMatricesVisible() { //ï¿½ï¿½ï¿½
+	public int  getNumberCharMatricesVisible() { //ÃÃÃ
 		return getNumberCharMatrices(null, null, null, true);
 	}
 	/*......................*/
@@ -1625,7 +1590,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets belonging to given taxa*/
-	public int  getNumberCharMatrices(Taxa taxa) { //ï¿½ï¿½ï¿½ï¿½ï¿½
+	public int  getNumberCharMatrices(Taxa taxa) { //ÃÃÃÃÃ
 		return getNumberCharMatrices(null, taxa, null, false);
 	}
 	/*......................*/
@@ -1635,7 +1600,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets belonging to given taxa*/
-	public int  getNumberCharMatricesVisible(Taxa taxa) { //ï¿½ï¿½ï¿½ï¿½ï¿½
+	public int  getNumberCharMatricesVisible(Taxa taxa) { //ÃÃÃÃÃ
 		return getNumberCharMatrices(null, taxa, null, true);
 	}
 	/*......................*/
@@ -1645,7 +1610,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets of a given data class (CharacterState subclass is passed)*/
-	public int  getNumberCharMatricesVisible(Object dataClass) {  //ï¿½ï¿½ï¿½ï¿½ï¿½
+	public int  getNumberCharMatricesVisible(Object dataClass) {  //ÃÃÃÃÃ
 		return getNumberCharMatrices(null, null, dataClass, true);
 	}
 	/*......................*/
@@ -1655,7 +1620,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets of a given data class (CharacterState subclass is passed)*/
-	public int  getNumberCharMatrices(Object dataClass) {  //ï¿½ï¿½ï¿½ï¿½ï¿½
+	public int  getNumberCharMatrices(Object dataClass) {  //ÃÃÃÃÃ
 		return getNumberCharMatrices(null, null, dataClass, false);
 	}
 	/*......................*/
@@ -1665,22 +1630,22 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets of a given data class (CharacterState subclass is passed) belonging to given taxa*/
-	public int  getNumberCharMatricesVisible(Taxa taxa, Object dataClass) {  //ï¿½ï¿½ï¿½ï¿½ï¿½
+	public int  getNumberCharMatricesVisible(Taxa taxa, Object dataClass) {  //ÃÃÃÃÃ
 		return getNumberCharMatrices(null, taxa, dataClass, true);
 	}
 	/*......................*/
 	/** returns the jth data set belonging to given taxa for given CharacterState subclass.*/
-	public mesquite.lib.characters.CharacterData getCharacterMatrixVisible(Taxa taxa, int j, Object dataClass) { //ï¿½ï¿½ï¿½ï¿½
+	public mesquite.lib.characters.CharacterData getCharacterMatrixVisible(Taxa taxa, int j, Object dataClass) { //ÃÃÃÃ
 		return getCharacterMatrix(null, taxa, dataClass, j, true);
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets belonging to a given file*/
-	public int  getNumberCharMatrices(MesquiteFile f) { //ï¿½ï¿½ï¿½ï¿½ï¿½
+	public int  getNumberCharMatrices(MesquiteFile f) { //ÃÃÃÃÃ
 		return getNumberCharMatrices(f, null, null, false);
 	}
 	/*......................*/
 	/** returns the jth of data sets belonging to a given file*/
-	public mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, int j) {  //ï¿½ï¿½ï¿½ï¿½ï¿½
+	public mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, int j) {  //ÃÃÃÃÃ
 		return getCharacterMatrix(f, null, null, j, false);
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
@@ -1713,12 +1678,12 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 	/*......................*/
 	/** returns the jth of data sets belonging to a given file*/
-	public mesquite.lib.characters.CharacterData getCharacterMatrixVisible(MesquiteFile f, Taxa taxa, Object dataClass, int j) {  //ï¿½ï¿½ï¿½ï¿½ not used yet
+	public mesquite.lib.characters.CharacterData getCharacterMatrixVisible(MesquiteFile f, Taxa taxa, Object dataClass, int j) {  //ÃÃÃÃ not used yet
 		return getCharacterMatrix(f, taxa, dataClass, j, true);
 	}
 	/*......................*/
 	/** returns the jth of data sets belonging to a given file*/
-	private mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, Taxa taxa, Object dataClass, int j) {  //ï¿½ï¿½ï¿½ï¿½
+	private mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, Taxa taxa, Object dataClass, int j) {  //ÃÃÃÃ
 		return getCharacterMatrix(f, taxa, dataClass, j, false);
 	}
 	/*......................*/

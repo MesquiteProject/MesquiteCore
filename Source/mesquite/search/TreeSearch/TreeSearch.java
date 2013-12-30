@@ -15,7 +15,6 @@ package mesquite.search.TreeSearch;
 
 import java.util.*;
 import java.awt.*;
-
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -49,12 +48,6 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 		return true;
 	}
 
-   	public Reconnectable getReconnectable(){
-   		if (searchTask instanceof Reconnectable)
-   			return (Reconnectable)searchTask;
-   		return null;
-   	}
-   	
 	 public String getExtraTreeWindowCommands (){
 		 if (searchTask!=null)
 			 return searchTask.getExtraTreeWindowCommands();
@@ -125,7 +118,6 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		temp.addLine("setSearcher " , searchTask);
-		temp.incorporate(super.getSnapshot(file), false);
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -151,15 +143,9 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 	}
 	/*.................................................................................................................*/
 	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
-		//DISCONNECTABLE
 		searchTask.fillTreeBlock(treeList);
 	}
-
-	//TEMPORARY Debugg.println  Should be only in disconnectable tree block fillers
-	public void retrieveTreeBlock(TreeVector treeList, int numberIfUnlimited){
-		searchTask.retrieveTreeBlock(treeList);
-	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public String getParameters() {
 		if (searchTask==null)
 			return("");
