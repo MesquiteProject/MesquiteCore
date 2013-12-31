@@ -48,18 +48,16 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	}
 
 	public static final short cellWidth = 24;
-
 	public static final short cellHeight = 16;
-
 	CharacterData data;
-
 	BasicDataWindow bdw;
-
 	boolean isExtra = false;
-
+	MesquiteMenuSpec matrixMenu, displayMenu;
+	
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		makeMenu("Matrix");
+		matrixMenu = makeMenu("Matrix");
+		displayMenu = addAuxiliaryMenu("Display");
 		resetContainingMenuBar();
 		return true;
 	}
@@ -347,7 +345,6 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			table.addControlButton(birdsEyeButton);
 		}
 
-		MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Display");
 		oldShowStates = table.showStates.getValue();
 		oldColumnsWidths = table.getColumnWidthsUniform();
 		oldSuppress = table.suppressAutosize;
@@ -361,73 +358,84 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addItemToSubmenu(null, cmm, "Inapplicable Symbol...", MesquiteModule.makeCommand("setInapplicableSymbol", this));
 		ownerModule.addCheckMenuItem(null, "Show Matrix Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
 		ownerModule.addMenuItem("-", null);
-		if (data.getClass() == CategoricalData.class || data.getClass() == ContinuousData.class)
-			ownerModule.addCheckMenuItemToSubmenu(null, mss, "Diagonal Character Names", MesquiteModule.makeCommand("toggleDiagonal", this), useDiagonal);
-		table.setColumnNamesDiagonal(useDiagonal.getValue());
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Narrow Columns", MesquiteModule.makeCommand("toggleTight", this), table.tight);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Thin Rows", MesquiteModule.makeCommand("toggleThinRows", this), table.thinRows);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Constrain Auto Widths", MesquiteModule.makeCommand("toggleConstrainCW", this), constrainedCW);
-		table.setConstrainMaxAutoColumn(constrainedCW.getValue());
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Show Changes Since Saved", MesquiteModule.makeCommand("toggleShowChanges", this), table.showChanges);
-		MesquiteSubmenuSpec mCC = ownerModule.addSubmenu(null, "Color Matrix Cells", MesquiteModule.makeCommand("colorCells", this), ownerModule.getEmployeeVector());
+		
+		
+		ownerModule.addMenuItem(ownerModule.displayMenu, "TEST", MesquiteModule.makeCommand("test", this));
+		MesquiteSubmenuSpec mCC = ownerModule.addSubmenu(ownerModule.displayMenu, "Color Matrix Cells", MesquiteModule.makeCommand("colorCells", this), ownerModule.getEmployeeVector());
 		mCC.setListableFilter(CellColorerMatrix.class);
 
 		mCC.setCompatibilityCheck(data.getStateClass());
 		cellColorerName = new MesquiteString();
 		mCC.setSelected(cellColorerName);
-		ownerModule.addCheckMenuItem(null, "Show Color Legend", MesquiteModule.makeCommand("toggleColorsPanel", this), showColorLegend);
+		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Show Color Legend", MesquiteModule.makeCommand("toggleColorsPanel", this), showColorLegend);
 
-		MesquiteSubmenuSpec mCC3 = ownerModule.addSubmenu(null, "Color Taxon Names Background", MesquiteModule.makeCommand("colorRowNames", this), ownerModule.getEmployeeVector());
+		MesquiteSubmenuSpec mCC3 = ownerModule.addSubmenu(ownerModule.displayMenu, "Color Taxon Names Background", MesquiteModule.makeCommand("colorRowNames", this), ownerModule.getEmployeeVector());
 		mCC3.setListableFilter(CellColorerTaxa.class);
 		mCC3.setCompatibilityCheck(data.getStateClass());
 		rowNamesColorerName = new MesquiteString();
 		mCC3.setSelected(rowNamesColorerName);
 
-		MesquiteSubmenuSpec mCC4 = ownerModule.addSubmenu(null, "Color Character Name Background", MesquiteModule.makeCommand("colorColumnNames", this), ownerModule.getEmployeeVector());
+		MesquiteSubmenuSpec mCC4 = ownerModule.addSubmenu(ownerModule.displayMenu, "Color Character Name Background", MesquiteModule.makeCommand("colorColumnNames", this), ownerModule.getEmployeeVector());
 		mCC4.setListableFilter(CellColorerCharacters.class);
 		mCC4.setCompatibilityCheck(data.getStateClass());
 		columnNamesColorerName = new MesquiteString();
 		mCC4.setSelected(columnNamesColorerName);
 
-		MesquiteSubmenuSpec mCC2 = ownerModule.addSubmenu(null, "Color Text", MesquiteModule.makeCommand("colorText", this), ownerModule.getEmployeeVector());
+		MesquiteSubmenuSpec mCC2 = ownerModule.addSubmenu(ownerModule.displayMenu, "Color Text", MesquiteModule.makeCommand("colorText", this), ownerModule.getEmployeeVector());
 		mCC2.setListableFilter(CellColorer.class);
 		mCC2.setCompatibilityCheck(data.getStateClass());
 		textColorerName = new MesquiteString();
 		mCC2.setSelected(textColorerName);
 
-		MesquiteSubmenuSpec mShowDataInfoStrip = ownerModule.addSubmenu(null, "Add Char Info Strip", ownerModule.makeCommand("hireDataInfoStrip", this), DataColumnNamesAssistant.class);
-		// mss.setCompatibilityCheck(ownerModule.getAddColumnCompatibility());
-		// if (columnsRemovable())
-		// ownerModule.addMenuItem( "Hide Selected Info Strips", ownerModule.makeCommand("deleteSelectedDataInfoStrips", this));
 
-		MesquiteSubmenuSpec mSetColor = ownerModule.addSubmenu(null, "Assign Color to Selected", MesquiteModule.makeCommand("assignColor", this), ColorDistribution.standardColorNames);
-		ownerModule.addMenuItem("Remove Color from Selected", MesquiteModule.makeCommand("removeColor", this));
+		MesquiteSubmenuSpec mSetColor = ownerModule.addSubmenu(ownerModule.displayMenu, "Assign Color to Selected", MesquiteModule.makeCommand("assignColor", this), ColorDistribution.standardColorNames);
+		ownerModule.addMenuItem(ownerModule.displayMenu, "Remove Color from Selected", MesquiteModule.makeCommand("removeColor", this));
 
-		MesquiteSubmenuSpec mmis = ownerModule.addSubmenu(null, "Background Color", MesquiteModule.makeCommand("setBackground", this));
+		MesquiteSubmenuSpec mmis = ownerModule.addSubmenu(ownerModule.displayMenu, "Background Color", MesquiteModule.makeCommand("setBackground", this));
 		mmis.setList(ColorDistribution.standardColorNames);
 		bgColorName = new MesquiteString();
 		mmis.setSelected(bgColorName);
 
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Show Taxon Names", MesquiteModule.makeCommand("toggleShowTaxonNames", this), showTaxonNames);
+		ownerModule.addMenuItem(ownerModule.displayMenu, "-", null);
+		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Bird's Eye View", MesquiteModule.makeCommand("toggleBirdsEye", this), table.showBirdsEyeView);
+		MesquiteSubmenuSpec widthsSubmenu = ownerModule.addSubmenu(ownerModule.displayMenu, "Widths");
+		//COLUMNS&ROWS
+		table.setColumnNamesDiagonal(useDiagonal.getValue());
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Narrow Columns", MesquiteModule.makeCommand("toggleTight", this), table.tight);
+		ownerModule.addItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Bird's Eye Width...", MesquiteModule.makeCommand("birdsEyeWidth", this));
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Thin Rows", MesquiteModule.makeCommand("toggleThinRows", this), table.thinRows);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Constrain Auto Widths", MesquiteModule.makeCommand("toggleConstrainCW", this), constrainedCW);
+		table.setConstrainMaxAutoColumn(constrainedCW.getValue());
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Enable Column Auto-Size", MesquiteModule.makeCommand("toggleAllowAutosize", this), table.allowAutosize);
+		ownerModule.addItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Restore Column Auto-Size", MesquiteModule.makeCommand("forceAutosize", this));
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Auto-size includes Char. Names", MesquiteModule.makeCommand("toggleAutoWCharNames", this), table.autoWithCharNames);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, widthsSubmenu, "Auto-size Taxon Names", MesquiteModule.makeCommand("toggleAutoTaxonNames", this), table.autoRowNameWidth);
+		MesquiteSubmenuSpec namesSubmenu = ownerModule.addSubmenu(ownerModule.displayMenu, "Names");
+		//NAMES
+		if (data.getClass() == CategoricalData.class || data.getClass() == ContinuousData.class)
+			ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Diagonal Character Names", MesquiteModule.makeCommand("toggleDiagonal", this), useDiagonal);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Show Taxon Names", MesquiteModule.makeCommand("toggleShowTaxonNames", this), showTaxonNames);
 		if (data instanceof CategoricalData && !(data instanceof DNAData) && !(data instanceof ProteinData))
-			ownerModule.addCheckMenuItemToSubmenu(null, mss, "Show State Names", MesquiteModule.makeCommand("toggleShowNames", this), table.showNames);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Show States", MesquiteModule.makeCommand("toggleShowStates", this), table.showStates);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Auto-size includes Char. Names", MesquiteModule.makeCommand("toggleAutoWCharNames", this), table.autoWithCharNames);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Auto-size Taxon Names", MesquiteModule.makeCommand("toggleAutoTaxonNames", this), table.autoRowNameWidth);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Show Default Char. Names", MesquiteModule.makeCommand("toggleShowDefaultCharNames", this), table.showDefaultCharNames);
+			ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Show State Names", MesquiteModule.makeCommand("toggleShowNames", this), table.showNames);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Show States", MesquiteModule.makeCommand("toggleShowStates", this), table.showStates);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Show Default Char. Names", MesquiteModule.makeCommand("toggleShowDefaultCharNames", this), table.showDefaultCharNames);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Bold Cell Text", MesquiteModule.makeCommand("toggleShowBoldCellText", this), table.showBoldCellText);
+		
+		
+
+		
+		MesquiteSubmenuSpec softnessSubmenu = ownerModule.addSubmenu(ownerModule.displayMenu, "Fog");
+		//COLORS
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Cell Colors", MesquiteModule.makeCommand("toggleShowPaleCellColors", this), table.showPaleCellColors);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
+		
+		//CHANGES
+		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Show Changes Since Saved", MesquiteModule.makeCommand("toggleShowChanges", this), table.showChanges);
 		if (data instanceof CategoricalData && !(data instanceof DNAData) && !(data instanceof ProteinData))
-			ownerModule.addCheckMenuItemToSubmenu(null, mss, "Lined States Explanation", MesquiteModule.makeCommand("toggleSeparateLines", this), table.statesSeparateLines);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Pale Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Pale Cell Colors", MesquiteModule.makeCommand("toggleShowPaleCellColors", this), table.showPaleCellColors);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Pale Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Pale Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Bold Cell Text", MesquiteModule.makeCommand("toggleShowBoldCellText", this), table.showBoldCellText);
-		ownerModule.addItemToSubmenu(null, mss, "-", null);
-		ownerModule.addItemToSubmenu(null, mss, "Restore Column Auto-Size", MesquiteModule.makeCommand("forceAutosize", this));
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Enable Column Auto-Size", MesquiteModule.makeCommand("toggleAllowAutosize", this), table.allowAutosize);
-		ownerModule.addItemToSubmenu(null, mss, "-", null);
-		ownerModule.addCheckMenuItemToSubmenu(null, mss, "Bird's Eye View", MesquiteModule.makeCommand("toggleBirdsEye", this), table.showBirdsEyeView);
-		ownerModule.addItemToSubmenu(null, mss, "Bird's Eye Width...", MesquiteModule.makeCommand("birdsEyeWidth", this));
+			ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Lined States Explanation", MesquiteModule.makeCommand("toggleSeparateLines", this), table.statesSeparateLines);
+		MesquiteSubmenuSpec mShowDataInfoStrip = ownerModule.addSubmenu(ownerModule.displayMenu, "Add Char Info Strip", ownerModule.makeCommand("hireDataInfoStrip", this), DataColumnNamesAssistant.class);
 
 		linkedScrollingItem = ownerModule.addCheckMenuItem(null, "Linked Scrolling", MesquiteModule.makeCommand("toggleLinkedScrolling", this), linkedScrolling);
 		linkedScrollingItem.setEnabled(false);
