@@ -22,6 +22,7 @@ import mesquite.lib.*;
 Example Module: NodeLocsStandard*/
 
 public abstract class NodeLocsVH extends NodeLocs  {
+	public static int defaultOrientation = TreeDisplay.UP;
  	public String getDutyName() {
  		return "Node Location (Vert/Horiz)";
    	 }

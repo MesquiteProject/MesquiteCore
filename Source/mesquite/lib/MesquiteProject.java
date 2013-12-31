@@ -1538,11 +1538,18 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				trees = manager.getTreeBlock(tree.getTaxa(), 0);
 			}
 			else {
-				Listable[] lists = new Listable[numLists];
+				Listable[] lists = new Listable[numLists+1];
 				for (int i=0; i<numLists; i++)
 					lists[i] = manager.getTreeBlock(tree.getTaxa(), i);
+				lists[numLists] = new MesquiteString("New Trees Block...", "New Trees Block...");
 				Object obj = ListDialog.queryList(parent, "Where to store tree?", "Choose tree block in which to store tree:",MesquiteString.helpString, lists, 0);
-				trees = (TreeVector)obj;
+				if (obj instanceof MesquiteString){
+					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", "Trees");
+					MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
+					trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
+				}
+				else
+					trees = (TreeVector)obj;
 			}
 			if (trees!=null) {
 				trees.addElement(tree, true);

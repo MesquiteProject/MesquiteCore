@@ -2717,6 +2717,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 
 	/*.................................................................................................................*/
+	Image icon;
+	public Image getIcon(){
+		return icon;
+	}
+	public void setIcon(String s){
+		icon = MesquiteImage.getImage(s);
+	}
+
+	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/

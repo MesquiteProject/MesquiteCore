@@ -315,8 +315,15 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 			return;
 		Taxon t = taxa.getTaxon(taxonName, false, true);
 		if (t == null) {
-			MesquiteMessage.warnProgrammer("Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [a])");
+			if (MesquiteTree.permitT0Names && taxonName.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
+					String number = taxonName.substring(1, taxonName.length());
+					int num = MesquiteInteger.fromString(number);
+					if (MesquiteInteger.isCombinable(num) && num>=0 && num<taxa.getNumTaxa())
+						t = taxa.getTaxon(num);
+			}
 		}
+		if (t==null)
+			MesquiteMessage.warnProgrammer("Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [a])");
 
 		translationTable.setLabel(t, label, checkDuplicates);
 		setDirty(true);
@@ -375,8 +382,16 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 			Taxon t = taxa.getTaxon(taxonName, false, true);
 			translationTable.setLabel(t, label, false); //note label set even if taxon not found; signal later to return null for whichtaxon number
 			if (t==null) {
-				MesquiteMessage.warnProgrammer("Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [b])");
+				if (MesquiteTree.permitT0Names && taxonName.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
+						String number = taxonName.substring(1, taxonName.length());
+						int num = MesquiteInteger.fromString(number);
+						if (MesquiteInteger.isCombinable(num) && num>=0 && num<taxa.getNumTaxa())
+							t = taxa.getTaxon(num);
+				}
 			}
+			if (t == null)
+				MesquiteMessage.warnProgrammer(	"Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [b])");
+
 		}
 		checkTranslationTable();
 	}

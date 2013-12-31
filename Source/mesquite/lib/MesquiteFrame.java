@@ -1336,26 +1336,29 @@ class FrameTabsPanel extends MousePanel {
 			rights = new int[numTabs];
 		}
 		String totalString = "";
+		int iconNumber = 0;
 		for (int i = 0; i<frame.windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
 			String s = w.getTitle();
 			if (s != null)
 				totalString += w.getTitle();
+			if (w.getIcon() !=null)
+				iconNumber ++;
 		}
-
+		int iconsWidth = iconNumber * 20;
 		int edges = (frontEdge + backEdge) * numTabs;
 		if (frame.frontMostInLocation(MesquiteFrame.POPTILE)!=null)
 			edges += 30;
 		int i = 0;
 		g.setFont(fonts[0]);
 		int needed = 0;
-		while ((needed = StringUtil.getStringDrawLength(g, totalString)+edges) > width && i<fonts.length-1){
+		while ((needed = StringUtil.getStringDrawLength(g, totalString) + iconsWidth +edges) > width && i<fonts.length-1){
 			i++;
 			g.setFont(fonts[i]);
 		}
 		double scaling = 1.0;
 		if (needed> width)
-			scaling = (width-edges)*1.0/StringUtil.getStringDrawLength(g, totalString);
+			scaling = (width-edges)*1.0/(StringUtil.getStringDrawLength(g, totalString) + iconsWidth);
 		int left = 0;
 		int right = width+ backEdge;
 		for (i = 0; i<frame.windows.size(); i++){
@@ -1372,7 +1375,10 @@ class FrameTabsPanel extends MousePanel {
 
 			MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
 			boolean popped = w.getTileLocation() == MesquiteFrame.POPTILE;
-
+			Image icon = w.getIcon();
+			int iconWidth = 0;
+			if (icon != null)
+				iconWidth = 20;
 			if (!popped){
 				left += frontEdge;
 				tabLeft = left;
@@ -1395,7 +1401,7 @@ class FrameTabsPanel extends MousePanel {
 			String title = w.getTitle();
 			if (title != null){
 				if (scaling < 1.0){
-					int wish = StringUtil.getStringDrawLength(g, title);
+					int wish = StringUtil.getStringDrawLength(g, title) + iconWidth;
 					int offer = (int)(scaling * wish);
 					if (!popped)
 						tabRight = left + offer + backEdge-2;
@@ -1411,7 +1417,9 @@ class FrameTabsPanel extends MousePanel {
 						g.setColor(ColorTheme.getExtInterfaceTextMuted()); //Color.black);
 					else 
 						g.setColor(ColorTheme.getExtInterfaceTextMuted()); //Color.black);
-					box.draw(g, tabLeft + frontEdge, 1);
+					box.draw(g, tabLeft + frontEdge + iconWidth, 1);
+					if (icon != null)
+						g.drawImage(icon, tabLeft + frontEdge, 1, this);
 
 					if (!popped)
 						left += offer;
@@ -1419,7 +1427,7 @@ class FrameTabsPanel extends MousePanel {
 						right -= offer;
 				}
 				else {
-					int offer = StringUtil.getStringDrawLength(g, title);
+					int offer = StringUtil.getStringDrawLength(g, title) + iconWidth;
 					if (!popped)
 						tabRight = left + offer + backEdge-2;
 					else
@@ -1432,7 +1440,9 @@ class FrameTabsPanel extends MousePanel {
 						g.setColor(ColorTheme.getExtInterfaceTextMuted()); //Color.black);
 					else 
 						g.setColor(ColorTheme.getExtInterfaceTextMuted()); //Color.black);
-					g.drawString(title, tabLeft + frontEdge, height -12);
+					g.drawString(title, tabLeft + frontEdge + iconWidth, height -12);
+					if (icon != null)
+						g.drawImage(icon, tabLeft + frontEdge, height -22, this);
 					if (!popped)
 						left += offer;
 					else
