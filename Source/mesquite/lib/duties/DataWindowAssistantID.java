@@ -20,15 +20,15 @@ import mesquite.lib.characters.*;
 /* ======================================================================== */
 /**This is superclass of modules to assist data matrix editor.  These are INITs.*/
 
-public abstract class DataWindowAssistantI extends DataWindowAssistant  {
+public abstract class DataWindowAssistantID extends DataWindowAssistantI  {
    	 public Class getDutyClass() {
-   	 	return DataWindowAssistantI.class;
+   	 	return DataWindowAssistantID.class;
    	 }
  	public String getDutyName() {
- 		return "INIT Assistant for Data Window";
+ 		return "INIT Assistant for Data Window; Display";
    	}
    	 public String[] getDefaultModule() {
-   	 	return new String[] {"#AddDeleteData", "#AlterData"};
+   	 	return new String[] {"#NoColor", "#ColorCells", "#ColorByState", "ColorByFootnote"};
    	 }
 
 	/*.................................................................................................................*/

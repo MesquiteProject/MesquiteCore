@@ -23,7 +23,7 @@ import java.awt.image.*;
 
 
 /** ======================================================================== */
-public class AnnotPanel extends DataWindowAssistantI implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrix, AnnotPanelOwner {
+public class AnnotPanel extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrix, AnnotPanelOwner {
 	CharacterData data;
 	MesquiteTable table;
 	boolean defaultNewEachCell = false;

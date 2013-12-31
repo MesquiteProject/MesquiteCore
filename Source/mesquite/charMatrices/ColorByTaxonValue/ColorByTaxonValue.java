@@ -21,7 +21,7 @@ import mesquite.lib.table.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class ColorByTaxonValue extends DataWindowAssistantI implements CellColorer, CellColorerTaxa, CellColorerMatrix {
+public class ColorByTaxonValue extends DataWindowAssistantID implements CellColorer, CellColorerTaxa, CellColorerMatrix {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForTaxon.class, getName() + " colors the rows (taxa) of the matrix to reflect some value for the taxa.",
 		"You can request a value to calculate initially, or later under the Values for Colors submenu.");

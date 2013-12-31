@@ -340,6 +340,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	/** This indicates what menu is to be used (e.g., employer sets it).  All of its otherwise unplaced menu items, and those of its
 	employees, will be placed there.*/
 	public final void setMenuToUse(MesquiteMenuSpec menu){
+		if (!useMenuBar)
+			return;
 		assignedMenuSpec = menu;
 		if (menu!=null)
 			menu.addGuestModule(module);
@@ -405,14 +407,12 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	/** Returns whether module's menu items are to appear in menubar or not. Does not apply to menu items in special menus (file, edit, windows, help).
 	Menu items don't appear in menu bar if the useMenuBar flag is set to false either for this module or for one of its employers */
 	public final boolean getUseMenubar(){
-		if (window==null &&moduleMenuSpec==null && assignedMenuSpec == null && module.getEmployer()!=null) {
-			if (!useMenuBar)
-				return false;
-			else
+		if (!useMenuBar)
+			return false;
+		if (window==null && moduleMenuSpec==null && assignedMenuSpec == null && module.getEmployer()!=null) {
 				return module.getEmployer().getUseMenubar(); 
 		}
-		else
-			return useMenuBar;
+		return true;
 	}
 	/*.................................................................................................................*/
 	/** Shows module's menus in popup. */

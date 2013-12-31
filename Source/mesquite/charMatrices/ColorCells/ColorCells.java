@@ -28,7 +28,7 @@ import mesquite.lib.characters.*;
 
 
 /* ======================================================================== */
-public class ColorCells extends DataWindowAssistantI implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrix {
+public class ColorCells extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrix {
 	TableTool colorTool; 
 	MesquiteTable table;
 	long currentColor = ColorDistribution.numberOfRed;
@@ -58,7 +58,7 @@ public class ColorCells extends DataWindowAssistantI implements CellColorer, Cel
 		addCheckMenuItem(null, "Remove color", makeCommand("removeColor",  this), removeColor);
 		addMenuItem(null, "Remove all color", makeCommand("removeAllColor",  this));
 		addMenuItem(null, "-", null);
-		addMenuItem(null, "Color Selected", makeCommand("colorSelected",  this));
+		addMenuItem(null, "Set Color of Selected", makeCommand("colorSelected",  this));
 		return true;
 	}
 	public boolean setActiveColors(boolean active){

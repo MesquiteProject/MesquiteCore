@@ -10,32 +10,28 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.duties;
+package mesquite.categ.lib;
 
 import java.awt.*;
+import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.duties.*;
+
 
 
 /* ======================================================================== */
-/**This is superclass of modules to assist data matrix editor.  These are INITs.*/
+/**This is superclass of modules to alter a data matrix.*/
 
-public abstract class DataWindowAssistantI extends DataWindowAssistant  {
+public abstract class CategDataEditorInitD extends CategDataEditorInit  {
+
    	 public Class getDutyClass() {
-   	 	return DataWindowAssistantI.class;
+   	 	return CategDataEditorInitD.class;
    	 }
  	public String getDutyName() {
- 		return "INIT Assistant for Data Window";
+ 		return "Categorical Data Editor Init (Display)";
    	}
-   	 public String[] getDefaultModule() {
-   	 	return new String[] {"#AddDeleteData", "#AlterData"};
-   	 }
-
-	/*.................................................................................................................*/
-	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
-	public CompatibilityTest getCompatibilityTest(){
-		return new CharacterStateTest();
-	}
+   	
 }
 
 

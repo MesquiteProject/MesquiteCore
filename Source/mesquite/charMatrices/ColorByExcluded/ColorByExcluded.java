@@ -21,7 +21,7 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class ColorByExcluded extends DataWindowAssistantI implements CellColorer, CellColorerCharacters, CellColorerMatrix {
+public class ColorByExcluded extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

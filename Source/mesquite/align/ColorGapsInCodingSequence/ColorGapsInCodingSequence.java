@@ -23,7 +23,7 @@ import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class ColorGapsInCodingSequence extends DataWindowAssistantI implements CellColorer, CellColorerMatrix {
+public class ColorGapsInCodingSequence extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	protected DNAData data;
 

@@ -299,7 +299,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	 }
 		/*.................................................................................................................*/
 	 public void drawInCell(int ic, Graphics g, int x, int y, int w, int h, boolean selected) {
-		 if (stateTask==null) 
+		 if (stateTask==null || data == null) 
 			 return;
 		 long s= CategoricalState.inapplicable;
 		 if (colorByAA.getValue()) {  // have to use precomputed sequences

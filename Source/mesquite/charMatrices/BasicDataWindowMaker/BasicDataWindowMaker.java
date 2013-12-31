@@ -360,7 +360,6 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addMenuItem("-", null);
 		
 		
-		ownerModule.addMenuItem(ownerModule.displayMenu, "TEST", MesquiteModule.makeCommand("test", this));
 		MesquiteSubmenuSpec mCC = ownerModule.addSubmenu(ownerModule.displayMenu, "Color Matrix Cells", MesquiteModule.makeCommand("colorCells", this), ownerModule.getEmployeeVector());
 		mCC.setListableFilter(CellColorerMatrix.class);
 
@@ -420,8 +419,6 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Show States", MesquiteModule.makeCommand("toggleShowStates", this), table.showStates);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Show Default Char. Names", MesquiteModule.makeCommand("toggleShowDefaultCharNames", this), table.showDefaultCharNames);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Bold Cell Text", MesquiteModule.makeCommand("toggleShowBoldCellText", this), table.showBoldCellText);
-		
-		
 
 		
 		MesquiteSubmenuSpec softnessSubmenu = ownerModule.addSubmenu(ownerModule.displayMenu, "Fog");
@@ -435,11 +432,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Show Changes Since Saved", MesquiteModule.makeCommand("toggleShowChanges", this), table.showChanges);
 		if (data instanceof CategoricalData && !(data instanceof DNAData) && !(data instanceof ProteinData))
 			ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Lined States Explanation", MesquiteModule.makeCommand("toggleSeparateLines", this), table.statesSeparateLines);
-		MesquiteSubmenuSpec mShowDataInfoStrip = ownerModule.addSubmenu(ownerModule.displayMenu, "Add Char Info Strip", ownerModule.makeCommand("hireDataInfoStrip", this), DataColumnNamesAssistant.class);
-
-		linkedScrollingItem = ownerModule.addCheckMenuItem(null, "Linked Scrolling", MesquiteModule.makeCommand("toggleLinkedScrolling", this), linkedScrolling);
+		linkedScrollingItem = ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Linked Scrolling", MesquiteModule.makeCommand("toggleLinkedScrolling", this), linkedScrolling);
 		linkedScrollingItem.setEnabled(false);
-		ownerModule.addMenuItem("-", null);
+
 
 		String selectExplanation = "This tool selects items in the matrix.  By holding down shift while clicking, the selection will be extended from the first to the last touched cell. ";
 		selectExplanation += " A block of cells can be selected either by using shift-click to extend a previous selection, or by clicking on a cell and dragging with the mouse button still down";
@@ -462,6 +457,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ListableVector v = ownerModule.getEmployeeVector();
 
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlterData");
+		
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#SearchData");
@@ -478,9 +474,13 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			Object obj = enumeration.nextElement();
 			if (obj instanceof DataWindowAssistantI) {
 				DataWindowAssistantI init = (DataWindowAssistantI) obj;
+				if (init instanceof DataWindowAssistantID || init instanceof CategDataEditorInitD)
+					init.setMenuToUse(ownerModule.displayMenu);
+				
 				init.setTableAndData(table, data);
 			}
 		}
+		
 		ownerModule.hireAllCompatibleEmployees(CharTableAssistantI.class, data.getStateClass());
 		enumeration = ownerModule.getEmployeeVector().elements();
 		while (enumeration.hasMoreElements()) {
@@ -526,6 +526,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		MesquiteSubmenuSpec mss3 = ownerModule.addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames", this));
 		mss3.setList(TaxonNameAlterer.class);
 		ownerModule.addMenuItem("-", null);
+		
+	
 		MesquiteModule noColor = ownerModule.findEmployeeWithName("#NoColor", true);
 		if (data.colorCellsByDefault()) {
 			MesquiteModule mbc = ownerModule.findEmployeeWithName("#ColorByState", true);
@@ -539,7 +541,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		groupColor = ownerModule.findEmployeeWithName("#CharGroupColor", true);
 		setColumnNamesColorer(groupColor);
 		setTextColorer(noColor);
-		/*
+		MesquiteSubmenuSpec mShowDataInfoStrip = ownerModule.addSubmenu(ownerModule.displayMenu, "Add Char Info Strip", ownerModule.makeCommand("hireDataInfoStrip", this), DataColumnNamesAssistant.class);
+		//ownerModule.hireAllCompatibleEmployees(DataColumnNamesAssistant.class, data.getStateClass());
+		
+	/*
 		 * TableTool colorWandTool = new TableTool(this, "colorMagicWand", ownerModule.getPath(), "colorWand.gif", 1,1,"Select same color", "This tool selects cells of the same color", MesquiteModule.makeCommand("selectSameColor", this) , null, null); colorWandTool.setWorksOnColumnNames(false); colorWandTool.setWorksOnRowNames(false); colorWandTool.setWorksOnMatrixPanel(true); colorWandTool.setWorksOnCornerPanel(false); addTool(colorWandTool); /*
 		 * 
 		 * scrollTool = new TableTool(this, "simScroller", ownerModule.getPath(), "simScrollerRight.gif", 8, 8,"Scrolls between similar items", "This tool scrolls to other similar items", MesquiteModule.makeCommand("simScroll", this) , null, null); scrollTool.setOptionImageFileName("simScrollerLeft.gif", 8, 8); scrollTool.setWorksOnColumnNames(true); scrollTool.setWorksOnRowNames(false); scrollTool.setWorksOnMatrixPanel(false); scrollTool.setWorksOnCornerPanel(false); scrollTool.setSpecialToolForColumnNamesInfoStrips(true);
@@ -3559,6 +3564,8 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void drawColumnNamesPanelExtras(Graphics g, int left, int top, int width, int height) {
+		if (data == null)
+			return;
 		Color oldColor = g.getColor();
 		for (int extraRow = 0; extraRow < window.numDataColumnNamesAssistants(); extraRow++) {
 			DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(extraRow);

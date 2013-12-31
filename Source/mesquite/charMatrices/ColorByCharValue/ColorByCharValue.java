@@ -21,7 +21,7 @@ import mesquite.lib.table.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class ColorByCharValue extends DataWindowAssistantI implements CellColorer, CellColorerCharacters, CellColorerMatrix {
+public class ColorByCharValue extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForCharacter.class, getName() + " colors the columns (characters) of the matrix to reflect some value for the character.",
 				"You can request a value to calculate initially, or later under the Values for Colors submenu.");

@@ -24,7 +24,7 @@ import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class StateNamesStrip extends CategDataEditorInit {
+public class StateNamesStrip extends CategDataEditorInitD {
 	CategoricalData data;
 	Ledge panel;
 	MesquiteBoolean showStrip;

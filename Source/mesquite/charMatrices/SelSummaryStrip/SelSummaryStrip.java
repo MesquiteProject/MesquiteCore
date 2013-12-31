@@ -25,7 +25,7 @@ import mesquite.cont.lib.*;
 
 
 /* ======================================================================== */
-public class SelSummaryStrip extends DataWindowAssistantI {
+public class SelSummaryStrip extends DataWindowAssistantID {
 	Ledge panel;
 	MesquiteBoolean showStrip;
 	boolean shown;

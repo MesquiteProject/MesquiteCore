@@ -24,7 +24,7 @@ import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class CharReferenceStrip extends DataWindowAssistantI {
+public class CharReferenceStrip extends DataWindowAssistantID {
 	Ledge panel;
 	MesquiteBoolean showStrip;
 	boolean shown;
