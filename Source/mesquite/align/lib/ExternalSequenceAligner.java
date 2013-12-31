@@ -92,6 +92,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return "";
 	}
 	/*.................................................................................................................*/
+	public String getHelpURL(){
+		return "";
+	}
+	/*.................................................................................................................*/
 	/** If a subclass wishes to add more options to the GUI dialog box, the GUI elements (CheckBoxes, etc.) should created in an override of this method. */
 	public void queryProgramOptions(ExtensibleDialog dialog) {
 	}
@@ -112,6 +116,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel(getProgramName() + " - File Locations & Options");
 		dialog.appendToHelpString(getHelpString());
+		dialog.setHelpURL(getHelpURL());
 
 		programPathField = dialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);

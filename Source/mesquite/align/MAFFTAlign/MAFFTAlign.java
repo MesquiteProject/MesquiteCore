@@ -99,6 +99,10 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 				+ " invoke the linsi option (for more thorough alignment search), you would use \"--localpair --maxiterate 1000\".";
 		return s;   //linsi option:  --localpair --maxiterate 1000 --thread -1
 	}
+	/*.................................................................................................................*/
+	public String getHelpURL(){
+		return "http://mafft.cbrc.jp/alignment/software/manual/manual.html";
+	}
 
 	static int DEFAULTSUGGESTEDMETHOD=0;
 	static final int LINSI = 1;
