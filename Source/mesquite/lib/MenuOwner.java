@@ -340,9 +340,25 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	/** This indicates what menu is to be used (e.g., employer sets it).  All of its otherwise unplaced menu items, and those of its
 	employees, will be placed there.*/
 	public final void setMenuToUse(MesquiteMenuSpec menu){
+		if (!useMenuBar)
+			return;
 		assignedMenuSpec = menu;
 		if (menu!=null)
 			menu.addGuestModule(module);
+	}
+	/*.................................................................................................................*/
+	boolean usingGuestMenu = false;
+	/** A module requests of this module to have its menu items as guests.*/
+	public final void setUsingGuestMenu(boolean usingGuestMenu){
+		this.usingGuestMenu = usingGuestMenu;
+	}
+	/*.................................................................................................................*/
+	/** A module requests of this module to have its menu items as guests.*/
+	public final void requestGuestMenuPlacement(MesquiteModule mb){
+		if (moduleMenuSpec!=null){
+			moduleMenuSpec.addGuestModule(mb);
+			mb.setUsingGuestMenu(true);
+		}
 	}
 	/*.................................................................................................................*/
 	/** This requests a main menu for the MesquiteModule.  All of its otherwise unplaced menu items, and those of its
@@ -405,14 +421,12 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	/** Returns whether module's menu items are to appear in menubar or not. Does not apply to menu items in special menus (file, edit, windows, help).
 	Menu items don't appear in menu bar if the useMenuBar flag is set to false either for this module or for one of its employers */
 	public final boolean getUseMenubar(){
-		if (window==null &&moduleMenuSpec==null && assignedMenuSpec == null && module.getEmployer()!=null) {
-			if (!useMenuBar)
-				return false;
-			else
+		if (!useMenuBar)
+			return false;
+		if (window==null && moduleMenuSpec==null && assignedMenuSpec == null && module.getEmployer()!=null) {
 				return module.getEmployer().getUseMenubar(); 
 		}
-		else
-			return useMenuBar;
+		return true;
 	}
 	/*.................................................................................................................*/
 	/** Shows module's menus in popup. */
@@ -717,7 +731,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				for (int i=0; i<num; i++){
 					Object obj = L.elementAt(i);
 					MesquiteModule mb = (MesquiteModule)obj;
-					if (mb !=null && !mb.isDoomed() && mb.getUseMenubar() && mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) 
+					if (mb !=null && !mb.isDoomed() && mb.getUseMenubar() && !mb.usingGuestMenu && mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) 
 						mb.composeMenuDescendants(menuToUse);
 				}
 			}
@@ -816,7 +830,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				for (int i=0; i<num; i++){
 					Object obj = L.elementAt(i);
 					MesquiteModule mb = (MesquiteModule)obj;
-					if (mb !=null && !mb.isDoomed() && mb.getUseMenubar() && mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) 
+					if (mb !=null && !mb.isDoomed() && mb.getUseMenubar() && !mb.usingGuestMenu && mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) 
 						mb.composeMenuDescendants(menuToUse);
 				}
 			}
@@ -922,6 +936,14 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			myMenu = (mms == useModule.moduleMenuSpec || mms == useModule.assignedMenuSpec);
 			guests = mms.getGuests();
 		}
+		if (guests!=null)
+			for (int i=0; i<guests.size(); i++) { 
+				MesquiteModule guest = (MesquiteModule)guests.elementAt(i);
+				Debugg.println("guest " + guest + " of " + this);
+				guest.addMyMenuItems(menu);
+			}
+
+
 		/*
 	# % @
 		 */
@@ -1178,7 +1200,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				for (int i=0; i<num; i++){
 					Object obj = L.elementAt(i);
 					MesquiteModule mb = (MesquiteModule)obj;
-					if ((mb.getUseMenubar() || !inMenuBar(menu)) &&  mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) {
+					if ((mb.getUseMenubar() || !inMenuBar(menu)) && !mb.usingGuestMenu &&  mb.window==null && mb.moduleMenuSpec==null && mb.assignedMenuSpec == null) {
 						mb.composeMenuDescendants(menu);
 					}
 				}
@@ -1197,7 +1219,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				for (int i=0; i<num; i++){
 					Object obj = L.elementAt(i);
 					MesquiteModule mb = (MesquiteModule)obj;
-					if (mb.getUseMenubar() && mb.window==null ) {
+					if (mb.getUseMenubar() && !mb.usingGuestMenu && mb.window==null ) {
 						if (mb.moduleMenuSpec!=null) {
 							MesquitePopup menu = MesquitePopup.getPopupMenu(mb.moduleMenuSpec, null);
 							mb.composeMenuDescendants(menu);
@@ -1234,7 +1256,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				for (int i=0; i<num; i++){
 					Object obj = L.elementAt(i);
 					MesquiteModule mb = (MesquiteModule)obj;
-					if (mb.getUseMenubar() && mb.window==null ) {
+					if (mb.getUseMenubar() && !mb.usingGuestMenu && mb.window==null ) {
 						if (mb.moduleMenuSpec!=null) {
 							MesquiteMenu menu = MesquiteMenu.getMenu(mb.moduleMenuSpec);
 							mb.composeMenuDescendants(menu);
@@ -1802,6 +1824,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	the module has none, in the nearest menu in its employer chain.*/
 	final void addMyMenuItems(Menu menu){
 		try {
+			if (this instanceof mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition){
+				Debugg.println("oops");
+			}
 			if (menuTracing) MesquiteMessage.notifyProgrammer("         adding menus of " + toString());
 			if (menuItemsSpecs!=null) {
 				for (int i=0; i<menuItemsSpecs.size(); i++) {

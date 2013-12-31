@@ -23,7 +23,7 @@ import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class ColorByState extends DataWindowAssistantI implements CellColorer, CellColorerMatrix {
+public class ColorByState extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	int stateLimit = 9;

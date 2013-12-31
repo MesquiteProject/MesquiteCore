@@ -21,7 +21,7 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class ColorByFootnote extends DataWindowAssistantI implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrix {
+public class ColorByFootnote extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/
