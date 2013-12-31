@@ -17,6 +17,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import mesquite.categ.lib.CategDataEditorInitD;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -157,6 +158,14 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		treeDrawCoordTask.setToLastEmployee(true);
 		hireAllEmployees(TreeDisplayAssistantI.class);
 		hireAllEmployees(TreeDisplayAssistantDI.class);
+		Enumeration enumeration = getEmployeeVector().elements();
+		while (enumeration.hasMoreElements()) {
+			Object obj = enumeration.nextElement();
+			if (obj instanceof TreeDisplayAssistantDI) {
+				TreeDisplayAssistantDI init = (TreeDisplayAssistantDI) obj;
+				treeDrawCoordTask.requestGuestMenuPlacement(init);
+			}
+		}
 		resetContainingMenuBar();
 		return treeDrawCoordTask;
 	}
