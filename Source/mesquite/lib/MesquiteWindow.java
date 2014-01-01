@@ -3036,7 +3036,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	String title = "Mesquite Window";
 	public void setTitle(String name) {
-
+		if (title != null && name != null && title.equals(name))
+			return;
 		title = name;
 		if (parentFrame != null)
 			parentFrame.windowTitleChanged(this);

@@ -939,7 +939,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		if (guests!=null)
 			for (int i=0; i<guests.size(); i++) { 
 				MesquiteModule guest = (MesquiteModule)guests.elementAt(i);
-				Debugg.println("guest " + guest + " of " + this);
 				guest.addMyMenuItems(menu);
 			}
 
@@ -1824,9 +1823,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	the module has none, in the nearest menu in its employer chain.*/
 	final void addMyMenuItems(Menu menu){
 		try {
-			if (this instanceof mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition){
-				Debugg.println("oops");
-			}
 			if (menuTracing) MesquiteMessage.notifyProgrammer("         adding menus of " + toString());
 			if (menuItemsSpecs!=null) {
 				for (int i=0; i<menuItemsSpecs.size(); i++) {

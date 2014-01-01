@@ -1664,6 +1664,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	/*.................................................................................................................*/
 
 	public void resetForTreeSource(boolean setToZero, boolean firstTimeTreeSource) {
+		resetTitle();
 		if (firstTimeTreeSource)
 			warningGivenForTreeSource = false;
 		MesquiteTree editedTree = null;
