@@ -195,10 +195,13 @@ public class ConsensusTree extends TreeSource {
 				}
 			}
 			logln("Trees consensed");
-			//if (count>0)
+//			if (count>0)
 				tree = iConsenser.getConsensus();
 				if (tree instanceof MesquiteTree)
-					((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
+					if (count==0)
+						((MesquiteTree)tree).setName(consenser.getName() + " of trees from " + treeSource.getNameAndParameters());
+					else
+						((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
 		}
 		else {
 			tree = consenser.consense(trees);
