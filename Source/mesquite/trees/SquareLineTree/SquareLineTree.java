@@ -145,8 +145,8 @@ public class SquareLineTree extends DrawTree {
 
 			int newDistance= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newDistance))
-				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", fixedTaxonDistance, 1, 99);
-			if (newDistance>0 && newDistance<100 && newDistance!=fixedTaxonDistance) {
+				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", "(Use a value of 0 to tell Mesquite to calculate the distance itself.)", "", fixedTaxonDistance, 0, 99, true);
+			if (newDistance>=0 && newDistance<100 && newDistance!=fixedTaxonDistance) {
 				fixedTaxonDistance=newDistance;
 				Enumeration e = drawings.elements();
 				while (e.hasMoreElements()) {
