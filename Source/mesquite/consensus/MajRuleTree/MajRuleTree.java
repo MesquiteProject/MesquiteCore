@@ -81,7 +81,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		if (MesquiteDouble.isCombinable(freq))
 			if (freq<0.5) {
 				frequencyLimit=0.5;
-				logln("Required frequency must be ³0.5");
+				logln("Required frequency must be >0.5");
 			}
 			else
 				frequencyLimit=freq;

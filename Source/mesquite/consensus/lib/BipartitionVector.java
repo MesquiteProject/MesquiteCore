@@ -36,6 +36,7 @@ public class BipartitionVector extends Vector {
 	public static final int MAJRULEMODE = 0;
 	public static final int STRICTMODE = 1;
 	public static final int SEMISTRICTMODE = 2;
+	public static final int MATCHMODE = 3;
 	int mode = STRICTMODE;
 	double weight = 1.0;
 
@@ -62,11 +63,14 @@ public class BipartitionVector extends Vector {
 		numTreesTotal = 0;
 		weight=1.0;
 		weightedTreesTotal=0.0;
-		allTaxa.clearAllBits();
-		partitionPresent.clearAllBits();
+		if (allTaxa!=null)
+			allTaxa.clearAllBits();
+		if (partitionPresent!=null)
+			partitionPresent.clearAllBits();
 		for (int i=0; i<size(); i++){
 			Bipartition b = getBipart(i);
-			b.reset();
+			if (b!=null)
+				b.reset();
 		}
 		for (int i=0; i<numTaxa; i++){
 			branchLengths[i] = MesquiteDouble.unassigned;
@@ -167,6 +171,16 @@ public class BipartitionVector extends Vector {
 			}
 		}
 		return bpv;
+	}
+	
+	public double getDecimalFrequencyOfNode(Tree tree, int node, boolean rooted){
+		Bits bits = tree.getTerminalTaxaAsBits(node);
+		for (int i=0; i<size(); i++){
+			Bipartition bp = ((Bipartition)elementAt(i));
+			if (bp.equals(bits,rooted))
+				return getDecimalFrequency(bp);
+		}
+		return 0.0;
 	}
 
 	public boolean compatible(Bits a, Bits b){
@@ -281,6 +295,19 @@ public class BipartitionVector extends Vector {
 				bipart.increment();
 			addElement(bipart);
 			return bipart;
+			
+		case MATCHMODE:
+			for (int i=0; i<size(); i++){
+				Bipartition stored = getBipart(i);
+
+				if (stored != null && stored.equals(bits, rooted)){  //stored.potentialMatch(numBits, rooted)&&
+					if (useWeights)
+						stored.weightedIncrement(weight);
+					else
+						stored.increment();
+					return stored;
+				}
+			}
 		default:
 			return null;
 		}
@@ -317,6 +344,7 @@ public class BipartitionVector extends Vector {
 		}
 	}
 
+	
 	/** adds tree to existing */
 	public void addTree(Tree tree){
 		princess = tree.firstDaughterOfNode(tree.getRoot());
@@ -345,6 +373,7 @@ public class BipartitionVector extends Vector {
 			weightedTreesTotal += getWeight();
 		allTaxa.orBits(nodes[tree.getRoot()]);
 	}
+
 
 	/** returns a new bipartitionVector for just for the tree passed. */
 	public static BipartitionVector getBipartitionVector(Tree tree){

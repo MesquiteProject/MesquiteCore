@@ -869,7 +869,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 					cPos.setValue(wpos+2);
 					String num = ParseUtil.getToken(commentString, cPos);
 					String slash = ParseUtil.getToken(commentString, cPos);
-					String denom = ParseUtil.getToken(commentString, cPos);
+					String denom = ParseUtil.getToken(commentString, cPos, null, "$");
 					double w = 0;
 					if (slash !=null && "/".equals(slash))
 						w = 1.0*(MesquiteInteger.fromString(num))/(MesquiteInteger.fromString(denom));
