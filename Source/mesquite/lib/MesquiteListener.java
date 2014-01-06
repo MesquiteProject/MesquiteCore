@@ -67,6 +67,10 @@ public interface MesquiteListener {
 	/** Entries in a data matrix have been changed*/
 	public final static int DATA_CHANGED = -18; 
 	
+	/** Param of the tree drawing have been changed in such a way that its size may have changed.*/
+	public final static int TREE_DRAWING_SIZING_CHANGED = 800; 
+
+	
 	
 	/** Subcode values specifying how much of the data has changed*/
 	public final static int SINGLE_CELL = 900; 

@@ -28,7 +28,6 @@ public class SquareLineTree extends DrawTree {
 	MesquiteString orientationName;
 	Vector drawings;
 	int oldEdgeWidth = 4;
-	int fixedTaxonDistance = 0;
 	int ornt;
 	MesquiteString nodeLocsName;
 	MesquiteBoolean showEdgeLines = new MesquiteBoolean(true);  //these needs to be set default true; otherwise Trace Character makes branches disappear in most common cases
@@ -56,7 +55,6 @@ public class SquareLineTree extends DrawTree {
 
 		
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
-		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null,"Show Edge Lines", makeCommand("showEdgeLines",  this), showEdgeLines);
 		return true;
 
@@ -97,7 +95,6 @@ public class SquareLineTree extends DrawTree {
 		Snapshot temp = new Snapshot();
 		temp.addLine("setNodeLocs", nodeLocsTask);
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		temp.addLine("setFixedTaxonDistance " + fixedTaxonDistance); 
 		temp.addLine("showEdgeLines " + showEdgeLines.toOffOnString()); 
 
 		if (ornt== TreeDisplay.UP)
@@ -137,24 +134,6 @@ public class SquareLineTree extends DrawTree {
 					treeDrawing.setEdgeWidth(newWidth);
 					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
 				}
-				if ( !MesquiteThread.isScripting()) parametersChanged();
-			}
-
-		}
-		else 	if (checker.compare(this.getClass(), "Sets a fixed distance between taxa for drawing the tree", "[distance in pixels]", commandName, "setFixedTaxonDistance")) {
-
-			int newDistance= MesquiteInteger.fromFirstToken(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newDistance))
-				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", "(Use a value of 0 to tell Mesquite to calculate the distance itself.)", "", fixedTaxonDistance, 0, 99, true);
-			if (newDistance>=0 && newDistance<100 && newDistance!=fixedTaxonDistance) {
-				fixedTaxonDistance=newDistance;
-				Enumeration e = drawings.elements();
-				while (e.hasMoreElements()) {
-					Object obj = e.nextElement();
-					SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
-					treeDrawing.treeDisplay.setFixedTaxonSpacing(newDistance);
-				}
-				
 				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 
