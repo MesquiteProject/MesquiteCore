@@ -22,6 +22,7 @@ import mesquite.lib.duties.*;
  * make a MesquiteExternalProcess that extends Process and stores things like 
  * 		OutputStream inputToProcess = proc.getOutputStream();
 		OutputStreamWriter inputStreamsWriter = new OutputStreamWriter(inputToProcess);
+	- all of the isWindows, StringUtil.lineEnding() needs to use line endings etc. from the computer running the process, not the local computer.
 
  * */
 
@@ -68,7 +69,7 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
 		if (MesquiteTrunk.isWindows())
-			return "del -f " + StringUtil.protectForWindows(filePath) +StringUtil.lineEnding();
+			return "del " + StringUtil.protectForWindows(filePath) +StringUtil.lineEnding();
 		else
 			return "rm -f " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
 	}
