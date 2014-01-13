@@ -14,9 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
 
+import javax.imageio.ImageIO;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -288,7 +290,7 @@ public class Mesquite extends MesquiteTrunk
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 			+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 			+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
-			+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Jeff Oliver"
+			+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Rutger Vos, Jeff Oliver, Daisie Hung"
 			+ "\nDevelopment Team Alumnus: Danny Mandel\n";
 
 		if (verboseStartup) System.out.println("main init 11");
@@ -302,6 +304,15 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else
 			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquite.gif");
+		
+		BufferedImage equiv = null;
+		try {
+		    equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
+		} catch (IOException e) {
+			Debugg.println(" IOException trying to read equivocal texture ");
+		}
+		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
+
 		if (verboseStartup) System.out.println("main init 14");
 		MediaTracker mt = new MediaTracker(logWindow.getOuterContentsArea());
 		mt.addImage(logo, 0);

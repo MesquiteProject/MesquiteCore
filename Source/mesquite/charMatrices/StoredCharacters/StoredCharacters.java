@@ -411,8 +411,9 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 
 		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
 		int numChars = data.getNumChars();
-		if (incl==null)
-			return numChars;
+		if (incl==null){
+			return data.numberSelected();
+		}
 		int count = 0;
 		for (int i=0; i<numChars; i++)
 			if (incl.isBitOn(i) && data.getSelected(i)) //included and selected

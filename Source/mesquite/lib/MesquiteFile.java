@@ -2647,7 +2647,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		catch( IOException e ) {
 			if (warnIfProblem)
-				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "   " + e.getMessage());
+				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "\n   " + e.getMessage());
 			//MesquiteMessage.printStackTrace();
 			return null;
 		}

@@ -14,6 +14,7 @@ package mesquite.ancstates.RecAncestralStates;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -40,8 +41,9 @@ public class RecAncestralStates extends CharHistorySource {
 	//private CharacterHistory recon;
 	Object hiringCondition;
 	boolean doMappings = false;
-
-
+	Selectionable selectionable = null;
+	MesquiteCMenuItemSpec selectedOnlyMenuItem;
+	MesquiteBoolean showSelectedOnly = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		hiringCondition = condition;
@@ -66,6 +68,9 @@ public class RecAncestralStates extends CharHistorySource {
 			mss.setSelected(assignTaskName);
 		}
 
+		selectionable = characterSourceTask.getSelectionable();
+		if (selectionable != null)
+			selectedOnlyMenuItem=addCheckMenuItem(null, "Selected Characters Only", makeCommand("toggleShowSelectedOnly",  this), showSelectedOnly);
 		return true;
 	}
 	boolean permissiveOfNoSeparateMappings = false;
@@ -95,6 +100,7 @@ public class RecAncestralStates extends CharHistorySource {
 		Snapshot temp = new Snapshot();
 		temp.addLine("getCharacterSource ",characterSourceTask);
 		temp.addLine("setMethod ",assignTask);
+		temp.addLine("toggleShowLegend " + showSelectedOnly.toOffOnString());  //Debugg.println
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -125,6 +131,13 @@ public class RecAncestralStates extends CharHistorySource {
 		else if (checker.compare(this.getClass(), "Returns module supplying characters", null, commandName, "getCharacterSource")) {
 			return characterSourceTask;
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not only selected characters are returned", "[on = show; off]", commandName, "toggleShowSelectedOnly")) {
+			showSelectedOnly.toggleValue(parser.getFirstToken(arguments));
+			lastCharRetrieved = -1;
+			currentObservedStates = null;
+			parametersChanged();
+			return null;
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 	}
@@ -136,10 +149,14 @@ public class RecAncestralStates extends CharHistorySource {
 			return;
 		}
 		if (tree.getTaxa() != currentTaxa|| (characterSourceTask.usesTree() && (tree.getID() != oldTreeID || tree.getVersionNumber() != oldTreeVersion)) || ic != lastCharRetrieved || currentObservedStates == null ) {
-			int maxnum = characterSourceTask.getNumberOfCharacters(tree);
+			
+			int maxnum = getNumberOfHistories(tree);
 			if (ic>= maxnum)
 				ic = maxnum-1;
-			currentObservedStates = characterSourceTask.getCharacter(tree, ic);
+			
+			currentObservedStates = characterSourceTask.getCharacter(tree, translateIfSelectedOnly(ic, tree.getTaxa()));
+			
+			
 			currentTaxa = tree.getTaxa();
 			oldTreeVersion = tree.getVersionNumber();
 			oldTreeID = tree.getID();
@@ -190,22 +207,44 @@ public class RecAncestralStates extends CharHistorySource {
 			return history;
 		}
 	}
+	private int translateIfSelectedOnly(int ic, Taxa taxa){
+		if (selectionable == null || !showSelectedOnly.getValue())
+			return ic;
+		int count = -1;
+		for (int i = 0; i< characterSourceTask.getNumberOfCharacters(taxa); i++){
+			if (selectionable.getSelected(i))
+				count++;
+			if (count == ic)
+				return i;
+		}
+		return ic;
+	}
 	/** returns the name of history ic*/
 	public String getHistoryName(Taxa taxa, int ic){
-		return characterSourceTask.getCharacterName(taxa, ic);
+		return characterSourceTask.getCharacterName(taxa, translateIfSelectedOnly(ic, taxa));
 	}
 	/** returns the name of history ic*/
 	public String getHistoryName(Tree tree, int ic){
-		return characterSourceTask.getCharacterName(tree, ic);
+		return characterSourceTask.getCharacterName(tree, translateIfSelectedOnly(ic, tree.getTaxa()));
 	}
 	public int getNumberOfHistories(Tree tree){
 		if (characterSourceTask == null || tree == null)
 			return 0;
+		
+		if (selectionable != null && showSelectedOnly.getValue()){
+			characterSourceTask.getNumberOfCharacters(tree.getTaxa()); // to initialize if needed
+			
+			return selectionable.numberSelected();
+		}
 		return characterSourceTask.getNumberOfCharacters(tree.getTaxa());
 	}
 	public int getNumberOfHistories(Taxa taxa){
 		if (characterSourceTask == null)
 			return 0;
+		if (selectionable != null && showSelectedOnly.getValue()){
+			characterSourceTask.getNumberOfCharacters(taxa); // to initialize if needed
+			return selectionable.numberSelected();
+		}
 		return characterSourceTask.getNumberOfCharacters(taxa);
 	}
 	public long getNumberOfMappings(Tree tree,  int ic){
