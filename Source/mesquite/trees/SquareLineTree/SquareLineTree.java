@@ -263,6 +263,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		}
 		catch (Throwable t){
 		}
+		treeDisplay.setOrientation(ownerModule.nodeLocsTask.getDefaultOrientation());
 		ready = true;
 	}
 
