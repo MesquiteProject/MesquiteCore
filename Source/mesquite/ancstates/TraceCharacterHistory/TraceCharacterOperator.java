@@ -170,11 +170,16 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 	}
 	public void cursorEnterBranch(Tree tree, int N, Graphics g) {
 		if (traceModule.showLegend.getValue() && traceLegend!=null && history!=null){
-			String expl = history.getExplanation();
-			if (expl == null)
-				expl = "";
-			else expl += "\n";
-			traceLegend.setMessage(expl + history.toString(N, "\n"));
+			if (tree.nodeIsTerminal(N)){
+				taxonMessage( tree, tree.taxonNumberOfNode(N));
+			}
+			else {
+				String expl = history.getExplanation();
+				if (expl == null)
+					expl = "";
+				else expl += "\n";
+				traceLegend.setMessage(expl + history.toString(N, "\n"));
+			}
 		}
 		if (treeDisplay != null)
 			treeDisplay.requestFocus();
@@ -186,12 +191,33 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 			treeDisplay.requestFocus();
 	}
 	public void cursorEnterTaxon(Tree tree, int M, Graphics g) {
-		if (traceModule.showLegend.getValue() && traceLegend!=null && history!=null && history.getObservedStates()!=null)
-			traceLegend.setMessage(history.getObservedStates().toString(M, "\n"));
+		taxonMessage(tree, M);
 	}
 	public void cursorExitTaxon(Tree tree, int M, Graphics g) {
 		if (traceModule.showLegend.getValue() && traceLegend!=null)
 			traceLegend.setMessage("");
+	}
+
+	private void taxonMessage(Tree tree, int it){
+		if (traceModule.showLegend.getValue() && traceLegend!=null && history!=null && history.getObservedStates()!=null){
+			if (it == -1)
+				traceLegend.setMessage("");
+			else {
+
+				String h = history.getExplanation();
+				if (h == null)
+					h = "";
+				else h += "\n";
+				int node = tree.nodeOfTaxonNumber(it);
+				h += history.toString(node, "\n");
+
+				traceLegend.setMessage("Observed states: " + history.getObservedStates().toString(it, "\n") + "\n" + h);
+			}
+		}
+	}
+	public void cursorMove(Tree tree, int x, int y, Graphics g) {
+		int boxFound = treeDisplay.getTreeDrawing().findTerminalBox(tree,  x, y);
+		taxonMessage(tree, boxFound);
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
