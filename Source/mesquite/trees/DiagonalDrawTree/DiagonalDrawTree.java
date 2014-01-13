@@ -252,6 +252,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
 		ready = true;
+		treeDisplay.setOrientation(ownerModule.nodeLocsTask.getDefaultOrientation());
 		utilityPolygon=new Polygon();
 		utilityPolygon.xpoints = new int[16];
 		utilityPolygon.ypoints = new int[16];
