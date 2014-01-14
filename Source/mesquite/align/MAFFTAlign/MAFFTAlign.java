@@ -67,7 +67,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 
 	public String getProgramName(){
-		return "mafft";
+		return "MAFFT";
 	}
 
 	/*.................................................................................................................*/
