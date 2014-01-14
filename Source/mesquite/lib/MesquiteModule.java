@@ -2178,7 +2178,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 						browserString = null;
 						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser." );
 					} catch (URISyntaxException e) {
-						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interprtable." );
+						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interpretable." );
 					}
 				}
 				else if (MesquiteTrunk.isMacOSX()){ //Mac OS X
