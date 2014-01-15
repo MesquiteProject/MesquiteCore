@@ -88,7 +88,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	587;  
+		return 	588;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -2169,9 +2169,24 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				String[] browserCommand = null;
 				boolean remote = path.indexOf(":/")>=0;
 				
-				if (MesquiteTrunk.getJavaVersionAsDouble()>= 1.6){
+				boolean useDesktop = false;
+				if (MesquiteTrunk.getJavaVersionAsDouble()>= 1.6){  // let's check to see if this will work first
+					try {
+						if (Desktop.isDesktopSupported()) {
+							Desktop desktop = Desktop.getDesktop();
+							if (desktop.isSupported(Desktop.Action.BROWSE)) {
+								useDesktop = true;
+							}
+						}
+					} catch (Exception e) {
+					}
+				}
+
+				if (useDesktop){  
 					Desktop d = Desktop.getDesktop();
 					try {
+						if (path.indexOf("http:/")<0 && path.indexOf("file://")<0)  // local reference that doesn't yet start with "file://"
+							path="file://"+path;
 						d.browse(new URI(path));
 					}
 					catch (IOException e) {
