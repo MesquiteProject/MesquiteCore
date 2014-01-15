@@ -2185,9 +2185,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				if (useDesktop){  
 					Desktop d = Desktop.getDesktop();
 					try {
-						if (path.indexOf("http:/")<0 && path.indexOf("file://")<0)  // local reference that doesn't yet start with "file://"
-							path="file://"+path;
-						d.browse(new URI(path));
+						URI uri = null;
+						if (path.indexOf("http:/")<0){  // local reference that doesn't yet start with "file://"
+							File file = new File(path);
+							uri=file.toURI();
+						} else
+							uri = new URI(path);
+						d.browse(uri);
 					}
 					catch (IOException e) {
 						browserString = null;
