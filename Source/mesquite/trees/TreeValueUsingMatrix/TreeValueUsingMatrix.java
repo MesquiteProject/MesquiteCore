@@ -90,7 +90,7 @@ public class TreeValueUsingMatrix extends NumberForTree {
 		
 		if (matrix == null) {
 			if (resultString!=null)
-				resultString.setValue("Treelength not calculated; no matrix supplied");
+				resultString.setValue("Value for tree not calculated; no matrix supplied");
 			return;
 		}
 		cs.setValue("");

@@ -33,10 +33,10 @@ public class MajRuleTree extends BasicTreeConsenser   {
 
 
 	public String getName() {
-		return "Majority Rules Consensus";
+		return "Majority-Rule Consensus";
 	}
 	public String getExplanation() {
-		return "Calculates the majority rules consensus tree." ;
+		return "Calculates the majority-rule consensus tree." ;
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
