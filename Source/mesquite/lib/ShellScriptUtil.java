@@ -176,8 +176,18 @@ public class ShellScriptUtil  {
 	public static boolean setScriptFileToBeExecutable(String scriptPath) throws IOException {
 		Process proc;
 		try {
-			if (!MesquiteTrunk.isWindows())
-				Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+			//Original implementation
+			//if (!MesquiteTrunk.isWindows())
+			//	Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+			if(!MesquiteTrunk.isWindows()){
+				proc = Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+				try{// waitFor() so thread waits for permission change to complete before trying to run the script
+					proc.waitFor();
+				} catch (InterruptedException e){
+					MesquiteMessage.println("Thread interrupted while waiting for change in ownership.");
+					return false;
+				}
+			}
 		}
 		catch (IOException e) {
 			MesquiteMessage.println("Script cannot be set to be executable.");
