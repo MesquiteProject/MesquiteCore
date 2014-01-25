@@ -126,6 +126,14 @@ public class ItemValueInTaxon extends NumberForCharacter implements NumberForCha
 		}
 
 		else if (checker.compare(this.getClass(), "Queries user about which character history to use", null, commandName, "chooseTaxon")) {
+			if (data == null)
+				return null;
+			Taxa taxa = data.getTaxa();
+			Taxon taxon = taxa.userChooseTaxon(containerOfModule(), "Taxon whose values to show");
+			if (taxon == null)
+				return null;
+			iTaxon = taxa.whichTaxonNumber(taxon);
+			parametersChanged();
 		}
 
 		else if (checker.compare(this.getClass(), "Sets which character history to use", "[taxon number]", commandName, "setTaxon")) {

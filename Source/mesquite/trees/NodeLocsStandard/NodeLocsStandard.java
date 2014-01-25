@@ -816,7 +816,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (treeDisplay.inhibitStretchByDefault != inhibitStretch.getValue())
 					inhibitStretch.setValue(treeDisplay.inhibitStretchByDefault);
 			}*/
-			int fixedTaxonDistance = treeDisplay.getFixedTaxonSpacing();
+			treeDisplay.setFixedTaxonSpacing(fixedTaxonDistance);  //NEW
+		//	int fixedTaxonDistance = treeDisplay.getFixedTaxonSpacing();  OLD code
 			lastOrientation = treeDisplay.getOrientation();
 			//this.treeDisplay = treeDisplay; 
 			if (!leaveScaleAlone) {
