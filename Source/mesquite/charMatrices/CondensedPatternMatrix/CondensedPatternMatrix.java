@@ -106,9 +106,11 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 					i--;
 				}
 				
-				Debugg.println("Frequencies of patterns:");
+				
+				
+				Debugg.println("\nFrequencies of patterns:");
 				for (int ic = 0; ic< weightSet.getNumberOfParts(); ic++){
-					Debugg.println(" "+(ic+1)+": " + weightSet.getInt(ic));
+					Debugg.println(" "+(ic+1)+": " + MesquiteDouble.toStringDigitsSpecified(((1.0*weightSet.getInt(ic))/numChars), 4));
 				}
 
 				return condensedData.getMCharactersDistribution();
