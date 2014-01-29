@@ -176,7 +176,7 @@ public class ShellScriptUtil  {
 	public static boolean setScriptFileToBeExecutable(String scriptPath) throws IOException {
 		Process proc;
 		try {
-			//Original implementation
+			//Original implementation (permission change was not complete before script execution attempted)
 			//if (!MesquiteTrunk.isWindows())
 			//	Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
 			if(!MesquiteTrunk.isWindows()){
