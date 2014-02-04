@@ -558,6 +558,8 @@ public class AlignUtil {
 				data.setSelected(i, true);
 
 		}
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment completed.");
+
 		return true;
 	}	
 
