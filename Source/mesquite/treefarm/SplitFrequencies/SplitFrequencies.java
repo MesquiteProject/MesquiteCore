@@ -231,7 +231,7 @@ public class SplitFrequencies extends NumbersForNodes {
 		return "Calculates, for each clade in the tree, the frequency of that split among the trees in a specified tree source.";
 	}
 	public String getName() {
-		return "Clade Frequences in Trees";
+		return "Clade Frequencies in Trees";
 	}
 
 

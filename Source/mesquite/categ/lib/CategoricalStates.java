@@ -221,7 +221,7 @@ public abstract class CategoricalStates extends CharacterStates {
 	}
 
 	/*..........................................  CategoricalStates  ...................................................*/
-	/** get state set represented by frequences at a particular node*/
+	/** get state set represented by frequencies at a particular node*/
 	public long getSetFromFrequencies(int node) {
 		if (checkIllegalNode(node, 3))
 			return 0L;
