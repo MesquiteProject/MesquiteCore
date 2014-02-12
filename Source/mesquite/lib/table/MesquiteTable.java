@@ -743,7 +743,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	protected void pasteIt(String s) {
+	protected void OLDpasteIt(String s) {
 		int count = 0;
 		MesquiteInteger pos = new MesquiteInteger(0);
 		if (columnNamesCopyPaste) {
@@ -774,6 +774,37 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						if (t != null)
 							returnedMatrixText(i, j, t);
 					}
+					count++;
+				}
+			}
+		}
+	}
+
+	/* ................................................................................................................. */
+	protected void pasteIt(String s) {
+		int count = 0;
+		MesquiteInteger pos = new MesquiteInteger(0);
+			for (int i = 0; i < numColumnsTotal; i++) {
+				if (isColumnNameSelected(i) || isColumnSelected(i)) {
+						String t = getNextTabbedToken(s, pos);
+						if (t != null && columnNamesEditable && columnNamesCopyPaste)
+							returnedColumnNameText(i, t);
+					count++;
+				}
+			}
+		
+		for (int j = 0; j < numRowsTotal; j++) {
+			if (isRowNameSelected(j) || isRowSelected(j)) {
+					String t = getNextTabbedToken(s, pos);
+					if (t != null && rowNamesEditable && rowNamesCopyPaste)
+						returnedRowNameText(j, t);
+				count++;
+			}
+			for (int i = 0; i < numColumnsTotal; i++) {
+				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
+						String t = getNextTabbedToken(s, pos);
+						if (t != null && isCellEditable(i, j))
+							returnedMatrixText(i, j, t);
 					count++;
 				}
 			}

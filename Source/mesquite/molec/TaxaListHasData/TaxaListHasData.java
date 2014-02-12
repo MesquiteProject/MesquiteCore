@@ -99,6 +99,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Prepends to the note the sequence length (including N\'s and ?\'s) for the selected taxa", null, commandName, "prependLength")) {
 			if (observedStates == null || taxa == null)
 				return null;
+			boolean anySelected = taxa.anySelected() || table.anyCellSelected();
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
 				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
 					String note = getNote(it);

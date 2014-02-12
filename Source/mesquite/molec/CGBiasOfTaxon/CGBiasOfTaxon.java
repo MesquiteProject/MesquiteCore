@@ -2,6 +2,7 @@ package mesquite.molec.CGBiasOfTaxon;
 
 import mesquite.categ.lib.*;
 import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
@@ -96,7 +97,7 @@ public class CGBiasOfTaxon extends NumberForTaxon {
 					charExc++;
 			}
 			if (tot == 0)
-				value = 0;
+				value = MesquiteDouble.unassigned; //changed from 0,  26 jan '14
 			else
 				value = ((double)count)/tot;
 			result.setValue(value);

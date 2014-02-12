@@ -298,10 +298,15 @@ public class ListTable extends MesquiteTable {
 		if (!window.interceptCellTouch(column, row, modifiers)){
 		
 			if (window.getCurrentTool()== window.arrowTool)  {
+				
 				ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-						if (!assistant.arrowTouchInRow(row))
-							rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+						if (!assistant.arrowTouchInRow(row)){
+							if (assistant.isCellEditable(row))
+								super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
+							else
+								rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+						}
 							
 				}
 				else

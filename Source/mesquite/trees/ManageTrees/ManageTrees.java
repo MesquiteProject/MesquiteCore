@@ -635,11 +635,12 @@ public class ManageTrees extends TreesManager {
 			}
 
 			int separateThread = 0;
+			MesquiteBoolean autoSave = new MesquiteBoolean(false);
 			if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-				separateThread= AlertDialog.query(containerOfModule(), "Separate Thread?", "Fill tree block on separate thread? (Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress)","No", "Separate", "Cancel", 0, null);
+				separateThread= separateThreadQuery("Fill tree block", autoSave);
 			if (separateThread==1) {  //separateThread
 				fillingTreesNow = true;
-				TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, file);
+				TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
 				/*DISCONNECTABLE: have third option, Run and Come Back (Disconnect).  This is available only for some tree block fillers that say they can do it.
 				Add to tree block filler a method startTreeFilling(TreesDoneListener this) that is called 
 				(not on a separate thread -- that is the responsibility of the tree block filler, as sometimes it will be the filler's own time involved, sometimes
@@ -671,6 +672,10 @@ public class ManageTrees extends TreesManager {
 				trees.setName(name);
 				logln(Integer.toString(trees.size()) + " trees stored in tree block, from " + treeFillerTask.getName());
 				trees.addToFile(file, getProject(), this);
+				if (autoSave != null && autoSave.getValue()){
+					FileCoordinator fCoord = getFileCoordinator();
+					fCoord.writeFile(file);
+				}
 				return trees;
 			}
 
@@ -796,11 +801,12 @@ public class ManageTrees extends TreesManager {
 			}
 		}
 		int separateThread = 0;
+		MesquiteBoolean autoSave = new MesquiteBoolean(false);
 		if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-			separateThread= AlertDialog.query(containerOfModule(), "Separate Thread?", taskName + " on separate thread? (Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress)","No", "Separate", "Cancel", 0, null);
+			separateThread= separateThreadQuery(taskName, autoSave);
 		if (separateThread==1) {   // separate
 			fillingTreesNow = true;
-			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, file);
+			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
 			tLT.suppressAsk = suppressAsk;
 			tLT.start();
 		}
@@ -819,6 +825,10 @@ public class ManageTrees extends TreesManager {
 			doneQuery(treeFillerTask, taxa, trees, suppressAsk);
 			if (!showTreeFiller){
 				fireEmployee(treeFillerTask);
+			}
+			if (autoSave != null && autoSave.getValue()){
+				FileCoordinator fCoord = getFileCoordinator();
+				fCoord.writeFile(file);
 			}
 			resetAllMenuBars();
 		}
@@ -883,6 +893,28 @@ public class ManageTrees extends TreesManager {
 
 		return null;
 	}	
+	
+	int separateThreadQuery(String taskName, MesquiteBoolean autoSave){
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Separate Thread & Auto-Save?",buttonPressed);
+		id.addLabel (taskName + " on separate thread?", Label.LEFT, true, false);
+		id.addLargeTextLabel("Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress");
+		if (id.isInWizard())
+			id.appendToHelpString("<h3>" + StringUtil.protectForXML("Separate Thread?") + "</h3>Please choose.");
+		RadioButtons radio = id.addRadioButtons (new String[]{"NOT separate thread", "Separate Thread"}, 0);
+		id.addBlankLine();
+		id.addBlankLine();
+		id.addLabel ("Save file automatically after trees are finished?", Label.LEFT, true, false);
+		RadioButtons radio2 = id.addRadioButtons (new String[]{"Auto-Save", "Don't Save"}, 0);
+
+		
+		id.addBlankLine();
+		id.completeAndShowDialog("OK", null, null, "OK");
+		id.dispose();
+		if (autoSave != null)
+			autoSave.setValue(radio2.getValue() == 0);
+		return radio.getValue();
+	}
 	/*.................................................................................................................*/
 	boolean saveDirectTreeFile(TreeSource treeSourceTask, Taxa taxa, int howManyTrees, MesquiteFile file){
 		String endLine = ";" + StringUtil.lineEnding();
@@ -1652,13 +1684,15 @@ class TreeBlockThread extends MesquiteThread {
 	int howManyTrees;
 	boolean suppressAsk = false;
 	CommandRecord comRec = null;
-	public TreeBlockThread (ManageTrees ownerModule, TreeBlockFiller fillTask, TreeVector trees, int howManyTrees, MesquiteFile file) {
+	MesquiteBoolean autoSave = null;
+	public TreeBlockThread (ManageTrees ownerModule, TreeBlockFiller fillTask, TreeVector trees, int howManyTrees, MesquiteBoolean autoSave, MesquiteFile file) {
 		super();
 		this.ownerModule = ownerModule;
 		this.fillTask = fillTask;
 		this.trees = trees;
 		this.howManyTrees = howManyTrees;
 		this.file = file;
+		this.autoSave = autoSave;
 		setCurrent(1);
 		CommandRecord cr = MesquiteThread.getCurrentCommandRecord();
 		boolean sc;
@@ -1695,6 +1729,10 @@ class TreeBlockThread extends MesquiteThread {
 				ownerModule.doneQuery(fillTask, trees.getTaxa(), trees, suppressAsk);
 			ownerModule.fireEmployee(fillTask);
 			ownerModule.fillingTreesNow = false;
+			if (autoSave != null && autoSave.getValue()){
+				FileCoordinator fCoord = ownerModule.getFileCoordinator();
+				fCoord.writeFile(file);
+			}
 			ownerModule.resetAllMenuBars();
 		}
 		catch (Exception e){
