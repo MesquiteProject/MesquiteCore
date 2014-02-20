@@ -74,6 +74,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 	private MCharactersDistribution condense(MCharactersDistribution mData){
 		if (mData != null && mData.getParentData() != null){
 			CharacterData data = mData.getParentData();
+				
 			if (data instanceof CategoricalData){
 				CategoricalData dData = (CategoricalData)data;
 				int numChars = dData.getNumChars();
@@ -96,6 +97,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 					}
 				}
 				
+			
 				condensedData.removeCharactersThatAreEntirelyGaps(false);
 				
 				int i = numChars-1;
@@ -104,6 +106,24 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 						weightSet.deleteParts(i, 1);
 					}
 					i--;
+				}
+				
+				// now resort by frequency
+				int newNumChars = condensedData.getNumChars();
+				for (int ic=-1; ic<newNumChars; ic++){
+					int bestWeight = 1;
+					int bestCharacter = -1;
+					for (int ic2=ic+1; ic2<newNumChars; ic2++){
+						int current = weightSet.getInt(ic2);
+						if (current>bestWeight){
+							bestWeight=current;
+							bestCharacter=ic2;
+						}
+					}
+					if (bestCharacter>=0 && ic<newNumChars){
+						weightSet.swapParts(ic+1, bestCharacter);
+						condensedData.swapParts(ic+1, bestCharacter);
+					}
 				}
 				
 				
@@ -170,7 +190,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 
 	/*.................................................................................................................*/
   	 public boolean isPrerelease(){
-  	 	return false;
+  	 	return true;
   	 }
 
 }
