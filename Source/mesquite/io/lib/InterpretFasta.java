@@ -446,12 +446,13 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							outputBuffer.append(getUnassignedSymbol());
 						else if (includeGaps || (!data.isInapplicable(ic,it))) {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
-							wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-							counter ++;
-							if ((counter % 50 == 1) && (counter > 1)) {    // modulo
-								outputBuffer.append(getLineEnding());
-							}
-						}
+                        }
+						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
+                        counter ++;
+                        if ((counter % 50 == 1) && (counter > 1)) {    // modulo
+                            outputBuffer.append(getLineEnding());
+                        }
+
 						if (wroteMoreThanOneSymbol) {
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 							return null;
