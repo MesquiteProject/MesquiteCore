@@ -417,7 +417,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 	}
  	/*.................................................................................................................*/
 	/** notifies listeners that element has been disposed*/
-	public void notifyListenersOfDisposed(Object disp){ //{ ¥¥¥ need in file element removeal to have all in one (dispose & remove) thjat calls this
+	public void notifyListenersOfDisposed(Object disp){ //{ ï¿½ï¿½ï¿½ need in file element removeal to have all in one (dispose & remove) thjat calls this
 		if (listeners!=null) {
 			Enumeration e = listeners.elements();
 			while (e.hasMoreElements()) {
@@ -589,6 +589,27 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public void showList(String title, MesquiteModule ownerModule){
 		listWindow = new MesquiteListWindow(title, ownerModule, this, false);
 	}
+	static int endSequenceByThree(Listable[] listArray1, Object obj1,NumberArray numberArray2, int number2, int ic){
+		int previousThird = ic;
+		for (int ik = ic+1; ik< listArray1.length&& ik< numberArray2.getNumParts(); ik++){
+			Object thisObj1 = listArray1[ik];
+			int num2= numberArray2.getInt(ik);
+			if (thisObj1 == obj1 && number2==num2) {
+				//is a match; if not modulus 3 on from ic then return previousThird 
+				if ((ik-ic) % 3 !=0)
+					return previousThird;
+				else
+					previousThird = ik;
+			}
+			else {
+				//is not a match; if modulus 3 on from ic then return previousThird 
+				if ((ik-ic) % 3 ==0)
+					return previousThird;
+			}
+		
+		}
+		return previousThird;
+	}
 	static int endSequenceByThree(Listable[] listArray, Object obj, int ic){
 		int previousThird = ic;
 		for (int ik = ic+1; ik< listArray.length; ik++){
@@ -664,7 +685,58 @@ public class ListableVector extends FileElement implements StringLister, Command
 		else
 			return null;
 	}
+	/*...........................................................*/
+	/** returns a string listing the elements of the array that are the passed object.  In the format
+	of NEXUS character, taxa lists (e.g., "1- 3 6 201-455".  The offset is what the first element is to be numbered
+	(e.g., 0 or 1)  */
+	public static  String getListOfMatches(Listable[] listArray1, Object obj1, NumberArray numberArray2, int number2, int offset, boolean doByThirds) {
+		int continuing = 0;
+		String s="";
+		boolean found=false;
+		int lastWritten = -1;
+		for (int i=0; i<listArray1.length && i<numberArray2.getNumParts(); i++) {
+			if (listArray1[i]==obj1 && numberArray2.getInt(i)==number2) {
+				found=true;
+				if (continuing == 0) {//first instance
+				//first, check to see if there is a series of thirds....
+				 int lastThird = 0;
+				 if (doByThirds)
+					 lastThird = endSequenceByThree(listArray1, obj1,numberArray2, number2, i);
+				//if so, then go the series of thirds 
+				if (doByThirds && lastThird != i){
+					s += " " + CharacterStates.toExternal(i) + " - " +  CharacterStates.toExternal(lastThird) + "\\3";
+					i = lastThird;
+				}
+				else { //otherwise write as normal*/
+					s += " " + (i + offset);
+					lastWritten = i;
+					continuing = 1;
+				}
+				}
+				else if (continuing == 1) {
+					s += " - ";
+					continuing = 2;
+				}
+			}
+			else if (continuing >0) {
+				if (lastWritten != i-1) {
+					s += " " + (i-1 + offset);
+					lastWritten = i-1;
+				}
+				else
+					lastWritten = -1;
+				continuing = 0;
+			}
+		}
+		if (continuing>1)
+			s += " " + (listArray1.length-1 + offset);   //TODO:  what about listArray2???
+		if (found)
+			return s;
+		else
+			return null;
+	}
 
+	/*...........................................................*/
  	static Collator collator;
 	static {
 		collator = Collator.getInstance();

@@ -29,6 +29,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 		"The source of categorical matrices is arranged initially");
 	}
 	CharMatrixSource dataTask;
+	CharWeightSet weightSet =null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		
@@ -70,7 +71,6 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 //	NameReference yRef = NameReference.getNameReference("y");
 
 	
-
 	private MCharactersDistribution condense(MCharactersDistribution mData){
 		if (mData != null && mData.getParentData() != null){
 			CharacterData data = mData.getParentData();
@@ -97,9 +97,10 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 					}
 				}
 				
-			
+
 				condensedData.removeCharactersThatAreEntirelyGaps(false);
-				
+			
+				// delete the extra parts of the weightset
 				int i = numChars-1;
 				while (i>=0) {
 					if (weightSet.getInt(i)==0){
@@ -108,7 +109,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 					i--;
 				}
 				
-				// now resort by frequency
+				// now re-sort by frequency
 				int newNumChars = condensedData.getNumChars();
 				for (int ic=-1; ic<newNumChars; ic++){
 					int bestWeight = 1;

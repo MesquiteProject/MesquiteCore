@@ -36,6 +36,9 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75
 	public boolean writeExcludedCharacters = true;
 	
+	String filePath=null;
+
+	
 	protected static int REPLACEDATA = 0;
 	protected static int REPLACEIFEMPTY = 1;
 	protected static int ADDASNEW = 2;
@@ -253,12 +256,23 @@ public abstract class FileInterpreter extends MesquiteModule  {
 
 	}
 	/*.................................................................................................................*/
+	public String getExportedFilePath(){
+		return filePath;
+	}
+	/*.................................................................................................................*/
+	public String getExportedFileName(){
+		if (filePath!=null) {
+			return MesquiteFile.getFileNameFromFilePath(filePath);
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public void saveExportedFile(String output, String arguments, String suggestedFileName) {
 
-		String path = getPathForExport(arguments, suggestedFileName, null, null);
-		if (path!=null) {
-			logln("Exporting file to " + path);
-			MesquiteFile.putFileContents(path, output, true);
+		filePath = getPathForExport(arguments, suggestedFileName, null, null);
+		if (filePath!=null) {
+			logln("Exporting file to " + filePath);
+			MesquiteFile.putFileContents(filePath, output, true);
 			logln("Export complete.");
 		}
 	}
