@@ -899,8 +899,17 @@ public class ManageTrees extends TreesManager {
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Separate Thread & Auto-Save?",buttonPressed);
 		id.addLabel (taskName + " on separate thread?", Label.LEFT, true, false);
 		id.addLargeTextLabel("Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress");
-		if (id.isInWizard())
-			id.appendToHelpString("<h3>" + StringUtil.protectForXML("Separate Thread?") + "</h3>Please choose.");
+		String s = "This dialog box establishes basic running options for this calculation. ";
+		s += "<h3>" + StringUtil.protectForXML("Separate Thread?") + "</h3>Mesquite can do multi-tasking (i.e., do multiple things at once) by placing different tasks on different computational \"threads\".";
+		s += " There is one main thread that controls the user interface. You can place the calculation you are about to do on this thread, ";
+		s += " or you can place it on a separate thread.  If you place it on the main thread you will not have control over the user interface, ";
+		s += " and you thus cannot interact fully with Mesquite.  If you place it on a separate thread, you will be able to interact fully with Mesquite.";
+		s += " The danger in placing it on a separate thread is that you might (while the calculations are proceeding) change your taxa in such a way";
+		s += " that the taxa in your file will differ from those used in the running calculation and there will be an unrecoverable conflict. ";
+		s += " Thus, placing the calculation on a separate thread is more convenient, put has potential risks if you are not careful. ";
+		s += "<h3>" + StringUtil.protectForXML("Auto-save?") + "</h3>If you choose the option to auto-save,  Mesquite will save your file as soon as the calculation completes.";
+		s += " This is of benefit should you be worried that something might happen (e.g., unexpected computer shutdown) before you have a chance to manually save the file.";
+		id.appendToHelpString(s);
 		RadioButtons radio = id.addRadioButtons (new String[]{"NOT separate thread", "Separate Thread"}, 0);
 		id.addBlankLine();
 		id.addBlankLine();
