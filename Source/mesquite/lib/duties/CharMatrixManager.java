@@ -95,7 +95,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		NameReference colorNameRef = NameReference.getNameReference("color");
 		MesquiteTimer readTime = new MesquiteTimer();
 		MesquiteTimer totalTime = new MesquiteTimer();
-		
+
 		totalTime.start();
 		if (data.interleaved) {  //vvvvvvvv  INTERLEAVED #################################################################
 			boolean warned = false;

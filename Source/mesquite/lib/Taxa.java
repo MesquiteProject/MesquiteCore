@@ -19,6 +19,7 @@ import java.util.Vector;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.MesquiteStringMatcher;
 
 /* ======================================================================== */
 /**
@@ -390,6 +391,43 @@ public class Taxa extends FileElement {
 
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
+	public int whichTaxonNumberUsingMatcher(MesquiteStringMatcher nameMatcher, String taxonName) {
+		if (StringUtil.blank(taxonName))
+			return -1;
+		for (int i = 0; i < numTaxa; i++){  //check UniqueID's
+			String uniqueID = taxon[i].getUniqueID();
+			if (uniqueID != null && taxonName.equals(uniqueID))
+				return i;
+		}
+		int tN0 = MesquiteInteger.fromString(taxonName, false);
+		if (MesquiteInteger.isCombinable(tN0) && tN0 >= 1 && tN0 <= numTaxa) {
+			return Taxon.toInternal(tN0);
+		}
+
+		int match = -1;
+		int numMatches = 0;
+		for (int i = 0; i < numTaxa; i++) {
+			String ti = taxon[i].getName();
+			if (ti != null  && nameMatcher.stringsMatch(ti, taxonName)) {
+				match = i;
+				numMatches++;
+			}
+		}
+		if (numMatches < 2 && match >= 0)
+			return match;
+
+		// System.out.println("ERROR: bad taxon name: "+ taxonName);
+		return -1;
+	}
+	/* ................................................................................................................. */
+	/** returns which taxon (i.e., its number) has the given name */
+	public int whichTaxonNumber(MesquiteStringMatcher nameMatcher, String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
+		if (nameMatcher==null)
+			return whichTaxonNumber(taxonName, caseSensitive, forgivingOfTruncation);
+		return whichTaxonNumberUsingMatcher(nameMatcher, taxonName);
+	}
+	/* ................................................................................................................. */
+	/** returns which taxon (i.e., its number) has the given name */
 	public int whichTaxonNumber(String taxonName, boolean caseSensitive,
 			boolean forgivingOfTruncation) {
 		if (StringUtil.blank(taxonName))
@@ -513,6 +551,42 @@ public class Taxa extends FileElement {
 		// System.out.println("ERROR: bad taxon name: "+ taxonName);
 		return -1;
 	}
+	/* ................................................................................................................. */
+	/**
+	 * returns which taxon (i.e., its number) has the given name, doing reverse
+	 * search from last to first
+	 */
+	public int whichTaxonNumberUsingMatcherRev(MesquiteStringMatcher nameMatcher, String taxonName) {
+		if (StringUtil.blank(taxonName))
+			return -1;
+
+		for (int i = numTaxa - 1; i >= 0; i--)
+			if (nameMatcher.stringsMatch(taxonName, taxon[i].getName()))
+				return i;
+		try {
+			int tNum = Taxon.toInternal(MesquiteInteger.fromString(taxonName, false));
+			if ((tNum < numTaxa) && (tNum >= 0))
+				return tNum;
+		} catch (NumberFormatException e) {
+			System.out.println("ERROR: bad taxon number/taxon name: "
+					+ taxonName);
+			return -1;
+		}
+		// System.out.println("ERROR: bad taxon name: "+ taxonName);
+		return -1;
+	}
+	
+	/* ................................................................................................................. */
+	/**
+	 * returns which taxon (i.e., its number) has the given name, doing reverse
+	 * search from last to first
+	 */
+	public int whichTaxonNumberRev(MesquiteStringMatcher nameMatcher, String taxonName, boolean caseSensitive) {
+		if (nameMatcher==null)
+			return whichTaxonNumberRev(taxonName, caseSensitive);
+		return whichTaxonNumberUsingMatcherRev(nameMatcher, taxonName);
+	}
+
 
 	/* ................................................................................................................. */
 	/** returns which number has the given taxon. */

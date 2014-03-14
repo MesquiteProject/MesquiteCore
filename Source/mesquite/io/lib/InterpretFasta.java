@@ -132,13 +132,17 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			String token = subParser.getFirstToken(line); //should be >
 			int numFilledChars = data.getNumChars();
 			boolean added = false;
+			MesquiteStringMatcher nameMatcher = null;
+			if (MesquiteTrunk.debugMode)
+				nameMatcher = (MesquiteStringMatcher)hireNamedEmployee(MesquiteStringMatcher.class, "#PrefixedStringMatcher"); //TEMP
+
 			
 			while (!StringUtil.blank(line) && !abort) {
 
 				//parser.setPunctuationString(null);
 
 				token = subParser.getRemaining();  //taxon Name
-				taxonNumber = taxa.whichTaxonNumber(token);   // checking to see if a taxon of that name already exists in the file
+				taxonNumber = taxa.whichTaxonNumber(nameMatcher, token, false, false);   // checking to see if a taxon of that name already exists in the file
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
 					if (!MesquiteThread.isScripting()){
