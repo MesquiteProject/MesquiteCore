@@ -133,8 +133,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			int numFilledChars = data.getNumChars();
 			boolean added = false;
 			MesquiteStringMatcher nameMatcher = null;
-			if (MesquiteTrunk.debugMode)
-				nameMatcher = (MesquiteStringMatcher)hireNamedEmployee(MesquiteStringMatcher.class, "#PrefixedStringMatcher"); //TEMP
+		//	if (MesquiteTrunk.debugMode)
+		//		nameMatcher = (MesquiteStringMatcher)hireNamedEmployee(MesquiteStringMatcher.class, "#PrefixedStringMatcher"); //TEMP
 
 			
 			while (!StringUtil.blank(line) && !abort) {
