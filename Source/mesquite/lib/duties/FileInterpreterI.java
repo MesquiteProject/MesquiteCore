@@ -31,7 +31,7 @@ public abstract class FileInterpreterI extends FileInterpreter  {
 	public abstract boolean exportFile(MesquiteFile file, String arguments);
 	
 	/** called after hired in case interpreter wants to query user about import*/
-	public void getImportOptions(){
+	public void getImportOptions(boolean fuse){
 	}
 	
 }

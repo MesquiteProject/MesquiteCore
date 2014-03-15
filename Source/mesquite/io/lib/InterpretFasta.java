@@ -27,13 +27,31 @@ import mesquite.cont.lib.ContinuousData;
 /** This is the class for interpreting FASTA files.  It is subclassed to make interpreters specifically for
 DNA and Protein files. */
 public abstract class InterpretFasta extends FileInterpreterI implements ReadFileFromString {
+	StringMatcher nameMatcherTask = null;
 	Class[] acceptedClasses;
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e1 = registerEmployeeNeed(StringMatcher.class, "FASTA file import needs a way to determine if the taxon in a ; choose the one that appropriately determines the sequence names from the sample codes.", "This is activated automatically.");
+	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class};
 		return true;  //make this depend on taxa reader being found?)
 	}
 
+	public void getImportOptions(boolean fuse){
+		if (fuse) {
+			if (nameMatcherTask==null) 
+				nameMatcherTask = (StringMatcher)hireEmployee(StringMatcher.class,  "Module to determine whether a taxon name in the incoming FASTA file matches that in an existing matrix.");
+			if (nameMatcherTask==null) 
+				return;
+			else {
+				if (!nameMatcherTask.optionsSpecified())
+					if (!MesquiteThread.isScripting())
+						if (!nameMatcherTask.queryOptions())
+							return;
+			}
+		}
+}
 	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		return true;  //
@@ -132,7 +150,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			String token = subParser.getFirstToken(line); //should be >
 			int numFilledChars = data.getNumChars();
 			boolean added = false;
-			MesquiteStringMatcher nameMatcher = null;
+			//StringMatcher nameMatcher = null;
 		//	if (MesquiteTrunk.debugMode)
 		//		nameMatcher = (MesquiteStringMatcher)hireNamedEmployee(MesquiteStringMatcher.class, "#PrefixedStringMatcher"); //TEMP
 
@@ -142,7 +160,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				//parser.setPunctuationString(null);
 
 				token = subParser.getRemaining();  //taxon Name
-				taxonNumber = taxa.whichTaxonNumber(nameMatcher, token, false, false);   // checking to see if a taxon of that name already exists in the file
+				taxonNumber = taxa.whichTaxonNumber(nameMatcherTask, token, false, false);   // checking to see if a taxon of that name already exists in the file
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
 					if (!MesquiteThread.isScripting()){

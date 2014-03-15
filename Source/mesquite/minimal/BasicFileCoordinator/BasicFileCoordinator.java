@@ -1255,7 +1255,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		Listable fInt = ListDialog.queryList(fd.containerOfModule(), "Translate File", message, MesquiteString.helpString,fInterpretersCanImport, 0);
 
 		if (fInt instanceof FileInterpreterI && !MesquiteThread.isScripting())
-			((FileInterpreterI)fInt).getImportOptions();
+			((FileInterpreterI)fInt).getImportOptions(fuse);
 
 		if (fd!=null)
 			fireEmployee(fd);

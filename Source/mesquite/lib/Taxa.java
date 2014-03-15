@@ -19,7 +19,7 @@ import java.util.Vector;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
-import mesquite.lib.duties.MesquiteStringMatcher;
+import mesquite.lib.duties.StringMatcher;
 
 /* ======================================================================== */
 /**
@@ -391,7 +391,7 @@ public class Taxa extends FileElement {
 
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
-	public int whichTaxonNumberUsingMatcher(MesquiteStringMatcher nameMatcher, String taxonName) {
+	public int whichTaxonNumberUsingMatcher(StringMatcher nameMatcher, String taxonName) {
 		if (StringUtil.blank(taxonName))
 			return -1;
 		for (int i = 0; i < numTaxa; i++){  //check UniqueID's
@@ -421,8 +421,8 @@ public class Taxa extends FileElement {
 	}
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
-	public int whichTaxonNumber(MesquiteStringMatcher nameMatcher, String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
-		if (nameMatcher==null)
+	public int whichTaxonNumber(StringMatcher nameMatcher, String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
+		if (nameMatcher==null || nameMatcher.useDefaultMatching())
 			return whichTaxonNumber(taxonName, caseSensitive, forgivingOfTruncation);
 		return whichTaxonNumberUsingMatcher(nameMatcher, taxonName);
 	}
@@ -556,7 +556,7 @@ public class Taxa extends FileElement {
 	 * returns which taxon (i.e., its number) has the given name, doing reverse
 	 * search from last to first
 	 */
-	public int whichTaxonNumberUsingMatcherRev(MesquiteStringMatcher nameMatcher, String taxonName) {
+	public int whichTaxonNumberUsingMatcherRev(StringMatcher nameMatcher, String taxonName) {
 		if (StringUtil.blank(taxonName))
 			return -1;
 
@@ -581,7 +581,7 @@ public class Taxa extends FileElement {
 	 * returns which taxon (i.e., its number) has the given name, doing reverse
 	 * search from last to first
 	 */
-	public int whichTaxonNumberRev(MesquiteStringMatcher nameMatcher, String taxonName, boolean caseSensitive) {
+	public int whichTaxonNumberRev(StringMatcher nameMatcher, String taxonName, boolean caseSensitive) {
 		if (nameMatcher==null)
 			return whichTaxonNumberRev(taxonName, caseSensitive);
 		return whichTaxonNumberUsingMatcherRev(nameMatcher, taxonName);

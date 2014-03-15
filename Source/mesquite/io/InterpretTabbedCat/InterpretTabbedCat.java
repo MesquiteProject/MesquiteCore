@@ -43,7 +43,7 @@ public class InterpretTabbedCat extends FileInterpreterI {
 	public boolean canImport() {  
 		return true;
 	}
-	public void getImportOptions(){
+	public void getImportOptions(boolean fuse){
 		firstLineAreCharacterNames = AlertDialog.query(containerOfModule(), "Import", "Does the first line of the file contain character names?", "Yes", "No", 1);  //post-1.03
 	}
 	/*.................................................................................................................*/

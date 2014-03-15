@@ -10,14 +10,24 @@ to read different data file formats.  Example module: "Interpret NEXUS files" (c
 see BasicFileCoordinator.*/
 
 /** a subclass for determining whether two strings match*/
-public abstract class MesquiteStringMatcher extends MesquiteModule  {
+public abstract class StringMatcher extends MesquiteModule  {
 
+	/** returns true if the options are already specified.*/
+	public  boolean optionsSpecified(){
+		return false;
+	}
 	/** returns true if the options are set and accepted.*/
 	public  boolean queryOptions(){
 		return true;
 	}
 	/** returns whether two strings are considered equal.*/
 	public abstract boolean stringsMatch(String s1, String s2);
+	
+	public boolean useDefaultMatching() {
+		return false;
+	}
+	
+	
 }
 
 
