@@ -10,6 +10,7 @@ public class BasicStringMatcher extends StringMatcher {
 		return true;
 	}
 	public boolean stringsMatch(String s1, String s2) {
+		MesquiteMessage.warnProgrammer("WARNING: Within BasicStringMatcher.stringsMatch(): shouldn't be here!!!!");
 		return false;
 	}
 
