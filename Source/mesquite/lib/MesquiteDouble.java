@@ -801,7 +801,7 @@ public class MesquiteDouble implements Listable {
 		String dec = "";
 		double lowerLimit=1.0;
 		for(int i=1; i<=digits; i++){
-			dec+="0";
+			dec+="#";
 			lowerLimit*=0.1;
 		}
 		DecimalFormat myFormatter=null;
