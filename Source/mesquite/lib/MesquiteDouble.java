@@ -795,6 +795,56 @@ public class MesquiteDouble implements Listable {
 		}
 		String sFromDouble;
 		
+		if (digits<0){ //added 17 Dec 01
+			digits=0;
+		}
+		String dec = "";
+		double lowerLimit=1.0;
+		for(int i=1; i<=digits; i++){
+			dec+="0";
+			lowerLimit*=0.1;
+		}
+		DecimalFormat myFormatter=null;
+		
+		if (allowExponentialNotation){
+			if (d>10000 || d<lowerLimit)
+				myFormatter = new DecimalFormat("0."+dec+"E0");
+			else 
+				myFormatter = new DecimalFormat("#."+dec);
+		}
+		else {
+			myFormatter = new DecimalFormat("#."+dec);
+		}
+
+		sFromDouble = myFormatter.format(d);
+		if (digits==0) 
+			sFromDouble = StringUtil.removeLastCharacterIfMatch(sFromDouble, '.');
+		s.append(sFromDouble);
+
+	}
+	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
+	public static void toStringDigitsSpecifiedOld(double d, int digits, StringBuffer s, boolean allowExponentialNotation) {  
+		if (s==null)
+			return;
+		if (d==unassigned|| d==infinite||d==negInfinite ||d==impossible ||d==inapplicable){
+			if (d==unassigned) 
+				s.append("?"); //changed from "unassigned" June 02
+			else if (d==infinite) 
+				s.append("infinite");
+			else if (d==negInfinite)
+				s.append("neg.infinite");  
+			else if (d==impossible)
+				s.append("impossible");  
+			else if (d==inapplicable)
+				s.append("inapplicable"); 
+			return;
+		}
+		if (d<0){
+			d = -d;
+			s.append('-');
+		}
+		String sFromDouble;
+		
 		
 		if (allowExponentialNotation)
 			sFromDouble = Double.toString(d);
