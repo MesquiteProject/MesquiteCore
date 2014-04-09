@@ -304,7 +304,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		 success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
 
 		if (success){
-			logln("Alignment completed in " + timer.timeSinceLastInSeconds() + " seconds");
+			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
+			logln("Processing results...");
 			FileCoordinator coord = getFileCoordinator();
 			MesquiteFile tempDataFile = null;
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
