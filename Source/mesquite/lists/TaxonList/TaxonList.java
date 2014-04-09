@@ -102,14 +102,14 @@ public class TaxonList extends ListModule {
 			addMenuItem( "Save selected as set...", makeCommand("saveSelectedRows", this));
 			addMenuItem( "-", null);
 
-			/* default columns*/
+			/* default columns*
 			TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#DefaultTaxaOrder"));
 			if (assistant!= null){
 				((TaxonListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
 			/* removed as default v. 2. 01; returned for v. 2. 5 */
-			assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
+			TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
 			if (assistant!= null){
 				((TaxonListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
