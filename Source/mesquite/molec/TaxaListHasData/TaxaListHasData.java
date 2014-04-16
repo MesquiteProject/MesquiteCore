@@ -50,6 +50,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
+		addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  //Debugg.println  temporary for Wayne!!!!!!
+		addMenuItem("Delete *", makeCommand("deleteStar", this));  //Debugg.println  temporary for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
@@ -94,6 +96,51 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 			if (!AlertDialog.query(containerOfModule(), "Delete Data?", "Are you sure you want to delete the data for these taxa in the matrix \"" + data.getName() + "\"", "No", "Yes"))
 				zapData(data);
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "deleteds () and anything between", null, commandName, "deletePrepended")) {
+			if (observedStates == null || taxa == null)
+				return null;
+			boolean anySelected = taxa.anySelected();
+			for (int it = 0; it<taxa.getNumTaxa(); it++){
+				if ((!anySelected || taxa.getSelected(it))){
+					String note = getNote(it);
+					while (!StringUtil.blank(note) && note.indexOf("(")>=0){
+						int start = note.indexOf("(");
+						int end = note.indexOf(")");
+						String firstBit = "";
+						if (start>0)
+							firstBit = note.substring(0, start);
+						note = firstBit + note.substring(end+1, note.length());
+					}
+					setNote(it, note);
+
+				}
+			}
+			outputInvalid();
+			parametersChanged();
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "deletes *", null, commandName, "deleteStar")) {
+			if (observedStates == null || taxa == null)
+				return null;
+			boolean anySelected = taxa.anySelected();
+			for (int it = 0; it<taxa.getNumTaxa(); it++){
+				if ((!anySelected || taxa.getSelected(it))){
+					String note = getNote(it);
+					while (!StringUtil.blank(note) && note.indexOf("*")>=0){
+						int start = note.indexOf("*");
+						String firstBit = "";
+						if (start>0)
+							firstBit = note.substring(0, start);
+						note = firstBit + note.substring(start+1, note.length());
+					}
+					setNote(it, note);
+
+				}
+			}
+			outputInvalid();
+			parametersChanged();
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Prepends to the note the sequence length (including N\'s and ?\'s) for the selected taxa", null, commandName, "prependLength")) {
@@ -228,11 +275,11 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return 0;
 			if (cs instanceof MolecularState){
 				if (!cs.isInapplicable())  //if Molecular, then count missing & with state
-				count++;
+					count++;
 			}
 			else
 				if (!cs.isInapplicable() && !cs.isUnassigned())  //if Molecular, then count missing & with state
-				count++;
+					count++;
 
 
 		}
@@ -301,6 +348,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		}
 		data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 		outputInvalid();
+		parametersChanged();
 	}
 
 	/*.................................................................................................................*/
@@ -312,6 +360,14 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	public Color getBackgroundColorOfCell(int it, boolean selected){
 		if (observedStates == null)
 			doCalcs();
+		if (observedStates.getParentData() != null){
+			CharacterData data = observedStates.getParentData();
+			Associable tInfo = data.getTaxaInfo(false);
+			NameReference genBankColor = NameReference.getNameReference("genbankcolor");
+			Object obj = tInfo.getAssociatedObject(genBankColor,  it);  //not saved to file
+			if (obj instanceof Color)
+				return (Color)obj;
+		}
 		if (bits ==null || it <0 || it > bits.getSize())
 			return null;
 		String note = getNote(it);
