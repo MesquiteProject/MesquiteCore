@@ -640,46 +640,74 @@ public class ListableVector extends FileElement implements StringLister, Command
 	of NEXUS character, taxa lists (e.g., "1- 3 6 201-455".  The offset is what the first element is to be numbered
 	(e.g., 0 or 1)  */
 	public static  String getListOfMatches(Listable[] listArray, Object obj, int offset, boolean doByThirds) {
+		return  getListOfMatches(listArray,  obj,  offset,  doByThirds, "");
+	}
+	/** returns a string listing the elements of the array that are the passed object.  In the format
+	of NEXUS character, taxa lists (e.g., "1- 3 6 201-455".  The offset is what the first element is to be numbered
+	(e.g., 0 or 1)  */
+	public static  String getListOfMatches(Listable[] listArray, Object obj, int offset, boolean doByThirds, String separator) {
 		int continuing = 0;
 		String s="";
 		boolean found=false;
+		boolean writeSeparator=false;
 		int lastWritten = -1;
 		for (int i=0; i<listArray.length; i++) {
 			if (listArray[i]==obj) {
 				found=true;
 				if (continuing == 0) {//first instance
-				//first, check to see if there is a series of thirds....
-				 int lastThird = 0;
-				 if (doByThirds)
-					 lastThird = endSequenceByThree(listArray, obj, i);
-				//if so, then go the series of thirds 
-				if (doByThirds && lastThird != i){
-					s += " " + CharacterStates.toExternal(i) + " - " +  CharacterStates.toExternal(lastThird) + "\\3";
-					i = lastThird;
+					//first, check to see if there is a series of thirds....
+					int lastThird = 0;
+					if (doByThirds)
+						lastThird = endSequenceByThree(listArray, obj, i);
+					//if so, then go the series of thirds 
+					if (doByThirds && lastThird != i){
+						if (writeSeparator) {
+							s+=separator;
+							writeSeparator=false;
+						}
+						s += " " + CharacterStates.toExternal(i) + " - " +  CharacterStates.toExternal(lastThird) + "\\3";
+						writeSeparator=true;
+						i = lastThird;
+					}
+					else { //otherwise write as normal*/
+						if (writeSeparator) {
+							s+=separator;
+							writeSeparator=false;
+						}
+						s += " " + (i + offset);
+						lastWritten = i;
+						continuing = 1;
+					}
 				}
-				else { //otherwise write as normal*/
-					s += " " + (i + offset);
-					lastWritten = i;
-					continuing = 1;
-				}
-				}
-				else if (continuing == 1) {
+				else if (continuing == 1) {  //second instance
 					s += " - ";
 					continuing = 2;
 				}
 			}
-			else if (continuing >0) {
+			else if (continuing >0) {  // we've already seen at least one
 				if (lastWritten != i-1) {
+					if (writeSeparator) {
+						s+=separator;
+						writeSeparator=false;
+					}
 					s += " " + (i-1 + offset);
+					writeSeparator=true;
 					lastWritten = i-1;
 				}
-				else
+				else {
+					writeSeparator=true;
 					lastWritten = -1;
+				}
 				continuing = 0;
 			}
 		}
-		if (continuing>1)
+		if (continuing>1){
+			if (writeSeparator) {
+				s+=separator;
+				writeSeparator=false;
+			}
 			s += " " + (listArray.length-1 + offset);
+		}
 		if (found)
 			return s;
 		else
