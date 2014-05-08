@@ -100,6 +100,8 @@ public class FAFillTreeBlock extends FileAlterer {
 
 
 		int before = trees.size();
+		mesquite.lib.characters.CharacterData data = proj.getCharacterMatrix(0);
+		treeFillerTask.initialize(data.getTaxa());
 		treeFillerTask.fillTreeBlock(trees, howManyTrees);
 
 		if (trees.size()==before) {

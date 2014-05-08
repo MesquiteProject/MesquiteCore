@@ -25,19 +25,19 @@ import mesquite.lib.duties.*;
 public class ManageTrees extends TreesManager {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.TreesList.TreesList.class, "This manages the List of Trees windows.",
-		"It is activated automatically. ");
+				"It is activated automatically. ");
 		EmployeeNeed e3 = registerEmployeeNeed(mesquite.lists.TreeblockList.TreeblockList.class, "This manages the List of Tree Blocks windows.",
-		"It is activated automatically. ");
+				"It is activated automatically. ");
 
 
 
 		EmployeeNeed e2 = registerEmployeeNeed(TreeBlockFiller.class, "Tree blocks can be generated and added to the file.",
-		"To create and fill a new tree block, select Make New Trees Block From... in the Taxa&amp;Trees menu. ");
+				"To create and fill a new tree block, select Make New Trees Block From... in the Taxa&amp;Trees menu. ");
 		e2.setPriority(2);
 		e2.setAlternativeEmployerLabel("Trees block manager");
 		e2.setEntryCommand("newFilledTreeBlockInt");
 		EmployeeNeed e4 = registerEmployeeNeed(TreeInferer.class, "Tree blocks can come from a tree inference method and be added to the file.",
-		"To request a tree inference method, select Tree Inference... in the Taxa&amp;Trees menu. ");
+				"To request a tree inference method, select Tree Inference... in the Taxa&amp;Trees menu. ");
 		e4.setPriority(2);
 		e4.setAlternativeEmployerLabel("Trees block manager");
 		e4.setEntryCommand("newFilledTreeBlockInferenceInt");
@@ -47,6 +47,8 @@ public class ManageTrees extends TreesManager {
 	TreeBlockFiller treeFillerTask;  //For make new trees block from
 	Vector blockListeners = null;
 	boolean fillingTreesNow = false;
+	MesquiteBoolean separateThreadFill;
+	MesquiteBoolean autoSaveInference ;
 	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on separate threads.
 	//The searches themselves should work fine, but there is a possibility of user-interface confuses.
 
@@ -56,6 +58,9 @@ public class ManageTrees extends TreesManager {
 		treesVector = new ListableVector();
 		blockListeners = new Vector();
 		setMenuToUse(MesquiteTrunk.treesMenu);
+		separateThreadFill = new MesquiteBoolean(true);
+		autoSaveInference = new MesquiteBoolean(false);
+		loadPreferences();
 		return true;
 	}
 
@@ -235,14 +240,14 @@ public class ManageTrees extends TreesManager {
 				temp.addLine("showTreeBlocks ", e); 
 			}
 		}
-	
+
 		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){
 			temp.addLine("restartTreeSource ", treeFillerTask);
 			temp.addLine("reconnectTreeSource ");
 		}
 		else if (showTreeFiller && treeFillerTask !=null)
 			temp.addLine("setTreeSource ", treeFillerTask);
-	
+
 		return temp;
 	}
 
@@ -637,7 +642,7 @@ public class ManageTrees extends TreesManager {
 			int separateThread = 0;
 			MesquiteBoolean autoSave = new MesquiteBoolean(false);
 			if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-				separateThread= separateThreadQuery("Fill tree block", autoSave);
+				separateThread= separateThreadQuery("Fill tree block", autoSave, false);
 			if (separateThread==1) {  //separateThread
 				fillingTreesNow = true;
 				TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
@@ -645,18 +650,18 @@ public class ManageTrees extends TreesManager {
 				Add to tree block filler a method startTreeFilling(TreesDoneListener this) that is called 
 				(not on a separate thread -- that is the responsibility of the tree block filler, as sometimes it will be the filler's own time involved, sometimes
 				an external program, and it will be the tree block filler's responsibility to poll for the external being done, and it will have to do that on its own thread.)
-				
+
 				When the tree block filler detects the trees are ready, it calls a method to notify the TreesDoneListener that the trees are ready.  
 				This perhaps will be done via an intermediary command on the main thread so that the response is on the main thread.  
 				ManageTrees will therefore get notified that the trees are ready, and will therefore ask the tree block filler to actually fill the block of trees, and continue.
-				
+
 				If the file is saved and closed before it's done, ManageTrees should snapshot setOngoingTreeBlockFiller in which it hires the tree block filler and then
 				re-registers as the TreesDoneListener.  The tree block filler would save a snapshot to remember what are the locations of the files and external searcher, 
 				and the criteria for its being done (e.g. the presence of a file).  When rehired it would load all that and check to see if the criterion was met, starting
 				a thread to check, and when done, would notify the TreesDoneListener
 
 
-				*/
+				 */
 				tLT.start();
 			}
 			else if (separateThread == 0) {// same thread
@@ -685,7 +690,7 @@ public class ManageTrees extends TreesManager {
 				discreetAlert("A taxa block must be created first before making a tree block");
 				return null;
 			}
-			newTreeBlockFilledInt(commandName, arguments, checker, false, "Fill tree block");
+			newTreeBlockFilledInt(commandName, arguments, checker, false, "Fill tree block", false);
 		}
 		else if (checker.compare(this.getClass(), "Creates a new tree file written directly from a tree source (internally called from menu item)", "[name of tree source module]", commandName, "saveDrectTreeFileInt")) {
 			saveDirectTreeFileCoord(commandName, arguments, checker, false);
@@ -695,7 +700,7 @@ public class ManageTrees extends TreesManager {
 				discreetAlert("A taxa block must be created first before making a tree block");
 				return null;
 			}
-			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference");
+			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference", true);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -764,7 +769,7 @@ public class ManageTrees extends TreesManager {
 
 	}
 	/*-----------------------------------------------------------------*/
-	Object newTreeBlockFilledInt(String commandName, String arguments, CommandChecker checker, boolean suppressAsk, String taskName){
+	Object newTreeBlockFilledInt(String commandName, String arguments, CommandChecker checker, boolean suppressAsk, String taskName, boolean isInference){
 		//arguments that should be accepted: (1) tree source, (2) which taxa, (3)  file id, (4) name of tree block, (5) how many trees  [number of taxa block] [identification number of file in which the tree block should be stored] [name of tree block] [how many trees to make]
 		if (fillingTreesNow){
 			discreetAlert( "Sorry, another new tree block or tree file is currently being filled.  You must wait for that to finish before asking for another new tree block.");
@@ -803,7 +808,7 @@ public class ManageTrees extends TreesManager {
 		int separateThread = 0;
 		MesquiteBoolean autoSave = new MesquiteBoolean(false);
 		if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-			separateThread= separateThreadQuery(taskName, autoSave);
+			separateThread= separateThreadQuery(taskName, autoSave, isInference);
 		if (separateThread==1) {   // separate
 			fillingTreesNow = true;
 			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
@@ -893,10 +898,28 @@ public class ManageTrees extends TreesManager {
 
 		return null;
 	}	
-	
-	int separateThreadQuery(String taskName, MesquiteBoolean autoSave){
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("separateThreadFill".equalsIgnoreCase(tag))
+			separateThreadFill.setValue(MesquiteBoolean.fromTrueFalseString(content));
+
+		if ("autoSaveInference".equalsIgnoreCase(tag))
+			autoSaveInference.setValue(MesquiteBoolean.fromTrueFalseString(content));
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "separateThreadFill", separateThreadFill);  
+		StringUtil.appendXMLTag(buffer, 2, "autoSaveInference", autoSaveInference);  
+		return buffer.toString();
+	}
+	int separateThreadQuery(String taskName, MesquiteBoolean autoSave, boolean isInference){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Separate Thread & Auto-Save?",buttonPressed);
+		String title = "Separate Thread?";
+		if (isInference)
+			title = "Separate Thread & Auto-Save?";
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), title,buttonPressed);
 		id.addLabel (taskName + " on separate thread?", Label.LEFT, true, false);
 		id.addLargeTextLabel("Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress");
 		String s = "This dialog box establishes basic running options for this calculation. ";
@@ -910,18 +933,34 @@ public class ManageTrees extends TreesManager {
 		s += "<h3>" + StringUtil.protectForXML("Auto-save?") + "</h3>If you choose the option to auto-save,  Mesquite will save your file as soon as the calculation completes.";
 		s += " This is of benefit should you be worried that something might happen (e.g., unexpected computer shutdown) before you have a chance to manually save the file.";
 		id.appendToHelpString(s);
-		RadioButtons radio = id.addRadioButtons (new String[]{"NOT separate thread", "Separate Thread"}, 0);
+		int choice = 0;
+		if (separateThreadFill.getValue())
+			choice = 1;
+		RadioButtons radio = id.addRadioButtons (new String[]{"NOT separate thread", "Separate Thread"}, choice);
 		id.addBlankLine();
-		id.addBlankLine();
-		id.addLabel ("Save file automatically after trees are finished?", Label.LEFT, true, false);
-		RadioButtons radio2 = id.addRadioButtons (new String[]{"Auto-Save", "Don't Save"}, 0);
+		if (isInference){
+			id.addBlankLine();
+			id.addLabel ("Save file automatically after trees are finished?", Label.LEFT, true, false);
+			choice = 0;
+			if (!autoSaveInference.getValue())
+				choice = 1;
+			RadioButtons radio2 = id.addRadioButtons (new String[]{"Auto-Save", "Don't Save"}, choice);
 
-		
-		id.addBlankLine();
-		id.completeAndShowDialog("OK", null, null, "OK");
-		id.dispose();
-		if (autoSave != null)
-			autoSave.setValue(radio2.getValue() == 0);
+
+			id.addBlankLine();
+			id.completeAndShowDialog("OK", null, null, "OK");
+			id.dispose();
+			if (autoSave != null){
+				autoSave.setValue(radio2.getValue() == 0);
+				autoSaveInference.setValue(autoSave.getValue());
+			}
+		}
+		else {
+			id.completeAndShowDialog("OK", null, null, "OK");
+			id.dispose();
+		}
+		separateThreadFill.setValue(radio.getValue() == 1);
+		storePreferences();
 		return radio.getValue();
 	}
 	/*.................................................................................................................*/
@@ -1130,7 +1169,7 @@ public class ManageTrees extends TreesManager {
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(j);
 			if (trees.getID() == id)
-					return trees;
+				return trees;
 		}
 		return null;
 	}
@@ -1364,7 +1403,7 @@ public class ManageTrees extends TreesManager {
 					}
 				}
 
-				
+
 				if (taxa==null) {
 					int tI = parser.tokenIndexOfIgnoreCase(fileReadingArguments, "taxa");//DRM added this 8 April 2012 so that one can specify which taxa block it should belong to
 					if (tI>=0){
@@ -1545,7 +1584,7 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 
-	
+
 	public String getTreeBlock(TreeVector trees, NexusBlock tB){
 		if (trees == null || trees.size()==0)
 			return null;
@@ -1711,7 +1750,7 @@ class TreeBlockThread extends MesquiteThread {
 			sc = cr.recordIsScripting();
 		comRec = new CommandRecord(sc);
 		setCommandRecord(comRec);
-		
+
 	}
 
 	public String getCurrentCommandName(){
@@ -1782,7 +1821,7 @@ class TreeBlockMonitorThread extends MesquiteThread {
 			sc = cr.recordIsScripting();
 		comRec = new CommandRecord(sc);
 		setCommandRecord(comRec);
-		
+
 	}
 
 	public String getCurrentCommandName(){
