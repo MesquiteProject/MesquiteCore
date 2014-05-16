@@ -181,14 +181,15 @@ public class PairwiseAligner  {
 				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
 				ret = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
 				gapInsertionArray = helper.getGapInsertionArray();  
-
+	            if (score != null)
+	                score.setValue( myScore );
 			} else {
 //				 fast (but quadratic space) alignment
 			    AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength);
 				ret = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
 				gapInsertionArray = helper.getGapInsertionArray();
 			}
-		
+
 			if (ret==null)
 				return null;
 			for (int i=0; i<ret.length; i++) {
@@ -213,10 +214,9 @@ public class PairwiseAligner  {
 				return null;
 			}
 			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.
-			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, alphabetLength, true, keepGaps, followsGapSize);
+			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength, true, keepGaps, followsGapSize);
 			helper.fillForward(0,lengthA,0,lengthB,helper.noGap);			
-			int myScore = Math.min(helper.fH[lengthA], Math.min (helper.fD[lengthA], helper.fV[lengthA])) ;
-			
+			int myScore = Math.min(helper.fH[lengthB], Math.min (helper.fD[lengthB], helper.fV[lengthB])) ;
 			if (score != null)
 				score.setValue( myScore );
 
