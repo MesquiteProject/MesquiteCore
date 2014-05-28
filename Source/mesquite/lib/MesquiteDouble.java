@@ -789,6 +789,10 @@ public class MesquiteDouble implements Listable {
 				s.append("inapplicable"); 
 			return;
 		}
+		else if (d == 0.0){
+			s.append("0.0");
+			return;
+		}
 		if (d<0){
 			d = -d;
 			s.append('-');

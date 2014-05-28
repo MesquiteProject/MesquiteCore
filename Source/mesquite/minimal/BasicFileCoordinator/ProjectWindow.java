@@ -1073,6 +1073,7 @@ class MElementPanel extends ElementPanel {
 	}
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Lists the characters", null, commandName, "list")) {
+			Debugg.println("element " + element.getName());
 			((CharacterData)element).showList();
 		}
 		else
