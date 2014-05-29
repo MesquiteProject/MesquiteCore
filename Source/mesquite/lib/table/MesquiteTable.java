@@ -3798,9 +3798,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/**
-	 * Returns text in corner of matrix. Should be overridden in subclasses if text returned is appropriate.
+	 * Returns text in corner of matrix. Should be overridden in subclasses if text returned is appropriate.  This draws low in the corner
 	 */
 	public synchronized String getCornerText() {
+		return "";
+	}
+	/* ............................................................................................................... */
+	/**
+	 * Returns text in corner of matrix. Should be overridden in subclasses if text returned is appropriate. This draws high in the corner
+	 */
+	public synchronized String getUpperCornerText() {
 		return "";
 	}
 

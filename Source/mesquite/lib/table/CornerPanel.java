@@ -14,6 +14,7 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 
 /* ======================================================================== */
@@ -64,10 +65,15 @@ public class CornerPanel extends MesquitePanel {
 		g.drawPolygon(temp);
 	*/
 		//g.fillRect(w-3, 0, 4, h+1);
+		g.setColor(Color.gray);
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		g.drawString(table.getUpperCornerText(), 4, fm.getAscent()+fm.getDescent() + 2);
 		if (table.getCellDimmed(-1, -1))
 			g.setColor(Color.gray);
 		else
 			g.setColor(Color.black);
+		
+		
 		g.drawString(table.getCornerText(), 4, h-MesquiteString.riseOffset);
 		g.setColor(Color.black);
 		if (table.getDropDown(-1, -1) && dropDownTriangle != null) {
