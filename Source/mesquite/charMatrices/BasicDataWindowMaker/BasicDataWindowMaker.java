@@ -3344,7 +3344,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		MesquiteWindow mw = getMesquiteWindow();
 		if (mw != null) {
 			FileCoordinator fileCoord = mw.getOwnerModule().getFileCoordinator();
-			FileInterpreter fileInterpreter = fileCoord.findImporter(droppedContents, fileName, 0, "", true, data.getStateClass());
+			FileInterpreter fileInterpreter = fileCoord.findImporter(droppedContents, fileName, 0, StringUtil.argumentMarker + "fuseTaxaCharBlocks", true, data.getStateClass());   //DRM  9 April 2014   added "fuseTaxaCharBlocks" as that is what is happening here
 			return fileInterpreter;
 		}
 		return null;

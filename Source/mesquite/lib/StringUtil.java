@@ -792,7 +792,7 @@ public class StringUtil {
 		String trimmedString = token.trim();
 		int charPos = trimmedString.lastIndexOf((int)c) ;  
 		if (charPos == trimmedString.length()-1)   // then the last none-whitespace is the character c
-			return token.substring(0,token.lastIndexOf((int)c)-1);
+			return token.substring(0,token.lastIndexOf((int)c));   //DRM March 2014:  changed from 0,token.lastIndexOf((int)c-1
 		else
 			return token;
 	}

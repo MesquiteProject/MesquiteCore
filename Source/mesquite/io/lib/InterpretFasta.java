@@ -378,7 +378,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	/*.................................................................................................................*/
 
-	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
+	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export FASTA Options", buttonPressed);
 		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file prepared for GenBank submission.");
@@ -502,7 +502,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		Taxa taxa = data.getTaxa();
 		if (!MesquiteThread.isScripting() && !usePrevious)
-			if (!getExportOptions(data.anySelected(), taxa.anySelected()))
+			if (!getExportOptions(data, data.anySelected(), taxa.anySelected()))
 				return false;
 
 		StringBuffer outputBuffer = getDataAsFileText(file, data);
