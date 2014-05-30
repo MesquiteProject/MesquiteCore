@@ -799,8 +799,9 @@ public class MesquiteDouble implements Listable {
 		}
 		String sFromDouble;
 		
-		if (digits<0){ //added 17 Dec 01
-			digits=0;
+		
+		if (digits<0){ //added 17 Dec 01.  digits < 0 signals full accuracy
+			digits=20;
 		}
 		String dec = "";
 		double lowerLimit=1.0;

@@ -17,6 +17,7 @@ import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -25,6 +26,8 @@ import mesquite.lib.table.*;
 /* ======================================================================== */
 public class DatasetsListConcatenate extends DatasetsListUtility {
 	boolean concatExcludedCharacters = false;
+	boolean anyExcluded = false;
+	boolean removeConcatenated = false;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Concatenate Selected Matrices";
@@ -40,8 +43,24 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		if (!MesquiteThread.isScripting()){
+			if (!anyExcluded)
+				removeConcatenated = AlertDialog.query(containerOfModule(), "Delete original matrices?","Delete the original individual matrices after they have been concatenated?", "Delete", "Keep");
+			else {
+				MesquiteInteger buttonPressed = new MesquiteInteger(1);
+				ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+				dialog.addLabel("Delete the original individual matrices after they have been concatenated?");
+				Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated);
 
-			concatExcludedCharacters = !AlertDialog.query(containerOfModule(), "Remove excluded characters?","Remove excluded characters?", "Yes", "No");
+				dialog.addLabel("Remove excluded characters?");
+				Checkbox deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", concatExcludedCharacters);
+				dialog.completeAndShowDialog(true);
+				if (buttonPressed.getValue()==0)  {
+					removeConcatenated = deleteMatricesBox.getState();
+					concatExcludedCharacters = !deleteExcludedBox.getState();
+				}
+				dialog.dispose();
+				return (buttonPressed.getValue()==0);
+			}
 		}
 		return true;
 	}
@@ -52,14 +71,13 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
-		boolean anyExcluded = false;
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (data.numCharsCurrentlyIncluded() < data.getNumChars())
 				anyExcluded = true;
 		}
-		if (anyExcluded)
-			queryOptions();
+		if (!queryOptions())
+			return false;
 		CharacterData starter = null;
 		int count = 0;
 		int countFailed = 0;
@@ -82,6 +100,8 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 				if (count > 1)
 					name = name + "+";
 				name = name + "(" + data.getName() + ")";
+				if (removeConcatenated)
+						data.deleteMe(false);
 			}
 			else 
 				countFailed++;
