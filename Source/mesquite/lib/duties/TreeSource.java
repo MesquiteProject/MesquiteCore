@@ -56,7 +56,7 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
   		return getNameForMenuItem();
   	}
   	
-  	/** queryies the user to choose a tree and returns an integer of the tree chosen*/
+   	/** queryies the user to choose a tree and returns an integer of the tree chosen*/
    	public int queryUserChoose(Taxa taxa, String forMessage){
  		int ic=MesquiteInteger.unassigned;
  		int numTrees = getNumberOfTrees(taxa);

@@ -28,22 +28,23 @@ public class MesqJEditorPane extends JEditorPane{
 		}
 		return new Dimension(300, 600);
 	}
-    public boolean getScrollableTracksViewportWidth() {
+	public boolean getScrollableTracksViewportWidth() {
 		try {
 			return super.getScrollableTracksViewportWidth();
 		}
 		catch(Exception e){
 		}
 		return true;
-    }
-    public boolean getScrollableTracksViewportHeight() {
+	}
+	public boolean getScrollableTracksViewportHeight() {
 		try {
 			return super.getScrollableTracksViewportHeight();
 		}
 		catch(Exception e){
 		}
+
 		return true;
-    }
+	}
 
 }
 

@@ -28,7 +28,7 @@ public abstract class DataWindowAssistantI extends DataWindowAssistant  {
  		return "INIT Assistant for Data Window";
    	}
    	 public String[] getDefaultModule() {
-   	 	return new String[] {"#NoColor", "#ColorCells", "#AddDeleteData", "#AlterData", "#ColorByState", "ColorByFootnote"};
+   	 	return new String[] {"#AddDeleteData", "#AlterData"};
    	 }
 
 	/*.................................................................................................................*/

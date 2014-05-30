@@ -33,10 +33,10 @@ public class MajRuleTree extends BasicTreeConsenser   {
 
 
 	public String getName() {
-		return "Majority Rules Consensus";
+		return "Majority-Rule Consensus";
 	}
 	public String getExplanation() {
-		return "Calculates the majority rules consensus tree." ;
+		return "Calculates the majority-rule consensus tree." ;
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -81,7 +81,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		if (MesquiteDouble.isCombinable(freq))
 			if (freq<0.5) {
 				frequencyLimit=0.5;
-				logln("Required frequency must be ³0.5");
+				logln("Required frequency must be >0.5");
 			}
 			else
 				frequencyLimit=freq;

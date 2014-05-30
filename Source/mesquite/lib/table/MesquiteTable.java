@@ -743,7 +743,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	protected void pasteIt(String s) {
+	protected void OLDpasteIt(String s) {
 		int count = 0;
 		MesquiteInteger pos = new MesquiteInteger(0);
 		if (columnNamesCopyPaste) {
@@ -774,6 +774,37 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 						if (t != null)
 							returnedMatrixText(i, j, t);
 					}
+					count++;
+				}
+			}
+		}
+	}
+
+	/* ................................................................................................................. */
+	protected void pasteIt(String s) {
+		int count = 0;
+		MesquiteInteger pos = new MesquiteInteger(0);
+			for (int i = 0; i < numColumnsTotal; i++) {
+				if (isColumnNameSelected(i) || isColumnSelected(i)) {
+						String t = getNextTabbedToken(s, pos);
+						if (t != null && columnNamesEditable && columnNamesCopyPaste)
+							returnedColumnNameText(i, t);
+					count++;
+				}
+			}
+		
+		for (int j = 0; j < numRowsTotal; j++) {
+			if (isRowNameSelected(j) || isRowSelected(j)) {
+					String t = getNextTabbedToken(s, pos);
+					if (t != null && rowNamesEditable && rowNamesCopyPaste)
+						returnedRowNameText(j, t);
+				count++;
+			}
+			for (int i = 0; i < numColumnsTotal; i++) {
+				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
+						String t = getNextTabbedToken(s, pos);
+						if (t != null && isCellEditable(i, j))
+							returnedMatrixText(i, j, t);
 					count++;
 				}
 			}
@@ -3504,6 +3535,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			defocusCell();
 	}
 
+	public boolean touchColumnNameEvenIfSelected(){
+		return false;
+	}
 	/* ............................................................................................................... */
 	/** Called if column name is touched. Can be overridden in subclasses to change response to touch. */
 	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
@@ -3764,9 +3798,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/**
-	 * Returns text in corner of matrix. Should be overridden in subclasses if text returned is appropriate.
+	 * Returns text in corner of matrix. Should be overridden in subclasses if text returned is appropriate.  This draws low in the corner
 	 */
 	public synchronized String getCornerText() {
+		return "";
+	}
+	/* ............................................................................................................... */
+	/**
+	 * Returns text in corner of matrix. Should be overridden in subclasses if text returned is appropriate. This draws high in the corner
+	 */
+	public synchronized String getUpperCornerText() {
 		return "";
 	}
 

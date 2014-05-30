@@ -123,7 +123,7 @@ public class CharacterGCBias extends NumberForCharacter implements NumForCharTre
 			}
 		}
 		if (total == 0)
-			resultNum = 0;
+			resultNum = MesquiteDouble.unassigned; //changed from 0,  26 jan '14
 		else
 			resultNum = 100.000*count/total;
 		if (wrongType)

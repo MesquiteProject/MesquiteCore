@@ -22,7 +22,7 @@ import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class ColorForAlignment extends DataWindowAssistantI implements CellColorer, CellColorerMatrix {
+public class ColorForAlignment extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	Color Acolor, Ccolor, Gcolor, Tcolor, AGcolor, CTcolor;

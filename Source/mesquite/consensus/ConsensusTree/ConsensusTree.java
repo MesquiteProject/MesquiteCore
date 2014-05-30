@@ -15,7 +15,6 @@ package mesquite.consensus.ConsensusTree;
 
 import java.util.*;
 import java.awt.*;
-
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -180,6 +179,7 @@ public class ConsensusTree extends TreeSource {
 			boolean done = false;
 			int count = 0;
 			logln("Consensing trees");
+//			Debugg.printStackTrace("consensing");
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
 				if (t == null)
@@ -196,10 +196,13 @@ public class ConsensusTree extends TreeSource {
 				}
 			}
 			logln("Trees consensed");
-			//if (count>0)
+//			if (count>0)
 				tree = iConsenser.getConsensus();
 				if (tree instanceof MesquiteTree)
-					((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
+					if (count==0)
+						((MesquiteTree)tree).setName(consenser.getName() + " of trees from " + treeSource.getNameAndParameters());
+					else
+						((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
 		}
 		else {
 			tree = consenser.consense(trees);

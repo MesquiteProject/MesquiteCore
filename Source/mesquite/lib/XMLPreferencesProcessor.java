@@ -15,6 +15,8 @@ package mesquite.lib;
 public interface XMLPreferencesProcessor {
 	
 	public void processSingleXMLPreference (String tag, String content);
+	
+	public void processSingleXMLPreference (String tag, String flavor, String content);
 
 
 }

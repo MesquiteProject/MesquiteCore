@@ -304,6 +304,8 @@ public class StateConsistencyInWindowStrip extends DataColumnNamesAssistant {
 
 		/*.................................................................................................................*/
 	 public void calculateSequence() {
+		 if (data == null)
+			 return;
 		 CategoricalState resultState = new CategoricalState();
 		 MesquiteString resultString = new MesquiteString();
 		 long[] sequence = new long[data.getNumChars()];
@@ -362,7 +364,7 @@ public class StateConsistencyInWindowStrip extends DataColumnNamesAssistant {
 
 		/*.................................................................................................................*/
 	 public void drawInCell(int ic, Graphics g, int x, int y, int w, int h, boolean selected) {
-		 if (stateTask==null) 
+		 if (stateTask==null || data == null) 
 			 return;
 		 long s= CategoricalState.inapplicable;
 		 if (consensusSequence==null)

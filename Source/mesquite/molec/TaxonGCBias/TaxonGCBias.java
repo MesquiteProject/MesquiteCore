@@ -135,7 +135,7 @@ public class TaxonGCBias extends CharacterSource {
 					}
 				}
 				if (tot == 0)
-					value = 0;
+					value = MesquiteDouble.unassigned;  //changed from 0,  26 jan '14
 				else
 					value = (double)(gCount-cCount)/(gCount+cCount);
 
@@ -172,7 +172,7 @@ public class TaxonGCBias extends CharacterSource {
 					}
 				}
 				if (tot == 0)
-					value = 0;
+					value = MesquiteDouble.unassigned; //changed from 0,  26 jan '14
 				else
 					value = ((double)count)/tot;
 			}

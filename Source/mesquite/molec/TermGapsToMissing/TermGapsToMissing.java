@@ -38,7 +38,7 @@ public class TermGapsToMissing extends CategDataAlterer {
 		}
 		CategoricalData data = (CategoricalData)dData;
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
-		boolean noRowsSelected =  !table.anyRowSelected() ;
+		boolean noRowsSelected =  table == null || !table.anyRowSelected() ;
 		for (int it = 0; it<data.getNumTaxa(); it++){
 			if (table==null || noRowsSelected || table.isRowSelected(it)) {
 				boolean done = false;

@@ -14,7 +14,6 @@ package mesquite.lib;
 
 import java.awt.*;
 
-import mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 import mesquite.lib.duties.*;
 import mesquite.trees.lib.TaxonPolygon;
 /*===  Mesquite Basic Class Library:  Trees    ===*/
@@ -23,7 +22,7 @@ import mesquite.trees.lib.TaxonPolygon;
 
 
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ trees ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ trees ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* ======================================================================== */
 /**This is the base class for the drawing of the tree.  It contains the information about
 the number of nodes, and the x and y positions of the nodes.  It should be subclassed by tree drawing modules, 
@@ -251,9 +250,6 @@ public abstract class TreeDrawing  {
 	/** Fill terminal box of node "node" with indicated set of colors */
 	public abstract void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g);
 	
-	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
-		return false;
-	}
 	/*.................................................................................................................*/
 	/** Find which terminal box is at x,y */
 	public int findTerminalBox(Tree tree,  int N, int x, int y) {
@@ -285,7 +281,12 @@ public abstract class TreeDrawing  {
 			drawnRoot = tree.getRoot();
 		return findTerminalBox(tree, drawnRoot, x, y); 
 	}
+	
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		return false;
+	}
 	/*.................................................................................................................*/
+
 	/** Draw highlight for branch N with current color of graphics context */
 	public void drawHighlight(Tree tree, int N, Graphics g, boolean flip){}
 

@@ -298,10 +298,15 @@ public class ListTable extends MesquiteTable {
 		if (!window.interceptCellTouch(column, row, modifiers)){
 		
 			if (window.getCurrentTool()== window.arrowTool)  {
+				
 				ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-						if (!assistant.arrowTouchInRow(row))
-							rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+						if (!assistant.arrowTouchInRow(row)){
+							if (assistant.isCellEditable(row))
+								super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
+							else
+								rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+						}
 							
 				}
 				else
@@ -380,6 +385,9 @@ public class ListTable extends MesquiteTable {
 			return assistant.needsMenu();
 		else
 			return false;
+	}
+	public boolean touchColumnNameEvenIfSelected(){
+		return true;
 	}
 	/*...............................................................................................................*/
 	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {

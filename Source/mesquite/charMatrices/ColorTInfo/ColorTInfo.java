@@ -28,7 +28,7 @@ import mesquite.categ.lib.*;
 //make display of ambiguities optional!!!!!
 
 /** ======================================================================== */
-public class ColorTInfo extends DataWindowAssistantI implements CellColorer, CellColorerTaxa {
+public class ColorTInfo extends DataWindowAssistantID implements CellColorer, CellColorerTaxa {
 	CharacterData data;
 	MesquiteTable table;
 	/*.................................................................................................................*/

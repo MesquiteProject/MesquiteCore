@@ -114,9 +114,12 @@ public class MolecularDataUtil {
 
 	/*.................................................................................................................*/
 	protected static double alignmentScoreRatioToRCScore(DNAData data, int it1, int it2) {
+		Debugg.println("comparing " + data.getTaxa().getTaxonName(it1) + " to " + data.getTaxa().getTaxonName(it2) );
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(false,data);
+		
 		if (aligner==null)
 			return 0.0;
+		//aligner.setGapCosts(-1, -1, 100, 100);
 		int firstSite = 0;
 		int lastSite = data.getNumChars()-1;
 		int numChars = lastSite - firstSite+1;
@@ -130,19 +133,24 @@ public class MolecularDataUtil {
 		}
 		MesquiteNumber alignScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignScore);
-
+		Debugg.println("align " + alignScore);
 		for (int ic = firstSite; ic<=lastSite; ic++){
 			extracted2[lastSite-ic] = DNAState.complement(data.getState(ic, it2));
 		}
 		MesquiteNumber alignRCScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignRCScore);
+		Debugg.println("alignRC " + alignRCScore);
 		alignScore.divideBy(alignRCScore);
 		return alignScore.getDoubleValue();
 
    	 }
-
 	/*.................................................................................................................*/
 	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons) {
+		reverseComplementSequencesIfNecessary(data,  module,  taxa,  itStart,  itEnd,  baseOnStopCodons, false);
+	}
+
+	/*.................................................................................................................*/
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean againstAllOthers) {
 
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
@@ -162,11 +170,28 @@ public class MolecularDataUtil {
 			}
 		} else {
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
-				double score = alignmentScoreRatioToRCScore((DNAData)data, 0, it);
+				Debugg.println("========taxon  " + it);
+				double score = 0;
+				if (againstAllOthers && false){
+					for (int ik = itStart; ik<taxa.getNumTaxa() && ik<=itEnd; ik++)
+						if (ik != it){
+							double thisScore = alignmentScoreRatioToRCScore((DNAData)data, ik, it);
+							score += thisScore;
+							Debugg.println("this score " + score);
+						}
+					score = score/(itEnd-itStart);
+				}
+				else 
+					score = alignmentScoreRatioToRCScore((DNAData)data, 0, it);
+				
+				Debugg.println("avg score " + score);
 				if (score>1.0){
 					data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
 					module.logln("Reverse complemented sequence " + (it+1));
 				}
+				else
+					module.logln("Sequence not reverse complemented " + (it+1));
+
 			}
 		
 		}

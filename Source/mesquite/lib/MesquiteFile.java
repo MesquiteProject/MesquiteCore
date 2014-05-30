@@ -436,10 +436,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			else if (directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))
 				directoryName = MesquiteTrunk.suggestedDirectory + directoryName;
 			else
-				directoryName = MesquiteTrunk.suggestedDirectory + fileSeparator + directoryName;
+				directoryName = MesquiteTrunk.suggestedDirectory + directoryName + fileSeparator;  //Dec 2013 this was backwards!
+				
+
 
 		}
-		if (fileExists(directoryName+ fileName)) {
+		if ((directoryName.indexOf("//")<0) && fileExists(directoryName+ fileName)) { //Dec 2013 added check on double //
 			MesquiteFile mF = new MesquiteFile();
 			mF.local = true;
 			mF.fileName = fileName;
@@ -1966,7 +1968,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** returns the file position of the start of the next block; returns blockName */
 	public String goToNextBlockStart(MesquiteLong startPos) {
 		MesquiteInteger status = new MesquiteInteger(0);
-		StringBuffer command = new StringBuffer(getNextCommand(status, null)); //����
+		StringBuffer command = new StringBuffer(getNextCommand(status, null)); //������������
 
 		if (!StringUtil.blank(command)) {
 			if (status.getValue()==0) {  //in middle of block; need to continue reading until get to end of block
@@ -2015,6 +2017,19 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public ListableVector getFileElements() {
 		return fileElements;
 	}
+	/*.................................................................................................................*/
+	/** appends a number to the end of the path until it finds that no file or directory does not exist at that path */
+	public static String getUniqueNumberedPath(String path) {
+		if (!fileOrDirectoryExists(path+"1"))
+			return path+"1";
+
+		int count = 1;
+		while (fileOrDirectoryExists(path+count)) {
+			count++;
+
+		}
+		return path + count;
+	}	
 	/*.................................................................................................................*/
 	/** appends a number to the end of the path until it finds that no file or directory does not exist at that path */
 	public static String getUniqueModifiedPath(String path) {
@@ -2080,7 +2095,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static long fileOrDirectoryLastModified(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.println("double // in path " + path);
+				MesquiteMessage.printStackTrace("double // in path " + path);  //Debugg.printStackTrace  temporarily printStackTrace to force us to fix things
 			File testing = new File(path);
 			return testing.lastModified();
 		}
@@ -2091,7 +2106,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean fileOrDirectoryExists(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.println("double // in path " + path);
+				MesquiteMessage.printStackTrace("double // in path " + path); //Debugg.printStackTrace  temporarily printStackTrace to force us to fix things
 			File testing = new File(path);
 			if (testing.exists())
 				return true;
@@ -2099,19 +2114,15 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return false;
 	}	
 
-	public static boolean fileExists(String directoryName, String fileName){
+	public static boolean fileExists(String directoryName, String fileName){ //Dec 2013.  Why was this appending existing directory to suggested?  Was generating double // errors
 		if (fileExists(directoryName+ fileName))  
 			return true;
-		else {
-			if (StringUtil.blank(directoryName))
-				directoryName = MesquiteTrunk.suggestedDirectory;
-			else if (directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))
-				directoryName = MesquiteTrunk.suggestedDirectory + directoryName;
-			else
-				directoryName = MesquiteTrunk.suggestedDirectory + fileSeparator + directoryName;
-			return fileExists(directoryName +fileName);
+		else if (StringUtil.blank(directoryName))
+			return fileExists(MesquiteTrunk.suggestedDirectory +fileName);
+		else if (!(directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))) 
+			return fileExists(directoryName + fileSeparator +fileName);
 
-		}
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -2119,7 +2130,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean fileExists(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.println("double // in path " + path);
+				MesquiteMessage.printStackTrace("double // in path " + path);   //Debugg.printStackTrace  temporarily printStackTrace to force us to fix things
 			File testing = new File(path);
 			if (testing.exists() && !testing.isDirectory())
 				return true;
@@ -2314,9 +2325,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					lastLines = addStringToEnd(lastLines, newS);
 					newS =readLine(stream, sBb, remnant);
 				}
-				
+
 				if (someStrings(lastLines)) {
-					//Debugg.println("\n" + concatStrings(lastLines));
 					return concatStrings(lastLines);
 				}
 			}
@@ -2348,6 +2358,38 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				}
 				if (!StringUtil.blank(lastS))
 					return lastS;
+			}
+			catch( FileNotFoundException e ) {
+			} 
+			catch( IOException e ) {
+			}
+		}
+		else {
+		}
+
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** Returns the last dark line of the file.  path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
+	public static String getFileLastDarkLine(String relativePath) {
+		DataInputStream stream;
+		StringBuffer sBb= new StringBuffer(100);
+		String lastS = null;
+		MesquiteInteger remnant = new MesquiteInteger(-1);
+		if (!MesquiteTrunk.isApplet()) {
+			try {
+				stream = new DataInputStream(new FileInputStream(relativePath));
+				String lastDarkLine = null;
+				String newS = " ";
+				while (newS != null) {
+					lastS = newS;
+					newS =readLine(stream, sBb, remnant);
+					if (!StringUtil.blank(newS)) 
+						lastDarkLine=newS;
+				}
+				if (!StringUtil.blank(lastDarkLine))
+					return lastDarkLine;
 			}
 			catch( FileNotFoundException e ) {
 			} 

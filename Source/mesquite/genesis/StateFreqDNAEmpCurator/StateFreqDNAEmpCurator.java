@@ -77,7 +77,7 @@ public class StateFreqDNAEmpCurator extends StateFreqCurator {
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Defines and maintains model of state frequences that match those found in an empirical matrix." ; 
+ 		return "Defines and maintains model of state frequencies that match those found in an empirical matrix." ; 
    	 }
 }
 

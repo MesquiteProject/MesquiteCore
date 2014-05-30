@@ -1668,19 +1668,40 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		boolean removedSome = false;
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyInapplicable(ic)) {
-				deleteCharacters(ic, 1, notify);
-				deleteInLinked(ic,1,notify);
+				int numToDelete = 1;
+				int firstToDelete = ic;
+				for (int ic2 =ic-1; ic2>=0; ic2--){
+					if (entirelyInapplicable(ic2)) {
+						numToDelete++;
+						firstToDelete= ic2;
+					} else break;
+				}
+				deleteCharacters(firstToDelete, numToDelete, notify);
+				deleteInLinked(firstToDelete,numToDelete,notify);
+				ic=ic-numToDelete+1;
 				removedSome=true;
 			}
 		}
 		return removedSome;
 	}
+	
+	
+	
 	public boolean removeCharactersThatAreEntirelyUnassigned(boolean notify){
 		boolean removedSome = false;
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyUnassigned(ic)) {
-				deleteCharacters(ic, 1, notify);
-				deleteInLinked(ic,1,notify);
+				int numToDelete = 1;
+				int firstToDelete = ic;
+				for (int ic2 =ic-1; ic2>=0; ic2--){
+					if (entirelyUnassigned(ic2)) {
+						numToDelete++;
+						firstToDelete= ic2;
+					} else break;
+				}
+				deleteCharacters(firstToDelete, numToDelete, notify);
+				deleteInLinked(firstToDelete,numToDelete,notify);
+				ic=ic-numToDelete+1;
 				removedSome=true;
 			}
 		}
@@ -1690,8 +1711,17 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		boolean removedSome = false;
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyUnassignedOrInapplicable(ic)) {
-				deleteCharacters(ic, 1, notify);
-				deleteInLinked(ic,1,notify);
+				int numToDelete = 1;
+				int firstToDelete = ic;
+				for (int ic2 =ic-1; ic2>=0; ic2--){
+					if (entirelyUnassignedOrInapplicable(ic2)) {
+						numToDelete++;
+						firstToDelete= ic2;
+					} else break;
+				}
+				deleteCharacters(firstToDelete, numToDelete, notify);
+				deleteInLinked(firstToDelete,numToDelete,notify);
+				ic=ic-numToDelete+1;
 				removedSome=true;
 			}
 		}
@@ -2879,9 +2909,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return linkedDatas;
 	}
 	public boolean isLinked(CharacterData other){
+		if (linkedDatas == null)
+			return false;
 		return (other!=null && linkedDatas.indexOf(other)>=0);
 	}
 	public boolean isLinked(){
+		if (linkedDatas == null)
+			return false;
 		return (linkedDatas.size()>0);
 	}
 /*------------------*/

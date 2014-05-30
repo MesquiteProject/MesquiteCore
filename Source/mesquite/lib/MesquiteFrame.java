@@ -1504,6 +1504,9 @@ class FrameTabsPanel extends MousePanel {
 				g.fillRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
 				g.setColor(ColorTheme.getExtInterfaceEdgeContrast());
 				g.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
+				g.setColor(Color.black);
+				g.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1);
+			//	g.drawRoundRect(tabLeft-2, top-2, tabRight - tabLeft+2, height+64, roundness+2, roundness+2);
 			}
 			else {
 				//			g.setColor(ColorDistribution.veryLightGray);

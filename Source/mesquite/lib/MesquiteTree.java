@@ -3172,7 +3172,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		if (!branchLengthUnassigned(node)) {
 			treeDescription.append(':');
-			treeDescription.append(MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1)); //add -1 to signal full accuracy 17 Dec 01
+			String bL = MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1);
+			treeDescription.append(bL); //add -1 to signal full accuracy 17 Dec 01
 		}
 		String a = writeAssociated(node, associatedUseComments);
 		treeDescription.append(a);

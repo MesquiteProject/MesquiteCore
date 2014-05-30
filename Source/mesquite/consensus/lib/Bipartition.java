@@ -41,7 +41,7 @@ public class Bipartition {
 		return s;
 	}
 	
-	
+
 	void reset(){
 		for (int i=0;i<numFreqs; i++)
 			freq[i]=0;
@@ -89,7 +89,12 @@ public class Bipartition {
 		}
 	}
 
-
+	public static Bipartition getBipartitionFromNode (Tree tree, int node) {
+		Bipartition bp = new Bipartition(tree.getTaxa().getNumTaxa());
+		bp.setBits(tree.getTerminalTaxaAsBits(node));
+		return bp;
+	}
+	
 	public Bits getBits(){
 		return bits;
 	}

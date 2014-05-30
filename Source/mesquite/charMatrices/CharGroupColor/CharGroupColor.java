@@ -21,7 +21,7 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class CharGroupColor extends DataWindowAssistantI implements CellColorer, CellColorerCharacters, CellColorerMatrix {
+public class CharGroupColor extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;

@@ -22,6 +22,7 @@ import mesquite.lib.duties.*;
  * make a MesquiteExternalProcess that extends Process and stores things like 
  * 		OutputStream inputToProcess = proc.getOutputStream();
 		OutputStreamWriter inputStreamsWriter = new OutputStreamWriter(inputToProcess);
+	- all of the isWindows, StringUtil.lineEnding() needs to use line endings etc. from the computer running the process, not the local computer.
 
  * */
 
@@ -68,7 +69,7 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
 		if (MesquiteTrunk.isWindows())
-			return "del -f " + StringUtil.protectForWindows(filePath) +StringUtil.lineEnding();
+			return "del " + StringUtil.protectForWindows(filePath) +StringUtil.lineEnding();
 		else
 			return "rm -f " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
 	}
@@ -175,8 +176,18 @@ public class ShellScriptUtil  {
 	public static boolean setScriptFileToBeExecutable(String scriptPath) throws IOException {
 		Process proc;
 		try {
-			if (!MesquiteTrunk.isWindows())
-				Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+			//Original implementation (permission change was not complete before script execution attempted)
+			//if (!MesquiteTrunk.isWindows())
+			//	Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+			if(!MesquiteTrunk.isWindows()){
+				proc = Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+				try{// waitFor() so thread waits for permission change to complete before trying to run the script
+					proc.waitFor();
+				} catch (InterruptedException e){
+					MesquiteMessage.println("Thread interrupted while waiting for change in ownership.");
+					return false;
+				}
+			}
 		}
 		catch (IOException e) {
 			MesquiteMessage.println("Script cannot be set to be executable.");

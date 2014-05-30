@@ -921,6 +921,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					iQuit();
 				}
 				else {
+					fileCloseRequested();
 					ListableVector files = getProject().getFiles();
 					if (files != null){
 
@@ -958,6 +959,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					fi.close();
 				}
 				else if (fi.isLocal()){
+					fileCloseRequested();
 					String message = "Do you want to save changes to \"" + fi.getName() + "\" before closing?";
 					int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
 					if (q==0) 
@@ -1253,7 +1255,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		Listable fInt = ListDialog.queryList(fd.containerOfModule(), "Translate File", message, MesquiteString.helpString,fInterpretersCanImport, 0);
 
 		if (fInt instanceof FileInterpreterI && !MesquiteThread.isScripting())
-			((FileInterpreterI)fInt).getImportOptions();
+			((FileInterpreterI)fInt).getImportOptions(fuse);
 
 		if (fd!=null)
 			fireEmployee(fd);

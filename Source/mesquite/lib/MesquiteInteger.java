@@ -630,7 +630,7 @@ public class MesquiteInteger implements Listable{
 		return queryInteger( parent,  title,  message, "",  current,  minimum,  maximum,  allowCancel);
 	}
 	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
-	public static int queryInteger(MesquiteWindow parent, String title, String message, String help, int current, int minimum, int maximum, boolean allowCancel) {
+	public static int queryInteger(MesquiteWindow parent, String title, String message, String secondaryMessage, String help, int current, int minimum, int maximum, boolean allowCancel) {
 		if (current>maximum)
 			current=maximum;
 		else if (current<minimum)
@@ -644,7 +644,7 @@ public class MesquiteInteger implements Listable{
 		while (!done) {
 			//IntegerDialog id = new IntegerDialog(parent, title, message, io);
 			//id.dispose();
-			QueryDialogs.queryInteger(parent, title, message, help, allowCancel, io);
+			QueryDialogs.queryInteger(parent, title, message, secondaryMessage, help, allowCancel, io);
 			if (!io.isCombinable() || (io.getValue()<=maximum && io.getValue()>=minimum))
 				done=true;
 			else {
@@ -658,8 +658,16 @@ public class MesquiteInteger implements Listable{
 		return io.getValue();
 	}
 	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
+	public static int queryInteger(MesquiteWindow parent, String title, String message, String help, int current, int minimum, int maximum, boolean allowCancel) {
+		return queryInteger(parent, title, message, null, help, current, minimum, maximum, allowCancel);
+	}
+	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
 	public static int queryInteger(MesquiteWindow parent, String title, String message, int current, int minimum, int maximum) {
 		return queryInteger(parent, title, message, current, minimum, maximum, true);
+	}
+	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
+	public static int queryInteger(MesquiteWindow parent, String title, String message, String secondaryMessage, String help, int current, int minimum, int maximum) {
+		return queryInteger(parent, title, message, secondaryMessage, help, current, minimum, maximum, true);
 	}
 	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
 	public static int queryInteger(MesquiteWindow parent, String title, String message, String help, int current, int minimum, int maximum) {

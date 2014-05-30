@@ -13,7 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
-
 import mesquite.lib.*;
 
 
@@ -24,7 +23,7 @@ Example Module: NodeLocsStandard*/
 
 public abstract class NodeLocsVH extends NodeLocs  {
 	public static int defaultOrientation = TreeDisplay.UP;
-	public String getDutyName() {
+ 	public String getDutyName() {
  		return "Node Location (Vert/Horiz)";
    	 }
    	 public Class getDutyClass() {

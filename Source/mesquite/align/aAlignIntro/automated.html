@@ -15,8 +15,8 @@
 <div id="masthead">
   <div id="banner"><img src="splash.gif" width="164" height="64"></div>
   <div id="mainTitle"><font id="packageName"><b>Align</b></font><font id="version"><br>
-    Version 1.51<br>
-    24 January 2009</font><BR>
+    Version 1.6<br>
+    13 January 2014</font><BR>
   David R. Maddison, Travis J. Wheeler, and Wayne P. Maddison </div>
   <div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Automated Alignment <!-- InstanceEndEditable --></div>
  
@@ -64,17 +64,24 @@
           DNA to Protein</u></font>. </li>
   </ul>
 
-  <h3>ClustalW Align </h3>
-  <p>This feature allows one to select a single block of sequences, and then have ClustalW align them. To do this, select the block, then choose Matrix&gt;Align Multiple Sequences&gt;Clustal Align... </p>
-  <p>You will be presented first with a query as to whether you want to do the ClustalW alignment on a separate thread, or on the same thread. Mesquite can do multiple things at once, because it can have one thing running on one computational &quot;thread&quot;, and another thing happening on a separate thread. There is a main thread of the program that is the thread the user deals with directly, and that allows you to give commands to Mesquite (via menus, etc.). If this main thread is busy with a calculation, then you will not be able to ask for new things to happen in Mesquite until the calculation is done. By choosing &quot;Separate&quot; in the query that appears, you are asking Mesquite to create a thread separate from the main thread, thus enabling you to do things in Mesquite while the Clustal alignment is proceeding. However, if you do this, you must remember not to edit the matrix or close the window showing the matrix; if you do, Mesquite will be very unhappy. The safest thing to do is choose &quot;No&quot; to that query. </p>
-  <p>Once you make that choice, you will see a dialog box in which you must enter the directory location of ClustalW; if you use the Browse button in the dialog box you can choose ClustalW and have the location filled in automatically. If you wish, you can also alter the options of clustalw. If you then press OK, Mesquite will send that section of the matrix to ClustalW and ask for it to be aligned; it will then harvest the results and reincorporate that piece into the matrix.</p>
-  <p>The version of ClustalW that is to be used by Mesquite <em>must</em> be a version of ClustalW that is executable from the command line of your operating system.  </p>
+  <h3>MAFFT Align </h3>
+  <p>This feature allows one to select a single block of sequences, and then have MAFFT align them. To do this, select the block, then choose Matrix&gt;Align Multiple Sequences&gt;MAFFT Align... </p>
+  <p>You will be presented first with a query as to whether you want to do the MAFFT alignment on a separate thread, or on the same thread. Mesquite can do multiple things at once, because it can have one thing running on one computational &quot;thread&quot;, and another thing happening on a separate thread. There is a main thread of the program that is the thread the user deals with directly, and that allows you to give commands to Mesquite (via menus, etc.). If this main thread is busy with a calculation, then you will not be able to ask for new things to happen in Mesquite until the calculation is done. By choosing &quot;Separate&quot; in the query that appears, you are asking Mesquite to create a thread separate from the main thread, thus enabling you to do things in Mesquite while the MAFFT alignment is proceeding. However, if you do this, you must remember not to edit the matrix or close the window showing the matrix; if you do, Mesquite will be very unhappy. The safest thing to do is choose &quot;No&quot; to that query. </p>
+  <p>Once you make that choice, you will see a dialog box in which you must enter the directory location of MAFFT. This is necessary as without it Mesquite won't know how to use MAFFT. In this dialog box you can also set options for MAFFT.</p>
+  <p><img src="images/MAFFT dialog box.png" width="572" height="325"></p>
+  <p>To set the directory location, you can either type in the path directly, or you can use the Browse button and then you can find MAFFT and the location filled in automatically. (On a Mac, by default the standard version of MAFFT is installed in /usr/local/bin, so the path would be /usr/local/bin/mafft )  </p>
+  <p>If you wish, you can also alter the options of MAFFT. The <a href="http://mafft.cbrc.jp/alignment/software/manual/manual.html">MAFFT manual</a> notes some standard alignment procedure settings, including some accuracy-oriented methods (e.g., L-INS-i, G-INS-i, and E-INS-i) and some speed-oriented methods (including FFT-NS-i). Mesquite offers these standard methods in the pull-down menu beside &quot;Suggested methods&quot;. Choosing one of these will fill the &quot;basic alignment method&quot; with the program arguments needed to implement that method. </p>
+  <p>For additional options, which you can enter into the &quot;Addition MAFFT options&quot; text box, see the <a href="http://mafft.cbrc.jp/alignment/software/manual/manual.html">MAFFT manual</a> for more details.  </p>
+  <p>If you then press OK, Mesquite will send that section of the matrix to MAFFT and ask for it to be aligned; it will then harvest the results and reincorporate that piece into the matrix.</p>
+  <p>If you use MAFFT from within Mesquite, then you should cite MAFFT as appropriate; see the <a href="http://mafft.cbrc.jp/alignment/software/manual/manual.html">MAFFT manual</a> for citation details.  </p>
   <p>&nbsp;  </p>
 
+  <h3>ClustalW Align</h3>
+  <p>This tool is just like the MAFFT Align feature described above, except that it works for the ClustalWprogram. The version of ClustalW that is to be used by Mesquite <em>must</em> be a version of ClustalW that is executable from the command line of your operating system.</p>
+  <p>&nbsp; </p>
   <h3>Muscle Align </h3>
-  <p>This tool is just like the ClustalW Align feature described above, except that it works for Robert C. Edgar's <a href="http://www.drive5.com/muscle/">MUSCLE</a> program.  </p>
-  <p>&nbsp;  </p>
-
+  <p>This tool is just like the MAFFT Align feature described above, except that it works for Robert C. Edgar's <a href="http://www.drive5.com/muscle/">MUSCLE</a> program. </p>
+  <p>&nbsp; </p>
 <!-- InstanceEndEditable --></div>
 <!--end content -->
 <div id="navBar">

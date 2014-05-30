@@ -14,6 +14,7 @@ package mesquite.categ.lib;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -351,6 +352,13 @@ public class DNAData extends MolecularData {
 		return (codonPositionsSet != null);
 	}
 
+	/*-----------------------------------------------------------*/
+	/** checks to see if the two cells have the same states */
+	public boolean sameState(int ic1, int it1, int ic2, int it2){
+		DNAState cs1 = (DNAState)getCharacterState(null, ic1, it1);
+		DNAState  cs2 = (DNAState)getCharacterState(null, ic2, it2);
+		return DNAState.equalsIgnoreCase(cs1.fullSet(), cs2.fullSet());
+	}
 	/* .......................................... DNAData .................................................. */
 	/** returns if there is there is at least one base that is codon position 1, 2, or 3 */
 	public boolean someCoding() {
@@ -1395,7 +1403,7 @@ public class DNAData extends MolecularData {
 	}
 
 	/* .......................................... DNAData .................................................. */
-	/* Appends to buffer state symbol for state e Ã */
+	/* Appends to buffer state symbol for state e ï¿½ */
 	protected void appendStateSymbol(int e, boolean lowerCase, StringBuffer sb) {
 		if (lowerCase) {
 			if (e == 0)
@@ -1428,7 +1436,7 @@ public class DNAData extends MolecularData {
 	}
 
 	/* .......................................... DNAData .................................................. */
-	/* Fills buffer with string version of state in char ic and taxon it Ã */
+	/* Fills buffer with string version of state in char ic and taxon it ï¿½ */
 	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb) {
 		boolean first = true;
 		long s = getStateRaw(ic, it);
@@ -1508,7 +1516,7 @@ public class DNAData extends MolecularData {
 		}
 	}
 	/* .......................................... DNAData .................................................. */
-	/* Returns state set from single state symbol Ã */
+	/* Returns state set from single state symbol ï¿½ */
 	public long fromChar(char state) {
 		if (state == getInapplicableSymbol())
 			return CategoricalState.inapplicable;

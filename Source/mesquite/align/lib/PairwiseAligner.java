@@ -300,10 +300,14 @@ public class PairwiseAligner  {
 	/** If object wasn't called with gap cost arguments, this must be called or alignment will fail*/
 	public void setGapCosts(int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal){
 	    //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
-		this.gapOpen = gapOpen;
-		this.gapExtend = gapExtend;
-		this.gapOpenTerminal = gapOpenTerminal;
-		this.gapExtendTerminal = gapExtendTerminal;
+		if (gapOpen >=0)  //allows passing of -1 to leave as is
+			this.gapOpen = gapOpen;
+		if (gapExtend >=0)
+			this.gapExtend = gapExtend;
+		if (gapOpenTerminal >=0)
+			this.gapOpenTerminal = gapOpenTerminal;
+		if (gapExtendTerminal >=0)
+			this.gapExtendTerminal = gapExtendTerminal;
 		gapCostsInitialized = true;
 	}
 

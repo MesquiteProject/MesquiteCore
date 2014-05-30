@@ -14,10 +14,8 @@ package mesquite.lists.CharacterList;
 /*~~  */
 
 import mesquite.lists.lib.*;
-
 import java.util.*;
 import java.awt.*;
-
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -43,7 +41,7 @@ public class CharacterList extends ListModule {
 				"You can request selection methods using the List menu of the List of Characters Window. ");
 	}
 	/*.................................................................................................................*/
-	public int currentDataSet = 0;
+	int currentDataSet = 0;
 	public CharacterData data = null;
 	CharacterListWindow window;
 	/*.................................................................................................................*/
@@ -62,9 +60,14 @@ public class CharacterList extends ListModule {
 			return (queryDataSet == currentDataSet && window!=null);
 		}
 		if (obj instanceof CharacterData) {
-			CharacterData d = (CharacterData)obj;
-			int queryDataSet = getProject().getMatrixNumber(d);
-			return (queryDataSet == currentDataSet && window!=null);
+			if (data == null){
+				CharacterData d = (CharacterData)obj;
+				int queryDataSet = getProject().getMatrixNumber(d);
+				return (queryDataSet == currentDataSet && window!=null);
+			}
+			else {
+				return data == obj;
+			}
 		}
 		return false;
 	}
@@ -224,6 +227,8 @@ public class CharacterList extends ListModule {
 			return null;
 		Snapshot temp = new Snapshot();
 
+		if (data != null)
+			currentDataSet = getProject().getMatrixNumber(data);
 
 		temp.addLine("setData " + currentDataSet); 
 
@@ -261,8 +266,9 @@ public class CharacterList extends ListModule {
 			data.showMatrix();
 		}
 		else if (checker.compare(this.getClass(), "Sets data set whose characters are to be displayed in this list window", "[number of data set]", commandName, "setData")) {
-			currentDataSet = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
-			if (window!=null && MesquiteInteger.isCombinable(currentDataSet) && currentDataSet<getProject().getNumberCharMatrices()) {
+			int tempCurrDataSet = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
+			if (window!=null && MesquiteInteger.isCombinable(tempCurrDataSet) && tempCurrDataSet<getProject().getNumberCharMatrices()) {
+				currentDataSet = tempCurrDataSet;
 				data = getProject().getCharacterMatrix(currentDataSet);//checker.getFile(), 
 				((CharacterListWindow)window).setObject(data);
 				((CharacterListWindow)window).repaintAll();

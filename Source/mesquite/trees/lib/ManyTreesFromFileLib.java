@@ -291,7 +291,10 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		if (this.file == null)
 			return null;
 		Snapshot temp = new Snapshot();
-		temp.addLine("setFilePath " + StringUtil.tokenize(MesquiteFile.decomposePath(getProject().getHomeFile().getDirectoryName(), this.file.getPath())));  //quote //todo: should parse name relative to path to home file!!!!!
+		String arguments = StringUtil.tokenize(MesquiteFile.decomposePath(getProject().getHomeFile().getDirectoryName(), this.file.getPath())) + " remain ";
+		if (this.file.useStandardizedTaxonNames)
+			arguments += " useStandardizedTaxonNames";
+		temp.addLine("setFilePath " + arguments);  //quote //todo: should parse name relative to path to home file!!!!!
 		temp.addLine("toggleReread " + rereadWholeFileIfGrows.toOffOnString());
 		if (canDoLiveUpdate())
 			temp.addLine("toggleLive " + live.toOffOnString());
@@ -866,7 +869,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 					cPos.setValue(wpos+2);
 					String num = ParseUtil.getToken(commentString, cPos);
 					String slash = ParseUtil.getToken(commentString, cPos);
-					String denom = ParseUtil.getToken(commentString, cPos);
+					String denom = ParseUtil.getToken(commentString, cPos, null, "$");
 					double w = 0;
 					if (slash !=null && "/".equals(slash))
 						w = 1.0*(MesquiteInteger.fromString(num))/(MesquiteInteger.fromString(denom));

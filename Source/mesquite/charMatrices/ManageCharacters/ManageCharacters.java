@@ -994,8 +994,9 @@ public class ManageCharacters extends CharactersManager {
 			else {
 				//Check to see if already has lister for this
 				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), true);
-				if (data != null)
+				if (data != null){
 					return showCharactersList(data);
+				}
 				int t = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberCharMatrices()) {//restriction to checker.getFile() deleted 13 Dec 01
 					data = getProject().getCharacterMatrix(t, true);//restriction to checker.getFile() deleted 13 Dec 01

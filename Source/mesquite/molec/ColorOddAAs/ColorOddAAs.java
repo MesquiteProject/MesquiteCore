@@ -23,7 +23,7 @@ import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class ColorOddAAs extends DataWindowAssistantI implements CellColorer, CellColorerMatrix {
+public class ColorOddAAs extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	protected DNAData data;
 

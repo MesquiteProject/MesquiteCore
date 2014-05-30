@@ -21,7 +21,7 @@ import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class ColorMisaligned extends DataWindowAssistantI implements CellColorer, CellColorerMatrix {
+public class ColorMisaligned extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	int[][] freqs;

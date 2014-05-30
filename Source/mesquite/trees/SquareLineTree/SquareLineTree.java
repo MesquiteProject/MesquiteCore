@@ -28,7 +28,6 @@ public class SquareLineTree extends DrawTree {
 	MesquiteString orientationName;
 	Vector drawings;
 	int oldEdgeWidth = 4;
-	int fixedTaxonDistance = 0;
 	int ornt;
 	MesquiteString nodeLocsName;
 	MesquiteBoolean showEdgeLines = new MesquiteBoolean(true);  //these needs to be set default true; otherwise Trace Character makes branches disappear in most common cases
@@ -56,7 +55,6 @@ public class SquareLineTree extends DrawTree {
 
 		
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
-		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null,"Show Edge Lines", makeCommand("showEdgeLines",  this), showEdgeLines);
 		return true;
 
@@ -97,7 +95,6 @@ public class SquareLineTree extends DrawTree {
 		Snapshot temp = new Snapshot();
 		temp.addLine("setNodeLocs", nodeLocsTask);
 		temp.addLine("setEdgeWidth " + oldEdgeWidth); 
-		temp.addLine("setFixedTaxonDistance " + fixedTaxonDistance); 
 		temp.addLine("showEdgeLines " + showEdgeLines.toOffOnString()); 
 
 		if (ornt== TreeDisplay.UP)
@@ -137,24 +134,6 @@ public class SquareLineTree extends DrawTree {
 					treeDrawing.setEdgeWidth(newWidth);
 					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
 				}
-				if ( !MesquiteThread.isScripting()) parametersChanged();
-			}
-
-		}
-		else 	if (checker.compare(this.getClass(), "Sets a fixed distance between taxa for drawing the tree", "[distance in pixels]", commandName, "setFixedTaxonDistance")) {
-
-			int newDistance= MesquiteInteger.fromFirstToken(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newDistance))
-				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", fixedTaxonDistance, 1, 99);
-			if (newDistance>0 && newDistance<100 && newDistance!=fixedTaxonDistance) {
-				fixedTaxonDistance=newDistance;
-				Enumeration e = drawings.elements();
-				while (e.hasMoreElements()) {
-					Object obj = e.nextElement();
-					SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
-					treeDrawing.treeDisplay.setFixedTaxonSpacing(newDistance);
-				}
-				
 				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 
@@ -376,7 +355,6 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	/** Draw highlight for branch node with current color of graphics context */
 	public void drawHighlight(Tree tree, int node, Graphics g, boolean flip){
-		Debugg.println("drawHighlight " + node);
 		Color tC = g.getColor();
 		if (flip)
 			g.setColor(Color.yellow);
@@ -397,7 +375,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			if (tree.getRooted() || tree.getRoot()!=node) {
-				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
+				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, null, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
 			}
 
 			int thisSister = tree.firstDaughterOfNode(node);
@@ -481,57 +459,32 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
-		Rectangle box;
+		float localInset = 0;
+		if (ownerModule.getShowEdgeLines())
+			localInset=inset;
+		Rectangle2D box;
+		Rectangle2D colorBox;
+		Graphics2D g2 = (Graphics2D)g;
 		int numColors = colors.getNumColors();
-		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-			box = new Rectangle(x[node], y[node]-edgewidth/2-2, edgewidth, edgewidth);
-			for (int i=0; i<numColors; i++) {
-				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y, box.width, box.height, 0+ (i*180/numColors), 180- (i*180/numColors));
-			}
-			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 0, 180);
-			g.drawLine(box.x, box.y+ edgewidth/2, box.x+edgewidth,  box.y+ edgewidth/2);
+		float ew = edgewidth-1;
+		// the 0.5 values are the halfline width to deal with pen positioning
+		if (treeDisplay.getOrientation()==treeDisplay.UP) 
+			box = new Rectangle2D.Double(x[node]+0.5, y[node]-ew-2, ew, ew);
+		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
+			box = new Rectangle2D.Double(x[node]+0.5, y[node]+2, ew, ew);
+		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
+			box = new Rectangle2D.Double(x[node]+2, y[node]+0.5, ew, ew);
+		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
+			box = new Rectangle2D.Double(x[node]-ew-2, y[node]+0.5, ew, ew);
+		else 
+			box = new Rectangle2D.Double(x[node], y[node], ew, ew);
+		for (int i=0; i<numColors; i++) {
+			g2.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
+			colorBox = new Rectangle2D.Double(box.getX() + (i*box.getWidth()/numColors), box.getY(), box.getWidth()-  (i*box.getWidth()/numColors), box.getHeight());
+			g2.fill(colorBox);
 		}
-		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
-			box = new Rectangle(x[node], y[node] + 2, edgewidth, edgewidth);
-			for (int i=0; i<numColors; i++) {
-				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y -  box.height/2, box.width, box.height, 180+ (i*180/numColors), 180- (i*180/numColors));
-			}
-			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y -  box.height/2, box.width, box.height, 180, 180);
-			g.drawLine(box.x, box.y , box.x+edgewidth,  box.y);
-		}
-		else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-			box = new Rectangle(x[node] + 2, y[node], edgewidth, edgewidth);
-			for (int i=0; i<numColors; i++) {
-				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x- box.width/2, box.y, box.width, box.height, 270+ (i*180/numColors), 180- (i*180/numColors));
-			}
-			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x- box.width/2, box.y, box.width, box.height, 270, 180);
-			g.drawLine(box.x, box.y, box.x ,  box.y+edgewidth);
-		}
-		else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
-			box = new Rectangle(x[node]-edgewidth/2-2, y[node], edgewidth, edgewidth);
-			for (int i=0; i<numColors; i++) {
-				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y, box.width, box.height, 90+ (i*180/numColors), 180- (i*180/numColors));
-			}
-			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 90, 180);
-			g.drawLine(box.x+edgewidth/2, box.y, box.x+edgewidth/2,  box.y+edgewidth);
-		}
-		else {
-			box = new Rectangle(x[node], y[node], edgewidth, edgewidth);
-			for (int i=0; i<numColors; i++) {
-				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y, box.width, box.height, 0, 360);
-			}
-			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 0, 360);
-		}
+		g2.setColor(treeDisplay.getBranchColor(node));
+		g2.draw(box);
 	}
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
@@ -556,18 +509,26 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			Color c = g.getColor();
-			float fillWidth = edgewidth;
+			float localInset = 0;
 			if (ownerModule.getShowEdgeLines())
-				fillWidth = edgewidth-2*inset;
+				localInset=inset;
+			float fillWidth = edgewidth-2*localInset;
 			int numColors = colors.getNumColors();
-			for (int i=0; i<numColors; i++) {
-				Color color;
-				if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
+			Color color;
+			if (numColors<=1) {
+				if ((color = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)))!=null)
 					g.setColor(color);
-				//			public static   void drawOneBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
-
-				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, node, inset + i*fillWidth/numColors,  (i+1)*fillWidth/numColors -i*fillWidth/numColors, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 			}
+			else
+				for (int i=0; i<numColors; i++) {
+					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
+						g.setColor(color);
+					//			public static   void drawOneBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+					float thickness = fillWidth/numColors;
+					float start = i*thickness+localInset;
+					DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+				}
 			if (c!=null) g.setColor(c);
 		}
 	}
@@ -576,7 +537,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			//if (ownerModule.getShowEdgeLines())
-				DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), tree, g, node, inset, edgewidth-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+			DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,getEdgeWidth(), tree, g, null, node, inset, edgewidth-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 		}
 	}
 

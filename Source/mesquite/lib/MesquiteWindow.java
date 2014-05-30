@@ -14,9 +14,12 @@ Modified May 02 especially for annotations*/
 package mesquite.lib;
 
 import java.awt.*;
+
+
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.util.*;
+
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
@@ -3033,7 +3036,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	String title = "Mesquite Window";
 	public void setTitle(String name) {
-
+		if (title != null && name != null && title.equals(name))
+			return;
 		title = name;
 		if (parentFrame != null)
 			parentFrame.windowTitleChanged(this);
