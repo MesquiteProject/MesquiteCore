@@ -23,6 +23,12 @@ import mesquite.parsimony.lib.ParsimonyModelSet;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
+/*TO DO: 
+ *  - creates pattern matrix of same type (e.g., DNA) as original
+ *  - creates weight set
+ *  - specify a better name
+ */
+
 public class CondensedPatternMatrix extends CharMatrixSource {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.charMatrices.StoredMatrices.StoredMatrices.class, getName() + "  needs a source of categorical matrices.",
@@ -62,6 +68,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 			return  super.doCommand(commandName, arguments, checker);
 		//return null;
 	}
+	
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
 	 happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Taxa taxa){
@@ -76,9 +83,8 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 			CharacterData data = mData.getParentData();
 				
 			if (data instanceof CategoricalData){
-				CategoricalData dData = (CategoricalData)data;
-				int numChars = dData.getNumChars();
-				CategoricalData condensedData = dData.getDataCopy();
+				CategoricalData condensedData  = ((CategoricalData)data).getDataCopy();
+				int numChars = data.getNumChars();
 				CharWeightSet weightSet= new CharWeightSet("Frequency of Patterns", data.getNumChars(), data);  // making a weight set
 				weightSet.addToFile(getProject().getHomeFile(), getProject(), findElementManager(CharWeightSet.class)); //attaching the weight set to a file
 				data.setCurrentSpecsSet(weightSet, CharWeightSet.class); 
@@ -96,7 +102,6 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 						}
 					}
 				}
-				
 
 				condensedData.removeCharactersThatAreEntirelyGaps(false);
 			
@@ -128,12 +133,13 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 				}
 				
 				
+				// rather than printing these out this weightset should be specified somehow as the current weightset of the new matrix
 				
 				Debugg.println("\nFrequencies of patterns:");
 				for (int ic = 0; ic< weightSet.getNumberOfParts(); ic++){
 					Debugg.println(" "+(ic+1)+": " + MesquiteDouble.toStringDigitsSpecified(((1.0*weightSet.getInt(ic))/numChars), 4));
 				}
-
+			
 				return condensedData.getMCharactersDistribution();
 			}
 		}
