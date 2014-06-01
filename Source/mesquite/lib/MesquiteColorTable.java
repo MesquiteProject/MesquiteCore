@@ -33,6 +33,11 @@ public  class MesquiteColorTable  {
 	public static final int PURPLESCALE = 8;
 	public static MesquiteColorTable DEFAULTGRAYTABLE = null;
 	public static MesquiteColorTable DEFAULTCOLORTABLE = null;
+	public static MesquiteColorTable DEFAULTREDTABLE = null;
+	public static MesquiteColorTable DEFAULTGREENTABLE = null;
+	public static MesquiteColorTable DEFAULTBLUETABLE = null;
+	public static MesquiteColorTable DEFAULTORANGETABLE = null;
+	public static MesquiteColorTable DEFAULTPURPLETABLE = null;
 	private static Color[][] defaultColorTable = null;
 	private static Color[] defaultBIGColorTable = null;
 	private static Color[][] defaultGrayTable = null;
@@ -106,12 +111,14 @@ public  class MesquiteColorTable  {
 		}
 		for (int maxState=1; maxState<maxNumStates; maxState++) {
 			defaultGreenTable[maxState][0] = Color.white;
-			defaultGreenTable[maxState][maxState] = Color.black;
+			defaultGreenTable[maxState][maxState] = new Color(0, 200, 0);
 			for (int theState=1; theState<maxState; theState++) {
 				float c = (float)((maxState-theState) * 1.0 /maxState);
 				defaultGreenTable[maxState][theState] = new Color(c, 1, c);
 			}
 		}
+		DEFAULTGREENTABLE = new MesquiteColorTable();
+		DEFAULTGREENTABLE.colorTable = defaultGreenTable;
 
 		defaultOrangeTable = new Color[maxNumStates][maxNumStates];
 		for (int i=0; i<maxNumStates; i++) {
@@ -127,6 +134,8 @@ public  class MesquiteColorTable  {
 				defaultOrangeTable[maxState][theState] = new Color(1, c, 0);
 			}
 		}
+		DEFAULTORANGETABLE = new MesquiteColorTable();
+		DEFAULTORANGETABLE.colorTable = defaultOrangeTable;
 
 		defaultPurpleTable = new Color[maxNumStates][maxNumStates];
 		for (int i=0; i<maxNumStates; i++) {
@@ -143,6 +152,8 @@ public  class MesquiteColorTable  {
 				defaultPurpleTable[maxState][theState] = new Color(c, c2, c);
 			}
 		}
+		DEFAULTPURPLETABLE = new MesquiteColorTable();
+		DEFAULTPURPLETABLE.colorTable = defaultPurpleTable;
 
 		defaultBlueTable = new Color[maxNumStates][maxNumStates];
 		for (int i=0; i<maxNumStates; i++) {
@@ -151,13 +162,15 @@ public  class MesquiteColorTable  {
 			}
 		}
 		for (int maxState=1; maxState<maxNumStates; maxState++) {
-			defaultBlueTable[maxState][0] = Color.white;
-			defaultBlueTable[maxState][maxState] = Color.black;
+			defaultBlueTable[maxState][0] = Color.white;     
+			defaultBlueTable[maxState][maxState] = new Color(0, 0, 200);
 			for (int theState=1; theState<maxState; theState++) {
 				float c = (float)((maxState-theState) * 1.0 /maxState);
 				defaultBlueTable[maxState][theState] = new Color(c, c, 1);
 			}
 		}
+		DEFAULTBLUETABLE = new MesquiteColorTable();
+		DEFAULTBLUETABLE.colorTable = defaultBlueTable;
 
 		defaultRedTable = new Color[maxNumStates][maxNumStates];
 		for (int i=0; i<maxNumStates; i++) {
@@ -167,12 +180,14 @@ public  class MesquiteColorTable  {
 		}
 		for (int maxState=1; maxState<maxNumStates; maxState++) {
 			defaultRedTable[maxState][0] = Color.white;
-			defaultRedTable[maxState][maxState] = Color.black;
+			defaultRedTable[maxState][maxState] = new Color(200, 0, 0);
 			for (int theState=1; theState<maxState; theState++) {
 				float c = (float)((maxState-theState) * 1.0 /maxState);
 				defaultRedTable[maxState][theState] = new Color(1, c, c);
 			}
 		}
+		DEFAULTREDTABLE = new MesquiteColorTable();
+		DEFAULTREDTABLE.colorTable = defaultRedTable;
 
 	}
 	public MesquiteColorTable() {
