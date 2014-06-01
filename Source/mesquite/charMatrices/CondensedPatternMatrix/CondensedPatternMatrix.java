@@ -24,7 +24,6 @@ import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 /*TO DO: 
- *  - creates pattern matrix of same type (e.g., DNA) as original
  *  - creates weight set
  *  - specify a better name
  */
@@ -87,7 +86,6 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 				int numChars = data.getNumChars();
 				CharWeightSet weightSet= new CharWeightSet("Frequency of Patterns", data.getNumChars(), data);  // making a weight set
 				weightSet.addToFile(getProject().getHomeFile(), getProject(), findElementManager(CharWeightSet.class)); //attaching the weight set to a file
-				condensedData.setCurrentSpecsSet(weightSet, CharWeightSet.class); 
 
 				for (int ic = 0; ic< numChars; ic++)
 					weightSet.setValue(ic,1);
@@ -105,7 +103,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 
 				condensedData.removeCharactersThatAreEntirelyGaps(false);
 			
-			/*	// delete the extra parts of the weightset
+				// delete the extra parts of the weightset
 				int i = numChars-1;
 				while (i>=0) {
 					if (weightSet.getInt(i)==0){
@@ -113,7 +111,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 					}
 					i--;
 				}
-				*/
+				
 				
 				// now re-sort by frequency
 				int newNumChars = condensedData.getNumChars();
@@ -132,15 +130,14 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 						condensedData.swapParts(ic+1, bestCharacter);
 					}
 				}
-				//condensedData.setCurrentSpecsSet(weightSet, CharWeightSet.class); 
+				condensedData.setCurrentSpecsSet(weightSet, CharWeightSet.class); 
 
-				
-				// rather than printing these out this weightset should be specified somehow as the current weightset of the new matrix
-				
-				Debugg.println("\nFrequencies of patterns:");
-				for (int ic = 0; ic< weightSet.getNumberOfParts(); ic++){
-					Debugg.println(" "+(ic+1)+": " + MesquiteDouble.toStringDigitsSpecified(((1.0*weightSet.getInt(ic))/numChars), 4));
+								
+				logln("\nFrequencies of commonest patterns:");
+				for (int ic = 0; ic< weightSet.getNumberOfParts() && ic<20; ic++){
+					logln(" "+(ic+1)+": " + MesquiteDouble.toStringDigitsSpecified(((1.0*weightSet.getInt(ic))/numChars), 4));
 				}
+				logln("\n[Weights of characters in pattern matrix are pattern frequencies.]");
 			
 				return condensedData.getMCharactersDistribution();
 			}
