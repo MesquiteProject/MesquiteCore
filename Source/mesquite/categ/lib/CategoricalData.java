@@ -231,7 +231,7 @@ public class CategoricalData extends CharacterData {
 	/*..........................................  CategoricalData  ..................................................*/
 	/**returns a copy of simply the data matrix with symbols */
 	public CategoricalData getDataCopy(){
-		CategoricalData data = new CategoricalData(matrixManager, numTaxa, numChars, getTaxa());
+		CategoricalData data = (CategoricalData)makeCharacterData(numTaxa, numChars);
 		if (symbols!=null)
 			for (int i=0; i<=CategoricalState.maxCategoricalState && i<symbols.length; i++) {
 				data.setSymbolDirect(i, symbols[i]);
