@@ -325,6 +325,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		treeDisplay.setMinimumTaxonNameDistance(0, spotSize/2+ 4);
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
+		treeDisplay.setOrientation(ownerModule.nodeLocsTask.getDefaultOrientation());
 		ready = true;
 	}
 	public void resetNumNodes(int numNodes){

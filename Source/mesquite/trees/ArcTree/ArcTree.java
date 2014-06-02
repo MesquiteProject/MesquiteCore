@@ -233,6 +233,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 		catch (Throwable t){
 		}
 		ready = true;
+		treeDisplay.setOrientation(ownerModule.nodeLocsTask.getDefaultOrientation());
 	}
 
 	/*_________________________________________________*/

@@ -12,12 +12,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.align.lib;
 
 import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.MesquiteNumber;
 import mesquite.lib.*;
 
 public class AlignmentHelperQuadraticSpace extends AlignmentHelper {	
 	
-	public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
+    public int bigNumber = MesquiteInteger.infinite/3; // can't use "infinite", because adding anything to it makes a negative number ... bad for minimization problems
+
+    public AlignmentHelperQuadraticSpace(int[] seq1, int[] seq2, int lengthA, int lengthB, int[][] subs, int gapOpen, int gapExtend, int alphabetLength) {
 		this(seq1, seq2, lengthA, lengthB, subs, gapOpen, gapExtend, gapOpen, gapExtend, alphabetLength);
 	}
 
@@ -41,19 +42,23 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 		int D[][] = new int[lengthA+1][lengthB+1];
 		int V[][] = new int[lengthA+1][lengthB+1];
 
-		int i,j;		
+		int i,j;
 		
+		//first column
 		for (i=1; i<=lengthA; i++) {
-			V[i][0] = D[i][0] = gapOpenTerminal + gapExtendTerminal*i;
-			H[i][0] = gapOpen + gapOpenTerminal +  gapExtendTerminal*i;
+          V[i][0] = gapOpenTerminal + gapExtendTerminal*i;
+          H[i][0] = D[i][0] = bigNumber;
 		}
+		
+		//first row
 		for (j=1; j<=lengthB; j++) {
-			D[0][j] = H[0][j] = gapOpenTerminal + gapExtendTerminal*j;
-			V[0][j] = gapOpen + gapOpenTerminal +  gapExtendTerminal*j;
+			H[0][j] = gapOpenTerminal + gapExtendTerminal*j;
+			V[0][j] = D[0][j] = bigNumber;
 		}
 		
 		int gapOpenOnA, gapOpenOnB, gapExtendOnA, gapExtendOnB;
 		for (i=1; i<=lengthA; i++) {
+
 			gapOpenOnA =  (i==lengthA) ? gapOpenTerminal : gapOpen;
 			gapExtendOnA = (i==lengthA) ? gapExtendTerminal : gapExtend ;			
 			if (keepGaps && i<followsGapSize.length && followsGapSize[i]>0) {
@@ -68,29 +73,29 @@ public class AlignmentHelperQuadraticSpace extends AlignmentHelper {
 				
 				if (isMinimize) {
 					V[i][j] = Math.min(  V[i-1][j] + gapExtendOnB,  
-								Math.min ( D[i-1][j] + gapOpenOnB + gapExtendOnB,
-												 H[i-1][j] + gapOpenOnB + gapExtendOnB));
+							  Math.min ( D[i-1][j] + gapOpenOnB + gapExtendOnB,
+										 H[i-1][j] + gapOpenOnB + gapExtendOnB));
 	
 					H[i][j] = Math.min(  V[i][j-1] + gapOpenOnA + gapExtendOnA,  
-								Math.min ( D[i][j-1] + gapOpenOnA + gapExtendOnA ,
-												 H[i][j-1] + gapExtendOnA));
+							  Math.min ( D[i][j-1] + gapOpenOnA + gapExtendOnA ,
+										 H[i][j-1] + gapExtendOnA));
 
 					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength)  +  Math.min(  V[i-1][j-1] , Math.min ( D[i-1][j-1] , H[i-1][j-1] ));
 				} else { //maximize
-					V[i][j] = Math.max(  V[i-1][j] + gapExtendOnB,  
-								Math.max( D[i-1][j] + gapOpenOnB + gapExtendOnB,
-												H[i-1][j] + gapOpenOnB + gapExtendOnB));
+					V[i][j] = Math.max( V[i-1][j] + gapExtendOnB,
+							  Math.max( D[i-1][j] + gapOpenOnB + gapExtendOnB,
+										H[i-1][j] + gapOpenOnB + gapExtendOnB));
 				
 					H[i][j] = Math.max(  V[i][j-1] + gapOpenOnA + gapExtendOnA,  
-								Math.max ( D[i][j-1] + gapOpenOnA + gapExtendOnA ,
-												 H[i][j-1] + gapExtendOnA));					
+							  Math.max ( D[i][j-1] + gapOpenOnA + gapExtendOnA ,
+										 H[i][j-1] + gapExtendOnA));
 	
 					D[i][j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  V[i-1][j-1] , Math.max( D[i-1][j-1] , H[i-1][j-1] ));
 				}
 			}
 		}
-		
-		//System.out.println ("Final scores are: H=" + H[i-1][j-1] + ", D=" + D[i-1][j-1] + ", V=" + V[i-1][j-1]);
+
+        
 		i--;
 		j--;
 		int myScore ;
