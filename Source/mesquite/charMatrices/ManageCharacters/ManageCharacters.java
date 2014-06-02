@@ -876,21 +876,18 @@ public class ManageCharacters extends CharactersManager {
 					return null;
 				}
 				newMatrix = matrix.makeCharacterData(manager, taxa);
-				String matrixName = matrix.getName();
 				if (matrix.getParentData()!=null){
 					CharacterData parent = matrix.getParentData();
-					if (StringUtil.notEmpty(parent.getName()))
-						matrixName = parent.getName();
 					if (parent.characterNamesExist()){
 						for (int ic=0; ic<parent.getNumChars() && ic<matrix.getNumChars(); ic++)
 							newMatrix.setCharacterName(ic, parent.getCharacterName(ic));
 					}
-					CharWeightSet weightSet= (CharWeightSet)parent.getCurrentSpecsSet(CharWeightSet.class);  //DRM added 1 May 2014
+					CharWeightSet weightSet= (CharWeightSet)parent.getCurrentSpecsSet(CharWeightSet.class);  //DRM added 1 May 14
 					if (weightSet!=null) {
 						newMatrix.setCurrentSpecsSet(weightSet, CharWeightSet.class); 
 					}
 				}
-				String name = MesquiteString.queryShortString(containerOfModule(), "Name Matrix", "Name of New Matrix", getProject().getCharacterMatrices().getUniqueName(matrixName));
+				String name = MesquiteString.queryShortString(containerOfModule(), "Name Matrix", "Name of New Matrix", getProject().getCharacterMatrices().getUniqueName(matrix.getName()));
 				if (name == null){
 					fireEmployee(characterSourceTask);
 					getProject().decrementProjectWindowSuppression();
