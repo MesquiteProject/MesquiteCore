@@ -3413,7 +3413,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					fileInterpreter.setOriginalNumTaxa(data.getNumTaxa());
 					fileInterpreter.setMaximumTaxonFilled(-1);
 
-					if (!MesquiteThread.isScripting() && false) {
+					if (!MesquiteThread.isScripting()) {
 						if (data instanceof MolecularData)
 							adjustNewSequences = queryOptions();
 					}
@@ -3425,9 +3425,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				actUponDroppedFileContents(fileInterpreter, nextFile.getAbsolutePath());
 
 				if (adjustNewSequences) {
-					if (data instanceof DNAData)
-						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, originalLastTaxonNumber, taxa.getNumTaxa() - 1, false);
-					// MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, originalLastTaxonNumber, taxa.getNumTaxa()-1,false);
+					if (data instanceof DNAData){
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, originalLastTaxonNumber, taxa.getNumTaxa() - 1, false, false);
+						MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, originalLastTaxonNumber, taxa.getNumTaxa()-1,false);
+					}
 					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
 				}
 				count++;

@@ -113,9 +113,10 @@ public class MolecularDataUtil {
 	}
 
 	/*.................................................................................................................*/
-	protected static double alignmentScoreRatioToRCScore(DNAData data, int it1, int it2) {
-		Debugg.println("comparing " + data.getTaxa().getTaxonName(it1) + " to " + data.getTaxa().getTaxonName(it2) );
+	protected static double alignmentScoreRatioToRCScore(DNAData data, MesquiteModule module, int it1, int it2, boolean verbose) {
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(false,data);
+		if (verbose)
+			module.logln("\nComparing " + data.getTaxa().getTaxonName(it2) + " to " + data.getTaxa().getTaxonName(it1) );
 		
 		if (aligner==null)
 			return 0.0;
@@ -133,24 +134,30 @@ public class MolecularDataUtil {
 		}
 		MesquiteNumber alignScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignScore);
-		Debugg.println("align " + alignScore);
+		Debugg.println("   Alignment score: " + alignScore);
 		for (int ic = firstSite; ic<=lastSite; ic++){
 			extracted2[lastSite-ic] = DNAState.complement(data.getState(ic, it2));
 		}
 		MesquiteNumber alignRCScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignRCScore);
-		Debugg.println("alignRC " + alignRCScore);
+		if (verbose)
+			module.logln("   Alignment score with " + data.getTaxa().getTaxonName(it2) + " reverse complemented: " + alignRCScore);
+
 		alignScore.divideBy(alignRCScore);
+		
+		if (verbose)
+			module.logln("   Ratio: " + alignScore.getDoubleValue());
+		
 		return alignScore.getDoubleValue();
 
    	 }
 	/*.................................................................................................................*/
-	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons) {
-		reverseComplementSequencesIfNecessary(data,  module,  taxa,  itStart,  itEnd,  baseOnStopCodons, false);
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean verbose) {
+		reverseComplementSequencesIfNecessary(data,  module,  taxa,  itStart,  itEnd,  baseOnStopCodons, false, verbose);
 	}
 
 	/*.................................................................................................................*/
-	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean againstAllOthers) {
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
 
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
@@ -166,31 +173,31 @@ public class MolecularDataUtil {
 				if (stops<=stopsRC) {
 					data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
 				} else
-					module.logln("Reverse complemented sequence " + (it+1));
+					module.logln("  Reverse complemented " + taxa.getTaxonName(it));
 			}
 		} else {
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
-				Debugg.println("========taxon  " + it);
+			   
 				double score = 0;
 				if (againstAllOthers && false){
 					for (int ik = itStart; ik<taxa.getNumTaxa() && ik<=itEnd; ik++)
 						if (ik != it){
-							double thisScore = alignmentScoreRatioToRCScore((DNAData)data, ik, it);
+							double thisScore = alignmentScoreRatioToRCScore((DNAData)data, module, ik, it, true);
 							score += thisScore;
 							Debugg.println("this score " + score);
 						}
 					score = score/(itEnd-itStart);
 				}
-				else 
-					score = alignmentScoreRatioToRCScore((DNAData)data, 0, it);
+				else {
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, 0, it, true);
+				}
 				
-				Debugg.println("avg score " + score);
 				if (score>1.0){
 					data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
-					module.logln("Reverse complemented sequence " + (it+1));
+					module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
 				}
-				else
-					module.logln("Sequence not reverse complemented " + (it+1));
+			//	else
+			//		module.logln("Sequence not reverse complemented " + (it+1));
 
 			}
 		
