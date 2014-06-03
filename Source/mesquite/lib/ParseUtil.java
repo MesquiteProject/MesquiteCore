@@ -15,7 +15,7 @@ package mesquite.lib;
 import java.awt.*;
 
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ parse util ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ parse util ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* this probably should move to a NEXUS library
 /* ======================================================================== */
 /** A set of string parsing methods.  Should be renamed StringParser or NEXUSParser.*/
@@ -547,12 +547,23 @@ public class ParseUtil extends StringUtil {
 			int startValue = startChar.getValue();
 			String token= getToken(s, startChar); //subcommandName
 			int count =0;
+			boolean scan = false;
 			while (token !=null && !token.equals(";")) {
 				token = getToken(s, startChar); //=
+					
 				if (token !=null && !token.equals(";")) {
 					token = getToken(s, startChar); //subcommandParameters
 					if (token != null && token.equals("-")){
-						token = token + getToken(s, startChar); //rest of negative number
+						scan = true;
+						int current = startChar.getValue();
+						String nextToken = getToken(s, startChar); //rest of negative number?
+						try {
+							double d = Double.valueOf(nextToken).doubleValue();
+							token = token +  nextToken; //rest of negative number
+						}
+						catch (NumberFormatException e) {
+							startChar.setValue(current);  // was just lone -, so back up for next token
+						}
 					}
 					count++;
 				}
@@ -568,7 +579,16 @@ public class ParseUtil extends StringUtil {
 				token = getToken(s, startChar); //=
 				token = getToken(s, startChar); //subcommandParameters
 				if (token != null && token.equals("-")){
-					token = token + getToken(s, startChar); //rest of negative number
+					int current = startChar.getValue();
+					String nextToken = getToken(s, startChar); //rest of negative number?
+					try {
+						double d = Double.valueOf(nextToken).doubleValue();
+						token = token +  nextToken; //rest of negative number
+					}
+					catch (NumberFormatException e) {
+						startChar.setValue(current);  // was just lone -, so back up for next token
+					}
+					//token = token + getToken(s, startChar); //rest of negative number
 				}
 				strings[1][i] = token; 
 			}
