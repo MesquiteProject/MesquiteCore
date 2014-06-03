@@ -22,12 +22,8 @@ import mesquite.lib.duties.*;
 import mesquite.parsimony.lib.ParsimonyModelSet;
 import mesquite.categ.lib.*;
 
-/* ======================================================================== */
-/*TO DO: 
- *  - creates weight set
- *  - specify a better name
- */
-
+/*  module initiated by David Maddison 
+ * */
 public class CondensedPatternMatrix extends CharMatrixSource {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.charMatrices.StoredMatrices.StoredMatrices.class, getName() + "  needs a source of categorical matrices.",
@@ -73,10 +69,10 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 	public void initialize(Taxa taxa){
 		dataTask.initialize(taxa);
 	}
-//	NameReference xRef = NameReference.getNameReference("x");
-//	NameReference yRef = NameReference.getNameReference("y");
-
 	
+	/** Does the core condensation of the matrix.  Note that it makes a copy of the matrix and then condenses that.
+	  It also creates a weight set that stores in it the number of times that pattern appeared in the matrix.
+	 * */
 	private MCharactersDistribution condense(MCharactersDistribution mData){
 		if (mData != null && mData.getParentData() != null){
 			CharacterData data = mData.getParentData();
@@ -137,7 +133,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 				for (int ic = 0; ic< weightSet.getNumberOfParts() && ic<20; ic++){
 					logln(" "+(ic+1)+": " + MesquiteDouble.toStringDigitsSpecified(((1.0*weightSet.getInt(ic))/numChars), 4));
 				}
-				logln("\n[Weights of characters in pattern matrix are pattern frequencies.]");
+				logln("\n[To see the frequencies of all patterns, go to the List of Characters window for this pattern matrix and choose Columns>Current Weights to see the weights applied to each character.]");
 			
 				return condensedData.getMCharactersDistribution();
 			}
@@ -154,14 +150,18 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 	public  MCharactersDistribution getCurrentMatrix(Taxa taxa){
 		MCharactersDistribution orig = dataTask.getCurrentMatrix(taxa);
 		MCharactersDistribution condensedData = condense(orig);
-		condensedData.setName("Patterns in " + orig.getName());
+		CharacterData data = condensedData.getParentData();
+		if (data!=null)
+			data.setName("Patterns in " + orig.getName());
 		return condensedData;
 	}
 	/** gets the indicated matrix.*/
 	public  MCharactersDistribution getMatrix(Taxa taxa, int im){
 		MCharactersDistribution orig = dataTask.getMatrix(taxa, im);
 		MCharactersDistribution condensedData = condense(orig);
-		condensedData.setName("Patterns in " + orig.getName());
+		CharacterData data = condensedData.getParentData();
+		if (data!=null)
+			data.setName("Patterns in " + orig.getName());
 		return condensedData;
 	}
 	/** gets name of the indicated matrix.*/
@@ -196,7 +196,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 
 	/*.................................................................................................................*/
   	 public boolean isPrerelease(){
-  	 	return true;
+  	 	return false;
   	 }
 
 }
