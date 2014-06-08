@@ -3395,7 +3395,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	/* ................................................................................................................. */
 	public void processFilesDroppedOnPanel(List files) {
 		int count = 0;
-		// boolean adjustNewSequences = false;
+		//boolean adjustNewSequences = false;
 
 		FileInterpreter fileInterpreter = null;
 		int numFiles = numIters(files.iterator());
@@ -3425,6 +3425,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				actUponDroppedFileContents(fileInterpreter, nextFile.getAbsolutePath());
 
 				if (adjustNewSequences) {
+					Debugg.println("adjusting sequences ");
 					if (data instanceof DNAData){
 						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, originalLastTaxonNumber, taxa.getNumTaxa() - 1, false, false);
 						MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, originalLastTaxonNumber, taxa.getNumTaxa()-1,false);
