@@ -40,6 +40,7 @@ public class BipartitionVector extends Vector {
 	int mode = STRICTMODE;
 	double weight = 1.0;
 
+	int numBranchLengthArraySizeWarnings=0;
 
 
 	public void setTaxa(Taxa taxa){
@@ -77,6 +78,11 @@ public class BipartitionVector extends Vector {
 		}
 
 	}
+	
+	public void initialize() {
+		numBranchLengthArraySizeWarnings=0;
+	}
+	
 	public String toString(){
 		String s = "BipartitionVector\n";
 		for (int i=0; i<size(); i++){
@@ -230,6 +236,7 @@ public class BipartitionVector extends Vector {
 			return;
 		}
 		nodes[node].clearAllBits();
+		branchLengthArrayWarningForThisTree = false;
 		for (int daughter=tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter) ) {
 			getPartitions(tree, daughter);
 			nodes[node].orBits(nodes[daughter]);
@@ -312,14 +319,23 @@ public class BipartitionVector extends Vector {
 			return null;
 		}
 	}
+	
+	boolean branchLengthArrayWarningForThisTree = false;
 
 	private void getPartitions(Tree tree, int node){
 		if (node >= nodes.length)
 			MesquiteMessage.println("Problem with getPartitions: node array wrong size");
-		if (tree.nodeIsTerminal(node)){
+		if (tree.nodeIsTerminal(node)){     
 			int it = tree.taxonNumberOfNode(node);
-			if (it< 0 || it >= branchLengths.length)
-				MesquiteMessage.println("Problem with getPartitions: branchlengths array wrong size");
+			if ((it< 0 || it >= branchLengths.length) && numBranchLengthArraySizeWarnings<10 && !branchLengthArrayWarningForThisTree){
+				MesquiteMessage.println("\nProblem with getPartitions: branchlengths array wrong size.");
+				MesquiteMessage.println("  Diagnostics:");
+				MesquiteMessage.println("    branchLengths.length = "+branchLengths.length);
+				MesquiteMessage.println("    it = "+it);
+				MesquiteMessage.println("    number of terminal taxa in tree = "+ tree.numberOfTerminalsInClade(tree.getRoot()));
+				numBranchLengthArraySizeWarnings++;
+				branchLengthArrayWarningForThisTree=true;
+			}
 			
 			nodes[node].setBit(it);
 			double length = tree.getBranchLength(node);
@@ -347,6 +363,7 @@ public class BipartitionVector extends Vector {
 	
 	/** adds tree to existing */
 	public void addTree(Tree tree){
+		branchLengthArrayWarningForThisTree=false;
 		princess = tree.firstDaughterOfNode(tree.getRoot());
 		if (tree.nodeIsPolytomous(tree.getRoot()))
 			princess=-1;  // don't worry about princess if root is a polytomy

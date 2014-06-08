@@ -362,6 +362,12 @@ class ValuesAtNodesOperator extends TreeDisplayDrawnExtra {
 				vLegend.setTitle(vModule.numForNodesTask.getName());
 			}
 
+/*			Debugg.println("");
+			if (numArray!=null)
+				Debugg.println("numArray.getSize() " + numArray.getSize());
+			Debugg.println("myTree.getNumNodeSpaces() " + myTree.getNumNodeSpaces());
+			Debugg.println("taxa.getNumTaxa() " + myTree.getTaxa().getNumTaxa());
+*/
 			if (numArray == null || numArray.getSize() < myTree.getNumNodeSpaces()) 
 				numArray = new NumberArray(myTree.getNumNodeSpaces());
 			else
