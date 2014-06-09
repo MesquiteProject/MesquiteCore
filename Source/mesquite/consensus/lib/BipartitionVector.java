@@ -346,7 +346,8 @@ public class BipartitionVector extends Vector {
 
 	private boolean getPartitions(Tree tree, int node){
 		if (node >= nodes.length) {
-			if ((!nodeArraySizeWarningForThisTree && numNodeArraySizeWarnings<10)||node>biggestNode){
+
+			if (((!nodeArraySizeWarningForThisTree && numNodeArraySizeWarnings<10)||node>biggestNode)){
 				MesquiteMessage.println("\nProblem with getPartitions: node number is larger than nodes array allocation");
 				printDiagnostics(tree,node);
 				MesquiteMessage.println("    nodes.length = "+ nodes.length);
@@ -397,6 +398,18 @@ public class BipartitionVector extends Vector {
 		branchLengthArrayWarningForThisTree=false;
 		nodeArraySizeWarningForThisTree=false;
 		princess = tree.firstDaughterOfNode(tree.getRoot());
+		
+		//upgrading storage if not big enough
+		if (false && nodes.length < tree.getNumNodeSpaces()){
+			partitionPresent.resetSize(tree.getNumNodeSpaces());
+			Bits[] newNodes = new Bits[tree.getNumNodeSpaces()];
+			for (int i=0; i<newNodes.length; i++)
+				if (i<nodes.length)
+					newNodes[i] =  nodes[i];
+				else
+					newNodes[i] = new Bits(numTaxa);
+			nodes = newNodes;
+		}
 		if (tree.nodeIsPolytomous(tree.getRoot()))
 			princess=-1;  // don't worry about princess if root is a polytomy
 		for (int i= 0; i<nodes.length; i++)
