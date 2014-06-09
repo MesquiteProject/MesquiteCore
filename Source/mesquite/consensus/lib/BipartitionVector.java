@@ -55,8 +55,8 @@ public class BipartitionVector extends Vector {
 		allTaxa = new Bits(numTaxa);
 		bits1 = new Bits(numTaxa);
 		bits2 = new Bits(numTaxa);
-		branchLengths = new double[numTaxa];
-		for (int i=0; i<numTaxa; i++){
+		branchLengths = new double[numTaxa*2];
+		for (int i=0; i<branchLengths.length; i++){
 			branchLengths[i] = MesquiteDouble.unassigned;
 		}
 
@@ -328,6 +328,7 @@ public class BipartitionVector extends Vector {
 	boolean nodeArraySizeWarningForThisTree = false;
 	int biggestNode =0;
 	
+	/*.................................................................................................................*/
 	private void printDiagnostics (Tree tree, int node) {
 		MesquiteMessage.println("  Diagnostics:");
 		MesquiteMessage.println("    tree name = "+ tree.getName());
@@ -344,6 +345,7 @@ public class BipartitionVector extends Vector {
 
 	}
 
+	/*.................................................................................................................*/
 	private boolean getPartitions(Tree tree, int node){
 		if (node >= nodes.length) {
 
@@ -375,6 +377,7 @@ public class BipartitionVector extends Vector {
 					branchLengths[it] =0.0;
 				branchLengths[it] += length;
 			}
+			return true;
 		}
 		nodes[node].clearAllBits();
 		for (int daughter=tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter) ) {
@@ -392,15 +395,10 @@ public class BipartitionVector extends Vector {
 		return true;
 	}
 
-	
-	/** adds tree to existing */
-	public void addTree(Tree tree){
-		branchLengthArrayWarningForThisTree=false;
-		nodeArraySizeWarningForThisTree=false;
-		princess = tree.firstDaughterOfNode(tree.getRoot());
-		
+
+	public void checkArraySizes(Tree tree){
 		//upgrading storage if not big enough
-		if (false && nodes.length < tree.getNumNodeSpaces()){
+		if (nodes.length < tree.getNumNodeSpaces()){
 			partitionPresent.resetSize(tree.getNumNodeSpaces());
 			Bits[] newNodes = new Bits[tree.getNumNodeSpaces()];
 			for (int i=0; i<newNodes.length; i++)
@@ -410,6 +408,27 @@ public class BipartitionVector extends Vector {
 					newNodes[i] = new Bits(numTaxa);
 			nodes = newNodes;
 		}
+		if (branchLengths.length < tree.getNumNodeSpaces()){
+			double[] newBranchLengths = new double[tree.getNumNodeSpaces()];
+			for (int i=0; i<newBranchLengths.length; i++)
+				if (i<branchLengths.length)
+					newBranchLengths[i] =  branchLengths[i];
+				else
+					newBranchLengths[i] = MesquiteDouble.unassigned;
+			branchLengths = newBranchLengths;
+		}
+	}
+
+	
+	/*.................................................................................................................*/
+	
+	/** adds tree to existing */
+	public void addTree(Tree tree){
+		branchLengthArrayWarningForThisTree=false;
+		nodeArraySizeWarningForThisTree=false;
+		princess = tree.firstDaughterOfNode(tree.getRoot());
+		
+		checkArraySizes(tree);
 		if (tree.nodeIsPolytomous(tree.getRoot()))
 			princess=-1;  // don't worry about princess if root is a polytomy
 		for (int i= 0; i<nodes.length; i++)
@@ -449,6 +468,7 @@ public class BipartitionVector extends Vector {
 		if (tree.nodeIsPolytomous(tree.getRoot()))
 			princess=-1;  // don't worry about princess if root is a polytomy
 		bpv.setPrincess(princess);
+		bpv.checkArraySizes(tree);
 		bpv.simpleGetPartitions(tree, tree.getRoot());
 		return bpv;
 	}

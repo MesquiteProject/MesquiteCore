@@ -118,7 +118,7 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
  	public abstract Tree getConsensus();
 	/*.................................................................................................................*/
  	public void initialize() {
- 		bipartitions.initialize();
+ 		//bipartitions.initialize();
  	}
 	/*.................................................................................................................*/
  	public void afterConsensus() {

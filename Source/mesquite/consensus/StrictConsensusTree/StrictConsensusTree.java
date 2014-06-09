@@ -34,6 +34,7 @@ public class StrictConsensusTree extends BasicTreeConsenser   {
   	
 	/*.................................................................................................................*/
  	public void initialize() {
+		bipartitions.initialize();
  		if (bipartitions!=null)
  			bipartitions.setMode(BipartitionVector.STRICTMODE);
  	}
