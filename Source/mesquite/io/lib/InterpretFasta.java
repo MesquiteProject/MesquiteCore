@@ -164,8 +164,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
 					if (!MesquiteThread.isScripting()){
+						String helpString = "If you choose Replace Data, then the incoming sequence will replace any existing sequence for that taxon.  If you choose Replace If Empty, then the incoming sequence will be put into the existing spot for that taxon ONLY if that taxon has no previous data there; if there is already a sequence there, then the incoming sequence will be added as a new taxon. ";
+						helpString+= " If you choose Add As New Taxa then all incoming sequences will be added as new taxa, even if there already exist taxa in the matrix with identical names.";
 						//replaceDataOfTaxonWithSameName = AlertDialog.query(this.containerOfModule(), "Replace Data", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data", "Add As New Taxa", 2);
-						replaceDataOfTaxonWithSameNameInt = AlertDialog.query(this.containerOfModule(), "Replace Data", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data","Replace If Empty", "Add As New Taxa", 3);
+						replaceDataOfTaxonWithSameNameInt = AlertDialog.query(this.containerOfModule(), "Incoming taxa match existing taxa", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data","Replace If Empty", "Add As New Taxa", 3, helpString);
 					}
 					hasQueriedAboutSameNameTaxa= true;
 				}

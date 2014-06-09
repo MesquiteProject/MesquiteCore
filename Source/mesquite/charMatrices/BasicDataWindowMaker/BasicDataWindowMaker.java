@@ -3413,10 +3413,11 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					fileInterpreter.setOriginalNumTaxa(data.getNumTaxa());
 					fileInterpreter.setMaximumTaxonFilled(-1);
 
-					if (!MesquiteThread.isScripting()) {
+				/*	if (!MesquiteThread.isScripting()) {
 						if (data instanceof MolecularData)
 							adjustNewSequences = queryOptions();
 					}
+					*/
 				}
 				fileInterpreter.setImportFileNumber(count);
 				// system.out.println("next file dropped is: " + nextFile);
