@@ -3373,9 +3373,12 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public boolean queryOptions() {
 		if (!(data instanceof DNAData))
 			return false;
-
+		
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(editorModule.containerOfModule(), "Adjust incoming sequences?", buttonPressed); // MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		String s="If you choose to adjust sequences on import, then Mesquite will examine each sequence it imports, and compare it against the reference sequence. ";
+		s+="It will reverse complement any sequences that need to be so treated, and then do a pairwise alignment of that sequence to the reference sequence.";
+		dialog.appendToHelpString(s);
 		dialog.addLabel("Reverse complement a sequence (if needed)");
 		dialog.addBlankLine();
 		IntegerField referenceSequenceBox = dialog.addIntegerField("Compare to reference sequence: ", referenceSequence + 1, 8, 1, data.getNumTaxa());
@@ -3408,16 +3411,17 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					fileInterpreter = findFileInterpreter(MesquiteFile.getFileContentsAsString(nextFile.getAbsolutePath()), nextFile.getName());
 					if (fileInterpreter == null)
 						return;
+					fileInterpreter.startRecordingTaxa(taxa);
 					fileInterpreter.setTotalFilesToImport(numFiles);
 					fileInterpreter.setMultiFileImport(numFiles>1);
 					fileInterpreter.setOriginalNumTaxa(data.getNumTaxa());
 					fileInterpreter.setMaximumTaxonFilled(-1);
 
-				/*	if (!MesquiteThread.isScripting()) {
+					if (!MesquiteThread.isScripting()) {
 						if (data instanceof MolecularData)
 							adjustNewSequences = queryOptions();
 					}
-					*/
+					
 				}
 				fileInterpreter.setImportFileNumber(count);
 				// system.out.println("next file dropped is: " + nextFile);
@@ -3425,19 +3429,21 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				CommandRecord.tick("\n\nReading file " + nextFile.getName());
 				actUponDroppedFileContents(fileInterpreter, nextFile.getAbsolutePath());
 
-				if (adjustNewSequences) {
-					Debugg.println("adjusting sequences ");
-					if (data instanceof DNAData){
-						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, originalLastTaxonNumber, taxa.getNumTaxa() - 1, false, false);
-						MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, originalLastTaxonNumber, taxa.getNumTaxa()-1,false);
-					}
-					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
-				}
 				count++;
 			}
 		}
 		 if (fileInterpreter!=null) {
+				if (adjustNewSequences) {
+					MesquiteMessage.println("Adjusting sequences ");
+					if (data instanceof DNAData){
+						Bits newTaxa = fileInterpreter.getNewlyAddedTaxa(taxa);
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, 0, false, false);
+						MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, newTaxa,0, false);
+					}
+					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
+				}
 				fileInterpreter.setMaximumTaxonFilled(-1);
+				fileInterpreter.endRecordingTaxa(taxa);
 		}
 
 		if (fileInterpreter != null)

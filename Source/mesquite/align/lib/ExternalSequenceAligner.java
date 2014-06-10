@@ -322,6 +322,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			Taxa originalTaxa =  data.getTaxa();
 
 			if (alignedData!=null) {
+				logln("Acquired aligned data");
 				int numChars = alignedData.getNumChars();
 				//sorting to get taxon names in correct order
 				int[] keys = new int[alignedData.getNumTaxa()];
@@ -329,6 +330,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 					String name = alignedTaxa.getTaxonName(it);
 					keys[it] = MesquiteInteger.fromString(name.substring(1, name.length()));  //this is original taxon number
 					if (!MesquiteInteger.isCombinable(keys[it])) {
+						MesquiteMessage.println("Processing unsuccessful: can't find incoming taxon " + name);
 						success=false;
 						break;
 					}
@@ -358,7 +360,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 							}
 					}
 				}
-			}
+			} else
+				MesquiteMessage.println("Processing unsuccessful: alignedData is null");
+
 			if (tempDataFile!=null)
 				tempDataFile.close();
 			getProject().decrementProjectWindowSuppression();

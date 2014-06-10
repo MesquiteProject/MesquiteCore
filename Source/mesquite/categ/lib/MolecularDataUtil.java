@@ -43,6 +43,24 @@ public class MolecularDataUtil {
 		return false;
 	}
 	/*.................................................................................................................*/
+	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, Bits taxaToAdjust, int comparisonTaxon, boolean allowNewGaps) {
+		MesquiteNumber score = new MesquiteNumber();
+		AlignUtil alignUtil = new AlignUtil();
+		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(true,data);
+		aligner.setAllowNewInternalGaps(allowNewGaps);
+		int numTaxa = data.getNumTaxa();
+		for (int it=0; it<=numTaxa; it++) {
+			if (taxaToAdjust.isBitOn(it) && it!=referenceTaxon) {
+				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
+				int[] newGaps = aligner.getGapInsertionArray();
+				if (newGaps!=null)
+					alignUtil.insertNewGaps((MolecularData)data, newGaps);
+				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
 	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, int itStart, int itEnd, boolean allowNewGaps) {
 		MesquiteNumber score = new MesquiteNumber();
 		AlignUtil alignUtil = new AlignUtil();
@@ -204,6 +222,46 @@ public class MolecularDataUtil {
 		}
 	}
 	
+	/*.................................................................................................................*/
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, Bits taxaToAdjust, int comparisonTaxon, boolean baseOnStopCodons, boolean verbose) {
+
+		if (baseOnStopCodons) {
+			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
+			if (modelSet == null) {
+				modelSet= new CodonPositionsSet("Codon Positions", data.getNumChars(), data);
+				modelSet.addToFile(data.getFile(), module.getProject(), module.findElementManager(CodonPositionsSet.class)); //THIS
+				data.setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
+			}
+			for (int it = 0; it<taxa.getNumTaxa() ; it++) {
+				if (taxaToAdjust.isBitOn(it)) {
+					int stops = getMinimumStops(data, it, modelSet);
+					data.reverseComplement(0, data.getNumChars()-1, it, false, false);
+					int stopsRC = getMinimumStops(data, it, modelSet);
+					if (stops<=stopsRC) {
+						data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+					} else
+						module.logln("  Reverse complemented " + taxa.getTaxonName(it));
+				}
+			}
+		} else {
+			for (int it = 0; it<taxa.getNumTaxa(); it++) {
+				if (taxaToAdjust.isBitOn(it)) {
+
+					double score = 0;
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, 0, it, true);
+
+					if (score>1.0){
+						data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+						module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+					}
+					//	else
+					//		module.logln("Sequence not reverse complemented " + (it+1));
+
+				}
+			}
+
+		}
+	}
 	/*.................................................................................................................*/
 	public static int numApplicable(long[] sequence) {
 		int count = 0;

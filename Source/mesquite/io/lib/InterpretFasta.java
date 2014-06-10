@@ -128,6 +128,12 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				token = firstLineParser.getFirstToken(line); //should be >
 		}
 	}
+	
+	
+	public int[] getNewTaxaAdded(){
+		return null;
+	}
+
 	/*.................................................................................................................*/
 	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile) {
 			boolean wassave = data.saveChangeHistory;
@@ -198,6 +204,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					}
 					else 
 						taxonNumber = taxa.getNumTaxa();
+					
+
+					
 					setLastNewTaxonFilled(taxonNumber);
 
 					if (data.getNumTaxa()<=taxonNumber) {
@@ -219,6 +228,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					t = taxa.getTaxon(taxonNumber);
 				
 				if (t!=null) {
+					recordAsNewlyAddedTaxon(taxa,taxonNumber);
+					
 					checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber to see if it is the biggest yet.
 					t.setName(token);
 					if (progIndicator!=null) {
@@ -234,8 +245,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					subParser.setString(line); 
 					int ic = 0;
 					progIndicator.setSecondaryMessage("Reading character 1");
-					
-					
 
 					while (subParser.getPosition()<line.length()) {
 						char c=subParser.nextDarkChar();

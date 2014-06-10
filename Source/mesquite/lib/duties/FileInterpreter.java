@@ -15,6 +15,7 @@ package mesquite.lib.duties;
 import java.awt.*;
 import java.util.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 
@@ -75,6 +76,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 //		replaceDataOfTaxonWithSameName = defaultReplaceDataOfTaxonWithSameName;
 		replaceDataOfTaxonWithSameNameInt = defaultReplaceDataOfTaxonWithSameNameInt;
 		hasQueriedAboutSameNameTaxa = defaultHasQueriedAboutSameNameTaxa;
+		
 	}
 
 	/** This is deprecated and should not be overridden.  The subsequent methods should be used instead.*/
@@ -94,8 +96,11 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean canExportData(Class dataClass){
 		return canExport();
 	}
-
-
+	
+	public int[] getNewTaxaAdded(){
+		return null;
+	}
+	
 	/** Returns whether the module can read (import) files with data of class dataClass*/
 	public boolean canImport(Class dataClass){
 		return canImport();
@@ -145,6 +150,40 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public String preferredDataFileExtension() {
 		return "";
 	}
+
+	NameReference previousTaxaNameRef = new NameReference("previousTaxon");
+	NameReference newlyAddedTaxaNameRef = new NameReference("newlyAddedTaxon");
+	
+	/*.................................................................................................................*/
+	public void startRecordingTaxa(Taxa taxa){
+		taxa.clearAllAssociatedBits(newlyAddedTaxaNameRef);
+		taxa.clearAllAssociatedBits(previousTaxaNameRef);
+		for (int it=0; it<taxa.getNumTaxa(); it++)
+			recordAsPreviousTaxon(taxa,it);
+	}
+	/*.................................................................................................................*/
+	public void recordAsPreviousTaxon(Taxa taxa, int it){
+		taxa.setAssociatedBit(previousTaxaNameRef, it, true);
+	}
+	/*.................................................................................................................*/
+	public void recordAsNewlyAddedTaxon(Taxa taxa, int it){
+		taxa.setAssociatedBit(newlyAddedTaxaNameRef, it, true);
+	}
+	/*.................................................................................................................*/
+	public Bits getNewlyAddedTaxa(Taxa taxa){
+		Bits newTaxa = new Bits(taxa.getNumTaxa());
+		newTaxa.clearAllBits();
+		for (int it=0; it<taxa.getNumTaxa(); it++)
+			if (taxa.getAssociatedBit(newlyAddedTaxaNameRef, it))
+				newTaxa.setBit(it);
+		return newTaxa;
+	}
+	/*.................................................................................................................*/
+	public void endRecordingTaxa(Taxa taxa){
+		taxa.clearAllAssociatedBits(newlyAddedTaxaNameRef);
+		taxa.clearAllAssociatedBits(previousTaxaNameRef);
+	}
+
 
 	/*.................................................................................................................*/
 	protected String stripNex(String name) {
