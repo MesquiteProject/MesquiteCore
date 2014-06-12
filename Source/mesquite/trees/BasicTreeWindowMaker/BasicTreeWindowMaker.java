@@ -4449,8 +4449,8 @@ class BasicTreeStatisticsPanel extends TreeInfoExtraPanel {
 	public BasicTreeStatisticsPanel(ClosablePanelContainer container){
 		super(container, "Basic Tree Stats");
 		statsBox =  new StringInABox("", null, 50);
-		open = true;
-	}
+		setOpen(true);
+		}
 	public void setTree(Tree tree){
 		super.setTree(tree);
 		//number of terminal taxa
@@ -4486,7 +4486,7 @@ class BasicTreeStatisticsPanel extends TreeInfoExtraPanel {
 		}
 	}
 	public int getRequestedHeight(int width){
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		statsBox.setFont(getFont());
 		statsBox.setString(treeStats);
@@ -4569,7 +4569,7 @@ class BranchInfoPanel extends TreeInfoExtraPanel {
 		}
 	}
 	public int getRequestedHeight(int width){
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		statsBox.setFont(getFont());
 		statsBox.setString(message);

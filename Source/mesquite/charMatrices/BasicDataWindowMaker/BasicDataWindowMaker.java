@@ -4908,7 +4908,7 @@ class BasicMatrixStatisticsPanel extends MatrixInfoExtraPanel {
 	public BasicMatrixStatisticsPanel(ClosablePanelContainer container) {
 		super(container, "Basic Matrix Stats");
 		statsBox = new StringInABox("", null, 50);
-		open = true;
+		setOpen(true);
 	}
 
 	public void setMatrixAndTable(CharacterData data, MesquiteTable table) {
@@ -4935,7 +4935,7 @@ class BasicMatrixStatisticsPanel extends MatrixInfoExtraPanel {
 	}
 
 	public int getRequestedHeight(int width) {
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		statsBox.setFont(getFont());
 		statsBox.setString(matrixStats);
@@ -5276,7 +5276,7 @@ class CellInfoPanel extends MatrixInfoExtraPanel {
 	}
 
 	public int getRequestedHeight(int width) {
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		statsBox.setFont(getFont());
 		statsBox.setString(message);

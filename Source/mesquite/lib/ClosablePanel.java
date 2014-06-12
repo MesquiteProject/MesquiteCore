@@ -20,9 +20,9 @@ public class ClosablePanel extends MousePanel {
 	public static final int MINHEIGHT = 20;
 	protected int height = MINHEIGHT;
 	protected int currentHeight = 60;
-	protected boolean open = false;
-	protected boolean wholeOpen = false;
-	protected boolean showTriangle = true;
+	private boolean open = false;
+	private boolean wholeOpen = false;
+	private boolean showTriangle = false;
 	protected ClosablePanelContainer container;
 	protected String title = "";
 	protected Color bgTopColor = Color.white;

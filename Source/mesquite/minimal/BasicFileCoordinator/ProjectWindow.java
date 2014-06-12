@@ -966,87 +966,7 @@ class TaxaPanel extends ElementPanel {
 			return "";
 		return Integer.toString(((Taxa)element).getNumTaxa()) + " Taxa";
 	}
-	/*
-	public void dispose(){
-		Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-		if (vv == null)
-			return;
-		for (int i=0; i<vv.size(); i++){
-			SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-			v.removeListener(this);
-			for (int k=0; k<v.size(); k++){
-				FileElement fe = (FileElement)v.elementAt(k);
-				fe.removeListener(this);
-			}
-		}
-		super.dispose();
-
-	}
-	public boolean upToDate(){
-		int e = 0;
-		Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-
-		for (int i=0; i<vv.size(); i++){
-			SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-			/*FileElement fe = (FileElement)v.getCurrentSpecsSet();
-			if (fe != null){
-				if (e>= subPanels.size())
-					return false;
-				ElementPanel panel = ((ElementPanel)subPanels.elementAt(e));
-				if (panel.element != fe)
-					return false;
-				e++;
-			}*
-			for (int k=0; k<v.size(); k++){
-				if (e>= subPanels.size())
-					return false;
-				ElementPanel panel = ((ElementPanel)subPanels.elementAt(e));
-				FileElement fe = (FileElement)v.elementAt(k);
-				if (panel.element != fe)
-					return false;
-
-				if (!StringUtil.stringsEqual(panel.element.getName(), panel.getTitle())){
-					panel.setTitle(panel.element.getName());
-				}
-				e++;
-			}
-		}
-		if (e<subPanels.size())
-			return false;
-		return true;
-	}
-	public void refresh(){
-		if (upToDate()) {
-			resetSizes(getWidth(), getHeight());
-			repaintAllPanels();
-			return;
-		}
-		for (int i = 0; i<subPanels.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-			remove(panel);
-			panel.dispose();
-		}
-		subPanels.removeAllElements();
-		Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-		ElementPanel panel;
-		for (int i=0; i<vv.size(); i++){
-			SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-			/*FileElement fe = (FileElement)v.getCurrentSpecsSet();
-			if (fe != null){
-				addExtraPanel(panel = new ElementPanel(bfc, this, fe), false);
-				panel.setBounds(0, 0, 0, 0);
-			}*
-			for (int k=0; k<v.size(); k++){
-				FileElement fe = (FileElement)v.elementAt(k);
-				addExtraPanel(panel = new SpecsSetPanel(bfc, this, fe), false);
-				panel.setBounds(0, 0, 0, 0);
-			}
-		}
-	}
-	public void changed(Object caller, Object obj, Notification notification){
-		refresh();
-	}
-	 */
+	
 }
 /*======================================================================== */
 class MElementPanel extends ElementPanel {
@@ -2024,7 +1944,7 @@ class OldElementPanel extends ClosablePanel implements MesquiteListener, Closabl
 	void resetSizes(int w, int h){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
-		if (!open){
+		if (!isOpen()){
 			for (int i = 0; i<subPanels.size(); i++){
 				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
 				panel.setBounds(0, 0, 0, 0);
@@ -2050,7 +1970,7 @@ class OldElementPanel extends ClosablePanel implements MesquiteListener, Closabl
 		}
 	}
 	boolean sizesMatch(int w, int h){
-		if (!open){
+		if (!isOpen()){
 			for (int i = 0; i<subPanels.size(); i++){
 				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
 				if (panel.getWidth() != 0 || panel.getHeight() != 0)
@@ -2079,7 +1999,7 @@ class OldElementPanel extends ClosablePanel implements MesquiteListener, Closabl
 		return false;
 	}
 	public int getRequestedHeight(int width){
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		int total = MINHEIGHT+5;
 		if (anyGraphicalCommands())

@@ -125,7 +125,7 @@ class ItemsPanel extends MatrixInfoExtraPanel  {
 		this.ownerModule = ownerModule;
 	}
 	public int getRequestedHeight(int width){
-		if (open)
+		if (isOpen())
 			return MINHEIGHT + itemsField.getDesiredHeight() + 30;
 		else
 			return MINHEIGHT;

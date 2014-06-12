@@ -221,7 +221,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 	protected void resetSizes(int w, int h){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
-		if (!open){
+		if (!isOpen()){
 			for (int i = 0; i<subPanels.size(); i++){
 				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
 				panel.setBounds(0, 0, 0, 0);
@@ -247,7 +247,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 		}
 	}
 	boolean sizesMatch(int w, int h){
-		if (!open){
+		if (!isOpen()){
 			for (int i = 0; i<subPanels.size(); i++){
 				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
 				if (panel.getWidth() != 0 || panel.getHeight() != 0)
@@ -276,7 +276,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 		return false;
 	}
 	public int getRequestedHeight(int width){
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		int total = MINHEIGHT+5;
 		if (anyGraphicalCommands())
