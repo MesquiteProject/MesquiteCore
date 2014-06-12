@@ -720,9 +720,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	public void includeFileFuse(String pathName, String importer, String arguments, int fileType){ //make new/read new linked file  DONE special to put on same thread
+		getProject().incrementProjectWindowSuppression();
 		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null);
 			pt.run();
-		
+			getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 
@@ -1067,6 +1068,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public void saveFile(MesquiteFile fi){
 		if (getProject() ==null)
 			return;
+		getProject().incrementProjectWindowSuppression();
 		MainThread.incrementSuppressWaitWindow();
 		if (fi != null) { 
 			if (fi.isLocal()){
@@ -1078,20 +1080,24 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				MesquiteMessage.notifyUser("File \"" + fi.getName() + "\" cannot be written because it was accessed as a URL");
 		}
 		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	/*  */
 	public void saveFileAs(int id){
 		if (getProject() ==null)
 			return;
+		getProject().incrementProjectWindowSuppression();
 		MesquiteFile fi;
 		if (!MesquiteInteger.isCombinable(id) && getProject().getNumberLinkedFiles()==1)
 			fi = getProject().getHomeFile();
 		else
 			fi = getProject().getFileByID(id);
 		saveFileAs(fi);
+		getProject().decrementProjectWindowSuppression();
 	}
 	public void saveFileAs(MesquiteFile fi){
+		getProject().incrementProjectWindowSuppression();
 		MainThread.incrementSuppressWaitWindow();
 		if (fi !=null){
 			/*if (!fi.isLocal())
@@ -1104,10 +1110,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		//TODO: change titles of windows and menu items!!!
 		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
 	}
 	public void renameAndSaveFile(int id, String name){
 		if (StringUtil.blank(name))
 			return;
+		getProject().incrementProjectWindowSuppression();
 		MainThread.incrementSuppressWaitWindow();
 		MesquiteFile fi;
 		if (!MesquiteInteger.isCombinable(id) && getProject().getNumberLinkedFiles()==1)
@@ -1120,6 +1128,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			writeFile(fi);
 		}
 		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	/*  */
@@ -2016,7 +2025,13 @@ class FileRead implements CommandRecordHolder, Runnable {
 	public void run() {
 		MesquiteThread.numFilesBeingRead++;
 		try {
+			if (ownerModule.getProject() != null)
+			ownerModule.getProject().incrementProjectWindowSuppression();
+
 			readLinkedFile(path);
+			if (ownerModule.getProject() != null)
+				ownerModule.getProject().decrementProjectWindowSuppression();
+
 		}
 		catch (Exception e){
 			MesquiteFile.throwableToLog(this, e);

@@ -48,7 +48,6 @@ public class FuseTaxaMatrices extends FileAssistantT {
 		discreetAlert( message);
 		MesquiteModule fCoord = getFileCoordinator();
 		MesquiteCommand command = makeCommand("includeFileFuse", fCoord);
-
 		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks", null, this);
 		getProject().showProjectWindow();
 		iQuit();

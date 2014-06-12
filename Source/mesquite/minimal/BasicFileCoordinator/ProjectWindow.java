@@ -229,6 +229,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	public void refresh(){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
+		//Debugg.printStackTrace();
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
@@ -239,7 +240,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		projPanel.refreshGraphics();
 	}
 	void suppress(){
-		suppressed = true;
+		suppressed = true; 
 		proj.incrementProjectWindowSuppression();
 	}
 	void resume(){  //BECAUSE OF decPWS below, should call this only if suppress had been called previously
