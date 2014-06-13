@@ -69,6 +69,9 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
 					numTaxa++;
 			
 		}
+		if (numTaxa<=1)
+			return null;
+		
 		long[][] extracted = new long[numChars][numTaxa];
 
 		for (int ic = firstSite; ic<=lastSite; ic++){
