@@ -209,6 +209,15 @@ public class CategoricalState extends CharacterState{
 			return (setLowerCase(tO, false) == setLowerCase(t,false));
 		return t == tO;
 	}
+	/*..........................................CategoricalState.....................................*/
+	/**returns true iff state sets are same */
+	public boolean equalsIgnoreCase(CategoricalState s) {
+		if (s==null)
+			return false;
+		long t = getValue();
+		long tO = ((CategoricalState)s).getValue();
+		return (setLowerCase(tO, false) == setLowerCase(t,false));
+	}
 	/*...............................................................................*/
 	/**returns new state  */
 	public static CategoricalState newState() {
@@ -756,7 +765,7 @@ public class CategoricalState extends CharacterState{
 		}
 	}
 	/*..........................................CategoricalState.....................................*/
-	/** sets its value to the value given by the String passed to it starting at position pos Ã*
+	/** sets its value to the value given by the String passed to it starting at position pos ï¿½*
 	public void setValue(String s, MesquiteInteger pos){
 		if (s==null){
 			set = unassigned;
@@ -796,7 +805,7 @@ public class CategoricalState extends CharacterState{
 		setValue(stateSet);
 	}
 	/*..........................................CategoricalState.....................................*/
-	/* Sets the value of this CharacterState according to the string, assuming the parent data is as given Ã*/
+	/* Sets the value of this CharacterState according to the string, assuming the parent data is as given ï¿½*/
 	public void setValue(String s, CharacterData parentData) {
 		if (s==null){
 			set = unassigned;
@@ -842,7 +851,7 @@ public class CategoricalState extends CharacterState{
 	}
 	/*..........................................CategoricalState.....................................*/
 	/**return the state set containing the state represented by the character (e.g., '0' to {0}); 
-	Used default symbols since no CharacterData is specified Ã*/
+	Used default symbols since no CharacterData is specified ï¿½*/
 	public long fromChar(char c) { //this doesn't work with symbols!
 		if (c == '?')
 			return unassigned;
@@ -856,7 +865,7 @@ public class CategoricalState extends CharacterState{
 		}
 	}
 	/*..........................................CategoricalState.....................................*/
-	/*find which state this character refers to, comparing against default symbols Ã*/
+	/*find which state this character refers to, comparing against default symbols ï¿½*/
 	public int whichState(char c){
 		for (int i=0; i<CategoricalData.defaultSymbols.length; i++){
 			if (CategoricalData.defaultSymbols[i] == c)
@@ -885,7 +894,7 @@ public class CategoricalState extends CharacterState{
 		return toString(s, data, ic, useBraces, false);
 	}
 	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses character state names if available. Ã*/
+	/** converts passed long (treated as CategoricalState) to string.  Uses character state names if available. ï¿½*/
 	public static String toString(long s, CategoricalData data, int ic, boolean useBraces, boolean useSymbols) {
 		if (s == impossible)
 			return "impossible";
@@ -933,7 +942,7 @@ public class CategoricalState extends CharacterState{
 		return temp;
 	}
 	/*..........................................CategoricalState.....................................*/
-	/** Returns string as would be displayed to user (not necessarily internal shorthand).  Ã*/
+	/** Returns string as would be displayed to user (not necessarily internal shorthand).  ï¿½*/
 	public  String toDisplayString(){
 		if (isInapplicable(set))
 			return "" + CharacterData.defaultInapplicableChar;
@@ -1002,7 +1011,7 @@ public class CategoricalState extends CharacterState{
 		return temp;
 	}
 	/*..........................................CategoricalState.....................................*/
-	/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states.  Includes High Bits.  Used for development/debugging. Ã*/
+	/** converts passed long (treated as CategoricalState) to string.  Uses default symbols for states.  Includes High Bits.  Used for development/debugging. ï¿½*/
 	public static String toSimpleStringHB(long s) {
 		if (isInapplicable(s))
 			return "" + CharacterData.defaultInapplicableChar;

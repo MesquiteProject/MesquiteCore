@@ -132,6 +132,7 @@ public class MatchingSequence extends FindSequenceCriterionG {
   			firstTaxon = taxonFound.getValue();
   			firstChar = charFound.getValue();
 			for (int it = firstTaxon; it< data.getNumTaxa(); it++){
+				CommandRecord.tick("Searching taxon " + data.getTaxa().getTaxonName(it));
 	   			for (int ic = firstChar; ic< data.getNumChars(); ic++) {
 	   				int extra = 0;
 	   				boolean found = false;
@@ -201,9 +202,13 @@ public class MatchingSequence extends FindSequenceCriterionG {
    	}
 
 	/*.................................................................................................................*/
-    	 public String getName() {
-		return "Matching Sequence";
-   	 }
+	 public String getName() {
+	return "Matching Sequence";
+	 }
+		/*.................................................................................................................*/
+	 public String getNameForMenuItem() {
+	return "Matching Sequence...";
+	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
