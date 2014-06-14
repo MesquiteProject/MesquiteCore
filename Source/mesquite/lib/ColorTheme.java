@@ -52,34 +52,34 @@ public class ColorTheme {
 	}
 
 
-	//EXTERNAL INTERFACE AREA (main tab panel, project resources panel)
+	//background of EXTERNAL INTERFACE AREA (main tab panel, project resources panel)
 	static Color[] ExtInterfaceBackground = new Color[5];
 	static {
 		ExtInterfaceBackground[ORIGINAL] = ColorDistribution.paleGoldenRod;
 		ExtInterfaceBackground[DARKCHOCOLATE] = new Color(74, 68, 59);
 		ExtInterfaceBackground[SLATE] = new Color(168,168,179); //slate theme
 		ExtInterfaceBackground[MILKCHOCOLATE] = new Color(88, 82, 74);
-		ExtInterfaceBackground[PAPER] = new Color(220, 220, 220); //new Color(220, 220, 230);
+		ExtInterfaceBackground[PAPER] = new Color(236, 244, 249); //new Color(220, 220, 220);
 	}
 	public static Color getExtInterfaceBackground(){  //general background to main tabs and project panel
 		return ExtInterfaceBackground[THEME];
 
 	}
 	public static Color getExtInterfaceBackground(boolean isMesquiteWindow){  //general background to main tabs and project panel
-		if (isMesquiteWindow)
+		if (isMesquiteWindow) //main mesquite window with log etc. has chocolate color scheme
 			return ExtInterfaceBackground[MILKCHOCOLATE];
 		else
 			return ExtInterfaceBackground[THEME];
 
 	}
-	/*-------------unselected outer tabs*/
+	/*-------------background of unselected outer tabs*/
 	static Color[] ExtInterfaceElement = new Color[5];
 	static {
 		ExtInterfaceElement[ORIGINAL] = ColorDistribution.veryPaleGoldenRod; 
 		ExtInterfaceElement[DARKCHOCOLATE] = new Color(88, 82, 74);//chocolate theme
 		ExtInterfaceElement[SLATE] = new Color(188,188,200);//slate theme
 		ExtInterfaceElement[MILKCHOCOLATE] = new Color(88, 82, 74);
-		ExtInterfaceElement[PAPER] = new Color(220, 220, 220); //new Color(220, 220, 230);
+		ExtInterfaceElement[PAPER] = new Color(236, 244, 249); //new Color(220, 220, 220);
 	}
 	public static Color getExtInterfaceElement(){ // slightly contrasting color for unselected main tabs and some parts of project panel
 		return ExtInterfaceElement[THEME];
@@ -91,7 +91,7 @@ public class ColorTheme {
 			return ExtInterfaceElement[THEME];
 
 	}
-	/*-------------selected outer tabs (pale top color)*/
+	/*-------------background of selected outer tabs (pale top color)*/
 	static Color[] ExtInterfaceElementContrast = new Color[5];
 	static {
 		ExtInterfaceElementContrast[ORIGINAL] = ColorDistribution.bisque;
@@ -110,14 +110,14 @@ public class ColorTheme {
 			return ExtInterfaceElementContrast[THEME];
 
 	}
-	/*-------------selected but NOT FOREMOST outer tabs (pale top color)*/
+	/*-------------background of selected but NOT FOREMOST outer tabs (pale top color)*/
 	static Color[] ExtInterfaceElementContrast2 = new Color[5];
 	static {
 		ExtInterfaceElementContrast2[ORIGINAL] = ColorDistribution.bisque;
 		ExtInterfaceElementContrast2[DARKCHOCOLATE] = new Color(113, 108, 96); //chocolate theme   //formerly new Color(102, 98, 86); //chocolate theme
 		ExtInterfaceElementContrast2[SLATE] = new Color(221,221,232);//slate theme
 		ExtInterfaceElementContrast2[MILKCHOCOLATE] = new Color(102, 98, 86); //chocolate theme
-		ExtInterfaceElementContrast2[PAPER] = new Color(240, 240, 245);
+		ExtInterfaceElementContrast2[PAPER] = new Color(242, 250, 255);  //new Color(240, 240, 245);
 	}
 	public static Color getExtInterfaceElementContrast2(){   //element that is contrasted, e.g. the highlighted one, in the main tabs/project area
 		return ExtInterfaceElementContrast2[THEME];
@@ -129,14 +129,14 @@ public class ColorTheme {
 			return ExtInterfaceElementContrast2[THEME];
 
 	}
-	/*-------------edge of selected outer tabs*/
+	/*------------- edge highlight of selected outer tabs*/
 	static Color[] ExtInterfaceEdgeContrast = new Color[5];
 	static {
 		ExtInterfaceEdgeContrast[ORIGINAL] = ColorDistribution.sienna;
 		ExtInterfaceEdgeContrast[DARKCHOCOLATE] = new Color(210,205,195);//chocolate theme  //formerly new Color(190,185,175);//chocolate theme
 		ExtInterfaceEdgeContrast[SLATE] = new Color(80,80,90);//slate theme
 		ExtInterfaceEdgeContrast[MILKCHOCOLATE] = new Color(190,185,175);//chocolate theme
-		ExtInterfaceEdgeContrast[PAPER] = Color.green;
+		ExtInterfaceEdgeContrast[PAPER] = ColorDistribution.veryDarkMesquiteBrown;
 	}
 	public static Color getExtInterfaceEdgeContrast(){
 		return ExtInterfaceEdgeContrast[THEME];
@@ -146,6 +146,25 @@ public class ColorTheme {
 			return ExtInterfaceEdgeContrast[MILKCHOCOLATE];
 		else
 			return ExtInterfaceEdgeContrast[THEME];
+
+	}
+	/*-------------edge of unselected outer tabs*/
+	static Color[] ExtInterfaceEdgeMuted = new Color[5];
+	static {
+		ExtInterfaceEdgeMuted[ORIGINAL] = ColorDistribution.sienna;
+		ExtInterfaceEdgeMuted[DARKCHOCOLATE] = new Color(190,178,130);//chocolate theme
+		ExtInterfaceEdgeMuted[SLATE] = new Color(68,68,78);//slate theme
+		ExtInterfaceEdgeMuted[MILKCHOCOLATE] = new Color(190,178,130);//chocolate theme
+		ExtInterfaceEdgeMuted[PAPER] = Color.lightGray;
+	}
+	public static Color getExtInterfaceEdgeMuted(){  //muted text in external interface area,e.g. unselected tabs
+		return ExtInterfaceEdgeMuted[THEME];
+	}
+	public static Color getExtInterfaceEdgeMuted(boolean isMesquiteWindow){  //general background to main tabs and project panel
+		if (isMesquiteWindow)
+			return ExtInterfaceEdgeMuted[MILKCHOCOLATE];
+		else
+			return ExtInterfaceEdgeMuted[THEME];
 
 	}
 	/*-------------text of selected outer tabs*/
@@ -167,30 +186,6 @@ public class ColorTheme {
 			return ExtInterfaceTextContrast[THEME];
 
 	}
-	/*-------------text of project panel*/
-	static Color[] ExtInterfaceTextMedium = new Color[5];
-	static {
-		ExtInterfaceTextMedium[ORIGINAL] = ColorDistribution.sienna;
-		ExtInterfaceTextMedium[DARKCHOCOLATE] = new Color(210,190,154);//chocolate theme
-		ExtInterfaceTextMedium[SLATE] = new Color(48,48,56); //slate theme
-		ExtInterfaceTextMedium[MILKCHOCOLATE] = new Color(219,199,164); //chocolate theme
-		ExtInterfaceTextMedium[PAPER] = Color.black;
-	}
-	public static Color getExtInterfaceTextMedium(){ //medium contrast text in external interface area, e.g. project resources text
-		return ExtInterfaceTextMedium[THEME];
-	}
-	/*-------------link text of project panel*/
-	static Color[] ExtInterfaceTextLink = new Color[5];
-	static {
-		ExtInterfaceTextLink[ORIGINAL] =  Color.blue;
-		ExtInterfaceTextLink[DARKCHOCOLATE] = Color.cyan;
-		ExtInterfaceTextLink[SLATE]  = Color.blue;
-		ExtInterfaceTextLink[MILKCHOCOLATE]  = Color.cyan;
-		ExtInterfaceTextLink[PAPER] = Color.black;
-	}
-	public static Color getExtInterfaceTextLink(){ //medium contrast text in external interface area, e.g. project resources text
-		return ExtInterfaceTextLink[THEME];
-	}
 	/*-------------text of unselected outer tabs*/
 	static Color[] ExtInterfaceTextMuted = new Color[5];
 	static {
@@ -198,7 +193,7 @@ public class ColorTheme {
 		ExtInterfaceTextMuted[DARKCHOCOLATE] = new Color(190,178,130);//chocolate theme
 		ExtInterfaceTextMuted[SLATE] = new Color(68,68,78);//slate theme
 		ExtInterfaceTextMuted[MILKCHOCOLATE] = new Color(190,178,130);//chocolate theme
-		ExtInterfaceTextMuted[PAPER] = Color.black;
+		ExtInterfaceTextMuted[PAPER] = Color.gray;
 	}
 	public static Color getExtInterfaceTextMuted(){  //muted text in external interface area,e.g. unselected tabs
 		return ExtInterfaceTextMuted[THEME];
@@ -210,7 +205,31 @@ public class ColorTheme {
 			return ExtInterfaceTextMuted[THEME];
 
 	}
-
+	/*-------------text of project panel*/
+	static Color[] ExtInterfaceTextMedium = new Color[5];
+	static {
+		ExtInterfaceTextMedium[ORIGINAL] = ColorDistribution.sienna;
+		ExtInterfaceTextMedium[DARKCHOCOLATE] = new Color(210,190,154);//chocolate theme
+		ExtInterfaceTextMedium[SLATE] = new Color(48,48,56); //slate theme
+		ExtInterfaceTextMedium[MILKCHOCOLATE] = new Color(219,199,164); //chocolate theme
+		ExtInterfaceTextMedium[PAPER] = Color.darkGray;
+	}
+	public static Color getExtInterfaceTextMedium(){ //medium contrast text in external interface area, e.g. project resources text
+		return ExtInterfaceTextMedium[THEME];
+	}
+	/*-------------link text of project panel*/
+	static Color[] ExtInterfaceTextLink = new Color[5];
+	static {
+		ExtInterfaceTextLink[ORIGINAL] =  Color.blue;
+		ExtInterfaceTextLink[DARKCHOCOLATE] = Color.cyan;
+		ExtInterfaceTextLink[SLATE]  = Color.blue;
+		ExtInterfaceTextLink[MILKCHOCOLATE]  = Color.cyan;
+		ExtInterfaceTextLink[PAPER] = Color.gray;
+	}
+	public static Color getExtInterfaceTextLink(){ //medium contrast text in external interface area, e.g. project resources text
+		return ExtInterfaceTextLink[THEME];
+	}
+	
 	/*-------------------------*/
 	//INTERNAL INTERFACE AREA (tool palettes, graphics/text/etc tabs)
 	static Color[] InterfaceBackground = new Color[5];

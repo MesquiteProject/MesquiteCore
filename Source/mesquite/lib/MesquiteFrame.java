@@ -1154,11 +1154,11 @@ class FrameTabsPanel extends MousePanel {
 	MesquiteFrame frame;
 	int[] lefts, rights;
 	Font[] fonts = new Font[6];
-	int frontEdge = 6;
-	int backEdge = 20;
+	int intertabSpace = 4;
+	int defaultBackEdge = 10;
 	Image goaway, popOut, popIn, minimize, mediumize, show;
-	MesquitePopup popup=null;
-	MesquiteCommand popCommand, tileCommand;
+	MesquitePopup popupForPopoutWindow=null;
+	MesquiteCommand popCommand, tileCommand, closeCommand;
 	public FrameTabsPanel(MesquiteFrame f){
 		this.frame = f;
 		//fonts[0] = new Font("SanSerif", Font.PLAIN, 13);
@@ -1175,6 +1175,7 @@ class FrameTabsPanel extends MousePanel {
 		popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "decompactTransparent.gif");
 		popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "compactTransparent.gif");
 		show = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "showTransparent.gif");
+		closeCommand = new MesquiteCommand("closeWindow", this);
 		popCommand = new MesquiteCommand("popOut", this);
 		tileCommand = new MesquiteCommand("tileOut", this);
 		setBackground(ColorTheme.getExtInterfaceBackground());
@@ -1199,6 +1200,10 @@ class FrameTabsPanel extends MousePanel {
 	int tabTouched = MesquiteInteger.unassigned;
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		tabTouched = findTab(x);
+		if (MesquiteEvent.commandOrControlKeyDown(modifiers)){
+			redoPopoutWindowMenu(tabTouched);
+			popupForPopoutWindow.show(this, x,y);
+		}
 	}
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
@@ -1208,7 +1213,7 @@ class FrameTabsPanel extends MousePanel {
 			if (tabTouched>=10000)
 				return;
 			if (i== tabTouched){  //down and up on same
-				if (frame.permitGoAway(i) && x> rights[i] - 20 && y >4 && y<20){
+				if (false && frame.permitGoAway(i) && x> rights[i] - 20 && y >4 && y<20){
 					if (frame.goAwayOrShow(i))  //showing goaway
 						frame.windowGoAway(i);
 					else
@@ -1216,13 +1221,13 @@ class FrameTabsPanel extends MousePanel {
 				}
 				else if (frame.showMinimizeMaximize(i) && x> rights[i] - 20 && y >4 && y<20)
 					frame.toggleMinimize(i);
-				else if (frame.showPopOut(i) && x> rights[i] - 20 && y >20 && y<40){
+				else if (false && frame.showPopOut(i) && x> rights[i] - 20 && y >20 && y<40){
 					MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
 					if (w.isPoppedOut())
 						frame.popIn(w);
 					else {
-						redoMenu(i);
-						popup.show(this, x,y);
+						redoPopoutWindowMenu(i);
+						popupForPopoutWindow.show(this, x,y);
 					}
 				}
 				else
@@ -1297,21 +1302,34 @@ class FrameTabsPanel extends MousePanel {
 				frame.popOut(i, true);
 			}
 		}
+		else if (checker.compare(this.getClass(), "Closes window", null, commandName, "closeWindow")) {
+			int i = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
+			if (MesquiteInteger.isCombinable(i)){
+				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+				if (w != null){
+					if (frame.goAwayOrShow(i))  //showing goaway
+						frame.windowGoAway(i);
+				}
+			}
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	void redoMenu(int i) {
-		if (popup==null)
-			popup = new MesquitePopup(this);
-		popup.removeAll();
+	void redoPopoutWindowMenu(int i) {
+		if (popupForPopoutWindow==null)
+			popupForPopoutWindow = new MesquitePopup(this);
+		popupForPopoutWindow.removeAll();
+		closeCommand.setDefaultArguments(Integer.toString(i));
 		popCommand.setDefaultArguments(Integer.toString(i));
 		tileCommand.setDefaultArguments(Integer.toString(i));
+		MesquiteMenuItem mItemClose = new MesquiteMenuItem("Close Window", null, closeCommand);
 		MesquiteMenuItem mItem = new MesquiteMenuItem("Pop Out as Separate Window", null, popCommand);
 		MesquiteMenuItem mItem2 = new MesquiteMenuItem("Put in Separate Tile", null, tileCommand);
-		popup.add(mItem);
-		popup.add(mItem2);
-		add(popup);
+		popupForPopoutWindow.add(mItemClose);
+		popupForPopoutWindow.add(mItem);
+		popupForPopoutWindow.add(mItem2);
+		add(popupForPopoutWindow);
 	}
 	public void paint(Graphics g){
 		//frame.ontabDark = new Color(160, 82, 45);
@@ -1329,15 +1347,15 @@ class FrameTabsPanel extends MousePanel {
 			g.fillRect(0, 0, getWidth(), getHeight());
 			g.setColor(co);
 		}
-		int width = getBounds().width;
-		int height = getBounds().height;
+		int panelWidth = getBounds().width;
+		int panelHeight = getBounds().height;
 
 		g.setColor(ColorDistribution.veryDarkMesquiteBrown);
-		g.drawLine(projectPanelWidth, height-1, width, height-1);
+		g.drawLine(projectPanelWidth, panelHeight-1, panelWidth, panelHeight-1);
 		//g.fillRect(projectPanelWidth, height-4, width, 4);
-		g.fillRect(projectPanelWidth-4, height-4, width-4, 4);
-		g.fillRect(projectPanelWidth-3, height-3, width, 3);
-		g.fillRect(projectPanelWidth-3, height-2, width, 2);
+		g.fillRect(projectPanelWidth-4, panelHeight-4, panelWidth-4, 4);
+		g.fillRect(projectPanelWidth-3, panelHeight-3, panelWidth, 3);
+		g.fillRect(projectPanelWidth-3, panelHeight-2, panelWidth, 2);
 
 
 		int numTabs = frame.windows.size();
@@ -1360,11 +1378,13 @@ class FrameTabsPanel extends MousePanel {
 				iconNumber ++;
 		}
 		int iconsWidth = iconNumber * 20;
-		int edges = (frontEdge + backEdge) * numTabs;
+
+		int edges = (intertabSpace + defaultBackEdge) * numTabs; //NOTE: this is not calculated quite properly, causing David's compaction when many windows
+		Debugg.println("defaultFrontEdge " + intertabSpace + " defaultBackEdge " + defaultBackEdge);
 		if (frame.frontMostInLocation(MesquiteFrame.POPTILE)!=null)
 			edges += 30;
 
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//~~~~~~Setting up sizing/scaling~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		int fontChosen = 0;
 		double scaling = 1.0;
 		boolean ready = false;
@@ -1376,40 +1396,40 @@ class FrameTabsPanel extends MousePanel {
 			g.setFont(fonts[0]);
 
 			int needed = 0;
-			while ((needed = StringUtil.getStringDrawLength(g, totalString) + iconsWidth +edges) > width && fontChosen<4){  //was i<fonts.length-1
+			while ((needed = StringUtil.getStringDrawLength(g, totalString) + iconsWidth +edges) > panelWidth && fontChosen<4){  //was i<fonts.length-1
 				fontChosen++;
 				g.setFont(fonts[fontChosen]);
 			}
+			needed = StringUtil.getStringDrawLength(g, totalString) + iconsWidth +edges;
 			scaling = 1.0;
-			if (needed> width){
-				scaling = (width-edges)*1.0/(StringUtil.getStringDrawLength(g, totalString) + iconsWidth);
+			if (needed> panelWidth-edges){
+				scaling = (panelWidth-edges)*1.0/(StringUtil.getStringDrawLength(g, totalString) + iconsWidth);
 			}
 
 			//trial run the tab widths
 			narrowest = 5000;
 			widest = 0;
-			int left = 0;
-			int right = width+ backEdge;
+			int leftMargin = 0;
+			int rightMargin = panelWidth - defaultBackEdge;
 			int i = 0;
 			for (i = 0; i<frame.windows.size(); i++){
-				if (frame.permitGoAway(i) || frame.showMinimizeMaximize(i)){
-					frontEdge = 4;
-					backEdge = 26;
+				int backSpace;
+				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+				if (w == frame.projectWindow){
+					backSpace = defaultBackEdge + 20;
 				}
 				else {
-					frontEdge = 6;
-					backEdge = 20;
+					backSpace = defaultBackEdge;
 				}
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
 				boolean popped = w.getTileLocation() == MesquiteFrame.POPTILE;
 				Image icon = w.getIcon();
 				int iconWidth = 0;
 				if (icon != null)
 					iconWidth = 20;
 				if (!popped)
-					left += frontEdge;
+					leftMargin += intertabSpace;
 				else 
-					right -= backEdge;
+					rightMargin -= backSpace;
 
 				String title = titles[i];
 				if (title != null){
@@ -1417,18 +1437,18 @@ class FrameTabsPanel extends MousePanel {
 					if (scaling < 1.0)
 						offer = (int)(scaling * offer);
 					if (!popped)
-						left += offer;
+						leftMargin += offer;
 					else
-						right -= offer;		
+						rightMargin -= offer;		
 					if (offer + iconWidth > widest)
 						widest = offer + iconWidth;
 					else if (offer + iconWidth < narrowest)
 						narrowest = offer + iconWidth;
 				}
 				if (!popped)
-					left += backEdge;
+					leftMargin += backSpace;
 				else
-					right -= frontEdge;
+					rightMargin -= intertabSpace;
 			}			
 			//if some tabs are very narrow AND there is a big variance in tab size, then delete characters from long tabs and try again 			
 			if (1.0*widest/narrowest > 2.0 && narrowest < 30){
@@ -1457,41 +1477,42 @@ class FrameTabsPanel extends MousePanel {
 			g.setFont(fonts[fontChosen]);
 			int needed = StringUtil.getStringDrawLength(g, totalString) + iconsWidth +edges;
 			scaling = 1.0;
-			if (needed> width)
-				scaling = (width-edges)*1.0/(StringUtil.getStringDrawLength(g, totalString) + iconsWidth);
+			if (needed> panelWidth-edges){
+				//Debugg.println("needed " + needed + " width " + width);
+				scaling = (panelWidth-edges)*1.0/(StringUtil.getStringDrawLength(g, totalString) + iconsWidth);
+			}
 		}
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		int left = 0;
-		int right = width+ backEdge;
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		int leftMargin = 0;  //this is the current left margin, moving rightward as left-side tabs are added
+		int rightMargin = panelWidth - intertabSpace;//this is the current right margin, moving leftward as right-side tabs are added
 
+		//~~~~~~~~~~~~~~~Drawing tab by tab ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		int i;
 		for (i = 0; i<frame.windows.size(); i++){
-			if (frame.permitGoAway(i) || frame.showMinimizeMaximize(i)){
-				frontEdge = 4;
-				backEdge = 26;
+			int backSpace;
+			MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+			if (w == frame.projectWindow){ //project window has minimize button
+				backSpace = defaultBackEdge + 20;
 			}
 			else {
-				frontEdge = 6;
-				backEdge = 20;
+				backSpace = defaultBackEdge;
 			}
-			int tabLeft = left;
-			int tabRight = left + backEdge-2;
-
-			MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+			int tabLeft, tabRight;     //these are the left and right edges of the current tab
+			//Debugg.println(" [" +i + "] left " + leftMargin + " right " +rightMargin);
 			boolean popped = w.getTileLocation() == MesquiteFrame.POPTILE;
 			Image icon = w.getIcon();
 			int iconWidth = 0;
 			if (icon != null)
 				iconWidth = 20;
 			if (!popped){
-				left += frontEdge;
-				tabLeft = left;
-				tabRight = left + backEdge-2;
+				leftMargin += intertabSpace;
+				tabLeft = leftMargin;
+				tabRight = leftMargin + backSpace-2;
 			}
 			else {
-				right -= backEdge;
-				tabRight = right -2;
-				tabLeft = right - frontEdge;
+				rightMargin -= backSpace;
+				tabRight = rightMargin -2;
+				tabLeft = rightMargin - intertabSpace;
 			}
 			boolean isFrontOfType = !frame.resourcesFullWindow && ((popped && (frame.frontMostInLocation(MesquiteFrame.POPTILE)==w)) || (!popped && (frame.frontMostInLocation(MesquiteFrame.MAIN)==w)));
 			isFrontOfType = isFrontOfType || (frame.resourcesFullWindow && w.getTileLocation() == MesquiteFrame.RESOURCES);
@@ -1507,11 +1528,12 @@ class FrameTabsPanel extends MousePanel {
 				if (scaling < 1.0){
 					int wish = StringUtil.getStringDrawLength(g, title) - iconWidth;
 					int offer = (int)(scaling * wish);
-					if (!popped)
-						tabRight = left + offer + backEdge-2;
+					if (!popped){
+						tabRight = leftMargin + offer + backSpace-2;
+					}
 					else
-						tabLeft = right - offer - frontEdge - backEdge +2;
-					drawTab(g, frontness, tabLeft, tabRight, height, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
+						tabLeft = rightMargin - offer - intertabSpace - backSpace +2;
+					drawTab(g, frontness, tabLeft, tabRight, panelHeight, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
 					StringInABox box = new StringInABox(title, g.getFont(), offer);
 
 					if (frontness == 2) 
@@ -1521,22 +1543,22 @@ class FrameTabsPanel extends MousePanel {
 						g.setColor(ColorTheme.getExtInterfaceTextMuted(w instanceof SystemWindow)); //Color.black);
 					else 
 						g.setColor(ColorTheme.getExtInterfaceTextMuted(w instanceof SystemWindow)); //Color.black);
-					box.draw(g, tabLeft + frontEdge + iconWidth, 1);
+					box.draw(g, tabLeft + intertabSpace + iconWidth, 1);
 					if (icon != null)
-						g.drawImage(icon, tabLeft + frontEdge, 6, this);
+						g.drawImage(icon, tabLeft + intertabSpace, 6, this);
 
 					if (!popped)
-						left += offer;
+						leftMargin += offer;
 					else
-						right -= offer;
+						rightMargin -= offer;
 				}
 				else {
 					int offer = StringUtil.getStringDrawLength(g, title) + iconWidth;
 					if (!popped)
-						tabRight = left + offer + backEdge-2;
+						tabRight = leftMargin + offer + backSpace-2;
 					else
-						tabLeft = right - offer - frontEdge - backEdge +2;
-					drawTab(g, frontness, tabLeft, tabRight, height, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
+						tabLeft = rightMargin - offer - intertabSpace - backSpace +2;
+					drawTab(g, frontness, tabLeft, tabRight, panelHeight, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
 					if (frontness == 2) 
 						g.setColor(ColorTheme.getExtInterfaceTextContrast(w instanceof SystemWindow)); //Color.black);
 					//	g.setColor(ColorTheme.getProjectText(0)); //Color.black);
@@ -1544,40 +1566,40 @@ class FrameTabsPanel extends MousePanel {
 						g.setColor(ColorTheme.getExtInterfaceTextMuted(w instanceof SystemWindow)); //Color.black);
 					else 
 						g.setColor(ColorTheme.getExtInterfaceTextMuted(w instanceof SystemWindow)); //Color.black);
-					g.drawString(title, tabLeft + frontEdge + iconWidth, height -12);
+					g.drawString(title, tabLeft + intertabSpace + iconWidth, panelHeight -12);
 					if (icon != null)
-						g.drawImage(icon, tabLeft + frontEdge, height -22, this);
+						g.drawImage(icon, tabLeft + intertabSpace, panelHeight -22, this);
 					if (!popped)
-						left += offer;
+						leftMargin += offer;
 					else
-						right -= offer;
+						rightMargin -= offer;
 				}
 			}
 			else 
 				MesquiteMessage.println("window without title " + w.getClass());
 
 			if (!popped)
-				left += backEdge;
+				leftMargin += backSpace;
 			else
-				right -= frontEdge;
-			if (frame.permitGoAway(i)) {
+				rightMargin -= intertabSpace;
+			/*if (frame.permitGoAway(i)) {
 				if (goaway != null && frame.goAwayOrShow(i))
 					g.drawImage(goaway, tabRight-17, 4, this);
 				else if (show != null && !frame.goAwayOrShow(i))
 					g.drawImage(show, tabRight-17, 4, this);
 			}
-			else if (frame.showMinimizeMaximize(i)){
+			else */if (w == frame.projectWindow){
 				if (minimize != null && !w.isMinimized())
 					g.drawImage(minimize, tabRight-17, 4, this);
 				else if (mediumize != null && w.isMinimized())
 					g.drawImage(mediumize, tabRight-17, 4, this);
 			}
-			if (popOut != null && frame.showPopOut(i)){
+		/*	if (popOut != null && frame.showPopOut(i)){
 				if (w.isPoppedOut())
 					g.drawImage(popIn, tabRight-17, 16, this);
 				else 
 					g.drawImage(popOut, tabRight-17, 16, this);
-			}
+			}*/
 			g.setColor(ColorTheme.getExtInterfaceEdgeContrast(w instanceof SystemWindow)); //Color.black);
 			try{
 				lefts[i] = tabLeft;
@@ -1593,57 +1615,53 @@ class FrameTabsPanel extends MousePanel {
 	}
 	void drawTab(Graphics g, int frontness, int tabLeft, int tabRight, int height, int projectPanelWidth, boolean isProjectTab, boolean isMesquiteWindow){
 
-		int roundness = 10;  //had been 16
-		int top = 4;  //had been 2
-		if (frontness>0){
-			if (frontness>1){
-				//	g.setColor(ColorTheme.getExtInterfaceElementPale()); //frame.medium);
-				g.setColor(ColorTheme.getExtInterfaceElementContrast(isMesquiteWindow)); //frame.medium);
-				g.fillRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
+		int roundness = 10;  
+		int top = 4;  
+		if (frontness>0){ // a tab for a selected window
+			if (frontness>1){   //the selected window on the selected tile (i.e. the one owning the menu bar)
+
+				g.setColor(ColorTheme.getExtInterfaceElementContrast(isMesquiteWindow)); 
+				g.fillRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);  //background of tab
 				g.setColor(ColorTheme.getExtInterfaceEdgeContrast(isMesquiteWindow));
-				g.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
+				g.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);  //highlight edge of tab
 				g.setColor(Color.black);  //black
-				g.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1);
+				g.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1); //primary edge of tab
 				if (!isMesquiteWindow){
 					g.setColor(Color.lightGray);
-					g.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);
+					g.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);  //line under the tab
 				}
-				//g.drawRect(x, y, width, height);
-				//	g.drawRoundRect(tabLeft-2, top-2, tabRight - tabLeft+2, height+64, roundness+2, roundness+2);
 			}
-			else {
+			else { //a selected window, but in the unselected tile (i.e. the other tile not owning the menu bar)
 				g.setColor(ColorTheme.getExtInterfaceElementContrast2(isMesquiteWindow));
-				g.fillRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
+				g.fillRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness); //background of tab
+
 				//g.setColor(ColorTheme.getExtInterfaceEdgeContrast());
 				//	g.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
 				g.setColor(Color.darkGray);
-				g.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1);
+				g.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1);  //primary edge of tab
 				g.setColor(Color.lightGray);
-				g.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);
+				g.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);//line under the tab
 			}
 		}
-		else {
+		else { //a tab for a window hidden in the background
 			g.setColor(ColorTheme.getExtInterfaceElement(isMesquiteWindow));
 			g.fillRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
-			g.setColor(ColorTheme.getExtInterfaceTextMuted(isMesquiteWindow));
+			g.setColor(ColorTheme.getExtInterfaceEdgeMuted(isMesquiteWindow));
 			g.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1);
+			
+			//now about to draw the lines/border beneath the tab
 			g.setColor(ColorDistribution.darkMesquiteBrown);
 			if (tabLeft> projectPanelWidth ){ //entirely over main windows
-				g.fillRect(tabLeft, height-4, tabRight-tabLeft, 4);
+				g.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, 4);
 				g.drawLine(tabLeft-1, height-1, tabRight, height-1);
 			}
 			else { //extending over project panel, but not project tab
-				//g.fillRect(tabLeft, height-4, tabRight-tabLeft, 4);
-				//g.drawLine(tabLeft-1, height-1, tabRight, height-1);
 				if (!isProjectTab) {
 					g.fillRect(tabLeft, height-4, tabRight-tabLeft, 2);
 					g.fillRect(tabLeft, height-5, 3, 2);
 					g.fillRect(tabLeft, height-7, 1, 3);
 				}
 				if (tabRight> projectPanelWidth){
-					//g.fillRect(projectPanelWidth, height-4, tabRight-projectPanelWidth, 4);
-					//g.drawLine(projectPanelWidth-1, height-1, tabRight, height-1);
-
 					g.fillRect(projectPanelWidth+4, height-4, tabRight-projectPanelWidth, 4);
 					g.fillRect(projectPanelWidth+3, height-3, tabRight-projectPanelWidth, 3);
 					g.fillRect(projectPanelWidth+2, height-2, tabRight-projectPanelWidth, 2);
@@ -1652,27 +1670,8 @@ class FrameTabsPanel extends MousePanel {
 				}
 			}
 
-			//g.fillRect(tabLeft-1, height-4, tabRight, 4);
-
-			//	g.setColor(ColorTheme.getExtInterfaceEdgePale());
-			//	g.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
 		}
-		/*	if (frontness>0){
-			if (frontness>1)
-				g.setColor(frame.ontabLight); //frame.medium);
-			else
-				g.setColor(ColorDistribution.lightMesquiteBrown);
-			g.fillRoundRect(tabLeft, 2, tabRight - tabLeft - 2, height+60, 16, 16);
-			//g.setColor(frame.ontabDark);
-			//g.drawRoundRect(tabLeft, 2, tabRight - tabLeft - 2, height+60, 16, 16);
-		}
-		else {
-			g.setColor(Color.lightGray);
-			g.setColor(ColorDistribution.mesquiteBrown);
-			g.fillRoundRect(tabLeft, 2, tabRight - tabLeft - 2, height+60, 16, 16);
-			g.setColor(ColorDistribution.lightMesquiteBrown);
-			g.drawRoundRect(tabLeft, 2, tabRight - tabLeft - 2, height+60, 16, 16);
-		}*/
+		
 	}
 
 }
