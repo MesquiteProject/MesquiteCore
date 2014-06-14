@@ -14,6 +14,7 @@ package mesquite.categ.lib;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -63,7 +64,7 @@ public class DNAState extends MolecularState{
 		return new DNACharacterHistory(taxa, numNodes);
 	}
 	
-	/** Returns string as would be displayed to user (not necessarily internal shorthand).  Ã*/
+	/** Returns string as would be displayed to user (not necessarily internal shorthand).  ï¿½*/
 	public  String toDisplayString(){
 		if (isInapplicable(set))
 			return "" + CharacterData.defaultInapplicableChar;
@@ -117,14 +118,26 @@ public class DNAState extends MolecularState{
 			}
 			return max;
 		}
+	}	
+
+	/*..........................................CategoricalState.....................................*/
+	/**returns true iff state sets are same */
+	public boolean equalsIgnoreCase(CategoricalState s) {
+		if (s==null)
+			return false;
+		long t = getValue();
+		long tO = ((CategoricalState)s).getValue();
+		return (setLowerCase(tO, false) == setLowerCase(t,false));
 	}
+
+
 	/*..........................................CategoricalState.....................................*/
 	/**returns true iff state sets are same except for case */
 	public static boolean equalsIgnoreCase(long s1, long s2) {
 		return setLowerCase(s1, false) == setLowerCase(s2, false) ;
 	}
 	/*..........................................DNAState.....................................*/
-	/** converts passed int (treated as DNAState) to string.  Uses character state names if available. Ã*/
+	/** converts passed int (treated as DNAState) to string.  Uses character state names if available. ï¿½*/
 	public static String toString(int e, boolean isLowerCase) {
 		if (isLowerCase){
 			if (e==0)
@@ -152,7 +165,7 @@ public class DNAState extends MolecularState{
 		}
 	}
 	/*..........................................DNAState.....................................*/
-	/** converts passed int (treated as DNAState) to string.  Uses character state names if available. Ã*/
+	/** converts passed int (treated as DNAState) to string.  Uses character state names if available. ï¿½*/
 	public static String toString(int e) {
 		if (e==0)
 			return "A";
@@ -166,7 +179,7 @@ public class DNAState extends MolecularState{
 			return Integer.toString(e);
 	}
 	/*..........................................DNAState.....................................*/
-	/** converts passed int (treated as DNAState) to string.  Uses character state names if available. Ã*/
+	/** converts passed int (treated as DNAState) to string.  Uses character state names if available. ï¿½*/
 	public static char toChar(int e, CharacterData data, boolean lowerCase) {
 		if (lowerCase){
 			if (e==0)
@@ -235,7 +248,7 @@ public class DNAState extends MolecularState{
 		return toString(s, data, ic, useBraces, false);
 	}
 	/*..........................................DNAState.....................................*/
-	/** converts passed long (treated as DNAState) to string. Ã*/
+	/** converts passed long (treated as DNAState) to string. ï¿½*/
 	public static String toString(long s, CategoricalData data, int ic, boolean useBraces, boolean useSymbols) {
 		if (s == impossible)
 			return "impossible";
@@ -347,12 +360,12 @@ public class DNAState extends MolecularState{
 		return isElement(s, 1) || isElement (s, 3);
 	}
 	/*..........................................DNAState.....................................*/
-	/**return the state set containing the state represented by the character (e.g., '0' to {0}) Ã*/
+	/**return the state set containing the state represented by the character (e.g., '0' to {0}) ï¿½*/
 	public long fromChar(char c) { 
 		return fromCharStatic(c);
 	}
 	/*..........................................DNAState.....................................*/
-	/**return the state set containing the state represented by the character (e.g., '0' to {0}) Ã*/
+	/**return the state set containing the state represented by the character (e.g., '0' to {0}) ï¿½*/
 	public static long fromCharStatic(char c) { 
 		if (c == '?')
 			return unassigned;
@@ -402,7 +415,7 @@ public class DNAState extends MolecularState{
   		return CategoricalState.impossible;
 	}
 	/*..........................................DNAState.....................................*/
-	/**return the state set containing the state represented by the character (e.g., '0' to {0}) Ã*/
+	/**return the state set containing the state represented by the character (e.g., '0' to {0}) ï¿½*/
 	public static char toCharStatic(long c) { 
 		if (c == unassigned)
 			return '?';

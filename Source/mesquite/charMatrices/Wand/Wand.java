@@ -188,6 +188,7 @@ public class Wand extends DataWindowAssistantI {
 						for (int j=rowStart; j<rowEnd; j++){
 							for (int i=columnStart; i<columnEnd; i++){
 								if (satisfiesCriteria(text, table.getMatrixText(i, j))) {
+									//Debugg.println("satisfies " + j);
 									numContigFound++;
 									if (numContigFound % 100 == 0)
 										CommandRecord.tick(Integer.toString(numContigFound) + " cells found");

@@ -1756,6 +1756,13 @@ public class CategoricalData extends CharacterData {
 		return cs1.equals(cs2);
 	}
 	/*-----------------------------------------------------------*/
+	/** checks to see if the two cells have the same states */
+	public boolean sameStateIgnoreCase(int ic1, int it1, int ic2, int it2){
+		CategoricalState cs1 = (CategoricalState)getCharacterState(null, ic1, it1);
+		CategoricalState cs2 = (CategoricalState)getCharacterState(null, ic2, it2);
+		return cs1.equalsIgnoreCase(cs2);
+	}
+	/*-----------------------------------------------------------*/
 	/** checks to see if the two characters have identical distributions of states */
 	public boolean samePattern(int oic, int ic){
 		
