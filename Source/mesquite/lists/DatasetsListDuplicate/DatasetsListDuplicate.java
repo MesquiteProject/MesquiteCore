@@ -69,7 +69,7 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 
 			boolean success = starter.concatenate(data, false, duplicateExcludedCharacters, false, false);
 			if (success){
-				starter.setName(data.getName() + " (duplicate)");
+				starter.setName(datas.getUniqueName(data.getName() + " (duplicate)"));
 			}
 
 

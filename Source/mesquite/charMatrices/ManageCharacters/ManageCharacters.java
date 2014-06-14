@@ -882,7 +882,10 @@ public class ManageCharacters extends CharactersManager {
 						for (int ic=0; ic<parent.getNumChars() && ic<matrix.getNumChars(); ic++)
 							newMatrix.setCharacterName(ic, parent.getCharacterName(ic));
 					}
-
+					CharWeightSet weightSet= (CharWeightSet)parent.getCurrentSpecsSet(CharWeightSet.class);  //DRM added 1 May 14
+					if (weightSet!=null) {
+						newMatrix.setCurrentSpecsSet(weightSet, CharWeightSet.class); 
+					}
 				}
 				String name = MesquiteString.queryShortString(containerOfModule(), "Name Matrix", "Name of New Matrix", getProject().getCharacterMatrices().getUniqueName(matrix.getName()));
 				if (name == null){

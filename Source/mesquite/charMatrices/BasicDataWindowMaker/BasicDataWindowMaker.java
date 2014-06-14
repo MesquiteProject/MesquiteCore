@@ -3344,7 +3344,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		MesquiteWindow mw = getMesquiteWindow();
 		if (mw != null) {
 			FileCoordinator fileCoord = mw.getOwnerModule().getFileCoordinator();
-			FileInterpreter fileInterpreter = fileCoord.findImporter(droppedContents, fileName, 0, "", true, data.getStateClass());
+			FileInterpreter fileInterpreter = fileCoord.findImporter(droppedContents, fileName, 0, StringUtil.argumentMarker + "fuseTaxaCharBlocks", true, data.getStateClass());   //DRM  9 April 2014   added "fuseTaxaCharBlocks" as that is what is happening here
 			return fileInterpreter;
 		}
 		return null;
@@ -3395,7 +3395,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	/* ................................................................................................................. */
 	public void processFilesDroppedOnPanel(List files) {
 		int count = 0;
-		// boolean adjustNewSequences = false;
+		//boolean adjustNewSequences = false;
 
 		FileInterpreter fileInterpreter = null;
 		int numFiles = numIters(files.iterator());
@@ -3413,7 +3413,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					fileInterpreter.setOriginalNumTaxa(data.getNumTaxa());
 					fileInterpreter.setMaximumTaxonFilled(-1);
 
-					if (!MesquiteThread.isScripting() && false) {
+					if (!MesquiteThread.isScripting()) {
 						if (data instanceof MolecularData)
 							adjustNewSequences = queryOptions();
 					}
@@ -3425,9 +3425,11 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				actUponDroppedFileContents(fileInterpreter, nextFile.getAbsolutePath());
 
 				if (adjustNewSequences) {
-					if (data instanceof DNAData)
-						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, originalLastTaxonNumber, taxa.getNumTaxa() - 1, false);
-					// MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, originalLastTaxonNumber, taxa.getNumTaxa()-1,false);
+					Debugg.println("adjusting sequences ");
+					if (data instanceof DNAData){
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, originalLastTaxonNumber, taxa.getNumTaxa() - 1, false, false);
+						MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, originalLastTaxonNumber, taxa.getNumTaxa()-1,false);
+					}
 					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
 				}
 				count++;
@@ -4906,7 +4908,7 @@ class BasicMatrixStatisticsPanel extends MatrixInfoExtraPanel {
 	public BasicMatrixStatisticsPanel(ClosablePanelContainer container) {
 		super(container, "Basic Matrix Stats");
 		statsBox = new StringInABox("", null, 50);
-		open = true;
+		setOpen(true);
 	}
 
 	public void setMatrixAndTable(CharacterData data, MesquiteTable table) {
@@ -4933,7 +4935,7 @@ class BasicMatrixStatisticsPanel extends MatrixInfoExtraPanel {
 	}
 
 	public int getRequestedHeight(int width) {
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		statsBox.setFont(getFont());
 		statsBox.setString(matrixStats);
@@ -5274,7 +5276,7 @@ class CellInfoPanel extends MatrixInfoExtraPanel {
 	}
 
 	public int getRequestedHeight(int width) {
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		statsBox.setFont(getFont());
 		statsBox.setString(message);

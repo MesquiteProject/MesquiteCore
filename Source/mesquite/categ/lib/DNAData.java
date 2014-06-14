@@ -357,7 +357,7 @@ public class DNAData extends MolecularData {
 	public boolean sameState(int ic1, int it1, int ic2, int it2){
 		DNAState cs1 = (DNAState)getCharacterState(null, ic1, it1);
 		DNAState  cs2 = (DNAState)getCharacterState(null, ic2, it2);
-		return DNAState.equalsIgnoreCase(cs1.fullSet(), cs2.fullSet());
+		return DNAState.equalsIgnoreCase(cs1.getValue(), cs2.getValue());
 	}
 	/* .......................................... DNAData .................................................. */
 	/** returns if there is there is at least one base that is codon position 1, 2, or 3 */

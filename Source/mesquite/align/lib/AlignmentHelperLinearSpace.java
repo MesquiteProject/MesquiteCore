@@ -200,13 +200,6 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	    int i,j;
 		int gapExtendOnA;
 		int gapOpenOnA;	
-<<<<<<< HEAD
-		
-		//Debugg.println(" lastColumn " + lastColumn + " lastRow " + lastRow + " lengthA " + lengthA + " lengthB " + lengthB);
-		
-=======
-
->>>>>>> pr/20
 		rH[lastColumn] = rV[lastColumn] = (lengthB==lastColumn) ? gapOpenTerminal : gapOpen;;
 		rD[lastColumn] = 0;
 		

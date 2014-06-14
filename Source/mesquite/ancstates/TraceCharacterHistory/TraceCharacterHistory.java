@@ -26,9 +26,9 @@ import mesquite.lib.duties.*;
 public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CharHistorySource.class, getName() + " needs a source of character histories.",
-		"The source of a traced history is be default a reconstruction from a supplied character distribution.  Afterwards you may choose an alternative source using the Character History Source submenu");
+				"The source of a traced history is be default a reconstruction from a supplied character distribution.  Afterwards you may choose an alternative source using the Character History Source submenu");
 		EmployeeNeed e3 = registerEmployeeNeed(DisplayStatesAtNodes.class, getName() + " needs a method to display the results.",
-		"The method to display results can be selected in the Trace Display Mode submenu");
+				"The method to display results can be selected in the Trace Display Mode submenu");
 		EmployeeNeed e4 = registerEmployeeNeed(TraceCharacterInit.class, getName() + " uses assistant modules to extend the analysis.",
 				"These assistant modules are arranged automatically by " + getName());
 	}
@@ -51,18 +51,21 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	Vector traces;
 	MesquiteCommand htC, dtC;
 	MesquiteBoolean showStateWeights;
-	MesquiteBoolean useGray;
+	MesquiteInteger colorMode;
 	boolean suspend = false;
 	MesquiteMenuItemSpec propWeight = null;
 	MesquiteMenuItemSpec  revertColorsItem;
 	MesquiteMenuItemSpec  setColorsAsDefaultItem;
 	MesquiteMenuItemSpec  binsMenuItem, numBinsMenuItem;
+	MesquiteSubmenuSpec colorSubmenu;
 	double[] binBoundaries;
 	double[] usedBoundaries;
 	boolean enableStore = false;  //should be false for release
 	Point[] whichColorsModified = new Point[64];
 	Color[] newColors = new Color[64];
 	String startingColors = null;
+	MesquiteString colorModeName;
+	String[] colorModeNames;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showLegend = new MesquiteBoolean(true);
@@ -102,8 +105,24 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		addCheckMenuItem(null, "Show Legend", makeCommand("toggleShowLegend",  this), showLegend);
 		MesquiteSubmenuSpec msDT = addSubmenu(null, "Trace Display Mode", dtC, DisplayStatesAtNodes.class); 
 		msDT.setSelected(displayTaskName);
-		useGray = new MesquiteBoolean(false);
-		addCheckMenuItem(null, "Use Grayscale", makeCommand("toggleGray", this), useGray);
+
+		colorSubmenu = addSubmenu(null, "Colors");
+
+		colorMode = new MesquiteInteger(0);
+		ListableVector f  = new ListableVector();
+		colorModeNames = new String[5];
+		colorModeNames[0] = "Full Colors";
+		colorModeNames[1] = "Grayscale";
+		colorModeNames[2] = "Redscale";
+		colorModeNames[3] = "Greenscale";
+		colorModeNames[4] = "Bluescale";
+		colorSubmenu.setEnabled(false);
+
+		for (int i= 0; i<colorModeNames.length; i++)
+			f.addElement(new MesquiteString(colorModeNames[i]), false);
+		MesquiteSubmenuSpec mcms = addSubmenu(null, "Colors", makeCommand("setColorMode", this), f);
+		colorModeName = new MesquiteString(colorModeNames[colorMode.getValue()]);
+		mcms.setSelected(colorModeName);
 
 		numBinsMenuItem = addMenuItem("Set Number of Bins...", makeCommand("setNumBins", this));
 		numBinsMenuItem.setEnabled(false);
@@ -143,7 +162,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		if (trace.history == null)
 			return null;
 		String results = historyTask.getName();
-		
+
 		results += "\t" + trace.history.toStringWithDetails();
 		return results;
 	}
@@ -218,10 +237,10 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 				s += " " + MesquiteDouble.toString(binBoundaries[i]);
 			temp.addLine("setBins " + s);
 		}
-		
+
 		temp.addLine("setMapping " + CharacterStates.toExternalLong(currentMapping));
 		temp.addLine("toggleShowLegend " + showLegend.toOffOnString());
-		temp.addLine("toggleGray " + useGray.toOffOnString());
+		temp.addLine("setColorMode " + colorMode.getValue());
 		temp.addLine("toggleWeights " + showStateWeights.toOffOnString());
 		TraceCharacterOperator tco = (TraceCharacterOperator)traces.elementAt(0);
 		if (tco!=null && tco.traceLegend!=null) {
@@ -309,9 +328,25 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to use grayscale if continuous", "[on; off]", commandName, "toggleGray")) {
-			useGray.toggleValue(parser.getFirstToken(arguments));
-			resetAllTraceOperators();
-			parametersChanged();
+			String arg = parser.getFirstToken(arguments);
+			if (arg != null && arg.equalsIgnoreCase("on")){
+				colorMode.setValue(1);
+				colorModeName.setValue(colorModeNames[1]);
+				resetAllTraceOperators();
+				parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets colorMode if continuous", "[on; off]", commandName, "setColorMode")) {
+			int w = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (w>=0 && w< colorModeNames.length) {
+				colorMode.setValue(w);
+				colorModeName.setValue(colorModeNames[w]);
+				resetColorsAllTraceOperators();
+				if (!MesquiteThread.isScripting()){
+					resetAllTraceOperators();
+					parametersChanged();
+				}
+			}
 		}
 		else if (checker.compare(this.getClass(), "Sets number of bins for continuous", "[number of bins]", commandName, "setNumBins")) {
 
@@ -323,7 +358,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 				MesquiteInteger io = new MesquiteInteger(numBins);
 
 				boolean b = QueryDialogs.queryInteger(containerOfModule(), "Set number of bins", "Number of bins for continuous character:\n\n(Enter \"?\" to indicate default binning)", null, true, io);
-				
+
 				if (!b)
 					return null;
 				newNum = io.getValue();
@@ -353,7 +388,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			}
 			if (set)
 				return null;
-			
+
 			double[] qBins = queryBins(binBoundaries);
 			if (qBins != null)
 				binBoundaries = qBins;
@@ -375,7 +410,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 
 		/*  The following is disabled for the moment, as storing and retrieving of character histories is not yet supported */
 		else if (enableStore && checker.compare(this.getClass(), "Stores the current character history", null, commandName, "storeHistory")) {
-			//todo: if more than one traced, query user which one to store¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥
+			//todo: if more than one traced, query user which one to storeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			TraceCharacterOperator tco = (TraceCharacterOperator)traces.elementAt(0);
 			if (tco!=null && tco.traceLegend!=null && tco.history!=null && tco.myTree!=null) {
 				CharacterHistory history = tco.history;
@@ -568,18 +603,18 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Edges of Bins",buttonPressed);
 		queryDialog.addLargeOrSmallTextLabel("Numerical values are currently in " + numBins + " bins.  Indicate the boundaries between bins.  Use \"?\" to let Mesquite choose the boundary automatically.  Current boundaries are shown at right.");
 		SingleLineTextField[] fields = new SingleLineTextField[qBinBoundaries.length];
-		 for (int i = 0; i< qBinBoundaries.length; i++){
-			 fields[i] = queryDialog.addTextField("Boundary after bin " + (i+1), MesquiteDouble.toString(qBinBoundaries[i]), 16);
+		for (int i = 0; i< qBinBoundaries.length; i++){
+			fields[i] = queryDialog.addTextField("Boundary after bin " + (i+1), MesquiteDouble.toString(qBinBoundaries[i]), 16);
 			if (usedBoundaries != null && i<usedBoundaries.length) {
 				queryDialog.suppressNewPanel();
-			queryDialog.addLabel(MesquiteDouble.toString(usedBoundaries[i]));
+				queryDialog.addLabel(MesquiteDouble.toString(usedBoundaries[i]));
 			}
-		 }
+		}
 		queryDialog.completeAndShowDialog(true);
-		 for (int i = 0; i< qBinBoundaries.length; i++){
-			 
-				qBinBoundaries[i] = MesquiteDouble.fromString(fields[i].getText());
-		 }
+		for (int i = 0; i< qBinBoundaries.length; i++){
+
+			qBinBoundaries[i] = MesquiteDouble.fromString(fields[i].getText());
+		}
 		queryDialog.dispose();
 		if (buttonPressed.getValue()==0)
 			return qBinBoundaries;
@@ -659,6 +694,18 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	}
 	boolean Q = true;
 	/*.................................................................................................................*/
+	public void resetColorsAllTraceOperators() {
+		if (traces==null)
+			return;
+		Enumeration e = traces.elements();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			if (obj instanceof TraceCharacterOperator) {
+				TraceCharacterOperator tCO = (TraceCharacterOperator)obj;
+				tCO.resetColors();
+			}
+		}
+	}
 	public void resetAllTraceOperators() {
 		if (traces==null)
 			return;

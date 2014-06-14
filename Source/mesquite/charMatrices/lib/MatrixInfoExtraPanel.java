@@ -26,6 +26,7 @@ public class MatrixInfoExtraPanel extends ClosablePanel {
 	protected int it = -8;
 	public MatrixInfoExtraPanel(ClosablePanelContainer container, String title){
 		super(container, title);
+		setShowTriangle(true);
 	}
 	public void setMatrixAndTable(CharacterData data, MesquiteTable table){
 		this.data = data;

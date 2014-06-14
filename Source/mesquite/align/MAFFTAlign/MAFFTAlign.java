@@ -63,7 +63,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Sends the selected sequence to MAFFT to align." ;
+		return "Sends the selected sequences to MAFFT to align." ;
 	}
 
 	public String getProgramName(){

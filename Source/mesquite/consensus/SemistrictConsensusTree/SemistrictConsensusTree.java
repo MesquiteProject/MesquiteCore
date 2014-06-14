@@ -35,6 +35,7 @@ import mesquite.lib.*;
 	  	
 		/*.................................................................................................................*/
 	 	public void initialize() {
+			bipartitions.initialize();
 	 		if (bipartitions!=null)
 	 			bipartitions.setMode(BipartitionVector.SEMISTRICTMODE);
 	 	}
