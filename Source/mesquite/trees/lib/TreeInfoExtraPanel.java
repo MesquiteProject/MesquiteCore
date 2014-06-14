@@ -26,6 +26,7 @@ public class TreeInfoExtraPanel extends ClosablePanel {
 	protected int node = -1;
 	public TreeInfoExtraPanel(ClosablePanelContainer container, String title){
 		super(container, title);
+		setShowTriangle(true);
 	}
 	public void setTree(Tree tree){
 		this.tree = tree;

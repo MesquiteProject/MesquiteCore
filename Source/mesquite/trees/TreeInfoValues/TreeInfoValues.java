@@ -300,8 +300,8 @@ class ValuesPanel extends TreeInfoExtraPanel {
 		employees[numLines] = mb;
 		if (tree != null){
 			MesquiteString resultString = new MesquiteString();
-			if (numLines == 0 && !open)
-				open = true;
+			if (numLines == 0 && !isOpen())
+				setOpen(true);
 			MesquiteNumber result = new MesquiteNumber();
 			mb.calculateNumber(tree, result, resultString);
 			results[numLines] = resultString.getValue();
@@ -350,7 +350,7 @@ class ValuesPanel extends TreeInfoExtraPanel {
 		return -1;
 	}
 	public int getRequestedHeight(int width){
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		neededHeight= 0;
 		for (int i= 0; i<numLines; i++){
