@@ -176,6 +176,10 @@ public class MolecularDataUtil {
 
 	/*.................................................................................................................*/
 	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
+		reverseComplementSequencesIfNecessary( data,  module,  taxa,  itStart,  itEnd,  0,  baseOnStopCodons,  againstAllOthers,  verbose);
+		}
+	/*.................................................................................................................*/
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, int comparisonTaxon, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
 
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
@@ -207,7 +211,7 @@ public class MolecularDataUtil {
 					score = score/(itEnd-itStart);
 				}
 				else {
-					score = alignmentScoreRatioToRCScore((DNAData)data, module, 0, it, true);
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, true);
 				}
 				
 				if (score>1.0){
