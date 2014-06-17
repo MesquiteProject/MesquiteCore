@@ -92,6 +92,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		Parser firstLineParser = new Parser(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 		firstLineParser.setPunctuationString(">");
 		String token = firstLineParser.getFirstToken(line); //should be >
+		
+		int numCharToAdd = 10;  // DRM June '14  to increase speed
+		int warnCount = 0;
+		
 		while (!StringUtil.blank(line)) {
 
 			token = firstLineParser.getRemaining();  //taxon Name
@@ -110,8 +114,11 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					char c=line.charAt(i);
 					if (c!= '\0') {
 						if (data.getNumChars() <= i) {
-							data.addCharacters(data.getNumChars()-1, 1, false);   // add a character if needed
-							data.addInLinked(data.getNumChars()-1, 1, false);
+							warnCount++;
+							data.addCharacters(data.getNumChars()-1, numCharToAdd, false);   // add a character if needed
+							data.addInLinked(data.getNumChars()-1, numCharToAdd, false);
+							if (warnCount % 50 ==0)
+								CommandRecord.tick("Importing, character " + ic);
 						
 							added++;
 						}
