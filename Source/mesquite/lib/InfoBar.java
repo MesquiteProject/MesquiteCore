@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.simplicity.SimplicityStrip;
@@ -194,10 +195,19 @@ public class InfoBar extends MousePanel implements Commandable {
 			}
 		}
 		 */
-		g.setColor(Color.gray);  //rounded upper left corner to feel like a screen corner, to make it easer to sense the menu
-		g.fillRect(0,0,2,2);
-		g.fillRect(0,0,4,1);
-		g.fillRect(0,0,1,4);
+		g.setColor(ColorDistribution.darkMesquiteBrown);  //rounded upper left corner to feel like a screen corner, to make it easer to sense the menu
+		if (g instanceof Graphics2D) {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setStroke(new BasicStroke(4));
+			g2.drawArc(-2,-2, 8, 8, -190, -70);
+			g2.setStroke(st);
+		} 
+		else {
+			g.fillRect(0,0,2,2);
+			g.fillRect(0,0,4,1);
+			g.fillRect(0,0,1,4);
+		}
 		g.setColor(Color.black);
 		
 		// MENUS ================
