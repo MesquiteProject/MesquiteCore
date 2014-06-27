@@ -2500,7 +2500,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 			catch( FileNotFoundException e ) {
 				if (warn) MesquiteMessage.warnProgrammer("File Busy or Not Found (z5) : " + relativePath);
-				//MesquiteMessage.printStackTrace();
 				return null;
 			} 
 			catch( IOException e ) {
