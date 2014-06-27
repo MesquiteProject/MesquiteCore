@@ -59,7 +59,7 @@ public class ColorTheme {
 		ExtInterfaceBackground[DARKCHOCOLATE] = new Color(74, 68, 59);
 		ExtInterfaceBackground[SLATE] = new Color(168,168,179); //slate theme
 		ExtInterfaceBackground[MILKCHOCOLATE] = new Color(88, 82, 74);
-		ExtInterfaceBackground[PAPER] = new Color(236, 244, 249); //new Color(220, 220, 220);
+		ExtInterfaceBackground[PAPER] = new Color(236, 249, 244); //new Color(220, 220, 220);
 	}
 	public static Color getExtInterfaceBackground(){  //general background to main tabs and project panel
 		return ExtInterfaceBackground[THEME];
@@ -79,7 +79,7 @@ public class ColorTheme {
 		ExtInterfaceElement[DARKCHOCOLATE] = new Color(88, 82, 74);//chocolate theme
 		ExtInterfaceElement[SLATE] = new Color(188,188,200);//slate theme
 		ExtInterfaceElement[MILKCHOCOLATE] = new Color(88, 82, 74);
-		ExtInterfaceElement[PAPER] = new Color(236, 244, 249); //new Color(220, 220, 220);
+		ExtInterfaceElement[PAPER] = new Color(236, 249, 244); //new Color(220, 220, 220);
 	}
 	public static Color getExtInterfaceElement(){ // slightly contrasting color for unselected main tabs and some parts of project panel
 		return ExtInterfaceElement[THEME];
@@ -117,7 +117,7 @@ public class ColorTheme {
 		ExtInterfaceElementContrast2[DARKCHOCOLATE] = new Color(113, 108, 96); //chocolate theme   //formerly new Color(102, 98, 86); //chocolate theme
 		ExtInterfaceElementContrast2[SLATE] = new Color(221,221,232);//slate theme
 		ExtInterfaceElementContrast2[MILKCHOCOLATE] = new Color(102, 98, 86); //chocolate theme
-		ExtInterfaceElementContrast2[PAPER] = new Color(242, 250, 255);  //new Color(240, 240, 245);
+		ExtInterfaceElementContrast2[PAPER] = new Color(242, 255, 250);  //new Color(240, 240, 245);
 	}
 	public static Color getExtInterfaceElementContrast2(){   //element that is contrasted, e.g. the highlighted one, in the main tabs/project area
 		return ExtInterfaceElementContrast2[THEME];
