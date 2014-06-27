@@ -103,9 +103,16 @@ public class AlterAllMatrices extends FileAlterer {
    		return success;
    	}
 	/*.................................................................................................................*/
-    	 public String getName() {
-		return "Alter All Matrices";
-   	 }
+	 public String getName() {
+	return "Alter All Matrices";
+	 }
+		/*.................................................................................................................*/
+	 public String getNameAndParameters() {
+		 if (alterTask==null)
+			 return "Alter All Matrices";
+		 else
+			 return "Alter All Matrices (" + alterTask.getName() + ")";
+	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
