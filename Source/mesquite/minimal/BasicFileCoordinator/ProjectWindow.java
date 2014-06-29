@@ -229,7 +229,6 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	public void refresh(){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
-		//Debugg.printStackTrace();
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
@@ -933,6 +932,18 @@ class TaxaPanel extends ElementPanel {
 		}
 		 */
 	}
+
+	public String getTitleAddition(){
+		int numTaxa = ((Taxa)element).getNumTaxa();
+		String heading = " (" + numTaxa + " tax";
+		if (numTaxa>1)
+			heading += "a)";
+		else
+			heading += "on)";
+		return heading;
+	}
+	
+	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows an initial tree window", null, commandName, "showInitTreeWindow")) {
@@ -994,12 +1005,21 @@ class MElementPanel extends ElementPanel {
 	}
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Lists the characters", null, commandName, "list")) {
-			Debugg.println("element " + element.getName());
+			//Debugg.println("element " + element.getName());
 			((CharacterData)element).showList();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
+	}
+	public String getTitleAddition(){
+		int numChars = ((CharacterData)element).getNumChars();
+		String heading = " (" + numChars + " character";
+		if (numChars>1)
+			heading += "s";
+		heading += ")";
+		
+		return heading;
 	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
@@ -1155,6 +1175,14 @@ class TreesRPanel extends ElementPanel {
 		((BasicFileCoordinator)bfc).showChartWizard("Trees");
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
+	}
+	public String getTitleAddition(){
+		int numTrees = ((TreeVector)element).size();
+		String heading = " (" + numTrees + " tree";
+		if (numTrees>1)
+			heading += "s";
+		heading += ")";
+		return heading;
 	}
 
 	public String getNotes(){
@@ -1537,7 +1565,10 @@ class ElementPanel extends ProjPanelPanel {
 		refreshIcon();
 		refresh();
 	}
-
+	public String getTitle(){
+		String t = super.getTitle() + getTitleAddition();
+		return t;
+	}
 	public String getIconFileName(){ //for small 16 pixel icon at left of main bar
 		if (element != null && element instanceof FileElement){
 			String s = ((FileElement)element).getIconFileName();
@@ -1550,16 +1581,22 @@ class ElementPanel extends ProjPanelPanel {
 		super(bfc, container, w, name, bfc);
 	}
 	public void resetTitle(){
-		if (element != null && element instanceof FileElement && !StringUtil.stringsEqual(element.getName(), getTitle())){
+		if (element != null && element instanceof FileElement){
+			String newTitle = "";
 			if (element.getName() == null)
-				setTitle(element.getClass().getName());
+				newTitle = element.getClass().getName();
 			else
-				setTitle(element.getName());
-			repaint();
+				newTitle = element.getName();
+			if (!StringUtil.stringsEqual(newTitle, getTitle())){
+				setTitle(newTitle);
+				repaint();
+			}
 		}
 	}
 
-
+	public String getTitleAddition(){
+		return "";
+	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
 		return null;

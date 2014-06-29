@@ -1236,7 +1236,7 @@ class FrameTabsPanel extends MousePanel {
 						;
 				}
 //				else if (frame.showMinimizeMaximize(i) && x> rights[i] - 20 && y >4 && y<20){
-				else if (frame.showMinimizeMaximize(i) && x< lefts[i] + 20 && y >4 && y<20){
+				else if (frame.showMinimizeMaximize(i) && x< lefts[i] + 20 && y >12 && y<28){
 					frame.toggleMinimize(i);
 				}
 				else {
@@ -1416,6 +1416,8 @@ class FrameTabsPanel extends MousePanel {
 		Shape oldClip = g.getClip();
 		g.setClip(tabLeft-1, 0, tabRight -tabLeft+4, panelHeight);
 		String title = w.getTitle();
+		if (w == frame.projectWindow && projectPanelWidth <=0)
+			title = "Project";
 		Image icon = w.getIcon();
 		int iconWidth = 0;
 		if (icon != null || w == frame.projectWindow)
@@ -1468,9 +1470,9 @@ class FrameTabsPanel extends MousePanel {
 		}
 		if (w == frame.projectWindow){
 			if (minimize != null && !w.isMinimized())
-				g.drawImage(minimize, tabLeft+intertabSpace, 4, this); //tabRight-17
+				g.drawImage(minimize, tabLeft+intertabSpace, 12, this); //tabRight-17
 			else if (mediumize != null && w.isMinimized())
-				g.drawImage(mediumize, tabLeft+intertabSpace, 4, this);//tabRight-17
+				g.drawImage(mediumize, tabLeft+intertabSpace, 12, this);//tabRight-17
 		}
 		g.setClip(oldClip );
 	}
@@ -1539,6 +1541,8 @@ class FrameTabsPanel extends MousePanel {
 		for (int i = 0; i<numWindows; i++){
 			MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
 			String s = w.getTitle();
+			if (w == frame.projectWindow && projectPanelWidth<=0)
+				s = "Project";
 			titles[i] = s;
 			if (s != null)
 				totalString += s;
@@ -1558,8 +1562,6 @@ class FrameTabsPanel extends MousePanel {
 		int narrowest = 5000;
 		int widest = 0;
 		int numLoops = 0;
-		int whichIsNarrowest = -1;
-		String narrowestTitle = "blah";
 
 		while (!ready && numLoops<1000){  //checking scaling/sizing
 			numLoops++;
@@ -1623,8 +1625,6 @@ class FrameTabsPanel extends MousePanel {
 							widest = offer + iconWidth;
 						else if (offer + iconWidth < narrowest){
 							narrowest = offer + iconWidth;
-							whichIsNarrowest = i;
-							narrowestTitle = title;
 						}
 					} else {
 						//Debugg.println("empty title "+i);
@@ -1633,13 +1633,7 @@ class FrameTabsPanel extends MousePanel {
 				}
 			}		
 
-			/*
- 			MesquiteWindow w = (MesquiteWindow)frameWindows.elementAt(whichIsNarrowest);
-			if (isProjectWindow(w)){
-				Debugg.println("narrowest: " + narrowest + ", window: " + whichIsNarrowest + " ("+narrowestTitle+") PROJECT WINDOW");
-			} else
-				Debugg.println("narrowest: " + narrowest + ", window: " + whichIsNarrowest + " ("+narrowestTitle+")");
-*/
+			
 				
 			//if some tabs are very narrow AND there is a big variance in tab size, then delete characters from long tabs and try again 			
 			if (1.0*widest/narrowest > 2.0 && narrowest < 30 && widest>30){
@@ -1711,6 +1705,11 @@ class FrameTabsPanel extends MousePanel {
 				if (isProjectWindow(w)){
 					tabLeft = 0;
 					tabRight = projectPanelWidth;
+					if (projectPanelWidth <0){
+						title = "Project";
+						titles[i] = title;
+						tabRight = 64; //StringUtil.getStringDrawLength(g2, title) + iconWidth + intertabSpace;
+					}
 					leftMargin = tabRight;
 				} 
 				else if (scaling < 1.0){
