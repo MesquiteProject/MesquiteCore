@@ -1491,6 +1491,7 @@ class FrameTabsPanel extends MousePanel {
 	int fontChosen = 0;
 	/*.................................................................................................................*/
 	public void paint(Graphics g){
+		
 		//frame.ontabDark = new Color(160, 82, 45);
 		if (!(g instanceof Graphics2D))
 			return;
@@ -1563,7 +1564,7 @@ class FrameTabsPanel extends MousePanel {
 		int widest = 0;
 		int numLoops = 0;
 
-		while (!ready && numLoops<1000){  //checking scaling/sizing
+		while (!ready && numLoops<100){  //checking scaling/sizing
 			numLoops++;
 			fontChosen = 0;
 			g2.setFont(fonts[0]);
@@ -1578,7 +1579,7 @@ class FrameTabsPanel extends MousePanel {
 			if (needed> panelWidth-edges-projectPanelWidth){
 				scaling = (panelWidth-edges-projectPanelWidth)*1.0/(StringUtil.getStringDrawLength(g2, totalString) + iconsWidth);
 			}
-
+			//Debugg.println("scaling " + scaling);
 
 			//trial run the tab widths
 			narrowest = 500000;
