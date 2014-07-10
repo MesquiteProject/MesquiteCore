@@ -307,7 +307,6 @@ public class ListTable extends MesquiteTable {
 							else
 								rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
 						}
-							
 				}
 				else
 					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);

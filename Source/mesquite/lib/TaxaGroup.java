@@ -21,35 +21,48 @@ import mesquite.lists.lib.GroupDialog;
 /* ======================================================================== */
 /** DOCUMENT.*/
 public class TaxaGroup extends GroupLabel {
+	Taxa taxa;
+	public TaxaGroup(Taxa taxa) {
+		this.taxa = taxa;
+	}
+	public TaxaGroup() {
+	}
 	public static boolean supportsSymbols() {
 		return true;
 	}
 	/*.................................................................................................................*/
 	public static TaxaGroup makeGroup(MesquiteModule mod, String name, Taxa taxa, TaxaGroupVector groups){
-		TaxaGroup group = new TaxaGroup();
+		TaxaGroup group = new TaxaGroup(taxa);
 		group.setName(name);
 		group.addToFile(taxa.getFile(), mod.getProject(), null);
 		if (groups.indexOf(group)<0) 
 			groups.addElement(group, false);
 		return group;
 	}
+	/*.................................................................................................................*/
 	public void editMe(){
 		GroupDialog d = new GroupDialog(getProject(),getProject().getCoordinatorModule().containerOfModule(), "Edit Taxa Group", getName(), getColor(), getSymbol(), supportsSymbols());
-	 		d.completeAndShowDialog();
+
+		d.completeAndShowDialog();
 		name = d.getName();
 		boolean ok = d.query()==0;
 		Color c = d.getColor();
+		MesquiteSymbol symbol = d.getSymbol();
 		d.dispose();
 		if (!ok)
 			return;
 
-
 		if (!StringUtil.blank(name)) {
 			setName(name);
 			setColor(c);
+			if (symbol!=null)
+				setSymbol(symbol);
+			if (taxa!=null)
+				taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+			notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 		}
-		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-		}
+
+	}
 
 }
 

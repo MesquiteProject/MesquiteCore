@@ -59,7 +59,8 @@ public class ColorTheme {
 		ExtInterfaceBackground[DARKCHOCOLATE] = new Color(74, 68, 59);
 		ExtInterfaceBackground[SLATE] = new Color(168,168,179); //slate theme
 		ExtInterfaceBackground[MILKCHOCOLATE] = new Color(88, 82, 74);
-		ExtInterfaceBackground[PAPER] = new Color(230, 234, 210); // pale greenish yellow new Color(249, 255, 237);;  greenish: new Color(236, 249, 244)
+		ExtInterfaceBackground[PAPER] = new Color(237, 232, 220); // lightening of tool palette background color
+		//ExtInterfaceBackground[PAPER] = new Color(230, 234, 210); // pale greenish yellow new Color(249, 255, 237);;  greenish: new Color(236, 249, 244)
 	}
 	public static Color getExtInterfaceBackground(){  //general background to main tabs and project panel
 		return ExtInterfaceBackground[THEME];
@@ -79,7 +80,8 @@ public class ColorTheme {
 		ExtInterfaceElement[DARKCHOCOLATE] = new Color(88, 82, 74);//chocolate theme
 		ExtInterfaceElement[SLATE] = new Color(188,188,200);//slate theme
 		ExtInterfaceElement[MILKCHOCOLATE] = new Color(88, 82, 74);
-		ExtInterfaceElement[PAPER] = new Color(230, 234, 210); //new Color(220, 220, 220);
+		ExtInterfaceElement[PAPER] = new Color(237, 232, 220); // lightening of tool palette background color
+		//ExtInterfaceBackground[PAPER] = new Color(230, 234, 210); // pale greenish yellow new Color(249, 255, 237);;  greenish: new Color(236, 249, 244)
 	}
 	public static Color getExtInterfaceElement(){ // slightly contrasting color for unselected main tabs and some parts of project panel
 		return ExtInterfaceElement[THEME];
@@ -117,7 +119,8 @@ public class ColorTheme {
 		ExtInterfaceElementContrast2[DARKCHOCOLATE] = new Color(113, 108, 96); //chocolate theme   //formerly new Color(102, 98, 86); //chocolate theme
 		ExtInterfaceElementContrast2[SLATE] = new Color(221,221,232);//slate theme
 		ExtInterfaceElementContrast2[MILKCHOCOLATE] = new Color(102, 98, 86); //chocolate theme
-		ExtInterfaceElementContrast2[PAPER] = new Color(234, 239, 215);  //greenish new Color(242, 255, 250)
+		ExtInterfaceElementContrast2[PAPER] =new Color(242, 237, 225); // lightening of tool palette background color
+		// ExtInterfaceElementContrast2[PAPER] = new Color(234, 239, 215);  //greenish new Color(242, 255, 250)
 	}
 	public static Color getExtInterfaceElementContrast2(){   //element that is contrasted, e.g. the highlighted one, in the main tabs/project area
 		return ExtInterfaceElementContrast2[THEME];
@@ -155,7 +158,8 @@ public class ColorTheme {
 		ExtInterfaceEdgeMuted[DARKCHOCOLATE] = new Color(190,178,130);//chocolate theme
 		ExtInterfaceEdgeMuted[SLATE] = new Color(68,68,78);//slate theme
 		ExtInterfaceEdgeMuted[MILKCHOCOLATE] = new Color(190,178,130);//chocolate theme
-		ExtInterfaceEdgeMuted[PAPER] = new Color(176,176,150);
+		ExtInterfaceEdgeMuted[PAPER] = new Color(176,162,150);  // to go with pale brown color
+		//ExtInterfaceEdgeMuted[PAPER] = new Color(176,176,150);  // to go with greenish color
 	}
 	public static Color getExtInterfaceEdgeMuted(){  //muted text in external interface area,e.g. unselected tabs
 		return ExtInterfaceEdgeMuted[THEME];
@@ -193,7 +197,8 @@ public class ColorTheme {
 		ExtInterfaceTextMuted[DARKCHOCOLATE] = new Color(190,178,130);//chocolate theme
 		ExtInterfaceTextMuted[SLATE] = new Color(68,68,78);//slate theme
 		ExtInterfaceTextMuted[MILKCHOCOLATE] = new Color(190,178,130);//chocolate theme
-		ExtInterfaceTextMuted[PAPER] = new Color(106,106,80);  //
+		ExtInterfaceTextMuted[PAPER] = new Color(106,98,80);  // to go with pale brown color
+//		ExtInterfaceTextMuted[PAPER] = new Color(106,106,80);  // to go with greenish color
 	}
 	public static Color getExtInterfaceTextMuted(){  //muted text in external interface area,e.g. unselected tabs
 		return ExtInterfaceTextMuted[THEME];
@@ -212,7 +217,8 @@ public class ColorTheme {
 		ExtInterfaceTextMedium[DARKCHOCOLATE] = new Color(210,190,154);//chocolate theme
 		ExtInterfaceTextMedium[SLATE] = new Color(48,48,56); //slate theme
 		ExtInterfaceTextMedium[MILKCHOCOLATE] = new Color(219,199,164); //chocolate theme
-		ExtInterfaceTextMedium[PAPER] = new Color(106,106,80);  
+		ExtInterfaceTextMedium[PAPER] = new Color(106,98,80);  // to go with pale brown color
+//		ExtInterfaceTextMedium[PAPER] = new Color(106,106,80);  // to go with greenish color
 	}
 	public static Color getExtInterfaceTextMedium(){ //medium contrast text in external interface area, e.g. project resources text
 		return ExtInterfaceTextMedium[THEME];

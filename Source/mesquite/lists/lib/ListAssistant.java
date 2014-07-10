@@ -73,6 +73,7 @@ public abstract class ListAssistant extends MesquiteModule  {
 	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
 		return false;
 	}
+	
 
 	/*.................................................................................................................*/
 	public String moduleActiveWord() {
