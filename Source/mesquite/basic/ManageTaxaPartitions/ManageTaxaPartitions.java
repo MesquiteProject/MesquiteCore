@@ -152,10 +152,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxa Partitions", makeCommand("showPartitions",  this), (ListableVector)getProject().taxas);
 		mmis.setOwnerModuleID(getID());
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
-//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,listOfTaxonGroupsName, makeCommand("showTaxonGroups",  this),  (ListableVector)getProject().taxas);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, listOfTaxonGroupsName, makeCommand("showTaxonGroups",  this));
-//		mmis2.setOwnerModuleID(getID());
-//		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		groups.addToFile(getProject().getHomeFile(), getProject(), this);
 		super.projectEstablished();
 	}
