@@ -27,7 +27,7 @@ import mesquite.lib.table.*;
 public class CharGroupList extends ListModule {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "List of Character Groups";
+		return "List of Character Group Labels";
 	}
 	public String getExplanation() {
 		return "Makes windows listing character groups and information about them." ;

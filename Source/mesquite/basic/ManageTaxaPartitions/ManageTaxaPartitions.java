@@ -24,6 +24,8 @@ import mesquite.lists.lib.GroupDialog;
 
 /** Manages specifications of partitions of taxa, including reading and writing from NEXUS file. */
 public class ManageTaxaPartitions extends SpecsSetManager {
+	final static String listOfTaxonGroupsName = "List of Taxon Group Labels";
+
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.TaxaPartitionList.TaxaPartitionList.class, getName() + "  uses an assistant to display a list window.",
 		"The assistant is arranged automatically");
@@ -150,8 +152,8 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxa Partitions", makeCommand("showPartitions",  this), (ListableVector)getProject().taxas);
 		mmis.setOwnerModuleID(getID());
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
-//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxon Groups", makeCommand("showTaxonGroups",  this),  (ListableVector)getProject().taxas);
-		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Taxon Groups", makeCommand("showTaxonGroups",  this));
+//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,listOfTaxonGroupsName, makeCommand("showTaxonGroups",  this),  (ListableVector)getProject().taxas);
+		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, listOfTaxonGroupsName, makeCommand("showTaxonGroups",  this));
 //		mmis2.setOwnerModuleID(getID());
 //		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		groups.addToFile(getProject().getHomeFile(), getProject(), this);
@@ -171,7 +173,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				}
 				else
 					temp.addLine("showPartitions ", e); 
-			} else if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("List of Taxon Groups")) {
+			} else if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals(listOfTaxonGroupsName)) {
 				temp.addLine("showTaxonGroups ", e); 
 			}
 		}
@@ -218,7 +220,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 //			alert("Sorry, there are no taxa partitions");
 		}
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
-					return showTaxonGroupList(null, "List of Taxon Groups");
+					return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

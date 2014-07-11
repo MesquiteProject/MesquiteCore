@@ -23,6 +23,9 @@ import mesquite.lists.lib.GroupDialog;
 
 /** Manages specifications of character partitions, including reading and writing from NEXUS files */
 public class ManageCharPartitions extends CharSpecsSetManager {
+	final static String listOfCharacterGroupsName = "List of Character Group Labels";
+
+	
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.CharPartitionList.CharPartitionList.class, getName() + "  uses an assistant to display a list window.",
 		"The assistant is arranged automatically");
@@ -135,7 +138,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			groups.removeElement(e, false);
 	}
 	public void projectEstablished(){
-		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "List of Character Groups", makeCommand("showCharacterGroups",  this));
+		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, listOfCharacterGroupsName, makeCommand("showCharacterGroups",  this));
 //		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu,"List of Character Groups", makeCommand("showCharacterGroups",  this),  (ListableVector)getProject().taxas);
 //		mmis2.setOwnerModuleID(getID());
 //		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
@@ -147,7 +150,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		Snapshot temp = new Snapshot();
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
 			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
-			 if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("List of Character Groups")) {
+			 if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals(listOfCharacterGroupsName)) {
 				temp.addLine("showCharacterGroups ", e); 
 			}
 		}
@@ -178,7 +181,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows list of the character groups", null, commandName, "showCharacterGroups")) {
-					return showCharacterGroupList(null, "List of Character Groups");
+					return showCharacterGroupList(null, listOfCharacterGroupsName);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

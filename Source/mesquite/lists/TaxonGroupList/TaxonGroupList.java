@@ -27,7 +27,7 @@ import mesquite.lib.table.*;
 public class TaxonGroupList extends ListModule {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "List of Taxon Groups";
+		return "List of Taxon Group Labels";
 	}
 	public String getExplanation() {
 		return "Makes windows listing taxon groups and information about them." ;
