@@ -1,23 +1,23 @@
-package mesquite.lists.TaxonGroupListColor;
+package mesquite.lists.CharGroupListColor;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Shape;
 
 import mesquite.lib.*;
-import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */
-public class TaxonGroupListColor extends TaxonGroupListAssistant  {
+public class CharGroupListColor extends CharGroupListAssistant  {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Taxon Group Color in List";
+		return "Character Group Color in List";
 	}
 	public String getExplanation() {
-		return "Shows color assigned to taxon group." ;
+		return "Shows color assigned to character group." ;
 	}
 
 	CharacterData data=null;
@@ -35,18 +35,18 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 		this.table = table;
 	}
 	/*.................................................................................................................*/
-	TaxaGroup getTaxonGroup(int ic){
-		TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+	CharactersGroup getCharacterGroup(int ic){
+		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 		if (groups!=null) {
 			if (ic>=0 && ic<groups.size())
-				return(TaxaGroup)groups.elementAt(ic);
+				return(CharactersGroup)groups.elementAt(ic);
 		}
 		return null;
 	}
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int ic, boolean selected){
 		
-		TaxaGroup tg = getTaxonGroup(ic);
+		CharactersGroup tg = getCharacterGroup(ic);
 		if (tg!=null){
 			return tg.getColor();
 
@@ -57,7 +57,7 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 
 	/*.................................................................................................................*/
 	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		TaxaGroup tg = getTaxonGroup(ic);
+		CharactersGroup tg = getCharacterGroup(ic);
 		if (tg!=null){
 			tg.editMe();
 			parametersChanged();

@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.lists.TaxonGroupList;
+package mesquite.lists.CharGroupList;
 /*~~  */
 
 import mesquite.lists.lib.*;
@@ -24,19 +24,19 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class TaxonGroupList extends ListModule {
+public class CharGroupList extends ListModule {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "List of Taxon Groups";
+		return "List of Character Groups";
 	}
 	public String getExplanation() {
-		return "Makes windows listing taxon groups and information about them." ;
+		return "Makes windows listing character groups and information about them." ;
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(TaxonGroupListAssistant.class, "The List of Taxon Groups window can display columns showing information for each taxon group.",
-		"You can request that columns be shown using the Columns menu of the List of Taxon Groups Window. ");
+		EmployeeNeed e = registerEmployeeNeed(CharGroupListAssistant.class, "The List of Character Groups window can display columns showing information for each character group.",
+				"You can request that columns be shown using the Columns menu of the List of Character Groups Window. ");
 	}
-	TaxaGroupVector groups;
+	CharactersGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -46,37 +46,37 @@ public class TaxonGroupList extends ListModule {
 	}
 
 	public void showListWindow(Object obj){
-		setModuleWindow(new TaxonGroupListWindow(this));
-		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-		((TaxonGroupListWindow)getModuleWindow()).setObject(groups);
+		setModuleWindow(new CharGroupListWindow(this));
+		groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+		((CharGroupListWindow)getModuleWindow()).setObject(groups);
 		//makeMenu("Character_Models");
 		makeMenu("List");
 
-		
+
 		if (!MesquiteThread.isScripting()){
-			TaxonGroupListAssistant assistant = (TaxonGroupListAssistant)hireNamedEmployee(TaxonGroupListAssistant.class, StringUtil.tokenize("#TaxonGroupListColor"));
+			CharGroupListAssistant assistant = (CharGroupListAssistant)hireNamedEmployee(CharGroupListAssistant.class, StringUtil.tokenize("#CharGroupListColor"));
 			if (assistant!= null){
-				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
+				((CharGroupListWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-	/*		assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("#ModelsListParadigm"));
+			/*		assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("#ModelsListParadigm"));
 			if (assistant!= null){
-				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
+				((CharGroupListWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
 			assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("#ModelsListWhole"));
 			if (assistant!= null){
-				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
+				((CharGroupListWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
 			assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("Data type for model"));
 			if (assistant!= null){
-				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
+				((CharGroupListWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-*/
+			 */
 		}
-	
+
 
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
@@ -87,36 +87,44 @@ public class TaxonGroupList extends ListModule {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Returns data set whose characters are listed", null, commandName, "getData")) {
+			return null;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+	}
+	/*.................................................................................................................*/
 	/* following required by ListModule*/
 	public Object getMainObject(){
-		return getProject().getFileElement(TaxaGroupVector.class, 0);
+		return getProject().getFileElement(CharactersGroupVector.class, 0);
 	}
 	public int getNumberOfRows(){
-		if (getProject().getFileElement(TaxaGroupVector.class, 0)==null)
+		if (getProject().getFileElement(CharactersGroupVector.class, 0)==null)
 			return 0;
 		else
-			return ((ListableVector)getProject().getFileElement(TaxaGroupVector.class, 0)).size();
+			return ((ListableVector)getProject().getFileElement(CharactersGroupVector.class, 0)).size();
 	}
 	public Class getAssistantClass(){
-		return TaxonGroupListAssistant.class;
+		return CharGroupListAssistant.class;
 	}
 	public String getItemTypeName(){
-		return "Taxon Group";
+		return "Character Group";
 	}
 	public String getItemTypeNamePlural(){
-		return "Taxon Groups";
+		return "Character Groups";
 	}
 	/*.................................................................................................................*/
 	public boolean rowsDeletable(){
 		return true;
 	}
 	public boolean deleteRow(int row, boolean notify){
-		TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
+		CharactersGroup group = ((CharGroupListWindow)getModuleWindow()).getCharGroup(row);
 		if (group!=null){
-				getProject().removeFileElement(group);//must remove first, before disposing
-				group.dispose();
-				return true;
-		
+			getProject().removeFileElement(group);//must remove first, before disposing
+			group.dispose();
+			return true;
+
 		}
 		return false;
 	}
@@ -125,7 +133,7 @@ public class TaxonGroupList extends ListModule {
 	public String getAnnotation(int row){ 
 		if (row<0 || row>= getNumberOfRows())
 			return null;
-		TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
+		CharactersGroup group = ((CharGroupListWindow)getModuleWindow()).getCharGroup(row);
 		return group.getAnnotation();
 	}
 
@@ -133,12 +141,12 @@ public class TaxonGroupList extends ListModule {
 	public void setAnnotation(int row, String s, boolean notify){
 		if (row<0 || row>= getNumberOfRows())
 			return;
-		TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
+		CharactersGroup group = ((CharGroupListWindow)getModuleWindow()).getCharGroup(row);
 		group.setAnnotation(s, notify);
 	}
 	/** returns a String of explanation for a row*/
 	public String getExplanation(int row){
-		TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
+		CharactersGroup group = ((CharGroupListWindow)getModuleWindow()).getCharGroup(row);
 		if (group!=null)
 			return group.getExplanation();
 		return null;
@@ -167,9 +175,9 @@ public class TaxonGroupList extends ListModule {
 }
 
 /* ======================================================================== */
-class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
-	TaxaGroupVector groups;
-	public TaxonGroupListWindow (TaxonGroupList ownerModule) {
+class CharGroupListWindow extends ListWindow implements MesquiteListener {
+	CharactersGroupVector groups;
+	public CharGroupListWindow (CharGroupList ownerModule) {
 		super(ownerModule);
 		MesquiteTable t = getTable();
 		if (t!=null)
@@ -180,7 +188,7 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle("Taxon Groups"); 
+		setTitle("Character Groups"); 
 	}
 	/*.................................................................................................................*/
 	public Object getCurrentObject(){
@@ -190,7 +198,7 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 		if (obj instanceof ListableVector) {
 			if (groups!=null)
 				groups.removeListener(this);
-			groups = (TaxaGroupVector)obj;
+			groups = (CharactersGroupVector)obj;
 			groups.addListener(this);
 			getTable().synchronizeRowSelection(groups);
 		}
@@ -199,30 +207,30 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	/*...............................................................................................................*/
 	/** returns whether or not a row name of table is editable.*/
 	public boolean isRowNameEditable(int row){
-		TaxaGroup group = getTaxonGroup(row);
+		CharactersGroup group = getCharGroup(row);
 		return (group!=null);
 	}
-	TaxaGroup getTaxonGroup(int row){
+	CharactersGroup getCharGroup(int row){
 		if (groups!=null) {
 			if (row>=0 && row<groups.size())
-				return(TaxaGroup)groups.elementAt(row);
+				return(CharactersGroup)groups.elementAt(row);
 		}
 		return null;
 	}
 	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
-		TaxaGroup group = getTaxonGroup(row);
+		CharactersGroup group = getCharGroup(row);
 		if (group!=null){
 			getTable().editRowNameCell(row);
 		}
 		return true;
 	}
 	public void setRowName(int row, String name){
-		TaxaGroup group = getTaxonGroup(row);
+		CharactersGroup group = getCharGroup(row);
 		if (group!=null){
-				group.setName(name);
-				resetAllTitles();
-				getOwnerModule().resetAllMenuBars();
-			
+			group.setName(name);
+			resetAllTitles();
+			getOwnerModule().resetAllMenuBars();
+
 		}
 	}
 	public String getRowName(int row){

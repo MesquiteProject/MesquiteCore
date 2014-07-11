@@ -150,9 +150,10 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxa Partitions", makeCommand("showPartitions",  this), (ListableVector)getProject().taxas);
 		mmis.setOwnerModuleID(getID());
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
-		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxon Groups", makeCommand("showTaxonGroups",  this),  (ListableVector)getProject().taxas);
-		mmis2.setOwnerModuleID(getID());
-		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxon Groups", makeCommand("showTaxonGroups",  this),  (ListableVector)getProject().taxas);
+		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Taxon Groups", makeCommand("showTaxonGroups",  this));
+//		mmis2.setOwnerModuleID(getID());
+//		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		groups.addToFile(getProject().getHomeFile(), getProject(), this);
 		super.projectEstablished();
 	}
@@ -170,6 +171,8 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				}
 				else
 					temp.addLine("showPartitions ", e); 
+			} else if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("List of Taxon Groups")) {
+				temp.addLine("showTaxonGroups ", e); 
 			}
 		}
 		return temp;
@@ -178,7 +181,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	/*.................................................................................................................*/
 	 public ManagerAssistant showTaxonGroupList(Object obj, String listerName){
 	 		//Check to see if already has lister for this
-	 		boolean found = false;
+/*	 		boolean found = false;
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
 			Object e=getEmployeeVector().elementAt(i);
 			if (e instanceof ManagerAssistant)
@@ -187,6 +190,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					return ((ManagerAssistant)e);
 				}
 		}
+		*/
 		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
 			if (lister!=null) {
 				lister.showListWindow(obj);
@@ -214,17 +218,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 //			alert("Sorry, there are no taxa partitions");
 		}
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
-			if (StringUtil.blank(arguments)) {
-				for (int i = 0; i< getProject().getNumberTaxas(checker.getFile()); i++) {
-					showTaxonGroupList(getProject().getTaxa(checker.getFile(), i), "List of Taxon Groups");
-				}
-			}
-			else {
-				Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
-				if (t!=null ) {
-					return showTaxonGroupList(t, "List of Taxon Groups");
-				}
-			}
+					return showTaxonGroupList(null, "List of Taxon Groups");
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

@@ -135,8 +135,54 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			groups.removeElement(e, false);
 	}
 	public void projectEstablished(){
+		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "List of Character Groups", makeCommand("showCharacterGroups",  this));
+//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu,"List of Character Groups", makeCommand("showCharacterGroups",  this),  (ListableVector)getProject().taxas);
+//		mmis2.setOwnerModuleID(getID());
+//		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		groups.addToFile(getProject().getHomeFile(), getProject(), this);
 		super.projectEstablished();
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
+			 if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("List of Character Groups")) {
+				temp.addLine("showCharacterGroups ", e); 
+			}
+		}
+		return temp;
+	}
+	/*.................................................................................................................*/
+	 public ManagerAssistant showCharacterGroupList(Object obj, String listerName){
+	 		//Check to see if already has lister for this
+/*	 		boolean found = false;
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant)
+				if (((ManagerAssistant)e).showing(obj)) {
+					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					return ((ManagerAssistant)e);
+				}
+		}
+		*/
+		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
+			if (lister!=null) {
+				lister.showListWindow(null);
+	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+	 				lister.getModuleWindow().setVisible(true);
+	 		}
+		return lister;
+	 		
+}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Shows list of the character groups", null, commandName, "showCharacterGroups")) {
+					return showCharacterGroupList(null, "List of Character Groups");
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		//return null;
 	}
 	public Class getElementClass(){
 		return CharacterPartition.class;

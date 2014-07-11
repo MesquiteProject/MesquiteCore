@@ -14,8 +14,10 @@ package mesquite.lists.lib;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -23,6 +25,7 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class CharListPartitionUtil {
+
 	/*.................................................................................................................*/
 	public static Object editGroup(MesquiteModule ownerModule, CharacterData data, MesquiteWindow cont, String name, String num) {
 		int i = MesquiteInteger.fromString(num);
