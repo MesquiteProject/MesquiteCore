@@ -37,6 +37,7 @@ public class Taxa extends FileElement {
 	public static boolean inventUniqueIDs = false;
 	private String uniqueID; // id's of the taxa block
 
+
 	public static final int MAXNUMTAXA = 100000;
 	public static int totalCreated = 0;
 	int id = 0;

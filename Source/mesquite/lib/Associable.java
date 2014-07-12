@@ -1594,6 +1594,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public void setAssociatedObject(NameReference nRef, int index, Object value){
 		setAssociatedObject(nRef, index, value, false);
 	}
+	
+
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
 	public void setAssociatedObject(NameReference nRef, int index, Object value, boolean setAsBetween){
