@@ -521,8 +521,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 	}
 	public void popIn(MesquiteWindow w){
-
-		if (windows == null || (!w.popAsTile && windows.indexOf(w)>=0))
+		if (windows == null || (!w.popAsTile && windows.indexOf(w)>=0))  //POPOUTBUGS: If window is popped out in separate window, then this doesn't work, in part as windows.indexOf(w)=0 but there is only one window.  
 			return;
 		if (w.popAsTile){
 			setVisible(w, false);  //remove from resources

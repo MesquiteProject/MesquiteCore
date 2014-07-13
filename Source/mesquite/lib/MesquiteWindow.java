@@ -14,12 +14,9 @@ Modified May 02 especially for annotations*/
 package mesquite.lib;
 
 import java.awt.*;
-
-
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.util.*;
-
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
@@ -52,7 +49,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public static boolean Java2Davailable = true;
 	protected MesquiteCommand showCommand, showInfoBarCommand, saveAsTextCommand, printCommand, printToFitCommand;
 	protected MesquiteCommand setFontCommand, setFontSizeCommand, listEmployeesCommand, doMacroCommand, showExplanationsCommand;
-	protected MesquiteCommand showSnapshotCommand, sendScriptCommand, showFileCommand, closeWindowCommand;
+	protected MesquiteCommand showSnapshotCommand, sendScriptCommand, showFileCommand, closeWindowCommand, tileOutWindowCommand, popOutWindowCommand;
 	protected MesquiteCommand printToPDFCommand;
 	public static boolean pdfOutputAvailable = true; 
 	boolean readyToPaint = true;
@@ -86,9 +83,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public static final int infoBarHeightAllowance = 22;
 	protected int infoBarHeight = infoBarHeightAllowance;
 	boolean queryMode = false;
-	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem;
+	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
+
 	private MesquiteMenuItemSpec ptfMMIS;
 	private MesquiteMenuItemSpec pPDFMMIS;
+	private MesquiteMenuItemSpec popOutWindowMSpec;
 	private boolean showInfoBar = false;
 	private StringBuffer logText;
 	public static Frame dialogAnchor;
@@ -239,6 +238,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		doMacroCommand =MesquiteModule.makeCommand("doMacro", this);
 		showFileCommand = MesquiteModule.makeCommand("showFile", ownerModule);
 		closeWindowCommand = MesquiteModule.makeCommand("closeWindow", this);
+		popOutWindowCommand = MesquiteModule.makeCommand("togglePopOutWindow", this);
+		tileOutWindowCommand = MesquiteModule.makeCommand("toggleTileOutWindow", this);
 		showExplanationsCommand =MesquiteModule.makeCommand("showExplanations", this);
 		showSnapshotCommand = MesquiteModule.makeCommand("showSnapshot", this);
 		sendScriptCommand = MesquiteModule.makeCommand("sendScript", this);
@@ -249,6 +250,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		explanationsMenuItem.disconnectable = false;
 		cloneWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Clone Window", getOwnerModule(), MesquiteModule.makeCommand("cloneWindow", this)));
 		cloneWindowMenuItem.disconnectable = false;
+		popOutWindowMSpec = new MesquiteMenuItemSpec(null, "Pop Out as Separate Window", getOwnerModule(), popOutWindowCommand);
+		popOutWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Pop Out as Separate Window", getOwnerModule(), popOutWindowCommand));
+		popOutWindowMenuItem.disconnectable = false;
+		tileOutWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Put in Separate Tile", getOwnerModule(), tileOutWindowCommand));
+		tileOutWindowMenuItem.disconnectable = false;
 		saveRecipeMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Save Window as Macro...", getOwnerModule(), MesquiteModule.makeCommand("saveMacroForWindow", this)));
 		saveRecipeMenuItem.disconnectable = false;
 		snapshotMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null,"Show Snapshot", getOwnerModule(), showSnapshotCommand));
@@ -258,6 +264,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		closeWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close Window", getOwnerModule(), closeWindowCommand));
 		closeWindowMenuItem.disconnectable = false;
 		closeWindowMenuItem.setShortcut(closeWindowShortcut);	
+
+		
+		
 		menuBar = new MesquiteMenuBar(this);
 		//setMenuBar(menuBar);  //���
 		parentFrame.setWindowLocation(60, 10, false, false); //default window position
@@ -267,6 +276,21 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		closeable = true;
 		windowFinishedBuilding = true;
 	}
+	
+	public void setPopTileMenuItemNames(){
+		popOutWindowMenuItem.setLabel("Pop Out as Separate Window");
+		tileOutWindowMenuItem.setLabel("Put in Separate Tile");
+		if (isPoppedOut()) {
+			if (getPopAsTile()) {
+				tileOutWindowMenuItem.setLabel("Return Tile to Main Window");
+				popOutWindowMSpec.setEnabled(false);  //WAYNECHECK:  I added this so that the pop out to separate window menu item wasn't chosable, but it doesn't work.
+			}
+			else
+				popOutWindowMenuItem.setLabel("Reset within Main Window");
+		} 
+
+	}
+	
 	public void startWindowTimer(){
 		if (windowTimer!=null)
 			windowTimer.start();
@@ -322,8 +346,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 
 	public void popOut(boolean setVisible){
-		if (!isLoneWindow())
+		if (!isLoneWindow() && parentFrame!=null)
 			parentFrame.popOut(this, setVisible);
+	}
+	public void popIn(){
+		if ((getPopAsTile() || isLoneWindow()) && parentFrame!=null)
+			parentFrame.popIn(this);
 	}
 
 	public boolean isLoneWindow(){
@@ -2418,6 +2446,26 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				Puppeteer p = new Puppeteer(module);
 				p.dialogScript(module, module.containerOfModule(), "owner module (" + module.getName() + ") of this window");
 			}
+		}
+		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is tiled out or not", null, commandName, "toggleTileOutWindow")) {  //WAYNECHECK: for menu items in Windows menu
+			if (isPoppedOut()){
+				popIn();
+				popOutWindowMSpec.setEnabled(true);
+			}
+			else {
+				setPopAsTile(true);
+				popOut(true);
+			}
+			setPopTileMenuItemNames();
+		}
+		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is popped out or not", null, commandName, "togglePopOutWindow")) {  //WAYNECHECK: for menu items in Windows menu; search for POPOUTBUGS
+			if (isPoppedOut())
+				popIn();  //POPOUTBUGS: this does not work.  Problem is in parentFrame.popIn(this) - see comment in there
+			else if (compactWindows){
+				setPopAsTile(false);
+				popOut(true);
+			}
+			setPopTileMenuItemNames();
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets which page of the window (graphics, text, explanations, parameters, employee tree, etc.) is showing", "[page number]", commandName, "showPage")) {
 			if (infoBar==null)
