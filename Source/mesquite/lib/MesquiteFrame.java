@@ -1221,6 +1221,22 @@ class FrameTabsPanel extends MousePanel {
 	
 	static int goAwayTop = 6;
 	static int goAwayBottom = 18;
+	
+	int getGoAwayControlTop(){
+		if (scaling < 1.0)
+			return 6;
+		return panelHeight-22;
+	}
+	int getGoAwayControlBottom(){
+		return getGoAwayControlTop()+12;
+	}
+	int getGoAwayControlLeft(){
+		return intertabSpace -1;
+	}
+	int getGoAwayControlRight(){
+		return getGoAwayControlLeft() + 12;
+	}
+	
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
 			int i = findTab(x);
@@ -1229,7 +1245,7 @@ class FrameTabsPanel extends MousePanel {
 			if (tabTouched>=10000 || tabTouched <0)
 				return;
 			if (i== tabTouched){  //down and up on same
-				if (frame.permitGoAway(i) && x> lefts[i] + intertabSpace -1 && x<lefts[i] + intertabSpace + 16 && y >= goAwayTop && y<=goAwayBottom){
+				if (frame.permitGoAway(i) && x> lefts[i] + getGoAwayControlLeft() && x<lefts[i] +getGoAwayControlRight() && y >= getGoAwayControlTop() && y<=getGoAwayControlBottom()){
 					if (frame.goAwayOrShow(i))  //showing goaway
 						frame.windowGoAway(i);
 					else
@@ -1444,8 +1460,8 @@ class FrameTabsPanel extends MousePanel {
 				}
 				else  //a tab for a window hidden in the background
 					g.setColor(ColorTheme.getExtInterfaceElement(w instanceof SystemWindow));
-				g.fillRect(tabLeft + intertabSpace, 6, 16, 12);
-				g.drawImage(goawayMouseOver, tabLeft + intertabSpace, 6, this);
+				g.fillRect(tabLeft  +getGoAwayControlLeft(), getGoAwayControlTop(), 16, 12);
+				g.drawImage(goawayMouseOver, tabLeft +getGoAwayControlLeft(), getGoAwayControlTop(), this);
 			}
 			else if (icon != null)
 				g.drawImage(icon, tabLeft + intertabSpace, 6, this);
@@ -1462,8 +1478,8 @@ class FrameTabsPanel extends MousePanel {
 				}
 				else  //a tab for a window hidden in the background
 					g.setColor(ColorTheme.getExtInterfaceElement(w instanceof SystemWindow));
-				g.fillRect(tabLeft + intertabSpace, panelHeight -22, 16, 12);
-				g.drawImage(goawayMouseOver, tabLeft + intertabSpace, panelHeight -22, this);
+				g.fillRect(tabLeft  +getGoAwayControlLeft(), getGoAwayControlTop(), 16, 12);
+				g.drawImage(goawayMouseOver, tabLeft +getGoAwayControlLeft(), getGoAwayControlTop(), this);
 			}
 			else if (icon != null)
 				g.drawImage(icon, tabLeft + intertabSpace, panelHeight -22, this);
