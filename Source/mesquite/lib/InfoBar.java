@@ -16,6 +16,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Path2D;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -196,11 +197,33 @@ public class InfoBar extends MousePanel implements Commandable {
 		}
 		 */
 		g.setColor(ColorDistribution.darkMesquiteBrown);  //rounded upper left corner to feel like a screen corner, to make it easer to sense the menu
+		//g.setColor(Color.green);
 		if (g instanceof Graphics2D) {
 			Graphics2D g2 = (Graphics2D)g;
 			Stroke st = g2.getStroke();
-			g2.setStroke(new BasicStroke(4));
-			g2.drawArc(-2,-2, 8, 8, -190, -70);
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		
+			try {
+				Class.forName("java.awt.geom.Path2D");
+				Path2D.Float path = new Path2D.Float();
+				int adjust = 0;
+				int pathLeft = 0;
+				int pathRight = 14;
+				int pathTop = 0;
+				int pathBottom = 10;
+				path.moveTo(adjust+pathRight, adjust+pathTop);
+				path.lineTo(adjust+pathLeft, adjust+pathTop);
+				path.lineTo(adjust+pathLeft,adjust+pathBottom);
+				path.curveTo(adjust+pathLeft, adjust+pathTop+(pathBottom-pathTop)/3, adjust+pathLeft+(pathRight-pathLeft)/3, adjust+pathTop, adjust+pathRight, adjust+pathTop);
+				path.closePath();
+				g2.fill(path);
+			}
+			catch (ClassNotFoundException exception) {
+				g2.setStroke(new BasicStroke(4));
+				g2.drawArc(-2,-2, 20, 20, -180, -90);
+			//	g2.drawArc(10,10, 8, 8, -180, -90);
+			}
 			g2.setStroke(st);
 		} 
 		else {

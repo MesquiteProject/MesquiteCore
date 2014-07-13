@@ -1831,7 +1831,7 @@ class FrameTabsPanel extends MousePanel {
 				g2.setColor(getBackground());
 				g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, tabBottomLineHeight);
 				g2.setColor(ColorDistribution.darkMesquiteBrown);
-				//g.setColor(Color.blue);
+				//g2.setColor(Color.green);
 				if (!isProjectTab) {
 					if (whichTab==1) {
 						try {
