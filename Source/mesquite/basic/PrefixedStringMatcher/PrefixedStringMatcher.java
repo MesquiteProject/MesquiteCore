@@ -7,6 +7,10 @@ public class PrefixedStringMatcher extends StringMatcher {
 	String prefix = "DNA";
 	int charAfterPrefix = 4;
 
+	public boolean loadModule() {  
+		return false;
+	}
+
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
