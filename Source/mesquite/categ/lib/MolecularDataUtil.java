@@ -58,7 +58,7 @@ public class MolecularDataUtil {
 				originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,comparisonTaxon, comparisonTaxon);
 				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 				int[] newGaps = aligner.getGapInsertionArray();
-				if (newGaps!=null){
+				if (newGaps!=null && allowNewGaps){
 					alignUtil.insertNewGaps((MolecularData)data, newGaps);
 					data.notifyListeners(module, new Notification(CharacterData.PARTS_ADDED, null, null));
 					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));

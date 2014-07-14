@@ -3376,12 +3376,12 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(editorModule.containerOfModule(), "Adjust incoming sequences?", buttonPressed); // MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String s="If you choose to adjust sequences on import, then Mesquite will examine each sequence it imports, and compare it against the reference sequence. ";
-		s+="It will reverse complement any DNA sequences that need to be so treated, and then do a pairwise alignment of that sequence to the reference sequence.";
+		s+="It will reverse complement any DNA sequences that need to be so treated, and then do a partial pairwise alignment (no new gaps will be inserted) of that sequence to the reference sequence.";
 		dialog.appendToHelpString(s);
-		if (data instanceof DNAData) {
-			dialog.addLabel("Reverse complement a sequence (if needed)");
-			dialog.addBlankLine();
-		}
+	//	if (data instanceof DNAData) {
+	//		dialog.addLabel("Reverse complement a sequence (if needed)");
+	//		dialog.addBlankLine();
+	//	}
 		IntegerField referenceSequenceBox = dialog.addIntegerField("Compare to reference sequence: ", referenceSequence + 1, 8, 1, data.getNumTaxa());
 		dialog.completeAndShowDialog("Adjust Sequences", "Don't Adjust", true, null);
 
@@ -3400,7 +3400,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	/* ................................................................................................................. */
 	public void processFilesDroppedOnPanel(List files) {
 		int count = 0;
-		//boolean adjustNewSequences = false;
 
 		FileInterpreter fileInterpreter = null;
 		int numFiles = numIters(files.iterator());
