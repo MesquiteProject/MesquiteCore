@@ -19,6 +19,7 @@ import java.awt.datatransfer.*;
 
 import javax.swing.text.JTextComponent;
 
+import pal.math.MathUtils;
 import mesquite.lib.*;
 import mesquite.lib.duties.FileInterpreter;
 
@@ -2472,18 +2473,28 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void resetNumRowsVisible() {
 		numRowsVisible = (numRowsTotal - firstRowVisible + 1);
 		int sum = 0;
+		int numRows = 0;
 		for (int r = firstRowVisible; r < numRowsTotal && r <rowHeights.length; r++) {
 			sum += rowHeights[r];
+			numRows++;
 			if (sum >= matrixHeight) {
 				numRowsVisible = (r - firstRowVisible + 1);
 				break;
 			}
 		}
-		vertScroll.setBlockIncrement(getNumRows()-1);
-		if (numRowsVisible < 2)
+		int verticalScrollPageIncrement = numRowsVisible - 1;
+		if (sum>0) {
+			double avgRowHeight = (1.0*sum)/numRows;
+			int numRowsPossiblyVisible = (int)(matrixHeight/avgRowHeight)-1;
+			if (numRowsPossiblyVisible>verticalScrollPageIncrement)
+				verticalScrollPageIncrement = numRowsPossiblyVisible;
+		}
+		
+		//vertScroll.setBlockIncrement(getNumRows()-1);
+		if (numRowsTotal < 2)
 			vertScroll.setBlockIncrement(1);
 		else
-			vertScroll.setBlockIncrement(numRowsVisible - 1);
+			vertScroll.setBlockIncrement(verticalScrollPageIncrement);  //DRM  14 july 14: changed this so that it did full page scrolls
 
 		lastRowVisible = firstRowVisible + numRowsVisible - 1;
 	}
