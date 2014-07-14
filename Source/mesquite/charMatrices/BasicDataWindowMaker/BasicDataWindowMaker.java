@@ -3365,22 +3365,23 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		}
 	}
 
+	boolean adjustNewSequences = false;
 	int referenceSequence = 0;
 
-	boolean adjustNewSequences = false;
-
 	/* ................................................................................................................. */
-	public boolean queryOptions() {
-		if (!(data instanceof DNAData))
+	public boolean queryDroppedFileOptions() {
+		if (!(data instanceof MolecularData))
 			return false;
 		
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(editorModule.containerOfModule(), "Adjust incoming sequences?", buttonPressed); // MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String s="If you choose to adjust sequences on import, then Mesquite will examine each sequence it imports, and compare it against the reference sequence. ";
-		s+="It will reverse complement any sequences that need to be so treated, and then do a pairwise alignment of that sequence to the reference sequence.";
+		s+="It will reverse complement any DNA sequences that need to be so treated, and then do a pairwise alignment of that sequence to the reference sequence.";
 		dialog.appendToHelpString(s);
-		dialog.addLabel("Reverse complement a sequence (if needed)");
-		dialog.addBlankLine();
+		if (data instanceof DNAData) {
+			dialog.addLabel("Reverse complement a sequence (if needed)");
+			dialog.addBlankLine();
+		}
 		IntegerField referenceSequenceBox = dialog.addIntegerField("Compare to reference sequence: ", referenceSequence + 1, 8, 1, data.getNumTaxa());
 		dialog.completeAndShowDialog("Adjust Sequences", "Don't Adjust", true, null);
 
@@ -3390,6 +3391,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		dialog.dispose();
 		return (buttonPressed.getValue() == 0);
 	}
+	
 	public int numIters (Iterator iter) {
 		int count = 0;
 		for ( ; iter.hasNext() ; ++count ) iter.next();
@@ -3419,7 +3421,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 					if (!MesquiteThread.isScripting()) {
 						if (data instanceof MolecularData)
-							adjustNewSequences = queryOptions();
+							adjustNewSequences = queryDroppedFileOptions();
 					}
 					
 				}
@@ -3432,18 +3434,24 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				count++;
 			}
 		}
-		 if (fileInterpreter!=null) {
+		if (fileInterpreter!=null) {
+			if (adjustNewSequences) {
+				MesquiteMessage.println("Adjusting sequences ");
+				if (!data.someApplicableInTaxon(referenceSequence, false)){  
+					MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
+				    adjustNewSequences = false;
+				}
 				if (adjustNewSequences) {
-					MesquiteMessage.println("Adjusting sequences ");
+					Bits newTaxa = fileInterpreter.getNewlyAddedTaxa(taxa);
 					if (data instanceof DNAData){
-						Bits newTaxa = fileInterpreter.getNewlyAddedTaxa(taxa);
 						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, 0, false, false);
-						MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, newTaxa,0, false);
 					}
+					MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, newTaxa,0, false);
 					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
 				}
-				fileInterpreter.setMaximumTaxonFilled(-1);
-				fileInterpreter.endRecordingTaxa(taxa);
+			}
+			fileInterpreter.setMaximumTaxonFilled(-1);
+			fileInterpreter.endRecordingTaxa(taxa);
 		}
 
 		if (fileInterpreter != null)

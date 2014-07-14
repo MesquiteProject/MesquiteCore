@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 
 import mesquite.basic.ManageSetsBlock.ManageSetsBlock;
 import mesquite.lib.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.duties.ElementManager;
 import mesquite.lists.lib.ListModule;
@@ -37,7 +38,7 @@ public class MolecularDataUtil {
 				alignUtil.insertNewGaps((MolecularData)data, newGaps);
 			Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
 
-			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inapproppriately altered data!", warnCheckSum, originalCheckSum);
+			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			return true;
 		}
 		return false;
@@ -49,32 +50,52 @@ public class MolecularDataUtil {
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(true,data);
 		aligner.setAllowNewInternalGaps(allowNewGaps);
 		int numTaxa = data.getNumTaxa();
+		boolean defaultWarnCheckSum  =true;
+		MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
+		long originalCheckSum;
 		for (int it=0; it<=numTaxa; it++) {
 			if (taxaToAdjust.isBitOn(it) && it!=referenceTaxon) {
+				originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,comparisonTaxon, comparisonTaxon);
 				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 				int[] newGaps = aligner.getGapInsertionArray();
-				if (newGaps!=null)
+				if (newGaps!=null){
 					alignUtil.insertNewGaps((MolecularData)data, newGaps);
+					data.notifyListeners(module, new Notification(CharacterData.PARTS_ADDED, null, null));
+					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
+				}
 				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
+				if (problem!=null)
+					module.logln("problem with alignment: " + problem.toString());
+				((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,comparisonTaxon, comparisonTaxon, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			}
 		}
 
 	}
+
 	/*.................................................................................................................*/
 	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, int itStart, int itEnd, boolean allowNewGaps) {
 		MesquiteNumber score = new MesquiteNumber();
 		AlignUtil alignUtil = new AlignUtil();
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(true,data);
 		aligner.setAllowNewInternalGaps(allowNewGaps);
+		boolean defaultWarnCheckSum  =true;
+		MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
+		long originalCheckSum;
+		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,itStart, itEnd);
 		for (int it=itStart; it<=itEnd; it++) {
 			if (it!=referenceTaxon) {
 				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 				int[] newGaps = aligner.getGapInsertionArray();
-				if (newGaps!=null)
+				if (newGaps!=null){
 					alignUtil.insertNewGaps((MolecularData)data, newGaps);
+					data.notifyListeners(module, new Notification(CharacterData.PARTS_ADDED, null, null));
+					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
+				}
 				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
 			}
 		}
+		((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,itStart, itEnd, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
+		
 
 	}
 	/*.................................................................................................................*/
