@@ -3149,7 +3149,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 			if (inclusionSet != null) {
 				for (int i=0; i<getNumChars(); i++) {
-					if (table.wholeColumnSelectedAnyWay(i)) {
+					if (table.wholeColumnSelectedAnyWay(i) || table.isRowNameSelected(i)) {
 						if (include) //include
 							inclusionSet.setSelected(i, true);
 						else if (!include) //exclude
