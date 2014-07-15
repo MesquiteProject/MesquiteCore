@@ -481,17 +481,20 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (StringUtil.notEmpty(sup))
 					outputBuffer.append(sup);
 				outputBuffer.append(getLineEnding());
+				
 				for (int ic = 0; ic<numChars; ic++) {
 					if (!writeOnlySelectedData || (data.getSelected(ic))){
 						int currentSize = outputBuffer.length();
 						boolean wroteMoreThanOneSymbol = false;
-						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it)))
+						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
 							outputBuffer.append(getUnassignedSymbol());
+	                        counter ++;
+						}
 						else if (includeGaps || (!data.isInapplicable(ic,it))) {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+							counter ++;
                         }
 						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-                        counter ++;
                         if ((counter % 50 == 1) && (counter > 1)) {    // modulo
                             outputBuffer.append(getLineEnding());
                         }
