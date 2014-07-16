@@ -83,9 +83,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
-	public void readString(CharacterData data, String s) {
+	public void readString(CharacterData data, String s, int insertAfterTaxon) {
 		Taxa taxa = data.getTaxa();
-		int numTaxa = taxa.getNumTaxa();
+		//int numTaxa = taxa.getNumTaxa();
+		int newTaxon = insertAfterTaxon+1;
 		Parser parser = new Parser(s);
 		parser.setPunctuationString(">");
 		String line = parser.getRawNextLine();
@@ -99,9 +100,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		while (!StringUtil.blank(line)) {
 
 			token = firstLineParser.getRemaining();  //taxon Name
-			taxa.addTaxa(numTaxa-1, 1, false);
+			taxa.addTaxa(newTaxon-1, 1, false);
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true); //notifying only matrices
-			Taxon t = taxa.getTaxon(numTaxa);
+			Taxon t = taxa.getTaxon(newTaxon);
 
 			if (t!=null) {
 				t.setName(token);
@@ -122,13 +123,13 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						
 							added++;
 						}
-						setFastaState(data,ic, numTaxa, c);    // setting state to that specified by character c
+						setFastaState(data,ic, newTaxon, c);    // setting state to that specified by character c
 					}
 					ic++;
 				}
 //				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {data.getNumChars(), added}));
 			}
-			numTaxa++;
+			newTaxon++;
 			line = parser.getRawNextLine();
 			firstLineParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 			if (StringUtil.notEmpty(line))
@@ -486,16 +487,19 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					if (!writeOnlySelectedData || (data.getSelected(ic))){
 						int currentSize = outputBuffer.length();
 						boolean wroteMoreThanOneSymbol = false;
+						boolean wroteSymbol = false;
 						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
 							outputBuffer.append(getUnassignedSymbol());
 	                        counter ++;
+	                        wroteSymbol = true;
 						}
 						else if (includeGaps || (!data.isInapplicable(ic,it))) {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 							counter ++;
+							wroteSymbol = true;
                         }
 						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-                        if ((counter % 50 == 1) && (counter > 1)) {    // modulo
+                        if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
                             outputBuffer.append(getLineEnding());
                         }
 

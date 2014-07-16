@@ -148,6 +148,15 @@ public class BLASTResults {
 	public boolean acceptableHit(int hitCount, double bitScore, double eValue) {
 		return hitCount<=maxHits;
 	}
+	/*.................................................................................................................*/
+	public boolean someHits() {
+		for (int i=0; i<maxHits; i++) {
+			if (StringUtil.notEmpty(getAccession(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/*.................................................................................................................*/
 	public  void setIDFromDefinition(String separator, int index){

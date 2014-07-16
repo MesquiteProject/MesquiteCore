@@ -44,6 +44,7 @@ the CharacterData object, but are established by their managing modules and stor
  */
 
 public abstract class CharacterData extends FileElement implements MesquiteListener, StringLister, Identifiable, CompatibilityChecker  {
+	public static String DATATYPENAME="Character Data";
 	protected  int numTaxa; //number of taxa (rows): also determinable by taxa.getNumTaxa()
 	protected  int numChars; //number of characters (columns)
 

@@ -89,7 +89,7 @@ public class FetchGenBank extends DataUtility {
 				logln("\nRequesting sequences.\n");
 				StringBuffer report = new StringBuffer();
 				String fasta = NCBIUtil.fetchGenBankSequences(idList,data instanceof DNAData, this, true, report);
-				NCBIUtil.importFASTASequences(data, fasta, this, report);
+				NCBIUtil.importFASTASequences(data, fasta, this, report, -1);
 				log(report.toString());
 				return StringUtil.notEmpty(fasta);
 

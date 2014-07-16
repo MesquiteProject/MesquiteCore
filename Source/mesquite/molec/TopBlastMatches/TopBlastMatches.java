@@ -42,6 +42,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	double  minimumBitScore = 0.0;
 	boolean preferencesSet = false;
 	boolean fetchTaxonomy = false;
+	boolean interleaveResults = false;
 //	boolean blastx = false;
 	int maxTime = 300;
 	static int upperMaxHits = 30;
@@ -61,8 +62,6 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		else if (!blasterTask.initialize())
 			return false;
 		loadPreferences();
-		results = new StringBuffer();
-		results.append("   Top hits\n\tAccession [eValue] Definition): \n");
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -73,6 +72,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			saveResultsToFile = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("importTopMatches".equalsIgnoreCase(tag))
 			importTopMatches = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("interleaveResults".equalsIgnoreCase(tag))
+			interleaveResults = MesquiteBoolean.fromTrueFalseString(content);
 //		else if ("blastx".equalsIgnoreCase(tag))
 //			blastx = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("blastType".equalsIgnoreCase(tag))
@@ -91,6 +92,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "fetchTaxonomy", fetchTaxonomy);  
 		StringUtil.appendXMLTag(buffer, 2, "maxTime", maxTime);  
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
+		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
 //		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
 		StringUtil.appendXMLTag(buffer, 2, "eValueCutoff", eValueCutoff);  
 		StringUtil.appendXMLTag(buffer, 2, "maxHits", maxHits);  
@@ -105,6 +107,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	Checkbox saveFileCheckBox ;
 	Checkbox fetchTaxonomyCheckBox;
 	Checkbox importCheckBox;
+	Checkbox interleaveResultsCheckBox;
 	/*.................................................................................................................*/
 	private void checkEnabling(){
 		//importCheckBox.setEnabled(!blastXCheckBox.getState());
@@ -128,6 +131,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
+		interleaveResultsCheckBox = dialog.addCheckBox("insert hits after sequence that was BLASTed",interleaveResults);
+		
 		IntegerField maxTimeField = dialog.addIntegerField("Maximum time for BLAST response (seconds):",  maxTime,5);
 	//	blastXCheckBox.addItemListener(this);
 		saveFileCheckBox.addItemListener(this);
@@ -144,6 +149,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			blastType = blastTypeChoice.getSelectedIndex();
 			if (blastType<0) blastType=oldBlastType;
 			importTopMatches = importCheckBox.getState();
+			interleaveResults = interleaveResultsCheckBox.getState();
 			maxTime=maxTimeField.getValue();
 			storePreferences();
 		}
@@ -169,7 +175,46 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** processing to be done after each search.  */
+	public void processAfterEachTaxonSearch(CharacterData data, int it){
+		logln("\nSearch results: \n"+ results.toString());
+		//		logln("**** IDs: " +StringArray.toString(ID)); 
+
+		if (importTopMatches ){  
+			int insertAfterTaxon = data.getNumTaxa()-1;
+			if (interleaveResults)
+				insertAfterTaxon = it;
+			//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
+			logln("About to import top matches.", true);
+			StringBuffer report = new StringBuffer();
+
+			if (blastType==Blaster.BLASTX && data instanceof DNAData) {
+				//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
+				ID = blasterTask.getNucleotideIDsfromProteinIDs(ID);
+				//				logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
+			}
+			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
+
+			StringBuffer blastResponse = new StringBuffer();
+			String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
+
+			if (StringUtil.notEmpty(newSequencesAsFasta))
+				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, report, insertAfterTaxon);
+			else
+				logln("BLAST database returned no FASTA files in response to query.");
+
+			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			logln(report.toString());
+		}
+	}
+	/*.................................................................................................................*/
+	/** message if search failed to find anything.  */
+	public void unsuccessfulSearchMessage(){
+		logln("BLAST database returned no FASTA files in response to query.");
 	}
 	/*.................................................................................................................*/
 	/** Called to search on the data in selected cells.  Returns true if data searched*/
@@ -182,39 +227,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		else {
 			if (!queryOptions())
 				return false;
-			logln("\nSearching for top blast hits (" + blasterTask.getName() + ")");
+			logln("\nSearching for top BLAST hits (" + blasterTask.getName() + ")");
 
 			boolean searchOK = searchSelectedTaxa(data,table);
-			if (searchOK) {
-
-				logln("\nSearch results: \n"+ results.toString());
-//				logln("**** IDs: " +StringArray.toString(ID)); 
-
-				if (importTopMatches ){  
-					//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
-					logln("About to import top matches.", true);
-					StringBuffer report = new StringBuffer();
-
-					if (blastType==Blaster.BLASTX && data instanceof DNAData) {
-						//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
-						ID = blasterTask.getNucleotideIDsfromProteinIDs(ID);
-//						logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
-					}
-					//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
-
-					StringBuffer blastResponse = new StringBuffer();
-					String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
-
-					if (StringUtil.notEmpty(newSequencesAsFasta))
-						NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, report);
-					else
-						logln("Blast database returned no FASTA files in response to query.");
-
-					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-					data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-					logln(report.toString());
-				}
-			}
 			if (saveResultsToFile)
 				saveResults(results);
 			return searchOK;
@@ -245,9 +260,10 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		}
 	}
 	/*.................................................................................................................*/
-	public void searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+		results = new StringBuffer();
 		if (data==null || blasterTask==null)
-			return;
+			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
 		StringBuffer sequence = new StringBuffer(data.getNumChars());
 		for (int ic = icStart; ic<=icEnd; ic++) {
@@ -264,6 +280,10 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		}
 
 		BLASTResults blastResults = new BLASTResults(maxHits);
+		
+		if (blastResults.someHits())
+			results.append("   Top hits\n\tAccession [eValue] Definition): \n");
+
 		blastResults.processResultsFromBLAST(response.toString(), false, eValueCutoff);
 		blasterTask.postProcessingCleanup(blastResults);
 
@@ -283,6 +303,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		}
 		accessionNumbers = blastResults.getAccessions();
 		ID = blastResults.getIDs();
+		return blastResults.someHits();
 	}
 	/*.................................................................................................................*/
 	public CompatibilityTest getCompatibilityTest(){

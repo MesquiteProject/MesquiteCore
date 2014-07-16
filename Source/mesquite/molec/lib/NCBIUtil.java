@@ -555,18 +555,21 @@ public class NCBIUtil {
 			return null;
 	}
 	/*.................................................................................................................*/
-	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report){
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested){
 		if (data==null)
 			return;
 		Taxa taxa = data.getTaxa();
 		int oldNumTaxa = taxa.getNumTaxa();
 		data.setCharNumChanging(true);
+		int insertAfterTaxon = taxa.getNumTaxa()-1;
+		if (insertAfterTaxonRequested>=0)
+			insertAfterTaxon = insertAfterTaxonRequested;
 		if (data instanceof ProteinData) {
 			InterpretFastaProtein importer = new InterpretFastaProtein();
-			importer.readString(data,fastaSequences);
+			importer.readString(data,fastaSequences, insertAfterTaxon);
 		} else {
 			InterpretFastaDNA importer = new InterpretFastaDNA();
-			importer.readString(data,fastaSequences);
+			importer.readString(data,fastaSequences, insertAfterTaxon);
 		}
 		data.setCharNumChanging(false);
 

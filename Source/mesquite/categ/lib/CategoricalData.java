@@ -197,7 +197,23 @@ public class CategoricalData extends CharacterData {
 			for (int it=itStart; it<=itEnd; it++) {
 				int itSource = it-itStart;
 				int icSource = ic-icStart;
-				if (itSource<sourceData.getNumTaxa() || icSource<sourceData.getNumChars())
+				if (itSource<sourceData.getNumTaxa() && icSource<sourceData.getNumChars())
+					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
+			}
+		}
+		resetChangedSinceSave();
+
+	}
+	/** Copies the block of data from the source to this data object */
+	public void copyDataBlock(CharacterData sourceData, int icSourceStart,  int itSourceStart, int icStart, int icEnd, int itStart, int itEnd){
+		if (sourceData == null)
+			return;
+		
+		for (int ic=icStart; ic<=icEnd; ic++){
+			for (int it=itStart; it<=itEnd; it++) {
+				int itSource = it-itStart+itSourceStart;
+				int icSource = ic-icStart+icSourceStart;
+				if (it<getNumTaxa() && ic<getNumChars() && itSource<sourceData.getNumTaxa() && icSource<sourceData.getNumChars())
 					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
 			}
 		}
