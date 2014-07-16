@@ -246,7 +246,7 @@ public class ConsensusTree extends TreeSource {
 		if (consenser instanceof IncrementalConsenser && employee == treeSource && notification != null && notification.getCode() == MesquiteListener.ITEMS_ADDED){
 			parametersChanged();
 		}
-		else {
+		else if (employee == treeSource && notification != null && notification.getCode() != MesquiteListener.SELECTION_CHANGED){
 			startTree =  0;
 			parametersChanged();
 		}
