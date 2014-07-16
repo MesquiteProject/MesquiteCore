@@ -299,6 +299,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		}
 		else if (checker.compare(this.getClass(), "Applies the magic wand tool to select like values", "[column touched] [row touched]", commandName, "wandTouch")) {
 			MesquiteInteger io = new MesquiteInteger(0);
+			Debugg.println("wandTouch");
 			int column= MesquiteInteger.fromString(arguments, io);
 			int row= MesquiteInteger.fromString(arguments, io);
 			if (MesquiteInteger.isNonNegative(column)&& (MesquiteInteger.isNonNegative(row))) {
@@ -342,6 +343,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 					}
 					table.repaintAll();
 				}
+				
+
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sorts rows", "[column touched] [row touched]", commandName, "sortTouch")) {
