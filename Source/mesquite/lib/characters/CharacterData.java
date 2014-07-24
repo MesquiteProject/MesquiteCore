@@ -1840,6 +1840,22 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return incl.numBitsOn();
 		return numChars;
 	}
+	/** returns number of currently included characters*/
+	public int numCharsCurrentlyIncluded(boolean countSelectedOnly){
+		CharInclusionSet incl = (CharInclusionSet)getCurrentSpecsSet(CharInclusionSet.class);
+		if (countSelectedOnly) {
+			int count = 0;
+			for (int ic=0; ic<numChars; ic++){
+				if (incl.isBitOn(ic) && selected.isBitOn(ic))
+					count++;
+			}
+			return count;
+		} else {
+			if (incl!=null)
+				return incl.numBitsOn();
+		}
+		return numChars;
+	}
 	public int firstApplicable(Bits whichTaxa){
 		int first = -1;
 		for (int it = 0; it<numTaxa; it++)
