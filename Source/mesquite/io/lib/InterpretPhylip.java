@@ -609,9 +609,13 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			exportTrees(taxa, trees, outputBuffer);
 		
 		saveExportedFileWithExtension(outputBuffer, arguments, "phy");
+		writeExtraFiles(taxa);
 		return true;
 	}
 
+	/*.................................................................................................................*/
+	public void writeExtraFiles(Taxa taxa){
+	}
 	/*.................................................................................................................*/
     	 public String getName() {
 		return "Phylip file";

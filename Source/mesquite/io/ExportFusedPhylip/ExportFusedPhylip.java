@@ -44,6 +44,7 @@ public CharacterData createData(CharactersManager charTask, Taxa taxa) {
 public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
 	data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 }
+boolean exportRAxMLModelFile = true;
 /*.................................................................................................................*/
 public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
 	MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -51,6 +52,7 @@ public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
 	
 	Checkbox excludedCharactersCheckbox = exportDialog.addCheckBox("export excluded characters", localWriteExcludedChars);
 	Checkbox exportTreesCheckbox = exportDialog.addCheckBox("export trees if present", exportTrees);
+	Checkbox exportRAxMLModelFileCheckBox = exportDialog.addCheckBox("save RAxML model file", exportRAxMLModelFile);
 
 	exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
 		
@@ -58,15 +60,60 @@ public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
 	
 	localWriteExcludedChars = excludedCharactersCheckbox.getState();
 	exportTrees = exportTreesCheckbox.getState();
+	exportRAxMLModelFile = exportRAxMLModelFileCheckBox.getState();
 	userSpecifiedWriteExcludedChars = true;
 	taxonNameLength = exportDialog.getTaxonNamesLength();
 	exportDialog.dispose();
 	return ok;
 }	
 /*.................................................................................................................*/
-	public boolean exportMultipleMatrices(){
-		return true;
+public boolean exportMultipleMatrices(){
+	return true;
+}
+/*.................................................................................................................*/
+public void writeExtraFiles(Taxa taxa){
+	if (exportRAxMLModelFile) {
+		if (MesquiteThread.isScripting()){}
+		else {
+			StringBuffer sb = new StringBuffer();
+			int numMatrices = getProject().getNumberCharMatricesVisible(CategoricalState.class);
+			CharacterData data;
+			int numCharWrite=0;
+			int totalNumCharWrite=1;
+
+
+			for (int im = 0; im<numMatrices; im++) {
+					data = getProject().getCharacterMatrixVisible(taxa, im, CategoricalState.class);
+					if (data==null) continue;
+				
+				 if (!writeExcludedCharacters){
+					 numCharWrite =  data.numCharsCurrentlyIncluded(this.writeOnlySelectedData);
+				 } else {
+					 numCharWrite =  data.numberSelected(this.writeOnlySelectedData);
+				 }
+				 
+					if (data!=null) {
+						String name = StringUtil.cleanseStringOfFancyChars(data.getName());
+						name = StringUtil.blanksToUnderline(name);
+						if (data instanceof DNAData) 
+							sb.append("DNA, ");
+						else if (data instanceof ProteinData) 
+						sb.append("WAG, ");
+						else if (data instanceof CategoricalData) 
+						sb.append("MULTI, ");
+						sb.append(name+ " = " + totalNumCharWrite + "-" + (totalNumCharWrite+numCharWrite-1)+StringUtil.lineEnding());
+					}
+					totalNumCharWrite+= numCharWrite;
+			}
+			StringBuffer fileNameBuffer = new StringBuffer();
+			fileNameBuffer.append("RAxML Model File");
+			String filePath = MesquiteFile.saveFileAsDialog("Save RAxML model file",fileNameBuffer);
+			if (StringUtil.blank(sb.toString()) || StringUtil.blank(filePath))
+				return;
+			MesquiteFile.putFileContents(filePath, sb.toString(), true);
+		}
 	}
+}
 /*.................................................................................................................*/
 public CharacterData findDataToExport(MesquiteFile file, String arguments) { 
 	return getProject().chooseData(containerOfModule(), file, null, CategoricalState.class, "Select data to export");
