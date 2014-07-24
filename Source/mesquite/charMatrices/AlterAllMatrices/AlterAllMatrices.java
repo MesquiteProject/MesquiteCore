@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class AlterAllMatrices extends FileAlterer {
+public class AlterAllMatrices extends FileProcessor {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DataAlterer.class, getName() + " needs a particular method to alter data, e.g. in the Character Matrix Editor.",
 				null);
