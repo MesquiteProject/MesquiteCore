@@ -118,7 +118,7 @@ public CharacterData findDataToExport(MesquiteFile file, String arguments) {
 }
 /*.................................................................................................................*/
 	 public String getName() {
-	return "Phylip (fused matrices)";
+	return "Fused Matrix Export (Phylip)";
 	 }
 /*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
