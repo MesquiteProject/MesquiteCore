@@ -1,6 +1,6 @@
 package mesquite.lib;
 
-public class SimpleTaxonNamer implements TaxonNamer {
+public class SimpleTaxonNamer extends TaxonNamer {
 	public String getNameToUse(Taxon taxon){
 		return "t" + taxon.getNumber();
 	}

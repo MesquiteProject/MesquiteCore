@@ -14,10 +14,14 @@ package mesquite.lib;
 
 
 /* ======================================================================== */
-public interface TaxonNamer  {
-	public String getNameToUse(Taxon taxon);
-	public String getNameToUse(Taxa taxa, int it);
-	public int whichTaxonNumber(Taxa taxa, String name);
+public abstract class TaxonNamer  {
+	public abstract String getNameToUse(Taxon taxon);
+	public abstract String getNameToUse(Taxa taxa, int it);
+	public abstract int whichTaxonNumber(Taxa taxa, String name);	
+	public String getTranslationFileContents(Taxa taxa){
+		return "";
+	}
+
 }
 
 
