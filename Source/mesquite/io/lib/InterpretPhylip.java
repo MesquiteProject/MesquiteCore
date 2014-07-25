@@ -560,7 +560,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 				if (firstTimeThrough) {
 					outputBuffer.append(Integer.toString(numTaxaWrite)+" ");
 					outputBuffer.append(Integer.toString(numCharWrite)+this.getLineEnding());
-					firstTimeThrough = false;
 				}
 				int blockSize=50;
 
@@ -580,6 +579,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 									outputBuffer.append(getLineEnding());
 									ic=endChar+1;
 									blockWritten=true;
+									firstTimeThrough = false;
 								}
 							} else {
 								if (ic2==numChars-1 && !blockWritten){  //at end
@@ -588,6 +588,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 										//Debugg.println("END ic: " + ic + ", endChar: " + endChar + ", count: " + count+ ", charWritten: " + charWritten); 
 										exportBlock(taxa, data, outputBuffer, ic, blockSize, firstTimeThrough);
 										outputBuffer.append(getLineEnding());
+										firstTimeThrough = false;
 									}
 									ic=endChar+1;
 									blockWritten=true;
