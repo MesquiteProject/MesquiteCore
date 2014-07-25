@@ -105,9 +105,7 @@ public void writeExtraFiles(Taxa taxa){
 					}
 					totalNumCharWrite+= numCharWrite;
 			}
-			StringBuffer fileNameBuffer = new StringBuffer();
-			fileNameBuffer.append("RAxML Model File");
-			String filePath = MesquiteFile.saveFileAsDialog("Save RAxML model file",fileNameBuffer);
+			String filePath = MesquiteFile.saveFileAsDialog("Save RAxML model file");
 			if (StringUtil.blank(sb.toString()) || StringUtil.blank(filePath))
 				return;
 			MesquiteFile.putFileContents(filePath, sb.toString(), true);

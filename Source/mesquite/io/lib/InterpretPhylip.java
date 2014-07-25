@@ -393,7 +393,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it))){
-				if (startChar==0) {   // first block
+				if (writeTaxonNames) {   // first block
 					String name = "";
 					if (taxonNamer!=null)
 						name = taxonNamer.getNameToUse(taxa,it)+pad;
