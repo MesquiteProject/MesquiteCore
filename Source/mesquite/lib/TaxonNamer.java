@@ -9,18 +9,22 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
+
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAState;
 
 
 /* ======================================================================== */
 public abstract class TaxonNamer  {
+	public abstract boolean initialize(Taxa taxa);
 	public abstract String getNameToUse(Taxon taxon);
 	public abstract String getNameToUse(Taxa taxa, int it);
+
+	/** Given a taxon name "name", this method returns the taxon number this name represents. */
 	public abstract int whichTaxonNumber(Taxa taxa, String name);	
-	public String getTranslationFileContents(Taxa taxa){
-		return "";
-	}
+
 
 }
 

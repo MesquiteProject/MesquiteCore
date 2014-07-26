@@ -39,7 +39,11 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
  		return true;  //make this depend on taxa reader being found?)
   	 }
   	 
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public boolean initializeExport(Taxa taxa) {  
+		 return true;  
+	}
+	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		 return true;  //
 	}
@@ -433,6 +437,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		if (data==null)
 			return null;
 		Taxa taxa = data.getTaxa();
+		initializeExport(taxa);
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 		if (file != null)
@@ -501,7 +506,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		if (taxa !=null)
 			taxaAnySelected= taxa.anySelected();
 		if (!MesquiteThread.isScripting() && !usePrevious)
-			if (!getExportOptions(dataAnySelected, taxaAnySelected))
+			if (!getExportOptions(dataAnySelected, taxaAnySelected))  // querying about options
 				return false;
 
 		if (userSpecifiedWriteExcludedChars) {
@@ -522,6 +527,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		StringBuffer outputBuffer = new StringBuffer(100);
 		int numCharWrite=0;
 		boolean firstTimeThrough = true;
+		initializeExport(taxa);
 
 		for (int im = 0; im<numMatrices; im++) {
 			if (exportMultipleMatrices()) {

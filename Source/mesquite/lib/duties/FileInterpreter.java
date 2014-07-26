@@ -37,7 +37,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75
 	public boolean writeExcludedCharacters = true;
 	
-	String filePath=null;
+	protected String filePath=null;
 
 	
 	protected static int REPLACEDATA = 0;
@@ -293,6 +293,10 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		}
 		return null;
 
+	}
+	/*.................................................................................................................*/
+	public String getExportedFileDirectory(){
+		return MesquiteFile.getDirectoryPathFromFilePath(filePath);
 	}
 	/*.................................................................................................................*/
 	public String getExportedFilePath(){

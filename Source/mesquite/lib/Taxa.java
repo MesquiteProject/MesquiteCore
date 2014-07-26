@@ -429,8 +429,7 @@ public class Taxa extends FileElement {
 	}
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
-	public int whichTaxonNumber(String taxonName, boolean caseSensitive,
-			boolean forgivingOfTruncation) {
+	public int whichTaxonNumber(String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
 		if (StringUtil.blank(taxonName))
 			return -1;
 		// second, see if there is an exact match

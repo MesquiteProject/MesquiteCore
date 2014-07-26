@@ -11,9 +11,20 @@ import mesquite.lib.duties.CharactersManager;
 public class ExportFusedPhylip extends InterpretPhylip {
 
 	boolean badImportWarningGiven = false;
+	boolean useTranslationTable = true;
 
 	/*.................................................................................................................*/
 	public void setPhylipState(CharacterData data, int ic, int it, char c){
+	}
+	/*.................................................................................................................*/
+	public boolean initializeExport(Taxa taxa) {  
+		if (useTranslationTable) {
+			if (useTranslationTable){
+				taxonNamer = new SimpleTaxonNamer();
+				taxonNamer.initialize(taxa);
+			}
+		}
+		return true;  
 	}
 	/*........................../*.................................................................................................................*/
 	public boolean canExportEver() {  
@@ -52,17 +63,21 @@ public class ExportFusedPhylip extends InterpretPhylip {
 
 		Checkbox excludedCharactersCheckbox = exportDialog.addCheckBox("export excluded characters", localWriteExcludedChars);
 		Checkbox exportTreesCheckbox = exportDialog.addCheckBox("export trees if present", exportTrees);
-		Checkbox exportRAxMLModelFileCheckBox = exportDialog.addCheckBox("save RAxML model file", exportRAxMLModelFile);
+		Checkbox exportRAxMLModelFileCheckbox = exportDialog.addCheckBox("save RAxML model file", exportRAxMLModelFile);
+		Checkbox useTranslationTableCheckbox = exportDialog.addCheckBox("use simple taxon names (for RAxML)", useTranslationTable);
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
 
 		boolean ok = (exportDialog.query(dataSelected, taxaSelected)==0);
 
-		localWriteExcludedChars = excludedCharactersCheckbox.getState();
-		exportTrees = exportTreesCheckbox.getState();
-		exportRAxMLModelFile = exportRAxMLModelFileCheckBox.getState();
-		userSpecifiedWriteExcludedChars = true;
-		taxonNameLength = exportDialog.getTaxonNamesLength();
+		if (ok) {
+			localWriteExcludedChars = excludedCharactersCheckbox.getState();
+			exportTrees = exportTreesCheckbox.getState();
+			exportRAxMLModelFile = exportRAxMLModelFileCheckbox.getState();
+			useTranslationTable = useTranslationTableCheckbox.getState();
+			userSpecifiedWriteExcludedChars = true;
+			taxonNameLength = exportDialog.getTaxonNamesLength();
+		}
 		exportDialog.dispose();
 		return ok;
 	}	
@@ -71,7 +86,19 @@ public class ExportFusedPhylip extends InterpretPhylip {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public String getTranslationTablePath(){
+		return getExportedFileDirectory()+"translationTable.txt";
+	}
+	/*.................................................................................................................*/
 	public void writeExtraFiles(Taxa taxa){
+		if (useTranslationTable) {
+			String table = ((SimpleTaxonNamer)taxonNamer).getTranslationTable(taxa);
+			if (StringUtil.notEmpty(table)) {
+				String filePath = getTranslationTablePath();
+				if (StringUtil.notEmpty(filePath))
+					MesquiteFile.putFileContents(filePath, table, true);
+			}
+		}
 		if (exportRAxMLModelFile) {
 			StringBuffer sb = new StringBuffer();
 			int numMatrices = getProject().getNumberCharMatricesVisible(CategoricalState.class);
@@ -119,12 +146,12 @@ public class ExportFusedPhylip extends InterpretPhylip {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Fused Matrix Export (Phylip)";
+		return "Fused Matrix Export (Phylip/RAxML)";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Exports Phylip matrices that consist of multiple matrices." ;
+		return "Exports Phylip matrices that consist of multiple matrices, preparing them for RAxML." ;
 	}
 
 	/*.................................................................................................................*/
