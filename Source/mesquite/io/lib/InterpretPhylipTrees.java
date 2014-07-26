@@ -10,22 +10,22 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.io.InterpretPhylipTrees;
+package mesquite.io.lib;
 /*~~  */
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 
 
-/* ============  a file interpreter for protein Phylip files ============*/
+/* ============  a file interpreter for phylip trees ============*/
 
-public class InterpretPhylipTrees extends InterpretPhylip {
+public abstract class InterpretPhylipTrees extends InterpretPhylip {
 /*.................................................................................................................*/
 	public void setPhylipState(CharacterData data, int ic, int it, char c){
 		//only deals with trees
@@ -61,6 +61,10 @@ public class InterpretPhylipTrees extends InterpretPhylip {
 	public CharacterData findDataToExport(MesquiteFile file, String arguments) { 
 		return null;
 	}
+	/*.................................................................................................................*/
+	public boolean importExtraFiles(MesquiteFile file, Taxa taxa, TreeVector trees) {  
+		 return true;
+	}
 /*.................................................................................................................*/
 	public void readTreeFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 		boolean enlargeTaxaBlock = false;
@@ -73,7 +77,9 @@ public class InterpretPhylipTrees extends InterpretPhylip {
 		}
 		incrementMenuResetSuppression();
 		if (file.openReading()) {
-			readPhylipTrees(mf, file, null, null, taxa, enlargeTaxaBlock);
+			initializeTreeImport(file, taxa);
+			TreeVector trees = IOUtil.readPhylipTrees(this,mf, file, null, null, taxa, enlargeTaxaBlock, taxonNamer,getTreeNameBase());
+			importExtraFiles(file,taxa, trees);
 			finishImport(null, file, false );
 		}
 		decrementMenuResetSuppression();
@@ -90,26 +96,6 @@ public class InterpretPhylipTrees extends InterpretPhylip {
 			}
 		}
 	}
-/*.................................................................................................................*/
-    	 public String getName() {
-		return "Phylip (trees)";
-   	 }
-/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Imports and exports Phylip trees." ;
-   	 }
-	/*.................................................................................................................*/
- 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
- 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
- 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-    	public int getVersionOfFirstRelease(){
-    		return 110;  
-    	}
-    	/*.................................................................................................................*/
-    	public boolean isPrerelease(){
-    		return false;
-    	}
 
  	 
 }

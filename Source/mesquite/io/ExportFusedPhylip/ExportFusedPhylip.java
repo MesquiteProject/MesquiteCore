@@ -87,7 +87,7 @@ public class ExportFusedPhylip extends InterpretPhylip {
 	}
 	/*.................................................................................................................*/
 	public String getTranslationTablePath(){
-		return getExportedFileDirectory()+"translationTable.txt";
+		return getExportedFileDirectory()+IOUtil.translationTableFileName;
 	}
 	/*.................................................................................................................*/
 	public void writeExtraFiles(Taxa taxa){

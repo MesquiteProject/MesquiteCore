@@ -30,17 +30,19 @@ import mesquite.categ.lib.*;
 
 public abstract class InterpretPhylip extends FileInterpreterITree {
 	Class[] acceptedClasses;
-	Parser treeParser;
 	TreeVector treeVector = null;
 /*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class, CategoricalState.class};
-		treeParser =  new Parser();
  		return true;  //make this depend on taxa reader being found?)
   	 }
   	 
 	/*.................................................................................................................*/
 	public boolean initializeExport(Taxa taxa) {  
+		 return true;  
+	}
+	/*.................................................................................................................*/
+	public boolean initializeTreeImport(MesquiteFile file, Taxa taxa) {  
 		 return true;  
 	}
 	/*.................................................................................................................*/
@@ -118,54 +120,16 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	
 	
 /*.................................................................................................................*/
-	public void readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
-		readPhylipTrees(mf, file, line, progIndicator, taxa, false);
+	public TreeVector readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
+		return IOUtil.readPhylipTrees(this,mf, file, line, progIndicator, taxa, false, null, getTreeNameBase());
 	}	
 	
 	public void setTaxonNameLength(int value) {
 		taxonNameLength = value;
 	}
 	
-/*.................................................................................................................*/
-	public void readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge) {
-		treeParser.setQuoteCharacter((char)0);
-		int numTrees = MesquiteInteger.infinite;
-		if (line != null){
-			treeParser.setString(line); 
-			String token = treeParser.getNextToken();  // numTaxa
-			numTrees = MesquiteInteger.fromString(token);
-		}
-		int iTree = 0;
-		TreeVector trees = null;
-		boolean abort = false;
-		line = file.readNextDarkLine();		
-		while (!StringUtil.blank(line) && !abort && (iTree<numTrees)) {
-			treeParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
-
-			if (trees == null) {
-				trees = new TreeVector(taxa);
-				trees.setName("Imported trees");
-			}
-			MesquiteTree t = new MesquiteTree(taxa);
-			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
-			//t.setTreeVector(treeVector);
-			t.readTree(line);
-			/*MesquiteInteger pos = new MesquiteInteger(0);
-			treeParser.setString(line);
-			readClade(t, t.getRoot());
-			t.setAsDefined(true);*/
-			t.setName("Imported tree " + iTree);
-			trees.addElement(t, false);
-
-
-			iTree++;
-			line = file.readNextDarkLine();		
-			if (file.getFileAborted())
-				abort = true;
-		}
-		if (trees != null)
-			trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
-		
+	public String getTreeNameBase () {
+		return "Imported tree ";
 	}
 /*.................................................................................................................*/
 	public void readTreeFile(MesquiteProject mf, MesquiteFile file, String arguments) {

@@ -10,9 +10,13 @@ import mesquite.lib.characters.CharacterPartition;
 import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.duties.TreesManager;
 
 public class IOUtil {
 
+	public static String translationTableFileName = "taxonNamesTranslationTable.txt";
+	public static final String RAXMLSCORENAME = "RAxMLScore";
+	/*.................................................................................................................*/
 
 	public static String[] getRAxMLRateModels(MesquiteModule mb, CharactersGroup[] parts){
 		if (parts==null || parts.length==0 || parts.length>20)
@@ -43,6 +47,7 @@ public class IOUtil {
 		return rateModels;
 	}
 
+	/*.................................................................................................................*/
 
 	public static String getMultipleModelRAxMLString(MesquiteModule mb, CharacterData data, boolean partByCodPos){
 		boolean writeCodPosPartition = false;
@@ -118,6 +123,109 @@ public class IOUtil {
 
 		return sb.toString();
 	}
+	/*.................................................................................................................*/
+	public static TreeVector readPhylipTrees (MesquiteModule mb, MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase) {
+		Parser treeParser = new Parser();
+		treeParser.setQuoteCharacter((char)0);
+		int numTrees = MesquiteInteger.infinite;
+		if (line != null){
+			treeParser.setString(line); 
+			String token = treeParser.getNextToken();  // numTaxa
+			numTrees = MesquiteInteger.fromString(token);
+		}
+		int iTree = 0;
+		TreeVector trees = null;
+		boolean abort = false;
+		line = file.readNextDarkLine();		
+		while (!StringUtil.blank(line) && !abort && (iTree<numTrees)) {
+			treeParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
+
+			if (trees == null) {
+				trees = new TreeVector(taxa);
+				trees.setName("Imported trees");
+			}
+			MesquiteTree t = new MesquiteTree(taxa);
+			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
+			//t.setTreeVector(treeVector);
+			t.readTree(line,namer);
+			/*MesquiteInteger pos = new MesquiteInteger(0);
+			treeParser.setString(line);
+			readClade(t, t.getRoot());
+			t.setAsDefined(true);*/
+			t.setName(treeNameBase + (iTree+1));
+			trees.addElement(t, false);
 
 
+			iTree++;
+			line = file.readNextDarkLine();		
+			if (file.getFileAborted())
+				abort = true;
+		}
+		if (trees != null)
+			trees.addToFile(file,mf,(TreesManager)mb.findElementManager(TreeVector.class));
+		return trees;
+		
+	}
+
+	/*.................................................................................................................*/
+
+	public static void readRAxMLInfoFile(MesquiteModule mb, String fileContents, boolean verbose, TreeVector trees, DoubleArray finalValues) {
+		if (finalValues==null) return;
+		Parser parser = new Parser(fileContents);
+		parser.setAllowComments(false);
+		parser.allowComments = false;
+		int count =0;
+
+		String line = parser.getRawNextDarkLine();
+		mb.logln("\nSummary of RAxML Search");
+
+		while (!StringUtil.blank(line) && count < finalValues.getSize()) {
+			if (line.startsWith("Inference[")) {
+				Parser subParser = new Parser();
+				subParser.setString(line);
+				String token = subParser.getFirstToken();
+				while (!StringUtil.blank(token) && ! subParser.atEnd()){
+					if (token.indexOf("likelihood")>=0) {
+						token = subParser.getNextToken();
+						finalValues.setValue(count,-MesquiteDouble.fromString(token));
+						//	finalScore[count].setValue(finalValues[count]);
+						mb.logln("RAxML Run " + (count+1) + " ln L = -" + finalValues.getValue(count));
+					}
+					token = subParser.getNextToken();
+				}
+				count++;
+			}
+			parser.setAllowComments(false);
+			line = parser.getRawNextDarkLine();
+		}
+
+		double bestScore =MesquiteDouble.unassigned;
+		int bestRun = MesquiteInteger.unassigned;
+		for (int i=0; i<trees.getNumberOfTrees(); i++) {
+			Tree newTree = trees.getTree(i);
+			if (MesquiteDouble.isCombinable(finalValues.getValue(i))){
+				MesquiteDouble s = new MesquiteDouble(-finalValues.getValue(i));
+				s.setName(RAXMLSCORENAME);
+				((Attachable)newTree).attachIfUniqueName(s);
+			}
+
+			if (MesquiteDouble.isCombinable(finalValues.getValue(i)))
+				if (MesquiteDouble.isUnassigned(bestScore)) {
+					bestScore = finalValues.getValue(i);
+					bestRun = i;
+				}
+				else if (bestScore>finalValues.getValue(i)) {
+					bestScore = finalValues.getValue(i);
+					bestRun = i;
+				}
+		}
+		if (MesquiteInteger.isCombinable(bestRun)) {
+			Tree t = trees.getTree(bestRun);
+
+			String newName = t.getName() + " BEST";
+			if (t instanceof AdjustableTree )
+				((AdjustableTree)t).setName(newName);
+		}
+
+	}
 }
