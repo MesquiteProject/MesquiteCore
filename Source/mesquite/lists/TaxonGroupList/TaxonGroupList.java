@@ -69,6 +69,11 @@ public class TaxonGroupList extends ListModule {
 				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
+			assistant = (TaxonGroupListAssistant)hireNamedEmployee(TaxonGroupListAssistant.class, StringUtil.tokenize("#TaxonGroupListVisibility"));
+			if (assistant!= null){
+				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
+				assistant.setUseMenubar(false);
+			}
 	/*		assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("#ModelsListParadigm"));
 			if (assistant!= null){
 				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);

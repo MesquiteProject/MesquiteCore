@@ -265,7 +265,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				else if (token.equalsIgnoreCase("SYMBOL")){
 					token = subcommands.getNextToken(); //=
 					token = subcommands.getNextToken(); // (
-					token = subcommands.getNextToken(); // should be NAME
+					token = subcommands.getNextToken(); // should be NAME					
 					if (token!=null && token.equalsIgnoreCase("NAME")) {
 						token = subcommands.getNextToken(); //=
 						token = subcommands.getNextToken(); // name of symbol
@@ -275,11 +275,16 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 							MesquiteSymbol symbol = (MesquiteSymbol)symVector.elementWithName(token);
 							if (symbol!=null) {
 								MesquiteSymbol groupSymbol = symbol.cloneMethod();
-								groupSymbol.interpretNexus(subcommands);
+								Parser remaining = new Parser();
+								remaining.setString(subcommands.getRemainingUntilChar(')',true));
+								groupSymbol.interpretNexus(remaining);
 								group.setSymbol(groupSymbol);
 							}
 						}
 					}
+				}
+				else if (token.equalsIgnoreCase("HIDDEN")){
+					group.setVisible(false);
 				}
 			}
 		}
@@ -332,6 +337,10 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 						MesquiteSymbol symbol = cg.getSymbol();
 						if (symbol != null)
 							s += " SYMBOL = (NAME="+ParseUtil.tokenize(symbol.getName()) + " SIZE="+symbol.getSize() + " "+ symbol.getBasicNexusOptions()+ " "+ symbol.getExtraNexusOptions() + ") ";
+					}
+					if (!cg.isVisible()){
+						Color c = cg.getColor();
+						s += " HIDDEN ";
 					}
 					s += ";" + StringUtil.lineEnding();
 				}

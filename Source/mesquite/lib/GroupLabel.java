@@ -24,6 +24,7 @@ public class GroupLabel extends FileElement {
 	int id;
 	boolean colorWasSet = false;
 	boolean symbolWasSet = false;
+	boolean visible = true;
 	static int numLabels;
 	static {
 		numLabels = 0;
@@ -48,6 +49,12 @@ public class GroupLabel extends FileElement {
 	}
 	public String getTypeName(){
 		return "Group Label";
+	}
+	public boolean isVisible() {
+		return visible;
+	}
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 	/*.................................................................................................................*/
 	public void setColor(Color color){
