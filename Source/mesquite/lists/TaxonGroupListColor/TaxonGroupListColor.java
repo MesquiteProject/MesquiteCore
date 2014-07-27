@@ -59,13 +59,20 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 	}
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 		Color c = getBackgroundColorOfCell(ic,selected);
-		g.setColor(c);
-		g.fillRect(x+1, y+1, w-1, h-1);
+		Color oldColor = g.getColor();
+		Color highlightColor = Color.black;
+		if (c!=null)
+			highlightColor = ColorDistribution.getContrasting(c);
+		if (c!=null){ 
+			g.setColor(c);
+			g.fillRect(x+1, y+1, w-1, h-1);
+		}
 		if (selected) {
-			g.setColor(ColorDistribution.getContrasting(c));
+			g.setColor(highlightColor);
 			g.drawRect(x+1, y+1, w-2, h-2);
 			g.drawRect(x+2, y+2, w-4,h-4);
 		}
+		g.setColor(oldColor);
 	}
 	Color newColor = null;
 	/*.................................................................................................................*/

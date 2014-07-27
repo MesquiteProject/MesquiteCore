@@ -266,13 +266,12 @@ public class ColorDistribution {
 			return light;
 	}
 	public static Color getContrasting(Color c){
-		if (c==null)
-			return null;
+		if (c==null){
+			return Color.black;
+		}
 		int red = (255-c.getRed());
 		int green = (255-c.getGreen());
 		int blue = (255-c.getBlue());
-		if (Math.abs(red-c.getRed())<50 && Math.abs(green-c.getGreen())<50 && Math.abs(blue-c.getBlue())<50) 
-			return Color.white;
 		return new Color(red,green,blue);
 	}
 	public static int getStandardColorNumber(String name){

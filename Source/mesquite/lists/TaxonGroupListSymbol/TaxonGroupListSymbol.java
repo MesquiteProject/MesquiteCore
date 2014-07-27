@@ -147,7 +147,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 		if (selected) {
-			g.setColor(Color.gray);
+			g.setColor(Color.lightGray);
 		} else
 			g.setColor(Color.white);
 		g.fillRect(x+1, y+1, w-1, h-1);
