@@ -1,6 +1,7 @@
-package mesquite.lists.TaxonGroupListColor;
+package mesquite.lists.TaxonGroupListSymbol;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Shape;
 
@@ -11,13 +12,13 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */
-public class TaxonGroupListColor extends TaxonGroupListAssistant  {
+public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Taxon Group Color in List";
+		return "Taxon Group Symbol in List";
 	}
 	public String getExplanation() {
-		return "Shows color assigned to taxon group." ;
+		return "Shows symbol assigned to taxon group." ;
 	}
 
 	CharacterData data=null;
@@ -43,22 +44,47 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 		}
 		return null;
 	}
-	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
+	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. *
 	public Color getBackgroundColorOfCell(int ic, boolean selected){
+		
 		TaxaGroup tg = getTaxonGroup(ic);
 		if (tg!=null){
-			Color color = tg.getColor();
-			if (selected) {
-				//color = ColorDistribution.darker(color, 5);
-			}
-			return color;
+			return tg.getColor();
+
 		}
 		return null;
 
 	}
+	/*.................................................................................................................*/
+
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
-		g.setColor(getBackgroundColorOfCell(ic,selected));
+		if (selected) {
+			g.setColor(Color.gray);
+		} else
+			g.setColor(Color.white);
 		g.fillRect(x+1, y+1, w-1, h-1);
+		MesquiteSymbol symbol = null;
+		TaxaGroup tg = getTaxonGroup(ic);
+		boolean colored = false;
+		if (tg!=null) {
+				symbol = tg.getSymbol();
+		if (symbol!=null) {
+			int size = symbol.getSize();
+			if (w-3<size)
+				size=w-3;
+			if (h/2-3<size)
+				size=h/2-3;
+			symbol.drawSymbol(g,x+w/2-size/2,y+h/2-size/2+3,size,size,true);
+		}
+			
+		}
+	}
+	public String getStringForRow(int ic) {
+		TaxaGroup tg = getTaxonGroup(ic);
+		if (tg!=null){
+			return tg.getSymbol().getName();
+		}
+		return "";
 	}
 
 	/*.................................................................................................................*/
@@ -73,22 +99,22 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 		return false;
 	}
 
+	/** Returns whether to use the string from getStringForRow; otherwise call drawInCell*/
+	public boolean useString(int ic){
+		return false;
+	}
+
 	public String getWidestString(){
 		return "888888";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		return "Color";
+		return "Symbol";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return true;  
-	}
-	
-	/** Returns whether to use the string from getStringForRow; otherwise call drawInCell*/
-	public boolean useString(int ic){
-		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -97,13 +123,6 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 	public void setTableAndObject(MesquiteTable table, Object object) {
 		this.table = table;
 		
-	}
-	public String getStringForRow(int ic) {
-		TaxaGroup tg = getTaxonGroup(ic);
-		if (tg!=null){
-			return tg.getColor().toString();
-		}
-		return "";
 	}
 
 

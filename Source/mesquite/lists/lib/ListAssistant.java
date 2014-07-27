@@ -32,6 +32,7 @@ public abstract class ListAssistant extends MesquiteModule  {
    	 }
 	/**  Set the table and list's object (e.g, listable vector, data matrix for characters, etc.) */
 	public abstract void setTableAndObject(MesquiteTable table, Object object);
+	
 	/** Returns whether to use the string from getStringForRow; otherwise call drawInCell*/
 	public boolean useString(int ic){
 		return (getStringForRow(ic)!=null);
