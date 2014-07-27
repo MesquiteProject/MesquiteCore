@@ -1,4 +1,4 @@
-package mesquite.lists.TaxonGroupListSymbol;
+package mesquite.lists.TaxonGroupListSymbolSize;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -12,21 +12,15 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */
-public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
-	/*.................................................................................................................*/
-	public String getName() {
-		return "Taxon Group Symbol";
-	}
-	public String getExplanation() {
-		return "Shows symbol assigned to taxon group." ;
-	}
-
+public class TaxonGroupListSymbolSize extends TaxonGroupListAssistant  {
 	CharacterData data=null;
 	MesquiteTable table = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("Set Size...", makeCommand("setSize", this));
 		return true;
 	}
+
 
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		//if (this.data !=null)
@@ -55,7 +49,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 		return null;
 
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 		if (selected) {
@@ -79,17 +73,66 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 			
 		}
 	}
+		/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the size of the symbol", null, commandName, "setSize")) {
+			String size = parser.getFirstToken(arguments);
+			if (StringUtil.blank(size)){
+				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+				if (groups!=null  && table != null) {
+					int oldSize = -1;
+					boolean variableSize = false;
+					for (int i = 0; i< groups.size(); i++){
+						if (groups.getSelected(i) || table.isRowSelected(i)){
+							TaxaGroup tg = getTaxonGroup(i);
+							if (tg!=null){
+								MesquiteSymbol symbol = tg.getSymbol();
+								if (symbol!=null){
+									int symbolSize = symbol.getSize();
+									if (oldSize>-1 && oldSize!=symbolSize)
+										variableSize=true;
+									oldSize=symbolSize;
+								}
+							}
+						}
+					}
+					int newSize = MesquiteInteger.queryInteger(containerOfModule(), "Symbol Size", "Symbol Size", oldSize, 1, 500, true);
+					if (MesquiteInteger.isCombinable(newSize)){
+						for (int i = 0; i< groups.size(); i++){
+							if (groups.getSelected(i) || table.isRowSelected(i)){
+								TaxaGroup tg = getTaxonGroup(i);
+								if (tg!=null){
+									MesquiteSymbol symbol = tg.getSymbol();
+									if (symbol!=null)
+										symbol.setSize(newSize);
+								}
+							}
+						}
+						if (table != null)
+							table.repaintAll();
+					}
+
+				}
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+
+	/*.................................................................................................................*/
+
 	public String getStringForRow(int ic) {
 		TaxaGroup tg = getTaxonGroup(ic);
 		if (tg!=null){
 			MesquiteSymbol symbol = tg.getSymbol();
 			if (symbol!=null)
-				return ""+symbol.getName();
+				return ""+symbol.getSize();
 		}
 		return "";
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
 		TaxaGroup tg = getTaxonGroup(ic);
 		if (tg!=null){
@@ -101,17 +144,14 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 		return false;
 	}
 
-	/** Returns whether to use the string from getStringForRow; otherwise call drawInCell*/
-	public boolean useString(int ic){
-		return false;
-	}
+	/*.................................................................................................................*/
 
 	public String getWidestString(){
-		return "888888";
+		return "888888888";
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		return "Symbol";
+		return "Symbol SIze";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -127,5 +167,12 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 		
 	}
 
+	/*.................................................................................................................*/
+	public String getName() {
+		return "Taxon Group Symbol Size";
+	}
+	public String getExplanation() {
+		return "Shows size of symbol assigned to taxon group." ;
+	}
 
 }

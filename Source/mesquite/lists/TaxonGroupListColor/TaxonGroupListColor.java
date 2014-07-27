@@ -14,7 +14,7 @@ import mesquite.lists.lib.*;
 public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Taxon Group Color in List";
+		return "Taxon Group Colors";
 	}
 	public String getExplanation() {
 		return "Shows color assigned to taxon group." ;
@@ -43,22 +43,26 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 		}
 		return null;
 	}
+	
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int ic, boolean selected){
 		TaxaGroup tg = getTaxonGroup(ic);
 		if (tg!=null){
 			Color color = tg.getColor();
-			if (selected) {
-				//color = ColorDistribution.darker(color, 5);
-			}
 			return color;
 		}
 		return null;
 
 	}
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
-		g.setColor(getBackgroundColorOfCell(ic,selected));
+		Color c = getBackgroundColorOfCell(ic,selected);
+		g.setColor(c);
 		g.fillRect(x+1, y+1, w-1, h-1);
+		if (selected) {
+			g.setColor(ColorDistribution.getContrasting(c));
+			g.drawRect(x+1, y+1, w-2, h-2);
+			g.drawRect(x+2, y+2, w-4,h-4);
+		}
 	}
 
 	/*.................................................................................................................*/
