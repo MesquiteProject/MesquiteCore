@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
@@ -62,6 +63,11 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	/**sets fill color*/
 	public void setFillColor(Color color){
 		this.fillColor = color;
+	}
+	/**sets fill color*/
+	public void setColor(Color color){
+		this.fillColor = color;
+		this.color = color;
 	}
 	/**gets whether the symbol is drawn via a Polygon*/
 	public boolean getIsPolygon(){

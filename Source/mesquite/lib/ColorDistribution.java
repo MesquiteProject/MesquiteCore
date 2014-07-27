@@ -313,6 +313,11 @@ public class ColorDistribution {
 			return null;
 		return (Color)standardColorsDimmed.getValue(ci);
 	}
+	public static boolean equalColors(Color color1, Color color2) {
+		if (color1==null || color2==null)
+			return false;
+		return (color1.getBlue()==color2.getBlue()&&color1.getRed()==color2.getRed()&&color1.getGreen()==color2.getGreen());
+	}
 	/** Initialize colors by setting the number of colors to 0, the weights to 0, and the colors to null*/
 	public void initialize() {
 		numColors=0;

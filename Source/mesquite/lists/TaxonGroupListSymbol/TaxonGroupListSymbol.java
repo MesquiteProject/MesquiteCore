@@ -52,7 +52,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	Choice symbolsPopUp=null;
 	SymbolsVector symVector=null;
 	JLabel symbolLabel;
-	
+
 	/*.................................................................................................................*/
 	public boolean queryOptions(MesquiteSymbol oldSymbol) {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
@@ -106,11 +106,14 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 									MesquiteSymbol groupSymbol = newSymbol.cloneMethod();
 									groupSymbol.setSize(symbol.getSize());
 									tg.setSymbol(groupSymbol);
+									tg.setColor(tg.getColor());
 								}
 							}
-							if (table != null)
-								table.repaintAll();
+
 						}
+						if (table != null)
+							table.repaintAll();
+						parametersChanged();
 					}
 
 				}
@@ -131,7 +134,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	}
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. *
 	public Color getBackgroundColorOfCell(int ic, boolean selected){
-		
+
 		TaxaGroup tg = getTaxonGroup(ic);
 		if (tg!=null){
 			return tg.getColor();
@@ -152,16 +155,16 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 		TaxaGroup tg = getTaxonGroup(ic);
 		boolean colored = false;
 		if (tg!=null) {
-				symbol = tg.getSymbol();
-		if (symbol!=null) {
-			int size = symbol.getSize();
-			if (w-3<size)
-				size=w-3;
-			if (h/2-3<size)
-				size=h/2-3;
-			symbol.drawSymbol(g,x+w/2-size/2,y+h/2-size/2+3,size,size,false);
-		}
-			
+			symbol = tg.getSymbol();
+			if (symbol!=null) {
+				int size = symbol.getSize();
+				if (w-3<size)
+					size=w-3;
+				if (h/2-3<size)
+					size=h/2-3;
+				symbol.drawSymbol(g,x+w/2-size/2,y+h/2-size/2+3,size,size,false);
+			}
+
 		}
 	}
 	public String getStringForRow(int ic) {
@@ -182,7 +185,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 			parametersChanged();
 			return true;
 		}
-*/
+		 */
 		return false;
 	}
 
@@ -209,7 +212,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	}
 	public void setTableAndObject(MesquiteTable table, Object object) {
 		this.table = table;
-		
+
 	}
 
 
