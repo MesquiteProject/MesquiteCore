@@ -81,7 +81,7 @@ public class TaxonGroupListVisibility extends TaxonGroupListAssistant  {
 			if (tg.isVisible())
 				return "show";
 			else 
-				return "hide";
+				return "HIDE";
 		}
 		return "";
 	}
