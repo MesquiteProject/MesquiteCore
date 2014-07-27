@@ -1,9 +1,16 @@
 package mesquite.lists.TaxonGroupListSymbol;
 
+import java.awt.Button;
+import java.awt.Choice;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Label;
+import java.awt.Panel;
 import java.awt.Shape;
+import java.awt.event.*;
+
+import javax.swing.JLabel;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.CharInclusionSet;
@@ -12,7 +19,14 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */
-public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
+public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
+	CharacterData data=null;
+	MesquiteTable table = null;
+	/*.................................................................................................................*/
+	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("Set Symbol...", makeCommand("setSymbol", this));
+		return true;
+	}
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Taxon Group Symbol";
@@ -21,12 +35,6 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 		return "Shows symbol assigned to taxon group." ;
 	}
 
-	CharacterData data=null;
-	MesquiteTable table = null;
-	/*.................................................................................................................*/
-	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		return true;
-	}
 
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		//if (this.data !=null)
@@ -34,6 +42,83 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 		this.data = data;
 		//data.addListener(this);
 		this.table = table;
+	}
+	/*.................................................................................................................*/
+	static final String chooseTemplate = "Choose Symbol";
+	MesquiteSymbol newSymbol = null;
+	MesquiteSymbol currentDialogSymbol = null;
+	String symbolOptionsButtonName = "Symbol Options...";
+	Button symbolOptionsButton;
+	Choice symbolsPopUp=null;
+	SymbolsVector symVector=null;
+	JLabel symbolLabel;
+	
+	/*.................................................................................................................*/
+	public boolean queryOptions(MesquiteSymbol oldSymbol) {
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
+			return true;
+		GroupSymbolsDialog symbolsDialog = new GroupSymbolsDialog(getProject(), containerOfModule(), "Symbol Options", "", oldSymbol);
+		symbolsDialog.completeAndShowDialog();
+		String name = symbolsDialog.getName();
+		boolean ok = symbolsDialog.query()==0;
+		if (ok) {
+			newSymbol = symbolsDialog.getSymbol();
+		}
+		symbolsDialog.dispose();
+		if (!ok)
+			return false;
+		return true;
+	}
+
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the symbol", null, commandName, "setSymbol")) {
+			String newSymbolName = parser.getFirstToken(arguments);
+			if (StringUtil.blank(newSymbolName)){
+				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+				if (groups!=null  && table != null) {
+					String oldSymbolName = null;
+					MesquiteSymbol oldSymbol = null;
+					boolean variable = false;
+					for (int i = 0; i< groups.size(); i++){
+						if (groups.getSelected(i) || table.isRowSelected(i)){
+							TaxaGroup tg = getTaxonGroup(i);
+							if (tg!=null){
+								MesquiteSymbol symbol = tg.getSymbol();
+								String symbolName = symbol.getName();
+								if (symbol!=null){
+									if (oldSymbolName!=null && !oldSymbolName.equals(symbolName))
+										variable=true;
+									oldSymbolName=symbolName;
+									oldSymbol = symbol.cloneMethod();
+								}
+							}
+						}
+					}
+					if (variable==true)
+						oldSymbol=null;
+					if (queryOptions(oldSymbol)){
+						for (int i = 0; i< groups.size(); i++){
+							if (groups.getSelected(i) || table.isRowSelected(i)){
+								TaxaGroup tg = getTaxonGroup(i);
+								if (tg!=null){
+									MesquiteSymbol symbol = tg.getSymbol();
+									MesquiteSymbol groupSymbol = newSymbol.cloneMethod();
+									groupSymbol.setSize(symbol.getSize());
+									tg.setSymbol(groupSymbol);
+								}
+							}
+							if (table != null)
+								table.repaintAll();
+						}
+					}
+
+				}
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 	/*.................................................................................................................*/
 	TaxaGroup getTaxonGroup(int ic){
@@ -74,7 +159,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 				size=w-3;
 			if (h/2-3<size)
 				size=h/2-3;
-			symbol.drawSymbol(g,x+w/2-size/2,y+h/2-size/2+3,size,size,true);
+			symbol.drawSymbol(g,x+w/2-size/2,y+h/2-size/2+3,size,size,false);
 		}
 			
 		}
@@ -91,13 +176,13 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant  {
 
 	/*.................................................................................................................*/
 	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		TaxaGroup tg = getTaxonGroup(ic);
+		/*TaxaGroup tg = getTaxonGroup(ic);
 		if (tg!=null){
 			tg.editMe();
 			parametersChanged();
 			return true;
 		}
-
+*/
 		return false;
 	}
 

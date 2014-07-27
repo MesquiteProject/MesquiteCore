@@ -137,7 +137,7 @@ public class GroupDialog extends ExtensibleDialog implements Colorable, ItemList
 		if (symbolOptionsButtonName.equalsIgnoreCase(e.getActionCommand())) {
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
     	 		ExtensibleDialog d = new ExtensibleDialog(frame, "Symbol Options: " + currentSymbol.getName(), buttonPressed);
-			currentSymbol.addDialogElements(d);
+			currentSymbol.addDialogElements(d, true);
     	 		d.completeAndShowDialog();
 			boolean ok = d.query()==0;
 			if (ok)

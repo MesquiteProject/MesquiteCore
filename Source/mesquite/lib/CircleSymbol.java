@@ -34,8 +34,8 @@ public class CircleSymbol extends FillableMesquiteSymbol  {
 		return  newSymbol;
 	}
 	/*.................................................................................................................*/
-	public void addDialogElements(ExtensibleDialog dialog){
-		super.addDialogElements(dialog);
+	public void addDialogElements(ExtensibleDialog dialog, boolean includeSize){
+		super.addDialogElements(dialog,includeSize);
 	}
 	/*.................................................................................................................*/
 	public boolean inRect(int symbolX, int symbolY, int x1, int y1, int x2, int y2, int bound){

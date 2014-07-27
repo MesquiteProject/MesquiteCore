@@ -42,8 +42,8 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 		setFill(((FillableMesquiteSymbol)cloned).getFill());
 	}
 	/*.................................................................................................................*/
-	public void addDialogElements(ExtensibleDialog dialog){
-		super.addDialogElements(dialog);
+	public void addDialogElements(ExtensibleDialog dialog, boolean includeSize){
+		super.addDialogElements(dialog, includeSize);
 		fillBox = dialog.addCheckBox("filled", fill);
 	}
 	/*.................................................................................................................*/
