@@ -72,6 +72,8 @@ public class GroupLabel extends FileElement {
 	/*.................................................................................................................*/
 	public void setSymbol(MesquiteSymbol symbol){
 		this.symbol = symbol;
+		symbol.setColor(getColor());
+		this.symbol.setColor(getColor());
 		symbolWasSet = true;
 	}
 	/*.................................................................................................................*/
