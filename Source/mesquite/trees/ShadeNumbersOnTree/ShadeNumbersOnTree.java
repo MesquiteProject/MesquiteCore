@@ -27,12 +27,14 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
 	MesquiteBoolean useLogScale;
 	MesquiteColorTable colorTable = new ContColorTable();
  	Vector labellers;
+ 	int digits = 4;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		backRect = new MesquiteBoolean(false);
 		useLogScale = new MesquiteBoolean(false);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Display");
 		addCheckMenuItemToSubmenu(null, mss, "Label nodes", makeCommand("toggleLabels", this), showLabels);
+		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
 		addCheckMenuItemToSubmenu(null, mss, "Include labels for terminals", makeCommand("toggleLabelTerminals", this), labelTerminals);  
 		addCheckMenuItemToSubmenu(null, mss, "Labels with background", makeCommand("toggleRectangle", this), backRect);
 		addItemToSubmenu(null, mss, "-", null);
@@ -51,8 +53,11 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
   	 	temp.addLine("toggleShade " + shadeBranches.toOffOnString());
   	 	temp.addLine("toggleRectangle " + backRect.toOffOnString());
   	 	temp.addLine("toggleLog " + useLogScale.toOffOnString());
-  	 	return temp;
+		temp.addLine("setDigits " + digits); 
+ 	 	return temp;
   	 }
+ 	/*.................................................................................................................*/
+ 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
     	 	if (checker.compare(this.getClass(), "Sets whether or not nodes are labeled with text", "[on = labeled; off]", commandName, "toggleLabels")) {
@@ -79,6 +84,15 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
     	 		useLogScale.toggleValue(parser.getFirstToken(arguments));
 			parametersChanged();
     	 	}
+    		else if (checker.compare(this.getClass(), "Sets how many digits are shown", "[number of digits]", commandName, "setDigits")) {
+    			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
+    			if (!MesquiteInteger.isCombinable(newWidth))
+    				newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set number of digits", "Number of digits (after decimal point) to display for values on tree:", digits, 0, 24);
+    			if (newWidth>=0 && newWidth<24 && newWidth!=digits) {
+    				digits = newWidth;
+    				if (!MesquiteThread.isScripting()) parametersChanged();
+    			}
+    		}
     	 	else
     	 		return  super.doCommand(commandName, arguments, checker);
 		return null;
@@ -149,8 +163,7 @@ class ShadeNumbersDecorator extends TreeDecorator {
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			writeAtNode(numbers, g, fm, d, tree);
 		if ((tree.nodeIsInternal(N) || ownerModule.getLabelTerminals()) && !numbers.isUnassigned(N)) {
-
-			String s = numbers.toString(N);
+			String s = numbers.toString(N,ownerModule.digits, false);
 			int stringWidth = fm.stringWidth(s);
 			int stringHeight = fm.getMaxAscent()+fm.getMaxDescent(); //numbers wouldn't actually reach max descent
 

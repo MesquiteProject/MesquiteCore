@@ -86,7 +86,7 @@ public class SplitFrequencies extends NumbersForNodes {
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("suspend");
-		temp.addLine("getTreeSource",treeSourceTask);
+		temp.addLine("setTreeSource",treeSourceTask);
 		temp.addLine("resume");
   	 	temp.addLine("toggleUseWeights " + useWeights.toOffOnString());
 		return temp;

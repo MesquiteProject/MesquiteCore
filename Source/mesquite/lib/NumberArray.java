@@ -1058,6 +1058,21 @@ public class NumberArray {
 	}
 	/*--------------------------------------STRINGS, NAME----------------------------------*/
 	/** DOCUMENT */
+	public String toString(int index, int digits, boolean allowExponentialNotation) {
+		if (!legalIndex(index)) 
+			return MesquiteInteger.toString(MesquiteInteger.unassigned);
+		if (valueClass==INT) {
+			return MesquiteInteger.toString(intValues[index]);// + " (int)";
+		}
+		else if (valueClass == LONG) {
+			return MesquiteLong.toString(longValues[index]);// + " (long)";
+		}
+		else if (valueClass == DOUBLE) {
+			return MesquiteDouble.toStringDigitsSpecified(doubleValues[index], digits, allowExponentialNotation);// + " (double)";
+		}
+		else return "";
+	}
+	/** DOCUMENT */
 	public String toString(int index) {
 		if (!legalIndex(index)) 
 			return MesquiteInteger.toString(MesquiteInteger.unassigned);
