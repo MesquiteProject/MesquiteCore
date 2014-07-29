@@ -1317,7 +1317,7 @@ class FrameTabsPanel extends MousePanel {
 				drawAndFillTab (g, w,  lefts[tabOver],  rights[tabOver],  tabOver, scaling);
 			}
 		}
-		if (tabOver != lastTabOver && lastTabOver>=0 && lastTabOver < frame.windows.size()){
+		if (tabOver != lastTabOver && lastTabOver>=0 && lastTabOver<lefts.length && lastTabOver < frame.windows.size()){
 			Graphics g = getGraphics();
 			if (g != null){
 				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(lastTabOver);
@@ -1335,7 +1335,7 @@ class FrameTabsPanel extends MousePanel {
 				drawAndFillTab (g, w,  lefts[tabOver],  rights[tabOver],  tabOver, scaling);
 			}
 		}
-		if (tabOver != lastTabOver && lastTabOver>=0 && lastTabOver < frame.windows.size()){
+		if (tabOver != lastTabOver && lastTabOver>=0 && lastTabOver<lefts.length && lastTabOver < frame.windows.size()){
 			Graphics g = getGraphics();
 			if (g != null){
 				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(lastTabOver);
@@ -1346,7 +1346,7 @@ class FrameTabsPanel extends MousePanel {
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		tabOver  = -1;
-		if (lastTabOver>=0 && lastTabOver < frame.windows.size()){
+		if (lastTabOver>=0 &&  lastTabOver<lefts.length && lastTabOver < frame.windows.size()){
 			Graphics g = getGraphics();
 			if (g != null){
 				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(lastTabOver);
