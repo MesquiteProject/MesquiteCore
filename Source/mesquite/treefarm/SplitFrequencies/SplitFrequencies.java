@@ -42,6 +42,7 @@ public class SplitFrequencies extends NumbersForNodes {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 
+		addCheckMenuItem(null, "Consider Tree Weights", makeCommand("toggleUseWeights", this), useWeights);
 		treeSourceTask = (TreeSource)hireEmployee(TreeSource.class, "Tree Source");
 		if (treeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees obtained");
@@ -55,8 +56,29 @@ public class SplitFrequencies extends NumbersForNodes {
 		return true;
 	}
 
+	public boolean getDefaultShowLabels() {
+		return true;
+	}
+	public boolean getDefaultShadeBranches() {
+		return false;
+	}
+	public boolean getDefaultShadeInColor() {
+		return false;
+	}
+	public boolean getDefaultLabelTerminals() {
+		return false;
+	}
 
 
+	/*.................................................................................................................*/
+	public void setUseWeights(boolean useWeights){
+		this.useWeights.setValue(useWeights);
+		Debugg.println("setValue useWeights");
+	}
+	/*.................................................................................................................*/
+	public boolean getUseWeights(){
+		return useWeights.getValue();
+	}
 	/*.................................................................................................................*/
 	public void employeeQuit(MesquiteModule m){
 		iQuit();
@@ -67,6 +89,7 @@ public class SplitFrequencies extends NumbersForNodes {
 		temp.addLine("suspend");
 		temp.addLine("getTreeSource",treeSourceTask);
 		temp.addLine("resume");
+  	 	temp.addLine("toggleUseWeights " + useWeights.toOffOnString());
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -85,6 +108,10 @@ public class SplitFrequencies extends NumbersForNodes {
 		}
 		else if (checker.compare(this.getClass(), "Returns treeSourceTask", null, commandName, "getTreeSource")) 
 			return treeSourceTask;
+		else if (checker.compare(this.getClass(), "Returns treeSourceTask", null, commandName, "toggleUseWeights")) {
+	 		useWeights.toggleValue(parser.getFirstToken(arguments));   //WAYNEQUERY: why is the menu not checked/unchecked as appropriate?
+	 		parametersChanged();
+		}
 		else if (checker.compare(this.getClass(), "Suspends calculations", null, commandName, "suspend")) {
 			suspend = true;
 		}

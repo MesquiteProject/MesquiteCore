@@ -23,22 +23,14 @@ import mesquite.cont.lib.*;
 /* ======================================================================== */
 public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
 	TreeDisplay treeDisplay;
-	MesquiteBoolean showLabels;
-	MesquiteBoolean shadeInColor;
-	MesquiteBoolean shadeBranches;   // added DRM 07.iv.14
 	MesquiteBoolean backRect;
 	MesquiteBoolean useLogScale;
-	MesquiteBoolean labelTerminals;  // added DRM 07.iv.14
 	MesquiteColorTable colorTable = new ContColorTable();
  	Vector labellers;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		showLabels = new MesquiteBoolean(false);
 		backRect = new MesquiteBoolean(false);
-		shadeInColor = new MesquiteBoolean(true);
-		shadeBranches = new MesquiteBoolean(true);
 		useLogScale = new MesquiteBoolean(false);
-		labelTerminals = new MesquiteBoolean(true);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Display");
 		addCheckMenuItemToSubmenu(null, mss, "Label nodes", makeCommand("toggleLabels", this), showLabels);
 		addCheckMenuItemToSubmenu(null, mss, "Include labels for terminals", makeCommand("toggleLabelTerminals", this), labelTerminals);  
@@ -65,7 +57,7 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
     	 	if (checker.compare(this.getClass(), "Sets whether or not nodes are labeled with text", "[on = labeled; off]", commandName, "toggleLabels")) {
     	 		showLabels.toggleValue(parser.getFirstToken(arguments));
-			parametersChanged();
+    	 		parametersChanged();
     	 	}
     	 	else if (checker.compare(this.getClass(), "Sets whether shadings are shown in color or grayscale", "[on = color; off]", commandName, "toggleColor")) {
     	 		shadeInColor.toggleValue(parser.getFirstToken(arguments));
@@ -156,7 +148,7 @@ class ShadeNumbersDecorator extends TreeDecorator {
 	private void writeAtNode(NumberArray numbers,Graphics g, FontMetrics fm, int N,  Tree tree) {
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			writeAtNode(numbers, g, fm, d, tree);
-		if ((tree.nodeIsInternal(N) || ownerModule.labelTerminals.getValue()) && !numbers.isUnassigned(N)) {
+		if ((tree.nodeIsInternal(N) || ownerModule.getLabelTerminals()) && !numbers.isUnassigned(N)) {
 
 			String s = numbers.toString(N);
 			int stringWidth = fm.stringWidth(s);
@@ -215,7 +207,7 @@ class ShadeNumbersDecorator extends TreeDecorator {
 				
 		if ((tree.nodeIsInternal(N) && shadeInternalNodes) || (tree.nodeIsTerminal(N) && shadeTerminalNodes)) {
 			Color c;
-			if (ownerModule.shadeInColor.getValue())
+			if (ownerModule.getShadeInColor())
 				c = ownerModule.colorTable.getColor(numbers.getDouble(N), min.getDoubleValue(), max.getDoubleValue()); 
 			else 
 				c = MesquiteColorTable.getGrayScale(numbers.getDouble(N), min.getDoubleValue(), max.getDoubleValue(), ownerModule.useLogScale.getValue()); 
@@ -227,13 +219,13 @@ class ShadeNumbersDecorator extends TreeDecorator {
 
 	}
 	Color getColor(double d, MesquiteNumber min, MesquiteNumber max){
-		if (ownerModule.shadeInColor.getValue())
+		if (ownerModule.getShadeInColor())
 			return ownerModule.colorTable.getColor(d, min.getDoubleValue(), max.getDoubleValue()); 
 		else
 			return MesquiteColorTable.getGrayScale(d, min.getDoubleValue(), max.getDoubleValue(), ownerModule.useLogScale.getValue()); 
 	}
 	public ColorRecord[] getLegendColorRecords(){
-		if (!ownerModule.shadeBranches.getValue()) 
+		if (!ownerModule.getShadeBranches()) 
 			return null;
 		if (min.isCombinable() && max.isCombinable()) {
 			ColorRecord[] records = new ColorRecord[10];
@@ -259,9 +251,9 @@ class ShadeNumbersDecorator extends TreeDecorator {
 					numbers.placeMinimumValue(min);
 					numbers.placeMaximumValue(max);
 					if (treeDisplay!=null && tree!=null) {
-						if (ownerModule.shadeBranches.getValue()) 
+						if (ownerModule.getShadeBranches()) 
 							shadeNode(drawnRoot, tree, numbers, min, max, g);
-						if (ownerModule.showLabels.getValue()) {
+						if (ownerModule.getShowLabels()) {
 							writeAtNode(numbers, g, g.getFontMetrics(), drawnRoot,tree);
 						}
 					}
