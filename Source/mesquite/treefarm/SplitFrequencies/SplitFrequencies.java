@@ -73,7 +73,6 @@ public class SplitFrequencies extends NumbersForNodes {
 	/*.................................................................................................................*/
 	public void setUseWeights(boolean useWeights){
 		this.useWeights.setValue(useWeights);
-		Debugg.println("setValue useWeights");
 	}
 	/*.................................................................................................................*/
 	public boolean getUseWeights(){
@@ -109,7 +108,7 @@ public class SplitFrequencies extends NumbersForNodes {
 		else if (checker.compare(this.getClass(), "Returns treeSourceTask", null, commandName, "getTreeSource")) 
 			return treeSourceTask;
 		else if (checker.compare(this.getClass(), "Returns treeSourceTask", null, commandName, "toggleUseWeights")) {
-	 		useWeights.toggleValue(parser.getFirstToken(arguments));   //WAYNEQUERY: why is the menu not checked/unchecked as appropriate?
+	 		useWeights.toggleValue(parser.getFirstToken(arguments));  
 	 		parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Suspends calculations", null, commandName, "suspend")) {
@@ -205,7 +204,6 @@ public class SplitFrequencies extends NumbersForNodes {
 		Tree otherTree;
 		BipartitionVector bipartitions = BipartitionVector.getBipartitionVector(tree);  //start the bipartition vector with all the bipartitions in the tree;
 			
-		useWeights.setValue(true);
 		initBipartitionVector(taxa, bipartitions);
 		bipartitions.setRooted(false);
 
