@@ -29,11 +29,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	ListModule owner;
 	TableTool arrowTool, ibeamTool, wandTool, sortTool;
 	MesquitePopup selectionPopup;
-	MesquiteBoolean equals, greaterThan, lessThan, withinExistingSelection;
+	MesquiteBoolean equals, greaterThan, lessThan, withinExistingSelection, nonMatching;
 	boolean defaultEquals = true;
 	boolean defaultGT = false;
 	boolean defaultLT = false;
 	boolean defaultWithinSelection = false;
+	boolean defaultNonMatching = false;
 
 	MesquiteCollator collator;
 	MesquiteCommand deleteCommand, deleteColumnCommand;
@@ -47,6 +48,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		greaterThan = new MesquiteBoolean(defaultGT);
 		lessThan = new MesquiteBoolean(defaultLT);
 		withinExistingSelection = new MesquiteBoolean(defaultWithinSelection);
+		nonMatching = new MesquiteBoolean(defaultNonMatching);
 		setWindowSize(windowWidth, windowHeight);
 		ownerModule.setModuleWindow(this);
 		owner = ownerModule;
@@ -181,6 +183,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			temp.addLine("toggleLT " + lessThan.toOffOnString());
 		if (withinExistingSelection.getValue()!=defaultWithinSelection)
 			temp.addLine("toggleWithinSelection " + withinExistingSelection.toOffOnString());
+		if (nonMatching.getValue()!=defaultNonMatching)
+			temp.addLine("toggleNonMatching " + nonMatching.toOffOnString());
 
 		for (int i = 0; i<ownerModule.getNumberOfEmployees(); i++) { //if employee is number for character list, then hire indirectly its 
 			MesquiteModule e=(MesquiteModule)ownerModule.getEmployeeVector().elementAt(i);
@@ -244,6 +248,60 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	} 
 
 	/*.................................................................................................................*/
+	private void doWandTouch(String arguments){
+		MesquiteInteger io = new MesquiteInteger(0);
+		int column= MesquiteInteger.fromString(arguments, io);
+		int row= MesquiteInteger.fromString(arguments, io);
+		if (MesquiteInteger.isNonNegative(column)&& (MesquiteInteger.isNonNegative(row))) {  // it is in a real row and column that matters for the wand
+			
+			if (getCurrentObject() instanceof Associable){
+				Associable assoc = (Associable)getCurrentObject();
+				boolean withinSelection = withinExistingSelection.getValue() && assoc.getSelected(row);
+				if (arguments.indexOf("shift")<0 && !withinSelection)
+					assoc.deselectAll();
+				table.offAllEdits();
+				String text = table.getMatrixText(column, row);
+				for (int i=0; i<table.getNumRows(); i++){
+					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
+					if (nonMatching.getValue())
+						satisfies = !satisfies;
+					if (withinSelection) {
+						if (assoc.getSelected(i))
+							assoc.setSelected(i, satisfies);
+					}
+					else if (satisfies) {
+						assoc.setSelected(i, true);
+					}
+				}
+				assoc.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+			}
+			else {
+				boolean withinSelection = withinExistingSelection.getValue() && table.isRowSelected(row);
+				if (arguments.indexOf("shift")<0 && !withinSelection)
+					table.deselectAll();
+				table.offAllEdits();
+				String text = table.getMatrixText(column, row);
+				for (int i=0; i<table.getNumRows(); i++){
+					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
+					if (nonMatching.getValue())
+						satisfies = !satisfies;
+					if (withinSelection) {
+						if (table.isRowSelected(i))
+							if (satisfies)
+								table.selectRow(i);
+							else
+								table.deselectRow(i);
+					}
+					else if (satisfies) {
+						table.selectRow(i);
+					} 
+				}
+				table.repaintAll();
+			}
+		}
+	
+	}
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hides the list window", null, commandName, "hideWindow")) {
 			hide();
@@ -274,6 +332,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				MesquiteCheckMenuItem withinSelectionItem = new MesquiteCheckMenuItem("Within Existing Selection", ownerModule, MesquiteModule.makeCommand("toggleWithinSelection", this), null, null);
 				withinSelectionItem.set(withinExistingSelection.getValue());
 				popup.add(withinSelectionItem);
+				MesquiteCheckMenuItem notMatchingItem = new MesquiteCheckMenuItem("Select Non-Matching", ownerModule, MesquiteModule.makeCommand("toggleNonMatching", this), null, null);
+				notMatchingItem.set(nonMatching.getValue());
+				popup.add(notMatchingItem);
 				popup.showPopup(x,y+6);
 			}
 		}
@@ -292,60 +353,18 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			MesquiteInteger io = new MesquiteInteger(0);
 			lessThan.toggleValue(ParseUtil.getFirstToken(arguments, io));
 		}
-		else if (checker.compare(this.getClass(), "Sets whether the wand selects within list items that are otherwise already selected", "[on = selects less than; off]", commandName, "toggleWithinSelection")) {
+		else if (checker.compare(this.getClass(), "Sets whether the wand selects within list items that are otherwise already selected", "[on = selects within; off]", commandName, "toggleWithinSelection")) {
 			boolean current = withinExistingSelection.getValue();
 			MesquiteInteger io = new MesquiteInteger(0);
 			withinExistingSelection.toggleValue(ParseUtil.getFirstToken(arguments, io));
 		}
-		else if (checker.compare(this.getClass(), "Applies the magic wand tool to select like values", "[column touched] [row touched]", commandName, "wandTouch")) {
+		else if (checker.compare(this.getClass(), "Sets whether the wand selects items that do NOT match that touched", "[on = selects non-matching; off]", commandName, "toggleNonMatching")) {
+			boolean current = nonMatching.getValue();
 			MesquiteInteger io = new MesquiteInteger(0);
-			//Debugg.println("wandTouch");
-			int column= MesquiteInteger.fromString(arguments, io);
-			int row= MesquiteInteger.fromString(arguments, io);
-			if (MesquiteInteger.isNonNegative(column)&& (MesquiteInteger.isNonNegative(row))) {
-				if (getCurrentObject() instanceof Associable){
-					Associable assoc = (Associable)getCurrentObject();
-					boolean withinSelection = withinExistingSelection.getValue() && assoc.getSelected(row);
-					if (arguments.indexOf("shift")<0 && !withinSelection)
-						assoc.deselectAll();
-					table.offAllEdits();
-					String text = table.getMatrixText(column, row);
-					for (int i=0; i<table.getNumRows(); i++){
-						boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
-						if (withinSelection) {
-							if (assoc.getSelected(i))
-								assoc.setSelected(i, satisfies);
-						}
-						else if (satisfies) {
-							assoc.setSelected(i, true);
-						}
-					}
-					assoc.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-				}
-				else {
-					boolean withinSelection = withinExistingSelection.getValue() && table.isRowSelected(row);
-					if (arguments.indexOf("shift")<0 && !withinSelection)
-						table.deselectAll();
-					table.offAllEdits();
-					String text = table.getMatrixText(column, row);
-					for (int i=0; i<table.getNumRows(); i++){
-						boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
-						if (withinSelection) {
-							if (table.isRowSelected(i))
-								if (satisfies)
-									table.selectRow(i);
-								else
-									table.deselectRow(i);
-						}
-						else if (satisfies) {
-							table.selectRow(i);
-						} 
-					}
-					table.repaintAll();
-				}
-				
-
-			}
+			nonMatching.toggleValue(ParseUtil.getFirstToken(arguments, io));
+		}
+		else if (checker.compare(this.getClass(), "Applies the magic wand tool to select like values", "[column touched] [row touched]", commandName, "wandTouch")) {
+			doWandTouch(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Sorts rows", "[column touched] [row touched]", commandName, "sortTouch")) {
 			if (!(getCurrentObject() instanceof Associable))

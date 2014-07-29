@@ -14,6 +14,7 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 
 
@@ -162,6 +163,24 @@ public abstract class TableWindow extends MesquiteWindow {
 		else return  super.doCommand(commandName, arguments, checker);
 		return null;
  	}
+	/*.................................................................................................................*/
+	public boolean shiftDown(String arguments){
+		if (StringUtil.blank(arguments))
+			return false;
+		 return (arguments.indexOf("shift")>=0);
+	}
+	/*.................................................................................................................*/
+	public boolean commandDown(String arguments){
+		if (StringUtil.blank(arguments))
+			return false;
+		 return (arguments.indexOf("command")>=0);
+	}
+	/*.................................................................................................................*/
+	public boolean optionDown(String arguments){
+		if (StringUtil.blank(arguments))
+			return false;
+		 return (arguments.indexOf("option")>=0);
+	}
 	/*.................................................................................................................*/
 	public void paintContents(Graphics g) {
 		if (getTable()==null) return;
