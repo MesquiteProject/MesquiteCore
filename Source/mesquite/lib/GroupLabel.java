@@ -24,6 +24,7 @@ public class GroupLabel extends FileElement {
 	int id;
 	boolean colorWasSet = false;
 	boolean symbolWasSet = false;
+	boolean recentlyModified = false;
 	boolean visible = true;
 	static int numLabels;
 	static {
@@ -83,6 +84,12 @@ public class GroupLabel extends FileElement {
 	/*.................................................................................................................*/
 	public boolean symbolSet(){
 		return symbolWasSet;
+	}
+	public boolean isRecentlyModified() {
+		return recentlyModified;
+	}
+	public void setRecentlyModified(boolean recentlyModified) {
+		this.recentlyModified = recentlyModified;
 	}
 	
 	/*.................................................................................................................*/

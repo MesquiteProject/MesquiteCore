@@ -332,6 +332,28 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return null;
 	}
 
+	public void setCurrentGroup(CharactersGroup group, int icStart, int icEnd, MesquiteModule ownerModule) {
+		if (icEnd<icStart || group==null)
+			return;
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
+		if (partition==null){
+			partition= new CharacterPartition("Partition", getNumChars(), null, this);
+			partition.addToFile(getFile(), getProject(), ownerModule.findElementManager(CharacterPartition.class));
+			setCurrentSpecsSet(partition, CharacterPartition.class);
+		}
+		if (group != null) {
+			if (partition != null) {
+				boolean changed = false;
+				for (int ic=icStart; ic<getNumChars() && ic<=icEnd; ic++) {
+					partition.setProperty(group, ic);
+					changed = true;
+
+				}
+				if (changed)
+					notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
+			}
+		}
+	}
 	public void setToNewGroup(String name, int icStart, int icEnd, MesquiteModule ownerModule) {
 		if (icEnd<icStart)
 			return;
@@ -368,6 +390,72 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
 			}
 		}
+	}
+	public CharactersGroup createNewGroup(CharactersGroupVector groups, String groupName, MesquiteModule ownerModule){
+		CharactersGroup group = new CharactersGroup();
+		group.setName(groupName);
+		group.addToFile(getFile(), getProject(), ownerModule.findElementManager(CharactersGroup.class));
+		if (groups.indexOf(group)<0) 
+			groups.addElement(group, false);	
+		return group;
+	}
+	
+	public void prefixGroupNames(String prefix, int icStart, int icEnd, MesquiteModule ownerModule) {
+		if (icEnd<icStart)
+			return;
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
+		if (partition==null){
+			partition= new CharacterPartition("Partition", getNumChars(), null, this);
+			partition.addToFile(getFile(), getProject(), ownerModule.findElementManager(CharacterPartition.class));
+			setCurrentSpecsSet(partition, CharacterPartition.class);
+		}
+		CharactersGroup group;
+		CharactersGroup newGroup=null;
+		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+		for (int i=0; i<groups.size(); i++){
+			group = (CharactersGroup)groups.elementAt(i);
+			group.setRecentlyModified(false);
+		}
+
+
+
+
+		if (partition != null) {
+			boolean changed = false;
+			for (int ic=icStart; ic<getNumChars() && ic<=icEnd; ic++) {
+				CharactersGroup currentGroup = (CharactersGroup)partition.getProperty(ic);
+				if (currentGroup==null) { // this character doesn't have a group assigned to it; will assign a new group based upon "prefix"
+					if (newGroup==null) { //make a new group
+						group = groups.findGroup(prefix);  //see if one with prefix already exists
+						String groupName = prefix;
+						if (group==null) {
+							newGroup = createNewGroup(groups,groupName,ownerModule);
+							newGroup.setRecentlyModified(true);
+							currentGroup=newGroup;
+						} else {
+							currentGroup=group;
+							currentGroup.setRecentlyModified(true);  // because the character is not assigned to any group, this character will get the group that uses the prefix name, which we don't want to modify, so we set it as already modified.
+						}
+					} else 
+						currentGroup=newGroup;
+				} 
+				if (!currentGroup.isRecentlyModified()) {  // rename it with prefix
+					currentGroup.setName(prefix+"."+currentGroup.getName());
+					currentGroup.setRecentlyModified(true);
+				}
+				partition.setProperty(currentGroup, ic);
+				changed = true;
+
+			}
+			if (changed)
+				notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
+
+		}
+		for (int i=0; i<groups.size(); i++){
+			group = (CharactersGroup)groups.elementAt(i);
+			group.setRecentlyModified(false);
+		}
+
 	}
 	/*.................................................................................................................*/
 	public  boolean hasCharacterGroups(){
@@ -2940,7 +3028,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return concatenate(oData, addTaxaIfNew, true, explainIfProblem, notify);
 	}
 
-	/*------------------*/
+	/** Concatenates the CharacterData oData to this object. */
 	public boolean concatenate(CharacterData oData, boolean addTaxaIfNew, boolean concatExcludedCharacters, boolean explainIfProblem, boolean notify){
 		if (oData==null)
 			return false;
@@ -2992,14 +3080,27 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			addParts(origNumChars+1, oData.getNumChars());
 		else 
 			addParts(origNumChars+1, oData.numCharsCurrentlyIncluded());
-		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
-		if (partition==null && origNumChars-1>=0) // let's give the origjnal ones a group
-			setToNewGroup(getName(), 0, origNumChars-1, module);  //set group
-		CharacterPartition oPartition = (CharacterPartition) oData.getCurrentSpecsSet(CharacterPartition.class);
-		if (oPartition == null)
-			setToNewGroup(oData.getName(), origNumChars, getNumChars()-1, module);  //set group
-			
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);   // partition of this object
+		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+		CharactersGroup group = null;  //see if one with prefix already exists
+		if (partition==null && origNumChars-1>=0){ // let's give the original ones a group, as they didn't have any before
+			group = groups.findGroup(getName());  //let's see if there already exists a group with this matrix name
+			if (group==null)
+				setToNewGroup(getName(), 0, origNumChars-1, module);  //set group
+			else
+				setCurrentGroup(group,0, origNumChars-1, module);  
+		}
+		CharacterPartition oPartition = (CharacterPartition) oData.getCurrentSpecsSet(CharacterPartition.class);   // partition in incoming. This by default will be used.
+		if (oPartition == null){
+			group = groups.findGroup(oData.getName());  //let's see if there already exists a group with this matrix name
+			if (group==null)
+				setToNewGroup(oData.getName(), origNumChars, getNumChars()-1, module);  //set group
+			else
+				setCurrentGroup(group,origNumChars, getNumChars()-1, module);   //set group
+		}
+		
 		addInLinked(getNumChars()+1, oData.getNumChars(), true);
+			
 		CharacterState cs = null;
 		int count=0;
 		for (int ic = 0; ic<oData.getNumChars(); ic++){
@@ -3009,6 +3110,10 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				count++;
 			}
 		}
+		
+		if (oPartition != null)
+			prefixGroupNames(oData.getName(), origNumChars, getNumChars()-1, module);  //there exists a partition in the incoming, so just redo the names for the groups there.
+
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {origNumChars, oData.getNumChars()}));
 		return true;
