@@ -78,10 +78,10 @@ public class MolecularDataUtil {
 		AlignUtil alignUtil = new AlignUtil();
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(true,data);
 		aligner.setAllowNewInternalGaps(allowNewGaps);
-		boolean defaultWarnCheckSum  =true;
-		MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
-		long originalCheckSum;
-		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,itStart, itEnd);
+//		boolean defaultWarnCheckSum  =true;
+//		MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
+//		long originalCheckSum;
+//		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,itStart, itEnd);
 		for (int it=itStart; it<=itEnd; it++) {
 			if (it!=referenceTaxon) {
 				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
@@ -92,9 +92,10 @@ public class MolecularDataUtil {
 					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
 				}
 				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
+				Debugg.println("score: " + score);
 			}
 		}
-		((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,itStart, itEnd, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
+//		((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,itStart, itEnd, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 		
 
 	}

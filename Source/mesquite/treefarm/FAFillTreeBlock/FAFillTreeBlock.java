@@ -79,7 +79,7 @@ public class FAFillTreeBlock extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	/** Called to alter file. */
-	public boolean alterFile(MesquiteFile file){
+	public boolean processFile(MesquiteFile file){
 		MesquiteProject proj = file.getProject();
 		if (proj == null)
 			return false;

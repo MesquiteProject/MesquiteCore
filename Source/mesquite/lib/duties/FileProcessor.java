@@ -35,8 +35,8 @@ public abstract class FileProcessor extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
-   	/** Called to alter file. */
-   	public  abstract boolean alterFile(MesquiteFile file);
+   	/** Called to process file. */
+   	public  abstract boolean processFile(MesquiteFile file);
    	
 
 }
