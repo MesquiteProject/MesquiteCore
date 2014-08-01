@@ -493,16 +493,18 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		boolean firstTimeThrough = true;
 		initializeExport(taxa);
 
-		for (int im = 0; im<numMatrices; im++) {
-			if (exportMultipleMatrices()) {
-				data = getProject().getCharacterMatrixVisible(t, im, CategoricalState.class);
-				if (data==null) continue;
-			} 
-			 if (!writeExcludedCharacters){
-				 numCharWrite +=  data.numCharsCurrentlyIncluded(this.writeOnlySelectedData);
-			 } else {
-				 numCharWrite +=  data.numberSelected(this.writeOnlySelectedData);
-			 }
+		if (data!=null) {
+			for (int im = 0; im<numMatrices; im++) {
+				if (exportMultipleMatrices()) {
+					data = getProject().getCharacterMatrixVisible(t, im, CategoricalState.class);
+					if (data==null) continue;
+				} 
+				if (!writeExcludedCharacters){
+					numCharWrite +=  data.numCharsCurrentlyIncluded(this.writeOnlySelectedData);
+				} else {
+					numCharWrite +=  data.numberSelected(this.writeOnlySelectedData);
+				}
+			}
 		}
 		charWritten=0;
 
