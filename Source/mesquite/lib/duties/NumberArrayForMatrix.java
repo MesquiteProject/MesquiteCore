@@ -21,7 +21,7 @@ import mesquite.lib.characters.*;
 /* ======================================================================== */
 /**Supplies a number for a data set (a CharacterData object)*/
 
-public abstract class NumbersForMatrix extends MesquiteModule  {
+public abstract class NumberArrayForMatrix extends MesquiteModule  {
 
    	 public Class getDutyClass() {
    	 	return NumberForMatrix.class;
@@ -65,6 +65,7 @@ public abstract class NumbersForMatrix extends MesquiteModule  {
 		return getNameAndParameters();
    	}
 	public abstract String[] getNumbersNames();
+	public abstract int getNumberOfNumbers();
 
 }
 
