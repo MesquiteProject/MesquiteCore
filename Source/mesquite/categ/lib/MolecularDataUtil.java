@@ -212,10 +212,10 @@ public class MolecularDataUtil {
 			}
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
 				int stops = getMinimumStops(data, it, modelSet);
-				data.reverseComplement(0, data.getNumChars()-1, it, false, false);
+				data.reverseComplement(0, data.getNumChars()-1, it, false, true);
 				int stopsRC = getMinimumStops(data, it, modelSet);
 				if (stops<=stopsRC) {
-					data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+					data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
 				} else
 					module.logln("  Reverse complemented " + taxa.getTaxonName(it));
 			}
@@ -237,7 +237,7 @@ public class MolecularDataUtil {
 				}
 				
 				if (score>1.0){
-					data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+					data.reverseComplement(0, data.getNumChars(), it, false, true);  
 					module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
 				}
 			//	else
@@ -261,10 +261,10 @@ public class MolecularDataUtil {
 			for (int it = 0; it<taxa.getNumTaxa() ; it++) {
 				if (taxaToAdjust.isBitOn(it)) {
 					int stops = getMinimumStops(data, it, modelSet);
-					data.reverseComplement(0, data.getNumChars()-1, it, false, false);
+					data.reverseComplement(0, data.getNumChars()-1, it, false, true);
 					int stopsRC = getMinimumStops(data, it, modelSet);
 					if (stops<=stopsRC) {
-						data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
 					} else
 						module.logln("  Reverse complemented " + taxa.getTaxonName(it));
 				}
@@ -277,7 +277,7 @@ public class MolecularDataUtil {
 					score = alignmentScoreRatioToRCScore((DNAData)data, module, 0, it, true);
 
 					if (score>1.0){
-						data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
 						module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
 					}
 					//	else
