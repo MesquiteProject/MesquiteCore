@@ -742,7 +742,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		return -1;
 	}
 	private int translateIndexUsedToOriginal(int index){
-		if (listablesUsed !=null && listablesUsed != originalListables && index < originalListables.length && index < listablesUsed.length){
+		if (listablesUsed !=null && listablesUsed != originalListables && index>0 && index < originalListables.length && index < listablesUsed.length){
 			Listable listable = listablesUsed[index];
 			int which = findListable(originalListables, listable);
 			return which;
