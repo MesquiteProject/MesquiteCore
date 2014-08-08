@@ -63,6 +63,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			return sorry(getName() + " couldn't start because no Blast module could be obtained.");
 		else if (!blasterTask.initialize())
 			return false;
+		results = new StringBuffer();
 		loadPreferences();
 		return true;
 	}
@@ -245,6 +246,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	/** Called to search on the data in selected cells.  Returns true if data searched*/
 	public boolean searchData(CharacterData data, MesquiteTable table){
 		this.data = data;
+		results.setLength(0);
 		if (!(data instanceof DNAData || data instanceof ProteinData)){
 			discreetAlert( "Only DNA or protein data can be searched using this module.");
 			return false;
@@ -286,10 +288,10 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
-		results = new StringBuffer();
 		if (data==null || blasterTask==null)
 			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
+		results.append("\n   BLASTing "+ sequenceName+ "\n");
 		StringBuffer sequence = new StringBuffer(data.getNumChars());
 		for (int ic = icStart; ic<=icEnd; ic++) {
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);
@@ -311,6 +313,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 		if (blastResults.someHits())
 			results.append("   Top hits\n\tAccession [eValue] Definition): \n");
+		else
+			results.append("   No hits returned.\n");
 
 		for (int i=0; i<maxHits; i++) {
 			if (StringUtil.notEmpty(blastResults.getAccession(i))) {
