@@ -130,7 +130,7 @@ public class BLASTResults {
 
 	public String toString(int numHits) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("   Top hits\n\tAccession\t[eValue]\tDefinition): \n");
+		sb.append("   Top hits\n\tAccession\t[eValue]\tDefinition: \n");
 		for (int i=0; i<maxHits && i<numHits && i<accession.length; i++) {
 			if (StringUtil.notEmpty(accession[i])){
 				/*				if (reversed[i])

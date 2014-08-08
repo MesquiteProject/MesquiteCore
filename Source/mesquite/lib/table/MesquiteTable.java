@@ -4480,27 +4480,41 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/**
-	 * returns the boundaries of the next single block of cells selected within one row, starting from upper left, and going through each row before going to next row. If rows and columns passed in as MesquiteInteger are unassigned, then this finds the first case. Subsequent calls, if passed the same MesquiteIntegers retaining previously returned values, will find next block.
+	 * returns the boundaries of the next single block of cells selected within one row, starting from upper left, and going through each row before going to next row. 
+	 * If rows and columns passed in as MesquiteInteger are unassigned, then this finds the first case. Subsequent calls, if passed the same MesquiteIntegers retaining 
+	 * previously returned values, will find next block.
 	 */
 	public boolean nextSingleRowBlockSelected(MesquiteInteger row, MesquiteInteger firstColumn, MesquiteInteger lastColumn) {
 		if (!anyCellSelectedAnyWay())
 			return false;
-		int tempLastRow = row.getValue();
-		int tempLastColumn = lastColumn.getValue();
-		if (!row.isCombinable()) {
-			tempLastRow = 0;
+		if (row==null||firstColumn==null||lastColumn==null){
+			MesquiteMessage.warnProgrammer("Wanring: MesquiteIntegers passed to nextSingleRowBlockSelected cannot be null!");
+			return false;
 		}
-		if (!lastColumn.isCombinable())
-			tempLastColumn = -1;
-		else if (tempLastColumn >= numColumnsTotal - 1) { // end of previous row, need to go to start of next row
-			tempLastRow++;
-			tempLastColumn = -1;
+		boolean nextRow=false;
+		int incomingRow = row.getValue();
+		if (!row.isCombinable()) {
+			incomingRow = 0;
+		}
+		
+		int incomingLastColumn = lastColumn.getValue();
+		if (!lastColumn.isCombinable()){   // can only happen on first time through
+			incomingLastColumn = -1;
+		}
+		else if (incomingLastColumn >= numColumnsTotal - 1) { // end of previous row, need to go to start of next row
+			nextRow=true;;
+			incomingLastColumn = -1;
 		}
 		else
-			tempLastColumn++;
-		if (tempLastRow >= numRowsTotal)
+			incomingLastColumn++;
+		
+		if (nextRow)
+			incomingRow++;
+		
+		if (incomingRow >= numRowsTotal)  //incomingRow is 0-based but numRowsTotal is 1-based
 			return false;
-		for (int i = tempLastRow; i < numRowsTotal; i++) { // go through the rows
+		
+		for (int i = incomingRow; i < numRowsTotal; i++) { // go through the rows
 			if (isRowSelected(i)) {
 				row.setValue(i);
 				firstColumn.setValue(0);
@@ -4508,7 +4522,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				return true;
 			}
 			else {
-				for (int j = tempLastColumn + 1; j < numColumnsTotal; j++) {
+				for (int j = incomingLastColumn + 1; j < numColumnsTotal; j++) {
 					if (isColumnSelected(j) || isCellSelected(j, i)) {
 						row.setValue(i);
 						firstColumn.setValue(j);
@@ -4527,7 +4541,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 				}
 			}
-			tempLastColumn = -1;
+			incomingLastColumn = -1;
 
 		}
 		return false;

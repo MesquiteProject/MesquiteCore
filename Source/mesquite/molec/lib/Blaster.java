@@ -80,16 +80,16 @@ public abstract class Blaster extends MesquiteModule   {
 	public  void basicDNABlastForMatches(int blastOption, String sequenceName, String sequence, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse, boolean writeTime){
 		switch (blastOption) {
 		case Blaster.BLAST: 
-			blastForMatches("blastn", sequenceName, sequence.toString(), true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("blastn", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
 			break;
 		case Blaster.BLASTX: 
-			blastForMatches("blastx", sequenceName, sequence.toString(), true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("blastx", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
 			break;
 		case Blaster.TBLASTX: 
-			blastForMatches("tblastx", sequenceName, sequence.toString(), true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("tblastx", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
 			break;
 		default: 
-			blastForMatches("blastn", sequenceName, sequence.toString(), true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("blastn", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
 			break;
 		}
 	}

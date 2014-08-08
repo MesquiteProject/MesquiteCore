@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.table.*;
 import mesquite.lib.characters.*;
@@ -41,8 +42,9 @@ public abstract class DataSearcher extends MesquiteModule  {
    	}
    	
 	/*.................................................................................................................*/
-   	/** processing to be done after each search.  */
-   	public void processAfterEachTaxonSearch(mesquite.lib.characters.CharacterData data, int it){
+   	/** Processing to be done after each search.  Returns true iff the number of columns changed in the process).*/
+   	public boolean processAfterEachTaxonSearch(mesquite.lib.characters.CharacterData data, int it){
+   		return false;
    	}
 	/*.................................................................................................................*/
 	/** message if search failed to find anything.  */
@@ -73,10 +75,16 @@ public abstract class DataSearcher extends MesquiteModule  {
  			MesquiteInteger lastColumn = new MesquiteInteger();
  	
  			while (table.nextSingleRowBlockSelected(row, firstColumn, lastColumn)) { 
- 				if (searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue()))
- 					processAfterEachTaxonSearch(data, row.getValue());
-				else
+ 				if (searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue())){
+ 					boolean resetColumns = processAfterEachTaxonSearch(data, row.getValue());
+ 					if (resetColumns){  //
+ 						lastColumn.setValue(data.getNumChars());
+ 						firstColumn.setValue(0);
+ 					}
+ 				}
+				else {
 					unsuccessfulSearchMessage();
+				}
 				did = true;
  			}
  			if (!did)

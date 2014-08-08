@@ -99,7 +99,7 @@ public class MolecularDataUtil {
 					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
 				}
 				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
-				Debugg.println("score: " + score);
+				//Debugg.println("score: " + score);
 			}
 		}
 //		((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,itStart, itEnd, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
@@ -181,7 +181,8 @@ public class MolecularDataUtil {
 		}
 		MesquiteNumber alignScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignScore);
-		Debugg.println("   Alignment score: " + alignScore);
+		if (verbose)
+			module.logln("   Alignment score: " + alignScore);
 		for (int ic = firstSite; ic<=lastSite; ic++){
 			extracted2[lastSite-ic] = DNAState.complement(data.getState(ic, it2));
 		}

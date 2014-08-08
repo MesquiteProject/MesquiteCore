@@ -43,6 +43,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	boolean preferencesSet = false;
 	boolean fetchTaxonomy = false;
 	boolean interleaveResults = false;
+	boolean adjustSequences = true;
+	boolean addInternalGaps = true;
 //	boolean blastx = false;
 	int maxTime = 300;
 	static int upperMaxHits = 30;
@@ -74,8 +76,10 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			importTopMatches = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("interleaveResults".equalsIgnoreCase(tag))
 			interleaveResults = MesquiteBoolean.fromTrueFalseString(content);
-//		else if ("blastx".equalsIgnoreCase(tag))
-//			blastx = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("adjustSequences".equalsIgnoreCase(tag))
+			adjustSequences = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("addInternalGaps".equalsIgnoreCase(tag))
+			addInternalGaps = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("blastType".equalsIgnoreCase(tag))
 			blastType = MesquiteInteger.fromString(content);
 		else if ("eValueCutoff".equalsIgnoreCase(tag))
@@ -93,6 +97,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "maxTime", maxTime);  
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
 		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
+		StringUtil.appendXMLTag(buffer, 2, "addInternalGaps", addInternalGaps);  
+		StringUtil.appendXMLTag(buffer, 2, "adjustSequences", adjustSequences);  
 //		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
 		StringUtil.appendXMLTag(buffer, 2, "eValueCutoff", eValueCutoff);  
 		StringUtil.appendXMLTag(buffer, 2, "maxHits", maxHits);  
@@ -108,6 +114,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	Checkbox fetchTaxonomyCheckBox;
 	Checkbox importCheckBox;
 	Checkbox interleaveResultsCheckBox;
+	Checkbox adjustSequencesCheckBox;
+	Checkbox addInternalGapsCheckBox;
 	/*.................................................................................................................*/
 	private void checkEnabling(){
 		//importCheckBox.setEnabled(!blastXCheckBox.getState());
@@ -132,6 +140,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert hits after sequence that was BLASTed",interleaveResults);
+		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement and align imported sequences if needed",adjustSequences);
+		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
 		
 		IntegerField maxTimeField = dialog.addIntegerField("Maximum time for BLAST response (seconds):",  maxTime,5);
 	//	blastXCheckBox.addItemListener(this);
@@ -150,6 +160,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			if (blastType<0) blastType=oldBlastType;
 			importTopMatches = importCheckBox.getState();
 			interleaveResults = interleaveResultsCheckBox.getState();
+			adjustSequences = adjustSequencesCheckBox.getState();
+			addInternalGaps = addInternalGapsCheckBox.getState();
 			maxTime=maxTimeField.getValue();
 			storePreferences();
 		}
@@ -178,12 +190,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		return true;
 	}
 	/*.................................................................................................................*/
-	/** processing to be done after each search.  */
-	public void processAfterEachTaxonSearch(CharacterData data, int it){
+	/** Processing to be done after each search. Returns true if  */
+	public boolean processAfterEachTaxonSearch(CharacterData data, int it){
 		logln("\nSearch results: \n"+ results.toString());
 		//		logln("**** IDs: " +StringArray.toString(ID)); 
+		int numTaxaAdded =0;
 
 		if (importTopMatches ){  
+			int originalNumChars = data.getNumChars();
 			int insertAfterTaxon = data.getNumTaxa()-1;
 			if (interleaveResults)
 				insertAfterTaxon = it;
@@ -194,27 +208,38 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			if (blastType==Blaster.BLASTX && data instanceof DNAData) {
 				//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
 				ID = blasterTask.getNucleotideIDsfromProteinIDs(ID);
-				//				logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
+				//	logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
 			}
 			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
 
 			StringBuffer blastResponse = new StringBuffer();
 			String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
 
-			if (StringUtil.notEmpty(newSequencesAsFasta))
-				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, report, insertAfterTaxon);
-			else
-				logln("BLAST database returned no FASTA files in response to query.");
 
+			numTaxaAdded = data.getNumTaxa();
+			if (StringUtil.notEmpty(newSequencesAsFasta))
+				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, report, insertAfterTaxon, it, adjustSequences, addInternalGaps);
+			else
+				logln("BLAST database returned no sequences in response to query.");
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			logln(report.toString());
+			
+			numTaxaAdded = data.getNumTaxa()-numTaxaAdded;
+/*			if (lastSearched!=null && lastSearched.isCombinable()) {
+				if (interleaveResults) { 
+					//lastSearched.add(numTaxaAdded);
+				}
+			}
+			*/
+			return data.getNumChars()!=originalNumChars;
 		}
+		return true;
 	}
 	/*.................................................................................................................*/
 	/** message if search failed to find anything.  */
 	public void unsuccessfulSearchMessage(){
-		logln("BLAST database returned no FASTA files in response to query.");
+		logln("BLAST database returned no sequences in response to query.");
 	}
 	/*.................................................................................................................*/
 	/** Called to search on the data in selected cells.  Returns true if data searched*/
@@ -269,7 +294,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		for (int ic = icStart; ic<=icEnd; ic++) {
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);
 		}
-
+		
 		StringBuffer response = new StringBuffer();
 		//blasterTask.setBlastx(blastx);
 		blasterTask.setBlastType(blastType);
@@ -281,11 +306,11 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 		BLASTResults blastResults = new BLASTResults(maxHits);
 		
-		if (blastResults.someHits())
-			results.append("   Top hits\n\tAccession [eValue] Definition): \n");
-
 		blastResults.processResultsFromBLAST(response.toString(), false, eValueCutoff);
 		blasterTask.postProcessingCleanup(blastResults);
+
+		if (blastResults.someHits())
+			results.append("   Top hits\n\tAccession [eValue] Definition): \n");
 
 		for (int i=0; i<maxHits; i++) {
 			if (StringUtil.notEmpty(blastResults.getAccession(i))) {
