@@ -141,8 +141,20 @@ public class AlignToDropped extends DataWindowAssistantI {
 			long[] newAlignment = Long2DArray.extractRow(aligned,1);
 
 			int[] newGaps = aligner.getGapInsertionArray();
-			if (newGaps!=null)
-				alignUtil.insertNewGaps((MolecularData)data, newGaps);
+	/*			if (newGaps!=null) {
+			int total = 0;
+				for (int i=0; i<newGaps.length; i++) {
+					if (newGaps[i]!=0)
+						Debugg.println("      " + i + "   " + newGaps[i]);
+				//	if (newGaps[i]<0)
+				//		newGaps[i]=0;
+					total += newGaps[i];
+				}
+				//Debugg.println("total newGaps: " + total);
+			}
+			*/
+			if (newGaps!=null) 
+				alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
 			Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
 
 			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);

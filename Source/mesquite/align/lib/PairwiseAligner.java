@@ -121,18 +121,33 @@ public class PairwiseAligner  {
 
 	}
 	
+	int preSequenceTerminalFlaggedGap = -1;
+	int postSequenceTerminalFlaggedGap = -1;
+	
+	
+	
+	public int getPreSequenceTerminalFlaggedGap() {
+		return preSequenceTerminalFlaggedGap;
+	}
+
+	public int getPostSequenceTerminalFlaggedGap() {
+		return postSequenceTerminalFlaggedGap;
+	}
+
 	private void doFlagGapArrayTerminals(long[] recipientSequence) {
 		if (gapInsertionArray==null)
 			return;
-		for (int i=0; i<gapInsertionArray.length; i++) {
+		for (int i=0; i<gapInsertionArray.length; i++) { // going up from start
 			if (gapInsertionArray[i]>0) {
 				boolean terminal=true;
 				for (int j=0; j<=i+1 && j<recipientSequence.length; j++) {
 					if (recipientSequence[j]!=MolecularState.inapplicable)
 						terminal=false;
 				}
-				if (terminal)
-					gapInsertionArray[i] = -gapInsertionArray[i];
+				if (terminal) {
+					gapInsertionArray[i] = -gapInsertionArray[i];  //having them as negative will flag them as terminal gaps
+					preSequenceTerminalFlaggedGap = i;
+				}
 				break;
 			}
 		}
@@ -143,9 +158,11 @@ public class PairwiseAligner  {
 					if (recipientSequence[j]!=MolecularState.inapplicable)
 						terminal=false;
 				}
-				if (terminal)
-					gapInsertionArray[i] = -gapInsertionArray[i];
-				break;
+				if (terminal) {
+					gapInsertionArray[i] = -gapInsertionArray[i]; //having them as negative will flag them as terminal gaps
+					postSequenceTerminalFlaggedGap = i;
+				}
+				break;  
 			}
 		}
 	}
@@ -453,6 +470,7 @@ public class PairwiseAligner  {
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the sequences identified by the "taxon" and "site" arguments.
 	 * If object has been told to retain gaps, gaps in taxon1 will remain intact (new ones  may be added)*/
 	public long[][] alignSequences(MCategoricalDistribution data, int taxon1, int taxon2, int firstSite, int lastSite, boolean returnAlignment, MesquiteNumber score) {
+	//	Debugg.println("\n\n****** alignSequences,  taxon1: "+ taxon1 + ", taxon2: "+ taxon2 + ", lastSite: "+ lastSite + ", returnAlignment: "+ returnAlignment);
 		if (lastSite - firstSite+1 <0 || !MesquiteInteger.isCombinable(firstSite) || !MesquiteInteger.isCombinable(lastSite)){
 			firstSite = 0;
 			lastSite = data.getNumChars()-1;
@@ -473,7 +491,8 @@ public class PairwiseAligner  {
 		}
 		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
 		
-		
+//		Debugg.println("       firstSite: "+ firstSite + ", lastSite: "+ lastSite);
+
 		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
 	
 		return aligned;

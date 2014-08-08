@@ -229,11 +229,16 @@ public class AlignUtil {
 		return false;
 	}
 	
-	public void  insertNewGaps(MolecularData data, int[] newGaps){
+	/** This inserts the needed new characters into the matrix contained in the MolecularData object.  The number of new characters
+	 * to be inserted at each site is contained in the newGaps array.  Those sites that are to receive new terminal gaps are indicated
+	 * by the values of preSequenceTerminalFlaggedGap and postSequenceTerminalFlaggedGap.
+	 * */
+	public void  insertNewGaps(MolecularData data, int[] newGaps,  int preSequenceTerminalFlaggedGap,  int postSequenceTerminalFlaggedGap){
+		//preSequenceTerminalFlaggedGap,  int postSequenceTerminalFlaggedGap added DRM 7 Aug 2014
 		int start = newGaps.length-1;
 		if (data.getNumChars()<newGaps.length)
 			start = data.getNumChars()-1;
-		for (int ic = start; ic>=0; ic--) {
+		for (int ic = start; ic>=0; ic--) {  // go down from last characters to see if there are any gaps that need to be inserted, and insert them.
 			if (newGaps[ic]>0){
 				data.addCharacters(ic-1, newGaps[ic], false); 
 				data.addInLinked(ic-1, newGaps[ic], false);
@@ -242,18 +247,21 @@ public class AlignUtil {
 		start = newGaps.length-1;
 		if (data.getNumChars()<newGaps.length)
 			start = data.getNumChars()-1;
-		for (int ic = start; ic>=0; ic--) {   // go down for start and look for negative values denoting terminals
-			if (newGaps[ic]<0){
-				int numGaps = - newGaps[ic] - (data.getNumChars()-ic);  // are extra characters needed?
+		
+		for (int ic = start; ic>=0; ic--) {   // go down from start and look for negative values denoting terminal gaps at the END that might need to be inserted
+			if (newGaps[ic]<0 && postSequenceTerminalFlaggedGap==ic){  // negative value AND this is the array position marked as the terminal gap AFTER the sequence
+				int numGaps = - newGaps[ic] - (data.getNumChars()-1-ic);  // are extra characters needed?
 				if (numGaps>0) {
 					data.addCharacters(data.getNumChars(), numGaps, false); 
 					data.addInLinked(data.getNumChars(), numGaps, false);
 				}
+				newGaps[ic]=0;  // have to zero it so that it isn't acted upon by the next loop.  *** added by DRM 7 Aug 2014
 				break;
-			}
+			} 
 		}
-		for (int ic = 0; ic<data.getNumChars() && ic<newGaps.length; ic++) {   // go down for start and look for negative values denoting terminals
-			if (newGaps[ic]<0){
+		
+		for (int ic = 0; ic<data.getNumChars() && ic<newGaps.length; ic++) {   // go up from zero and look for negative values denoting terminals
+			if (newGaps[ic]<0 && preSequenceTerminalFlaggedGap==ic){ // negative value AND this is the array position marked as the terminal gap BEFORE the sequence
 				int numGaps = - newGaps[ic] - (ic);  // are extra characters needed?
 				if (numGaps>0) {
 					data.addCharacters(0, numGaps, false); 
