@@ -46,9 +46,9 @@ public class PrefixTaxonNameWithGroup extends TaxonNameAlterer {
     	}
 		if (currentPartition!=null){
 			tg = currentPartition.getTaxaGroup(it);
-			if (tg==null) return false;
 		}
-
+		if (tg==null) return false;
+		
     	
    		boolean nameChanged = false;
 		String name = taxa.getTaxonName(it);

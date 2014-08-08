@@ -358,8 +358,11 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	}
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int it, boolean selected){
-		if (observedStates == null)
+		if (observedStates == null){
 			doCalcs();
+			if (observedStates==null)
+				return null;
+		}
 		if (observedStates.getParentData() != null){
 			CharacterData data = observedStates.getParentData();
 			Associable tInfo = data.getTaxaInfo(false);
