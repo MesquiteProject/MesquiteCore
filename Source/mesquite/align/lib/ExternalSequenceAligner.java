@@ -331,6 +331,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 					keys[it] = MesquiteInteger.fromString(name.substring(1, name.length()));  //this is original taxon number
 					if (!MesquiteInteger.isCombinable(keys[it])) {
 						MesquiteMessage.println("Processing unsuccessful: can't find incoming taxon " + name);
+						MesquiteMessage.println("  Example taxon names found: ");
+						for (int i=0; i<alignedData.getNumTaxa() && i<10; i++) {
+							MesquiteMessage.println("    "+ alignedTaxa.getTaxonName(it));
+						}
+						
 						success=false;
 						break;
 					}
