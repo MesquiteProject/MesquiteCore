@@ -65,6 +65,12 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 	public boolean importExtraFiles(MesquiteFile file, Taxa taxa, TreeVector trees) {  
 		 return true;
 	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return false;  
+	}
+
 /*.................................................................................................................*/
 	public void readTreeFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 		boolean enlargeTaxaBlock = false;

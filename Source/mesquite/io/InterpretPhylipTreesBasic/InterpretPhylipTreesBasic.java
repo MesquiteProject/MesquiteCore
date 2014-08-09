@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.io.BasicInterpretPhylipTrees;
+package mesquite.io.InterpretPhylipTreesBasic;
 /*~~  */
 
 import java.util.*;
@@ -25,29 +25,29 @@ import mesquite.io.lib.*;
 
 /* ============  a file interpreter for Phylip trees ============*/
 
-public class BasicInterpretPhylipTrees extends InterpretPhylipTrees {
-/*.................................................................................................................*/
-    	 public String getName() {
-		return "Phylip (trees)";
-   	 }
-/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Imports and exports Phylip trees." ;
-   	 }
+public class InterpretPhylipTreesBasic extends InterpretPhylipTrees {
 	/*.................................................................................................................*/
- 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
- 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
- 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-    	public int getVersionOfFirstRelease(){
-    		return 110;  
-    	}
-    	/*.................................................................................................................*/
-    	public boolean isPrerelease(){
-    		return false;
-    	}
+	public String getName() {
+		return "Phylip (trees)";
+	}
+	/*.................................................................................................................*/
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Imports and exports Phylip trees." ;
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 110;  
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;
+	}
 
- 	 
+
 }
 	
 
