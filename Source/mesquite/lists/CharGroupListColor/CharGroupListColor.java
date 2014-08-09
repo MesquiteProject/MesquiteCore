@@ -134,15 +134,25 @@ public class CharGroupListColor extends CharGroupListAssistant  {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
+	public void specifyColor (int ic) {
+		CharactersGroup cg = getCharacterGroup(ic);
+		if (cg!=null){
+			Color oldColor = null;
+			if (chooseColor(oldColor)){
+				cg.setColor(newColor);
+				if (table != null)
+					table.repaintAll();
+				parametersChanged();
+			}
+		}
+	}
+	/*.................................................................................................................*/
 	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		CharactersGroup tg = getCharacterGroup(ic);
-		if (tg!=null){
-			tg.editMe();
-			parametersChanged();
+		if (ic>=0 && doubleClick) {
+			specifyColor(ic);
 			return true;
 		}
-
 		return false;
 	}
 	/*.................................................................................................................*/
