@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.MatrixSourceCoord;
@@ -254,6 +255,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		else {
 			if (!queryOptions())
 				return false;
+			if (saveResultsToFile)
+				prepareReportDirectory();
 			logln("\nSearching for top BLAST hits (" + blasterTask.getName() + ")");
 
 			boolean searchOK = searchSelectedTaxa(data,table);
@@ -278,12 +281,34 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		return new URL(s);
 	}
 
+	String reportDirectoryPath=null;
 	/*.................................................................................................................*/
-	public void saveResults( StringBuffer results) {
-		String path;
-		path = MesquiteFile.saveFileAsDialog("Save Top Matches report", new StringBuffer("blastMatches.txt"));
-		if (!StringUtil.blank(path)) {
-			MesquiteFile.putFileContents(path, results.toString(), false);
+	public boolean prepareReportDirectory() {
+		String folderName = "BLAST reports";
+		if (blasterTask!=null)
+			folderName = "BLAST to " + blasterTask.getDatabaseName();
+		reportDirectoryPath = MesquiteFileUtil.createDirectoryForFiles(this, MesquiteFileUtil.BESIDE_HOME_FILE, folderName,".");
+		return StringUtil.notEmpty(reportDirectoryPath);
+	}
+	/*.................................................................................................................*/
+	public void saveBLASTReport(String name, String contents) {
+		if (StringUtil.blank(reportDirectoryPath))
+			return;
+		
+		String blastReportPath = reportDirectoryPath + MesquiteFile.fileSeparator + name;  // directory into which processed files go
+		blastReportPath = MesquiteFile.getUniqueNumberedPath(blastReportPath);
+		if (!StringUtil.blank(blastReportPath)) {
+			MesquiteFile.putFileContents(blastReportPath, contents, false);
+		}
+	}
+	/*.................................................................................................................*/
+	public void saveResults(StringBuffer results) {
+		if (StringUtil.blank(reportDirectoryPath))
+			return;
+		
+		String blastSummaryPath = reportDirectoryPath + "BLAST summary";  // directory into which processed files go
+		if (!StringUtil.blank(blastSummaryPath)) {
+			MesquiteFile.putFileContents(blastSummaryPath, results.toString(), false);
 		}
 	}
 	/*.................................................................................................................*/
@@ -308,6 +333,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 		BLASTResults blastResults = new BLASTResults(maxHits);
 		
+		if (saveResultsToFile)
+			saveBLASTReport(sequenceName+" to " + blasterTask.getDatabaseName(),response.toString());
 		blastResults.processResultsFromBLAST(response.toString(), false, eValueCutoff);
 		blasterTask.postProcessingCleanup(blastResults);
 

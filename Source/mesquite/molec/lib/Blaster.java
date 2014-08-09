@@ -52,6 +52,7 @@ public abstract class Blaster extends MesquiteModule   {
 
 	public abstract String[] getNucleotideIDsfromProteinIDs(String[] ID);
 
+	public abstract String getDatabaseName ();
 
 
 	public  void postProcessingCleanup(BLASTResults blastResult){

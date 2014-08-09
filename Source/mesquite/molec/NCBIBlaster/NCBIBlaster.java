@@ -18,6 +18,10 @@ public class NCBIBlaster extends Blaster {
 	public boolean initialize() {
 		return true;
 	}
+	/*.................................................................................................................*/
+	public String getDatabaseName () {
+		return "NCBI GenBank";
+	}
 
 	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse, boolean writeCommand) {
 		timer.timeSinceLast();
@@ -52,7 +56,7 @@ public class NCBIBlaster extends Blaster {
 
 
 	public String getName() {
-		return "BLAST NCBI Server";
+		return "BLAST NCBI GenBank Server";
 	}
 
 	public String getExplanation() {
