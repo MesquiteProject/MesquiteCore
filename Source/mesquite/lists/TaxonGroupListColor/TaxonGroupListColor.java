@@ -87,70 +87,79 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 		return false;
 	}
 	/*.................................................................................................................*/
+	public void specifyColor () {
+		TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+		if (groups!=null  && table != null) {
+			Color oldColor = null;
+			boolean variable = false;
+			for (int i = 0; i< groups.size(); i++){
+				if (groups.getSelected(i) || table.isRowSelected(i)){
+					TaxaGroup tg = getTaxonGroup(i);
+					if (tg!=null){
+						Color color = tg.getColor();
+						if (color!=null){
+							if (ColorDistribution.equalColors(color, oldColor))
+								variable=true;
+							oldColor = color;
+						}
+					}
+				}
+			}
+			if (variable==true)
+				oldColor=null;
+			if (chooseColor(oldColor)){
+				for (int i = 0; i< groups.size(); i++){
+					if (groups.getSelected(i) || table.isRowSelected(i)){
+						TaxaGroup tg = getTaxonGroup(i);
+						if (tg!=null){
+							tg.setColor(newColor);
+							MesquiteSymbol symbol = tg.getSymbol();
+							if (symbol!=null)
+								symbol.setColor(newColor);
+						}
+					}
+				}
+				if (table != null)
+					table.repaintAll();
+				parametersChanged();
+			}
+
+		}
+	}
+	/*.................................................................................................................*/
+	public void specifyColor (int ic) {
+		TaxaGroup tg = getTaxonGroup(ic);
+		if (tg!=null){
+			Color oldColor = null;
+			if (chooseColor(oldColor)){
+				tg.setColor(newColor);
+				MesquiteSymbol symbol = tg.getSymbol();
+				if (symbol!=null)
+					symbol.setColor(newColor);
+				if (table != null)
+					table.repaintAll();
+				parametersChanged();
+			}
+		}
+	}
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
 			String newColorText = parser.getFirstToken(arguments);
-			if (StringUtil.blank(newColorText)){
-				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-				if (groups!=null  && table != null) {
-					Color oldColor = null;
-					boolean variable = false;
-					for (int i = 0; i< groups.size(); i++){
-						if (groups.getSelected(i) || table.isRowSelected(i)){
-							TaxaGroup tg = getTaxonGroup(i);
-							if (tg!=null){
-								Color color = tg.getColor();
-								if (color!=null){
-									if (ColorDistribution.equalColors(color, oldColor))
-										variable=true;
-									oldColor = color;
-								}
-							}
-						}
-					}
-					if (variable==true)
-						oldColor=null;
-					if (chooseColor(oldColor)){
-						for (int i = 0; i< groups.size(); i++){
-							if (groups.getSelected(i) || table.isRowSelected(i)){
-								TaxaGroup tg = getTaxonGroup(i);
-								if (tg!=null){
-									tg.setColor(newColor);
-									MesquiteSymbol symbol = tg.getSymbol();
-									if (symbol!=null)
-										symbol.setColor(newColor);
-								}
-							}
-						}
-						if (table != null)
-							table.repaintAll();
-						parametersChanged();
-					}
-
-				}
+			if (StringUtil.blank(newColorText)){   //TODO: what if not blank???
+				specifyColor();
 			}
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	/*.................................................................................................................*
-	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		TaxaGroup tg = getTaxonGroup(ic);
-		if (tg!=null){
-			JFrame guiFrame = new JFrame();
-			Color selectedColor = JColorChooser.showDialog(guiFrame, "Pick a Color", tg.getColor());
-			if (selectedColor!=null){
-				tg.setColor(selectedColor);
-				MesquiteSymbol symbol = tg.getSymbol();
-				if (symbol!=null)
-					symbol.setColor(selectedColor);
-			//tg.editMe();
-			parametersChanged();
-			}
+	/*.................................................................................................................*/
+	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+		if (ic>=0 && doubleClick) {
+			specifyColor(ic);
 			return true;
 		}
-
 		return false;
 	}
 	/*.................................................................................................................*/

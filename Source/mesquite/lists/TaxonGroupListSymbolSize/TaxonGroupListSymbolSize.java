@@ -74,6 +74,24 @@ public class TaxonGroupListSymbolSize extends TaxonGroupListAssistant  {
 		}
 	}
 		/*.................................................................................................................*/
+	public void specifySymbolSize(int ic) {
+		TaxaGroup tg = getTaxonGroup(ic);
+		if (tg!=null){
+			MesquiteSymbol symbol = tg.getSymbol();
+			if (symbol!=null){
+				int oldSize = symbol.getSize();
+				int newSize = MesquiteInteger.queryInteger(containerOfModule(), "Symbol Size", "Symbol Size", oldSize, 1, 500, true);
+				if (MesquiteInteger.isCombinable(newSize)){
+					symbol.setSize(newSize);
+					if (table != null)
+						table.repaintAll();
+					parametersChanged();
+				}
+			}
+		}
+	}
+
+		/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the size of the symbol", null, commandName, "setSize")) {
 			String size = parser.getFirstToken(arguments);
@@ -132,15 +150,12 @@ public class TaxonGroupListSymbolSize extends TaxonGroupListAssistant  {
 		return "";
 	}
 
-	/*.................................................................................................................*
-	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		TaxaGroup tg = getTaxonGroup(ic);
-		if (tg!=null){
-			tg.editMe();
-			parametersChanged();
+	/*.................................................................................................................*/
+	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+		if (ic>=0 && doubleClick) {
+			specifySymbolSize(ic);
 			return true;
 		}
-
 		return false;
 	}
 

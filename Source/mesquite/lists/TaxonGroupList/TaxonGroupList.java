@@ -25,13 +25,6 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class TaxonGroupList extends ListModule {
-	/*.................................................................................................................*/
-	public String getName() {
-		return "List of Taxon Group Labels";
-	}
-	public String getExplanation() {
-		return "Makes windows listing taxon groups and information about them." ;
-	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxonGroupListAssistant.class, "The List of Taxon Groups window can display columns showing information for each taxon group.",
 		"You can request that columns be shown using the Columns menu of the List of Taxon Groups Window. ");
@@ -39,6 +32,7 @@ public class TaxonGroupList extends ListModule {
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("New Taxon Group...", MesquiteModule.makeCommand("newGroup",  this));
 		return true;
 	}
 	public boolean showing(Object obj){
@@ -74,28 +68,25 @@ public class TaxonGroupList extends ListModule {
 				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-	/*		assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("#ModelsListParadigm"));
-			if (assistant!= null){
-				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
-				assistant.setUseMenubar(false);
-			}
-			assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("#ModelsListWhole"));
-			if (assistant!= null){
-				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
-				assistant.setUseMenubar(false);
-			}
-			assistant = (ModelsListAssistant)hireNamedEmployee(ModelsListAssistant.class, StringUtil.tokenize("Data type for model"));
-			if (assistant!= null){
-				((TaxonGroupListWindow)getModuleWindow()).addListAssistant(assistant);
-				assistant.setUseMenubar(false);
-			}
-*/
 		}
-	
 
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
 		//getModuleWindow().setVisible(true);
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
+			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, getProject().getFile(0));   //WAYNECHECK: how do we know this is the correct file?
+			if (group!=null){
+				// group.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //WAYNECHECK: what notifications can I do here given I don't have the Taxa?
+				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint();  //WAYNECHECK:  why is this not being repainted?
+				parametersChanged();
+			}
+			return group;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
 	}
 	/*.................................................................................................................*/
 	public boolean rowsMovable(){
@@ -176,6 +167,13 @@ public class TaxonGroupList extends ListModule {
 	public void windowGoAway(MesquiteWindow whichWindow) {
 		//Debug.println("disposing of getModuleWindow()");
 		whichWindow.hide();
+	}
+	/*.................................................................................................................*/
+	public String getName() {
+		return "List of Taxon Group Labels";
+	}
+	public String getExplanation() {
+		return "Makes windows listing taxon groups and information about them." ;
 	}
 
 
@@ -294,6 +292,7 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 			groups.removeListener(this);
 		super.dispose();
 	}
+
 }
 
 

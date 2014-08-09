@@ -87,7 +87,7 @@ public class TaxonGroupListVisibility extends TaxonGroupListAssistant  {
 	}
 
 	/*.................................................................................................................*
-	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
 		TaxaGroup tg = getTaxonGroup(ic);
 		if (tg!=null){
 			tg.editMe();

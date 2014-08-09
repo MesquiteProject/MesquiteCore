@@ -25,13 +25,6 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class CharGroupList extends ListModule {
-	/*.................................................................................................................*/
-	public String getName() {
-		return "List of Character Group Labels";
-	}
-	public String getExplanation() {
-		return "Makes windows listing character groups and information about them." ;
-	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(CharGroupListAssistant.class, "The List of Character Groups window can display columns showing information for each character group.",
 				"You can request that columns be shown using the Columns menu of the List of Character Groups Window. ");
@@ -39,6 +32,7 @@ public class CharGroupList extends ListModule {
 	CharactersGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem("New Character Group...", MesquiteModule.makeCommand("newGroup",  this));
 		return true;
 	}
 	public boolean showing(Object obj){
@@ -88,7 +82,16 @@ public class CharGroupList extends ListModule {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Returns data set whose characters are listed", null, commandName, "getData")) {
+		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
+			MesquiteString ms = new MesquiteString("");
+			CharactersGroup group = CharListPartitionUtil.makeGroup(this,getProject().getFile(0),containerOfModule(), ms);      // WAYNECHECK: how do we know this is referring to the correct file?
+			if (group!=null) {
+				((CharGroupListWindow)getModuleWindow()).getTable().repaint();  //WAYNECHECK:  why is this not being repainted?
+				parametersChanged();
+			}
+			return group;
+		}
+		else if (checker.compare(this.getClass(), "Returns data set whose characters are listed", null, commandName, "getData")) {
 			return null;
 		}
 		else
@@ -97,7 +100,7 @@ public class CharGroupList extends ListModule {
 	/*.................................................................................................................*/
 	/* following required by ListModule*/
 	public Object getMainObject(){
-		return getProject().getFileElement(CharactersGroupVector.class, 0);
+		return getProject().getFileElement(CharactersGroupVector.class, 0);     // WAYNECHECK: how do we know this is referring to the correct file?
 	}
 	public int getNumberOfRows(){
 		if (getProject().getFileElement(CharactersGroupVector.class, 0)==null)
@@ -171,6 +174,13 @@ public class CharGroupList extends ListModule {
 		whichWindow.hide();
 	}
 
+	/*.................................................................................................................*/
+	public String getName() {
+		return "List of Character Group Labels";
+	}
+	public String getExplanation() {
+		return "Makes windows listing character groups and information about them." ;
+	}
 
 }
 

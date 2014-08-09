@@ -71,6 +71,24 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	}
 
 	/*.................................................................................................................*/
+	public void specifySymbol(int ic) {
+		TaxaGroup tg = getTaxonGroup(ic);
+		if (tg!=null){
+			MesquiteSymbol oldSymbol = tg.getSymbol();
+			if (queryOptions(oldSymbol)){
+				MesquiteSymbol groupSymbol = newSymbol.cloneMethod();
+				groupSymbol.setSize(oldSymbol.getSize());
+				tg.setSymbol(groupSymbol);
+				tg.setColor(tg.getColor());
+				if (table != null)
+					table.repaintAll();
+				parametersChanged();
+			}
+		}
+	}
+
+
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the symbol", null, commandName, "setSymbol")) {
 			String newSymbolName = parser.getFirstToken(arguments);
@@ -178,14 +196,11 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	}
 
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		/*TaxaGroup tg = getTaxonGroup(ic);
-		if (tg!=null){
-			tg.editMe();
-			parametersChanged();
+	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+		if (ic>=0 && doubleClick) {
+			specifySymbol(ic);
 			return true;
 		}
-		 */
 		return false;
 	}
 
