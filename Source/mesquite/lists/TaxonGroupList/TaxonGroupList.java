@@ -79,7 +79,6 @@ public class TaxonGroupList extends ListModule {
 		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
 			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, getProject().getFile(0));   //WAYNECHECK: how do we know this is the correct file?
 			if (group!=null){
-				// group.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //WAYNECHECK: what notifications can I do here given I don't have the Taxa?
 				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint();  //WAYNECHECK:  why is this not being repainted?
 				parametersChanged();
 			}
