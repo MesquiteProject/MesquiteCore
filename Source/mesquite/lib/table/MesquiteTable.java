@@ -4515,7 +4515,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			return false;
 		
 		for (int i = incomingRow; i < numRowsTotal; i++) { // go through the rows
-			if (isRowSelected(i)) {
+			if (wholeRowSelectedAnyWay(i)) {
 				row.setValue(i);
 				firstColumn.setValue(0);
 				lastColumn.setValue(numColumnsTotal - 1);
@@ -4523,11 +4523,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			else {
 				for (int j = incomingLastColumn + 1; j < numColumnsTotal; j++) {
-					if (isColumnSelected(j) || isCellSelected(j, i)) {
+					if (isCellSelected(j, i)) {   
 						row.setValue(i);
 						firstColumn.setValue(j);
 						for (int k = j + 1; k < numColumnsTotal; k++) {
-							if (!isColumnSelected(k) && !isCellSelected(k, i)) {
+							if (!isCellSelected(k, i)) {
 								lastColumn.setValue(k - 1);
 								return true;
 							}
@@ -5205,6 +5205,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			if (notify)
 				columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 		}
+	}
+	/* ............................................................................................................... */
+	/** deselects all columns. */
+	public void convertColumnSelectionToRows(boolean notify) {
+		for (int row = 0; (row < numRowsTotal); row++)
+			if (wholeRowSelectedAnyWay(row)) {
+				selectRow(row);
+			}
+		deselectAllColumns(true);
 	}
 
 	/* ............................................................................................................... */

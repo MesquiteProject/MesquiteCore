@@ -197,30 +197,6 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		logln("BLAST database returned no sequences in response to query.");
 	}
 	/*.................................................................................................................*/
-	/** Called to search on the data in selected cells.  Returns true if data searched*/
-	public boolean searchData(CharacterData data, MesquiteTable table){
-		this.data = data;
-		results.setLength(0);
-		if (!(data instanceof DNAData || data instanceof ProteinData)){
-			discreetAlert( "Only DNA or protein data can be searched using this module.");
-			return false;
-		} 
-		else {
-			if (!queryOptions())
-				return false;
-			if (saveResultsToFile)
-				prepareReportDirectory();
-			logln("\nSearching for top BLAST hits (" + blasterTask.getName() + ")");
-
-			boolean searchOK = searchSelectedTaxa(data,table);
-			if (saveResultsToFile)
-				saveResults(results);
-			return searchOK;
-
-		}
-	}
-
-	/*.................................................................................................................*/
 	public boolean isNucleotides(CharacterData data){
 		return data instanceof DNAData;
 	}
@@ -248,7 +224,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		if (StringUtil.blank(reportDirectoryPath))
 			return;
 		
-		String blastReportPath = reportDirectoryPath + MesquiteFile.fileSeparator + name;  // directory into which processed files go
+		String blastReportPath = reportDirectoryPath + name;  // directory into which processed files go
 		blastReportPath = MesquiteFile.getUniqueNumberedPath(blastReportPath);
 		if (!StringUtil.blank(blastReportPath)) {
 			MesquiteFile.putFileContents(blastReportPath, contents, false);
@@ -361,6 +337,33 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		ID = blastResults.getIDs();
 		return blastResults.someHits();
 	}
+	/*.................................................................................................................*/
+	/** Called to search on the data in selected cells.  Returns true if data searched*/
+	public boolean searchData(CharacterData data, MesquiteTable table){
+		this.data = data;
+		results.setLength(0);
+		if (!(data instanceof DNAData || data instanceof ProteinData)){
+			discreetAlert( "Only DNA or protein data can be searched using this module.");
+			return false;
+		} 
+		else {
+			if (!queryOptions())
+				return false;
+			if (saveResultsToFile)
+				prepareReportDirectory();
+			logln("\nSearching for top BLAST hits (" + blasterTask.getName() + ")");
+			if (table!=null)
+				table.convertColumnSelectionToRows(true);
+			
+	
+			boolean searchOK = searchSelectedTaxa(data,table);
+			if (saveResultsToFile)
+				saveResults(results);
+			return searchOK;
+	
+		}
+	}
+
 	/*.................................................................................................................*/
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
