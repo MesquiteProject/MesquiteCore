@@ -33,7 +33,7 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	 }
    	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-   	public abstract void initialize(Taxa taxa);
+   	public abstract boolean initialize(Taxa taxa);
 
 	 public String getExtraTreeWindowCommands (){
    		 return "";
