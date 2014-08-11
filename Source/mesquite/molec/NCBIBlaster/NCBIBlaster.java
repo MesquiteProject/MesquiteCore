@@ -18,6 +18,11 @@ public class NCBIBlaster extends Blaster {
 	public boolean initialize() {
 		return true;
 	}
+	
+	public  int getUpperLimitMaxHits(){
+		return 40;
+	}
+
 	/*.................................................................................................................*/
 	public String getDatabaseName () {
 		return "NCBI GenBank";

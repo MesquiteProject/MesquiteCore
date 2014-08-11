@@ -48,7 +48,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	boolean addInternalGaps = true;
 //	boolean blastx = false;
 	int maxTime = 300;
-	static int upperMaxHits = 30;
+//	static int upperMaxHits = 30;
 
 	double eValueCutoff = 10.0;
 
@@ -134,7 +134,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		dialog.addLabel("Options for Top Blast Matches");
 		int oldBlastType = blastType;
 
-		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,upperMaxHits);
+		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 //		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
 		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);

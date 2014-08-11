@@ -58,6 +58,10 @@ public abstract class Blaster extends MesquiteModule   {
 	public  void postProcessingCleanup(BLASTResults blastResult){
 	}
 
+	public  int getUpperLimitMaxHits(){
+		return 60;
+	}
+
 	public boolean isBlastx() {
 		return blastx;
 	}
