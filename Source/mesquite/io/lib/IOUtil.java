@@ -16,6 +16,7 @@ public class IOUtil {
 
 	public static String translationTableFileName = "taxonNamesTranslationTable.txt";
 	public static final String RAXMLSCORENAME = "RAxMLScore";
+	public static final String RAXMLFINALSCORENAME = "RAxMLScore (Final Gamma-based)";
 	/*.................................................................................................................*/
 
 	public static String[] getRAxMLRateModels(MesquiteModule mb, CharactersGroup[] parts){
@@ -169,7 +170,7 @@ public class IOUtil {
 
 	/*.................................................................................................................*/
 
-	public static void readRAxMLInfoFile(MesquiteModule mb, String fileContents, boolean verbose, TreeVector trees, DoubleArray finalValues) {
+	public static void readRAxMLInfoFile(MesquiteModule mb, String fileContents, boolean verbose, TreeVector trees, DoubleArray finalValues, DoubleArray optimizedValues) {
 		if (finalValues==null) return;
 		Parser parser = new Parser(fileContents);
 		parser.setAllowComments(false);
@@ -198,6 +199,32 @@ public class IOUtil {
 			parser.setAllowComments(false);
 			line = parser.getRawNextDarkLine();
 		}
+		
+		count =0;
+
+		if (optimizedValues!=null) {
+			while (!StringUtil.blank(line) && count < optimizedValues.getSize()) {
+				if (line.startsWith("Inference[")) {
+					Parser subParser = new Parser();
+					subParser.setString(line);
+					String token = subParser.getFirstToken();   // should be "Inference"
+					while (!StringUtil.blank(token) && ! subParser.atEnd()){
+						if (token.indexOf("Likelihood")>=0) {
+							token = subParser.getNextToken(); // :
+							token = subParser.getNextToken(); // -
+							optimizedValues.setValue(count,-MesquiteDouble.fromString(token));
+							//	finalScore[count].setValue(finalValues[count]);
+							//logln("RAxML Run " + (count+1) + " ln L = -" + optimizedValues[count]);
+						}
+						token = subParser.getNextToken();
+					}
+					count++;
+				}
+				parser.setAllowComments(false);
+				line = parser.getRawNextDarkLine();
+			}
+		}
+
 
 		double bestScore =MesquiteDouble.unassigned;
 		int bestRun = MesquiteInteger.unassigned;
