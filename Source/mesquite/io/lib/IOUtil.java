@@ -125,7 +125,7 @@ public class IOUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static TreeVector readPhylipTrees (MesquiteModule mb, MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase) {
+	public static TreeVector readPhylipTrees (MesquiteModule mb, MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge, TaxonNamer namer, String treeNameBase, boolean addTreesToFile) {
 		Parser treeParser = new Parser();
 		treeParser.setQuoteCharacter((char)0);
 		int numTrees = MesquiteInteger.infinite;
@@ -162,7 +162,7 @@ public class IOUtil {
 			if (file.getFileAborted())
 				abort = true;
 		}
-		if (trees != null)
+		if (trees != null && addTreesToFile)
 			trees.addToFile(file,mf,(TreesManager)mb.findElementManager(TreeVector.class));
 		return trees;
 		
@@ -178,7 +178,8 @@ public class IOUtil {
 		int count =0;
 
 		String line = parser.getRawNextDarkLine();
-		mb.logln("\nSummary of RAxML Search");
+		if (verbose)
+			mb.logln("\nSummary of RAxML Search");
 
 		while (!StringUtil.blank(line) && count < finalValues.getSize()) {
 			if (line.startsWith("Inference[")) {
@@ -213,8 +214,6 @@ public class IOUtil {
 							token = subParser.getNextToken(); // :
 							token = subParser.getNextToken(); // -
 							optimizedValues.setValue(count,-MesquiteDouble.fromString(token));
-							//	finalScore[count].setValue(finalValues[count]);
-							//logln("RAxML Run " + (count+1) + " ln L = -" + optimizedValues[count]);
 						}
 						token = subParser.getNextToken();
 					}
@@ -233,6 +232,11 @@ public class IOUtil {
 			if (MesquiteDouble.isCombinable(finalValues.getValue(i))){
 				MesquiteDouble s = new MesquiteDouble(-finalValues.getValue(i));
 				s.setName(RAXMLSCORENAME);
+				((Attachable)newTree).attachIfUniqueName(s);
+			}
+			if (MesquiteDouble.isCombinable(optimizedValues.getValue(i))){
+				MesquiteDouble s = new MesquiteDouble(-optimizedValues.getValue(i));
+				s.setName(IOUtil.RAXMLFINALSCORENAME);
 				((Attachable)newTree).attachIfUniqueName(s);
 			}
 

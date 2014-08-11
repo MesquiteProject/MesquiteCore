@@ -121,7 +121,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	
 /*.................................................................................................................*/
 	public TreeVector readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
-		return IOUtil.readPhylipTrees(this,mf, file, line, progIndicator, taxa, false, null, getTreeNameBase());
+		return IOUtil.readPhylipTrees(this,mf, file, line, progIndicator, taxa, false, null, getTreeNameBase(), true);
 	}	
 	
 	public void setTaxonNameLength(int value) {
