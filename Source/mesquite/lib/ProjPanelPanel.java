@@ -55,7 +55,13 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 
 		refresh();
 	}
-	public void resetTitle(){
+	public void setOpen(boolean b){
+		super.setOpen(false);  //sorry, closed only
+	}
+	public boolean isOpen(){
+		return false;
+	}
+public void resetTitle(){
 	}
 	public MesquiteModule getOwnerModule(){
 		return owner;
