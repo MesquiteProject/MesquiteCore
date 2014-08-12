@@ -196,6 +196,7 @@ public class InfoBar extends MousePanel implements Commandable {
 			}
 		}
 		 */
+
 		g.setColor(ColorDistribution.darkMesquiteBrown);  //rounded upper left corner to feel like a screen corner, to make it easer to sense the menu
 		//g.setColor(Color.green);
 		if (g instanceof Graphics2D) {

@@ -36,13 +36,15 @@ public class MesquiteFrame extends Frame implements Commandable {
 	MesquiteModule ownerModule;
 	static int numTotal = 0;
 	boolean isSystemFrame = false;
+	public static int cornerBuffer = 8;
+
 
 	int num = 0;
 	int id = 0;
 	private Panel main;
 	private Panel resources;
 	private Panel  poptile;
-	private BetweenPanel rBetweenPanel;
+	private BetweenPanel rBetweenPanel;   // this is the vertical bar between the project panel and the main window region
 	private BetweenPanel pBetweenPanel;
 	private static int BETWEENWIDTH = 6;
 	public static final int RESOURCES = 0;  // for project
@@ -1156,6 +1158,7 @@ class FrameTabsPanel extends MousePanel {
 	Font[] fonts = new Font[6];
 	int intertabSpace = 4;
 	int defaultBackEdge = 10;
+	public static int lowerBarHeight = 4;
 	static Image goaway, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
 	static {
 		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
@@ -1532,8 +1535,9 @@ class FrameTabsPanel extends MousePanel {
 
 		g2.setColor(ColorDistribution.veryDarkMesquiteBrown);
 	//	BasicStroke stroke = new BasicStroke(4);
-		g2.drawLine(projectPanelWidth, panelHeight-1, panelWidth, panelHeight-1);
-		g2.fillRect(projectPanelWidth, panelHeight-4, panelWidth-4, 4);
+		g2.drawLine(projectPanelWidth+MesquiteFrame.cornerBuffer, panelHeight-1, panelWidth, panelHeight-1);
+		g2.fillRect(projectPanelWidth+MesquiteFrame.cornerBuffer, panelHeight-4, panelWidth-4, 4);
+		//g2.setColor(Color.blue);
 		
 		
 		//g.fillRect(projectPanelWidth, height-4, width, 4);
@@ -1591,8 +1595,8 @@ class FrameTabsPanel extends MousePanel {
 			}
 			needed = StringUtil.getStringDrawLength(g2, totalString) + iconsWidth +edges;
 			scaling = 1.0;
-			if (needed> panelWidth-edges-projectPanelWidth){
-				scaling = (panelWidth-edges-projectPanelWidth)*1.0/(StringUtil.getStringDrawLength(g2, totalString) + iconsWidth);
+			if (needed> panelWidth-edges){
+				scaling = (panelWidth-edges-projectPanelWidth-MesquiteFrame.cornerBuffer)*1.0/(StringUtil.getStringDrawLength(g2, totalString) + iconsWidth);
 			}
 			//Debugg.println("scaling " + scaling);
 
@@ -1678,8 +1682,8 @@ class FrameTabsPanel extends MousePanel {
 			g2.setFont(fonts[fontChosen]);
 			int needed = StringUtil.getStringDrawLength(g2, totalString) + iconsWidth +edges;
 			scaling = 1.0;
-			if (needed> panelWidth-edges-projectPanelWidth){  // remove "projectPanelWidth" here and in next line if other tabs can go over project panel
-				scaling = (panelWidth-edges-projectPanelWidth)*1.0/(StringUtil.getStringDrawLength(g2, totalString) + iconsWidth);
+			if (needed> panelWidth-edges-projectPanelWidth-MesquiteFrame.cornerBuffer){  // remove "projectPanelWidth" here and in next line if other tabs can go over project panel
+				scaling = (panelWidth-edges-projectPanelWidth-MesquiteFrame.cornerBuffer)*1.0/(StringUtil.getStringDrawLength(g2, totalString) + iconsWidth);
 			}
 		}
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1720,7 +1724,7 @@ class FrameTabsPanel extends MousePanel {
 			if (title != null){
 				if (isProjectWindow(w)){
 					tabLeft = 0;
-					tabRight = projectPanelWidth;
+					tabRight = projectPanelWidth+MesquiteFrame.cornerBuffer;
 					if (projectPanelWidth <0){
 						title = "Project";
 						titles[i] = title;
@@ -1764,6 +1768,8 @@ class FrameTabsPanel extends MousePanel {
 					g2.drawImage(mediumize, tabRight-17, 4, this);
 			}*/
 			
+			
+			
 			g2.setColor(ColorTheme.getExtInterfaceEdgeContrast(w instanceof SystemWindow)); //Color.black);
 			try{
 				lefts[i] = tabLeft;
@@ -1773,6 +1779,42 @@ class FrameTabsPanel extends MousePanel {
 				repaint();
 			}
 		}
+		
+		
+		// this little section draws the rounded corner on the upper (and outer) left side of the main part of the window
+		g2.setColor(ColorDistribution.darkMesquiteBrown);
+		Stroke st = g2.getStroke();
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		try {
+			Class.forName("java.awt.geom.Path2D");
+			Path2D.Float path = new Path2D.Float();
+			int adjust = 0;
+			int pathLeft = projectPanelWidth;
+			int pathRight = pathLeft+12;  //+14
+			int pathTop = getBounds().height-FrameTabsPanel.lowerBarHeight-1;
+			int pathBottom = pathTop+MesquiteFrame.cornerBuffer+8;  //+10
+			path.moveTo(adjust+pathRight, adjust+pathTop);
+			path.lineTo(adjust+pathRight, adjust+pathBottom);
+			path.lineTo(adjust+pathLeft,adjust+pathBottom);
+			path.curveTo(adjust+pathLeft, adjust+pathTop+(pathBottom-pathTop)/3, adjust+pathLeft+(pathRight-pathLeft)/3, adjust+pathTop, adjust+pathRight, adjust+pathTop);
+			path.closePath();
+			g2.fill(path);
+			
+		}
+		catch (ClassNotFoundException exception) {
+			int pathLeft = projectPanelWidth;
+			int pathRight = projectPanelWidth+4;  //+14
+			int pathTop = panelHeight;
+			g2.fillRect(pathLeft+4, pathTop-4, pathRight-pathLeft, 4);
+			g2.fillRect(pathLeft+3, pathTop-3, pathRight-pathLeft, 3);
+			g2.fillRect(pathLeft+2, pathTop-2, pathRight-pathLeft, 2);
+			g2.fillRect(pathLeft+1, pathTop-1, pathRight-pathLeft, 1);
+			g2.drawLine(pathLeft+3, pathTop-1, pathRight, pathTop-1);
+		}
+		g2.setStroke(st);
+
+		
+		
 	//	Debugg.println("leaving paint " + paintCount);
 	}
 	/*.................................................................................................................*/
@@ -1821,8 +1863,9 @@ class FrameTabsPanel extends MousePanel {
 			//now about to draw the lines/border beneath the tab
 
 
-			if (tabLeft> projectPanelWidth ){ //entirely over main windows
+			if (tabLeft> projectPanelWidth+MesquiteFrame.cornerBuffer ){ //entirely over main windows
 				g2.setColor(ColorDistribution.darkMesquiteBrown);
+				//g2.setColor(Color.red);
 				g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, 4);
 				g2.drawLine(tabLeft-1, height-1, tabRight, height-1);
 			}
@@ -1830,15 +1873,16 @@ class FrameTabsPanel extends MousePanel {
 				g2.setColor(getBackground());
 				g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, tabBottomLineHeight);
 				g2.setColor(ColorDistribution.darkMesquiteBrown);
-				//g2.setColor(Color.green);
 				if (!isProjectTab) {
 					if (whichTab==1) {
+
+						//g2.fillRect(tabLeft-4, height-tabBottomLineHeight, 5, tabBottomLineHeight);
 						try {
 							Class.forName("java.awt.geom.Path2D");
 							int rightPath = 7;
 							int topPath = 6;
 							Path2D.Float path = new Path2D.Float();
-							g2.fillRect(tabLeft+rightPath-1, height-tabBottomLineHeight, projectPanelWidth-tabLeft+4, tabBottomLineHeight);
+							g2.fillRect(tabLeft+rightPath-1, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft+4, tabBottomLineHeight);
 							path.moveTo(tabLeft-1, height-topPath);
 							path.lineTo(tabLeft, height-topPath);
 							path.curveTo(tabLeft+2, height-4,tabLeft+4, height-4, tabLeft+rightPath, height-tabBottomLineHeight);
@@ -1848,21 +1892,38 @@ class FrameTabsPanel extends MousePanel {
 							g2.fill(path);
 						}
 						catch (ClassNotFoundException exception) {
-							g2.fillRect(tabLeft+1, height-tabBottomLineHeight, projectPanelWidth-tabLeft-1+5, tabBottomLineHeight);
+							g2.fillRect(tabLeft+1, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft-1+5, tabBottomLineHeight);
 							g2.fillRect(tabLeft, height-5, 3, 3);
 							g2.fillRect(tabLeft, height-7, 1, 4);
 						}
 					} else {
-						g2.fillRect(tabLeft-4, height-tabBottomLineHeight, projectPanelWidth-tabLeft+4, tabBottomLineHeight);
+						g2.fillRect(tabLeft-4, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft+4, tabBottomLineHeight);
 					}
 					
 				}
 				if (tabRight> projectPanelWidth){
-					g2.fillRect(projectPanelWidth+4, height-4, tabRight-projectPanelWidth, 4);
-					g2.fillRect(projectPanelWidth+3, height-3, tabRight-projectPanelWidth, 3);
-					g2.fillRect(projectPanelWidth+2, height-2, tabRight-projectPanelWidth, 2);
-					g2.fillRect(projectPanelWidth+1, height-1, tabRight-projectPanelWidth, 1);
-					g2.drawLine(projectPanelWidth+3, height-1, tabRight, height-1);
+					try {
+						Class.forName("java.awt.geom.Path2D");
+						Path2D.Float path = new Path2D.Float();
+						int adjust = 0;
+						int pathLeft = 0;
+						int pathRight = 0+4;  //+14
+						int pathTop = height;
+						int pathBottom = height+4;  //+10
+						path.moveTo(adjust+pathRight, adjust+pathTop);
+						path.lineTo(adjust+pathLeft, adjust+pathTop);
+						path.lineTo(adjust+pathLeft,adjust+pathBottom);
+						path.curveTo(adjust+pathLeft, adjust+pathTop+(pathBottom-pathTop)/3, adjust+pathLeft+(pathRight-pathLeft)/3, adjust+pathTop, adjust+pathRight, adjust+pathTop);
+						path.closePath();
+						g2.fill(path);
+					}
+					catch (ClassNotFoundException exception) {
+						g2.fillRect(projectPanelWidth+4, height-4, tabRight-projectPanelWidth, 4);
+						g2.fillRect(projectPanelWidth+3, height-3, tabRight-projectPanelWidth, 3);
+						g2.fillRect(projectPanelWidth+2, height-2, tabRight-projectPanelWidth, 2);
+						g2.fillRect(projectPanelWidth+1, height-1, tabRight-projectPanelWidth, 1);
+						g2.drawLine(projectPanelWidth+3, height-1, tabRight, height-1);
+					}
 				}
 
 			}
@@ -1881,10 +1942,52 @@ class BetweenPanel extends MousePanel{
 		super();
 		setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
 		this.f=f;
-		setBackground(ColorDistribution.darkMesquiteBrown);
+		//setBackground(ColorDistribution.darkMesquiteBrown);
+		//setBackground(Color.yellow);
 		//setBackground(Color.darkGray);
 	}
 	int touchX = -1;
+	public void paint (Graphics g) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setColor(ColorDistribution.darkMesquiteBrown);
+		g2.fillRect(0,MesquiteFrame.cornerBuffer,getBounds().width, getBounds().height);
+		Stroke st = g2.getStroke();
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		try {
+			g2.setColor(ColorDistribution.darkMesquiteBrown);
+			Class.forName("java.awt.geom.Path2D");
+			Path2D.Float path = new Path2D.Float();
+			int adjust = 0;
+			int pathLeft = 0;
+			int pathRight = 12;  //+14
+			int pathTop = 0-FrameTabsPanel.lowerBarHeight;
+			int pathBottom = 8;  //+10
+			path.moveTo(adjust+pathRight, adjust+pathTop);
+			path.lineTo(adjust+pathRight, adjust+pathBottom);
+			path.lineTo(adjust+pathLeft,adjust+pathBottom);
+			path.curveTo(adjust+pathLeft, adjust+pathTop+(pathBottom-pathTop)/3, adjust+pathLeft+(pathRight-pathLeft)/3, adjust+pathTop, adjust+pathRight, adjust+pathTop);
+			path.closePath();
+			g2.fill(path);
+		}
+		catch (ClassNotFoundException exception) {
+			g2.setColor(ColorDistribution.darkMesquiteBrown);
+			int pathLeft = 0;
+			int pathRight = 12;  //+14
+			int pathTop = 0;
+			int pathBottom = 8;  //+10
+			g2.fillRect(pathLeft+4, pathTop-4, pathRight-pathLeft, 4);
+			g2.fillRect(pathLeft+3, pathTop-3, pathRight-pathLeft, 3);
+			g2.fillRect(pathLeft+2, pathTop-2, pathRight-pathLeft, 2);
+			g2.fillRect(pathLeft+1, pathTop-1, pathRight-pathLeft, 1);
+			g2.drawLine(pathLeft+3, pathTop-1, pathRight, pathTop-1);
+		}
+		g2.setStroke(st);
+
+	
+	}
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		touchX= x;
 	}
