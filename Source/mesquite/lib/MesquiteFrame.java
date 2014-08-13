@@ -1432,7 +1432,9 @@ class FrameTabsPanel extends MousePanel {
 		int frontness = getFrontness(w);
 		g.setFont(fonts[fontChosen]);
 		Shape oldClip = g.getClip();
-		g.setClip(tabLeft-1, 0, tabRight -tabLeft+4, panelHeight);
+		if (w == frame.projectWindow)
+			g.setClip(tabLeft-1, 0, tabRight -tabLeft+4, panelHeight-tabBottomLineHeight-1);
+		else g.setClip(tabLeft-1, 0, tabRight -tabLeft+4, panelHeight);
 		String title = w.getTitle();
 		if (w == frame.projectWindow && projectPanelWidth <=0)
 			title = "Project";
@@ -1441,7 +1443,10 @@ class FrameTabsPanel extends MousePanel {
 		if (icon != null || w == frame.projectWindow)
 			iconWidth = 20;
 		drawTab(g, whichTab, frontness, tabLeft, tabRight, panelHeight, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
-		g.setClip(tabLeft-1, 0, tabRight -tabLeft+1, panelHeight-tabBottomLineHeight);
+		if (w == frame.projectWindow)
+			g.setClip(tabLeft-1, 0, tabRight -tabLeft+1, panelHeight-tabBottomLineHeight-1);
+		else
+			g.setClip(tabLeft-1, 0, tabRight -tabLeft+1, panelHeight-tabBottomLineHeight);
 		if (frontness == 2) 
 			g.setColor(ColorTheme.getExtInterfaceTextContrast(w instanceof SystemWindow)); //Color.black);
 		else if (frontness == 1) 
@@ -1533,11 +1538,10 @@ class FrameTabsPanel extends MousePanel {
 		panelHeight = getBounds().height;
 		Vector frameWindows = (Vector)frame.windows.clone();
 
-		g2.setColor(ColorDistribution.veryDarkMesquiteBrown);
+		g2.setColor(ColorTheme.getContentFrame());
 	//	BasicStroke stroke = new BasicStroke(4);
 		g2.drawLine(projectPanelWidth+MesquiteFrame.cornerBuffer, panelHeight-1, panelWidth, panelHeight-1);
 		g2.fillRect(projectPanelWidth+MesquiteFrame.cornerBuffer, panelHeight-4, panelWidth-4, 4);
-		//g2.setColor(Color.blue);
 		
 		
 		//g.fillRect(projectPanelWidth, height-4, width, 4);
@@ -1782,7 +1786,7 @@ class FrameTabsPanel extends MousePanel {
 		
 		
 		// this little section draws the rounded corner on the upper (and outer) left side of the main part of the window
-		g2.setColor(ColorDistribution.darkMesquiteBrown);
+		g2.setColor(ColorTheme.getContentFrame());
 		Stroke st = g2.getStroke();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		try {
@@ -1792,6 +1796,8 @@ class FrameTabsPanel extends MousePanel {
 			int pathLeft = projectPanelWidth;
 			int pathRight = pathLeft+12;  //+14
 			int pathTop = getBounds().height-FrameTabsPanel.lowerBarHeight-1;
+			if (projectPanelWidth <=0)  //project panel closed, so lower the curve a bit to make it not leave negative corner
+				pathTop +=1;
 			int pathBottom = pathTop+MesquiteFrame.cornerBuffer+8;  //+10
 			path.moveTo(adjust+pathRight, adjust+pathTop);
 			path.lineTo(adjust+pathRight, adjust+pathBottom);
@@ -1864,7 +1870,7 @@ class FrameTabsPanel extends MousePanel {
 
 
 			if (tabLeft> projectPanelWidth+MesquiteFrame.cornerBuffer ){ //entirely over main windows
-				g2.setColor(ColorDistribution.darkMesquiteBrown);
+				g2.setColor(ColorTheme.getContentFrame());
 				//g2.setColor(Color.red);
 				g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, 4);
 				g2.drawLine(tabLeft-1, height-1, tabRight, height-1);
@@ -1872,7 +1878,7 @@ class FrameTabsPanel extends MousePanel {
 			else { //extending over project panel, but not project tab
 				g2.setColor(getBackground());
 				g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, tabBottomLineHeight);
-				g2.setColor(ColorDistribution.darkMesquiteBrown);
+				g2.setColor(ColorTheme.getContentFrame());
 				if (!isProjectTab) {
 					if (whichTab==1) {
 
@@ -1951,13 +1957,13 @@ class BetweenPanel extends MousePanel{
 		if (!(g instanceof Graphics2D))
 			return;
 		Graphics2D g2 = (Graphics2D)g;
-		g2.setColor(ColorDistribution.darkMesquiteBrown);
+		g2.setColor(ColorTheme.getContentFrame());
 		g2.fillRect(0,MesquiteFrame.cornerBuffer,getBounds().width, getBounds().height);
 		Stroke st = g2.getStroke();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		try {
-			g2.setColor(ColorDistribution.darkMesquiteBrown);
+			g2.setColor(ColorTheme.getContentFrame());
 			Class.forName("java.awt.geom.Path2D");
 			Path2D.Float path = new Path2D.Float();
 			int adjust = 0;
@@ -1973,7 +1979,7 @@ class BetweenPanel extends MousePanel{
 			g2.fill(path);
 		}
 		catch (ClassNotFoundException exception) {
-			g2.setColor(ColorDistribution.darkMesquiteBrown);
+			g2.setColor(ColorTheme.getContentFrame());
 			int pathLeft = 0;
 			int pathRight = 12;  //+14
 			int pathTop = 0;

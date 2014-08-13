@@ -58,6 +58,9 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 	public void setText(String t){
 		searchBox.setText(t);
 	}
+	public void search(){
+		enterPressed();
+	}
 	void enterPressed(){
 		String string = searchBox.getText();
 		if (!StringUtil.blank(string)) {

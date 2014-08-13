@@ -31,6 +31,7 @@ public class ColorTheme {
 	static Color ContentDarkElement = new Color(150,150,150);
 	static Color ContentEdgePale = new Color(240,240,240);
 	static Color ContentEdgeDark = new Color(150,150,150);
+	static Color ContentFrame = new Color(88, 88, 88);
 
 	public static Color getContentBackground(){
 		return ContentBackground;
@@ -51,6 +52,9 @@ public class ColorTheme {
 		return ContentEdgeDark;
 	}
 
+	public static Color getContentFrame(){
+		return ContentFrame;
+	}
 
 	//background of EXTERNAL INTERFACE AREA (main tab panel, project resources panel)
 	static Color[] ExtInterfaceBackground = new Color[5];

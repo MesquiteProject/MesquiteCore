@@ -725,7 +725,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 /*======================================================================== */
 class ScrollPanel extends MousePanel {
 	ProjectPanel p;
-	Image up, down; // query;
+	Image up, down, search; // query;
 	int scrollLeft = 38;
 	HelpSearchStrip searchStrip;
 
@@ -737,16 +737,17 @@ class ScrollPanel extends MousePanel {
 		searchStrip = new HelpSearchStrip(p.w, true);
 		add(searchStrip);
 		searchStrip.setSize(120, 15);
-		searchStrip.setLocation(4, 0);
+		searchStrip.setLocation(20, 0);
 		searchStrip.setVisible(true);
-		searchStrip.setText("Search data");
+		searchStrip.setText("");
+		search = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "search.gif");
 		up = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "uparrow.gif");
 		down = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "downarrow.gif");
 	//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}
 	public void paint(Graphics g){
-	//	g.drawImage(query, 8, 8, this);
+		g.drawImage(search, 4, 0, this);
 		if (!p.canScrollUp() && !p.canScrollDown())
 			return;
 		g.setColor(ColorDistribution.veryLightGray);
@@ -770,7 +771,10 @@ class ScrollPanel extends MousePanel {
 	}*/
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		//if modifiers include right click/control, then do dropdown menu
-		if (y>=8 && y<=26 && x>= scrollLeft && x < scrollLeft + 18) {
+		if (y<=16 && x < 20) {
+			searchStrip.search();
+		}
+		else if (y>=8 && y<=26 && x>= scrollLeft && x < scrollLeft + 18) {
 			p.scrollUp();
 		}
 		else if (y>=8 && y<=26 && x>= scrollLeft+22 && x < scrollLeft + 40) {
