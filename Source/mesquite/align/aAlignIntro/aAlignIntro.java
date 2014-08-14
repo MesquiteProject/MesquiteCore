@@ -61,6 +61,16 @@ public class aAlignIntro extends PackageIntro {
  	 public int getPackageVersionInt() {
 		return 170;
   	 }
+  	/*.................................................................................................................*/
+  	/** Returns the URL for the web page about the package*/
+  	public String getPackageURL(){
+  		return "http://mesquitealign.wikispaces.com";  
+  	}
+ 	/*.................................................................................................................*/
+ 	/** Returns the URL for the web page about the package*/
+ 	public String getManualPath(){
+ 		return "http://mesquitealign.wikispaces.com";  
+ 	}
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){

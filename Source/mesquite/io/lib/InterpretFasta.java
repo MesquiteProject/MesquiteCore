@@ -204,6 +204,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				} else {  // adding to end, not replacing an existing one
 					if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
 						taxonNumber = getLastNewTaxonFilled()+1;
+						if (taxonNumber>taxa.getNumTaxa())
+							taxonNumber=taxa.getNumTaxa();
 						setLastNewTaxonFilled(taxonNumber);
 						if (data.hasDataForTaxa(taxonNumber, taxonNumber)) {
 							MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to overwrite existing data, and so failed.");
@@ -218,7 +220,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					setLastNewTaxonFilled(taxonNumber);
 
 					if (data.getNumTaxa()<=taxonNumber) {
-						int numTaxaAdded = getTotalFilesToImport();
+						int numTaxaAdded = getTotalFilesToImport();  // we may not need all of those, as some of them might be placed in existing taxa.
 						if (numTaxaAdded<1) numTaxaAdded =1;
 						taxa.addTaxa(taxonNumber-1, numTaxaAdded, false);
 						added=true;

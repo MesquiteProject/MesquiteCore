@@ -530,7 +530,7 @@ public class Mesquite extends MesquiteTrunk
 		openExternalSMS.setCommand(makeCommand("openGeneral", this));
 		openExternalSMS.setList(GeneralFileMaker.class);
 
-		addMenuItem(helpMenu, "Mesquite Manual", makeCommand("showHomePage",  this));
+		addMenuItem(helpMenu, "Mesquite Documentation", makeCommand("showHomePage",  this));
 		addMenuItem(helpMenu, "Support and Advice", makeCommand("showSupport",  this));
 		addMenuItem(helpMenu, "Modules Loaded", makeCommand("showModules",  this));
 		addMenuItem(helpMenu, "Keyword Search...", makeCommand("keywordSearch",  this));
@@ -1964,9 +1964,15 @@ public class Mesquite extends MesquiteTrunk
 			if (MesquiteTrunk.isApplet()) 
 				return null;
 			String packageURL= parser.getFirstToken(arguments); //MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator + "modules.html";
-			File testing = new File(packageURL);
-			if (testing.exists()) {
-				showWebPage(packageURL, false);
+			if (StringUtil.notEmpty(packageURL)) {
+				if (packageURL.startsWith("http"))
+					showWebPage(packageURL,false);
+				else {
+					File testing = new File(packageURL);
+					if (testing.exists()) {
+						showWebPage(packageURL, false);
+					}
+				}
 			}
 		}
 		else if (checker.compare(this.getClass(), "Shows web page of available commands for scripting", null, commandName, "showCommands")) {
@@ -1982,18 +1988,17 @@ public class Mesquite extends MesquiteTrunk
 				showWebPage(commandListPath, true);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Shows home page of Mesquite manual", null, commandName, "showHomePage")) {
+		else if (checker.compare(this.getClass(), "Shows home page of Mesquite", null, commandName, "showHomePage")) {
 			if (MesquiteTrunk.isApplet()) 
 				return null;
 			if (!CommandChecker.documentationComposed) {
 				CommandChecker cchecker = new CommandChecker();
 				cchecker.composeDocumentation();
 			}	
-			String manualPath = mesquiteDirectoryPath + "docs/mesquite" + MesquiteFile.fileSeparator + "manual.html" ; 
-			File testing = new File(manualPath);
-			if (testing.exists()) {
+			String manualPath = "http://mesquiteproject.wikispaces.com" ; 
+			//File testing = new File(manualPath);
 				showWebPage(manualPath, false);
-			}
+			
 		}
 		else if (checker.compare(this.getClass(), "Shows Support page of Mesquite manual", null, commandName, "showSupport")) {
 			if (MesquiteTrunk.isApplet()) 
