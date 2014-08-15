@@ -67,7 +67,7 @@ public class aAlignIntro extends PackageIntro {
   		return "http://mesquitealign.wikispaces.com";  
   	}
  	/*.................................................................................................................*/
- 	/** Returns the URL for the web page about the package*/
+ 	/** Returns the URL for the manual about the package*/
  	public String getManualPath(){
  		return "http://mesquitealign.wikispaces.com";  
  	}

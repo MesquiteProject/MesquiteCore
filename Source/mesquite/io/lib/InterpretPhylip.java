@@ -360,7 +360,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			pad += "  ";
 		
 		for (int it = 0; it<numTaxa; it++){
-			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it))){
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters))){
 				if (writeTaxonNames) {   // first block
 					String name = "";
 					if (taxonNamer!=null)
@@ -404,19 +404,17 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		initializeExport(taxa);
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		if (file != null)
-			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
-		int countTaxa = 0;
-		for (int it = 0; it<numTaxa; it++)
-			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it)))
-				countTaxa++;
-		numTaxa = countTaxa;
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
-
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
 		}
+		int countTaxa = 0;
+		for (int it = 0; it<numTaxa; it++)
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters)))
+				countTaxa++;
+		numTaxa = countTaxa;
+		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+
 		outputBuffer.append(Integer.toString(numTaxa)+" ");
 
 		if (!writeExcludedCharacters)

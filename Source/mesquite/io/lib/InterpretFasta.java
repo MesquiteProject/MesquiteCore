@@ -453,7 +453,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected boolean taxonHasData(CharacterData data, int it){
 		for (int ic = 0; ic<data.getNumChars(); ic++) {
 			if (!writeOnlySelectedData || (data.getSelected(ic))){
-				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it))
+				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
 					return true;
 			}
 		}

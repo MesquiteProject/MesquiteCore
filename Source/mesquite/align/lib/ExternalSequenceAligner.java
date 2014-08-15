@@ -162,6 +162,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		//rename taxa so program doesn't screw around with names
 		for (int it=0; it<newTaxa.getNumTaxa(); it++)
 			newTaxa.setTaxonName(it, "t" + it);
+		logln("Number of taxa to be aligned: " + newTaxa.getNumTaxa());
 		CharMatrixManager matrixManager = data.getMatrixManager();
 		int numNewChars=0;
 		int firstChar = -1;
@@ -251,13 +252,23 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		boolean success = false;
 		
 		logln("Exporting file for " + getProgramName());
-		if (taxaToAlign!=null)
+		int numTaxaToAlign=data.getNumTaxa();
+
+		
+		if (taxaToAlign!=null){
 			success = saveExportFile(data, rootDir, fileName, taxaToAlign, firstSite, lastSite);
+			int count=0;
+			for (int j=0; j<taxaToAlign.length; j++)
+				if (taxaToAlign[j])
+					count++;
+			numTaxaToAlign=count;
+		}
 		else if (!(firstTaxon==0 && lastTaxon==matrix.getNumTaxa())) {  // we are doing something other than all taxa.
 			boolean[] taxaToAlignLocal = new boolean[matrix.getNumTaxa()];
 			for (int it = 0; it<matrix.getNumTaxa(); it++)
 				taxaToAlignLocal[it] =  (it>=firstTaxon && it<= lastTaxon);
 			success = saveExportFile(data, rootDir, fileName, taxaToAlignLocal, firstSite, lastSite);
+			numTaxaToAlign=lastTaxon-firstTaxon+1;
 		}
 		else
 			success = saveExportFile(data, rootDir, fileName, null, -1, -1);
@@ -329,13 +340,18 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				for (int it = 0; it<alignedData.getNumTaxa(); it++){
 					String name = alignedTaxa.getTaxonName(it);
 					keys[it] = MesquiteInteger.fromString(name.substring(1, name.length()));  //this is original taxon number
-					if (!MesquiteInteger.isCombinable(keys[it])) {
-						MesquiteMessage.println("Processing unsuccessful: can't find incoming taxon " + name);
-						MesquiteMessage.println("  Example taxon names found: ");
-						for (int i=0; i<alignedData.getNumTaxa() && i<10; i++) {
-							MesquiteMessage.println("    "+ alignedTaxa.getTaxonName(it));
+					if (it<numTaxaToAlign && !MesquiteInteger.isCombinable(keys[it])) {
+						MesquiteMessage.println("Processing unsuccessful: can't find incoming taxon \"" + name+"\"");
+						MesquiteMessage.println("  Taxa in incoming: ");
+						for (int i=0; i<alignedData.getNumTaxa(); i++) {
+							MesquiteMessage.println("    "+ alignedTaxa.getTaxonName(i) + "\tsome data: " + alignedData.hasDataForTaxon(i));
 						}
-						
+						MesquiteMessage.println("  Number of taxa in incoming matrix: "+ alignedTaxa.getNumTaxa());
+						if (taxaToAlign!=null) {
+							MesquiteMessage.println("  Number of taxa set to true in taxaToAlign: "+ numTaxaToAlign);
+						}
+						MesquiteMessage.println("  Number of taxa in original: "+ data.getNumTaxa());
+
 						success=false;
 						break;
 					}

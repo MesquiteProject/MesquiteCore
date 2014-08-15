@@ -2818,11 +2818,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	MesquiteBoolean showPaleGrid;
 
 	MesquiteBoolean showBoldCellText;
-
 	MesquiteBoolean showPaleCellColors;
-
 	MesquiteBoolean showPaleExcluded;
-
+	MesquiteBoolean showEmptyDataAsClear;
 	MesquiteBoolean paleInapplicable;
 
 	int birdsEyeWidth = 2;
@@ -2886,6 +2884,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		showBirdsEyeView = new MesquiteBoolean(false);
 		showPaleGrid = new MesquiteBoolean(false);
 		showPaleCellColors = new MesquiteBoolean(false);
+		showEmptyDataAsClear = new MesquiteBoolean(false);
 		showPaleExcluded = new MesquiteBoolean(false);
 		paleInapplicable = new MesquiteBoolean(true);
 		showBoldCellText = new MesquiteBoolean(false);

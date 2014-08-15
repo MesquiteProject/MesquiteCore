@@ -1312,6 +1312,9 @@ class FrameTabsPanel extends MousePanel {
 	int lastTabOver = -1;
 	int tabOver = -1;
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
+		if (frame==null || frame.windows==null){
+			return;
+		}
 		tabOver = findTab(x);
 		if (tabOver != lastTabOver && tabOver > 0 && (lefts==null || tabOver<lefts.length) ){
 			Graphics g = getGraphics();
@@ -1330,6 +1333,9 @@ class FrameTabsPanel extends MousePanel {
 		lastTabOver = tabOver;
 	}
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
+		if (frame==null || frame.windows==null){
+			return;
+		}
 		tabOver = findTab(x);
 		if (tabOver != lastTabOver && tabOver > 0 && (lefts==null || tabOver<lefts.length) ){
 			Graphics g = getGraphics();
@@ -1349,7 +1355,10 @@ class FrameTabsPanel extends MousePanel {
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		tabOver  = -1;
-		if (lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length) && lastTabOver < frame.windows.size()){
+		if (frame==null || frame.windows==null){
+			return;
+		}
+		if (lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length) && (lastTabOver < frame.windows.size())){
 			Graphics g = getGraphics();
 			if (g != null){
 				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(lastTabOver);

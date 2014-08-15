@@ -1710,6 +1710,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}		
 		return false;
 	}
+	public boolean hasDataForTaxon(int it, boolean considerExcluded){
+		int numChars = getNumChars();
+		for (int ic=0; ic<numChars; ic++) {
+			if (!isInapplicable(ic, it) && !isUnassigned(ic, it) && (considerExcluded || isCurrentlyIncluded(ic)))
+				return true;
+		}		
+		return false;
+	}
 	
 	public boolean hasDataForTaxa(int itStart, int itEnd){
 		for (int it=itStart; it<=itEnd; it++)

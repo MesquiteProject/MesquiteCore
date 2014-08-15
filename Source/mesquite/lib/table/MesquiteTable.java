@@ -4523,11 +4523,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			}
 			else {
 				for (int j = incomingLastColumn + 1; j < numColumnsTotal; j++) {
-					if (isCellSelected(j, i)) {   
+					if (isCellSelectedAnyWay(j, i)) {   
 						row.setValue(i);
 						firstColumn.setValue(j);
 						for (int k = j + 1; k < numColumnsTotal; k++) {
-							if (!isCellSelected(k, i)) {
+							if (!isCellSelectedAnyWay(k, i)) {
 								lastColumn.setValue(k - 1);
 								return true;
 							}
