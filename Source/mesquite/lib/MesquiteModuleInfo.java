@@ -97,19 +97,19 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		this.mbClass = c;
 		isPrimaryChoice = mb.requestPrimaryChoice();
 		this.hireSubchoice = mb.getHireSubchoice();
-		this.name = mb.getName(); //Ã
-		this.nameForMenuItem = mb.getNameForMenuItem(); //Ã
- 		this.authors =mb.getAuthors();//Ã
- 		this.version =mb.getVersion();//Ã
+		this.name = mb.getName(); //ï¿½
+		this.nameForMenuItem = mb.getNameForMenuItem(); //ï¿½
+ 		this.authors =mb.getAuthors();//ï¿½
+ 		this.version =mb.getVersion();//ï¿½
  		
  		this.versionOfFirstRelease = mb.getVersionOfFirstRelease();
- 		this.explanation =mb.getExplanation();//Ã
+ 		this.explanation =mb.getExplanation();//ï¿½
  		this.sCitation = mb.showCitation();
- 		this.userChooseable =mb.getUserChooseable();//Ã
+ 		this.userChooseable =mb.getUserChooseable();//ï¿½
  		this.substantive = mb.isSubstantive();
  		this.prerelease = mb.isPrerelease();
- 		this.dutyClass =mb.getDutyClass();//Ã
- 		this.dutyName =mb.getDutyName();//Ã
+ 		this.dutyClass =mb.getDutyClass();//ï¿½
+ 		this.dutyName =mb.getDutyName();//ï¿½
  		this.defaultForSuper = mb.getDefaultModule();
  		this.keywords = mb.getKeywords();
  		this.versionInt = mb.getVersionInt();
@@ -128,11 +128,15 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 			hideable = (( PackageIntroInterface)mb).getHideable();
  		}
   		mb.mesquiteStartup();
-		this.nexusBlockTest = mb.getNexusBlockTest();//Ã
- 		this.nexusCommandTest = mb.getNexusCommandTest();//Ã
+		this.nexusBlockTest = mb.getNexusBlockTest();//ï¿½
+ 		this.nexusCommandTest = mb.getNexusCommandTest();//ï¿½
 		this.compatibilityTest = mb.getCompatibilityTest();
 		this.searchableAsModule = mb.getSearchableAsModule();
-		mb.getEmployeeNeeds();
+		try{
+			mb.getEmployeeNeeds();
+		}
+		catch (java.lang.NoClassDefFoundError e){
+		}
 		this.functionIconPath = mb.getFunctionIconPath();
 		this.moduleURL = mb.getURLString();
 		this.URLinPackageIntroDirectory = mb.URLinPackageIntro();

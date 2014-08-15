@@ -15,6 +15,7 @@ package mesquite.consensus.ConsensusTree;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -104,7 +105,7 @@ public class ConsensusTree extends TreeSource {
 				assigned = true;
 			}
 			parametersChanged();
-			*/
+			 */
 		}
 		else
 			if (checker.compare(this.getClass(), "Sets the module doing a consensus", "[name of module]", commandName, "setConsenser")) {
@@ -178,10 +179,10 @@ public class ConsensusTree extends TreeSource {
 				iConsenser.reset(taxa);
 			boolean done = false;
 			int count = 0;
-			logln("Consensing trees");
-//			Debugg.printStackTrace("consensing");
+			logln("Consensing trees " + startTree);
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
+				Debugg.println("tree " + t);
 				if (t == null)
 					done = true;
 				else {
@@ -196,13 +197,13 @@ public class ConsensusTree extends TreeSource {
 				}
 			}
 			logln("Trees consensed");
-//			if (count>0)
-				tree = iConsenser.getConsensus();
-				if (tree instanceof MesquiteTree)
-					if (count==0)
-						((MesquiteTree)tree).setName(consenser.getName() + " of trees from " + treeSource.getNameAndParameters());
-					else
-						((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
+			//			if (count>0)
+			tree = iConsenser.getConsensus();
+			if (tree instanceof MesquiteTree)
+				if (count==0)
+					((MesquiteTree)tree).setName(consenser.getName() + " of trees from " + treeSource.getNameAndParameters());
+				else
+					((MesquiteTree)tree).setName(consenser.getName() + " of " + count + " trees from " + treeSource.getNameAndParameters());
 		}
 		else {
 			tree = consenser.consense(trees);
@@ -222,7 +223,7 @@ public class ConsensusTree extends TreeSource {
 	public String getTreeNameString(Taxa taxa, int itree) {
 		return consenser.getName() + " from " + treeSource.getNameAndParameters();
 	}
-	 /**Returns name to show in windows etc. for tree block or source of trees.*/
+	/**Returns name to show in windows etc. for tree block or source of trees.*/
 	public String getTreesDescriptiveString(Taxa taxa){
 		return "Consensus of " + treeSource.getTreesDescriptiveString(taxa);
 	}
@@ -243,12 +244,20 @@ public class ConsensusTree extends TreeSource {
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (MesquiteThread.isScripting())
 			return;
-		if (consenser instanceof IncrementalConsenser && employee == treeSource && notification != null && notification.getCode() == MesquiteListener.ITEMS_ADDED){
-			parametersChanged();
-		}
-		else if (employee == treeSource && notification != null && notification.getCode() != MesquiteListener.SELECTION_CHANGED){
-			startTree =  0;
-			parametersChanged();
+
+		if (employee == treeSource){
+			if (notification == null){
+				startTree = 0;
+
+				parametersChanged();
+			}
+			else if (consenser instanceof IncrementalConsenser && notification.getCode() == MesquiteListener.ITEMS_ADDED){
+				parametersChanged();
+			}
+			else if (notification.getCode() != MesquiteListener.SELECTION_CHANGED){
+				startTree =  0;
+				parametersChanged();
+			}
 		}
 	}
 

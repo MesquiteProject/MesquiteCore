@@ -158,6 +158,7 @@ class ShadeStatesDecorator extends TreeDecorator {
 		colorSequence = statesAtNodes.getColorSequenceAtNode(N, colorTable);
 		if (colorSequence != null) {
 			treeDisplay.getTreeDrawing().fillBranchWithColorSequence(tree,  N, colorSequence, g);
+			anyDataInClade = true;
 		}
 		else {
 
