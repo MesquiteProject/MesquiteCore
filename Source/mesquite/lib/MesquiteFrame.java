@@ -1343,7 +1343,6 @@ class FrameTabsPanel extends MousePanel {
 	long entryTime = -1;
 	
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
-		Debugg.println("mouse Entered " +x + " " + y);
 		if (frame==null || frame.windows==null){
 			return;
 		}
