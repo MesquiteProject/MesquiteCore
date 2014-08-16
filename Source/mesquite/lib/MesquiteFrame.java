@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.*;
 import java.util.*;
+import javax.swing.*;
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
@@ -1152,13 +1153,15 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 }
 
+
 class FrameTabsPanel extends MousePanel {
-	MesquiteFrame frame;
+		MesquiteFrame frame;
 	int[] lefts, rights;
 	Font[] fonts = new Font[6];
 	int intertabSpace = 4;
 	int defaultBackEdge = 10;
 	public static int lowerBarHeight = 4;
+
 	static Image goaway, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
 	static {
 		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
@@ -1238,7 +1241,11 @@ class FrameTabsPanel extends MousePanel {
 	int getGoAwayControlRight(){
 		return getGoAwayControlLeft() + 12;
 	}
+	public void explainTab(int whichTab) {
+		frame.frontWindow.setExplanation(getTabTitle(whichTab));
 	
+	}
+
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
 			int i = findTab(x);
@@ -1322,6 +1329,7 @@ class FrameTabsPanel extends MousePanel {
 				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(tabOver);
 				drawAndFillTab (g, w,  lefts[tabOver],  rights[tabOver],  tabOver, scaling);
 			}
+			explainTab(tabOver);
 		}
 		if (tabOver != lastTabOver && lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length)  && lastTabOver < frame.windows.size()){
 			Graphics g = getGraphics();
@@ -1332,16 +1340,22 @@ class FrameTabsPanel extends MousePanel {
 		}
 		lastTabOver = tabOver;
 	}
+	long entryTime = -1;
+	
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
+		Debugg.println("mouse Entered " +x + " " + y);
 		if (frame==null || frame.windows==null){
 			return;
 		}
 		tabOver = findTab(x);
+		if (entryTime<0)
+			entryTime = System.currentTimeMillis();
 		if (tabOver != lastTabOver && tabOver > 0 && (lefts==null || tabOver<lefts.length) ){
 			Graphics g = getGraphics();
 			if (g != null){
 				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(tabOver);
 				drawAndFillTab (g, w,  lefts[tabOver],  rights[tabOver],  tabOver, scaling);
+				entryTime=-1;
 			}
 		}
 		if (tabOver != lastTabOver && lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length)  && lastTabOver < frame.windows.size()){
@@ -1351,13 +1365,17 @@ class FrameTabsPanel extends MousePanel {
 				drawAndFillTab (g, w,  lefts[lastTabOver],  rights[lastTabOver],  lastTabOver, scaling);
 			}
 		}
+		explainTab(tabOver);
 		lastTabOver = tabOver;
 	}
+	
+	
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		tabOver  = -1;
 		if (frame==null || frame.windows==null){
 			return;
 		}
+		entryTime=-1;
 		if (lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length) && (lastTabOver < frame.windows.size())){
 			Graphics g = getGraphics();
 			if (g != null){
@@ -1521,6 +1539,18 @@ class FrameTabsPanel extends MousePanel {
 	int projectPanelWidth;
 	double scaling = 1.0;
 	int fontChosen = 0;
+	
+	/*.................................................................................................................*/
+	public String getTabTitle(int i) {
+		if (i<0 || i>=frame.windows.size())
+			return "";
+		MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+		String s = w.getTitle();
+		if (w == frame.projectWindow && projectPanelWidth<=0)
+			s = "Project";
+		return s;
+	}
+	
 	/*.................................................................................................................*/
 	public void paint(Graphics g){
 		
