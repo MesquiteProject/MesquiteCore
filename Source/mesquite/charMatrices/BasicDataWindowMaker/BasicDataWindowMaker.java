@@ -1738,11 +1738,18 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				ownerModule.discreetAlert("Sorry, a single block of cells must be selected before it can be moved.");
 				return null;
 			}
-			String helpString ="Enter the amount to shift the block.  If you enter a positive number, the block will be shifted through that many characters to the right; a negative number, to the left. ";
-			helpString+="The block will not be shifted over top of existing data; it will only be moved through gaps.  If you request a shift larger than can be accommodated, then ";
-			helpString += "the block will be shifted as far as possible without overwriting data.";
 			
-			int shiftAmount = MesquiteInteger.queryInteger(ownerModule.containerOfModule(), "Move Selected Block", "Number of characters to shift selected block", helpString, 1, MesquiteInteger.unassigned, MesquiteInteger.unassigned);
+			MesquiteInteger io = new MesquiteInteger(0);
+			int shiftAmount = MesquiteInteger.fromString(arguments, io);
+
+			if (!MesquiteInteger.isCombinable(shiftAmount) && !MesquiteThread.isScripting()) {
+				String helpString ="Enter the amount to shift the block.  If you enter a positive number, the block will be shifted through that many characters to the right; a negative number, to the left. ";
+				helpString+="The block will not be shifted over top of existing data; it will only be moved through gaps.  If you request a shift larger than can be accommodated, then ";
+				helpString += "the block will be shifted as far as possible without overwriting data.";
+			
+				shiftAmount = MesquiteInteger.queryInteger(ownerModule.containerOfModule(), "Move Selected Block", "Number of characters to shift selected block", helpString, 1, MesquiteInteger.unassigned, MesquiteInteger.unassigned);
+			}
+			
 			if (MesquiteInteger.isCombinable(shiftAmount)) {
 				MesquiteBoolean dataChanged = new MesquiteBoolean();
 				MesquiteInteger charAdded = new MesquiteInteger();
