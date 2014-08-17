@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.text.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -140,6 +141,12 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	public void selectSameColor(int column, int row, boolean restrictToCharacter, boolean restrictToTaxon, boolean contiguous, boolean subtractFromSelection) {
 		if (bdw != null)
 			bdw.selectSameColor(column, row, restrictToCharacter, restrictToTaxon, contiguous, subtractFromSelection);
+	}
+	
+	public void selectDataBlockInTaxon(int column, int row) {
+		if (bdw != null)
+			bdw.selectBlockInTaxon(column, row);
+
 	}
 
 	public void selectSameColorRow(int column, int row, boolean subtractFromSelection) {
@@ -516,6 +523,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		MesquiteMenuItemSpec msct = ownerModule.addMenuItem("Move Selected Characters To...", ownerModule.makeCommand("moveCharsTo", this));
 		msct.setShortcut(KeyEvent.VK_M);
 		ownerModule.addMenuItem("Move Selected Taxa To...", ownerModule.makeCommand("moveTaxaTo", this));
+		ownerModule.addMenuItem("Move Selected Block...", ownerModule.makeCommand("moveSelectedBlock", this));
 
 		MesquiteSubmenuSpec mss4 = ownerModule.addSubmenu(null, "Character Inclusion/Exclusion");
 		ownerModule.addItemToSubmenu(null, mss4, "Include Selected Characters", ownerModule.makeCommand("includeSelectedCharacters", this));
@@ -1115,6 +1123,29 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 
 	}
+	
+	public void selectBlockInTaxon(int column, int row) {
+		if (data == null || table == null)
+			return;
+		if (!data.isInapplicable(column,  row)) {
+			for (int ic=column; ic>=0; ic--){
+				if (!data.isInapplicable(ic, row))
+					table.selectCell(ic, row);
+				else
+					break;
+			}
+			for (int ic=column+1; ic<data.getNumChars(); ic++){
+				if (!data.isInapplicable(ic, row))
+					table.selectCell(ic, row);
+				else
+					break;
+			}
+	
+		}
+
+
+	}
+
 
 	public void selectSameColorRow(int column, int row, boolean subtractFromSelection) {
 		if (data == null || table == null || table.rowNamesColorer == null || ((MesquiteModule) table.rowNamesColorer).nameMatches("#NoColor"))
@@ -1697,6 +1728,33 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				justAfter = MesquiteInteger.queryInteger(this, "Move taxa", "After which row should the selected taxa be moved (enter 0 to move to first place)?", 0, 0, table.getNumRows() * 10);
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter - 1); // -1 to convert to internal representation
+		}
+		else if (checker.compare(this.getClass(), "Moves the selected block ", "[number of characters to move]", commandName, "moveSelectedBlock")) {
+			MesquiteInteger firstRow = new MesquiteInteger();
+			MesquiteInteger lastRow = new MesquiteInteger();
+			MesquiteInteger firstColumn = new MesquiteInteger();
+			MesquiteInteger lastColumn = new MesquiteInteger();
+			if (!table.singleCellBlockSelected(firstRow, lastRow, firstColumn, lastColumn)) {
+				ownerModule.discreetAlert("Sorry, a single block of cells must be selected before it can be moved.");
+				return null;
+			}
+			String helpString ="Enter the amount to shift the block.  If you enter a positive number, the block will be shifted through that many characters to the right; a negative number, to the left. ";
+			helpString+="The block will not be shifted over top of existing data; it will only be moved through gaps.  If you request a shift larger than can be accommodated, then ";
+			helpString += "the block will be shifted as far as possible without overwriting data.";
+			
+			int shiftAmount = MesquiteInteger.queryInteger(ownerModule.containerOfModule(), "Move Selected Block", "Number of characters to shift selected block", helpString, 1, MesquiteInteger.unassigned, MesquiteInteger.unassigned);
+			if (MesquiteInteger.isCombinable(shiftAmount)) {
+				MesquiteBoolean dataChanged = new MesquiteBoolean();
+				MesquiteInteger charAdded = new MesquiteInteger();
+				MesquiteInteger distanceMoved = new MesquiteInteger();
+				data.moveCells(firstColumn.getValue(), lastColumn.getValue(), shiftAmount, firstRow.getValue(), lastRow.getValue(),  false, false, true, true,  dataChanged,  charAdded, distanceMoved);
+				if (distanceMoved.getValue()!=shiftAmount)
+					MesquiteMessage.println("Block could not be moved as far as request.  Request: : " + shiftAmount + ". Amount moved: " + distanceMoved.getValue());
+				table.deSelectBlock(firstColumn.getValue(), firstRow.getValue(), lastColumn.getValue(), lastRow.getValue());
+				table.selectBlock(firstColumn.getValue()+distanceMoved.getValue(), firstRow.getValue(), lastColumn.getValue()+distanceMoved.getValue(), lastRow.getValue());
+				if (dataChanged.getValue())
+					contentsChanged();
+			}
 		}
 		/* This is a hidden feature to help recover from consequences of bug of duplicate NOTES blocks in linked files in 1.0 to 1.02 */
 		else if (checker.compare(this.getClass(), "Moves the footnotes of the selected characters ", "[column to move after; -1 if at start]", commandName, "moveFootnotes")) {
@@ -4242,6 +4300,20 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			for (int i = 0; i < linkedTables.size(); i++) {
 				MesquiteTable t = (MesquiteTable) linkedTables.elementAt(i);
 				t.selectBlock(firstColumn, firstRow, lastColumn, lastRow);
+				t.redrawBlock(firstColumn, firstRow, lastColumn, lastRow);
+			}
+			suppressSelect = false;
+			notifySelectionChanged();
+		}
+	}
+	
+	public void deSelectBlock(int firstColumn, int firstRow, int lastColumn, int lastRow) {
+		if (!suppressSelect) {
+			super.deSelectBlock(firstColumn, firstRow, lastColumn, lastRow);
+			suppressSelect = true;
+			for (int i = 0; i < linkedTables.size(); i++) {
+				MesquiteTable t = (MesquiteTable) linkedTables.elementAt(i);
+				t.deSelectBlock(firstColumn, firstRow, lastColumn, lastRow);
 				t.redrawBlock(firstColumn, firstRow, lastColumn, lastRow);
 			}
 			suppressSelect = false;

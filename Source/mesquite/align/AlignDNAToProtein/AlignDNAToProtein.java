@@ -98,7 +98,7 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 				icDNA = dnaData.nextApplicable(it, icDNA, true);
 				if (icDNA>=0) {
 					int distance = icDNA-adjustedPosInDNA;
-					dnaData.moveCells(icDNA,icDNA, -distance, it,it, false, false, true,  false, dataChanged, charAdded);
+					dnaData.moveCells(icDNA,icDNA, -distance, it,it, false, false, true,  false, dataChanged, charAdded, null);
 					if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
 //						dnaData.assignGeneticCodeToTerminalChars(charAdded.getValue());

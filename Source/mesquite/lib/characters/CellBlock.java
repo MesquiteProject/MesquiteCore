@@ -79,7 +79,7 @@ public class CellBlock {
 	public void restoreCharBlock(MesquiteBoolean dataChanged){    // takes data that is currently at currentBlock location and move to original location
 		if (!(currentLeftMovement==0 && currentRightMovement==0)) {
 			int distanceToMove = originalFirstCharInBlock - previousFirstCharInBlock;
-			int added = data.moveCells(previousFirstCharInBlock,previousLastCharInBlock, distanceToMove, whichTaxa, true, false, true, false,dataChanged,null);
+			int added = data.moveCells(previousFirstCharInBlock,previousLastCharInBlock, distanceToMove, whichTaxa, true, false, true, false,dataChanged,null, null);
 
 			table.redrawBlock(MesquiteInteger.minimum(previousFirstCharInBlock, originalFirstCharInBlock), MesquiteInteger.maximum(previousLastCharInBlock, originalLastCharInBlock), whichTaxa);
 			reset();
@@ -534,7 +534,7 @@ public class CellBlock {
 		}
 		else {
 			for (int i=icEnd; i<data.getNumChars(); i++) {  // find first gap to the right of this point
-				if (data.inapplicableBlock(i,i, whichTaxa)){  // should be isToolInapplicableú
+				if (data.inapplicableBlock(i,i, whichTaxa)){  // should be isToolInapplicableï¿½
 					lastInBlock.setValue(i-1);
 					return;
 				} else if (i>icEnd &&!data.applicableInBothCharacters(i,i-1,whichTaxa)) {

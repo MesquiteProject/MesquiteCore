@@ -148,7 +148,7 @@ public String preparePreferencesForXML () {
 
 					}
 					if (match) {
-						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded);
+						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
 						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
 							((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
 //							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());

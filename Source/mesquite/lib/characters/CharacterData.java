@@ -1060,7 +1060,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	Returns how many characters are added to the front (if value is -ve) or end (if value is +ve) of the matrix.
 	 */
-	public int moveCells(int startBlock, int endBlock, int distance, Bits whichTaxa,  boolean canExpand, boolean canOverwrite, boolean includingLinked, boolean notify, MesquiteBoolean dataChanged,MesquiteInteger charAdded){  //startBlock and endBlock are 0-based
+	public int moveCells(int startBlock, int endBlock, int distance, Bits whichTaxa,  boolean canExpand, boolean canOverwrite, boolean includingLinked, boolean notify, MesquiteBoolean dataChanged,MesquiteInteger charAdded, MesquiteInteger distanceMoved){  //startBlock and endBlock are 0-based
 		if (!checkThread(false))
 			return 0;
 		CharacterState cs = null;
@@ -1079,6 +1079,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 			else
 				gResultingEndBlock = endBlock + distance;
+			if (distanceMoved!=null)
+				distanceMoved.setValue(distance);
 			if (isTerminalBlock.getValue() && canExpand) {
 				openUp = distance-(getNumChars()-endBlock)+1;
 				if (openUp>0) {  //makeNewCharacters
@@ -1107,6 +1109,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				distance = checkCellMoveDistanceAvailable(distance, startBlock, endBlock, whichTaxa, isTerminalBlock, boundaryOfAvailableSpace,canExpand);	   	
 				g = boundaryOfAvailableSpace.getValue();		
 			}
+			if (distanceMoved!=null)
+				distanceMoved.setValue(distance);
+
 			if (isTerminalBlock.getValue() && canExpand) {
 				openUp = -distance-startBlock;
 
@@ -1139,7 +1144,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			if (linkedDatas.size()>0){
 				for (int i=0; i<linkedDatas.size(); i++){
 					CharacterData d = (CharacterData)linkedDatas.elementAt(i);
-					d.moveCells(origStartBlock, origEndBlock, distance, whichTaxa,  false, true, false, notify, null,null);
+					d.moveCells(origStartBlock, origEndBlock, distance, whichTaxa,  false, true, false, notify, null,null, null);
 				}
 			}
 		}
@@ -1153,20 +1158,20 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	Returns how many characters are added to the front (if value is -ve) or end (if value is +ve) of the matrix.
 	 */
-	public int moveCells(int startBlock, int endBlock, int distance, int itStart, int itEnd,  boolean canExpand, boolean canOverwrite, boolean includingLinked, boolean notify, MesquiteBoolean dataChanged, MesquiteInteger charAdded){  //startBlock and endBlock are 0-based
+	public int moveCells(int startBlock, int endBlock, int distance, int itStart, int itEnd,  boolean canExpand, boolean canOverwrite, boolean includingLinked, boolean notify, MesquiteBoolean dataChanged, MesquiteInteger charAdded, MesquiteInteger distanceMoved){  //startBlock and endBlock are 0-based
 		Bits whichTaxa = new Bits(getNumTaxa());
 		for (int it=itStart; it<=itEnd; it++)
 			whichTaxa.setBit(it);
-		return moveCells( startBlock,  endBlock,  distance, whichTaxa,   canExpand,  canOverwrite,  includingLinked,  notify,  dataChanged, charAdded);
+		return moveCells( startBlock,  endBlock,  distance, whichTaxa,   canExpand,  canOverwrite,  includingLinked,  notify,  dataChanged, charAdded, distanceMoved);
 	}
 	/*.................................................................................................................*/
-	public int shiftAllCells(int distance, int it,  boolean canExpand,  boolean includingLinked, boolean notify, MesquiteBoolean dataChanged, MesquiteInteger charAdded){  //startBlock and endBlock are 0-based
+	public int shiftAllCells(int distance, int it,  boolean canExpand,  boolean includingLinked, boolean notify, MesquiteBoolean dataChanged, MesquiteInteger charAdded, MesquiteInteger distanceMoved){  //startBlock and endBlock are 0-based
 		int first = firstApplicable(it);
 		int last = lastApplicable(it);
 		if (first<0)
 			return 0;
 		else {
-			int dist =  moveCells(first,last, distance, it, it, canExpand, false, includingLinked,  notify, dataChanged, charAdded);
+			int dist =  moveCells(first,last, distance, it, it, canExpand, false, includingLinked,  notify, dataChanged, charAdded, distanceMoved);
 			return dist;
 		}
 	}

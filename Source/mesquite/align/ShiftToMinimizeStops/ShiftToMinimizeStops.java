@@ -64,7 +64,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 			if (table.wholeRowSelectedAnyWay(it)) {
 				numStops[0]= dnaData.getAminoAcidNumbers(it,ProteinData.TER);   //unshifted amount
 				if (numStops[0]>0) {
-					int added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
+					int added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded, null);
 					if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 						dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
 //						dnaData.assignGeneticCodeToTerminalChars(charAdded.getValue());
@@ -72,7 +72,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 					}
 					numStops[1] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);  //amount if shift by 1
 					if (numStops[1]>0) {
-						added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded);
+						added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded, null);
 						if (charAdded.isCombinable() && charAdded.getValue()!=0) {
 							dnaData.assignCodonPositionsToTerminalChars(charAdded.getValue());
 //							dnaData.assignGeneticCodeToTerminalChars(charAdded.getValue());
@@ -80,11 +80,11 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 						}
 						numStops[2] = dnaData.getAminoAcidNumbers(it,ProteinData.TER);  //amount if shift by 2
 						if (numStops[0]<=numStops[1] && numStops[0]<=numStops[2] ) {  // no change is best, but have shifted by 2, need to shift back
-							added = data.shiftAllCells(-2, it, true, true, false, dataChanged,charAdded);
+							added = data.shiftAllCells(-2, it, true, true, false, dataChanged,charAdded, null);
 							dataChanged.setValue(false);
 						}
 						else if (numStops[1]<=numStops[0] && numStops[1]<=numStops[2] ) {  // one shift change is best, but have shifted by 1, need to shift back
-							added = data.shiftAllCells(-1, it, true, true, false, dataChanged,charAdded);							
+							added = data.shiftAllCells(-1, it, true, true, false, dataChanged,charAdded, null);							
 						}
 					}
 					if (dataChanged.getValue())

@@ -349,7 +349,7 @@ public class AlignUtil {
 											int gapToUse = spaceNeeded;
 											if (spaceAvailable<spaceNeeded)
 												gapToUse = spaceAvailable;
-											int added = origData.moveCells(icOrig, startOfGapOrig-1, gapToUse, itOrig,itOrig, false, true, true, false,null,null);
+											int added = origData.moveCells(icOrig, startOfGapOrig-1, gapToUse, itOrig,itOrig, false, true, true, false,null,null, null);
 											icOrig += gapToUse;
 											spaceNeeded -= gapToUse;
 											if (added>0)
@@ -372,7 +372,7 @@ public class AlignUtil {
 							if (icOrig<=icOrigEnd2){
 								int gapSize = icOrig-startOfGap;
 								//now know how big of a gap must be closed
-								int added = origData.moveCells(icOrig, icOrigEnd2, -gapSize, itOrig,itOrig, false, true, true, false,null,null);
+								int added = origData.moveCells(icOrig, icOrigEnd2, -gapSize, itOrig,itOrig, false, true, true, false,null,null, null);
 								icOrig -= gapSize;
 								if (added>0)
 									MesquiteMessage.warnProgrammer("Alignment added characters when shouldn't have");

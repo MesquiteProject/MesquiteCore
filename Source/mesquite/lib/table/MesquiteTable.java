@@ -4103,6 +4103,20 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				cellsSelected[0].setBit(j * numColumnsTotal + i);
 			}
 	}
+	/* ............................................................................................................... */
+	/** Select block of cells. */
+	public void deSelectBlock(int firstColumn, int firstRow, int lastColumn, int lastRow) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || !rowLegal(firstRow) || !rowLegal(lastRow))
+			return;
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		int r1 = MesquiteInteger.minimum(firstRow, lastRow);
+		int r2 = MesquiteInteger.maximum(firstRow, lastRow);
+		for (int i = c1; i <= c2; i++)
+			for (int j = r1; j <= r2; j++) {
+				cellsSelected[0].clearBit(j * numColumnsTotal + i);
+			}
+	}
 
 
 	/* ............................................................................................................... */
