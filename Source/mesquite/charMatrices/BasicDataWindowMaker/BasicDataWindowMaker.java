@@ -281,6 +281,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	MatrixInfoPanel matrixInfoPanel;
 	boolean matrixInfoPanelEverShown = false;
 	MesquiteBoolean infoPanelOn;
+	MesquiteBoolean editingNotPermitted = new MesquiteBoolean(false);
 	MesquiteBoolean showPaleExcluded = new MesquiteBoolean(false);
 
 	public BasicDataWindow() {
@@ -357,6 +358,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addItemToSubmenu(null, cmm, "Missing Data Symbol...", MesquiteModule.makeCommand("setUnassignedSymbol", this));
 		ownerModule.addItemToSubmenu(null, cmm, "Inapplicable Symbol...", MesquiteModule.makeCommand("setInapplicableSymbol", this));
 		ownerModule.addCheckMenuItem(null, "Show Matrix Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
+		editingNotPermitted.setValue(data.getEditorInhibition());
+		ownerModule.addCheckMenuItemToSubmenu(null, cmm,"Editing Not Permitted", ownerModule.makeCommand("toggleEditingNotPermitted", this), editingNotPermitted);
 		ownerModule.addMenuItem("-", null);
 		
 		
@@ -448,12 +451,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		setCurrentTool(arrowTool);
 		arrowTool.setInUse(true);
 		// ibeam
-		if (!data.getEditorInhibition()) {
-			ibeamTool = new TableTool(this, "ibeam", MesquiteModule.getRootImageDirectoryPath(), "ibeam.gif", 7, 7, "Edit", "This tool can be used to edit the contents of cells in the matrix.", MesquiteModule.makeCommand("editCell", (Commandable) table), null, null);
-			ibeamTool.setWorksOnRowNames(true);
-			ibeamTool.setWorksOnColumnNames(true);
-			addTool(ibeamTool);
-		}
+		ibeamTool = new TableTool(this, "ibeam", MesquiteModule.getRootImageDirectoryPath(), "ibeam.gif", 7, 7, "Edit", "This tool can be used to edit the contents of cells in the matrix.", MesquiteModule.makeCommand("editCell", (Commandable) table), null, null);
+		ibeamTool.setWorksOnRowNames(true);
+		ibeamTool.setWorksOnColumnNames(true);
+		addTool(ibeamTool);
+		ibeamTool.setEnabled(!data.getEditorInhibition());
+
 		ListableVector v = ownerModule.getEmployeeVector();
 
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlterData");
@@ -917,6 +920,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				temp.addLine("endTell");
 			}
 			temp.addLine("toggleInfoPanel " + infoPanelOn.toOffOnString());
+			temp.addLine("toggleEditingNotPermitted " + editingNotPermitted.toOffOnString());
 		}
 		return temp;
 	}
@@ -1326,6 +1330,13 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		else if (checker.compare(this.getClass(), "Toggles whether the info panel is on", null, commandName, "toggleInfoPanel")) {
 			infoPanelOn.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			setMatrixInfoPanel(infoPanelOn.getValue());
+		}
+		else if (checker.compare(this.getClass(), "Toggles whether editing is permitted or not", null, commandName, "toggleEditingNotPermitted")) {
+			editingNotPermitted.toggleValue(ParseUtil.getFirstToken(arguments, pos));
+			data.setEditorInhibition(editingNotPermitted.getValue());
+			if (ibeamTool!=null)
+				ibeamTool.setEnabled(!editingNotPermitted.getValue());
+			//setMatrixInfoPanel(infoPanelOn.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Selects sequence", "[number of taxon][number of starting site][number of ending site]", commandName, "selectSequence")) {
 			int it = MesquiteInteger.fromFirstToken(arguments, pos);
