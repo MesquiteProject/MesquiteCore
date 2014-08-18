@@ -574,7 +574,7 @@ public class Installer extends MesquiteInit {
 							else if (response == -1)
 								discreetAlert("There was a problem downloading the update from the server.  Your internet connection or the server may be down.");
 							else if (response == -2)
-								discreetAlert("There was a problem saving the downloaded files.  It is possible that you don't have permission to make modifications within Mesquite_Folder.  This can happen, for example, if Mesquite_Folder is in the Applications or Program Files folder.  One possible fix is to move Mesquite_Folder to your own user directory, and try again to update.");
+								discreetAlert("There was a problem saving the downloaded files.  It is possible that Mesquite doesn’t have permission to make modifications within Mesquite_Folder.  This can happen, for example, if Mesquite_Folder is in the Applications or Program Files folder.  One possible fix is to move Mesquite_Folder to your own user directory, and try again to update.");
 							else if (response == -3)
 								discreetAlert("You have decided to cancel the update.");
 							else if (response == -4)
