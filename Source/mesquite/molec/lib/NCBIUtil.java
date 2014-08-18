@@ -20,6 +20,7 @@ import java.io.*;
 import org.dom4j.Element;
 
 import mesquite.lib.*;
+import mesquite.lib.Bits;
 import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;   //is this guaranteed to be an installed package?
@@ -555,25 +556,59 @@ public class NCBIUtil {
 			return null;
 	}
 	/*.................................................................................................................*/
-	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report){
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps){
 		if (data==null)
 			return;
+		
 		Taxa taxa = data.getTaxa();
 		int oldNumTaxa = taxa.getNumTaxa();
 		data.setCharNumChanging(true);
+		int insertAfterTaxon = taxa.getNumTaxa()-1;
+		if (insertAfterTaxonRequested>=0)
+			insertAfterTaxon = insertAfterTaxonRequested;
 		if (data instanceof ProteinData) {
 			InterpretFastaProtein importer = new InterpretFastaProtein();
-			importer.readString(data,fastaSequences);
+			importer.readString(data,fastaSequences, insertAfterTaxon);
 		} else {
 			InterpretFastaDNA importer = new InterpretFastaDNA();
-			importer.readString(data,fastaSequences);
+			importer.readString(data,fastaSequences, insertAfterTaxon);
 		}
 		data.setCharNumChanging(false);
+		taxa.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));
+		data.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));
 
+		Bits newTaxa = new Bits(taxa.getNumTaxa());
+		int taxaAdded = taxa.getNumTaxa()-oldNumTaxa;
+		int itStart = insertAfterTaxon+1;
+		int itEnd = itStart+taxaAdded-1;
+		for (int it=itStart; it<=itEnd; it++) {
+			newTaxa.setBit(it);
+		}
+		
+		
+		if (adjustNewSequences) {
+			MesquiteMessage.println("Adjusting sequences ");
+			if (!data.someApplicableInTaxon(insertAfterTaxon, false)){  
+				MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
+			    adjustNewSequences = false;
+			}
+			if (adjustNewSequences) {
+				
+				if (data instanceof DNAData){
+					MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, mod, taxa, newTaxa, insertAfterTaxon, false, false);
+				}
+				
+				MolecularDataUtil.pairwiseAlignMatrix(mod, (MolecularData)data, referenceTaxon, newTaxa,0, addNewInternalGaps, true);
+				data.notifyListeners(mod, new Notification(CharacterData.DATA_CHANGED, null, null));
+			}
+		}
+
+
+		
 		String s;
 		if (report!=null){
 			report.append("Acquired: \n");
-			for (int it = oldNumTaxa; it<taxa.getNumTaxa(); it++){
+			for (int it = itStart; it<= itEnd; it++){
 				s = taxa.getTaxon(it).getName();
 				report.append("  " + s + "\n");
 				report.append("  Length: " + data.getTotalNumApplicable(it,false)+ "\n");
@@ -581,8 +616,6 @@ public class NCBIUtil {
 			}
 			report.append("\n");
 		}
-		taxa.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));
-		data.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));
 	}
 	/*.................................................................................................................*/
 	public static String createFastaString(CharacterData data, int icStart, int icEnd, int it){

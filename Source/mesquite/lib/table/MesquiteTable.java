@@ -19,6 +19,7 @@ import java.awt.datatransfer.*;
 
 import javax.swing.text.JTextComponent;
 
+import pal.math.MathUtils;
 import mesquite.lib.*;
 import mesquite.lib.duties.FileInterpreter;
 
@@ -2472,18 +2473,28 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void resetNumRowsVisible() {
 		numRowsVisible = (numRowsTotal - firstRowVisible + 1);
 		int sum = 0;
+		int numRows = 0;
 		for (int r = firstRowVisible; r < numRowsTotal && r <rowHeights.length; r++) {
 			sum += rowHeights[r];
+			numRows++;
 			if (sum >= matrixHeight) {
 				numRowsVisible = (r - firstRowVisible + 1);
 				break;
 			}
 		}
-		vertScroll.setBlockIncrement(getNumRows()-1);
-		if (numRowsVisible < 2)
+		int verticalScrollPageIncrement = numRowsVisible - 1;
+		if (sum>0) {
+			double avgRowHeight = (1.0*sum)/numRows;
+			int numRowsPossiblyVisible = (int)(matrixHeight/avgRowHeight)-1;
+			if (numRowsPossiblyVisible>verticalScrollPageIncrement)
+				verticalScrollPageIncrement = numRowsPossiblyVisible;
+		}
+		
+		//vertScroll.setBlockIncrement(getNumRows()-1);
+		if (numRowsTotal < 2)
 			vertScroll.setBlockIncrement(1);
 		else
-			vertScroll.setBlockIncrement(numRowsVisible - 1);
+			vertScroll.setBlockIncrement(verticalScrollPageIncrement);  //DRM  14 july 14: changed this so that it did full page scrolls
 
 		lastRowVisible = firstRowVisible + numRowsVisible - 1;
 	}
@@ -4092,6 +4103,20 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				cellsSelected[0].setBit(j * numColumnsTotal + i);
 			}
 	}
+	/* ............................................................................................................... */
+	/** Select block of cells. */
+	public void deSelectBlock(int firstColumn, int firstRow, int lastColumn, int lastRow) {
+		if (!columnLegal(firstColumn) || !columnLegal(lastColumn) || !rowLegal(firstRow) || !rowLegal(lastRow))
+			return;
+		int c1 = MesquiteInteger.minimum(firstColumn, lastColumn);
+		int c2 = MesquiteInteger.maximum(firstColumn, lastColumn);
+		int r1 = MesquiteInteger.minimum(firstRow, lastRow);
+		int r2 = MesquiteInteger.maximum(firstRow, lastRow);
+		for (int i = c1; i <= c2; i++)
+			for (int j = r1; j <= r2; j++) {
+				cellsSelected[0].clearBit(j * numColumnsTotal + i);
+			}
+	}
 
 
 	/* ............................................................................................................... */
@@ -4469,40 +4494,54 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 	/* ............................................................................................................... */
 	/**
-	 * returns the boundaries of the next single block of cells selected within one row, starting from upper left, and going through each row before going to next row. If rows and columns passed in as MesquiteInteger are unassigned, then this finds the first case. Subsequent calls, if passed the same MesquiteIntegers retaining previously returned values, will find next block.
+	 * returns the boundaries of the next single block of cells selected within one row, starting from upper left, and going through each row before going to next row. 
+	 * If rows and columns passed in as MesquiteInteger are unassigned, then this finds the first case. Subsequent calls, if passed the same MesquiteIntegers retaining 
+	 * previously returned values, will find next block.
 	 */
 	public boolean nextSingleRowBlockSelected(MesquiteInteger row, MesquiteInteger firstColumn, MesquiteInteger lastColumn) {
 		if (!anyCellSelectedAnyWay())
 			return false;
-		int tempLastRow = row.getValue();
-		int tempLastColumn = lastColumn.getValue();
-		if (!row.isCombinable()) {
-			tempLastRow = 0;
+		if (row==null||firstColumn==null||lastColumn==null){
+			MesquiteMessage.warnProgrammer("Wanring: MesquiteIntegers passed to nextSingleRowBlockSelected cannot be null!");
+			return false;
 		}
-		if (!lastColumn.isCombinable())
-			tempLastColumn = -1;
-		else if (tempLastColumn >= numColumnsTotal - 1) { // end of previous row, need to go to start of next row
-			tempLastRow++;
-			tempLastColumn = -1;
+		boolean nextRow=false;
+		int incomingRow = row.getValue();
+		if (!row.isCombinable()) {
+			incomingRow = 0;
+		}
+		
+		int incomingLastColumn = lastColumn.getValue();
+		if (!lastColumn.isCombinable()){   // can only happen on first time through
+			incomingLastColumn = -1;
+		}
+		else if (incomingLastColumn >= numColumnsTotal - 1) { // end of previous row, need to go to start of next row
+			nextRow=true;;
+			incomingLastColumn = -1;
 		}
 		else
-			tempLastColumn++;
-		if (tempLastRow >= numRowsTotal)
+			incomingLastColumn++;
+		
+		if (nextRow)
+			incomingRow++;
+		
+		if (incomingRow >= numRowsTotal)  //incomingRow is 0-based but numRowsTotal is 1-based
 			return false;
-		for (int i = tempLastRow; i < numRowsTotal; i++) { // go through the rows
-			if (isRowSelected(i)) {
+		
+		for (int i = incomingRow; i < numRowsTotal; i++) { // go through the rows
+			if (wholeRowSelectedAnyWay(i)) {
 				row.setValue(i);
 				firstColumn.setValue(0);
 				lastColumn.setValue(numColumnsTotal - 1);
 				return true;
 			}
 			else {
-				for (int j = tempLastColumn + 1; j < numColumnsTotal; j++) {
-					if (isColumnSelected(j) || isCellSelected(j, i)) {
+				for (int j = incomingLastColumn + 1; j < numColumnsTotal; j++) {
+					if (isCellSelectedAnyWay(j, i)) {   
 						row.setValue(i);
 						firstColumn.setValue(j);
 						for (int k = j + 1; k < numColumnsTotal; k++) {
-							if (!isColumnSelected(k) && !isCellSelected(k, i)) {
+							if (!isCellSelectedAnyWay(k, i)) {
 								lastColumn.setValue(k - 1);
 								return true;
 							}
@@ -4516,7 +4555,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 
 				}
 			}
-			tempLastColumn = -1;
+			incomingLastColumn = -1;
 
 		}
 		return false;
@@ -5180,6 +5219,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			if (notify)
 				columnAssociable.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 		}
+	}
+	/* ............................................................................................................... */
+	/** deselects all columns. */
+	public void convertColumnSelectionToRows(boolean notify) {
+		for (int row = 0; (row < numRowsTotal); row++)
+			if (wholeRowSelectedAnyWay(row)) {
+				selectRow(row);
+			}
+		deselectAllColumns(true);
 	}
 
 	/* ............................................................................................................... */

@@ -194,7 +194,7 @@ public class ConcatenateMatrices extends DataUtility {
 		int origNumChars = data.getNumChars();
 		data.addParts(data.getNumChars()+1, oData.getNumChars());
 		CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
-		if (partition==null) // let's give the origjnal ones a group
+		if (partition==null) // let's give the original ones a group
 			data.setToNewGroup(data.getName(), 0, origNumChars-1, this);  //set group
 		data.setToNewGroup(oData.getName(), origNumChars, data.getNumChars()-1, this);  //set group
 		data.addInLinked(data.getNumChars()+1, oData.getNumChars(), true);

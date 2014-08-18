@@ -37,6 +37,7 @@ public class Taxa extends FileElement {
 	public static boolean inventUniqueIDs = false;
 	private String uniqueID; // id's of the taxa block
 
+
 	public static final int MAXNUMTAXA = 100000;
 	public static int totalCreated = 0;
 	int id = 0;
@@ -428,8 +429,7 @@ public class Taxa extends FileElement {
 	}
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
-	public int whichTaxonNumber(String taxonName, boolean caseSensitive,
-			boolean forgivingOfTruncation) {
+	public int whichTaxonNumber(String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
 		if (StringUtil.blank(taxonName))
 			return -1;
 		// second, see if there is an exact match

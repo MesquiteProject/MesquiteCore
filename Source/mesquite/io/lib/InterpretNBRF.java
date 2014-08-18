@@ -150,7 +150,7 @@ public abstract class InterpretNBRF extends FileInterpreterI implements ReadFile
 				}
 			}
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 	}
 	

@@ -290,7 +290,7 @@ public abstract class BlockMover extends DataWindowAssistantI {
 							redrawStartBlock = cellBlock.getCurrentLastCharInBlock()+1;
 
 
-						int added = data.moveCells(cellBlock.getPreviousFirstCharInBlock(), cellBlock.getPreviousLastCharInBlock(), distanceToMove, firstRowTouched,firstRowTouched, canExpand.getValue(), false, true, false,dataChanged,null);
+						int added = data.moveCells(cellBlock.getPreviousFirstCharInBlock(), cellBlock.getPreviousLastCharInBlock(), distanceToMove, firstRowTouched,firstRowTouched, canExpand.getValue(), false, true, false,dataChanged,null, null);
 						if (added<0){ //now start adjusting all the values as we may have added taxa at the start of the matrix
 							added = -added;
 							cellBlock.addToCharBlockValues(added);
@@ -358,6 +358,7 @@ public abstract class BlockMover extends DataWindowAssistantI {
 						betweenCells = true;
 					atRightEdgeOfCell = true;
 				}
+
 				previousPercentHorizontal = percentHorizontal;
 				MesquiteInteger firstInBlock= new MesquiteInteger();
 				MesquiteInteger lastInBlock= new MesquiteInteger();

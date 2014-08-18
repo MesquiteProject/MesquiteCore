@@ -126,6 +126,11 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			treeDisplay.forceRepaint();
 	}
 	/*.................................................................................................................*/
+	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
+	public boolean satisfiesSnapshotMode(){
+		return (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || MesquiteTrunk.snapshotMode == Snapshot.SNAPDISPLAYONLY);
+	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		if (myFont!=null)
@@ -170,7 +175,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				else
 					current = namesAngle/2/Math.PI*360;
 				MesquiteDouble d = new MesquiteDouble(current);
-				if (!QueryDialogs.queryDouble(containerOfModule(), "Names Angle", "Angle of taxon names, in degrees clockwise from horizontal.  Use \"?\" to indicate default.  Typical settings are between 0 degrees and -90 degrees.  0 = text reads from left to right (long dash = Ñ); -90 = text reads from bottom to top (long dash = |); -45 = text angled diagonally (long dash = /).  This setting applies only when tree is in UP orientation", d))
+				if (!QueryDialogs.queryDouble(containerOfModule(), "Names Angle", "Angle of taxon names, in degrees clockwise from horizontal.  Use \"?\" to indicate default.  Typical settings are between 0 degrees and -90 degrees.  0 = text reads from left to right (long dash = ï¿½); -90 = text reads from bottom to top (long dash = |); -45 = text angled diagonally (long dash = /).  This setting applies only when tree is in UP orientation", d))
 					return null;
 				namesAngle = d.getValue();
 				if (MesquiteDouble.isCombinable(namesAngle))

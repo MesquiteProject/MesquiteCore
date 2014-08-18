@@ -126,7 +126,8 @@ public class TextRotator {
 				g2.fillRect(horizPosition,(int)(vertPosition-height*0.667),width, height);
 				g2.setColor(c);
 			} 
-			
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
 			g2.drawString(s, horizPosition, vertPosition);
 			g2.rotate(-rotation, horizPosition, vertPosition);
 			g2.translate(-textOffsetH, -textOffsetV);

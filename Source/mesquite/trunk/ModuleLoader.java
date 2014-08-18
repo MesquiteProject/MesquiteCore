@@ -605,7 +605,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 							MesquiteModule.mesquiteTrunk.substantivePrereleasesFound();
 						}
 						String message = checkModuleForCompatibility(c);
-						if (message == null && mb.compatibleWithSystem()) {
+						if (message == null && mb.compatibleWithSystem() && mb.loadModule()) {
 							MesquiteModuleInfo mBI = new MesquiteModuleInfo(c, mb, moduleChecker, pathSlash);
 							if (!mb.getName().equals("Mesquite") && mesquite.mesquiteModulesInfoVector.nameAlreadyInList(mb.getName()))
 								MesquiteTrunk.mesquiteTrunk.alert("Two modules have the same name (" + mb.getName() + ").  This may make one of the modules unavailable for use. (Module class: " + mb.getClass().getName() +

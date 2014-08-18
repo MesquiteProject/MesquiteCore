@@ -76,6 +76,10 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		setLayout(null);
 	}
 	
+	public MesquiteModule getOwnerModule(){
+		return ownerModule;
+	}
+	
 	public int getNumTaxa() {
 		return taxa.getNumTaxa();
 	}

@@ -243,36 +243,69 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		basicTreeWindow.setCloneOfTree(tree, true);
 	}
 	/*.................................................................................................................*/
+	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
+	public boolean satisfiesSnapshotMode(){
+		return (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || MesquiteTrunk.snapshotMode == Snapshot.SNAPDISPLAYONLY);
+	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		if (basicTreeWindow==null)
 			return null;
+//		if (MesquiteTrunk.snapshotMode==Snapshot.SNAPDISPLAYONLY)
+//			return null;
+		
 		Snapshot temp = new Snapshot();
 		Snapshot fromWindow = basicTreeWindow.getSnapshot(file);
 		temp.addLine("suppressEPCResponse");
 
-		temp.addLine("setTreeSource " , treeSourceTask);
+		if (MesquiteTrunk.snapshotMode!=Snapshot.SNAPDISPLAYONLY){
+			temp.addLine("setTreeSource " , treeSourceTask);
 
-		temp.addLine("setAssignedID " + getPermanentIDString());  //for tree context
+			temp.addLine("setAssignedID " + getPermanentIDString());  //for tree context
+		}
 
 		temp.addLine("getTreeWindow");
 		temp.addLine("tell It");
 		temp.incorporate(fromWindow, true);
-		for (int i = 0; i<getNumberOfEmployees(); i++) {
-			Object e=getEmployeeVector().elementAt(i);
-			if (e instanceof TreeDisplayAssistantD || e instanceof TreeDisplayAssistantA || e instanceof TreeDisplayAssistantAO) {
-				temp.addLine("\tnewAssistant " , ((MesquiteModule)e));
+		
+		if (MesquiteTrunk.snapshotMode==Snapshot.SNAPDISPLAYONLY){
+			for (int i = 0; i<getNumberOfEmployees(); i++) {
+				Object e=getEmployeeVector().elementAt(i);
+				if (e instanceof TreeDisplayAssistantDI) {
+					temp.addLine("\tnewAssistant " , ((MesquiteModule)e));
+				}
 			}
-		}
-		for (int i = 0; i<getNumberOfEmployees(); i++) {
-			Object e=getEmployeeVector().elementAt(i);
-			if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA) {
-				temp.addLine("\tnewWindowAssistant " , ((MesquiteModule)e));
+		} else {
+			for (int i = 0; i<getNumberOfEmployees(); i++) {
+				Object e=getEmployeeVector().elementAt(i);
+				if (e instanceof TreeDisplayAssistantD || e instanceof TreeDisplayAssistantA || e instanceof TreeDisplayAssistantAO) {
+					temp.addLine("\tnewAssistant " , ((MesquiteModule)e));
+				}
+			}
+			for (int i = 0; i<getNumberOfEmployees(); i++) {
+				Object e=getEmployeeVector().elementAt(i);
+				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA) {
+					temp.addLine("\tnewWindowAssistant " , ((MesquiteModule)e));
+				}
 			}
 		}
 		temp.addLine("endTell");
 		temp.addLine("desuppressEPCResponse");
 
 		return temp;
+	}
+	/*.................................................................................................................*
+	public void getSnapshotForMacro(Snapshot temp) {
+		temp.addLine("getTreeWindow");
+		temp.addLine("tell It");
+//		temp.incorporate(fromWindow, true);
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof TreeDisplayAssistantDI) {
+				temp.addLine("\tnewAssistant " , ((MesquiteModule)e));
+			}
+		}
+		temp.addLine("endTell");
 	}
 	/*.................................................................................................................*/
 	/** Query module as to whether conditions are such that it will have to quit soon -- e.g. if its taxa block has been doomed.  The tree window, data window, 
@@ -1746,21 +1779,23 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		Snapshot temp = new Snapshot();
 		temp.incorporate(super.getSnapshot(file), false);
 
-		temp.addLine("getTreeDrawCoordinator", treeDrawCoordTask);
-		temp.addLine("setTreeNumber " +(MesquiteTree.toExternal(currentTreeNumber)));  
-		if (treeEdited && tree!=null) {
-			temp.addLine("setTree " + StringUtil.tokenize(tree.writeTree(Tree.BY_NUMBERS, false))); 
-			if (!StringUtil.blank(tree.getAnnotation()))
-				temp.addLine("setTreeAnnotation " + StringUtil.tokenize(tree.getAnnotation())); 
+		if (MesquiteTrunk.snapshotMode!=Snapshot.SNAPDISPLAYONLY) {
+			temp.addLine("getTreeDrawCoordinator", treeDrawCoordTask);
+			temp.addLine("setTreeNumber " +(MesquiteTree.toExternal(currentTreeNumber)));  
+			if (treeEdited && tree!=null) {
+				temp.addLine("setTree " + StringUtil.tokenize(tree.writeTree(Tree.BY_NUMBERS, false))); 
+				if (!StringUtil.blank(tree.getAnnotation()))
+					temp.addLine("setTreeAnnotation " + StringUtil.tokenize(tree.getAnnotation())); 
 
-			if (file !=null && BasicTreeWindowMaker.warnUnsaved){
-				BasicTreeWindowMaker.warnUnsaved = false;
-				ownerModule.storePreferences();
-				String s = "The tree in a tree window has been edited, and is a temporary tree associated with the window.  ";
-				s += "The fact that it is a temporary tree is indicated by the tree window\'s bar toward the bottom that indicates the tree name with a black diamond.  ";
-				s += "If you haven\'t stored it in the file using Store Tree from the Tree menu, then this temporary tree won't be stored in a public part of the file, ";
-				s += "and other programs won't be able to see the tree.\nIf you want other programs to see a temporary tree in a tree window, use Store Tree then resave the file.";
-				ownerModule.alert(s);
+				if (file !=null && BasicTreeWindowMaker.warnUnsaved){
+					BasicTreeWindowMaker.warnUnsaved = false;
+					ownerModule.storePreferences();
+					String s = "The tree in a tree window has been edited, and is a temporary tree associated with the window.  ";
+					s += "The fact that it is a temporary tree is indicated by the tree window\'s bar toward the bottom that indicates the tree name with a black diamond.  ";
+					s += "If you haven\'t stored it in the file using Store Tree from the Tree menu, then this temporary tree won't be stored in a public part of the file, ";
+					s += "and other programs won't be able to see the tree.\nIf you want other programs to see a temporary tree in a tree window, use Store Tree then resave the file.";
+					ownerModule.alert(s);
+				}
 			}
 		}
 		if (drawingSizeMode != FIXEDSIZE){

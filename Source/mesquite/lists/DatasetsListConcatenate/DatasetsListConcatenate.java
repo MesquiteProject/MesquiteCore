@@ -43,24 +43,25 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		if (!MesquiteThread.isScripting()){
-			if (!anyExcluded)
-				removeConcatenated = AlertDialog.query(containerOfModule(), "Delete original matrices?","Delete the original individual matrices after they have been concatenated?", "Delete", "Keep");
-			else {
-				MesquiteInteger buttonPressed = new MesquiteInteger(1);
-				ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-				dialog.addLabel("Delete the original individual matrices after they have been concatenated?");
-				Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated);
-
-				dialog.addLabel("Remove excluded characters?");
-				Checkbox deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", concatExcludedCharacters);
-				dialog.completeAndShowDialog(true);
-				if (buttonPressed.getValue()==0)  {
-					removeConcatenated = deleteMatricesBox.getState();
-					concatExcludedCharacters = !deleteExcludedBox.getState();
-				}
-				dialog.dispose();
-				return (buttonPressed.getValue()==0);
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			if (anyExcluded) {
+				dialog.appendToHelpString("During concatenation, characters that are currently excluded will be omitted entirely from the concatenated matrix if \"Remove excluded characters\" is checked.<BR>");
 			}
+			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation.");
+			Checkbox deleteExcludedBox=null;
+			if (anyExcluded)
+				deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", concatExcludedCharacters);
+			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated);
+			dialog.completeAndShowDialog(true);
+			if (buttonPressed.getValue()==0)  {
+				removeConcatenated = deleteMatricesBox.getState();
+				if (anyExcluded)
+					concatExcludedCharacters = !deleteExcludedBox.getState();
+			}
+			dialog.dispose();
+			return (buttonPressed.getValue()==0);
+
 		}
 		return true;
 	}
@@ -78,7 +79,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		}
 		if (!queryOptions())
 			return false;
-		CharacterData starter = null;
+		CharacterData starter = null;   // this will be the new concatenated matrix
 		int count = 0;
 		int countFailed = 0;
 		String name = "";

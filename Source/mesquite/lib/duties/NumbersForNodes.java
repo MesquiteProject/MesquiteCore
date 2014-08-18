@@ -35,6 +35,20 @@ public abstract class NumbersForNodes extends MesquiteModule  {
    	public abstract void initialize(Tree tree);
 
 	public abstract void calculateNumbers(Tree tree, NumberArray result, MesquiteString resultString); //TODO: pass MesquiteString
+	
+	public boolean getDefaultShowLabels() {
+		return false;
+	}
+	public boolean getDefaultShadeBranches() {
+		return true;
+	}
+	public boolean getDefaultShadeInColor() {
+		return true;
+	}
+	public boolean getDefaultLabelTerminals() {
+		return true;
+	}
+
 }
 
 

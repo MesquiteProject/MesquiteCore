@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 
 
@@ -20,6 +21,10 @@ import mesquite.lib.*;
 /**Displays numbers at nodes on tree.  Example modules: LabelNumbersOnTree.*/
 
 public abstract class DisplayNumbersAtNodes extends MesquiteModule  {
+	protected MesquiteBoolean showLabels= new MesquiteBoolean(false);
+	protected MesquiteBoolean shadeBranches= new MesquiteBoolean(true);   // added DRM 07.iv.14
+	protected MesquiteBoolean shadeInColor= new MesquiteBoolean(true);
+	protected MesquiteBoolean labelTerminals= new MesquiteBoolean(true);  // added DRM 07.iv.14
 
    	 public Class getDutyClass() {
    	 	return DisplayNumbersAtNodes.class;
@@ -36,6 +41,30 @@ public abstract class DisplayNumbersAtNodes extends MesquiteModule  {
    	 method drawOnTree(Tree tree, Object obj, Graphics g) will be called to draw the states*/
 	public TreeDecorator createTreeDecorator(TreeDisplay treeDisplay, TreeDisplayExtra ownerExtra) {
 		return null;
+	}
+	public boolean getShowLabels() {
+		return showLabels.getValue();
+	}
+	public void setShowLabels(boolean showLabels) {
+		this.showLabels.setValue(showLabels);
+	}
+	public boolean getShadeBranches() {
+		return shadeBranches.getValue();
+	}
+	public void setShadeBranches(boolean shadeBranches) {
+		this.shadeBranches.setValue(shadeBranches);
+	}
+	public boolean getShadeInColor() {
+		return shadeInColor.getValue();
+	}
+	public void setShadeInColor(boolean shadeInColor) {
+		this.shadeInColor.setValue(shadeInColor);
+	}
+	public boolean getLabelTerminals() {
+		return labelTerminals.getValue();
+	}
+	public void setLabelTerminals(boolean labelTerminals) {
+		this.labelTerminals.setValue(labelTerminals);
 	}
 
 }

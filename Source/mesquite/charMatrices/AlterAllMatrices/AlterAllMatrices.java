@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class AlterAllMatrices extends FileAlterer {
+public class AlterAllMatrices extends FileProcessor {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DataAlterer.class, getName() + " needs a particular method to alter data, e.g. in the Character Matrix Editor.",
 				null);
@@ -87,7 +87,7 @@ public class AlterAllMatrices extends FileAlterer {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter file. */
-   	public boolean alterFile(MesquiteFile file){
+   	public boolean processFile(MesquiteFile file){
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
    			return false;
@@ -103,9 +103,16 @@ public class AlterAllMatrices extends FileAlterer {
    		return success;
    	}
 	/*.................................................................................................................*/
-    	 public String getName() {
-		return "Alter All Matrices";
-   	 }
+	 public String getName() {
+	return "Alter All Matrices";
+	 }
+		/*.................................................................................................................*/
+	 public String getNameAndParameters() {
+		 if (alterTask==null)
+			 return "Alter All Matrices";
+		 else
+			 return "Alter All Matrices (" + alterTask.getName() + ")";
+	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {

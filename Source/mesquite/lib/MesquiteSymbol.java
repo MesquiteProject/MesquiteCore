@@ -50,12 +50,14 @@ public abstract class MesquiteSymbol extends Listened implements Listable  {
 	/*.................................................................................................................*/
 	public  abstract MesquiteSymbol  cloneMethod();
 	/*.................................................................................................................*/
-	public void addDialogElements(ExtensibleDialog dialog){
-		sizeField = dialog.addIntegerField("Size: ", size,4);
+	public void addDialogElements(ExtensibleDialog dialog, boolean includeSize){
+		if (includeSize)
+			sizeField = dialog.addIntegerField("Size: ", size,4);
 	}
 	/*.................................................................................................................*/
 	public void getDialogOptions(){
-		size = sizeField.getValue();
+		if (sizeField!=null)
+			size = sizeField.getValue();
 	}
 	/*.................................................................................................................*/
 	public void interpretNexus(Parser subcommands){

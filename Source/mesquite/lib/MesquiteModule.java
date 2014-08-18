@@ -67,7 +67,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "13 June 2014";   
+		return "13 August 2014";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -88,7 +88,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	597;  
+		return 	612;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -169,7 +169,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	protected  Object lastResult;
 	/** this is for modules to store their last result string for later use; intended for NumberForItem subclasses */
 	protected  String lastResultString; 
-
+	
 
 	/** The default author for this machine and user account */
 	public static Author author = new Author();
@@ -1450,6 +1450,26 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else
 			this.lastResultString = lastResultString.getValue();
 	}
+	/*.................................................................................................................*/
+	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
+	public boolean satisfiesSnapshotMode(){
+		return (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL);
+	}
+	/*.................................................................................................................*/
+	/** return the value of items to be snapshotted when saving a macro.*/
+	public int getMacroSnapshotMode(){
+		return Snapshot.SNAPALL;
+	}
+	/*.................................................................................................................*/
+	/** return the module responsible for snapshotting when saving a macro.*/
+	public MesquiteModule getMacroSnapshotModule(){
+		return this;
+	}
+	/*.................................................................................................................*/
+	/** return the command string to get the module responsible for snapshotting when saving a macro.*/
+	public String getMacroSnapshotModuleCommand(){
+		return null;
+	}
 
 	public Object doCommand(String commandName, String arguments) {
 		return doCommand(commandName, arguments, CommandChecker.defaultChecker);
@@ -1521,10 +1541,21 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return containerOfModule();
 		}
 		else  if (checker.compare(MesquiteModule.class, null, null, commandName, "saveMacro")) {
+			MesquiteTrunk.snapshotMode = getMacroSnapshotMode();
+			MesquiteModule mb = getMacroSnapshotModule();
+			boolean otherModule = !mb.equals(this);
+			String prefix = "";
+			if (otherModule) {
+				prefix = "\t" + getMacroSnapshotModuleCommand()+";" + StringUtil.lineEnding();
+		 		prefix+="\t\ttell It;" + StringUtil.lineEnding();
+			}
+			String recipe = Snapshot.getSnapshotCommands(getMacroSnapshotModule(), null, "");
+			if (otherModule) {
+				recipe = prefix + recipe + "\t\tendTell;" + StringUtil.lineEnding();
 
-			String recipe = Snapshot.getSnapshotCommands(this, null, "");
+			}
 			MesquiteMacro.saveMacro(this, "Untitled Macro for " + getNameForMenuItem(), 0, recipe);
-
+			MesquiteTrunk.snapshotMode = Snapshot.SNAPALL;
 		}
 		else  if (checker.compare(MesquiteModule.class, null, null, commandName, "applyMacro")) {
 			MesquiteModuleInfo mmi = getModuleInfo();
@@ -1830,6 +1861,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** check if any adjustments are needed before writing, .e.g. resolve name conflicts.  Format is file type, e.g. NEXUS, NEXML. */
 	public void preWritingCheck(MesquiteFile file, String format){		
 	}
+
 
 	/** Return Mesquite commands that will put the module (approximately) back into its current state. Used
 	so that on file save, a Mesquite block can be saved that will return the user more or less to previous state. */
@@ -2486,6 +2518,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return true;
 	}
 	/*.................................................................................................................*/
+	/** Returns whether the module should be loaded on startup.  This can be overridden to exclude modules from consideration. */  //WAYNECHECK
+	public boolean  loadModule(){ 
+		return true;
+	}
+	/*.................................................................................................................*/
 	public String getAppletInfo() {
 		return getName() + ", version " + getVersion();
 	}
@@ -2571,6 +2608,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public boolean getUserChooseable(){
 		return true;
 	}
+
 	public void processSingleXMLPreference (String tag, String flavor, String content){
 	}
 

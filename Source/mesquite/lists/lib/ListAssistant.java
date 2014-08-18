@@ -15,6 +15,7 @@ package mesquite.lists.lib;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
@@ -32,6 +33,7 @@ public abstract class ListAssistant extends MesquiteModule  {
    	 }
 	/**  Set the table and list's object (e.g, listable vector, data matrix for characters, etc.) */
 	public abstract void setTableAndObject(MesquiteTable table, Object object);
+	
 	/** Returns whether to use the string from getStringForRow; otherwise call drawInCell*/
 	public boolean useString(int ic){
 		return (getStringForRow(ic)!=null);
@@ -70,9 +72,10 @@ public abstract class ListAssistant extends MesquiteModule  {
 	}
 	
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
 		return false;
 	}
+	
 
 	/*.................................................................................................................*/
 	public String moduleActiveWord() {

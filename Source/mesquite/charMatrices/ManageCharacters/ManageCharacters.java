@@ -829,7 +829,7 @@ public class ManageCharacters extends CharactersManager {
 			MesquiteModule mb = findNearestColleagueWithName("Data Window Coordinator");
 			if (mb != null)
 				mb.doCommand("showDataWindow", MesquiteInteger.toString(getProject().getNumberCharMatrices()-1), checker);
-			newMatrix.resetChangedSinceSave();
+			newMatrix.resetCellMetadata();
 
 			resetAllMenuBars();
 			decrementMenuResetSuppression();
@@ -905,7 +905,7 @@ public class ManageCharacters extends CharactersManager {
 				fireEmployee(characterSourceTask);
 				getProject().decrementProjectWindowSuppression();
 				resetAllMenuBars();
-				newMatrix.resetChangedSinceSave();
+				newMatrix.resetCellMetadata();
 				return newMatrix;
 			}
 		}
@@ -2053,7 +2053,7 @@ public class ManageCharacters extends CharactersManager {
 		 if (data != null && blockComments!=null && blockComments.length()>0)
 			 data.setAnnotation(blockComments.toString(), false);
 		 if (data !=null) {
-			 data.resetChangedSinceSave();
+			 data.resetCellMetadata();
 		 }
 		 if (fuse) {
 			 data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));

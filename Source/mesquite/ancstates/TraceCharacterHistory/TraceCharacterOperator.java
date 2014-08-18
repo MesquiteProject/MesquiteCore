@@ -111,6 +111,7 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 				holding = false;
 				return;
 			}
+
 			traceModule.binsMenuItem.setEnabled(history instanceof mesquite.cont.lib.ContinuousHistory);
 			traceModule.numBinsMenuItem.setEnabled(history instanceof mesquite.cont.lib.ContinuousHistory);
 			traceModule.colorSubmenu.setEnabled(history instanceof mesquite.cont.lib.ContinuousHistory);

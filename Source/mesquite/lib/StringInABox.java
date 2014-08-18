@@ -384,6 +384,9 @@ public class StringInABox {
 	TextRotator textRotator;
 	/** draw text based at x, y, starting at local position y in box for height h*/
 	public int draw(Graphics g, int x, int y, int yPos, int h, Component component, boolean drawHorizontal){
+		return draw(g, x, y, yPos, h, component, drawHorizontal, false);
+	}
+	public int draw(Graphics g, int x, int y, int yPos, int h, Component component, boolean drawHorizontal, boolean tightVertical){
 		try {
 			if (sb!=null && sb.length()>0 && strings!=null && font!=null && width>0){
 				int lastDrawnYPos = yPos;
@@ -401,6 +404,8 @@ public class StringInABox {
 				if (!drawHorizontal && textRotator==null)
 					textRotator = new TextRotator(MesquiteInteger.maximum(10, strings.length));
 				int heightOnThisPage = increment;
+				if (tightVertical)
+					increment -= 4;
 				maxWidth = -1;
 				int charCount = 0;
 				linkBox = null;
@@ -508,6 +513,11 @@ public class StringInABox {
 	/** draw text based at x, y*/
 	public int draw(Graphics g, int x, int y){
 		return draw(g, x, y, 0, getHeight());
+	}
+	/* ----------------------------------------------- */
+	/** draw text based at x, y*/
+	public int drawTight(Graphics g, int x, int y){
+		return draw(g,x,y,0,getHeight(), null, true, true);
 	}
 	/* ----------------------------------------------- */
 	/** draw text based at x, y*/

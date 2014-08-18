@@ -24,6 +24,8 @@ import mesquite.lists.lib.GroupDialog;
 
 /** Manages specifications of partitions of taxa, including reading and writing from NEXUS file. */
 public class ManageTaxaPartitions extends SpecsSetManager {
+	final static String listOfTaxonGroupsName = "List of Taxon Group Labels";
+
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.TaxaPartitionList.TaxaPartitionList.class, getName() + "  uses an assistant to display a list window.",
 		"The assistant is arranged automatically");
@@ -150,6 +152,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxa Partitions", makeCommand("showPartitions",  this), (ListableVector)getProject().taxas);
 		mmis.setOwnerModuleID(getID());
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, listOfTaxonGroupsName, makeCommand("showTaxonGroups",  this));
 		groups.addToFile(getProject().getHomeFile(), getProject(), this);
 		super.projectEstablished();
 	}
@@ -167,10 +170,35 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				}
 				else
 					temp.addLine("showPartitions ", e); 
+			} else if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals(listOfTaxonGroupsName)) {
+				temp.addLine("showTaxonGroups ", e); 
 			}
 		}
 		return temp;
 	}
+
+	/*.................................................................................................................*/
+	 public ManagerAssistant showTaxonGroupList(Object obj, String listerName){
+	 		//Check to see if already has lister for this
+/*	 		boolean found = false;
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant)
+				if (((ManagerAssistant)e).showing(obj)) {
+					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					return ((ManagerAssistant)e);
+				}
+		}
+		*/
+		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
+			if (lister!=null) {
+				lister.showListWindow(obj);
+	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+	 				lister.getModuleWindow().setVisible(true);
+	 		}
+		return lister;
+	 		
+}
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -187,6 +215,9 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				}
 			}
 //			alert("Sorry, there are no taxa partitions");
+		}
+		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
+					return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -234,7 +265,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				else if (token.equalsIgnoreCase("SYMBOL")){
 					token = subcommands.getNextToken(); //=
 					token = subcommands.getNextToken(); // (
-					token = subcommands.getNextToken(); // should be NAME
+					token = subcommands.getNextToken(); // should be NAME					
 					if (token!=null && token.equalsIgnoreCase("NAME")) {
 						token = subcommands.getNextToken(); //=
 						token = subcommands.getNextToken(); // name of symbol
@@ -244,11 +275,16 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 							MesquiteSymbol symbol = (MesquiteSymbol)symVector.elementWithName(token);
 							if (symbol!=null) {
 								MesquiteSymbol groupSymbol = symbol.cloneMethod();
-								groupSymbol.interpretNexus(subcommands);
+								Parser remaining = new Parser();
+								remaining.setString(subcommands.getRemainingUntilChar(')',true));
+								groupSymbol.interpretNexus(remaining);
 								group.setSymbol(groupSymbol);
 							}
 						}
 					}
+				}
+				else if (token.equalsIgnoreCase("HIDDEN")){
+					group.setVisible(false);
 				}
 			}
 		}
@@ -301,6 +337,10 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 						MesquiteSymbol symbol = cg.getSymbol();
 						if (symbol != null)
 							s += " SYMBOL = (NAME="+ParseUtil.tokenize(symbol.getName()) + " SIZE="+symbol.getSize() + " "+ symbol.getBasicNexusOptions()+ " "+ symbol.getExtraNexusOptions() + ") ";
+					}
+					if (!cg.isVisible()){
+						Color c = cg.getColor();
+						s += " HIDDEN ";
 					}
 					s += ";" + StringUtil.lineEnding();
 				}

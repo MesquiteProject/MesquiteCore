@@ -144,7 +144,7 @@ public abstract class InterpretSimple extends FileInterpreterI {
 				}
 			}
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 		}
 		decrementMenuResetSuppression();

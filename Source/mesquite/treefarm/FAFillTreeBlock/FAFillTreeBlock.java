@@ -17,7 +17,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class FAFillTreeBlock extends FileAlterer {
+public class FAFillTreeBlock extends FileProcessor {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(TreeBlockFiller.class, getName() + " needs a particular method to make tree blocks.",
 				null);
@@ -79,7 +79,7 @@ public class FAFillTreeBlock extends FileAlterer {
 	}
 	/*.................................................................................................................*/
 	/** Called to alter file. */
-	public boolean alterFile(MesquiteFile file){
+	public boolean processFile(MesquiteFile file){
 		MesquiteProject proj = file.getProject();
 		if (proj == null)
 			return false;

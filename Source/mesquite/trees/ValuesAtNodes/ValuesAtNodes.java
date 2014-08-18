@@ -62,6 +62,7 @@ public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolde
 		if (displayTask == null) {
 			return sorry(getName() + " couldn't start because no display module was obtained");
 		}
+		setDefaultsFromNumbersForNodes();
 		traces = new Vector();
 		makeMenu("Node_Values");
 		resetContainingMenuBar();
@@ -74,6 +75,17 @@ public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolde
 		addMenuItem( "-", null);
 		return true;
 	}
+	/*.................................................................................................................*/
+	private void setDefaultsFromNumbersForNodes(){
+		if (displayTask!=null && numForNodesTask!=null) {
+			displayTask.setShadeBranches(numForNodesTask.getDefaultShadeBranches());
+			displayTask.setShadeInColor(numForNodesTask.getDefaultShadeInColor());
+			displayTask.setShowLabels(numForNodesTask.getDefaultShowLabels());
+			displayTask.setLabelTerminals(numForNodesTask.getDefaultLabelTerminals());
+		}
+	}
+	/*.................................................................................................................*/
+
 	public boolean suppliesWritableResults(){
 		return traces.size()<2;
 	}
@@ -159,6 +171,7 @@ public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolde
 			DisplayNumbersAtNodes temp=  (DisplayNumbersAtNodes)replaceEmployee(DisplayNumbersAtNodes.class, arguments, "Displayer of numbers at nodes", displayTask);
 			if (temp!=null) {
 				displayTask= temp;
+				setDefaultsFromNumbersForNodes();
 				resetAllTraceOperators();
 				recalculateAllTraceOperators();
 				if (!suppress)

@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.table.*;
 import mesquite.lib.characters.*;
@@ -41,6 +42,15 @@ public abstract class DataSearcher extends MesquiteModule  {
    	}
    	
 	/*.................................................................................................................*/
+   	/** Processing to be done after each search.  Returns true iff the number of columns changed in the process).*/
+   	public boolean processAfterEachTaxonSearch(mesquite.lib.characters.CharacterData data, int it){
+   		return false;
+   	}
+	/*.................................................................................................................*/
+	/** message if search failed to find anything.  */
+	public void unsuccessfulSearchMessage(){
+	}
+	/*.................................................................................................................*/
    	/** Called to search data in a table. This is used if the searching procedure can be done on the selected region in one taxon
    	at a time, independent of all other taxa.  If the searching procedure involves dependencies between taxa,
    	then a different method must be built.  */
@@ -49,8 +59,12 @@ public abstract class DataSearcher extends MesquiteModule  {
  		if (table==null && data!=null){    // alter entire matrix
  			if (canSearchMoreThanOnePiece() || data.getNumTaxa()==1)
  				return false;
-			for (int j=0; j<data.getNumTaxa(); j++)
-				searchOneTaxon(data,j,0,data.getNumChars());
+			for (int j=0; j<data.getNumTaxa(); j++) {
+				if (searchOneTaxon(data,j,0,data.getNumChars()))
+					processAfterEachTaxonSearch(data, j); 
+				else
+					unsuccessfulSearchMessage();
+			}
 			did = true;
 			return true;
  		}
@@ -61,8 +75,17 @@ public abstract class DataSearcher extends MesquiteModule  {
  			MesquiteInteger lastColumn = new MesquiteInteger();
  	
  			while (table.nextSingleRowBlockSelected(row, firstColumn, lastColumn)) { 
- 				searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue());
- 				did = true;
+ 				if (searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue())){
+ 					boolean resetColumns = processAfterEachTaxonSearch(data, row.getValue());
+ 					if (resetColumns){  //
+ 						lastColumn.setValue(data.getNumChars());
+ 						firstColumn.setValue(0);
+ 					}
+ 				}
+				else {
+					unsuccessfulSearchMessage();
+				}
+				did = true;
  			}
  			if (!did)
 				discreetAlert( "Sorry, to use the search you need to have one or more stretches of character states (e.g. a section of sequence) selected in one or more taxa.");
@@ -72,7 +95,8 @@ public abstract class DataSearcher extends MesquiteModule  {
 	/*.................................................................................................................*/
    	/** Called to search the data selected .  If you use the searchSelectedTaxa method of this class, 
    	then you must supply a real method for this, not just this stub. */
-   	public void searchOneTaxon(mesquite.lib.characters.CharacterData data, int it, int icStart, int icEnd){
+   	public boolean searchOneTaxon(mesquite.lib.characters.CharacterData data, int it, int icStart, int icEnd){
+   		return false;
    	}
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */

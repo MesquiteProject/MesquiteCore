@@ -313,9 +313,9 @@ public class AddAndRearrange extends TreeSearcher implements Incrementable {
 	}
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-	public void initialize(Taxa taxa){
+	public boolean initialize(Taxa taxa){
 		treeValueTask.initialize(taxa.getDefaultTree());
-
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void fillTreeBlock(TreeVector treeList){

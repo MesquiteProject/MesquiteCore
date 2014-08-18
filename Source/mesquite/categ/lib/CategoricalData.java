@@ -197,11 +197,27 @@ public class CategoricalData extends CharacterData {
 			for (int it=itStart; it<=itEnd; it++) {
 				int itSource = it-itStart;
 				int icSource = ic-icStart;
-				if (itSource<sourceData.getNumTaxa() || icSource<sourceData.getNumChars())
+				if (itSource<sourceData.getNumTaxa() && icSource<sourceData.getNumChars())
 					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
 			}
 		}
-		resetChangedSinceSave();
+		resetCellMetadata();
+
+	}
+	/** Copies the block of data from the source to this data object */
+	public void copyDataBlock(CharacterData sourceData, int icSourceStart,  int itSourceStart, int icStart, int icEnd, int itStart, int itEnd){
+		if (sourceData == null)
+			return;
+		
+		for (int ic=icStart; ic<=icEnd; ic++){
+			for (int it=itStart; it<=itEnd; it++) {
+				int itSource = it-itStart+itSourceStart;
+				int icSource = ic-icStart+icSourceStart;
+				if (it<getNumTaxa() && ic<getNumChars() && itSource<sourceData.getNumTaxa() && icSource<sourceData.getNumChars())
+					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
+			}
+		}
+		resetCellMetadata();
 
 	}
 
@@ -220,7 +236,7 @@ public class CategoricalData extends CharacterData {
 						setState(ic, it, ((CategoricalData)sourceData).getStateRaw(ic, it)); 
 				}
 			}
-			resetChangedSinceSave();
+			resetCellMetadata();
 		}
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -241,7 +257,7 @@ public class CategoricalData extends CharacterData {
 				data.setState(ic, it, getStateRaw(ic, it)); 
 			}
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -267,7 +283,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -296,7 +312,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic-icStart, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 
@@ -900,6 +916,7 @@ public class CategoricalData extends CharacterData {
 				stampHistoryChange(ic, it);
 			}
 		}
+		calculateFirstLastApplicable();
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**get matrix and return as StsOfCharacters */

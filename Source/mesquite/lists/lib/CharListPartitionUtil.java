@@ -14,8 +14,10 @@ package mesquite.lists.lib;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -23,6 +25,7 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class CharListPartitionUtil {
+
 	/*.................................................................................................................*/
 	public static Object editGroup(MesquiteModule ownerModule, CharacterData data, MesquiteWindow cont, String name, String num) {
 		int i = MesquiteInteger.fromString(num);
@@ -89,6 +92,32 @@ public class CharListPartitionUtil {
 		CharactersGroup group = new CharactersGroup();
 		group.setName(name);
 		group.addToFile(data.getFile(), data.getProject(), null);
+		if (c!=null) {
+			group.setColor(c);
+		}
+		return group;
+	}
+	/*.................................................................................................................*/
+	public static CharactersGroup makeGroup(MesquiteModule ownerModule, MesquiteFile file, MesquiteWindow cont, MesquiteString ms) {
+ 		String n = "Untitled Group";
+ 		if (file==null)
+ 			return null;
+ 		n = file.getFileElements().getUniqueName(n);
+ 		GroupDialog d = new GroupDialog(ownerModule.getProject(),MesquiteWindow.windowOfItem(cont), "New Character Group", n, Color.white, null,CharactersGroup.supportsSymbols());
+ 		d.completeAndShowDialog();
+		String name = d.getName();
+		ms.setValue(name);
+		boolean ok = d.query()==0;
+		Color c = d.getColor();
+		d.dispose();
+		if (!ok)
+			return null;
+		//String name = MesquiteString.queryString(containerOfModule(), "New character group", "New character group label", "Untitled Group");
+		if (StringUtil.blank(name))
+			return null;
+		CharactersGroup group = new CharactersGroup();
+		group.setName(name);
+		group.addToFile(file, file.getProject(), null);
 		if (c!=null) {
 			group.setColor(c);
 		}

@@ -773,29 +773,28 @@ public class MesquiteDouble implements Listable {
 	}
 	
 	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
-	public static void toStringDigitsSpecified(double d, int digits, StringBuffer s, boolean allowExponentialNotation) {  
-		if (s==null)
-			return;
+	public static String toStringDigitsSpecified(double d, int digits, boolean allowExponentialNotation) {  
+		StringBuffer sb = new StringBuffer();
 		if (d==unassigned|| d==infinite||d==negInfinite ||d==impossible ||d==inapplicable){
 			if (d==unassigned) 
-				s.append("?"); //changed from "unassigned" June 02
+				sb.append("?"); //changed from "unassigned" June 02
 			else if (d==infinite) 
-				s.append("infinite");
+				sb.append("infinite");
 			else if (d==negInfinite)
-				s.append("neg.infinite");  
+				sb.append("neg.infinite");  
 			else if (d==impossible)
-				s.append("impossible");  
+				sb.append("impossible");  
 			else if (d==inapplicable)
-				s.append("inapplicable"); 
-			return;
+				sb.append("inapplicable"); 
+			return sb.toString();
 		}
 		else if (d == 0.0){
-			s.append("0.0");
-			return;
+			sb.append("0.0");
+			return sb.toString();
 		}
 		if (d<0){
 			d = -d;
-			s.append('-');
+			sb.append('-');
 		}
 		String sFromDouble;
 		
@@ -824,8 +823,15 @@ public class MesquiteDouble implements Listable {
 		sFromDouble = myFormatter.format(d);
 		if (digits==0) 
 			sFromDouble = StringUtil.removeLastCharacterIfMatch(sFromDouble, '.');
-		s.append(sFromDouble);
+		sb.append(sFromDouble);
+		return sb.toString();
 
+	}
+	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
+	public static void toStringDigitsSpecified(double d, int digits, StringBuffer s, boolean allowExponentialNotation) {  
+		if (s==null)
+			return;
+		s.append(toStringDigitsSpecified(d,digits,allowExponentialNotation));
 	}
 	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
 	public static void toStringDigitsSpecifiedOld(double d, int digits, StringBuffer s, boolean allowExponentialNotation) {  

@@ -17,6 +17,7 @@ import java.util.*;
 import java.lang.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -34,6 +35,7 @@ public class ShiftOtherToMatch extends CategDataAlterer {
 	int it1= MesquiteInteger.unassigned;
 	int it2= MesquiteInteger.unassigned;
 	boolean preferencesSet = false;
+	boolean reverseComplementIfNecessary = true;
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -50,6 +52,9 @@ public class ShiftOtherToMatch extends CategDataAlterer {
 		if ("matchFraction".equalsIgnoreCase(tag)) {
 			matchFraction = MesquiteDouble.fromString(content);
 		}
+		else if ("reverseComplementIfNecessary".equalsIgnoreCase(tag)) {
+			reverseComplementIfNecessary = MesquiteBoolean.fromOffOnString(content);
+		}
 	
 		preferencesSet = true;
 }
@@ -57,6 +62,7 @@ public class ShiftOtherToMatch extends CategDataAlterer {
 public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "matchFraction", matchFraction);  
+		StringUtil.appendXMLTag(buffer, 2, "reverseComplementIfNecessary", reverseComplementIfNecessary);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -78,11 +84,14 @@ public String preparePreferencesForXML () {
 		IntegerField it2Field =  queryFilesDialog.addIntegerField ("Last Sequence", it2, 4, 1, max);
 		DoubleField matchFractionField = queryFilesDialog.addDoubleField ("Fraction of Match", matchFraction, 6, 0.00001, 1.0);
 		
+		Checkbox reverseSequencesCheckBox = queryFilesDialog.addCheckBox("Reverse complement sequences if necessary", reverseComplementIfNecessary);
+		
 		queryFilesDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			matchFraction = matchFractionField.getValue();
 			it1 = it1Field.getValue();
 			it2 = it2Field.getValue();
+			reverseComplementIfNecessary = reverseSequencesCheckBox.getState();
 			storePreferences();
 		}
 		queryFilesDialog.dispose();
@@ -134,8 +143,12 @@ public String preparePreferencesForXML () {
 			for (int it = it1-1; it<=it2-1; it++) {  // must subtract 1 off of it1 and it2 as these are 1-based numbers
 				if (row.getValue()!=it) {
 					match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);
+					if (reverseComplementIfNecessary && !match && data instanceof DNAData) {
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(), it, it, row.getValue(), false, false, false);
+
+					}
 					if (match) {
-						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded);
+						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
 						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
 							((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
 //							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());

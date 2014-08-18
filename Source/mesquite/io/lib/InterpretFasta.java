@@ -83,21 +83,26 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
-	public void readString(CharacterData data, String s) {
+	public void readString(CharacterData data, String s, int insertAfterTaxon) {
 		Taxa taxa = data.getTaxa();
-		int numTaxa = taxa.getNumTaxa();
+		//int numTaxa = taxa.getNumTaxa();
+		int newTaxon = insertAfterTaxon+1;
 		Parser parser = new Parser(s);
 		parser.setPunctuationString(">");
 		String line = parser.getRawNextLine();
 		Parser firstLineParser = new Parser(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 		firstLineParser.setPunctuationString(">");
 		String token = firstLineParser.getFirstToken(line); //should be >
+		
+		int numCharToAdd = 10;  // DRM June '14  to increase speed
+		int warnCount = 0;
+		
 		while (!StringUtil.blank(line)) {
 
 			token = firstLineParser.getRemaining();  //taxon Name
-			taxa.addTaxa(numTaxa-1, 1, false);
+			taxa.addTaxa(newTaxon-1, 1, false);
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true); //notifying only matrices
-			Taxon t = taxa.getTaxon(numTaxa);
+			Taxon t = taxa.getTaxon(newTaxon);
 
 			if (t!=null) {
 				t.setName(token);
@@ -110,18 +115,21 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					char c=line.charAt(i);
 					if (c!= '\0') {
 						if (data.getNumChars() <= i) {
-							data.addCharacters(data.getNumChars()-1, 1, false);   // add a character if needed
-							data.addInLinked(data.getNumChars()-1, 1, false);
+							warnCount++;
+							data.addCharacters(data.getNumChars()-1, numCharToAdd, false);   // add a character if needed
+							data.addInLinked(data.getNumChars()-1, numCharToAdd, false);
+							if (warnCount % 50 ==0)
+								CommandRecord.tick("Importing, character " + ic);
 						
 							added++;
 						}
-						setFastaState(data,ic, numTaxa, c);    // setting state to that specified by character c
+						setFastaState(data,ic, newTaxon, c);    // setting state to that specified by character c
 					}
 					ic++;
 				}
 //				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {data.getNumChars(), added}));
 			}
-			numTaxa++;
+			newTaxon++;
 			line = parser.getRawNextLine();
 			firstLineParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 			if (StringUtil.notEmpty(line))
@@ -196,6 +204,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				} else {  // adding to end, not replacing an existing one
 					if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
 						taxonNumber = getLastNewTaxonFilled()+1;
+						if (taxonNumber>taxa.getNumTaxa())
+							taxonNumber=taxa.getNumTaxa();
 						setLastNewTaxonFilled(taxonNumber);
 						if (data.hasDataForTaxa(taxonNumber, taxonNumber)) {
 							MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to overwrite existing data, and so failed.");
@@ -210,7 +220,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					setLastNewTaxonFilled(taxonNumber);
 
 					if (data.getNumTaxa()<=taxonNumber) {
-						int numTaxaAdded = getTotalFilesToImport();
+						int numTaxaAdded = getTotalFilesToImport();  // we may not need all of those, as some of them might be placed in existing taxa.
 						if (numTaxaAdded<1) numTaxaAdded =1;
 						taxa.addTaxa(taxonNumber-1, numTaxaAdded, false);
 						added=true;
@@ -309,7 +319,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 */
 
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 		
 
 			finishImport(progIndicator, file, abort);
@@ -443,7 +453,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected boolean taxonHasData(CharacterData data, int it){
 		for (int ic = 0; ic<data.getNumChars(); ic++) {
 			if (!writeOnlySelectedData || (data.getSelected(ic))){
-				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it))
+				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
 					return true;
 			}
 		}
@@ -474,18 +484,24 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (StringUtil.notEmpty(sup))
 					outputBuffer.append(sup);
 				outputBuffer.append(getLineEnding());
+				
 				for (int ic = 0; ic<numChars; ic++) {
 					if (!writeOnlySelectedData || (data.getSelected(ic))){
 						int currentSize = outputBuffer.length();
 						boolean wroteMoreThanOneSymbol = false;
-						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it)))
+						boolean wroteSymbol = false;
+						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
 							outputBuffer.append(getUnassignedSymbol());
+	                        counter ++;
+	                        wroteSymbol = true;
+						}
 						else if (includeGaps || (!data.isInapplicable(ic,it))) {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+							counter ++;
+							wroteSymbol = true;
                         }
 						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-                        counter ++;
-                        if ((counter % 50 == 1) && (counter > 1)) {    // modulo
+                        if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
                             outputBuffer.append(getLineEnding());
                         }
 

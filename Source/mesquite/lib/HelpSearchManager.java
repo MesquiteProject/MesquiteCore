@@ -39,14 +39,15 @@ public class HelpSearchManager implements Commandable {
 			return;
 		searchWindowBabysitter = MesquiteTrunk.mesquiteTrunk.hireNamedEmployee (WindowHolder.class, "#WindowBabysitter");
 		HSWindow ww = new HSWindow(searchWindowBabysitter, new MesquiteCommand("linkTouched", this), "Search", true);
-		searchWindowBabysitter.setModuleWindow(ww);
+		if (searchWindowBabysitter != null)
+			searchWindowBabysitter.setModuleWindow(ww);
 		//	ww.setWindowSize(620, 400, false);
 	}
 
 	public void showHTML(String s){
 		if (searchWindowBabysitter== null)
 			makeWindow();
-		if (searchWindowBabysitter.getModuleWindow()!= null){
+		if (searchWindowBabysitter != null && searchWindowBabysitter.getModuleWindow()!= null){
 			MesquiteHTMLWindow w = (MesquiteHTMLWindow)searchWindowBabysitter.getModuleWindow();
 			if (w != null){
 				w.setText(s);

@@ -141,9 +141,15 @@ public class Wand extends DataWindowAssistantI {
 				boolean subtractFromSelection = commandSelected && table.isCellSelected(column, row);
 				if ((arguments.indexOf("shift")<0) && !commandSelected)
 					table.deselectAll();
+				
+
 
 				table.offAllEdits();
-				if (selectByText.getValue()){
+				if (arguments.indexOf("option")>=0 && getEmployer() instanceof mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker){
+					mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker mb = (mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker)getEmployer();
+					mb.selectDataBlockInTaxon(column, row);
+				}
+				else if (selectByText.getValue()){
 					if (contiguous.getValue()){
 						String text = table.getMatrixText(column, row);
 						if (contigSel == null || contigSel.length != table.getNumColumns() || contigSel[0].length != table.getNumRows())

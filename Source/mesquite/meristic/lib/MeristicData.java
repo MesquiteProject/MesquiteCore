@@ -95,7 +95,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 					}
 				}
 			}
-			resetChangedSinceSave();
+			resetCellMetadata();
 		
 	}
 

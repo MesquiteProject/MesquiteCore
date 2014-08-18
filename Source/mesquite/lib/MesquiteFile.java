@@ -2500,7 +2500,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 			catch( FileNotFoundException e ) {
 				if (warn) MesquiteMessage.warnProgrammer("File Busy or Not Found (z5) : " + relativePath);
-				//MesquiteMessage.printStackTrace();
 				return null;
 			} 
 			catch( IOException e ) {
@@ -2690,7 +2689,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		catch( IOException e ) {
 			if (warnIfProblem)
 				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "\n   " + e.getMessage());
-			//MesquiteMessage.printStackTrace();
+			//MesquiteMessage.printStackTrace();  
 			return null;
 		}
 		return s.toString();
@@ -2730,16 +2729,21 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 	}
 
-	/** Returns the contents of the file at the url*/
-	public static boolean downloadURLContents(String urlPath, String writePath, boolean warnIfProblem, boolean showProgressIndicator) {
+	/** Downloads the contents of the file at the url to a local file*/
+	// 0 if unknown problem in downloading/writing
+	// -1 if problem reading from server
+	// -2 if problem writing download
+	public static int downloadURLContents(String urlPath, String writePath, boolean warnIfProblem, boolean showProgressIndicator) {
 		URLConnection uC;
 		OutputStream outFile = null;
 		InputStream  input = null;
 		ProgressIndicator progIndicator=null;
+		int doing = 0;
 		try {
 			byte[] buf = new byte[1024];
+			doing = 1; //
 			URL url = new URL(urlPath);
-			outFile = new BufferedOutputStream(new FileOutputStream(writePath));
+			//outFile = new BufferedOutputStream(new FileOutputStream(writePath));
 			uC = url.openConnection();
 			int length = uC.getContentLength();
 			if (showProgressIndicator) {
@@ -2753,7 +2757,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			int numRead;
 			long numWritten = 0;
 			while ((numRead = input.read(buf)) != -1) {
+				doing = 2;
+				if (outFile == null)
+					outFile = new BufferedOutputStream(new FileOutputStream(writePath));
+					
 				outFile.write(buf, 0, numRead);
+				doing = 1;
 				numWritten += numRead;
 				CommandRecord.tick("" + numWritten + " bytes downloaded");
 				if (progIndicator!=null){
@@ -2761,8 +2770,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					progIndicator.setCurrentValue(numWritten);
 				}
 			}
+			doing = 1;
 			input.close();
+			doing = 2;
 			outFile.close();
+			doing = 0;
 			if (progIndicator!=null)
 				progIndicator.goAway();
 		} 
@@ -2773,13 +2785,13 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 			if (progIndicator!=null)
 				progIndicator.goAway();
-			return false;
+			return -doing;
 		}
-		return true;
+		return 1;
 
 	}
 	/** Returns the contents of the file at the url*/
-	public static boolean downloadURLContents(String urlPath, String writePath, boolean warnIfProblem) {
+	public static int downloadURLContents(String urlPath, String writePath, boolean warnIfProblem) {
 		return downloadURLContents(urlPath, writePath, warnIfProblem, false);
 	}
 	/*.................................................................................................................*/

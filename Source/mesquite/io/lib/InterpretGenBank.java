@@ -202,7 +202,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 			}
 			
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 	}
 	

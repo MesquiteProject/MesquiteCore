@@ -21,13 +21,13 @@ import mesquite.lib.characters.*;
 /* ======================================================================== */
 /**This is superclass of modules to alter a file (e.g. to process matrices within the file).*/
 
-public abstract class FileAlterer extends MesquiteModule  {
+public abstract class FileProcessor extends MesquiteModule  {
 
    	 public Class getDutyClass() {
-   	 	return FileAlterer.class;
+   	 	return FileProcessor.class;
    	 }
  	public String getDutyName() {
- 		return "File Alterer";
+ 		return "File Processor";
    	}
    	
    	/** if returns true, then requests to remain on even after alterFile is called.  Default is false*/
@@ -35,8 +35,8 @@ public abstract class FileAlterer extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
-   	/** Called to alter file. */
-   	public  abstract boolean alterFile(MesquiteFile file);
+   	/** Called to process file. */
+   	public  abstract boolean processFile(MesquiteFile file);
    	
 
 }

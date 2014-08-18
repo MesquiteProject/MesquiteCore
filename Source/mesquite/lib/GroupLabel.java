@@ -24,6 +24,8 @@ public class GroupLabel extends FileElement {
 	int id;
 	boolean colorWasSet = false;
 	boolean symbolWasSet = false;
+	boolean recentlyModified = false;
+	boolean visible = true;
 	static int numLabels;
 	static {
 		numLabels = 0;
@@ -49,6 +51,12 @@ public class GroupLabel extends FileElement {
 	public String getTypeName(){
 		return "Group Label";
 	}
+	public boolean isVisible() {
+		return visible;
+	}
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
 	/*.................................................................................................................*/
 	public void setColor(Color color){
 		this.color = color;
@@ -65,6 +73,8 @@ public class GroupLabel extends FileElement {
 	/*.................................................................................................................*/
 	public void setSymbol(MesquiteSymbol symbol){
 		this.symbol = symbol;
+		symbol.setColor(getColor());
+		this.symbol.setColor(getColor());
 		symbolWasSet = true;
 	}
 	/*.................................................................................................................*/
@@ -74,6 +84,12 @@ public class GroupLabel extends FileElement {
 	/*.................................................................................................................*/
 	public boolean symbolSet(){
 		return symbolWasSet;
+	}
+	public boolean isRecentlyModified() {
+		return recentlyModified;
+	}
+	public void setRecentlyModified(boolean recentlyModified) {
+		this.recentlyModified = recentlyModified;
 	}
 	
 	/*.................................................................................................................*/

@@ -22,7 +22,7 @@ import java.util.*;
 
 
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* ======================================================================== */
 /**  The superclass of the Mesquite class, which resides within the trunk MesquiteModule, has the "main" for the program
 Mesquite, and instantiates itself as mesquiteTrunk.  MesquiteTrunk is placed in the class library so that all MesquiteModules (modules) can communicate 
@@ -140,6 +140,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean startedFromExecutable = false;
 	public static boolean debugMode = false;
 	public static boolean mesquiteExiting = false;
+	public static int snapshotMode = Snapshot.SNAPALL;
+
+
 
 
 	//true if Mesquite should check website for notices

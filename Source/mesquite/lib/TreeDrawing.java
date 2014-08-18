@@ -173,8 +173,16 @@ public abstract class TreeDrawing  {
 	/** Fill branch N with indicated set of colors */
 	public abstract void fillBranchWithColors(Tree tree, int N, ColorDistribution colors, Graphics g);
 
+	boolean fillBranchColorSequenceWarned = false;
 	/** Fill branch N with indicated set of colors as a sequence, e.g. for stochastic character mapping.  This is not abstract because many tree drawers would have difficulty implementing it */
 	public void fillBranchWithColorSequence(Tree tree, int N, ColorEventVector colors, Graphics g){
+		if (!fillBranchColorSequenceWarned){
+			fillBranchColorSequenceWarned = true;
+			MesquiteModule module = MesquiteTrunk.mesquiteTrunk;
+			if (treeDisplay != null && treeDisplay.getOwnerModule() != null)
+				module = treeDisplay.getOwnerModule();
+			module.alert("The current tree form does not support sequences of changes along branches.  Try selecting another, such as Classic Square Tree.");
+		}
 	}
 	
 	public boolean isAtNode(MesquiteDouble fraction) {

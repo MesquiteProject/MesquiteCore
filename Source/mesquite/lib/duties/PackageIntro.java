@@ -42,8 +42,13 @@ public abstract class PackageIntro extends MesquiteModule implements PackageIntr
 		splashP =getPath()+"splash.html";
 		if (MesquiteFile.fileExists(splashP))
 			return splashP;
-		else
-			return getManualPath();
+		String s = getManualPath();
+		if (StringUtil.notEmpty(s))
+			return s;
+		s = getPackageURL();
+		if (StringUtil.notEmpty(s))
+			return s;
+		return s;
 	}
 	public boolean getSearchableAsModule(){
 		return false;

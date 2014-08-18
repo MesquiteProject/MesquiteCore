@@ -204,7 +204,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 						}
 					}
 				}
-				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, taxaToMove, canExpand.getValue(), false, true, false,dataChanged,null);
+				int added = data.moveCells(currentBlock.getCurrentFirstCharInBlock(), currentBlock.getCurrentLastCharInBlock(), distanceToMove, taxaToMove, canExpand.getValue(), false, true, false,dataChanged,null, null);
 				if (MesquiteTrunk.debugMode) {
 					numTaxaToMove = taxaToMove.numBitsOn();
 					int count = 0;

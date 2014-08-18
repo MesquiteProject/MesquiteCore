@@ -138,8 +138,8 @@ public class ClosablePanel extends MousePanel {
 			triangleOffset += 10;
 		}
 		g.setColor(textColor);
-		if (title != null){
-			g.drawString(title, tightness + triangleOffset, MINHEIGHT-4);
+		if (getTitle() != null){
+			g.drawString(getTitle(), tightness + triangleOffset, MINHEIGHT-4);
 		}
 
 	}

@@ -97,7 +97,7 @@ public class ContinuousData extends CharacterData implements ItemContainer {
 				}
 			}
 		}
-		resetChangedSinceSave();
+		resetCellMetadata();
 
 	}
 

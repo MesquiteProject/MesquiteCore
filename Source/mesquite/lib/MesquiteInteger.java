@@ -631,21 +631,24 @@ public class MesquiteInteger implements Listable{
 	}
 	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
 	public static int queryInteger(MesquiteWindow parent, String title, String message, String secondaryMessage, String help, int current, int minimum, int maximum, boolean allowCancel) {
-		if (current>maximum)
+		if (MesquiteInteger.isCombinable(maximum) && current>maximum)
 			current=maximum;
-		else if (current<minimum)
+		else if (MesquiteInteger.isCombinable(minimum) && current<minimum)
 			current=minimum;
 		MesquiteInteger io = new MesquiteInteger(current);
 		boolean done=false;
-		if (StringUtil.blank(help))
-			help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + MesquiteInteger.toString(current) 
-			+ "; the minimum value permitted is " + MesquiteInteger.toString(minimum)+ " and the maximum value permitted is " + MesquiteInteger.toString(maximum);
-		
+		if (StringUtil.blank(help)) {
+			help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + MesquiteInteger.toString(current) + ". ";
+			if (MesquiteInteger.isCombinable(minimum))
+				help += "The minimum value permitted is " + MesquiteInteger.toString(minimum)+ ". ";
+			if (MesquiteInteger.isCombinable(maximum))
+				help += "The maximum value permitted is " + MesquiteInteger.toString(maximum)+ ". ";
+		}
 		while (!done) {
 			//IntegerDialog id = new IntegerDialog(parent, title, message, io);
 			//id.dispose();
 			QueryDialogs.queryInteger(parent, title, message, secondaryMessage, help, allowCancel, io);
-			if (!io.isCombinable() || (io.getValue()<=maximum && io.getValue()>=minimum))
+			if (!io.isCombinable() || ((!MesquiteInteger.isCombinable(maximum) || io.getValue()<=maximum) && (!MesquiteInteger.isCombinable(minimum) ||  io.getValue()>=minimum)))
 				done=true;
 			else {
 				if (maximum==infinite)

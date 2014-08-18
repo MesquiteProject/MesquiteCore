@@ -1008,7 +1008,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			wMenu.add("-");
 			wMenu.add(whichWindow.saveRecipeMenuItem);
 
-
+			
 			MesquiteSubmenu macrosSubmenu = makeMacrosSubmenu(wMenu, module.getFileCoordinator(), 0, "Macros");
 			if (macrosSubmenu !=null) {
 				wMenu.add(macrosSubmenu);
@@ -1017,6 +1017,17 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			scriptingSubmenu.add(whichWindow.snapshotMenuItem); //��� scripting
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem);  //��� scripting
 			wMenu.add(scriptingSubmenu);
+			wMenu.add("-");
+			if (!whichWindow.isPoppedOut()) {
+				wMenu.add(whichWindow.popOutWindowMenuItem);
+				wMenu.add(whichWindow.tileOutWindowMenuItem);
+			} else {
+				if (whichWindow.getPopAsTile())
+					wMenu.add(whichWindow.tileOutWindowMenuItem);
+				else 
+					wMenu.add(whichWindow.popOutWindowMenuItem);
+			}
+			whichWindow.setPopTileMenuItemNames();
 
 			//wMenu.add("-", insertPoint);
 		}
@@ -1051,6 +1062,17 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			scriptingSubmenu.add(whichWindow.snapshotMenuItem); //��� scripting
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem);  //��� scripting
 			wMenu.add(scriptingSubmenu);
+			wMenu.add("-");
+			if (!whichWindow.isPoppedOut()) {
+				wMenu.add(whichWindow.popOutWindowMenuItem);
+				wMenu.add(whichWindow.tileOutWindowMenuItem);
+			} else {
+				if (whichWindow.getPopAsTile())
+					wMenu.add(whichWindow.tileOutWindowMenuItem);
+				else 
+					wMenu.add(whichWindow.popOutWindowMenuItem);
+			}
+			whichWindow.setPopTileMenuItemNames();
 
 			//wMenu.add("-", insertPoint);
 		}

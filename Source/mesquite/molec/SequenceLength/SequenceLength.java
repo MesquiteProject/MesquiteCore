@@ -15,6 +15,7 @@ package mesquite.molec.SequenceLength;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -29,12 +30,21 @@ public class SequenceLength extends NumberForTaxon {
 	MatrixSourceCoord matrixSourceTask;
 	Taxa currentTaxa = null;
 	MCharactersDistribution observedStates =null;
+	MesquiteBoolean countExcluded = new MesquiteBoolean(false);
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, MolecularState.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
+		addCheckMenuItem(null, "Count Excluded Characters", makeCommand("toggleCountExcluded",  this), countExcluded);
 		return true;
+	}
+
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("toggleCountExcluded " + countExcluded.toOffOnString());
+		return temp;
 	}
 
 	/*.................................................................................................................*/
@@ -48,6 +58,21 @@ public class SequenceLength extends NumberForTaxon {
 		observedStates = null;
 		super.employeeParametersChanged(employee, source, notification);
 	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		 if (checker.compare(this.getClass(), "Sets whether or not excluded characters are considered in the calculation", "[on or off]", commandName, "toggleCountExcluded")) {
+			boolean current = countExcluded.getValue();
+			countExcluded.toggleValue(parser.getFirstToken(arguments));
+			if (current!=countExcluded.getValue()) {
+				outputInvalid();
+				parametersChanged();
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
@@ -84,7 +109,7 @@ public class SequenceLength extends NumberForTaxon {
 			CharacterState cs = null;
 			int seqLen = 0;
 			for (int ic=0; ic<numChars; ic++) {
-				if (incl == null || incl.isBitOn(ic)){  // adjusted 2. 01 to consider inclusion
+				if (countExcluded.getValue() || (incl == null || incl.isBitOn(ic))){  // adjusted 2. 01 to consider inclusion  // added control in 3.0
 					cs = observedStates.getCharacterState(cs, ic, it);
 					if (!cs.isInapplicable())
 						seqLen++;
@@ -119,7 +144,12 @@ public class SequenceLength extends NumberForTaxon {
 		return false;
 	}
 	public String getParameters() {
-		return "Sequence Length in matrix from: " + matrixSourceTask.getParameters();
+		String s="";
+		if (countExcluded.getValue())
+			s = "Excluded characters are counted.";
+		else
+			s="Excluded characters not counted.";
+		return "Sequence Length in matrix from: " + matrixSourceTask.getParameters() + ". " + s;
 	}
 	/*.................................................................................................................*/
 

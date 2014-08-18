@@ -99,7 +99,7 @@ public class MatrixFromClipboard extends CharMatrixFiller implements MesquiteLis
 					data.saveChangeHistory = false;
 	   				pasteIt(s, data, columnNamesPresent, rowNamesPresent);
 					data.saveChangeHistory = wassave;
-	   				data.resetChangedSinceSave();
+	   				data.resetCellMetadata();
 	   				return data.getMCharactersDistribution();
 	   			}
 			}

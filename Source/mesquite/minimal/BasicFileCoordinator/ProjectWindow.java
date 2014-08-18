@@ -229,7 +229,6 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	public void refresh(){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
-		//Debugg.printStackTrace();
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
@@ -394,14 +393,15 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		}
 		if (e>= elements.size())
 			return 21;
-		ProjPanelPanel fip = ((ProjPanelPanel)elements.elementAt(e));
+		ProjPanelPanel fip;
+		/*ProjPanelPanel fip = ((ProjPanelPanel)elements.elementAt(e));
 		if (!(fip instanceof FileIncorporatePanel) || !fip.upToDate())
 			return 22;
-		e++;
+		e++;*/
 		if (e>= elements.size())
 			return 2001;
 		fip = ((ProjPanelPanel)elements.elementAt(e));
-		if (!(fip instanceof NewElementPanel) || !fip.upToDate())
+		if (!(fip instanceof AddElementPanel) || !fip.upToDate())
 			return 2001;
 		e++;
 		if (proj.taxas.size()>0){
@@ -446,7 +446,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				}
 
 			}
-			if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
+			/*if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
 				if (e>= elements.size())
 					return 9;
 				ProjPanelPanel panel = ((ProjPanelPanel)elements.elementAt(e));
@@ -454,12 +454,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					return 10;
 				((CharModelsPanel)panel).refresh();
 				e++;
-			}
+			}*/
 			ListableVector others = bfc.getProject().getOtherElements();
 			if (others.size()>0){
 				for (int i=0; i<others.size(); i++){
 					FileElement f = (FileElement)others.elementAt(i);
-					if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
+					/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 						if (((ListableVector)f).size()>0){
 							if (e>= elements.size())
 								return 100;
@@ -470,7 +470,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 							e++;
 						}
 					}
-					else if (f instanceof TaxaAssociation){
+					else */if (f instanceof TaxaAssociation){
 						if (e>= elements.size())
 							return 900;
 						ProjPanelPanel panel = ((ProjPanelPanel)elements.elementAt(e));
@@ -488,7 +488,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			return 0;
 		}
 		else {
-			if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
+			/*if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
 				if (e>= elements.size())
 					return 12;
 				ProjPanelPanel panel = ((ProjPanelPanel)elements.elementAt(e));
@@ -497,11 +497,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 				((CharModelsPanel)panel).refresh();
 				e++;
 			}
+			*/
 			ListableVector others = bfc.getProject().getOtherElements();
 			if (others.size()>0){
 				for (int i=0; i<others.size(); i++){
 					FileElement f = (FileElement)others.elementAt(i);
-					if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
+					/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 						if (((ListableVector)f).size()>0){
 							if (e>= elements.size())
 								return 102;
@@ -512,7 +513,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 							e++;
 						}
 					}
-					else if (f instanceof TaxaAssociation){
+					else */if (f instanceof TaxaAssociation){
 						if (e>= elements.size())
 							return 902;
 						ProjPanelPanel panel = ((ProjPanelPanel)elements.elementAt(e));
@@ -540,16 +541,16 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}
 		}
 	}
-	boolean fipOpen = false;
-	FileIncorporatePanel fip = null;
+	//boolean fipOpen = false;
+	//FileIncorporatePanel fip = null;
 	public void refresh(){
 		int sutd = sequenceUpToDate();  //integer passed to diagnose why not up to date, for debugging
 		if (sutd==0){
 			resetSizes();
 			return;
 		}
-		if (fip != null)
-			fipOpen = fip.isOpen();
+		//if (fip != null)
+		//	fipOpen = fip.isOpen();
 		for (int i = 0; i<elements.size(); i++){
 			ClosablePanel panel = ((ClosablePanel)elements.elementAt(i));
 			remove(panel);
@@ -580,10 +581,10 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			panel.setSize(94, 10);
 			panel.setLocation(0,0);
 		}
-		addExtraPanel(fip = new FileIncorporatePanel(bfc,this,w));
-		fip.setOpen(fipOpen);
+		//addExtraPanel(fip = new FileIncorporatePanel(bfc,this,w));
+		//fip.setOpen(fipOpen);
 		panel.setLocation(0,0);
-		addExtraPanel(panel = new NewElementPanel(bfc, this,w));
+		addExtraPanel(panel = new AddElementPanel(bfc, this,w));
 		panel.setOpen(false);
 		panel.setLocation(0,0);
 		if (proj.taxas.size()>0){
@@ -619,21 +620,22 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 
 			}
 		}
-		if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
+	/*	if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
 			addExtraPanel(panel = new CharModelsPanel(bfc, this, w));
 			panel.setLocation(0,0);
 		}
+		*/
 		ListableVector others = bfc.getProject().getOtherElements();
 		if (others.size()>0){
 			for (int i=0; i<others.size(); i++){
 				FileElement f = (FileElement)others.elementAt(i);
-				if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
+				/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 					if (((ListableVector)f).size()>0){
 						addExtraPanel(panel = new GroupsPanel(bfc, this, w, (ListableVector)f));
 						panel.setLocation(0,0);
 					}
 				}
-				else if (f instanceof TaxaAssociation){
+				else */if (f instanceof TaxaAssociation){
 					addExtraPanel(panel = new AssocPanel(bfc, this, w, f));
 					panel.setLocation(0,0);
 				}
@@ -723,7 +725,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 /*======================================================================== */
 class ScrollPanel extends MousePanel {
 	ProjectPanel p;
-	Image up, down; // query;
+	Image up, down, search; // query;
 	int scrollLeft = 38;
 	HelpSearchStrip searchStrip;
 
@@ -735,16 +737,17 @@ class ScrollPanel extends MousePanel {
 		searchStrip = new HelpSearchStrip(p.w, true);
 		add(searchStrip);
 		searchStrip.setSize(120, 15);
-		searchStrip.setLocation(4, 0);
+		searchStrip.setLocation(20, 0);
 		searchStrip.setVisible(true);
-		searchStrip.setText("Search data");
+		searchStrip.setText("");
+		search = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "search.gif");
 		up = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "uparrow.gif");
 		down = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "downarrow.gif");
 	//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}
 	public void paint(Graphics g){
-	//	g.drawImage(query, 8, 8, this);
+		g.drawImage(search, 4, 0, this);
 		if (!p.canScrollUp() && !p.canScrollDown())
 			return;
 		g.setColor(ColorDistribution.veryLightGray);
@@ -768,7 +771,10 @@ class ScrollPanel extends MousePanel {
 	}*/
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		//if modifiers include right click/control, then do dropdown menu
-		if (y>=8 && y<=26 && x>= scrollLeft && x < scrollLeft + 18) {
+		if (y<=16 && x < 20) {
+			searchStrip.search();
+		}
+		else if (y>=8 && y<=26 && x>= scrollLeft && x < scrollLeft + 18) {
 			p.scrollUp();
 		}
 		else if (y>=8 && y<=26 && x>= scrollLeft+22 && x < scrollLeft + 40) {
@@ -779,6 +785,31 @@ class ScrollPanel extends MousePanel {
 
 }
 /*======================================================================== */
+class AddElementPanel extends ElementPanel {
+
+	public AddElementPanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w){
+		super(bfc, container, w, "Add...");
+		setShowTriangle(false);
+		setColors(ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
+		addCommand(true, null, "New Taxa Block...", "New Taxa Block...",  new MesquiteCommand("newTaxa", (Commandable)bfc.findElementManager(Taxa.class)));
+		addCommand(true, null, "New Character Matrix...", "New Character Matrix...",  new MesquiteCommand("newMatrix", (Commandable)bfc.findElementManager(CharacterData.class)));
+		addCommand(true, null, "New Trees Block...", "New Trees Block...",  new MesquiteCommand("newTreeBlock", (Commandable)bfc.findElementManager(TreeVector.class)));
+		addCommand(true, null, "-", "-",  null);
+		addCommand(true, null, "-", "Read Other File",  null);
+		addCommand(false, "queryGray.gif", null, "Explanation...",  new MesquiteCommand("explainIncorporate", bfc.getModuleWindow()));
+		addCommand(false, "fileLink.gif", "Link\nFile", "Link File...", new MesquiteCommand("linkFile", bfc));
+		addCommand(false, "fileInclude.gif", "Include\nFile", "Include File...", new MesquiteCommand("includeFile", bfc));
+		MesquiteCommand c = new MesquiteCommand("newAssistant", bfc);
+		c.setDefaultArguments("#mesquite.dmanager.FuseTaxaMatrices.FuseTaxaMatrices");
+		addCommand(false, "fileMergeTM.gif", "Merge Taxa\n& Matrices", "Merge Taxa/Matrices...", c);
+		ElementManager tm = bfc.findElementManager(TreeVector.class);
+		addCommand(false, "fileLinkTrees.gif", "Link\nTrees", "Link Trees...", new MesquiteCommand("linkTreeFile", ((MesquiteModule)tm)));
+		addCommand(false, "fileIncludeTrees.gif", "Include\nTrees", "Include Trees...", new MesquiteCommand("includeTreeFileAskPartial", ((MesquiteModule)tm)));
+	}
+
+}
+
+/*======================================================================== *
 class NewElementPanel extends ElementPanel {
 
 	public NewElementPanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w){
@@ -792,11 +823,11 @@ class NewElementPanel extends ElementPanel {
 
 }
 
-/*======================================================================== */
+/*======================================================================== *
 class FileIncorporatePanel extends ElementPanel {
 
 	public FileIncorporatePanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w){
-		super(bfc, container, w, "File Incorporation...");
+		super(bfc, container, w, "Read from File...");
 		//	setColors(ColorDistribution.veryVeryVeryLightGray, ColorDistribution.veryVeryVeryLightGray, ColorDistribution.veryVeryVeryLightGray, Color.black);
 		//	Color cLight = ColorTheme.getExtInterfaceBackground();
 		//		Color cDark = ColorTheme.getExtInterfaceElement();
@@ -933,6 +964,18 @@ class TaxaPanel extends ElementPanel {
 		}
 		 */
 	}
+
+	public String getTitleAddition(){
+		int numTaxa = ((Taxa)element).getNumTaxa();
+		String heading = " (" + numTaxa + " tax";
+		if (numTaxa>1)
+			heading += "a)";
+		else
+			heading += "on)";
+		return heading;
+	}
+	
+	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows an initial tree window", null, commandName, "showInitTreeWindow")) {
@@ -994,12 +1037,21 @@ class MElementPanel extends ElementPanel {
 	}
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Lists the characters", null, commandName, "list")) {
-			Debugg.println("element " + element.getName());
+			//Debugg.println("element " + element.getName());
 			((CharacterData)element).showList();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
+	}
+	public String getTitleAddition(){
+		int numChars = ((CharacterData)element).getNumChars();
+		String heading = " (" + numChars + " character";
+		if (numChars>1)
+			heading += "s";
+		heading += ")";
+		
+		return heading;
 	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
@@ -1156,6 +1208,14 @@ class TreesRPanel extends ElementPanel {
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
 	}
+	public String getTitleAddition(){
+		int numTrees = ((TreeVector)element).size();
+		String heading = " (" + numTrees + " tree";
+		if (numTrees>1)
+			heading += "s";
+		heading += ")";
+		return heading;
+	}
 
 	public String getNotes(){
 		if (element == null)
@@ -1194,7 +1254,7 @@ class AssocPanel extends ElementPanel {
 		return "Association between " + ((TaxaAssociation)element).getTaxa(0).getName() + " and " +  ((TaxaAssociation)element).getTaxa(1).getName();
 	}
 }
-/*======================================================================== */
+/*======================================================================== *
 class CharModelsPanel extends ElementPanel {
 	public CharModelsPanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w){
 		super(bfc, container, w,"Character Models");
@@ -1268,7 +1328,7 @@ class CharModelsPanel extends ElementPanel {
 		refresh();
 	}
 }
-/*======================================================================== */
+/*======================================================================== *
 class GroupPanel extends ElementPanel {
 	GroupLabel e;
 	public GroupPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, GroupLabel e){
@@ -1279,7 +1339,6 @@ class GroupPanel extends ElementPanel {
 		addCommand(true, null, "Delete Group", "Delete Group", new MesquiteCommand("deleteMe", e));
 		//	setColors(ColorDistribution.veryVeryVeryLightGray, e.getColor(), ColorDistribution.veryVeryVeryLightGray, Color.black);
 	}
-	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
 		return "Group";
 	}
@@ -1315,7 +1374,7 @@ class GroupPanel extends ElementPanel {
 	}
 
 }
-/*======================================================================== */
+/*======================================================================== *
 class GroupsPanel extends ElementPanel {
 	MesquiteWindow w= null;
 	public GroupsPanel(BasicFileCoordinator bfc, ClosablePanelContainer container,MesquiteWindow w,  ListableVector v){
@@ -1386,7 +1445,7 @@ class GroupsPanel extends ElementPanel {
 	}
 }/*======================================================================== */
 
-/*======================================================================== */
+/*======================================================================== *
 class CharModelPanel extends ElementPanel {
 
 	public CharModelPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, FileElement element){
@@ -1399,19 +1458,17 @@ class CharModelPanel extends ElementPanel {
 		//	addCommand(true, null, "ID " + element.getID(), "ID " + element.getID(), new MesquiteCommand("id", this));
 
 	}
-	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
 		if (element instanceof CharacterModel)
 			return ((CharacterModel)element).getTypeName();
 		return "Character Model";
 	}
-	/*.................................................................................................................*/
 
 	public String getNotes(){
 		return null; //applicability
 	}
 }
-/*======================================================================== */
+/*======================================================================== *
 class SpecsSetVectorPanel extends ElementPanel {  
 	private SpecsSetVector ssv;
 	public SpecsSetVectorPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, SpecsSetVector element, String name){
@@ -1489,7 +1546,7 @@ class SpecsSetVectorPanel extends ElementPanel {
 	}
 
 }
-/*======================================================================== */
+/*======================================================================== *
 class SpecsSetPanel extends ElementPanel {
 	SpecsSet s;
 	public SpecsSetPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w,  FileElement element){
@@ -1504,7 +1561,6 @@ class SpecsSetPanel extends ElementPanel {
 			return null;
 		return s.getTypeName();
 	}
-	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
 		if (element instanceof SpecsSet)
 			return ((SpecsSet)element).getTypeName();
@@ -1526,18 +1582,21 @@ class ElementPanel extends ProjPanelPanel {
 		setOpen(element.getResourcePanelIsOpen());
 		if (element !=null)
 			element.addListener(this);
-		if (element != null){
+		/*if (element != null){
 			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
 			if (vv != null)
 				for (int i=0; i<vv.size(); i++){
 					SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
 					v.addListener(this);
 				}
-		}
+		}*/
 		refreshIcon();
 		refresh();
 	}
-
+	public String getTitle(){
+		String t = super.getTitle() + getTitleAddition();
+		return t;
+	}
 	public String getIconFileName(){ //for small 16 pixel icon at left of main bar
 		if (element != null && element instanceof FileElement){
 			String s = ((FileElement)element).getIconFileName();
@@ -1550,22 +1609,28 @@ class ElementPanel extends ProjPanelPanel {
 		super(bfc, container, w, name, bfc);
 	}
 	public void resetTitle(){
-		if (element != null && element instanceof FileElement && !StringUtil.stringsEqual(element.getName(), getTitle())){
+		if (element != null && element instanceof FileElement){
+			String newTitle = "";
 			if (element.getName() == null)
-				setTitle(element.getClass().getName());
+				newTitle = element.getClass().getName();
 			else
-				setTitle(element.getName());
-			repaint();
+				newTitle = element.getName();
+			if (!StringUtil.stringsEqual(newTitle, getTitle())){
+				setTitle(newTitle);
+				repaint();
+			}
 		}
 	}
 
-
+	public String getTitleAddition(){
+		return "";
+	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
 		return null;
 	}
 	public boolean upToDate(){
-		int e = 0;
+		/*int e = 0;
 		if (element != null && element instanceof FileElement){
 			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
 			if (vv != null)
@@ -1582,7 +1647,7 @@ class ElementPanel extends ProjPanelPanel {
 				}
 		}
 		if (e<subPanels.size())
-			return false;
+			return false;*/
 		return true;
 	}
 	public boolean checkSize(){
@@ -1631,7 +1696,7 @@ class ElementPanel extends ProjPanelPanel {
 			panel.dispose();
 		}
 		subPanels.removeAllElements();
-		if (element != null && element instanceof FileElement){
+		/*if (element != null && element instanceof FileElement){
 			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
 			if (vv != null){
 				ElementPanel panel;
@@ -1644,7 +1709,7 @@ class ElementPanel extends ProjPanelPanel {
 					}
 				}
 			}
-		}
+		}*/
 	}
 	public Listable getElement(){
 		return element;
@@ -1674,13 +1739,13 @@ class ElementPanel extends ProjPanelPanel {
 		if (element != null && element instanceof FileElement){
 			((FileElement)element).removeListener(this);
 			((FileElement)element).setResourcePanelIsOpen(isOpen());
-			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
+			/*Vector vv = ((FileElement)element).getSpecSetsVectorVector();
 			if (vv != null){
 				for (int i=0; i<vv.size(); i++){
 					SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
 					v.removeListener(this);
 				}
-			}
+			}*/
 		}
 		for (int i = 0; i<subPanels.size(); i++){
 			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
@@ -1690,439 +1755,4 @@ class ElementPanel extends ProjPanelPanel {
 	}
 
 }
-/*======================================================================== */
-class OldElementPanel extends ClosablePanel implements MesquiteListener, ClosablePanelContainer, MesquiteDroppedFileHandler {
-	Listable element;
-	Vector commands = new Vector();
-	MesquitePopup popup=null;
-	BasicFileCoordinator bfc;
-	StringInABox notes, commandBox;
-	int notesWidth = 560;
-	int notesLeft = 10;
-	int commandBoxWidth = 64;
-	protected int COMMANDHEIGHT = 64 - MINHEIGHT;
-	Image im;
-	Vector subPanels = new Vector();
-	MesquiteWindow w = null;
-
-	public OldElementPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, FileElement element){
-		super(container, element.getName());
-		this.element = element;
-		this.w = w;
-		if (element.getName() == null)
-			setTitle(element.getClass().getName());
-		setOpen(element.getResourcePanelIsOpen());
-		//	setColors(Color.white, ColorDistribution.veryVeryVeryLightGray, ColorDistribution.veryVeryLightGray, Color.darkGray);
-		setColors(ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
-		if (getIconFileName() != null)
-			im = 	MesquiteImage.getImage(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + getIconFileName());
-		this.bfc = bfc;
-		currentHeight = COMMANDHEIGHT + MINHEIGHT;
-		if (element !=null)
-			element.addListener(this);
-		setTightness(2);
-		notes =  new StringInABox(getNotes(), new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), notesWidth);
-		commandBox =  new StringInABox(getNotes(), new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), commandBoxWidth);
-		if (element != null){
-			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-			if (vv != null)
-				for (int i=0; i<vv.size(); i++){
-					SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-					v.addListener(this);
-				}
-		}
-		dropTarget = new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);  
-
-		refresh();
-	}
-	public OldElementPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, String name){
-		super(container, name);
-		this.bfc = bfc;
-		//		setColors(Color.white, ColorDistribution.veryVeryVeryLightGray, ColorDistribution.veryVeryLightGray, Color.darkGray);
-		setColors(ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
-		//		setColors(ColorDistribution.veryVeryLightGray, ColorDistribution.veryLightGray, Color.darkGray);
-		currentHeight = COMMANDHEIGHT + MINHEIGHT;
-		setTightness(2);
-		notes =  new StringInABox(getNotes(), new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), notesWidth);
-		commandBox =  new StringInABox(getNotes(), new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), commandBoxWidth);
-		refresh();
-	}
-	public void resetTitle(){
-		if (element != null && element instanceof FileElement && !StringUtil.stringsEqual(element.getName(), getTitle())){
-			if (element.getName() == null)
-				setTitle(element.getClass().getName());
-			else
-				setTitle(element.getName());
-			repaint();
-		}
-	}
-	protected int getFontSize(){
-		return MesquiteFrame.resourcesFontSize;
-	}
-	public void refreshGraphics(){
-		if (getBold())
-			setFont(new Font("SansSerif", Font.BOLD, getFontSize()));
-		else
-			setFont(new Font("SansSerif", Font.PLAIN, getFontSize()));
-		notes.setFont(new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize));
-		commandBox.setFont(new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize));
-		setColors(ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
-		repaint();
-		if (subPanels != null)
-			for (int i = 0; i<subPanels.size(); i++){
-				ElementPanel p = (ElementPanel)subPanels.elementAt(i);
-				p.refreshGraphics();
-			}
-	}
-	public void actUponDroppedFileContents(FileInterpreter fileInterpreter, String droppedContents) {
-	}
-	public FileInterpreter findFileInterpreter(String droppedContents, String fileName) {
-		return null;
-	}
-	/*.................................................................................................................*/
-	public void processFilesDroppedOnPanel(List files) {
-	}
-	/*.................................................................................................................*/
-	public void processFileStringDroppedOnPanel(String path) {
-	}
-
-	/*.................................................................................................................*/
-	public String getElementTypeName(){ 
-		return null;
-	}
-	/*.................................................................................................................*/
-	public String getIconFileName(){ //for small 16 pixel icon at left of main bar
-		return null;
-	}
-	public Image getIcon(){ //for small 16 pixel icon at left of main bar
-		return im;
-	}
-	public int requestSpacer(){
-		return 0;
-	}
-	public String getNotes(){
-		return null;
-	}
-	public boolean upToDate(){
-		int e = 0;
-		if (element != null && element instanceof FileElement){
-			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-			if (vv != null)
-				for (int i=0; i<vv.size(); i++){
-					if (e>= subPanels.size())
-						return false;
-					SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-					if (v.size()>0){
-						ElementPanel panel = ((ElementPanel)subPanels.elementAt(e));
-						if (panel.element != v)
-							return false;
-						e++;
-					}
-				}
-		}
-		if (e<subPanels.size())
-			return false;
-		return true;
-	}
-	public void setColors(Color bgTopColor, Color bgBottomColor, Color barColor, Color textColor){
-		super.setColors(bgTopColor, bgBottomColor, barColor, textColor);
-		for (int i = 0; i<subPanels.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-			panel.setColors(bgBottomColor, bgBottomColor, bgBottomColor, textColor);
-		}
-	}
-	public void refresh(){
-		if (upToDate()) {
-			resetSizes(getWidth(), getHeight());
-			repaintAllPanels();
-			return;
-		}
-		for (int i = 0; i<subPanels.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-			remove(panel);
-			panel.dispose();
-		}
-		subPanels.removeAllElements();
-		if (element != null && element instanceof FileElement){
-			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-			if (vv != null){
-				ElementPanel panel;
-				for (int i=0; i<vv.size(); i++){
-					SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-					if (v.size()>0){
-						addExtraPanel(panel = new SpecsSetVectorPanel(bfc, this,w, v, v.getTypeName()), false);
-						panel.setBounds(0, 0, 0, 0);
-						panel.setColors(bgBottomColor, bgBottomColor, bgBottomColor, textColor);
-					}
-				}
-			}
-		}
-	}
-	public ClosablePanel getPrecedingPanel(ClosablePanel panel){
-		return null;
-	}
-	void chart(){  //to be overridden to respond to command to chart the element
-	}
-	public void changed(Object caller, Object obj, Notification notification){
-		if (obj == element && element != null) {
-			setTitle(element.getName());
-			notes.setString(getNotes());
-			repaint();
-		}
-		else {
-			refresh();
-		}
-	}
-	/*.................................................................................................................*/
-
-	public void paint(Graphics g){
-		if (!sizesMatch(getWidth(), getHeight())){
-			resetSizes(getWidth(), getHeight());
-			repaintAllPanels();
-			repaint();
-			return;
-		}
-		g.setColor(ColorTheme.getExtInterfaceTextMedium());
-		int nH = 0;
-		if (!StringUtil.blank(getNotes())){
-			String s = notes.getString();
-			if (s != null && !s.equals(getNotes()))
-				notes.setString(getNotes());
-			notes.draw(g,notesLeft, MINHEIGHT-4);
-			nH = 16;
-		}
-		g.setColor(barColor);
-		g.fillRect(0, getHeight()-2, getWidth(), 2);
-		g.setColor(ColorTheme.getExtInterfaceTextMedium());
-		if (commands.size()>0){
-			int left = notesLeft;
-			for (int i=0; i<commands.size(); i++){
-				ProjPanelCommand ec = (ProjPanelCommand)commands.elementAt(i);
-				if (!ec.menuOnly){
-					ec.left=left;
-					if (ec.icon !=null){
-						Composite comp = ((Graphics2D)g).getComposite();
-						ColorDistribution.setTransparentGraphics(g,0.8f);		
-						g.drawImage(ec.icon, left, MINHEIGHT+nH + 4, this);
-						((Graphics2D)g).setComposite(comp);
-						left += ec.icon.getWidth(this) + 2;
-					}
-					if (ec.label != null){
-						commandBox.setString(ec.label);
-						g.setColor(ColorTheme.getExtInterfaceTextLink());
-						commandBox.draw(g,left, MINHEIGHT+nH);
-
-						g.setColor(ColorTheme.getExtInterfaceTextMedium());
-						left += commandBox.getMaxWidthDrawn() + 2;
-					}
-					ec.right=left;
-					left += 12;
-
-				}
-			}
-
-		}
-		super.paint(g);
-	}	
-	void addExtraPanel(ElementPanel p, boolean doReset){
-		subPanels.addElement(p);
-		add(p);
-		if (doReset) {
-			resetSizes(getWidth(), getHeight());
-			p.setVisible(true);
-		}
-	}
-	public void repaintAllPanels(){
-		for (int i = 0; i<subPanels.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-			panel.repaint();
-		}
-	}
-	public void requestHeightChange(ClosablePanel panel){
-		resetSizes(getWidth(), getHeight());
-		container.requestHeightChange(this);
-	}
-	void resetSizes(int w, int h){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
-			return;
-		if (!isOpen()){
-			for (int i = 0; i<subPanels.size(); i++){
-				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-				panel.setBounds(0, 0, 0, 0);
-				panel.setVisible(false);
-			}
-			return;
-		}
-
-		int vertical = MINHEIGHT+2;
-		if (anyGraphicalCommands())
-			vertical += COMMANDHEIGHT;
-		if (getNotes() != null)
-			vertical += 24;
-		for (int i = 0; i<subPanels.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-			int requestedlHeight = panel.getRequestedHeight(w);
-			panel.setVisible(false);
-
-			panel.setBounds(20, vertical, w, requestedlHeight);
-			panel.setVisible(true);
-
-			vertical += requestedlHeight;
-		}
-	}
-	boolean sizesMatch(int w, int h){
-		if (!isOpen()){
-			for (int i = 0; i<subPanels.size(); i++){
-				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-				if (panel.getWidth() != 0 || panel.getHeight() != 0)
-					return false;
-
-			}
-			return true;
-		}
-		for (int i = 0; i<subPanels.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-			int requestedlHeight = panel.getRequestedHeight(w);
-			if (panel.getWidth() != w || panel.getHeight() != requestedlHeight)
-				return false;
-		}
-		return true;
-	}
-	boolean anyGraphicalCommands(){
-		if (commands.size() == 0)
-			return false;
-		for (int i=0; i<commands.size(); i++){
-			ProjPanelCommand ec = (ProjPanelCommand)commands.elementAt(i);
-			if (!ec.menuOnly)
-				return true;
-
-		}
-		return false;
-	}
-	public int getRequestedHeight(int width){
-		if (!isOpen())
-			return MINHEIGHT;
-		int total = MINHEIGHT+5;
-		if (anyGraphicalCommands())
-			total += COMMANDHEIGHT;
-		if (getNotes() != null)
-			total += 24;
-		for (int i=0; i<subPanels.size(); i++){
-			ClosablePanel mp = (ClosablePanel)subPanels.elementAt(i);
-			total += mp.getRequestedHeight(width-20);
-		}
-		return total;
-	}
-	public void setBounds(int x, int y, int w, int h){
-		super.setBounds(x,y,w,h);
-		resetSizes(w, h);
-	}
-	public void setSize(int w, int h){
-		super.setSize(w,h);
-		resetSizes(w, h);
-	}	
-	protected void deleteAllCommands(){
-		commands.removeAllElements();
-	}
-	protected void addCommand(boolean menuOnly, String iconFileName, String label, String shortLabel, MesquiteCommand command){
-		ProjPanelCommand ec = new ProjPanelCommand(menuOnly, iconFileName, label, shortLabel, command);
-		if (iconFileName != null)
-			ec.icon = MesquiteImage.getImage(bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + iconFileName);
-
-		commands.addElement(ec);
-	}
-	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Charts the file element", null, commandName, "chart")) {
-			chart();
-		}
-		else
-			return  super.doCommand(commandName, arguments, checker);
-		return null;
-	}
-	public void disposing(Object obj){
-
-	}
-	public boolean okToDispose(Object obj, int queryUser){
-		return true;
-	}
-	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
-		//if modifiers include right click/control, then do dropdown menu
-		if (MesquiteEvent.rightClick(modifiers) || y<= MINHEIGHT && x> triangleOffset + 8) {
-			redoMenu();
-			popup.show(this, x,y);
-			return;
-		}
-
-		else if (y<= MINHEIGHT) {
-			super.mouseDown(modifiers,  clickCount,  when,  x,  y,  tool);
-			return;
-		}
-		else {
-			for (int i=0; i<commands.size(); i++){
-				ProjPanelCommand ec = (ProjPanelCommand)commands.elementAt(i);
-				if (!ec.menuOnly){
-					if (x>=ec.left && x<ec.right){
-						ec.command.doItMainThread(null, null, this);
-						repaint();
-						return;
-					}
-
-				}
-			}
-		}
-	}
-
-	protected String getMenuHeading(){
-		String heading = getTitle();
-		if (getElementTypeName() != null)
-			heading = getElementTypeName() + ": " + heading;
-		return heading;
-	}
-	protected void resetCommands(){ //use this only if last minute command changes might exist
-	}
-	/*.................................................................................................................*/
-	void redoMenu() {
-		if (popup==null)
-			popup = new MesquitePopup(this);
-		resetCommands();
-		popup.removeAll();
-		String heading = getMenuHeading();
-		popup.add(new MesquiteMenuItem(heading, bfc, null));
-		for (int i=0; i<commands.size(); i++) {
-			ProjPanelCommand m = (ProjPanelCommand)commands.elementAt(i);
-			MesquiteMenuItem mItem = new MesquiteMenuItem(m.shortLabel, bfc, m.command);
-			popup.add(mItem);
-		}
-		add(popup);
-	}
-	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
-		if (!MesquiteEvent.rightClick(modifiers) && y<= MINHEIGHT) {
-			super.mouseUp(modifiers,  x,  y,  tool);
-			return;
-		}
-	}
-	public void dispose(){
-		if (popup!=null)
-			remove(popup);
-		if (element != null && element instanceof FileElement){
-			((FileElement)element).removeListener(this);
-			((FileElement)element).setResourcePanelIsOpen(isOpen());
-			Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-			if (vv != null){
-				for (int i=0; i<vv.size(); i++){
-					SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-					v.removeListener(this);
-				}
-			}
-		}
-		for (int i = 0; i<subPanels.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
-			panel.dispose();
-		}
-		super.dispose();
-	}
-
-}
-
 

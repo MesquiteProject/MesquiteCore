@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.MatrixSourceCoord;
@@ -42,9 +43,12 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	double  minimumBitScore = 0.0;
 	boolean preferencesSet = false;
 	boolean fetchTaxonomy = false;
+	boolean interleaveResults = false;
+	boolean adjustSequences = true;
+	boolean addInternalGaps = true;
 //	boolean blastx = false;
 	int maxTime = 300;
-	static int upperMaxHits = 30;
+//	static int upperMaxHits = 30;
 
 	double eValueCutoff = 10.0;
 
@@ -60,9 +64,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			return sorry(getName() + " couldn't start because no Blast module could be obtained.");
 		else if (!blasterTask.initialize())
 			return false;
-		loadPreferences();
 		results = new StringBuffer();
-		results.append("   Top hits\n\tAccession [eValue] Definition): \n");
+		loadPreferences();
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -73,8 +76,12 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			saveResultsToFile = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("importTopMatches".equalsIgnoreCase(tag))
 			importTopMatches = MesquiteBoolean.fromTrueFalseString(content);
-//		else if ("blastx".equalsIgnoreCase(tag))
-//			blastx = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("interleaveResults".equalsIgnoreCase(tag))
+			interleaveResults = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("adjustSequences".equalsIgnoreCase(tag))
+			adjustSequences = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("addInternalGaps".equalsIgnoreCase(tag))
+			addInternalGaps = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("blastType".equalsIgnoreCase(tag))
 			blastType = MesquiteInteger.fromString(content);
 		else if ("eValueCutoff".equalsIgnoreCase(tag))
@@ -91,6 +98,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "fetchTaxonomy", fetchTaxonomy);  
 		StringUtil.appendXMLTag(buffer, 2, "maxTime", maxTime);  
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
+		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
+		StringUtil.appendXMLTag(buffer, 2, "addInternalGaps", addInternalGaps);  
+		StringUtil.appendXMLTag(buffer, 2, "adjustSequences", adjustSequences);  
 //		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
 		StringUtil.appendXMLTag(buffer, 2, "eValueCutoff", eValueCutoff);  
 		StringUtil.appendXMLTag(buffer, 2, "maxHits", maxHits);  
@@ -105,6 +115,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	Checkbox saveFileCheckBox ;
 	Checkbox fetchTaxonomyCheckBox;
 	Checkbox importCheckBox;
+	Checkbox interleaveResultsCheckBox;
+	Checkbox adjustSequencesCheckBox;
+	Checkbox addInternalGapsCheckBox;
 	/*.................................................................................................................*/
 	private void checkEnabling(){
 		//importCheckBox.setEnabled(!blastXCheckBox.getState());
@@ -121,13 +134,17 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		dialog.addLabel("Options for Top Blast Matches");
 		int oldBlastType = blastType;
 
-		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,upperMaxHits);
+		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 //		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
-		saveFileCheckBox = dialog.addCheckBox("save report of results to file",saveResultsToFile);
+		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
+		interleaveResultsCheckBox = dialog.addCheckBox("insert hits after sequence that was BLASTed",interleaveResults);
+		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement in needed and align imported sequences",adjustSequences);
+		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
+		
 		IntegerField maxTimeField = dialog.addIntegerField("Maximum time for BLAST response (seconds):",  maxTime,5);
 	//	blastXCheckBox.addItemListener(this);
 		saveFileCheckBox.addItemListener(this);
@@ -144,6 +161,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			blastType = blastTypeChoice.getSelectedIndex();
 			if (blastType<0) blastType=oldBlastType;
 			importTopMatches = importCheckBox.getState();
+			interleaveResults = interleaveResultsCheckBox.getState();
+			adjustSequences = adjustSequencesCheckBox.getState();
+			addInternalGaps = addInternalGapsCheckBox.getState();
 			maxTime=maxTimeField.getValue();
 			storePreferences();
 		}
@@ -169,59 +189,13 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;   // because of all of the modifications
 	}
 	/*.................................................................................................................*/
-	/** Called to search on the data in selected cells.  Returns true if data searched*/
-	public boolean searchData(CharacterData data, MesquiteTable table){
-		this.data = data;
-		if (!(data instanceof DNAData || data instanceof ProteinData)){
-			discreetAlert( "Only DNA or protein data can be searched using this module.");
-			return false;
-		} 
-		else {
-			if (!queryOptions())
-				return false;
-			logln("\nSearching for top blast hits (" + blasterTask.getName() + ")");
-
-			boolean searchOK = searchSelectedTaxa(data,table);
-			if (searchOK) {
-
-				logln("\nSearch results: \n"+ results.toString());
-//				logln("**** IDs: " +StringArray.toString(ID)); 
-
-				if (importTopMatches ){  
-					//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
-					logln("About to import top matches.", true);
-					StringBuffer report = new StringBuffer();
-
-					if (blastType==Blaster.BLASTX && data instanceof DNAData) {
-						//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
-						ID = blasterTask.getNucleotideIDsfromProteinIDs(ID);
-//						logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
-					}
-					//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
-
-					StringBuffer blastResponse = new StringBuffer();
-					String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
-
-					if (StringUtil.notEmpty(newSequencesAsFasta))
-						NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, report);
-					else
-						logln("Blast database returned no FASTA files in response to query.");
-
-					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-					data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-					logln(report.toString());
-				}
-			}
-			if (saveResultsToFile)
-				saveResults(results);
-			return searchOK;
-
-		}
+	/** message if search failed to find anything.  */
+	public void unsuccessfulSearchMessage(){
+		logln("BLAST database returned no sequences in response to query.");
 	}
-
 	/*.................................................................................................................*/
 	public boolean isNucleotides(CharacterData data){
 		return data instanceof DNAData;
@@ -236,24 +210,94 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		return new URL(s);
 	}
 
+	String reportDirectoryPath=null;
 	/*.................................................................................................................*/
-	public void saveResults( StringBuffer results) {
-		String path;
-		path = MesquiteFile.saveFileAsDialog("Save Top Matches report", new StringBuffer("blastMatches.txt"));
-		if (!StringUtil.blank(path)) {
-			MesquiteFile.putFileContents(path, results.toString(), false);
+	public boolean prepareReportDirectory() {
+		String folderName = "BLAST reports";
+		if (blasterTask!=null)
+			folderName = "BLAST to " + blasterTask.getDatabaseName();
+		reportDirectoryPath = MesquiteFileUtil.createDirectoryForFiles(this, MesquiteFileUtil.BESIDE_HOME_FILE, folderName,".");
+		return StringUtil.notEmpty(reportDirectoryPath);
+	}
+	/*.................................................................................................................*/
+	public void saveBLASTReport(String name, String contents) {
+		if (StringUtil.blank(reportDirectoryPath))
+			return;
+		
+		String blastReportPath = reportDirectoryPath + name;  // directory into which processed files go
+		blastReportPath = MesquiteFile.getUniqueNumberedPath(blastReportPath);
+		if (!StringUtil.blank(blastReportPath)) {
+			MesquiteFile.putFileContents(blastReportPath, contents, false);
 		}
 	}
 	/*.................................................................................................................*/
-	public void searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
-		if (data==null || blasterTask==null)
+	public void saveResults(StringBuffer results) {
+		if (StringUtil.blank(reportDirectoryPath))
 			return;
+		
+		String blastSummaryPath = reportDirectoryPath + "BLAST summary";  // directory into which processed files go
+		if (!StringUtil.blank(blastSummaryPath)) {
+			MesquiteFile.putFileContents(blastSummaryPath, results.toString(), false);
+		}
+	}
+	/*.................................................................................................................*/
+	/** Processing to be done after each search. Returns true if  */
+	public boolean processAfterEachTaxonSearch(CharacterData data, int it){
+		logln("\nSearch results: \n"+ results.toString());
+		//		logln("**** IDs: " +StringArray.toString(ID)); 
+		int numTaxaAdded =0;
+
+		if (importTopMatches ){  
+			int originalNumChars = data.getNumChars();
+			int insertAfterTaxon = data.getNumTaxa()-1;
+			if (interleaveResults)
+				insertAfterTaxon = it;
+			//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
+			logln("About to import top matches.", true);
+
+			if (blastType==Blaster.BLASTX && data instanceof DNAData) {
+				//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
+				ID = blasterTask.getNucleotideIDsfromProteinIDs(ID);
+				//	logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
+			}
+			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
+
+			StringBuffer blastResponse = new StringBuffer();
+			String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
+
+
+			numTaxaAdded = data.getNumTaxa();
+			if (StringUtil.notEmpty(newSequencesAsFasta))
+				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps);
+			else
+				logln("BLAST database returned no sequences in response to query.");
+			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			logln(results.toString());
+			
+			numTaxaAdded = data.getNumTaxa()-numTaxaAdded;
+/*			if (lastSearched!=null && lastSearched.isCombinable()) {
+				if (interleaveResults) { 
+					//lastSearched.add(numTaxaAdded);
+				}
+			}
+			*/
+			return data.getNumChars()!=originalNumChars;
+		}
+		return true;
+	}
+
+	/*.................................................................................................................*/
+	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+		if (data==null || blasterTask==null)
+			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
+		results.append("\n   BLASTing "+ sequenceName+ "\n");
 		StringBuffer sequence = new StringBuffer(data.getNumChars());
 		for (int ic = icStart; ic<=icEnd; ic++) {
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);
 		}
-
+		
 		StringBuffer response = new StringBuffer();
 		//blasterTask.setBlastx(blastx);
 		blasterTask.setBlastType(blastType);
@@ -264,8 +308,16 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		}
 
 		BLASTResults blastResults = new BLASTResults(maxHits);
+		
+		if (saveResultsToFile)
+			saveBLASTReport(sequenceName+" to " + blasterTask.getDatabaseName(),response.toString());
 		blastResults.processResultsFromBLAST(response.toString(), false, eValueCutoff);
 		blasterTask.postProcessingCleanup(blastResults);
+
+		if (blastResults.someHits())
+			results.append("   Top hits\n\tAccession [eValue] Definition): \n");
+		else
+			results.append("   No hits returned.\n");
 
 		for (int i=0; i<maxHits; i++) {
 			if (StringUtil.notEmpty(blastResults.getAccession(i))) {
@@ -283,7 +335,35 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		}
 		accessionNumbers = blastResults.getAccessions();
 		ID = blastResults.getIDs();
+		return blastResults.someHits();
 	}
+	/*.................................................................................................................*/
+	/** Called to search on the data in selected cells.  Returns true if data searched*/
+	public boolean searchData(CharacterData data, MesquiteTable table){
+		this.data = data;
+		results.setLength(0);
+		if (!(data instanceof DNAData || data instanceof ProteinData)){
+			discreetAlert( "Only DNA or protein data can be searched using this module.");
+			return false;
+		} 
+		else {
+			if (!queryOptions())
+				return false;
+			if (saveResultsToFile)
+				prepareReportDirectory();
+			logln("\nSearching for top BLAST hits (" + blasterTask.getName() + ")");
+			if (table!=null)
+				table.convertColumnSelectionToRows(true);
+			
+	
+			boolean searchOK = searchSelectedTaxa(data,table);
+			if (saveResultsToFile)
+				saveResults(results);
+			return searchOK;
+	
+		}
+	}
+
 	/*.................................................................................................................*/
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();

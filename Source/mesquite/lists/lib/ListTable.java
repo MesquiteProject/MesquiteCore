@@ -301,13 +301,12 @@ public class ListTable extends MesquiteTable {
 				
 				ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-						if (!assistant.arrowTouchInRow(row)){
+						if (!assistant.arrowTouchInRow(row, clickCount>1)){
 							if (assistant.isCellEditable(row))
 								super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
 							else
 								rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
 						}
-							
 				}
 				else
 					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);

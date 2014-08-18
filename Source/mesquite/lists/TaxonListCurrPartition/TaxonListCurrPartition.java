@@ -105,6 +105,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 		}
 	}
+	
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -149,31 +150,10 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Creates a new group for use in taxon partitions", null, commandName, "newGroup")) {
-			String n = "Untitled Group";
-			if (taxa.getFile()!=null)
-				n = taxa.getFile().getFileElements().getUniqueName(n);
-			GroupDialog d = new GroupDialog(getProject(),containerOfModule(), "New Taxon Group", n, Color.white, null, TaxaGroup.supportsSymbols());
-			d.completeAndShowDialog();
-			String name = d.getName();
-			boolean ok = d.query()==0;
-			Color c = d.getColor();
-			MesquiteSymbol symbol = d.getSymbol();
-
-			d.dispose();
-			if (!ok)
-				return null;
-			//String name = MesquiteString.queryString(containerOfModule(), "New character group", "New character group label", "Untitled Group");
-			if (StringUtil.blank(name))
-				return null;
-			TaxaGroup group = new TaxaGroup();
-			group.setName(name);
-			if (symbol!=null)
-				group.setSymbol(symbol);
-			group.addToFile(taxa.getFile(), getProject(), null);
-			setGroup(group, name);
-			if (c!=null) {
-				group.setColor(c);
-			}
+			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, taxa.getFile());
+			if (group!=null)
+				setGroup(group, group.getName());
+			return group;
 		}
 		else if (checker.compare(this.getClass(), "Stores the current taxa partition as a TAXAPARTITION", null, commandName, "storeCurrent")) {
 			if (taxa!=null){

@@ -12,6 +12,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.align.lib;
 
 import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteNumber;
 
@@ -53,7 +54,7 @@ public abstract class AlignmentHelper {
 			if(inputSequence[i][0] == CategoricalState.inapplicable) {
 				recentGapRunLength++;
 				if (j+retainedGapsSeen < gapInsertionArray.length && j < followsGapSize.length) //Wayne's workaround to crash
-				gapInsertionArray[j+retainedGapsSeen] = Math.max(0, recentGapRunLength - followsGapSize[j] );
+				gapInsertionArray[j+retainedGapsSeen] = Math.max(0, recentGapRunLength - followsGapSize[j]);
 				if (j< followsGapSize.length && followsGapSize[j] > recentGapRunLength) { 	
 					retainedGapsSeen++;
 				}
@@ -87,6 +88,16 @@ public abstract class AlignmentHelper {
 			gappedSeq2return[i+usedGaps][0] = inputSequence[i][0] ;
 			gappedSeq2return[i+usedGaps][1] = inputSequence[i][1] ;
 		}		
+		
+/*		if (gapInsertionArray!=null) {
+			int total = 0;
+			for (int m=0; m<gapInsertionArray.length; m++) {
+				if (gapInsertionArray[m]!=0)
+					Debugg.println("|||       " + m + "   " + gapInsertionArray[m]);
+			}
+			Debugg.println("||| total newGaps: " + total);
+		}
+*/
 
 		return gappedSeq2return;	
 	}

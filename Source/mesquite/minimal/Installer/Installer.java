@@ -76,16 +76,16 @@ import org.dom4j.Element;
  * -- FUTURE (or in control of modules after they start): permit writing outside Mesquite
  * -- FUTURE (or in control of modules after they start): permit scripts to run, e.g. to install outside of Mesquite_Folder
  * 
- * Ã-- Same protection in menu formation re java/dependencies
- * Ã-- have dependency tag that indicates dependencies
- * Ã-- make directories needed
- * Ã-- permit OS-specific installs
- * Ã-- what if dir not writable???
- * Ã-- have require tag that indicates minimal Java version
- * Ã-- receipt should contain more info
- * Ã-- add tag "critical" to updates; these would get installed only if receipt and folders indicate installation already had been done
- * Ã-- distinguish install and update, i.e. some do not give messages unless you already have older pakcage installed
- * Ã-- check to see that receipts point to files that still exist; if not, then treat receipt as if it hadn't existed
+ * ï¿½-- Same protection in menu formation re java/dependencies
+ * ï¿½-- have dependency tag that indicates dependencies
+ * ï¿½-- make directories needed
+ * ï¿½-- permit OS-specific installs
+ * ï¿½-- what if dir not writable???
+ * ï¿½-- have require tag that indicates minimal Java version
+ * ï¿½-- receipt should contain more info
+ * ï¿½-- add tag "critical" to updates; these would get installed only if receipt and folders indicate installation already had been done
+ * ï¿½-- distinguish install and update, i.e. some do not give messages unless you already have older pakcage installed
+ * ï¿½-- check to see that receipts point to files that still exist; if not, then treat receipt as if it hadn't existed
  * */
 public class Installer extends MesquiteInit {
 	public String getName() {
@@ -345,9 +345,17 @@ public class Installer extends MesquiteInit {
 		MesquiteFile.putFileContents(scriptPath, script, true);
 		return ShellScriptUtil.executeAndWaitForShell(scriptPath, "installScript");
 	}
-	boolean install(Element installElement, ListableVector receipt){
+
+	//returns 1 if OK
+	// 0 if unknown problem in downloading/writing
+	// -1 if problem reading from server
+	// -2 if problem writing download
+	// -3 if user request to cancel
+	// -4 if unzipping problem
+	// -5, -6 if script execution problem
+	int install(Element installElement, ListableVector receipt){
 		if (!applicableOS(installElement))
-			return true;  //return true because not considered failure if inapplicable OS
+			return 1;  //return true because not considered failure if inapplicable OS
 		String url = installElement.elementText("url");
 		String fileName = installElement.elementText("file");
 		String pathInMesquiteFolder = installElement.elementText("location");
@@ -379,7 +387,7 @@ public class Installer extends MesquiteInit {
 			int prevVersion  = MesquiteInteger.fromString(prevVString);
 			if (false && prevVersion >= version){
 				if (!AlertDialog.query(containerOfModule(), "Replace?", "The version of the package " + fileName + " installed (" + prevVersion + ") is the same as or newer than the one to be downloaded (" + version + ") .  Do you want to replace it with the one to be downloaded?")){
-					return false;
+					return -3;
 				}
 			}
 		}
@@ -393,7 +401,8 @@ public class Installer extends MesquiteInit {
 				MesquiteFile.rename(prevPackagePath, tempPackagePath);
 			}
 			logln("Downloading installation file to " + directoryLocation + downloadAs);
-			if (MesquiteFile.downloadURLContents(url, directoryLocation + downloadAs, true, true)){
+			int response = MesquiteFile.downloadURLContents(url, directoryLocation + downloadAs, true, true);
+			if (response == 1){
 				boolean fileReady = true;
 				if (treatment != null && treatment.equalsIgnoreCase("unzip")){
 					logln("Unzipping installation file");
@@ -408,12 +417,12 @@ public class Installer extends MesquiteInit {
 				else if (hadExisted){
 					logln("Installation unsuccessful; attempting to recover old version of " + fileName);
 					MesquiteFile.rename(tempPackagePath, prevPackagePath);
-					return false;
+					return -4;
 				}
 			}	
 			else {
 				MesquiteFile.deleteFile(directoryLocation + downloadAs);
-				return false;
+				return response;
 			}
 		}
 		if (execute != null){
@@ -424,7 +433,7 @@ public class Installer extends MesquiteInit {
 				logln("Executing script");
 				if (!executeScriptString(execute, false)){
 					logln("Script execution unsuccessful");
-					return false;
+					return -5;
 				}
 			}
 		}
@@ -437,11 +446,11 @@ public class Installer extends MesquiteInit {
 				logln("Executing script");
 				if (!executeScriptString(executeInMesquiteFolder, true)){
 					logln("Script execution unsuccessful");
-					return false;
+					return -6;
 				}
 			}
 		}
-		return true;
+		return 1;
 	}
 	void cleanUp(Element installElement){
 		String pathInMesquiteFolder = installElement.elementText("location");
@@ -543,12 +552,37 @@ public class Installer extends MesquiteInit {
 					MesquiteProject proj = projects.getProject(ip);
 
 				}
+				int failures = 0;
 				for (Iterator iter = installation.iterator(); !failed && iter.hasNext();) {   // this is going through all of the notices
 					Element installElement = (Element) iter.next();
-					if (install(installElement, receipt))
+					//returns 1 if OK
+					// 0 if unknown problem in downloading/writing
+					// -1 if problem reading from server
+					// -2 if problem writing download
+					// -3 if user request to cancel
+					// -4 if unzipping problem
+					// -5, -6 if script execution problem
+					int response = install(installElement, receipt);
+					if (response == 1) 
 						count++;
-					else
+					else {
 						failed = true;
+						failures ++;
+						if (failures == 1){
+							if (response == 0)
+								discreetAlert("There was an unknown problem downloading and writing a file.");
+							else if (response == -1)
+								discreetAlert("There was a problem downloading the update from the server.  Your internet connection or the server may be down.");
+							else if (response == -2)
+								discreetAlert("There was a problem saving the downloaded files.  It is possible that Mesquite doesnâ€™t have permission to make modifications within Mesquite_Folder.  This can happen, for example, if Mesquite_Folder is in the Applications or Program Files folder.  One possible fix is to move Mesquite_Folder to your own user directory, and try again to update.");
+							else if (response == -3)
+								discreetAlert("You have decided to cancel the update.");
+							else if (response == -4)
+								discreetAlert("There was a problem unzipping the downloaded update.");
+							else if (response == -5 || response == -6)
+								discreetAlert("There was a problem executing the install script (" + response + ")");
+						}
+					}
 				}
 			}
 			catch (Throwable t){

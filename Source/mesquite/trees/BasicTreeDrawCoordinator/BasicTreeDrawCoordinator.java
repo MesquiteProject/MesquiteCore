@@ -14,12 +14,16 @@ package mesquite.trees.BasicTreeDrawCoordinator;
 /*~~  */
 
 import java.util.*;
+
 import mesquite.assoc.lib.*;
+
 import java.awt.*;
 import java.io.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+
 import com.lowagie.text.pdf.PdfGraphics2D;
 
 /** Coordinates the drawing of trees in windows (e.g., used in the Tree Window and other places) */
@@ -120,6 +124,15 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		return treeDrawTask.getPreferredSize();
 	}
 	/*.................................................................................................................*/
+	MesquiteModule getTreeWindowMaker() {
+		TreeWindowMaker tw = (TreeWindowMaker) findEmployerWithDuty(TreeWindowMaker.class);
+		if (tw!=null)
+			return tw;
+		TWindowMaker tw2 = (TWindowMaker) findEmployerWithDuty(TWindowMaker.class);
+		return tw2;
+	}
+
+	/*.................................................................................................................*/
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
 			defaultDrawer = prefs[0];
@@ -137,6 +150,32 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	}
 
 
+	/*.................................................................................................................*
+	public Snapshot getSnapshotForMacro(MesquiteFile file) {
+		treeDrawCoordTask= (DrawTreeCoordinator)hireEmployee(DrawTreeCoordinator.class, null);
+		if (treeDrawCoordTask== null) {
+			sorry(getName() + " couldn't start because no tree draw coordinating module was obtained.");
+			return null;
+		}
+		treeDrawCoordTask.setToLastEmployee(true);
+		hireAllEmployees(TreeDisplayAssistantI.class);
+		hireAllEmployees(TreeDisplayAssistantDI.class);
+		Enumeration enumeration = getEmployeeVector().elements();
+		while (enumeration.hasMoreElements()) {
+			Object obj = enumeration.nextElement();
+			if (obj instanceof TreeDisplayAssistantDI) {
+				TreeDisplayAssistantDI init = (TreeDisplayAssistantDI) obj;
+				treeDrawCoordTask.requestGuestMenuPlacement(init);
+			}
+		}
+		resetContainingMenuBar();
+		return treeDrawCoordTask;
+	}
+	/*.................................................................................................................*/
+	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
+	public boolean satisfiesSnapshotMode(){
+		return (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || MesquiteTrunk.snapshotMode == Snapshot.SNAPDISPLAYONLY);
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -163,6 +202,21 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 		temp.addLine("setNumBrLenDecimals " + numBrLenDecimals.getValue());
 		temp.addLine("desuppress");
 		return temp;
+	}
+	/*.................................................................................................................*/
+	/** return the value of items to be snapshotted when saving a macro.*/
+	public int getMacroSnapshotMode(){
+		return Snapshot.SNAPDISPLAYONLY;
+	}
+	/*.................................................................................................................*/
+	/** return the module responsible for snapshotting when saving a macro.*/
+	public MesquiteModule getMacroSnapshotModule(){
+		return getTreeWindowMaker();
+	}
+	/*.................................................................................................................*/
+	/** return the command string to get the module responsible for snapshotting when saving a macro.*/
+	public String getMacroSnapshotModuleCommand(){
+		return "getTreeWindowMaker";
 	}
 
 	public DrawNamesTreeDisplay getNamesTask(){
@@ -335,11 +389,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Gets current tree window maker", null, commandName, "getTreeWindowMaker")) {
-			TreeWindowMaker tw = (TreeWindowMaker) findEmployerWithDuty(TreeWindowMaker.class);
-			if (tw!=null)
-				return tw;
-			TWindowMaker tw2 = (TWindowMaker) findEmployerWithDuty(TWindowMaker.class);
-			return tw2;
+			return getTreeWindowMaker();
 		}
 		else if (checker.compare(this.getClass(), "Sets background color of tree display", "[name of color]", commandName, "setBackground")) {
 			String token = ParseUtil.getFirstToken(arguments, stringPos);

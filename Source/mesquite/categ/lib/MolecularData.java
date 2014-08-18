@@ -28,6 +28,7 @@ import java.util.*;
 /* ======================================================================== */
 /** A subclass of CharacterData for molecular data */
 public class MolecularData extends CategoricalData {
+	public static String DATATYPENAME="Molecular Data";
 	GenCodeModelSet genCodeModelSet =null;
 	public static final NameReference reversedRef = NameReference.getNameReference("reversed"); //long: tInfo, data(ch); MesquiteInteger: data(cells)
 	public static final NameReference genBankNumberRef = NameReference.getNameReference("genBankNumber");//String: tInfo

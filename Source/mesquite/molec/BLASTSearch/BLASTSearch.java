@@ -48,9 +48,9 @@ public class BLASTSearch extends CategDataSearcher {
 		return searchSelectedTaxa(data,table);
 	}
 	/*.................................................................................................................*/
-   	public void searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+   	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
    		if (data==null)
-   			return;
+   			return false;
    		StringBuffer searchBuffer = new StringBuffer(data.getNumChars());
    		String s = data.getTaxa().getTaxonName(it);
    		if (!StringUtil.blank(s))
@@ -68,9 +68,12 @@ public class BLASTSearch extends CategDataSearcher {
 				url += "&PROGRAM=blastn";
 			url += "&CLIENT=web&SERVICE=plain&PAGE=Nucleotides&CMD=Put&QUERY=";
 			MesquiteModule.showWebPage(url + seq, true);
+			return true;
 		}
 		else 
 			discreetAlert( "Sorry, to use the BLAST search you need to have one or more stretches of sequence selected.");
+		return false;
+
    	}
 	/*.................................................................................................................*/
     	 public String getName() {

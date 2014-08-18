@@ -21,7 +21,6 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
@@ -31,16 +30,22 @@ import mesquite.categ.lib.*;
 
 public abstract class InterpretPhylip extends FileInterpreterITree {
 	Class[] acceptedClasses;
-	Parser treeParser;
 	TreeVector treeVector = null;
 /*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class, CategoricalState.class};
-		treeParser =  new Parser();
  		return true;  //make this depend on taxa reader being found?)
   	 }
   	 
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public boolean initializeExport(Taxa taxa) {  
+		 return true;  
+	}
+	/*.................................................................................................................*/
+	public boolean initializeTreeImport(MesquiteFile file, Taxa taxa) {  
+		 return true;  
+	}
+	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		 return true;  //
 	}
@@ -115,54 +120,16 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	
 	
 /*.................................................................................................................*/
-	public void readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
-		readPhylipTrees(mf, file, line, progIndicator, taxa, false);
+	public TreeVector readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa) {
+		return IOUtil.readPhylipTrees(this,mf, file, line, progIndicator, taxa, false, null, getTreeNameBase(), true);
 	}	
 	
 	public void setTaxonNameLength(int value) {
 		taxonNameLength = value;
 	}
 	
-/*.................................................................................................................*/
-	public void readPhylipTrees (MesquiteProject mf, MesquiteFile file, String line, ProgressIndicator progIndicator, Taxa taxa, boolean permitTaxaBlockEnlarge) {
-		treeParser.setQuoteCharacter((char)0);
-		int numTrees = MesquiteInteger.infinite;
-		if (line != null){
-			treeParser.setString(line); 
-			String token = treeParser.getNextToken();  // numTaxa
-			numTrees = MesquiteInteger.fromString(token);
-		}
-		int iTree = 0;
-		TreeVector trees = null;
-		boolean abort = false;
-		line = file.readNextDarkLine();		
-		while (!StringUtil.blank(line) && !abort && (iTree<numTrees)) {
-			treeParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
-
-			if (trees == null) {
-				trees = new TreeVector(taxa);
-				trees.setName("Imported trees");
-			}
-			MesquiteTree t = new MesquiteTree(taxa);
-			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
-			//t.setTreeVector(treeVector);
-			t.readTree(line);
-			/*MesquiteInteger pos = new MesquiteInteger(0);
-			treeParser.setString(line);
-			readClade(t, t.getRoot());
-			t.setAsDefined(true);*/
-			t.setName("Imported tree " + iTree);
-			trees.addElement(t, false);
-
-
-			iTree++;
-			line = file.readNextDarkLine();		
-			if (file.getFileAborted())
-				abort = true;
-		}
-		if (trees != null)
-			trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
-		
+	public String getTreeNameBase () {
+		return "Imported tree ";
 	}
 /*.................................................................................................................*/
 	public void readTreeFile(MesquiteProject mf, MesquiteFile file, String arguments) {
@@ -314,7 +281,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			if (!StringUtil.blank(line)) // then we have trees
 				readPhylipTrees(mf, file, line, progIndicator, taxa);
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 		}
 		decrementMenuResetSuppression();
@@ -324,6 +291,9 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 
 /* ============================  exporting ============================*/
 	public boolean exportInterleaved=false;
+	public boolean exportTrees=true;
+	public boolean localWriteExcludedChars = true;
+	public boolean userSpecifiedWriteExcludedChars = false;
 	
 	/*.................................................................................................................*/
 	protected int taxonNameLength = 10;
@@ -379,8 +349,9 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			}
 		}
 	}
+	int charWritten = 0;
 	/*.................................................................................................................*/
-	public void exportBlock(Taxa taxa, CharacterData data, StringBuffer outputBuffer, int startChar, int endChar) { 
+	public void exportBlock(Taxa taxa, CharacterData data, StringBuffer outputBuffer, int startChar, int blockSize, boolean writeTaxonNames) { 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 		int counter;
@@ -389,8 +360,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			pad += "  ";
 		
 		for (int it = 0; it<numTaxa; it++){
-			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it))){
-				if (startChar==0) {   // first block
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters))){
+				if (writeTaxonNames) {   // first block
 					String name = "";
 					if (taxonNamer!=null)
 						name = taxonNamer.getNameToUse(taxa,it)+pad;
@@ -405,18 +376,20 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 						outputBuffer.append(" ");
 				}
 				//outputBuffer.append(" ");
-				counter = startChar;
+				counter = 1;
 				for (int ic = startChar; ic<numChars; ic++) {
 					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
 						int currentSize = outputBuffer.length();
 						appendPhylipStateToBuffer(data, ic, it, outputBuffer);
+						if (it==0)
+							charWritten++;
 						if (outputBuffer.length()-currentSize>1) {
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 							return;
 						}
-						counter++;
-						if (counter>endChar)
+						if (counter>=blockSize)
 							break;
+						counter++;
 					}
 				}
 				outputBuffer.append(getLineEnding());
@@ -428,21 +401,20 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		if (data==null)
 			return null;
 		Taxa taxa = data.getTaxa();
+		initializeExport(taxa);
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		if (file != null)
-			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
-		int countTaxa = 0;
-		for (int it = 0; it<numTaxa; it++)
-			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it)))
-				countTaxa++;
-		numTaxa = countTaxa;
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
-
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
 		}
+		int countTaxa = 0;
+		for (int it = 0; it<numTaxa; it++)
+			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters)))
+				countTaxa++;
+		numTaxa = countTaxa;
+		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+
 		outputBuffer.append(Integer.toString(numTaxa)+" ");
 
 		if (!writeExcludedCharacters)
@@ -450,71 +422,171 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		else
 			outputBuffer.append(Integer.toString(numChars)+this.getLineEnding());		
 
-		exportBlock(taxa, data, outputBuffer, 0, numChars);
+		exportBlock(taxa, data, outputBuffer, 0, numChars, true);
 		return outputBuffer;
 	}
+	/*.................................................................................................................*/
+ 	public boolean exportMultipleMatrices(){
+ 		return false;
+ 	}
+	/*.................................................................................................................*/
+ 	public void setExportTrees(boolean exportTrees){
+ 		this.exportTrees = exportTrees;
+ 	}
+	/*.................................................................................................................*/
+ 	public boolean getExportTrees(){
+ 		return exportTrees;
+ 	}
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");
 
-		CharacterData data = findDataToExport(file, arguments);
+		CharacterData data = null;
+		int numMatrices =1;
+		
 		Taxa t = null;
+		Taxa taxa = null;
+		if (exportMultipleMatrices()) {
+			//data = findDataToExport(file, arguments);
+			t = getProject().chooseTaxa(containerOfModule(), "Select taxa to export", false);
+			numMatrices = getProject().getNumberCharMatricesVisible(CategoricalState.class);
+			data = getProject().getCharacterMatrixVisible(t, 0, CategoricalState.class);
+			taxa = data.getTaxa();
+		} else {
+			data = findDataToExport(file, arguments);
+			if (data != null){
+				t = data.getTaxa();
+				taxa = data.getTaxa();
+			}
+
+		}
+		boolean dataAnySelected = false;
 		if (data != null)
-			t = data.getTaxa();
-		TreeVector trees = findTreesToExport(file, t, arguments, usePrevious);
+			dataAnySelected =data.anySelected();
+		boolean taxaAnySelected = false;
+		if (taxa !=null)
+			taxaAnySelected= taxa.anySelected();
+		if (!MesquiteThread.isScripting() && !usePrevious)
+			if (!getExportOptions(dataAnySelected, taxaAnySelected))  // querying about options
+				return false;
+
+		if (userSpecifiedWriteExcludedChars) {
+			file.writeExcludedCharacters= localWriteExcludedChars;
+			writeExcludedCharacters = localWriteExcludedChars;
+		}
+		userSpecifiedWriteExcludedChars= false;
+
+		TreeVector trees = null;
+		if (getExportTrees()) {
+			trees = findTreesToExport(file, t, arguments, usePrevious);
+		}
 		if (data ==null && trees == null) {
 			showLogWindow(true);
 			logln("WARNING: No suitable data or trees available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
 			return false;
 		}
-		Taxa taxa = null;
-		if (data == null)
-			taxa = trees.getTaxa();
-		else
-			taxa = data.getTaxa();
-		boolean dataAnySelected = false;
-		if (data != null)
-			dataAnySelected =data.anySelected();
-		if (!MesquiteThread.isScripting() && !usePrevious)
-			if (!getExportOptions(dataAnySelected, taxa.anySelected()))
-				return false;
-			
-		int numTaxa = taxa.getNumTaxa();
+		StringBuffer outputBuffer = new StringBuffer(100);
+		int numCharWrite=0;
+		boolean firstTimeThrough = true;
+		initializeExport(taxa);
 
-		int numTaxaWrite;
-		int countTaxa = 0;
-		for (int it = 0; it<numTaxa; it++)
-			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it)))
-				countTaxa++;
-		numTaxaWrite = countTaxa;
-
-		int numChars = 0;
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
-
-		
-		if (data != null){
-			numChars = data.getNumChars();
-			int numCharWrite = data.numberSelected(this.writeOnlySelectedData); 
-			outputBuffer.append(Integer.toString(numTaxaWrite)+" ");
-			outputBuffer.append(Integer.toString(numCharWrite)+this.getLineEnding());
-			int blockSize=50;
-		
-			if (exportInterleaved)
-				for (int ic=0; ic<numChars; ic= ic+blockSize) {
-					exportBlock(taxa, data, outputBuffer, ic, ic+blockSize-1);
-					outputBuffer.append(getLineEnding());
+		if (data!=null) {
+			for (int im = 0; im<numMatrices; im++) {
+				if (exportMultipleMatrices()) {
+					data = getProject().getCharacterMatrixVisible(t, im, CategoricalState.class);
+					if (data==null) continue;
+				} 
+				if (!writeExcludedCharacters){
+					numCharWrite +=  data.numCharsCurrentlyIncluded(this.writeOnlySelectedData);
+				} else {
+					numCharWrite +=  data.numberSelected(this.writeOnlySelectedData);
 				}
-			else
-				exportBlock(taxa, data, outputBuffer, 0, numChars);
+			}
 		}
+		charWritten=0;
+
+		for (int im = 0; im<numMatrices; im++) {
+			if (exportMultipleMatrices()) {
+				data = getProject().getCharacterMatrixVisible(t, im, CategoricalState.class);
+				if (data==null) continue;
+			}
+			if (data == null && getExportTrees())
+				taxa = trees.getTaxa();
+			int numTaxa = taxa.getNumTaxa();
+
+			int numTaxaWrite;
+			int countTaxa = 0;
+			for (int it = 0; it<numTaxa; it++)
+				if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || (data!=null && data.hasDataForTaxon(it))))
+					countTaxa++;
+			numTaxaWrite = countTaxa;
+
+			int numChars = 0;
+
+			
+			if (data != null){
+				numChars = data.getNumChars();
+				if (firstTimeThrough) {
+					outputBuffer.append(Integer.toString(numTaxaWrite)+" ");
+					outputBuffer.append(Integer.toString(numCharWrite)+this.getLineEnding());
+				}
+				int blockSize=50;
+
+				if (exportInterleaved || exportMultipleMatrices()){
+					int ic = 0;
+					while (ic<numChars) {
+						int endChar = ic+blockSize;
+						int count=0;
+						boolean blockWritten = false;
+						for (int ic2=ic; ic2<numChars && !blockWritten; ic2++) {
+							if ((this.writeExcludedCharacters || data.isCurrentlyIncluded(ic2)) && (!this.writeOnlySelectedData || data.getSelected(ic2))){  // this character needs to be written
+								count++;
+								if (count==blockSize || ic2==numChars-1){
+									endChar = ic2;
+									//Debugg.println("ic: " + ic + ", endChar: " + endChar + ", count: " + count + ", charWritten: " + charWritten); 
+									exportBlock(taxa, data, outputBuffer, ic, blockSize, firstTimeThrough);
+									outputBuffer.append(getLineEnding());
+									ic=endChar+1;
+									blockWritten=true;
+									firstTimeThrough = false;
+								}
+							} else {
+								if (ic2==numChars-1 && !blockWritten){  //at end
+									endChar = ic2;
+									if (count>0){  //only write if there is something to write
+										//Debugg.println("END ic: " + ic + ", endChar: " + endChar + ", count: " + count+ ", charWritten: " + charWritten); 
+										exportBlock(taxa, data, outputBuffer, ic, blockSize, firstTimeThrough);
+										outputBuffer.append(getLineEnding());
+										firstTimeThrough = false;
+									}
+									ic=endChar+1;
+									blockWritten=true;
+								}
+							}
+						}
+					}
+				}
+				else
+					exportBlock(taxa, data, outputBuffer, 0, numChars, true);
+			}
+		}
+		if (charWritten!=numCharWrite)
+			MesquiteMessage.warnProgrammer("Warning: the number of characters written does not match expectation.");
 		
-		exportTrees(taxa, trees, outputBuffer);
+
+		
+		if (trees!=null)
+			exportTrees(taxa, trees, outputBuffer);
 		
 		saveExportedFileWithExtension(outputBuffer, arguments, "phy");
+		writeExtraFiles(taxa);
 		return true;
 	}
 
+	/*.................................................................................................................*/
+	public void writeExtraFiles(Taxa taxa){
+	}
 	/*.................................................................................................................*/
     	 public String getName() {
 		return "Phylip file";
