@@ -1201,7 +1201,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 			}
 		}
 		newData.saveChangeHistory = wassave;
-		newData.resetChangedSinceSave();
+		newData.resetCellMetadata();
 		return newData;
 	}
 	/*As of 2. 73 recognizing different default symbol lists to eliminate different step counting when ordered and states span I and O.
@@ -1413,7 +1413,7 @@ class HennigDREAD extends HennigXDREAD {
 			ownerModule.logln("MATCH subcommand could not be found.");
 			return false;
 		}
-		c = parser.nextDarkChar();  //¥¥ set matchchar to this, set matchcharon;
+		c = parser.nextDarkChar();  //ï¿½ï¿½ set matchchar to this, set matchcharon;
 		return true;
 	}
 	/*.................................................................................................................*/

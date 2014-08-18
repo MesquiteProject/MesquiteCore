@@ -74,6 +74,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	private Vector cellObjects; //Vector of arrays of objects (Object2DArray) that are attached to cells.  A courtesy to modules, so that they can attach and maintain info at the cells
 	private boolean[][] cellObjectsDisplay; //indicates whether there exist cell objects at a cell that need to be displayed in any way
 	private boolean[][] changedSinceSave; //records whether changed since last save.  
+	private int[] firstApplicable; //records the character number of the first non-applicable character.  
+	private int[] lastApplicable; //records the character number of the first non-applicable character.  
 
 	//the following four fields are for the experimental facility to record history of changes to cells
 	public static boolean defaultSaveChangeHistory = false;
@@ -152,6 +154,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		cellObjects = new Vector();
 		cellObjectsDisplay = new boolean[numChars][numTaxa];
 		changedSinceSave = new boolean[numChars][numTaxa];
+		firstApplicable = new int[numTaxa];
+		lastApplicable = new int[numTaxa];
 		uniqueIDs = new String[numChars];
 		String base = MesquiteTrunk.getUniqueIDBase();
 		charIDs = new long[numChars];
@@ -609,6 +613,37 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {starting, num}));
 		return added;
 	}
+	
+	public void calculateFirstLastApplicable(int it){
+		if (firstApplicable!=null){
+			int first = -1;
+			for (int ic=0; ic<numChars; ic++) {
+				if (!isInapplicable(ic, it)) {
+					first=ic;
+					break;
+				}
+			}
+			if (it<firstApplicable.length)
+				firstApplicable[it] = first;
+
+		}
+		if (lastApplicable!=null){
+			int last = -1;
+			for (int ic=numChars-1; ic>=0; ic--) {
+				if (!isInapplicable(ic, it)) {
+					last=ic;
+					break;
+				}
+			}
+			if (it<lastApplicable.length)
+				lastApplicable[it] = last;
+		}
+
+	}
+	public void calculateFirstLastApplicable(){
+		for (int it = 0; it<numTaxa; it++)
+			calculateFirstLastApplicable(it);
+	}
 
 	/*-----------------------------------------------------------*/
 	/**Adds num characters after position "starting".  If "starting" = -1, then inserts at start.  If "starting" >
@@ -705,6 +740,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 			changedSinceSave = newCOD;
 		}
+
 		if (characterIllustrations!=null){
 			Image[] newCharacterIllustrations = new Image[newNumChars];
 			for (int i=0; i<=starting; i++) {
@@ -719,6 +755,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			characterIllustrations = newCharacterIllustrations;
 		}
 		numChars = newNumChars;
+		calculateFirstLastApplicable();
 		super.addParts(starting, num); //for specssets
 		uncheckThread();
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_ADDED, starting, num, 0);  
@@ -830,6 +867,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 			changedSinceSave = newCOD;
 		}
+		
 		if (characterIllustrations!=null){
 			Image[] newCharacterIllustrations = new Image[newNumChars];
 			for (int i=0; i<starting; i++) {
@@ -841,6 +879,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			characterIllustrations = newCharacterIllustrations;
 		}
 		numChars = newNumChars;
+		calculateFirstLastApplicable();
 		super.deleteParts(starting, num); //for specs sets
 		uncheckThread();
 		return true;
@@ -890,6 +929,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 		Bits.moveColumns(cellObjectsDisplay, starting, num, justAfter);
 		Bits.moveColumns(changedSinceSave, starting, num, justAfter);
+		calculateFirstLastApplicable();
 		MesquiteImage.moveParts( characterIllustrations, starting, num, justAfter); 
 		charIDs = LongArray.getMoveParts(charIDs, starting, num, justAfter);
 		StringArray.moveParts(uniqueIDs, starting, num, justAfter);
@@ -937,6 +977,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		Bits.swapColumns(cellObjectsDisplay,  first, second);
 		Bits.swapColumns(changedSinceSave,  first, second);
+		calculateFirstLastApplicable();
 		MesquiteImage.swapParts( characterIllustrations,  first, second); 
 		nMove++;
 		boolean swapped =  super.swapParts( first, second);
@@ -1311,6 +1352,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (changedSinceSave !=null) {
 			changedSinceSave = Bits.addRows(changedSinceSave, starting, num);
 		}
+		if (firstApplicable !=null) {
+			firstApplicable = IntegerArray.addParts(firstApplicable, starting, num);
+		}
+		if (lastApplicable !=null) {
+			lastApplicable = IntegerArray.addParts(lastApplicable, starting, num);
+		}
 
 		if (cellObjects != null && cellObjects.size()>0){//Vector of arrays of objects that are attached to cells
 			for (int k =0; k<cellObjects.size(); k++){
@@ -1344,6 +1391,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (changedSinceSave !=null) {
 			changedSinceSave = Bits.deleteRows(changedSinceSave, starting, num);
 		}
+		if (firstApplicable !=null) {
+			firstApplicable = IntegerArray.deleteParts(firstApplicable, starting, num);
+		}
+		if (lastApplicable !=null) {
+			lastApplicable = IntegerArray.deleteParts(lastApplicable, starting, num);
+		}
+
 
 		if (cellObjects != null && cellObjects.size()>0){//Vector of arrays of objects that are attached to cells
 			for (int k =0; k<cellObjects.size(); k++){
@@ -1372,6 +1426,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (changedSinceSave !=null) {
 			Bits.moveRows(changedSinceSave, starting, num, justAfter);
 		}
+		if (firstApplicable !=null) {
+			firstApplicable = IntegerArray.moveParts(firstApplicable, starting, num, justAfter);
+		}
+		if (lastApplicable !=null) {
+			lastApplicable = IntegerArray.moveParts(lastApplicable, starting, num, justAfter);
+		}
+
 
 		if (cellObjects != null && cellObjects.size()>0){//Vector of arrays of objects that are attached to cells
 			for (int k =0; k<cellObjects.size(); k++){
@@ -1696,6 +1757,32 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/** sets the state of character ic in taxon it from CharacterState cs*/
 	public abstract void setState(int ic, int it, CharacterState cs);
+	
+	/** returns whether the character ic in taxon it has a terminal inapplicable*/
+	public boolean isTerminalInapplicable(int ic, int it){
+		if (!isInapplicable(ic,it)) 
+			return false;
+		if (firstApplicable!=null && it<firstApplicable.length && (firstApplicable[it]<0 || ic<firstApplicable[it]))
+			return true;
+		if (lastApplicable!=null && it<lastApplicable.length && ic>lastApplicable[it] && lastApplicable[it]>=0)
+			return true;
+/*		boolean terminal = true;
+		for (int i=ic-1; i>=0; i--)
+			if (!isInapplicable(i,it)){
+				terminal=false;
+				break;
+			}
+		if (terminal)
+			return true;
+		terminal=true;
+		for (int i=ic+1; i<numChars; i++)
+			if (!isInapplicable(i,it))
+				return false;
+				*/
+		return false;
+
+	}
+	
 	/** returns whether the character ic is inapplicable to taxon it*/
 	public abstract boolean isInapplicable(int ic, int it);
 	/** returns whether the character ic is entirely inapplicable codings*/
@@ -2337,6 +2424,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 	}
 	/*.................................................................................................................*/
+	public void resetCellMetadata() {
+		resetChangedSinceSave();
+		calculateFirstLastApplicable();
+	}
+	/*.................................................................................................................*/
 	public Vector getCellObjectsVector(){
 		return cellObjects;
 	}
@@ -2840,6 +2932,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	protected void setDirty(boolean d, int ic, int it){
 		setDirty(d); 
 		stampHistoryChange(ic, it);
+		calculateFirstLastApplicable(it);
 	}
 	/*.................................................................................................................*/
 	public boolean someApplicableInTaxon(int it, boolean countMissing){

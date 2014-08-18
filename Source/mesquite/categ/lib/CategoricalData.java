@@ -201,7 +201,7 @@ public class CategoricalData extends CharacterData {
 					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
 			}
 		}
-		resetChangedSinceSave();
+		resetCellMetadata();
 
 	}
 	/** Copies the block of data from the source to this data object */
@@ -217,7 +217,7 @@ public class CategoricalData extends CharacterData {
 					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
 			}
 		}
-		resetChangedSinceSave();
+		resetCellMetadata();
 
 	}
 
@@ -236,7 +236,7 @@ public class CategoricalData extends CharacterData {
 						setState(ic, it, ((CategoricalData)sourceData).getStateRaw(ic, it)); 
 				}
 			}
-			resetChangedSinceSave();
+			resetCellMetadata();
 		}
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -257,7 +257,7 @@ public class CategoricalData extends CharacterData {
 				data.setState(ic, it, getStateRaw(ic, it)); 
 			}
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -283,7 +283,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -312,7 +312,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic-icStart, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 
@@ -916,6 +916,7 @@ public class CategoricalData extends CharacterData {
 				stampHistoryChange(ic, it);
 			}
 		}
+		calculateFirstLastApplicable();
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**get matrix and return as StsOfCharacters */

@@ -431,12 +431,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Bold Cell Text", MesquiteModule.makeCommand("toggleShowBoldCellText", this), table.showBoldCellText);
 
 		
-		MesquiteSubmenuSpec softnessSubmenu = ownerModule.addSubmenu(ownerModule.displayMenu, "Fog");
+		MesquiteSubmenuSpec softnessSubmenu = ownerModule.addSubmenu(ownerModule.displayMenu, "Lighten");
 		//COLORS
-		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
-		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Cell Colors", MesquiteModule.makeCommand("toggleShowPaleCellColors", this), table.showPaleCellColors);
-		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
-		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Pale Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Cell Colors", MesquiteModule.makeCommand("toggleShowPaleCellColors", this), table.showPaleCellColors);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
 		
 		//CHANGES
 		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Show Changes Since Saved", MesquiteModule.makeCommand("toggleShowChanges", this), table.showChanges);
@@ -3757,12 +3757,20 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			} catch (Throwable e) {
 			}
 		}
-
-		if (fillColor == null)
-			fillColor = bgColor;
-		if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
-			fillColor = ColorDistribution.brighter(fillColor, showPaleExcludedValueBackground);
-		Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
+		
+		if (paleInapplicable.getValue() && data.isTerminalInapplicable(column, row)){
+				fillColor = Color.white;
+				//fillColor = Color.lightGray;
+				g.setColor(ColorDistribution.veryVeryLightGray);
+				g.drawRect(x, y+1, w, h-2);
+		}
+		else {
+			if (fillColor == null)
+				fillColor = bgColor;
+			if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
+				fillColor = ColorDistribution.brighter(fillColor, showPaleExcludedValueBackground);
+			Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
+		}
 		g.setColor(fillColor);
 
 		if (leaveEdges)
@@ -3802,8 +3810,12 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					textColor = textColorer.getCellColor(column, row);
 
 				if (textColor == null) {
-					if (paleInapplicable.getValue() && data.isInapplicable(column, row))
-						textColor = Color.lightGray;
+					if (paleInapplicable.getValue() && data.isInapplicable(column, row)){
+						if (data.isTerminalInapplicable(column, row))
+							textColor = Color.white;
+						else
+							textColor = Color.lightGray;
+					}
 					else
 						textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
 				}

@@ -319,7 +319,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 */
 
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 		
 
 			finishImport(progIndicator, file, abort);

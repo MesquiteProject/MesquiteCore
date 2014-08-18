@@ -183,7 +183,7 @@ public class ProteinData extends MolecularData {
 			if (getSelected(ic))
 				data.setSelected(ic, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 	/*..........................................  ProteinData  ..................................................*/
@@ -383,7 +383,7 @@ public class ProteinData extends MolecularData {
 	}
 	int ecount = 0;
 	/*..........................................  ProteinData  ..................................................*/
-	/* Returns state set from single state symbol Ã*/
+	/* Returns state set from single state symbol ï¿½*/
    	public long fromChar(char state){
 		if (state == getInapplicableSymbol())
 			return CategoricalState.inapplicable;

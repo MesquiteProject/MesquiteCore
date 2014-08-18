@@ -130,7 +130,7 @@ public class InterpretTabbedCat extends FileInterpreterI {
 				}
 			}
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 		}
 		decrementMenuResetSuppression();

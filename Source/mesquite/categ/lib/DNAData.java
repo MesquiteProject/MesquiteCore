@@ -114,7 +114,7 @@ public class DNAData extends MolecularData {
 			if (getSelected(ic))
 				data.setSelected(ic, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 

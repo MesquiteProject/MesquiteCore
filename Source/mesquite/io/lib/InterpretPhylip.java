@@ -281,7 +281,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			if (!StringUtil.blank(line)) // then we have trees
 				readPhylipTrees(mf, file, line, progIndicator, taxa);
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 		}
 		decrementMenuResetSuppression();

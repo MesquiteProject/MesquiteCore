@@ -70,7 +70,7 @@ public class CharactersBlock extends NexusBlock {
 			}
 			MesquiteTrunk.mesquiteTrunk.logln("      Writing " + getName());
 			data.getMatrixManager().writeCharactersBlock(data, this, file, progIndicator);
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 		}
 	}
 }

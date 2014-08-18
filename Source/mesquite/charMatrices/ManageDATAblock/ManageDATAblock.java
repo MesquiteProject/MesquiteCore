@@ -163,7 +163,7 @@ public class ManageDATAblock extends MesquiteModule {
 		if (data != null && blockComments!=null && blockComments.length()>0)
 			data.setAnnotation(blockComments.toString(), false);
 		if (data !=null) {
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 		}
 		file.setCurrentTaxa(taxa);
 		file.setCurrentData(data);
