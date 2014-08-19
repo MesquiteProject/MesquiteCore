@@ -144,6 +144,13 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		this.htmlExplanation = mb.getHTMLExplanation();
 		this.employeeNeedsVector = mb.getEmployeeNeedsVector();
 		this.homePhoneNumber = mb.getHomePhoneNumber();
+		String localPhoneBookPath = directoryPath + "phoneBook.txt";
+		if (MesquiteFile.fileExists(localPhoneBookPath)) {
+			String phoneNumber = MesquiteFile.getFileContentsAsString(localPhoneBookPath);
+			if (StringUtil.notEmpty(phoneNumber)) {
+				this.homePhoneNumber = phoneNumber;
+			}
+		}
 		if (employeeNeedsVector != null)
 			for (int i = 0; i< employeeNeedsVector.size(); i++){
 				EmployeeNeed need = (EmployeeNeed)employeeNeedsVector.elementAt(i);
