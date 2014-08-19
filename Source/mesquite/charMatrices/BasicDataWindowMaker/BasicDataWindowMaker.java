@@ -3759,19 +3759,19 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			}
 		}
 		
-		if (paleInapplicable.getValue() && data.isTerminalInapplicable(column, row)){
+/*		if (paleInapplicable.getValue() && data.isTerminalInapplicable(column, row)){
 				fillColor = Color.white;
 				//fillColor = Color.lightGray;
 				g.setColor(ColorDistribution.veryVeryLightGray);
 				g.drawRect(x, y+1, w, h-2);
 		}
-		else {
+		else { */
 			if (fillColor == null)
 				fillColor = bgColor;
 			if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
 				fillColor = ColorDistribution.brighter(fillColor, showPaleExcludedValueBackground);
 			Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
-		}
+		//}
 		g.setColor(fillColor);
 
 		if (leaveEdges)
@@ -3812,9 +3812,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 				if (textColor == null) {
 					if (paleInapplicable.getValue() && data.isInapplicable(column, row)){
-						if (data.isTerminalInapplicable(column, row))
+					/*	if (data.isTerminalInapplicable(column, row))
 							textColor = Color.white;
-						else
+						else */
 							textColor = Color.lightGray;
 					}
 					else

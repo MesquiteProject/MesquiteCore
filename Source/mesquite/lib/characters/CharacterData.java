@@ -641,7 +641,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	}
 	public void calculateFirstLastApplicable(){
-		Debugg.println("calc first last applicable");
+		//Debugg.println("calc first last applicable");
 		for (int it = 0; it<numTaxa; it++)
 			calculateFirstLastApplicable(it);
 	}
@@ -2933,7 +2933,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	protected void setDirty(boolean d, int ic, int it){
 		setDirty(d); 
 		stampHistoryChange(ic, it);
-		calculateFirstLastApplicable(it);
+	//	calculateFirstLastApplicable(it);
 	}
 	/*.................................................................................................................*/
 	public boolean someApplicableInTaxon(int it, boolean countMissing){
