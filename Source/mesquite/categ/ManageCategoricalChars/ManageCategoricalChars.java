@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -364,7 +365,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write(endLine);
 		}
 		//if (data.getTaxa().getName()!=null  && getProject().getNumberTaxas(cB.getFile())>1){ //before 13 Dec 01 had been this
-		if (( !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //¥¥¥ should have an isUntitled method??
+		if (( !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //ï¿½ï¿½ï¿½ should have an isUntitled method??
 			file.write("\tLINK TAXA = ");
 			file.write(StringUtil.tokenize(data.getTaxa().getName()));
 			file.write(endLine);
