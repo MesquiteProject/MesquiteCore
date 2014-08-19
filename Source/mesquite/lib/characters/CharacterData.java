@@ -641,6 +641,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	}
 	public void calculateFirstLastApplicable(){
+		Debugg.println("calc first last applicable");
 		for (int it = 0; it<numTaxa; it++)
 			calculateFirstLastApplicable(it);
 	}
