@@ -8,7 +8,7 @@ Once Mesquite_Folder is installed, you can start Mesquite as follows:
 Mac OS X
 There are 3 ways to start Mesquite under OS X:
 
-1. Default: Double click Mesquite.app
+1. Default: Double click Mesquite.app or one of the other versions.
 
 2. To run Mesquite with more memory: Double click Mesquite (500MB).app or Mesquite (1GB).app  (Hint: if you want to adjust the memory allocated, right click on the application's icon, go to info.plist in Contents, and change Xmx512M to Xmx700M or higher)
 
