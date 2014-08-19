@@ -1057,6 +1057,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Displays an alert in connection to an exception*/
 	public void exceptionAlert(Throwable e, String s) {
 		MesquiteTrunk.errorReportedDuringRun = true;
+		StackTraceElement[] stt = e.getStackTrace();
+		String rep = MesquiteException.lastLocMessage() + "\n";
+		rep += getRootPath() + "\n";
+		rep += e + "\n";
+		rep += s + "\n";
+		for (int i= 0; i< stt.length; i++)
+			rep += stt[i] + "\n";
+		s = rep;
 		MesquiteDialog.cleanUpWizard();
 		Thread t = Thread.currentThread();
 		if (t instanceof MesquiteThread)

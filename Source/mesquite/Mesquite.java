@@ -14,9 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
+
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
+import java.net.*;
 
 import javax.imageio.ImageIO;
 
@@ -87,7 +89,7 @@ public class Mesquite extends MesquiteTrunk
 	private boolean preferencesSet = false;
 	protected int lastVersionUsedInt = 0;
 	protected String lastVersionRun = "1.04";
-	private String storedManualString = null;
+	//private String storedManualString = null;
 	private boolean showLogWindow = true;
 	private boolean showAbout = true;
 	private boolean consoleMode = false;
@@ -166,9 +168,36 @@ public class Mesquite extends MesquiteTrunk
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
-		loc = loc.substring(0, loc.lastIndexOf(MesquiteFile.fileSeparator));
-		loc = loc.substring(0, loc.lastIndexOf(MesquiteFile.fileSeparator));
-		mesquiteDirectory = new File(loc);
+
+		String sepp = MesquiteFile.fileSeparator;
+		if (loc.indexOf(sepp)<0){
+			sepp = "/";
+			if (loc.indexOf(sepp)<0)
+				System.out.println("Not a recognized separator in path to Mesquite class!");
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			
+			try {
+			    URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+
+			
+			
+			
+		}
+		else {
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			try {
+			    URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
 
 		if (mesquiteDirectory == null){
 			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
@@ -233,16 +262,16 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 5");
 		if (!MesquiteModule.prefsDirectory.exists() || !MesquiteModule.prefsDirectory.isDirectory()) {
 			makeNewPrefsDirectory = true;
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 		}
 		else if (prefsFile.exists() || prefsFileXML.exists()) {
 			if (MesquiteModule.mesquiteDirectory==null) 
-				findMesquiteDirectory();
+				setMesquiteDirectoryPath();
 			else
 				setMesquiteDirectoryPath();
 		}
 		else {
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 		}
 		if (verboseStartup) System.out.println("main init 6");
 
@@ -252,7 +281,7 @@ public class Mesquite extends MesquiteTrunk
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
 			if (!preferencesSet) {
-				findMesquiteDirectory();
+				setMesquiteDirectoryPath();
 			}
 		}
 		if (verboseStartup) System.out.println("main init 7");
@@ -704,7 +733,7 @@ public class Mesquite extends MesquiteTrunk
 				mesquiteDirectoryPath+= MesquiteFile.fileSeparator;
 		}
 	}
-	/*.................................................................................................................EMBEDDED delete this if embedded */
+	/*.................................................................................................................EMBEDDED delete this if embedded *
 	private void findMesquiteDirectory(){
 		String sep = "" + MesquiteFile.fileSeparator;
 		if (mesquiteDirectory!=null) {
@@ -730,7 +759,7 @@ public class Mesquite extends MesquiteTrunk
 			//showLogWindow=prefs[0].charAt(0) == 'L';
 			if (prefs.length<2)
 				return;
-			storedManualString = prefs[1];
+			//storedManualString = prefs[1];
 			if (prefs.length<3)
 				return;
 
@@ -747,7 +776,7 @@ public class Mesquite extends MesquiteTrunk
 			if (prefs.length<6)
 				return;
 			/* EMBEDDED disable if embedded */
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 			/**/
 			if (prefs.length<7)
 				return;
@@ -832,7 +861,7 @@ public class Mesquite extends MesquiteTrunk
 	public void processSingleXMLPreference (String tag, String content) {
 		preferencesSet = true; //done to see that prefs file found; if not ask for registration
 		if ("storedManualString".equalsIgnoreCase(tag)){
-			storedManualString = (content);
+		//	storedManualString = (content);  DEFUNCT with v. 3
 		}
 		else if ("textEdgeCompensationHeight".equalsIgnoreCase(tag)){
 			int iq = MesquiteInteger.fromString(content);
@@ -944,7 +973,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 		/* EMBEDDED disable if embedded */
-		findMesquiteDirectory();
+		setMesquiteDirectoryPath();
 		/**/
 
 	}
@@ -952,7 +981,7 @@ public class Mesquite extends MesquiteTrunk
 	String previousMesquitePath = "";
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
+	//	StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationHeight", MesquiteModule.textEdgeCompensationHeight);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationWidth", MesquiteModule.textEdgeCompensationWidth);  
 		StringUtil.appendXMLTag(buffer, 2, "numUses", numUses);  
