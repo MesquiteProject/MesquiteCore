@@ -497,6 +497,20 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
 		return isCompatible(obj, project, prospectiveEmployer, null);
 	}
+	
+	public Listable[] removeExcludedFromListable(Listable[] listable) {
+		if (listable==null) return null;
+		int numIncluded = getNumCharsIncluded();
+		Listable[] newListable = new Listable[numIncluded];
+		int count = 0;
+		for (int ic=0; count<newListable.length && ic<listable.length; ic++) {
+			if (isCurrentlyIncluded(ic)){
+				newListable[count] = listable[ic];
+				count++;
+			}
+		}
+		return newListable;
+	}
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer, MesquiteString report){
 		if (obj ==null)
 			return true;
