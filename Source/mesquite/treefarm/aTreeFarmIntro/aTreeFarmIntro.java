@@ -93,11 +93,11 @@ public class aTreeFarmIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
  	public String getPackageCitation(){
- 		return "Maddison, W.P.,  D.R. Maddison and P. Midford, 2011.  Tree Farm package for Mesquite, version 2.75.";
+ 		return "Maddison, W.P.,  D.R. Maddison and P. Midford, 2014.  Tree Farm package for Mesquite, version 3.0.";
  	}
 	/*.................................................................................................................*/
   	 public String getPackageVersion() {
-		return "2.75";
+		return "3.00";
    	 }
 	/*.................................................................................................................*/
   	 public String getPackageAuthors() {
