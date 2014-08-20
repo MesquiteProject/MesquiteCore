@@ -50,11 +50,11 @@ public class aDiverseIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
  	public String getPackageCitation(){
- 		return "Midford, P. & W.P. Maddison. 2011.  Diverse Package for Mesquite.  Version 2.75. http://mesquiteproject.org";
+ 		return "Midford, P. & W.P. Maddison. 2014.  Diverse Package for Mesquite.  Version 3.00. http://mesquiteproject.org";
  	}
 	/*.................................................................................................................*/
   	 public String getPackageVersion() {
-		return "2.75";
+		return "3.00";
    	 }
  	/*.................................................................................................................*/
   	 public int getVersionOfFirstRelease() {

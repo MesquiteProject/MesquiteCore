@@ -73,7 +73,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "2.75+";
+		return "3.0 beta";
 	}
 	/*.................................................................................................................*/
 	//this should be mesquiteFeedbackXXX.py where XXX is version as integer if a release version (e.g. mesquiteFeedback273.py)
@@ -89,7 +89,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	616;  
+		return 	617;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
