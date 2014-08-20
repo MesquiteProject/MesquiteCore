@@ -329,15 +329,15 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (getHelpURLOwnerModule()!=null) {
 			if (!StringUtil.blank(helpURL)) {
 				String s = getHelpURLOwnerModule().getPackageIntroModule().getDirectoryPath() + getHelpURL();
-				MesquiteModule.showWebPage(s, true);
+				MesquiteModule.showWebPage(s, false);
 			}
 			else if (useManualPage)
 				getHelpURLOwnerModule().showManual();
 			else
-				MesquiteModule.showWebPage(getHelpURLOwnerModule().getPackageIntroModule().getSplashURL(), true);
+				MesquiteModule.showWebPage(getHelpURLOwnerModule().getPackageIntroModule().getSplashURL(), false);
 		}
 		else if (!StringUtil.blank(helpURL)) 
-			MesquiteModule.showWebPage(getHelpURL(), true);
+			MesquiteModule.showWebPage(getHelpURL(), false);
 	}
 	/*.................................................................................................................*/
 	public void setHelpURL (MesquiteModule ownerModule, String s) {

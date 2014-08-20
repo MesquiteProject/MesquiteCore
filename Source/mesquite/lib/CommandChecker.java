@@ -549,13 +549,12 @@ public class CommandChecker {
 	static String getNavBar(String leader) {
 		String s = "<table  width=\"137\"><tr><td><img src=\""
 			+ MesquiteFile.massageFilePathToURL(MesquiteModule
-					.getDocsPath()
+					.getRootPath() 
 					+ "images/mesquiteIcon.gif")
 					+ "\"></td><td><table width=\"450\" border=\"1\"  cellspacing=\"1\"><tr>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
-			+ MesquiteFile.massageFilePathToURL(MesquiteModule
-					.getDocsPath()
-					+ "manual.html") + "\">Manual</a></td>";
+			+ MesquiteModule
+					.mesquiteWebSite + "\">Manual</a></td>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
 			+ (leader + "modules.html") + "\">Modules Loaded</a></td>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
@@ -565,9 +564,9 @@ public class CommandChecker {
 			+ (leader + "puppeteer.html")
 			+ "\">General scripting commands</a></td>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
-			+ MesquiteFile.massageFilePathToURL(MesquiteModule
-					.getDocsPath()
-					+ "scripting.html") + "\">Scripting</a></td>";
+			+ MesquiteModule
+					.mesquiteWebSite 
+					+ "//Scripts+%26+Macros" + "\">Scripting</a></td>";
 		s += "</tr></table></td></tr></table>";
 		return s;
 	}
@@ -681,9 +680,9 @@ public class CommandChecker {
 				+ "<hr><h1>Commands available for scripting</h1>");
 		commandsListing
 		.addElement("<h2>Scripting language</h2>Mesquite uses a scripting language whose specifications may be found in the <a href=\""
-				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
-						+ "scripting.html") + "\">manual</a>.");
+				+ MesquiteModule
+						.mesquiteWebSite  
+						+ "/Scripts+%26+Macros" + "\">manual</a>.");
 		commandsListing
 		.addElement("<p>There are some <a href = puppeteer.html>universal commands</a> that can be used in the scripting language.");
 		commandsListing
@@ -807,16 +806,16 @@ public class CommandChecker {
 		if (gmp != null)
 			s.append(" <img src = \""
 					+ MesquiteFile.massageFilePathToURL(MesquiteModule
-							.getDocsPath()
-							+ "images/green-ball-small.gif")
+							.getRootPath()
+							+ "images/green-ball-small.gif") 
 							+ "\"> <a href = \""
 							+ MesquiteFile.massageFilePathToURL(mBI.getDirectoryPath()
 									+ "manual.html") + "\"> Manual </a>\n");
 
 		s.append(" <img src = \""
 				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
-						+ "images/blue-ball-small.gif")
+						.getRootPath()
+						+ "images/blue-ball-small.gif")  
 						+ "\"> <a href = \""
 						+ MesquiteFile.massageFilePathToURL(commandsPath
 								+ mBI.getShortClassName() + ".html")
@@ -883,7 +882,7 @@ public class CommandChecker {
 		if (c != null) {
 			content += "<hr><h2><a href=\"#top\"><img src=\""
 				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
+						.getRootPath() 
 						+ "images/small.top.arrow.gif")
 						+ "\"</a> <a name=\"controls\"></a>Controls (including buttons and tools)</h2>";//
 			content += getComponentExplanation(c);
@@ -895,7 +894,7 @@ public class CommandChecker {
 			// MENUS
 			content += "<hr><h2><a href=\"#top\"><img src=\""
 				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
+						.getRootPath() 
 						+ "images/small.top.arrow.gif")
 						+ "\"</a> <a name=\"menus\"></a>Menus</h2>";//
 			for (int i = 0; i < mBar.getMenuCount(); i++) {

@@ -68,7 +68,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "19 August 2014";   
+		return "20 August 2014";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -89,7 +89,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	617;  
+		return 	618;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -945,13 +945,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return getRootImageDirectoryPath() + s + imageFileName;
 	}
 	/*.................................................................................................................*/
-	/** returns path to the root directory of the documentation of Mesquite*/
+	/** returns path to the root directory of the documentation of Mesquite*
 	public static String getDocsPath() {
 		String s= StringUtil.getAllButLastItem(mesquiteDirectoryPath, MesquiteFile.fileSeparator);
 		if (s==null)
 			return null;
 		else
-			return s + MesquiteFile.fileSeparator + "docs/mesquite/";
+			return s + MesquiteFile.fileSeparator + "docs/mesquite/"; xxx
 	}
 	/*.................................................................................................................*/
 	/** returns a local file path expected by the module.  This allows the module to say "I am going to need this".  Mesquite
@@ -2078,7 +2078,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String manualPath;
 		String manP;
 		if (this instanceof MesquiteTrunk)
-			manP= "docs" + MesquiteFile.fileSeparator + "mesquiteTrunk.html";
+			return mesquiteWebSite;
 		else
 			manP= "manual.html";
 		manualPath = getPath() + manP; 
@@ -2108,15 +2108,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return null;
 		}
 	}
+	
+	public static final String mesquiteWebSite = "http://mesquiteproject.wikispaces.com";
 	/*.................................................................................................................*/
 	/** returns path to manual.  Null if manual doesn't exist*/
-	public String getBrowserManualPath() {
+	public String getBrowserManualPath() { 
 		if (MesquiteTrunk.isApplet()) 
 			return null;
 		String manualPath;
 		//String manP;
 		if (this instanceof MesquiteTrunk)
-			manualPath= getDocsPath() + "mesquiteTrunk.html";
+			 return mesquiteWebSite;
 		else
 			manualPath= getPath() + "manual.html";
 		File testing = new File(manualPath);
@@ -2129,7 +2131,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** shows manual for module*/
 	public void showManual() {
-		showWebPage(getBrowserManualPath(), true);
+		showWebPage(getBrowserManualPath(), false); 
 	}
 	/*.................................................................................................................*/
 	//TODO: have showWebPage(MesquiteFile file, String path) and showWebPage(MesquiteProject project, String path) to say relative to what (otherwise relative to Mesquite home folder)

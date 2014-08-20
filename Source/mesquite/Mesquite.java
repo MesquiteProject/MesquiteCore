@@ -1188,11 +1188,8 @@ public class Mesquite extends MesquiteTrunk
 	/*New code added April.02.07 oliver*/ //TODO: delete new code comments
 	/*.................................................................................................................*/
 	private void openMesquiteFAQ(){
-		String manualPath = mesquiteDirectoryPath + "docs/mesquite" + MesquiteFile.fileSeparator + "Help/MesquiteFAQ.html" ; 
-		File testing = new File(manualPath);
-		if (testing.exists()) {
+		String manualPath = mesquiteWebSite + "/FAQ" ; 
 			showWebPage(manualPath, false);
-		}
 	}
 	/*End new code added April.02.07 oliver*/
 
@@ -2013,11 +2010,8 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Shows home page of Mesquite", null, commandName, "showHomePage")) {
 			if (MesquiteTrunk.isApplet()) 
 				return null;
-			if (!CommandChecker.documentationComposed) {
-				CommandChecker cchecker = new CommandChecker();
-				cchecker.composeDocumentation();
-			}	
-			String manualPath = "http://mesquiteproject.wikispaces.com" ; 
+			
+			String manualPath = mesquiteWebSite; 
 			//File testing = new File(manualPath);
 			showWebPage(manualPath, false);
 
@@ -2025,15 +2019,9 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Shows Support page of Mesquite manual", null, commandName, "showSupport")) {
 			if (MesquiteTrunk.isApplet()) 
 				return null;
-			if (!CommandChecker.documentationComposed) {
-				CommandChecker cchecker = new CommandChecker();
-				cchecker.composeDocumentation();
-			}	
-			String manualPath = mesquiteDirectoryPath + "docs/mesquite" + MesquiteFile.fileSeparator + "support.html" ; 
-			File testing = new File(manualPath);
-			if (testing.exists()) {
+			
+			String manualPath = mesquiteWebSite + "/Getting+Help" ;
 				showWebPage(manualPath, false);
-			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether the Mesquite window appears automatically when no windows are showing", "[on or off]", commandName, "windowAutoShow")){
 			MesquiteWindow.autoShow = MesquiteBoolean.fromOffOnString(ParseUtil.getFirstToken(arguments, stringPos));

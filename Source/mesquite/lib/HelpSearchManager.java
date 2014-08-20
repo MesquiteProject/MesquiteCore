@@ -192,32 +192,7 @@ public class HelpSearchManager implements Commandable {
 		return result;
 	}
 	/*
-	String searchManualFiles(String s, String path){
-		java.io.File f = new java.io.File(path);
-		String result = "";
-		if (f.isDirectory()){
-			String[] files = f.list();
-			for (int i=0; i<files.length; i++) {
-				String subPath = path + files[i];
-				java.io.File f2 = new java.io.File(subPath);
-				if (f2.isDirectory())
-					subPath += MesquiteFile.fileSeparator;
-				result += searchManualFiles(s, subPath);
-			}
-		}
-		else {
-			if (path.endsWith(".html")){
-
-				String page = MesquiteFile.getFileContentsAsString(path);
-
-				if (stringsFound(page, s)){
-					result = "<li><a href = \"showPage:" +path + "\">manual page</a></li>";
-				}
-			}
-		}
-		return result;
-	}
-	 */
+	
 	String searchManual(String s, boolean useBrowser){
 		String results = "";
 		String arefStart = "showPage:";
@@ -299,6 +274,7 @@ public class HelpSearchManager implements Commandable {
 		MesquiteTrunk.mesquiteTrunk.logln(".. manual ready.");
 		manualLoading = 0;
 	}
+	*/
 	String menuResults = null;
 	String controlResults = null;
 
@@ -345,7 +321,8 @@ public class HelpSearchManager implements Commandable {
 			results += "<h3><strong>Modules</strong><ul>" + smod + "</ul></h3>";
 
 		//ADDING RESULTS FROM MANUAL
-		if (manualLoading == 1){
+		/*
+		 * if (manualLoading == 1){
 			try {
 				while (manualLoading >0)
 					Thread.sleep(20);
@@ -359,7 +336,7 @@ public class HelpSearchManager implements Commandable {
 		String sman = searchManual(s, useBrowser);
 		if (!StringUtil.blank(sman))
 			results += "<h3>Manual Pages</h3><ul>" + sman + "</ul>";
-
+	*/
 
 
 		if (StringUtil.blank(results))
