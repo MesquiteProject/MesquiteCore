@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison.
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -497,6 +497,22 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
 		return isCompatible(obj, project, prospectiveEmployer, null);
 	}
+	
+	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
+	 * entries corresponding to excluded characters are removed from the list */
+	public Listable[] removeExcludedFromListable(Listable[] listable) {
+		if (listable==null) return null;
+		int numIncluded = getNumCharsIncluded();
+		Listable[] newListable = new Listable[numIncluded];
+		int count = 0;
+		for (int ic=0; count<newListable.length && ic<listable.length; ic++) {
+			if (isCurrentlyIncluded(ic)){
+				newListable[count] = listable[ic];
+				count++;
+			}
+		}
+		return newListable;
+	}
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer, MesquiteString report){
 		if (obj ==null)
 			return true;
@@ -641,6 +657,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	}
 	public void calculateFirstLastApplicable(){
+		//Debugg.println("calc first last applicable");
 		for (int it = 0; it<numTaxa; it++)
 			calculateFirstLastApplicable(it);
 	}
@@ -2932,7 +2949,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	protected void setDirty(boolean d, int ic, int it){
 		setDirty(d); 
 		stampHistoryChange(ic, it);
-		calculateFirstLastApplicable(it);
+	//	calculateFirstLastApplicable(it);
 	}
 	/*.................................................................................................................*/
 	public boolean someApplicableInTaxon(int it, boolean countMissing){

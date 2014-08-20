@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -67,12 +68,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "13 August 2014";   
+		return "19 August 2014";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "2.75+";
+		return "3.0 beta";
 	}
 	/*.................................................................................................................*/
 	//this should be mesquiteFeedbackXXX.py where XXX is version as integer if a release version (e.g. mesquiteFeedback273.py)
@@ -88,7 +89,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	612;  
+		return 	617;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -1057,6 +1058,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Displays an alert in connection to an exception*/
 	public void exceptionAlert(Throwable e, String s) {
 		MesquiteTrunk.errorReportedDuringRun = true;
+		StackTraceElement[] stt = e.getStackTrace();
+		String rep = MesquiteException.lastLocMessage() + "\n";
+		rep += getRootPath() + "\n";
+		rep += e + "\n";
+		rep += s + "\n";
+		for (int i= 0; i< stt.length; i++)
+			rep += stt[i] + "\n";
+		s = rep;
 		MesquiteDialog.cleanUpWizard();
 		Thread t = Thread.currentThread();
 		if (t instanceof MesquiteThread)

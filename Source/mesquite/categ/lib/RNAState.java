@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -67,7 +68,7 @@ public class RNAState extends DNAState{
 		return RNAData.getIUPACSymbol(s);
 	}
 	/*..........................................RNAState.....................................*/
-	/** converts passed int (treated as RNAState) to string.  Uses character state names if available. Ã*/
+	/** converts passed int (treated as RNAState) to string.  Uses character state names if available. ï¿½*/
 	public static String toString(int e) {
 		if (e==0)
 			return "A";
@@ -81,7 +82,7 @@ public class RNAState extends DNAState{
 			return Integer.toString(e);
 	}
 	/*..........................................RNAState.....................................*/
-	/** Returns string as would be displayed to user (not necessarily internal shorthand).  Repeated from DNAState so it uses RNAState's toString(e) Ã*/
+	/** Returns string as would be displayed to user (not necessarily internal shorthand).  Repeated from DNAState so it uses RNAState's toString(e) ï¿½*/
 	public  String toDisplayString(){
 		if (isInapplicable(set))
 			return "" + CharacterData.defaultInapplicableChar;
@@ -123,7 +124,7 @@ public class RNAState extends DNAState{
 		return toString(s, data, ic, useBraces, false);
 	}
 	/*..........................................RNAState.....................................*/
-	/** converts passed long (treated as RNAState) to string.  Repeated from DNAState so that it uses RNAState's toChar. Ã*/
+	/** converts passed long (treated as RNAState) to string.  Repeated from DNAState so that it uses RNAState's toChar. ï¿½*/
 	public static String toString(long s, CategoricalData data, int ic, boolean useBraces, boolean useSymbols) {
 		if (s == impossible)
 			return "impossible";
@@ -166,7 +167,7 @@ public class RNAState extends DNAState{
 		return temp;
 	}
 	/*..........................................RNAState.....................................*/
-	/** converts passed int (treated as RNAState) to string.  Uses character state names if available. Ã*/
+	/** converts passed int (treated as RNAState) to string.  Uses character state names if available. ï¿½*/
 	public static char toChar(int e, CharacterData data, boolean lowerCase) {
 		if (lowerCase){
 			if (e==0)

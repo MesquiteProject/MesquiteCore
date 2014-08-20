@@ -49,6 +49,7 @@ public class IOUtil {
 	}
 
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 
 	public static String getMultipleModelRAxMLString(MesquiteModule mb, CharacterData data, boolean partByCodPos){
 		boolean writeCodPosPartition = false;
@@ -68,7 +69,7 @@ public class IOUtil {
 			return null;
 		}
 		StringBuffer sb = new StringBuffer();
-		CharInclusionSet incl = null;
+		CharInclusionSet incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
 
 		String codPosPart = "";
 		boolean molecular = (data instanceof MolecularData);
@@ -76,19 +77,29 @@ public class IOUtil {
 		boolean protein = (data instanceof ProteinData);
 		String standardPart = "";
 		if (writeStandardPartition) {
+			Listable[] partition = (Listable[])characterPartition.getProperties();
+			partition = data.removeExcludedFromListable(partition);
+			data.removeExcludedFromListable(partition);
 			if (nucleotides) {
+				String q;
 				for (int i=0; i<parts.length; i++) {
-					String q = ListableVector.getListOfMatches((Listable[])characterPartition.getProperties(), parts[i], CharacterStates.toExternal(0), true, ",");
+					q = ListableVector.getListOfMatches(partition, parts[i], CharacterStates.toExternal(0), true, ",");
 					if (q != null) {
 						if (nucleotides)
 							sb.append("DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+parts[i].getName(), true) + " = " +  q + "\n");
 					}
 				}
+				q = ListableVector.getListOfMatches(partition, null, CharacterStates.toExternal(0), true, ",");
+				if (q != null) {
+					if (nucleotides)
+						sb.append("DNA, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_unassigned", true) + " = " +  q + "\n");
+				}
 			} else if (protein) {
 				String[] rateModels = getRAxMLRateModels(mb, parts);
+				String q;
 				if (rateModels!=null) {
 					for (int i=0; i<parts.length; i++) {
-						String q = ListableVector.getListOfMatches((Listable[])characterPartition.getProperties(), parts[i], CharacterStates.toExternal(0), true, ",");
+						q = ListableVector.getListOfMatches(partition, parts[i], CharacterStates.toExternal(0), true, ",");
 						if (q != null && i<rateModels.length) {
 							sb.append(rateModels[i]+", " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+parts[i].getName(), true) + " = " +  q + "\n");
 						}
@@ -96,7 +107,7 @@ public class IOUtil {
 				}
 			} else {  // non molecular
 				for (int i=0; i<parts.length; i++) {
-					String q = ListableVector.getListOfMatches((Listable[])characterPartition.getProperties(), parts[i], CharacterStates.toExternal(0), true, ",");
+					String q = ListableVector.getListOfMatches(partition, parts[i], CharacterStates.toExternal(0), true, ",");
 					if (q != null) {
 						if (nucleotides)
 							sb.append("MULTI, " + StringUtil.simplifyIfNeededForOutput(data.getName()+"_"+parts[i].getName(), true) + " = " +  q + "\n");

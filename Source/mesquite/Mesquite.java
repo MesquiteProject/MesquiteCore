@@ -1,6 +1,7 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
-Version 2.75, September 2011.
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,9 +15,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
+
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
+import java.net.*;
 
 import javax.imageio.ImageIO;
 
@@ -33,24 +36,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2011.  Mesquite: A modular system for evolutionary analysis.  Version 2.75.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2014.  Mesquite: A modular system for evolutionary analysis.  Version 3.0beta.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "2.75+";
+		return "3.0 beta";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 275;
+		return 300;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 2.75;
+		return 3.00;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "October 2011"; //"April 2007";
+		return "August 2014"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -87,7 +90,7 @@ public class Mesquite extends MesquiteTrunk
 	private boolean preferencesSet = false;
 	protected int lastVersionUsedInt = 0;
 	protected String lastVersionRun = "1.04";
-	private String storedManualString = null;
+	//private String storedManualString = null;
 	private boolean showLogWindow = true;
 	private boolean showAbout = true;
 	private boolean consoleMode = false;
@@ -166,9 +169,36 @@ public class Mesquite extends MesquiteTrunk
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
-		loc = loc.substring(0, loc.lastIndexOf(MesquiteFile.fileSeparator));
-		loc = loc.substring(0, loc.lastIndexOf(MesquiteFile.fileSeparator));
-		mesquiteDirectory = new File(loc);
+
+		String sepp = MesquiteFile.fileSeparator;
+		if (loc.indexOf(sepp)<0){
+			sepp = "/";
+			if (loc.indexOf(sepp)<0)
+				System.out.println("Not a recognized separator in path to Mesquite class!");
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			
+			try {
+			    URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+
+			
+			
+			
+		}
+		else {
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			try {
+			    URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
 
 		if (mesquiteDirectory == null){
 			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
@@ -233,16 +263,16 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 5");
 		if (!MesquiteModule.prefsDirectory.exists() || !MesquiteModule.prefsDirectory.isDirectory()) {
 			makeNewPrefsDirectory = true;
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 		}
 		else if (prefsFile.exists() || prefsFileXML.exists()) {
 			if (MesquiteModule.mesquiteDirectory==null) 
-				findMesquiteDirectory();
+				setMesquiteDirectoryPath();
 			else
 				setMesquiteDirectoryPath();
 		}
 		else {
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 		}
 		if (verboseStartup) System.out.println("main init 6");
 
@@ -252,7 +282,7 @@ public class Mesquite extends MesquiteTrunk
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
 			if (!preferencesSet) {
-				findMesquiteDirectory();
+				setMesquiteDirectoryPath();
 			}
 		}
 		if (verboseStartup) System.out.println("main init 7");
@@ -297,7 +327,7 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2011 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2014 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
@@ -704,7 +734,7 @@ public class Mesquite extends MesquiteTrunk
 				mesquiteDirectoryPath+= MesquiteFile.fileSeparator;
 		}
 	}
-	/*.................................................................................................................EMBEDDED delete this if embedded */
+	/*.................................................................................................................EMBEDDED delete this if embedded *
 	private void findMesquiteDirectory(){
 		String sep = "" + MesquiteFile.fileSeparator;
 		if (mesquiteDirectory!=null) {
@@ -730,7 +760,7 @@ public class Mesquite extends MesquiteTrunk
 			//showLogWindow=prefs[0].charAt(0) == 'L';
 			if (prefs.length<2)
 				return;
-			storedManualString = prefs[1];
+			//storedManualString = prefs[1];
 			if (prefs.length<3)
 				return;
 
@@ -747,7 +777,7 @@ public class Mesquite extends MesquiteTrunk
 			if (prefs.length<6)
 				return;
 			/* EMBEDDED disable if embedded */
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 			/**/
 			if (prefs.length<7)
 				return;
@@ -832,7 +862,7 @@ public class Mesquite extends MesquiteTrunk
 	public void processSingleXMLPreference (String tag, String content) {
 		preferencesSet = true; //done to see that prefs file found; if not ask for registration
 		if ("storedManualString".equalsIgnoreCase(tag)){
-			storedManualString = (content);
+		//	storedManualString = (content);  DEFUNCT with v. 3
 		}
 		else if ("textEdgeCompensationHeight".equalsIgnoreCase(tag)){
 			int iq = MesquiteInteger.fromString(content);
@@ -944,7 +974,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 		/* EMBEDDED disable if embedded */
-		findMesquiteDirectory();
+		setMesquiteDirectoryPath();
 		/**/
 
 	}
@@ -952,7 +982,7 @@ public class Mesquite extends MesquiteTrunk
 	String previousMesquitePath = "";
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
+	//	StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationHeight", MesquiteModule.textEdgeCompensationHeight);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationWidth", MesquiteModule.textEdgeCompensationWidth);  
 		StringUtil.appendXMLTag(buffer, 2, "numUses", numUses);  

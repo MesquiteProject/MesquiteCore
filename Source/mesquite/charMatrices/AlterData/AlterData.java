@@ -1,6 +1,7 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
-Version 2.75, September 2011.
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -57,18 +58,18 @@ public class AlterData extends DataWindowAssistantI {
 	
 	/* possible alterers:
 		recode (as in MacClade)
-		reverse (sequences) Ã
-		shuffle Ã
-		random fill Ã
-		fill (via dialog) Ã
+		reverse (sequences) ï¿½
+		shuffle ï¿½
+		random fill ï¿½
+		fill (via dialog) ï¿½
 		search and replace
 		
 	DNA only:
-		complement Ã
+		complement ï¿½
 		
 	continuous only:
-		log transform Ã
-		scale Ã
+		log transform ï¿½
+		scale ï¿½
 		standardize (mean 0, variance 1)
 	*/
 	/*.................................................................................................................*/

@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -354,7 +355,7 @@ public class PhoneHomeUtil {
 									notices.append("<h2>Available for installation: " + packageName + "</h2>");
 								notices.append(explanation);
 								String installHTML = null;
-								if (!MesquiteFile.canWrite(MesquiteTrunk.getRootPath() + "settings")){
+								if (!MesquiteFile.canWrite(MesquiteTrunk.getRootPath() + "mesquite")){
 									installHTML = ("<p>HOWEVER, you cannot install this update because you do not have privileges to write into the Mesquite_Folder." +
 									"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 								}

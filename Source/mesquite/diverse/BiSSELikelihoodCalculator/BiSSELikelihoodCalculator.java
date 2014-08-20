@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -59,7 +60,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 	public static final int ROOT_IGNOREPRIOR = 0;  // likelihoodignore's model's prior
 	public static final int ROOT_USEPRIOR = 1;  // calculates ancestral states imposing model's prior
 	public boolean showRootModeChoices = true;  
-	//TODO: allow user choice ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥
+	//TODO: allow user choice ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	int rootMode = ROOT_USEPRIOR; //what if anything is done with prior probabilities of states at subroot?  
 	StringArray rootModes;
 	MesquiteString rootModeName;

@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -584,7 +585,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		//    first, acquire the name of the remote file 
 		if (StringUtil.blank(urlString))
 			return false;
-		if (!(urlString.toLowerCase().startsWith("ftp://") || urlString.toLowerCase().startsWith("http://"))) {
+		if (!(urlString.toLowerCase().startsWith("ftp://") || urlString.toLowerCase().startsWith("http://") || urlString.toLowerCase().startsWith("https://"))) {
 			return false;
 		}
 		String fileName = "downloadedFile";
@@ -1145,6 +1146,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return d;
 		int count=0;
 		if (f.startsWith("http://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
+			return f;
+		if (f.startsWith("https://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
 			return f;
 		if (f.startsWith("file://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
 			return f;
