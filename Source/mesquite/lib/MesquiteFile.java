@@ -585,7 +585,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		//    first, acquire the name of the remote file 
 		if (StringUtil.blank(urlString))
 			return false;
-		if (!(urlString.toLowerCase().startsWith("ftp://") || urlString.toLowerCase().startsWith("http://"))) {
+		if (!(urlString.toLowerCase().startsWith("ftp://") || urlString.toLowerCase().startsWith("http://") || urlString.toLowerCase().startsWith("https://"))) {
 			return false;
 		}
 		String fileName = "downloadedFile";
@@ -1146,6 +1146,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return d;
 		int count=0;
 		if (f.startsWith("http://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
+			return f;
+		if (f.startsWith("https://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
 			return f;
 		if (f.startsWith("file://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
 			return f;

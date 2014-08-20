@@ -498,6 +498,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return isCompatible(obj, project, prospectiveEmployer, null);
 	}
 	
+	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
+	 * entries corresponding to excluded characters are removed from the list */
 	public Listable[] removeExcludedFromListable(Listable[] listable) {
 		if (listable==null) return null;
 		int numIncluded = getNumCharsIncluded();
