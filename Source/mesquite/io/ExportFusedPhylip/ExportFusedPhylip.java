@@ -120,7 +120,6 @@ public class ExportFusedPhylip extends InterpretPhylip {
 			int numCharWrite=0;
 			int totalNumCharWrite=1;
 			if (MesquiteThread.isScripting()){
-
 			}
 			else {
 

@@ -240,7 +240,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
 		mLine = addMenuItem("-",null);
-		mScs = addMenuItem("Store current partition", makeCommand("storeCurrent",  this));
+		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
 			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));

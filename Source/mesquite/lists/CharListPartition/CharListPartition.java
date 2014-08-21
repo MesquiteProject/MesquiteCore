@@ -233,7 +233,7 @@ public class CharListPartition extends CharListAssistant {
 		mDGC = addSubmenu(null, "Delete Group...", makeCommand("deleteGroup", this));
 		mDGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
 		mLine = addMenuItem("-",null);
-		mScs = addMenuItem("Store current partition", makeCommand("storeCurrent",  this));
+		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
 			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharacterPartition.class));
