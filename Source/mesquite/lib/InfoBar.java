@@ -570,7 +570,7 @@ public class InfoBar extends MousePanel implements Commandable {
 
 		}
 		if (simplicityStrip != null)
-			simplicityStrip.setLocation(w - 20, 0);
+			simplicityStrip.setLocation(w - 20, 1);
 
 	}
 	public void setBounds(int x, int y, int w, int h){
@@ -580,7 +580,7 @@ public class InfoBar extends MousePanel implements Commandable {
 			b.setLocation(w- ( i+1)*20, 2);
 		}
 		if (simplicityStrip != null)
-			simplicityStrip.setLocation(w - 20, 0);
+			simplicityStrip.setLocation(w - 20, 1);
 
 	}
 	/*.................................................................................................................*/
