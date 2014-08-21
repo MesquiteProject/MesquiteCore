@@ -274,7 +274,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	public String getVoucherCode(Taxa taxa, int ic){
 
 		if (taxa!=null) {
-			String s = (String)taxa.getAssociatedObject(VoucherInfo.voucherCodeRef, ic);
+			String s = (String)taxa.getAssociatedObject(VoucherInfoFromOTUIDDB.voucherCodeRef, ic);
 			return s;
 		}
 		return null;
