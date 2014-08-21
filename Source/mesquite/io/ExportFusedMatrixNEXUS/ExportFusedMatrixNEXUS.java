@@ -175,9 +175,13 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 				if (writeCodPosPartition) {
 					//codon positions if nucleotide
 					String codPos = "";
+					boolean[] include = null;
+					if (removeExcluded)
+						include = data.getBooleanArrayOfIncluded();
+
 					CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
 					for (int iw = 0; iw<4; iw++){
-						String locs = codSet.getListOfMatches(iw, totNumChars);
+						String locs = codSet.getListOfMatches(iw, totNumChars,include);
 						if (!StringUtil.blank(locs)) {
 							String charSetName = "";
 							if (iw==0) 

@@ -372,6 +372,17 @@ public class DNAData extends MolecularData {
 		}
 		return false;
 	}
+	/* .......................................... DNAData .................................................. */
+	/** returns if there is there is at least one base that is codon position specified */
+	public boolean anyCodPos(int pos, boolean considerExcluded) {
+		if (!isCurrentCodonPositionsSet())
+			return false;
+		for (int ic=0; ic<getNumChars(); ic ++){
+			if (getCodonPosition(ic)==pos && (considerExcluded || isCurrentlyIncluded(ic)))
+				return true;
+		}
+		return false;
+	}
 
 	/* .......................................... .................................................. */
 	/** Returns true if ic is the first position in a codon. */

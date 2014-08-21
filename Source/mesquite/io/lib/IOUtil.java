@@ -79,7 +79,6 @@ public class IOUtil {
 		if (writeStandardPartition) {
 			Listable[] partition = (Listable[])characterPartition.getProperties();
 			partition = data.removeExcludedFromListable(partition);
-			data.removeExcludedFromListable(partition);
 			if (nucleotides) {
 				String q;
 				for (int i=0; i<parts.length; i++) {
@@ -117,9 +116,10 @@ public class IOUtil {
 		} else if (writeCodPosPartition && partByCodPos) {//TODO: never accessed because in the only call of this method, partByCodPos is false.
 			//codon positions if nucleotide
 			int numberCharSets = 0;
+			boolean[] include = data.getBooleanArrayOfIncluded();
 			CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
 			for (int iw = 0; iw<4; iw++){
-				String locs = codSet.getListOfMatches(iw);
+				String locs = codSet.getListOfMatches(iw,0, include);
 				if (!StringUtil.blank(locs)) {
 					String charSetName = "";
 					if (iw==0) 

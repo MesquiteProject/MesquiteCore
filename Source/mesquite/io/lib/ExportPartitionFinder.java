@@ -112,7 +112,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		return false;
 	}
 	/*.................................................................................................................*/
-	public String getPartitionList(CharacterData data, CharacterPartition partition, boolean separateCodePos){
+	public String getPartitionList(CharacterData data, CharacterPartition charPartition, boolean separateCodePos){
 		boolean subdivideByCodPos = false;
 		CodonPositionsSet codPosSet=null;
 		if (separateCodePos && data instanceof DNAData) {
@@ -122,17 +122,21 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		}
 
 		StringBuffer sb = new StringBuffer();
-		CharactersGroup[] parts = partition.getGroups();
+		CharactersGroup[] parts = charPartition.getGroups();
 		if (parts!=null)
 			for (int i=0; i<parts.length; i++) {
 				String s = parts[i].getName();
 				s = StringUtil.cleanseStringOfFancyChars(s);
 				s = StringUtil.blanksToUnderline(s);
 				String q = null;
-				boolean hasCodPos = subdivideByCodPos && hasSomeCodPos((Listable[])partition.getProperties(), parts[i], codPosSet.getNumberArray());
+				Listable[] partition = (Listable[])charPartition.getProperties();
+				if (!writeExcludedCharacters)
+					partition = data.removeExcludedFromListable(partition);
+				boolean hasCodPos = subdivideByCodPos && hasSomeCodPos(partition, parts[i], codPosSet.getNumberArray());
+
 				if (subdivideByCodPos && hasCodPos) {
 					for (int codpos = 1; codpos<=3; codpos++) {
-						q = ListableVector.getListOfMatches((Listable[])partition.getProperties(), parts[i], codPosSet.getNumberArray(), codpos,1, true);
+						q = ListableVector.getListOfMatches(partition, parts[i], codPosSet.getNumberArray(), codpos,1, true);
 						if (q != null) {
 							sb.append(s+"_pos"+codpos + " = ");
 							sb.append(q + ";\n");
@@ -140,7 +144,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 					}
 				}
 				else {
-					q = ListableVector.getListOfMatches((Listable[])partition.getProperties(), parts[i], 1, false);
+					q = ListableVector.getListOfMatches(partition, parts[i], 1, false);
 					if (q != null) {
 						sb.append(s + " = ");
 						sb.append(q + ";\n");
