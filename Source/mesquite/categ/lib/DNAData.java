@@ -384,22 +384,26 @@ public class DNAData extends MolecularData {
 	/* .......................................... .................................................. */
 	/** Returns the character number of the start of the codon following the one in which character ic participates. */
 	public int getStartOfNextCodon(int ic) {
-		int[] triplet = getCodonTriplet(ic);
-		if (triplet==null)
-			return -1;
-		int candidate=triplet[2]+1;
-		if (candidate>=numChars)
-			return -1;
-		int icPos = getCodonPosition(candidate);
+		int icPos = getCodonPosition(ic);
+		int candidate = -1;
+		if (icPos==1)
+			ic++;
+		icPos = getCodonPosition(ic);
 
-		while (candidate!=1 && candidate<numChars){
+		
+		while (icPos!=1 && ic<getNumChars()){
 			icPos = getCodonPosition(ic);
 			if (icPos==1) {
-				return candidate;
+				candidate = ic;
+				break;
 			}
-			candidate++;
+			ic++;
 		}
-		return -1;
+
+		int[] triplet = getCodonTriplet(candidate);
+		if (triplet==null)
+			return -1;
+		return candidate;
 	}
 	/* ................................................................................................................. */
 	/** Returns the codon in which character ic in taxon it participates. Returned is a long[3] containing the three DNAStates */
