@@ -709,7 +709,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 			//else {
 			//	if (MesquiteTrunk.isMacOSX()){
-			Menu spot = new Menu("◆");
+			Menu spot = new Menu("<");
+		//	spot.setFont(new Font ("SanSerif", Font.PLAIN, 12));
 			spot.add(new MenuItem("Menus between squares"));
 			spot.add(new MenuItem("  refer to current window"));
 			menuBar.add(spot);
@@ -773,7 +774,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				menuBar.remove(spot);
 			}
 			else {
-				Menu spot2 = new Menu(whiteBox);
+				Menu spot2 = new Menu(">>");
 				spot2.add(new MenuItem("Menus between squares"));
 				spot2.add(new MenuItem("  refer to current window"));
 				menuBar.add(spot2);
