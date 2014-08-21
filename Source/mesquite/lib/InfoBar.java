@@ -280,7 +280,9 @@ public class InfoBar extends MousePanel implements Commandable {
 		
 		String title = window.title;
 		g.setColor(Color.gray);
-		int leftStart = getWidth()-preReleaseLoc-GraphicsUtil.stringWidth(g, title)-10;
+		int leftStart = getWidth()-GraphicsUtil.stringWidth(g, title)-10;
+		if (mod!=null)
+			leftStart=leftStart-preReleaseLoc;
 		if (leftStart<left)
 			leftStart=left;
 		g.drawString(title, leftStart, GraphicsUtil.stringHeight(g, title));
