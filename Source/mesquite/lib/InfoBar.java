@@ -169,7 +169,6 @@ public class InfoBar extends MousePanel implements Commandable {
 	/*.................................................................................................................*/
 	String[] label = new String[]{"Graphics", "Text", "Parameters", "Modules", "Citations"};
 	public void paint (Graphics g) {
-
 		if (window == null || MesquiteWindow.checkDoomed(this))
 			return;
 		/*if (InterfaceManager.isEditingMode()){
@@ -277,11 +276,20 @@ public class InfoBar extends MousePanel implements Commandable {
 
 		}
 		
+		int preReleaseLoc = 36;
 		
+		String title = window.title;
+		g.setColor(Color.gray);
+		int leftStart = getWidth()-preReleaseLoc-GraphicsUtil.stringWidth(g, title)-10;
+		if (leftStart<left)
+			leftStart=left;
+		g.drawString(title, leftStart, GraphicsUtil.stringHeight(g, title));
+		g.setColor(Color.black);
 		
-		int rel = getWidth()  - 36;
+		int rel = getWidth()  - preReleaseLoc;
 		if (mod != null) {
 			//Debugg.println  : this has been deleted from infobar; hint that there are prerelease needs to be placed elsewhere
+			
 			if (prereleaseImage !=null && releaseImage!=null){
 				if (mod.anySubstantivePrereleases())
 					g.drawImage(prereleaseImage,rel,1, this);

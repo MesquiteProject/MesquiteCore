@@ -58,6 +58,24 @@ public class GraphicsUtil {
 			return Math.abs(1.0*(y-yStart)/(yEnd-yStart));
 		return Math.abs(1.0*(x-xStart)/(xEnd-xStart));
 	}
+
+	/* ............................................................................................................... */
+	/** Returns the width of string in the current Graphics */
+	public static int stringWidth(Graphics g, String s) {
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		if (fm==null)
+			return -1;
+		return fm.stringWidth(s);
+	}
+	/* ............................................................................................................... */
+	/** Returns the width of string in the current Graphics */
+	public static int stringHeight(Graphics g, String s) {
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		if (fm==null)
+			return -1;
+		return fm.getMaxAscent()+ fm.getMaxDescent();
+	}
+
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns the value of x at the middle of the line */
 	public static int xCenterOfLine(int x1, int y1, int x2, int y2) {

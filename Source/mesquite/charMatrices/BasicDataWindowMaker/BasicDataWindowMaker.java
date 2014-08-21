@@ -3602,10 +3602,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public String getUpperCornerText() {
-		if (data == null)
+	//	if (data == null)
 			return "";
 		
-		return data.getName();
+//		return data.getName();
 	}
 	/* ............................................................................................................... */
 	public String getCornerText() {
