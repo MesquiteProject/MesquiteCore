@@ -2229,7 +2229,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 					Desktop d = Desktop.getDesktop();
 					try {
 						URI uri = null;
-						if (path.indexOf("http:/")<0){ // it's a local reference
+						if (path.indexOf("http:/")<0 && path.indexOf("https:/")<0){ // it's a local reference
 							File file = new File(path);
 							uri=file.toURI();
 						} else

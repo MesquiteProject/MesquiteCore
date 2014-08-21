@@ -1860,7 +1860,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent e) {
 			if (e.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) {
 				String link = e.getDescription();
-				if (link != null && StringUtil.startsWithIgnoreCase(link, "http:"))
+				if (link != null && StringUtil.startsWithIgnoreCase(link, "http"))
 					MesquiteTrunk.showWebPage(e.getURL().toString(), false);
 				else  if (linkTouchedCommand != null)
 					linkTouchedCommand.doItNewThread(ParseUtil.tokenize(e.getDescription()), null);
