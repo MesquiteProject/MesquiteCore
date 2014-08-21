@@ -252,9 +252,9 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	public Snapshot getSnapshot(MesquiteFile file) {
 		if (basicTreeWindow==null)
 			return null;
-//		if (MesquiteTrunk.snapshotMode==Snapshot.SNAPDISPLAYONLY)
-//			return null;
-		
+		//		if (MesquiteTrunk.snapshotMode==Snapshot.SNAPDISPLAYONLY)
+		//			return null;
+
 		Snapshot temp = new Snapshot();
 		Snapshot fromWindow = basicTreeWindow.getSnapshot(file);
 		temp.addLine("suppressEPCResponse");
@@ -268,7 +268,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		temp.addLine("getTreeWindow");
 		temp.addLine("tell It");
 		temp.incorporate(fromWindow, true);
-		
+
 		if (MesquiteTrunk.snapshotMode==Snapshot.SNAPDISPLAYONLY){
 			for (int i = 0; i<getNumberOfEmployees(); i++) {
 				Object e=getEmployeeVector().elementAt(i);
@@ -1706,13 +1706,24 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			ownerModule.iQuit();
 			return;
 		}
-		if (tree!=null) {
-			if (treeEdited && !firstTimeTreeSource)
-				editedTree = tree;
 
+
+		if (tree!=null) {
+			boolean retainTree = false;
+			if (treeEdited)
+				retainTree = !AlertDialog.query(this, "Discard edited tree?", "The tree in the window has been edited but not saved.  " 
+						+ "Do you want to discard it, or do you want to retain it in the window?\n\nIf you retain it, remember that it " 
+						+ "does not come from the source of trees currently used by the window.  "
+						+ "To see the first tree that does belong to the source, hit the Enter arrow of the " 
+						+ "Tree scroll in the upper left of the tree window.", "Discard", "Retain", 0);
+
+
+			if (retainTree)
+				editedTree = tree;  // if this is done, and the tree is unot disposed, then it will be remembered
 			unhookPreviousTree();
-			if (!treeEdited || firstTimeTreeSource)
+			if (!retainTree)
 				tree.dispose();
+
 		}
 		treeAnnotationShown = false;
 		//	tree=null; //done to catch spurious redraws
@@ -4486,7 +4497,7 @@ class BasicTreeStatisticsPanel extends TreeInfoExtraPanel {
 		super(container, "Basic Tree Stats");
 		statsBox =  new StringInABox("", null, 50);
 		setOpen(true);
-		}
+	}
 	public void setTree(Tree tree){
 		super.setTree(tree);
 		//number of terminal taxa
