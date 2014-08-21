@@ -117,6 +117,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		selectAllShortcut = new MenuShortcut(KeyEvent.VK_A);
 		pasteShortcut = new MenuShortcut(KeyEvent.VK_V);
 		byte[] b = {(byte) 226, (byte)150, (byte)160};  //black box
+		blackBox = "◆";//new String(b, "UTF-8");
+		whiteBox = "◇"; //new String(bb, "UTF-8");
+		/*
 		try {
 			blackBox = new String(b, "UTF-8");
 			//blackBox = "||";
@@ -130,6 +133,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		} catch (UnsupportedEncodingException e1) {
 			whiteBox= "�";
 		}
+		*/
 	}
 	/** The constructor in general is to be avoided, because modules are instantiated momentarily on startup to gather
 	information.  The usual functions of a constructor are performed by startJob*/
@@ -705,8 +709,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 			//else {
 			//	if (MesquiteTrunk.isMacOSX()){
-			Menu spot = new Menu(blackBox);
-			spot.add(new MenuItem("Menus between black and white squares"));
+			Menu spot = new Menu("◆");
+			spot.add(new MenuItem("Menus between squares"));
 			spot.add(new MenuItem("  refer to current window"));
 			menuBar.add(spot);
 			int numBeforeSpecificMenus = menuBar.getMenuCount();
@@ -770,7 +774,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			}
 			else {
 				Menu spot2 = new Menu(whiteBox);
-				spot2.add(new MenuItem("Menus between black and white squares"));
+				spot2.add(new MenuItem("Menus between squares"));
 				spot2.add(new MenuItem("  refer to current window"));
 				menuBar.add(spot2);
 			}
