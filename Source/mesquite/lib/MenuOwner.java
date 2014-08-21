@@ -95,7 +95,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	private static MenuShortcut newShortcut, openShortcut, saveShortcut, printShortcut, getInfoShortcut, quitShortcut, ccShortcut, previousToolShortcut;
 	private static MenuShortcut undoShortcut, copyShortcut, cutShortcut, clearShortcut, selectAllShortcut, pasteShortcut;
 
-	public static String blackBox, whiteBox;
+	public static String leftBracket, rightBracket;
 
 	static {
 
@@ -116,24 +116,15 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		clearShortcut = new MenuShortcut(KeyEvent.VK_CLEAR);
 		selectAllShortcut = new MenuShortcut(KeyEvent.VK_A);
 		pasteShortcut = new MenuShortcut(KeyEvent.VK_V);
-		byte[] b = {(byte) 226, (byte)150, (byte)160};  //black box
-		blackBox = "◆";//new String(b, "UTF-8");
-		whiteBox = "◇"; //new String(bb, "UTF-8");
-		/*
-		try {
-			blackBox = new String(b, "UTF-8");
-			//blackBox = "||";
-		} catch (UnsupportedEncodingException e1) {
-			blackBox= "�";
+		/*if (MesquiteTrunk.isMacOSX()){
+			leftBracket = "◀";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
+			rightBracket = "▶"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
 		}
-		byte[] bb = {(byte) 226, (byte)150, (byte)161};
-		try {
-			whiteBox = new String(bb, "UTF-8");
-			//whiteBox = "|";
-		} catch (UnsupportedEncodingException e1) {
-			whiteBox= "�";
-		}
-		*/
+		else {*/
+			leftBracket = "«";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
+			rightBracket = "»"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
+		//}
+		
 	}
 	/** The constructor in general is to be avoided, because modules are instantiated momentarily on startup to gather
 	information.  The usual functions of a constructor are performed by startJob*/
@@ -709,9 +700,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 			//else {
 			//	if (MesquiteTrunk.isMacOSX()){
-			Menu spot = new Menu("<");
+			Menu spot = new Menu(leftBracket);
 		//	spot.setFont(new Font ("SanSerif", Font.PLAIN, 12));
-			spot.add(new MenuItem("Menus between squares"));
+			spot.add(new MenuItem("Menus between " + leftBracket + " " + rightBracket));
 			spot.add(new MenuItem("  refer to current window"));
 			menuBar.add(spot);
 			int numBeforeSpecificMenus = menuBar.getMenuCount();
@@ -774,8 +765,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				menuBar.remove(spot);
 			}
 			else {
-				Menu spot2 = new Menu(">>");
-				spot2.add(new MenuItem("Menus between squares"));
+				Menu spot2 = new Menu(rightBracket);
+				spot2.add(new MenuItem("Menus between " + leftBracket + " " + rightBracket));
 				spot2.add(new MenuItem("  refer to current window"));
 				menuBar.add(spot2);
 			}

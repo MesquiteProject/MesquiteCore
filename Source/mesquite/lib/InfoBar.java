@@ -42,6 +42,9 @@ public class InfoBar extends MousePanel implements Commandable {
 	public static final int numModes = 5;
 	static final int CLOSEINFOBAR = -1;
 	Color bgColor = Color.white;
+	int rightBracketMenu = -1;
+	int leftBracketX = -1;
+	MesquitePopup leftNotice, rightNotice;
 	//	Following are modes
 	int mode = 0; 
 	/** The standard graphics mode by which modules display their results in the window. */
@@ -118,6 +121,13 @@ public class InfoBar extends MousePanel implements Commandable {
 		which = new MesquiteInteger(0);
 		setFont(smallFont);
 		setBackground(bgColor = ColorDistribution.veryVeryLightGray);
+		leftNotice =  new MesquitePopup(this);
+		leftNotice.add(new MesquiteMenuItem("Menus between " + MenuOwner.leftBracket + " " + MenuOwner.rightBracket, null, null, null));
+		leftNotice.add(new MesquiteMenuItem("   are specific to current window", null, null, null));
+		rightNotice =  new MesquitePopup(this);
+		rightNotice.add(new MesquiteMenuItem("Menus between " + MenuOwner.leftBracket + " " + MenuOwner.rightBracket, null, null, null));
+		rightNotice.add(new MesquiteMenuItem("   are specific to current window", null, null, null));
+
 		//	searchStrip.setBackground(ColorTheme.getInterfaceBackground());
 		//simplicityStrip.setBackground(ColorTheme.getInterfaceBackground());
 
@@ -244,9 +254,11 @@ public class InfoBar extends MousePanel implements Commandable {
 		Vector menus = mod.getEmbeddedMenusVector();
 		int count = 0;
 		if (menus != null){
-			g.drawString(MenuOwner.blackBox, left-20, 16);
+			g.drawString(MenuOwner.leftBracket, left-20, 16);
+			leftBracketX = left-20;
 			//g.fillRect(left-12, 2, 8, 8);
-			for (int i=0; i< menuOffsets.length; i++) menuOffsets[i] = -1;
+			menuOffsets = new int[menus.size()];
+			for (int i=0; i< menuOffsets.length; i++) menuOffsets[i] = 12;
 			for (int i=0; i< menus.size(); i++){
 				Object m = menus.elementAt(i);
 				if (m instanceof MesquitePopup){
@@ -255,8 +267,10 @@ public class InfoBar extends MousePanel implements Commandable {
 					if (menu.getItemCount()>0){
 						String label = menu.getLabel();
 						if (i == menus.size()-1 && label.equals("Window") && mod != MesquiteTrunk.mesquiteTrunk){
-							g.drawString(MenuOwner.whiteBox, left , 16);
+							rightBracketMenu = i;
+							g.drawString(MenuOwner.rightBracket, left , 16);
 							left += 26;
+							//menuOffsets[count] += 26;
 						}
 						if (menuWithSameLabelExists(label, i, menus))
 							label = label + ".";
@@ -273,6 +287,7 @@ public class InfoBar extends MousePanel implements Commandable {
 					MesquiteMessage.warnProgrammer("MENU PROBLEM: MesquiteMenu where popup should be " + menu.getLabel());
 				}
 			}
+		//	for (int i=0; i< menuOffsets.length; i++) g.drawRect(menuOffsets[i], 0, 6, 16);
 
 		}
 		
@@ -611,13 +626,30 @@ public class InfoBar extends MousePanel implements Commandable {
 			window.setExplanation(s);
 		super.mouseMoved(modifiers,x,y,tool);
 	}
+	*/
 	/*.................................................................................................................*/
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
 			return;
+		menuBase = defaultMenuBase;
+		ToolPalette palette = window.getPalette();
+		if (palette != null && palette.getWidth()>defaultMenuBase/2){
+			menuBase = defaultMenuBase/2 + palette.getWidth();
+		}
+		if (x> leftBracketX -10 && x < leftBracketX + 20){
+			leftNotice.showPopup(x, 24);
+			MesquiteWindow.uncheckDoomed(this);
+			return;
+		}
 		int rel = menuBase ; //  + tabOffsets[numModes-1] ;
 		for (int i=0; i< menuOffsets.length; i++) 
 			if (x > menuBase -2 && x < menuOffsets[i]){
+				if (i == rightBracketMenu -1 && i > 0 && x < menuOffsets[i-1] + 26){
+					rightNotice.showPopup(x, 24);
+						MesquiteWindow.uncheckDoomed(this);
+						return;
+				}
+				
 				MesquiteModule mod = window.getOwnerModule() ;
 				Vector menus = mod.getEmbeddedMenusVector();
 				if (menus != null){
