@@ -1997,7 +1997,7 @@ class BetweenPanel extends MousePanel{
 			return;
 		Graphics2D g2 = (Graphics2D)g;
 		g2.setColor(ColorTheme.getContentFrame());
-		g2.fillRect(0,MesquiteFrame.cornerBuffer,getBounds().width, getBounds().height);
+		g2.fillRect(0,MesquiteFrame.cornerBuffer-1,getBounds().width, getBounds().height);
 		Stroke st = g2.getStroke();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		

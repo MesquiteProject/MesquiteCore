@@ -33,7 +33,7 @@ the modules currently contributing to the window and their parameters, explanati
 public class InfoBar extends MousePanel implements Commandable {
 	MesquiteWindow window;
 	MesquiteInteger which;
-	int defaultMenuBase = 28;
+	int defaultMenuBase = 40;
 	int menuBase = defaultMenuBase;
 	//	int[] tabOffsets = new int[] {54, 92, 162, 213, 272};
 	int triangleWidth = 4;
@@ -107,7 +107,7 @@ public class InfoBar extends MousePanel implements Commandable {
 			simplicityStrip = new SimplicityStrip(window, false);
 			add(simplicityStrip);
 			simplicityStrip.setSize(120, 16);
-			simplicityStrip.setLocation(getWidth()-24, 0);
+			simplicityStrip.setLocation(getWidth()-24, 1);
 			simplicityStrip.setBackground(ColorDistribution.veryVeryLightGray);
 			simplicityStrip.setVisible(true);
 		}
@@ -237,7 +237,7 @@ public class InfoBar extends MousePanel implements Commandable {
 		// MENUS ================
 		menuBase = defaultMenuBase;
 		ToolPalette palette = window.getPalette();
-		if (palette != null){
+		if (palette != null && palette.getWidth()>defaultMenuBase/2){
 			menuBase = defaultMenuBase/2 + palette.getWidth();
 		}
 		int left=menuBase ; //+ tabOffsets[numModes-1];
