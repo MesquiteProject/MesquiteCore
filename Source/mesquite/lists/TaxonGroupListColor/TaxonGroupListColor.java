@@ -90,7 +90,7 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 	Color newColor = null;
 	/*.................................................................................................................*/
 	public boolean chooseColor(Color oldColor){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
-		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  
 			return true;
 		JFrame guiFrame = new JFrame();
 		newColor = JColorChooser.showDialog(guiFrame, "Pick a Color", oldColor);

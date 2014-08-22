@@ -464,17 +464,18 @@ public class ManageTrees extends TreesManager {
 			}
 			return treeFillerTask;
 		}
-		else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
+	/*	else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
 			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, treeFillerTask);
 			fillingTreesNow = true;
 
 			thread.start();
 			return null;
 		}
+
 		else if (checker.compare(this.getClass(), "Informs Manage trees that trees are ready", "[ID of tree block filler module]", commandName, "treesReady")) { 
 			// may need to pass more info to be able to connect to right filltask etc, especially if multithreading
 			if (treeFillerTask != null){
-				TreeVector trees = new TreeVector(getProject().getTaxa(0));  //Debugg.println   temporary -- need to get right taxa block!
+				TreeVector trees = new TreeVector(getProject().getTaxa(0)); -- need to get right taxa block!
 				treeFillerTask.retrieveTreeBlock(trees, 100);
 				trees.addToFile(getProject().getHomeFile(), getProject(), this);
 				doneQuery(treeFillerTask, trees.getTaxa(), trees, true);
@@ -484,6 +485,7 @@ public class ManageTrees extends TreesManager {
 			}
 			return null;
 		}
+		*/
 		else if (checker.compare(this.getClass(), "Fires the tree source for use in filling newly created tree blocks",null, commandName, "fireTreeSource")) { 
 			if (treeFillerTask!=null) {
 				fireEmployee(treeFillerTask);
@@ -1766,19 +1768,22 @@ class TreeBlockThread extends MesquiteThread {
 		int before = trees.size();
 		try {
 			fillTask.fillTreeBlock(trees, howManyTrees);
+			boolean okToSave = false;
 			if (trees.size()==before) {
 				ownerModule.alert("Sorry, no trees were returned by " + fillTask.getName());
 				ownerModule.fireEmployee(fillTask);
 				ownerModule.fillingTreesNow = false;
 
 			}
-			else
+			else {
 				trees.addToFile(file, ownerModule.getProject(), ownerModule);
+				okToSave = true;
+			}
 			if (trees.size()!=before)
 				ownerModule.doneQuery(fillTask, trees.getTaxa(), trees, suppressAsk);
 			ownerModule.fireEmployee(fillTask);
 			ownerModule.fillingTreesNow = false;
-			if (autoSave != null && autoSave.getValue()){
+			if (okToSave && autoSave != null && autoSave.getValue()){
 				FileCoordinator fCoord = ownerModule.getFileCoordinator();
 				fCoord.writeFile(file);
 			}
@@ -1804,7 +1809,7 @@ class TreeBlockThread extends MesquiteThread {
 	}
 
 }
-/* ======================================================================== */
+/* ======================================================================== *
 class TreeBlockMonitorThread extends MesquiteThread {
 	ManageTrees ownerModule;
 	TreeBlockFiller fillTask;
@@ -1831,7 +1836,7 @@ class TreeBlockMonitorThread extends MesquiteThread {
 	public String getCurrentCommandExplanation(){
 		return null;
 	}
-	/*.............................................*/
+	/*.............................................*
 	public void run() {
 		Reconnectable reconnectable = fillTask.getReconnectable();
 		if (reconnectable != null){
@@ -1840,7 +1845,7 @@ class TreeBlockMonitorThread extends MesquiteThread {
 		threadGoodbye();
 
 	}
-	/*.............................................*/
+	/*.............................................*
 	public void dispose(){
 		ownerModule = null;
 		fillTask = null;

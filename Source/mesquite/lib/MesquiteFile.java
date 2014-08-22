@@ -2098,7 +2098,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static long fileOrDirectoryLastModified(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.printStackTrace("double // in path " + path);  //Debugg.printStackTrace  temporarily printStackTrace to force us to fix things
+				MesquiteMessage.printStackTrace("double // in path " + path); 
 			File testing = new File(path);
 			return testing.lastModified();
 		}
@@ -2109,7 +2109,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean fileOrDirectoryExists(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.printStackTrace("double // in path " + path); //Debugg.printStackTrace  temporarily printStackTrace to force us to fix things
+				MesquiteMessage.printStackTrace("double // in path " + path);
 			File testing = new File(path);
 			if (testing.exists())
 				return true;
@@ -2133,7 +2133,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean fileExists(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.printStackTrace("double // in path " + path);   //Debugg.printStackTrace  temporarily printStackTrace to force us to fix things
+				MesquiteMessage.printStackTrace("double // in path " + path);  
 			File testing = new File(path);
 			if (testing.exists() && !testing.isDirectory())
 				return true;

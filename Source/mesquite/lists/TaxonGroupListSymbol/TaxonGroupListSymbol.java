@@ -68,7 +68,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 
 	/*.................................................................................................................*/
 	public boolean queryOptions(MesquiteSymbol oldSymbol) {
-		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		GroupSymbolsDialog symbolsDialog = new GroupSymbolsDialog(getProject(), containerOfModule(), "Symbol Options", "", oldSymbol);
 		symbolsDialog.completeAndShowDialog();

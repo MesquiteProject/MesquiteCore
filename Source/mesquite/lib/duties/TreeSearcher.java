@@ -52,9 +52,7 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	public boolean isReconnectable(){
    		return false;
    	}
-	//TEMPORARY Debugg.println  Should be only in disconnectable tree block fillers
-	public void retrieveTreeBlock(TreeVector treeList){
-	}
+	
 	 public boolean canGiveIntermediateResults(){
    		 return false;
    	 }

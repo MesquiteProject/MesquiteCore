@@ -102,8 +102,6 @@ public class ListTable extends MesquiteTable {
 				undoInstructions.recordPreviousOrder(assoc);
 				UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
 
-				Debugg.println("ASSOC " + assoc.getClass());
-				
 				while (i<getNumRows()){
 					if (b.isBitOn(i)) {
 						if (assoc instanceof CharacterData && !asked && ((CharacterData)assoc).isMolecularSequence() && i!=after) {
@@ -122,7 +120,6 @@ public class ListTable extends MesquiteTable {
 					else
 						i++;
 				}
-//BEFORETHIS
 				
 				if (assoc instanceof TreeVector)
 					((TreeVector)assoc).resetAssignedNumbers();

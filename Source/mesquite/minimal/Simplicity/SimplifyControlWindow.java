@@ -205,6 +205,7 @@ class MovePanel extends MousePanel {
 		setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
 		this.window = window;
 		setBackground(Color.darkGray);
+		setBackground(Color.blue);
 	}
 	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		if (MesquiteWindow.checkDoomed(this))
@@ -619,7 +620,7 @@ class SaveRenameDeleteButton extends LoadSaveDeleteButton {
 class LoadButton extends LoadSaveDeleteButton {
 	public LoadButton(){
 		super("Load Simplification");
-		setForeground(ColorTheme.getExtInterfaceBackground());
+		setForeground(Color.darkGray);
 	}
 	void redoMenu() {
 		if (popup==null)
@@ -764,6 +765,7 @@ class ModePanel extends Panel implements ItemListener {
 		loadButton.setFont(fontBig);
 		loadButton.setVisible(true);
 		add(loadButton);
+
 		saveRenameDeleteButton = new SaveRenameDeleteButton();
 		saveRenameDeleteButton.setFont(fontBig);
 		saveRenameDeleteButton.setVisible(true);

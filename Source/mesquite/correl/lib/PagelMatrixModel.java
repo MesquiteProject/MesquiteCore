@@ -385,7 +385,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
     	
 		for (int i=0;i<qMapping.length;i++) {
 			if (qMapping[i]>= values.length)
-				Debugg.println("values length " + values.length + " [qMapping[i] " + qMapping[i]);
+				MesquiteMessage.println("values length " + values.length + " [qMapping[i] " + qMapping[i]);
 			qList[i] = values[qMapping[i]];
 		}
 		return qList;
