@@ -115,12 +115,10 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		return null;
 	}
 	public void elementDisposed(FileElement e){
-		Debugg.println("elementDisposed " + e);
 		if (groups !=null)
 			groups.removeElement(e, true);
 	}
 	public void deleteElement(FileElement e){
-		Debugg.println("DELETE " + e);
 		if (e instanceof TaxaGroup){
 			ListableVector d = getProject().getTaxas();
 			for (int im = 0; im<d.size(); im++){

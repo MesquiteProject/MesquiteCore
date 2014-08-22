@@ -516,7 +516,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 		}
 		btw.sizeDisplay();
-		MesquiteMenuSpec aux = addAuxiliaryMenu("Analyze");
+		MesquiteMenuSpec aux = addAuxiliaryMenu("Analysis:Tree");
 		MesquiteCommand mC = makeCommand("newWindowAssistant",  basicTreeWindow);
 		MesquiteSubmenuSpec mms = addSubmenu(aux, "New Chart for Tree", mC); 
 		mms.setZone(0);
@@ -1710,7 +1710,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		if (tree!=null) {
 			boolean retainTree = false;
-			if (MesquiteThread.isScripting())
+			if (MesquiteThread.isScripting() || !setToZero)
 				retainTree = true;
 			else if (treeEdited)
 				retainTree = !AlertDialog.query(this, "Discard edited tree?", "The tree in the window has been edited but not saved.  " 

@@ -816,6 +816,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		ready = true;
 		if (getModuleWindow()!=null) {
 			getModuleWindow().getParentFrame().showFrontWindow();
+		//	getModuleWindow().getParentFrame().fixFrontness();
 		}
 
 		resetAllMenuBars();

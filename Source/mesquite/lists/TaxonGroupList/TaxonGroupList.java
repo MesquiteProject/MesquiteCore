@@ -84,9 +84,10 @@ public class TaxonGroupList extends ListModule {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
-			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, getProject().getFile(0));   //WAYNECHECK: how do we know this is the correct file?
+			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new group label"); 
+			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, file);   
 			if (group!=null){
-				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint();  //WAYNECHECK:  why is this not being repainted?
+				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint(); 
 				parametersChanged();
 			}
 			return group;
