@@ -587,6 +587,28 @@ public class DNAData extends MolecularData {
 		return CategoricalState.inapplicable;
 	}
 	/* ................................................................................................................. */
+	/** Returns the amino acid that follows the one coded for by a codon that contains character ic in taxon it */
+	public long getNextAminoAcid(MesquiteInteger currentCharacter, int it, boolean checkForVariableCodes) {
+		if (currentCharacter==null)
+			return CategoricalState.inapplicable;
+		int ic = currentCharacter.getValue();
+		int[] triplet = getCodonTriplet(ic); 
+		if (triplet!=null) {
+			triplet = getCodonTriplet(triplet[2]+1);  // go one more character along
+			if (triplet!=null) {
+				currentCharacter.setValue(triplet[0]);
+				GeneticCode genCode = getGeneticCode(triplet[0]);
+				if (genCode!=null && checkForVariableCodes) {
+					if (!genCode.equals(getGeneticCode(triplet[1])) || !genCode.equals(getGeneticCode(triplet[2])))
+						return CategoricalState.inapplicable;
+				}
+				return getAminoAcid(getCodon(triplet, it), genCode);
+			}
+		}
+		return CategoricalState.inapplicable;
+	}
+
+	/* ................................................................................................................. */
 	/** Returns whether or not ic participates in partial coding triplet, i.e., one not containing all three nucleotides*/
 	public boolean isInPartialTriplet(int ic, int it, MesquiteInteger matchLength){
 		int icPos = getCodonPosition(ic);
