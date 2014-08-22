@@ -183,7 +183,6 @@ public class ConsensusTree extends TreeSource {
 			logln("Consensing trees " + startTree);
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
-				Debugg.println("tree " + t);
 				if (t == null)
 					done = true;
 				else {
