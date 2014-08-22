@@ -56,7 +56,7 @@ public class NCBIBlaster extends Blaster {
 
 
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 

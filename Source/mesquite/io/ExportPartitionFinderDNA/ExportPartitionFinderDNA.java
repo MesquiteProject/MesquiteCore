@@ -40,7 +40,7 @@ public class ExportPartitionFinderDNA extends ExportPartitionFinder {
 
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/

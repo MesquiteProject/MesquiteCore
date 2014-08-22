@@ -459,7 +459,6 @@ public class NCBIUtil {
 			}
 			in.close();
 
-			//			Debugg.println(sb.toString());
 			String[] idList = requestGenBankIDs(sb.toString());
 
 			return idList;
@@ -500,7 +499,6 @@ public class NCBIUtil {
 			}
 			in.close();
 
-			//			Debugg.println(sb.toString());
 			String[] idList = requestGenBankAccessions(sb.toString(), ID.length);
 
 			return idList;
@@ -536,7 +534,6 @@ public class NCBIUtil {
 			}
 			in.close();
 
-			//			Debugg.println(sb.toString());
 			String geneID = getGenIDFromELinkResults(sb.toString());
 
 			return geneID;

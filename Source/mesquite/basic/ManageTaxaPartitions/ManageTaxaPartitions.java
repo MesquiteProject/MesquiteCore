@@ -35,7 +35,6 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = new TaxaGroupVector();
-		Debugg.println("ManageTaxaPartitions " + groups);
 		getProject().addFileElement(groups);
 		return true;
 	}

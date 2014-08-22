@@ -1654,7 +1654,6 @@ class FrameTabsPanel extends MousePanel {
 			if (needed> panelWidth-edges){
 				scaling = (panelWidth-edges-projectPanelWidth-MesquiteFrame.cornerBuffer)*1.0/(StringUtil.getStringDrawLength(g2, totalString) + iconsWidth);
 			}
-			//Debugg.println("scaling " + scaling);
 
 			//trial run the tab widths
 			narrowest = 500000;
@@ -1703,7 +1702,6 @@ class FrameTabsPanel extends MousePanel {
 							narrowest = offer + iconWidth;
 						}
 					} else {
-						//Debugg.println("empty title "+i);
 					}
 
 				}
@@ -1871,9 +1869,6 @@ class FrameTabsPanel extends MousePanel {
 		}
 		g2.setStroke(st);
 
-
-
-		//	Debugg.println("leaving paint " + paintCount);
 	}
 	/*.................................................................................................................*/
 

@@ -544,7 +544,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 								count++;
 								if (count==blockSize || ic2==numChars-1){
 									endChar = ic2;
-									//Debugg.println("ic: " + ic + ", endChar: " + endChar + ", count: " + count + ", charWritten: " + charWritten); 
 									exportBlock(taxa, data, outputBuffer, ic, blockSize, firstTimeThrough);
 									outputBuffer.append(getLineEnding());
 									ic=endChar+1;
@@ -555,7 +554,6 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 								if (ic2==numChars-1 && !blockWritten){  //at end
 									endChar = ic2;
 									if (count>0){  //only write if there is something to write
-										//Debugg.println("END ic: " + ic + ", endChar: " + endChar + ", count: " + count+ ", charWritten: " + charWritten); 
 										exportBlock(taxa, data, outputBuffer, ic, blockSize, firstTimeThrough);
 										outputBuffer.append(getLineEnding());
 										firstTimeThrough = false;

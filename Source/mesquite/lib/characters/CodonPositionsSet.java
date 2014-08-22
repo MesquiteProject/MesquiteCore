@@ -90,8 +90,6 @@ public class CodonPositionsSet  extends CharNumSet {
   	
  	public String getListOfMatches(int targetPos, int offset, boolean[] include){  //offset is number to add to character numbers
 
- 		//Debugg.println("\ncodpos: " + targetPos);
-
  		int lastWritten = -1;
 		int unassignedPosition=4;
 		String list = "";
@@ -106,12 +104,10 @@ public class CodonPositionsSet  extends CharNumSet {
 					if (continuing == 0) { 
 						//first, check to see if there is a series of thirds....
 						int lastThird = endSequenceByThree(targetPos, getNumberOfParts(), ic, count, include, charNumberOfLastThird);
-	//Debugg.println("   count: " + count + ", lastThird: " + lastThird + ", ic: " + ic);
 						//if so, then go the series of thirds 
 						if (lastThird != count){
 							list += " " + CharacterStates.toExternal(count+offset) + " - " +  CharacterStates.toExternal(lastThird+offset) + "\\3";
 							ic = charNumberOfLastThird.getValue();
-						//	Debugg.println("     ******count: " + count + ", lastThird: " + lastThird + ", ic: " + ic);
 							count = lastThird;
 						}
 						else { //otherwise write as normal*/
@@ -140,7 +136,6 @@ public class CodonPositionsSet  extends CharNumSet {
 			list += " " + CharacterStates.toExternal(count+offset) + " ";
 			//thisValueString += " " + CharacterStates.toExternal(data.getNumChars()-1+offset) + " ";
 		}
-		//Debugg.println("     list: " + list);
 		return list;
  	}
 }

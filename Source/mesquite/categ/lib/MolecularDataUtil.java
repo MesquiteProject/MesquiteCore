@@ -99,7 +99,6 @@ public class MolecularDataUtil {
 					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
 				}
 				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
-				//Debugg.println("score: " + score);
 			}
 		}
 //		((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,itStart, itEnd, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
@@ -231,18 +230,18 @@ public class MolecularDataUtil {
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
 			   
 				double score = 0;
-				if (againstAllOthers && false){
+/*				if (againstAllOthers && false){
 					for (int ik = itStart; ik<taxa.getNumTaxa() && ik<=itEnd; ik++)
 						if (ik != it){
 							double thisScore = alignmentScoreRatioToRCScore((DNAData)data, module, ik, it, true);
 							score += thisScore;
-							Debugg.println("this score " + score);
 						}
 					score = score/(itEnd-itStart);
 				}
 				else {
+				*/
 					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, true);
-				}
+		//		}
 				
 				if (score>1.0){
 					data.reverseComplement(0, data.getNumChars(), it, false, true);  
@@ -258,7 +257,6 @@ public class MolecularDataUtil {
 	
 	/*.................................................................................................................*/
 	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, Bits taxaToAdjust, int comparisonTaxon, boolean baseOnStopCodons, boolean verbose) {
-//		Debugg.println("*** reverseComplementSequencesIfNecessary, comparisonTaxon = " + comparisonTaxon );
 
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);

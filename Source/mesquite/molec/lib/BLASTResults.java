@@ -266,13 +266,11 @@ public class BLASTResults {
 
 							String s = hitElement.elementText("Hit_def");
 							setDefinition(s, numHits);
-							//	Debugg.println("Hit_def: " + s);
 
 							s = hitElement.elementText("Hit_accession");
 							setAccession(s, numHits);
 
 							s = hitElement.elementText("Hit_id");
-							//	Debugg.println("Hit_id: " + s);
 							//s=StringUtil.getItem(s,"|", 2);
 							if (StringUtil.notEmpty(s))
 								setID(s, numHits);
