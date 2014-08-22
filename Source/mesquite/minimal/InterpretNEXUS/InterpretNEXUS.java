@@ -16,6 +16,7 @@ package mesquite.minimal.InterpretNEXUS;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -133,7 +134,7 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 			//make sure block is in OK place
 			for (int i = index-1; i>=0; i--) { //now look to all higher to see if nb should jump above them
 				NexusBlock nR = (NexusBlock)blocks.elementAt(i);
-				if (nR.mustBeAfter(nb) && (nb.getFile()==nR.getFile())) { //nb needs to jump above nR
+				if (!nb.mustBeAfter(nR) && (nb.getFile()==nR.getFile())) { //nb needs to jump above nR
 					height = i;  //remember height of nR
 				}
 			}
@@ -613,6 +614,7 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 			MesquiteTimer time = new MesquiteTimer();
 			time.start();
 			MesquiteBoolean finishedWriting = new MesquiteBoolean(false);
+			
 			sortBlocks(blocks);
 			ProgressIndicator progIndicator = new ProgressIndicator(mf,"Writing File "+ mNF.getName(), blocks.size(), false);
 			progIndicator.start();

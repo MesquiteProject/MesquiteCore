@@ -2788,6 +2788,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			Object obj = e.nextElement();
 			MesquiteWindow mw = (MesquiteWindow)obj;
 			mw.resetTitle();
+			mw.infoBar.repaint();
 		}
 	}
 	/*.................................................................................................................*/
