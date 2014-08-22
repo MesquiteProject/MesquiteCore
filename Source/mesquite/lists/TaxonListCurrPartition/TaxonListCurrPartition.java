@@ -15,8 +15,10 @@ package mesquite.lists.TaxonListCurrPartition;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
@@ -58,6 +60,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 			if (group == null){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+				Debugg.println("TaxonListCurrentPartition " + groups);
 				Object obj = groups.getElement(name);
 				group = (TaxaGroup)obj;
 			}
@@ -256,6 +259,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == this)
 			return;
+		Debugg.println("changed " + obj);
 		outputInvalid();
 		parametersChanged(notification);
 	}

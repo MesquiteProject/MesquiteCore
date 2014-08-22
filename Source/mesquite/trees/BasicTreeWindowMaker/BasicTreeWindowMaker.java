@@ -1710,7 +1710,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		if (tree!=null) {
 			boolean retainTree = false;
-			if (treeEdited)
+			if (MesquiteThread.isScripting())
+				retainTree = true;
+			else if (treeEdited)
 				retainTree = !AlertDialog.query(this, "Discard edited tree?", "The tree in the window has been edited but not saved.  " 
 						+ "Do you want to discard it, or do you want to retain it in the window?\n\nIf you retain it, remember that it " 
 						+ "does not come from the source of trees currently used by the window.  "

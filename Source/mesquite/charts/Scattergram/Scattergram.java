@@ -857,7 +857,7 @@ class ScattergramCharter extends Charter {
 	}
 
 	/* ----------------------------------*/
-	private int findExactPoint(int xPixel, int yPixel, MesquiteChart chart){   // todo: WayneCheck:   need to fill this in.  gives value to screen resolution
+	private int findExactPoint(int xPixel, int yPixel, MesquiteChart chart){   // todo:   need to fill this in.  gives value to screen resolution
 		if (xPixel<0)
 			xPixel =0;
 		return xPixel;

@@ -35,6 +35,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = new CharactersGroupVector();
+		getProject().addFileElement(groups);
  		return true;
 	}
 	public void elementsReordered(ListableVector v){
@@ -42,7 +43,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	public NexusBlock elementAdded(FileElement e){
 		if (e instanceof CharactersGroup){
 			if (groups.indexOf(e)<0) {
-				groups.addElement(e, false);
+				groups.addElement(e, true);
 			}
 			e.setManager(this);
 			return null;

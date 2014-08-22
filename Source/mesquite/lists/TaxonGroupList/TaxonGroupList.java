@@ -28,7 +28,7 @@ import mesquite.lib.table.*;
 public class TaxonGroupList extends ListModule {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxonGroupListAssistant.class, "The List of Taxon Groups window can display columns showing information for each taxon group.",
-		"You can request that columns be shown using the Columns menu of the List of Taxon Groups Window. ");
+				"You can request that columns be shown using the Columns menu of the List of Taxon Groups Window. ");
 	}
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
@@ -39,15 +39,21 @@ public class TaxonGroupList extends ListModule {
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null && obj == groups);
 	}
+	public void endJob(){
+	//	if (groups != null)
+	//		groups.removeListener(this);
 
+		super.endJob();
+	}
 	public void showListWindow(Object obj){
 		setModuleWindow(new TaxonGroupListWindow(this));
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+//		groups.addListener(this);
 		((TaxonGroupListWindow)getModuleWindow()).setObject(groups);
-		//makeMenu("Character_Models");
+
 		makeMenu("List");
 
-		
+
 		if (!MesquiteThread.isScripting()){
 			TaxonGroupListAssistant assistant = (TaxonGroupListAssistant)hireNamedEmployee(TaxonGroupListAssistant.class, StringUtil.tokenize("#TaxonGroupListColor"));
 			if (assistant!= null){
@@ -89,6 +95,31 @@ public class TaxonGroupList extends ListModule {
 			return  super.doCommand(commandName, arguments, checker);
 	}
 	/*.................................................................................................................*/
+	/** passes which object changed*
+	public void changed(Object caller, Object obj, Notification notification){
+		int code = Notification.getCode(notification);
+		TaxaGroupVector vector = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+		MesquiteTable table = ((TaxonGroupListWindow)getModuleWindow()).getTable();
+		if (obj instanceof TaxaGroupVector) {
+			if (code==MesquiteListener.NAMES_CHANGED) {
+				table.redrawRowNames();
+			}
+			else if (code==MesquiteListener.SELECTION_CHANGED) {
+				table.synchronizeRowSelection(vector);
+				table.repaintAll();
+			}
+			else if (code==MesquiteListener.PARTS_ADDED || code==MesquiteListener.PARTS_DELETED || code==MesquiteListener.PARTS_CHANGED || code==MesquiteListener.PARTS_MOVED) {
+				table.setNumRows(vector.size());
+				table.synchronizeRowSelection(vector);
+				table.repaintAll();
+			}
+			else {
+				table.repaintAll();
+			}
+		}
+		super.changed(caller, obj, notification);
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return true;
 	}
@@ -119,10 +150,11 @@ public class TaxonGroupList extends ListModule {
 	public boolean deleteRow(int row, boolean notify){
 		TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
 		if (group!=null){
-				getProject().removeFileElement(group);//must remove first, before disposing
-				group.dispose();
-				return true;
-		
+			getProject().removeFileElement(group);//must remove first, before disposing
+			
+			group.dispose();
+			return true;
+
 		}
 		return false;
 	}
@@ -232,10 +264,10 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	public void setRowName(int row, String name){
 		TaxaGroup group = getTaxonGroup(row);
 		if (group!=null){
-				group.setName(name);
-				resetAllTitles();
-				getOwnerModule().resetAllMenuBars();
-			
+			group.setName(name);
+			resetAllTitles();
+			getOwnerModule().resetAllMenuBars();
+
 		}
 	}
 	public String getRowName(int row){

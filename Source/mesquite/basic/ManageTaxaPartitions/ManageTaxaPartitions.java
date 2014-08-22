@@ -35,6 +35,8 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = new TaxaGroupVector();
+		Debugg.println("ManageTaxaPartitions " + groups);
+		getProject().addFileElement(groups);
 		return true;
 	}
 
@@ -99,8 +101,9 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	}
 	public NexusBlock elementAdded(FileElement e){
 		if (e instanceof TaxaGroup){
+			
 			if (groups.indexOf(e)<0) {
-				groups.addElement(e, false);
+				groups.addElement(e, true);
 			}
 			e.setManager(this);
 			return null;
@@ -111,8 +114,9 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		return null;
 	}
 	public void elementDisposed(FileElement e){
+		Debugg.println("elementDisposed " + e);
 		if (groups !=null)
-			groups.removeElement(e, false);
+			groups.removeElement(e, true);
 	}
 	public void deleteElement(FileElement e){
 		if (e instanceof TaxaGroup){

@@ -284,7 +284,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (isPoppedOut()) {
 			if (getPopAsTile()) {
 				tileOutWindowMenuItem.setLabel("Return Tile to Main Window");
-				popOutWindowMSpec.setEnabled(false);  //WAYNECHECK:  I added this so that the pop out to separate window menu item wasn't chosable, but it doesn't work.
 			}
 			else
 				popOutWindowMenuItem.setLabel("Reset within Main Window");
@@ -344,15 +343,20 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	public void setPopAsTile(boolean popAsTile){
 		this.popAsTile = popAsTile;
+		ownerModule.resetEmbeddedMenus(this);
 	}
 
 	public void popOut(boolean setVisible){
-		if (!isLoneWindow() && parentFrame!=null)
+		if (!isLoneWindow() && parentFrame!=null){
 			parentFrame.popOut(this, setVisible);
+			ownerModule.resetEmbeddedMenus(this);
+		}
 	}
 	public void popIn(){
-		if ((getPopAsTile() || isLoneWindow()) && parentFrame!=null)
+		if ((getPopAsTile() || isLoneWindow()) && parentFrame!=null){
 			parentFrame.popIn(this);
+		}
+		ownerModule.resetEmbeddedMenus(this);
 	}
 
 	public boolean isLoneWindow(){
@@ -2448,7 +2452,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				p.dialogScript(module, module.containerOfModule(), "owner module (" + module.getName() + ") of this window");
 			}
 		}
-		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is tiled out or not", null, commandName, "toggleTileOutWindow")) {  //WAYNECHECK: for menu items in Windows menu
+		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is tiled out or not", null, commandName, "toggleTileOutWindow")) {  
 			if (isPoppedOut()){
 				popIn();
 				popOutWindowMSpec.setEnabled(true);
@@ -2457,16 +2461,14 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				setPopAsTile(true);
 				popOut(true);
 			}
-			setPopTileMenuItemNames();
 		}
-		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is popped out or not", null, commandName, "togglePopOutWindow")) {  //WAYNECHECK: for menu items in Windows menu; search for POPOUTBUGS
+		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is popped out or not", null, commandName, "togglePopOutWindow")) { 
 			if (isPoppedOut())
-				popIn();  //POPOUTBUGS: this does not work.  Problem is in parentFrame.popIn(this) - see comment in there
+				popIn();  
 			else if (compactWindows){
 				setPopAsTile(false);
 				popOut(true);
 			}
-			setPopTileMenuItemNames();
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets which page of the window (graphics, text, explanations, parameters, employee tree, etc.) is showing", "[page number]", commandName, "showPage")) {
 			if (infoBar==null)

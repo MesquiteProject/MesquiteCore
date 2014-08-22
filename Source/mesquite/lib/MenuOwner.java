@@ -693,10 +693,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			//=============MENUS FORMERLY TO RIGHT OF WINDOW=SPECIFIC
 
 			//@@@@@@@@========  menus that are specific to this module/window
-			if (window.getShowInfoBar() && (MesquiteTrunk.isMacOSX() || !whichWindow.isLoneWindow())) // && MesquiteTrunk.isMacOSX())   //these menus belong in the window, as long as an info bar is shown
-				embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
-			else
-				embeddedMenusVector = null;
+			resetEmbeddedMenus(whichWindow);
 
 			//else {
 			//	if (MesquiteTrunk.isMacOSX()){
@@ -807,6 +804,13 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	/*-------------------------------------------------------------*/
 	public Vector getEmbeddedMenusVector(){
 		return embeddedMenusVector;
+	}
+	
+	public void resetEmbeddedMenus(MesquiteWindow whichWindow){
+		if (window.getShowInfoBar() && (MesquiteTrunk.isMacOSX() || !whichWindow.isLoneWindow())) // && MesquiteTrunk.isMacOSX())   //these menus belong in the window, as long as an info bar is shown
+			embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
+		else
+			embeddedMenusVector = null;
 	}
 	Vector embeddedMenusVector = null;
 	public Vector composeEmbeddedMenuBar(MesquiteWindow whichWindow){
@@ -1022,6 +1026,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem);  //��� scripting
 			wMenu.add(scriptingSubmenu);
 			wMenu.add("-");
+			whichWindow.setPopTileMenuItemNames();
 			if (!whichWindow.isPoppedOut()) {
 				wMenu.add(whichWindow.popOutWindowMenuItem);
 				wMenu.add(whichWindow.tileOutWindowMenuItem);
@@ -1031,7 +1036,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				else 
 					wMenu.add(whichWindow.popOutWindowMenuItem);
 			}
-			whichWindow.setPopTileMenuItemNames();
 
 			//wMenu.add("-", insertPoint);
 		}
@@ -1067,6 +1071,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem);  //��� scripting
 			wMenu.add(scriptingSubmenu);
 			wMenu.add("-");
+			whichWindow.setPopTileMenuItemNames();
 			if (!whichWindow.isPoppedOut()) {
 				wMenu.add(whichWindow.popOutWindowMenuItem);
 				wMenu.add(whichWindow.tileOutWindowMenuItem);
@@ -1076,7 +1081,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				else 
 					wMenu.add(whichWindow.popOutWindowMenuItem);
 			}
-			whichWindow.setPopTileMenuItemNames();
 
 			//wMenu.add("-", insertPoint);
 		}
