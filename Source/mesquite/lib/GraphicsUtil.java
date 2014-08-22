@@ -277,8 +277,24 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
+	public static void drawOval(Graphics g, int x, int y, int w, int h){
+		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.drawOval(x,y,w,h); 
+			g2.setStroke(st);
+		}
+		catch(NullPointerException e){
+			MesquiteMessage.warnProgrammer("npe in draw oval x " + x + " y " + y + " w " + w + " h " + h);
+		}
+	}
+	/* -------------------------------------------------*/
 	public static void fillOval(Graphics g, int x, int y, int w, int h, boolean threeD){
 		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			if (threeD){
 				Color c = g.getColor();
 				Color current = c;
@@ -295,7 +311,9 @@ public class GraphicsUtil {
 				if (c!=null) g.setColor(c);
 			}
 			else
-				g.fillOval(x,y,w,h); 
+				g2.fillOval(x,y,w,h); 
+			g2.setStroke(st);
+
 		}
 		catch(NullPointerException e){
 			MesquiteMessage.warnProgrammer("npe in fill oval x " + x + " y " + y + " w " + w + " h " + h);

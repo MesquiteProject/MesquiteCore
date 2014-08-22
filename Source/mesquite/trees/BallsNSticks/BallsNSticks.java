@@ -465,16 +465,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			g.setColor(Color.red);
 		else
 			g.setColor(Color.blue);
-		if (g instanceof Graphics2D) {
-			Graphics2D g2 = (Graphics2D)g;
-			Stroke st = g2.getStroke();
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			for (int i=1; i<4; i++)
-				g2.drawOval( x[node]- spotSize/2 - 2 - i, y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);
-			g2.setStroke(st);
+		for (int i=1; i<4; i++)
+			GraphicsUtil.drawOval(g, x[node]- spotSize/2 - 2 - i, y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);
 
-		}
+
 		g.setColor(tC);
 	}
 
@@ -696,14 +691,9 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			g.setColor(Color.black);
 			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
 			//GraphicsUtil.setToXOR(g);
-			if (g instanceof Graphics2D) {
-				Graphics2D g2 = (Graphics2D)g;
-				Stroke st = g2.getStroke();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.drawOval(x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
-				g2.drawOval(x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
-				g2.setStroke(st);
-			}
+			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
+			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
+
 			g.setPaintMode();
 			g.setColor(Color.black);
 		}
