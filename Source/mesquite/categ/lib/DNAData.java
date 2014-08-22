@@ -611,77 +611,22 @@ public class DNAData extends MolecularData {
 	/* ................................................................................................................. */
 	/** Returns whether or not ic participates in partial coding triplet, i.e., one not containing all three nucleotides*/
 	public boolean isInPartialTriplet(int ic, int it, MesquiteInteger matchLength){
-		int icPos = getCodonPosition(ic);
-		boolean checkIfAnyApplicable = false;
-		int startCheck = 0;
-		int endCheck = 0;
-		switch (icPos) {
-		case 1:  {// we are at a first position
-			if (ic + 2 >= getNumChars()){
-				checkIfAnyApplicable = true;
-				startCheck = ic;
-				endCheck = getNumChars()-1;
-			}
-			else {
-				startCheck = ic;
-				endCheck = ic+2;
-			}
-			break;
-		}
-		case 2: {
-			 if (ic + 1 >= getNumChars() || ic-1<0){
-				checkIfAnyApplicable = true;
-				if (ic-1<0)
-					startCheck = 0;
+		int[] triplet = getCodonTriplet(ic); 
+		if (triplet!=null) {
+			boolean oneInapplicable = false;
+			boolean oneApplicable = false;
+			for (int i=0; i<=2; i++) 
+				if (isInapplicable(triplet[i],it))
+					oneInapplicable = true;
 				else
-					startCheck = ic-1;
-				if (ic + 1 >= getNumChars())
-					endCheck = getNumChars()-1;
-				else 
-					endCheck = ic+1;
-				
-			}
-				else {
-					startCheck = ic-1;
-					endCheck = ic+1;
-				}
-
-			break;
-		}
-		case 3: {
-			if (ic - 2 <0){
-				checkIfAnyApplicable = true;
-				startCheck = 0;
-				endCheck = ic;
-			}
-			else {
-				startCheck = ic-2;
-				endCheck = ic;
-			}
-
-			break;
-		}
-		default:
-			return false;
-
-		}
-		if (matchLength!=null)
-			matchLength.setValue(endCheck-startCheck+1);
-		if (checkIfAnyApplicable) {
-			for (int i=startCheck; i<=endCheck; i++) 
-				if (!isInapplicable(i,it))
-					return true;
-		} else {
-			if (getCodonPosition(startCheck)==1 && getCodonPosition(startCheck+1)==2 && getCodonPosition(startCheck+2)==3) {  // it is a triplet
-				if (isInapplicable(startCheck,it) && isInapplicable(startCheck+1,it) && isInapplicable(startCheck+2,it))
-					return false;
-				if (!isInapplicable(startCheck,it) && !isInapplicable(startCheck+1,it) && !isInapplicable(startCheck+2,it))
-					return false;
+					oneApplicable = true;
+			if (oneApplicable && oneInapplicable) {
+			if (matchLength!=null)
+				matchLength.setValue(triplet[2]-triplet[0]+1);
 				return true;
 			}
 		}
 		return false;
-
 	}
 
 	/*.................................................................................................................*/
