@@ -267,7 +267,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 		messagePanel=new MessagePanel(getColorScheme());
 		addToWindow(messagePanel);
 		messagePanel.setVisible(true);
-		MesquiteMenuSpec aux = ownerModule.addAuxiliaryMenu("Analyze");
+		MesquiteMenuSpec aux = ownerModule.addAuxiliaryMenu("Analysis:Trees");
 		ownerModule.addModuleMenuItems(aux, MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantMA.class);
 		treeScroll = new MTWScroll(this, 0, 2, 0, treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1
 		addToWindow(treeScroll);

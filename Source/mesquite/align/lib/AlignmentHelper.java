@@ -90,16 +90,6 @@ public abstract class AlignmentHelper {
 			gappedSeq2return[i+usedGaps][1] = inputSequence[i][1] ;
 		}		
 		
-/*		if (gapInsertionArray!=null) {
-			int total = 0;
-			for (int m=0; m<gapInsertionArray.length; m++) {
-				if (gapInsertionArray[m]!=0)
-					Debugg.println("|||       " + m + "   " + gapInsertionArray[m]);
-			}
-			Debugg.println("||| total newGaps: " + total);
-		}
-*/
-
 		return gappedSeq2return;	
 	}
 

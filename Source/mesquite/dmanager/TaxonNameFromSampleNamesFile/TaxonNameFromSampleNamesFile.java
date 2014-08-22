@@ -34,15 +34,6 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
-/*		if (!optionsSpecified()){
-			if (MesquiteThread.isScripting() && StringUtil.blank(sampleCodeListPath))
-				return false;
-			if (!queryOptions())
-				return false;
-			if (!scanTabbedDocument())
-				return false;
-		} 
-		*/
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -154,21 +145,6 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	}
 	Choice categoryChoice ;
 
-	/*.................................................................................................................*
-	public boolean queryCategoryOptions() {
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Name category to use for sequence names",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-
-		categoryChoice = dialog.addPopUpMenu("", nameCategories, 0);
-
-		dialog.completeAndShowDialog(true);
-		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
-		if (success)  {
-			chosenNameCategory = categoryChoice.getSelectedIndex();
-		}
-		dialog.dispose();
-		return success;
-	}
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -274,7 +250,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	public String getVoucherCode(Taxa taxa, int ic){
 
 		if (taxa!=null) {
-			String s = (String)taxa.getAssociatedObject(VoucherInfo.voucherCodeRef, ic);
+			String s = (String)taxa.getAssociatedObject(VoucherInfoFromOTUIDDB.voucherCodeRef, ic);
 			return s;
 		}
 		return null;
@@ -309,7 +285,6 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 			sampleCodeListPath = sampleCodeFilePathField.getText();
 			if (StringUtil.notEmpty(sampleCodeListPath)) {
 				chosenNameCategory=-1;
-				//	scanTabbedDocument();
 				scanTabbedDocument();
 				//	processNameCategories();
 				//initialize(sampleCodeListPath);
@@ -329,11 +304,11 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Rename Taxa Based On Coded File...";
+		return "Rename Taxa Based On ID Code File...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Rename Taxa Based On Coded File";
+		return "Rename Taxa Based On ID Code File";
 	}
 
 	/*.................................................................................................................*/
@@ -346,12 +321,12 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 300;  
 	}
 
 	/*.................................................................................................................*/
   	 public boolean isPrerelease(){
-  	 	return true;
+  	 	return false;
   	 }
 
 }

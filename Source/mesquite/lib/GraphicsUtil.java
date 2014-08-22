@@ -58,6 +58,24 @@ public class GraphicsUtil {
 			return Math.abs(1.0*(y-yStart)/(yEnd-yStart));
 		return Math.abs(1.0*(x-xStart)/(xEnd-xStart));
 	}
+
+	/* ............................................................................................................... */
+	/** Returns the width of string in the current Graphics */
+	public static int stringWidth(Graphics g, String s) {
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		if (fm==null)
+			return -1;
+		return fm.stringWidth(s);
+	}
+	/* ............................................................................................................... */
+	/** Returns the width of string in the current Graphics */
+	public static int stringHeight(Graphics g, String s) {
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		if (fm==null)
+			return -1;
+		return fm.getMaxAscent()+ fm.getMaxDescent();
+	}
+
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns the value of x at the middle of the line */
 	public static int xCenterOfLine(int x1, int y1, int x2, int y2) {
@@ -259,8 +277,24 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
+	public static void drawOval(Graphics g, int x, int y, int w, int h){
+		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.drawOval(x,y,w,h); 
+			g2.setStroke(st);
+		}
+		catch(NullPointerException e){
+			MesquiteMessage.warnProgrammer("npe in draw oval x " + x + " y " + y + " w " + w + " h " + h);
+		}
+	}
+	/* -------------------------------------------------*/
 	public static void fillOval(Graphics g, int x, int y, int w, int h, boolean threeD){
 		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			if (threeD){
 				Color c = g.getColor();
 				Color current = c;
@@ -277,7 +311,9 @@ public class GraphicsUtil {
 				if (c!=null) g.setColor(c);
 			}
 			else
-				g.fillOval(x,y,w,h); 
+				g2.fillOval(x,y,w,h); 
+			g2.setStroke(st);
+
 		}
 		catch(NullPointerException e){
 			MesquiteMessage.warnProgrammer("npe in fill oval x " + x + " y " + y + " w " + w + " h " + h);

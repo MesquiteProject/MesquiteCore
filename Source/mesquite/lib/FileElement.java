@@ -206,6 +206,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	/** Sets the name of this element */
 	public void setName(String name){
 		this.name = name;
+
 		if (getHShow()) {
 			if (getProject() != null)
 				getProject().refreshProjectWindow();

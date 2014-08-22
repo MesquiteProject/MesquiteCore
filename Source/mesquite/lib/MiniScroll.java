@@ -443,9 +443,9 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	}
 	public String getImagePath(){ //TODO: this should use path to standard image
 		if (stacked)
-			return MesquiteModule.getDocsPath() + "images/miniscrollVert.gif";
+			return MesquiteModule.getRootPath() + "images/miniscrollVert.gif"; 
 		else
-			return MesquiteModule.getDocsPath() + "images/miniscrollHoriz.gif";
+			return MesquiteModule.getRootPath() + "images/miniscrollHoriz.gif"; 
 	}
 	
 }

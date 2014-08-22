@@ -76,6 +76,16 @@ public class CharacterPartition  extends CharObjectSpecsSet {
 		}
 		return num;
 	}
+ 	/*.................................................................................................................*/
+	/**/
+	public boolean getAnyCurrentlyUnassigned(){
+		for (int i=0; i<getNumberOfParts(); i++) {
+			CharactersGroup mq = getCharactersGroup(i);
+			if (mq==null)
+				return true;
+		}
+		return false;
+	}
 	/*.................................................................................................................*/
  	/** gets storage for set of properties*/
 	public Object[] getNewPropertyStorage(int numParts){

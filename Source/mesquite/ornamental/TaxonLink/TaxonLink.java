@@ -251,7 +251,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 				String link = (String)tree.getTaxa().getAssociatedObject(linkNameRef, M);
 				if (link!=null) {
 					if (StringUtil.startsWithIgnoreCase(link, "http:") || StringUtil.startsWithIgnoreCase(link, "https:") || link.endsWith(".html") || link.endsWith(".htm") || link.endsWith(".HTML") || link.endsWith(".HTM")) {  //assumed to be web page
-						if (StringUtil.startsWithIgnoreCase(link, "http:")) 
+						if (StringUtil.startsWithIgnoreCase(link, "http")) 
 							taxonLinkModule.showWebPage(link, false);
 						else
 							taxonLinkModule.showWebPage(MesquiteFile.composePath(taxonLinkModule.getProject().getHomeDirectoryName(),  link), false);
@@ -259,7 +259,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 					else {
 						ownerModule.logln("Jumping to " + link);
 						String openCommand = "openFile ";
-						if (StringUtil.startsWithIgnoreCase(link, "http:")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
+						if (StringUtil.startsWithIgnoreCase(link, "http")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
 							openCommand = "openGeneral  Open_URL ";
 						}
 
@@ -324,14 +324,14 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 				String link = c.getLink();
 				if (link!=null) {
 					if (!link.endsWith(".nex")) {  //assumed to be web page
-						if (StringUtil.startsWithIgnoreCase(link, "http:")) 
+						if (StringUtil.startsWithIgnoreCase(link, "http")) 
 							taxonLinkModule.showWebPage(link, false);
 						else
 							taxonLinkModule.showWebPage(MesquiteFile.composePath(taxonLinkModule.getProject().getHomeDirectoryName(),  link), false);
 					}
 					else {
 						String openCommand = "openFile ";
-						if (StringUtil.startsWithIgnoreCase(link, "http:")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
+						if (StringUtil.startsWithIgnoreCase(link, "http")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
 							openCommand = "openURL ";
 						}
 

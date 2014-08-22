@@ -226,7 +226,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			return MesquiteTrunk.consoleListenSuppressed;  //treat as scripting if backgrounded
 		}
 		else if (!(thisThread instanceof CommandRecordHolder)){ //not a MesquiteThread
-			if (MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(thisThread) || mesquite.trunk.EAWTHandler.openFileThreads.indexOf(thisThread)>=0) {
+			if (MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(thisThread) || (MesquiteTrunk.isMacOSX() && mesquite.trunk.EAWTHandler.openFileThreads.indexOf(thisThread)>=0)) {
 				shouldBeScripting = false;  //startup, shutdown; should be treated as nonscripting, but if scripting then OK
 				situation = 1;
 				if (diagnose) MesquiteMessage.println("isScripting:!CommandRecordHolder, 1");
@@ -467,7 +467,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		if (mt instanceof CommandRecordHolder)
 			cr = ((CommandRecordHolder)mt).getCommandRecord(); // 
 		if (cr == null) {
-			if (MesquiteTrunk.debugMode && mt != MesquiteTrunk.startupShutdownThread && mesquite.trunk.EAWTHandler.openFileThreads.indexOf(mt)<0 && defaultIfNull == CommandRecord.nonscriptingRecord)
+			if (MesquiteTrunk.debugMode && mt != MesquiteTrunk.startupShutdownThread && (MesquiteTrunk.isMacOSX() &&mesquite.trunk.EAWTHandler.openFileThreads.indexOf(mt)<0) && defaultIfNull == CommandRecord.nonscriptingRecord)
 				MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@\nNS CommandRecord used because none is attached to thread");
 			return defaultIfNull;
 		}

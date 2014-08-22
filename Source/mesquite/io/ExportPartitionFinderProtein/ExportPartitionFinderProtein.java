@@ -37,7 +37,7 @@ public class ExportPartitionFinderProtein extends ExportPartitionFinder {
 
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isProtein(){
 		return true;

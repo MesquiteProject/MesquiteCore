@@ -76,7 +76,7 @@ public class ExtractTreeBlock extends TreeListUtility {
 	}
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Extract selection as tree block...";
+		return "Extract selection as tree block";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {

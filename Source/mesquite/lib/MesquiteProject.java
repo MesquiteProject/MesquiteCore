@@ -687,19 +687,27 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			return;
 
 		if (element instanceof Taxa) {
-			taxas.addElement(element, true);
-			element.addListener(taxas);
+			if (taxas.indexOf(element)<0){
+				taxas.addElement(element, true);
+				element.addListener(taxas);
+			}
 		}
 		else if (element instanceof mesquite.lib.characters.CharacterData){
-			datas.addElement(element, true);
-			element.addListener(datas);
+			if (datas.indexOf(element)<0){
+				datas.addElement(element, true);
+				element.addListener(datas);
+			}
 		}
 		else if (element instanceof CharacterModel) {
-			charModels.addElement(element, true);
-			modelListener.addModel((CharacterModel)element);
+			if (charModels.indexOf(element)<0){
+				charModels.addElement(element, true);
+				modelListener.addModel((CharacterModel)element);
+			}
 		}
-		else 
-			otherElements.addElement(element, true);
+		else {
+			if (otherElements.indexOf(element)<0)
+				otherElements.addElement(element, true);
+		}
 		element.addListener(this);
 		broadcastAddFileElement(ownerModule, element);
 		notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
@@ -743,41 +751,41 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** DOCUMENT */
 	public void removeAllFileElements(Class c, boolean notify) {
 		if (Taxa.class.isAssignableFrom(c)) {
-		if (taxas != null){
-			for (int i = 0; i< taxas.size(); i++){
-				FileElement element = (FileElement)taxas.elementAt(i);
-				element.deleteMe(false);
+			if (taxas != null){
+				for (int i = 0; i< taxas.size(); i++){
+					FileElement element = (FileElement)taxas.elementAt(i);
+					element.deleteMe(false);
+				}
+				taxas.removeAllElements(notify);
 			}
-			taxas.removeAllElements(notify);
-		}
 		}
 		else if (mesquite.lib.characters.CharacterData.class.isAssignableFrom(c)){
 
-		if (datas != null){
-			for (int i = 0; i< datas.size(); i++){
-				FileElement element = (FileElement)datas.elementAt(i);
-				element.deleteMe(false);
+			if (datas != null){
+				for (int i = 0; i< datas.size(); i++){
+					FileElement element = (FileElement)datas.elementAt(i);
+					element.deleteMe(false);
+				}
+				datas.removeAllElements(notify);
 			}
-			datas.removeAllElements(notify);
-		}
 		}
 		else if (CharacterModel.class.isAssignableFrom(c)) {
-		if (charModels != null){
-			for (int i = 0; i< charModels.size(); i++){
-				FileElement element = (FileElement)charModels.elementAt(i);
-				element.deleteMe(false);
+			if (charModels != null){
+				for (int i = 0; i< charModels.size(); i++){
+					FileElement element = (FileElement)charModels.elementAt(i);
+					element.deleteMe(false);
+				}
+				charModels.removeAllElements(notify);
 			}
-			charModels.removeAllElements(notify);
-		}
 		}
 		else {
-		if (otherElements != null){
-			for (int i = 0; i< otherElements.size(); i++){
-				FileElement element = (FileElement)otherElements.elementAt(i);
-				if (element.getClass().isAssignableFrom(c))
-					element.deleteMe(false);
+			if (otherElements != null){
+				for (int i = 0; i< otherElements.size(); i++){
+					FileElement element = (FileElement)otherElements.elementAt(i);
+					if (element.getClass().isAssignableFrom(c))
+						element.deleteMe(false);
+				}
 			}
-		}
 		}
 	}	
 

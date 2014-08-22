@@ -36,7 +36,7 @@ public class CutSelectedTaxa extends TreeAltererMult {
    	 }
 
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 300;  
 	}
 	/** passes which object changed, along with optional code number (type of change) and integers (e.g. which character)*/
 	public void changed(Object caller, Object obj, Notification notification){
@@ -88,7 +88,7 @@ public class CutSelectedTaxa extends TreeAltererMult {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
     	 public String getName() {

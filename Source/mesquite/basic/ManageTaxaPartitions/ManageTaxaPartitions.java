@@ -35,6 +35,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = new TaxaGroupVector();
+		getProject().addFileElement(groups);
 		return true;
 	}
 
@@ -99,8 +100,10 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	}
 	public NexusBlock elementAdded(FileElement e){
 		if (e instanceof TaxaGroup){
+			
 			if (groups.indexOf(e)<0) {
-				groups.addElement(e, false);
+				groups.addElement(e, true);
+				e.addListener(groups);
 			}
 			e.setManager(this);
 			return null;
@@ -112,7 +115,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 	}
 	public void elementDisposed(FileElement e){
 		if (groups !=null)
-			groups.removeElement(e, false);
+			groups.removeElement(e, true);
 	}
 	public void deleteElement(FileElement e){
 		if (e instanceof TaxaGroup){
@@ -141,7 +144,9 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				if (changed)
 					taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 			}
+			getProject().removeFileElement(e);//must remove first, before disposing
 			groups.removeElement(e, true);
+			e.dispose();
 		}
 	}
 	public Class getElementClass(){

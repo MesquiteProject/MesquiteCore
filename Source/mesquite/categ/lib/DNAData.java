@@ -372,48 +372,16 @@ public class DNAData extends MolecularData {
 		}
 		return false;
 	}
-	/* .......................................... .................................................. */
-	/** Returns the codon triplet in which character ic in taxon it participates. Returned is an int[3] containing the three character numbers */
-	public int[] getCodonTriplet(int ic) {
-		int[] triplet = new int[3];
-		int icPos = getCodonPosition(ic);
-		switch (icPos) {
-		case 1:
-			if (ic + 2 < getNumChars()) {
-				if (getCodonPosition(ic + 1) == 2 && getCodonPosition(ic + 2) == 3) {
-					triplet[0] = ic;
-					triplet[1] = ic + 1;
-					triplet[2] = ic + 2;
-					return triplet;
-				}
-			}
-			break;
-		case 2:
-			;
-			if (ic - 1 >= 0 && ic + 1 < getNumChars()) {
-				if (getCodonPosition(ic - 1) == 1 && getCodonPosition(ic + 1) == 3) {
-					triplet[0] = ic - 1;
-					triplet[1] = ic;
-					triplet[2] = ic + 1;
-					return triplet;
-				}
-			}
-			break;
-		case 3:
-			;
-			if (ic - 2 >= 0) {
-				if (getCodonPosition(ic - 2) == 1 && getCodonPosition(ic - 1) == 2) {
-					triplet[0] = ic - 2;
-					triplet[1] = ic - 1;
-					triplet[2] = ic;
-					return triplet;
-				}
-			}
-			break;
-		default:
-			return null;
+	/* .......................................... DNAData .................................................. */
+	/** returns if there is there is at least one base that is codon position specified */
+	public boolean anyCodPos(int pos, boolean considerExcluded) {
+		if (!isCurrentCodonPositionsSet())
+			return false;
+		for (int ic=0; ic<getNumChars(); ic ++){
+			if (getCodonPosition(ic)==pos && (considerExcluded || isCurrentlyIncluded(ic)))
+				return true;
 		}
-		return null;
+		return false;
 	}
 
 	/* .......................................... .................................................. */
@@ -429,54 +397,43 @@ public class DNAData extends MolecularData {
 	public int getStartOfNextCodon(int ic) {
 		int icPos = getCodonPosition(ic);
 		int candidate = -1;
-		switch (icPos) {
-		case 0:
-			while (icPos!=1 && ic<getNumChars()){
-				icPos = getCodonPosition(ic);
-				if (icPos==1) {
-					candidate = ic;
-					break;
-				}
-				ic++;
+		if (icPos==1)
+			ic++;
+		icPos = getCodonPosition(ic);
+
+		
+		while (icPos!=1 && ic<getNumChars()){
+			icPos = getCodonPosition(ic);
+			if (icPos==1) {
+				candidate = ic;
+				break;
 			}
-			break;
-		case 1:  // we are at a first position
-			//	if (ic + 3 < getNumChars()) {
-			candidate = ic+3;
-			//	}
-			break;
-		case 2:
-			//;
-			//if (ic + 2 < getNumChars())
-			candidate =ic + 2;
-			//	break;
-		case 3:
-			//;
-			//	if (ic + 1 < getNumChars())
-			candidate =ic + 1;
-			break;
-		default:
-			while (icPos!=1 && ic<getNumChars()){
-				icPos = getCodonPosition(ic);
-				if (icPos==1) {
-					candidate = ic;
-					break;
-				}
-				ic++;
-			}
+			ic++;
 		}
-		while (!isStartOfCodon(candidate) && candidate<getNumChars()) 
-			candidate++;
-		if (candidate>=getNumChars())
+
+		int[] triplet = getCodonTriplet(candidate);
+		if (triplet==null)
 			return -1;
 		return candidate;
 	}
-
 	/* ................................................................................................................. */
 	/** Returns the codon in which character ic in taxon it participates. Returned is a long[3] containing the three DNAStates */
 	public long[] getCodon(int ic, int it) {
 		long[] codon = new long[3];
 		int[] triplet = getCodonTriplet(ic);
+
+		if (triplet != null) {
+			codon[0] = getState(triplet[0], it);
+			codon[1] = getState(triplet[1], it);
+			codon[2] = getState(triplet[2], it);
+			return codon;
+		}
+		return null;
+	}
+	/* ................................................................................................................. */
+	/** Returns the codon in which character ic in taxon it participates. Returned is a long[3] containing the three DNAStates */
+	public long[] getCodon(int[] triplet, int it) {
+		long[] codon = new long[3];
 
 		if (triplet != null) {
 			codon[0] = getState(triplet[0], it);
@@ -534,118 +491,142 @@ public class DNAData extends MolecularData {
 
 	/* ................................................................................................................. */
 	/** Returns the amino acid that is coded for by a codon that contains character ic in taxon it */
-	public long getAminoAcid(int ic, int it, boolean checkForVariableCodes) {
+	public int[] getCodonTriplet(int ic) {
+		int[] triplet = new int[3];
+		triplet[0]=-1;
+		triplet[1]=-1;
+		triplet[2]=-1;
 		int icPos = getCodonPosition(ic);
-		GeneticCode genCode = getGeneticCode(ic);
-		if (genCode!=null && checkForVariableCodes) {
 			switch (icPos) {
 			case 1:  {// we are at a first position
-				if (ic + 2 >= getNumChars())
-					return CategoricalState.inapplicable;
-				else
-					if (!genCode.equals(getGeneticCode(ic+1)) || !genCode.equals(getGeneticCode(ic+2)))
-						return CategoricalState.inapplicable;
-
+				triplet[0]=ic;
+				int ic2=-1;
+				for (ic2=ic+1; ic2<numChars && triplet[1]<0; ic2++){
+					int pos = getCodonPosition(ic2);
+					if (pos==1 || pos==3)
+						return null;
+					if (pos==2){
+						triplet[1]=ic2;
+					}
+				}
+				for (int ic3=triplet[1]+1; ic3<numChars; ic3++){
+					int pos = getCodonPosition(ic3);
+					if (pos==1 || pos==2)
+						return null;
+					if (pos==3){
+						triplet[2]=ic3;
+						break;
+					}
+				}
 				break;
 			}
-			case 2: {
-				if (ic + 1 >= getNumChars() || ic-1<0)
-					return CategoricalState.inapplicable;
-				else
-					if (!genCode.equals(getGeneticCode(ic-1)) || !genCode.equals(getGeneticCode(ic+1)))
-						return CategoricalState.inapplicable;
-
+			case 2: {  // we are at a second position
+				triplet[1]=ic;
+				int ic2=-1;
+				for (ic2=ic-1; ic2>=0 && triplet[0]<0; ic2--){
+					int pos = getCodonPosition(ic2);
+					if (pos==2 || pos==3)
+						return null;
+					if (pos==1){
+						triplet[0]=ic2;
+					}
+				}
+				for (int ic3=ic+1; ic3<numChars; ic3++){
+					int pos = getCodonPosition(ic3);
+					if (pos==1 || pos==2)
+						return null;
+					if (pos==3){
+						triplet[2]=ic3;
+						break;
+					}
+				}
 				break;
 			}
-			case 3: {
-				if (ic - 2 <0)
-					return CategoricalState.inapplicable;
-				else
-					if (!genCode.equals(getGeneticCode(ic-2)) || !genCode.equals(getGeneticCode(ic-1)))
-						return CategoricalState.inapplicable;
-
+			case 3:  {// we are at a third position
+				triplet[2]=ic;
+				int ic2=-1;
+				for (ic2=ic-1; ic2>=0 && triplet[1]<0; ic2--){
+					int pos = getCodonPosition(ic2);
+					if (pos==1 || pos==3)
+						return null;
+					if (pos==2){
+						triplet[1]=ic2;
+					}
+				}
+				for (int ic3=triplet[1]-1; ic3>=0; ic3--){
+					int pos = getCodonPosition(ic3);
+					if (pos==2 || pos==3)
+						return null;
+					if (pos==1){
+						triplet[0]=ic3;
+						break;
+					}
+				}
 				break;
 			}
 			default:
-				return CategoricalState.inapplicable;
+				return null;
+			}
+			if (triplet[0]==-1 || triplet[1]==-1 || triplet[2]==-1 )
+				return null;
+			return triplet;
+	}
+
+	/* ................................................................................................................. */
+	/** Returns the amino acid that is coded for by a codon that contains character ic in taxon it */
+	public long getAminoAcid(int ic, int it, boolean checkForVariableCodes) {
+		int[] triplet = getCodonTriplet(ic); 
+		if (triplet!=null) {
+			GeneticCode genCode = getGeneticCode(triplet[0]);
+			if (genCode!=null && checkForVariableCodes) {
+				if (!genCode.equals(getGeneticCode(triplet[1])) || !genCode.equals(getGeneticCode(triplet[2])))
+					return CategoricalState.inapplicable;
+			}
+			return getAminoAcid(getCodon(triplet, it), genCode);
+		}
+		return CategoricalState.inapplicable;
+	}
+	/* ................................................................................................................. */
+	/** Returns the amino acid that follows the one coded for by a codon that contains character ic in taxon it */
+	public long getNextAminoAcid(MesquiteInteger currentCharacter, int it, boolean checkForVariableCodes) {
+		if (currentCharacter==null)
+			return CategoricalState.inapplicable;
+		int ic = currentCharacter.getValue();
+		int[] triplet = getCodonTriplet(ic); 
+		if (triplet!=null) {
+			triplet = getCodonTriplet(triplet[2]+1);  // go one more character along
+			if (triplet!=null) {
+				currentCharacter.setValue(triplet[0]);
+				GeneticCode genCode = getGeneticCode(triplet[0]);
+				if (genCode!=null && checkForVariableCodes) {
+					if (!genCode.equals(getGeneticCode(triplet[1])) || !genCode.equals(getGeneticCode(triplet[2])))
+						return CategoricalState.inapplicable;
+				}
+				return getAminoAcid(getCodon(triplet, it), genCode);
 			}
 		}
-		return getAminoAcid(getCodon(ic, it), genCode);
+		return CategoricalState.inapplicable;
 	}
+
 	/* ................................................................................................................. */
 	/** Returns whether or not ic participates in partial coding triplet, i.e., one not containing all three nucleotides*/
 	public boolean isInPartialTriplet(int ic, int it, MesquiteInteger matchLength){
-		int icPos = getCodonPosition(ic);
-		boolean checkIfAnyApplicable = false;
-		int startCheck = 0;
-		int endCheck = 0;
-		switch (icPos) {
-		case 1:  {// we are at a first position
-			if (ic + 2 >= getNumChars()){
-				checkIfAnyApplicable = true;
-				startCheck = ic;
-				endCheck = getNumChars()-1;
-			}
-			else {
-				startCheck = ic;
-				endCheck = ic+2;
-			}
-			break;
-		}
-		case 2: {
-			 if (ic + 1 >= getNumChars() || ic-1<0){
-				checkIfAnyApplicable = true;
-				if (ic-1<0)
-					startCheck = 0;
+		int[] triplet = getCodonTriplet(ic); 
+		if (triplet!=null) {
+			boolean oneInapplicable = false;
+			boolean oneApplicable = false;
+			for (int i=0; i<=2; i++) 
+				if (isInapplicable(triplet[i],it))
+					oneInapplicable = true;
 				else
-					startCheck = ic-1;
-				if (ic + 1 >= getNumChars())
-					endCheck = getNumChars()-1;
-				else 
-					endCheck = ic+1;
-				
-			}
-				else {
-					startCheck = ic-1;
-					endCheck = ic+1;
-				}
-
-			break;
-		}
-		case 3: {
-			if (ic - 2 <0){
-				checkIfAnyApplicable = true;
-				startCheck = 0;
-				endCheck = ic;
-			}
-			else {
-				startCheck = ic-2;
-				endCheck = ic;
-			}
-
-			break;
-		}
-		default:
-			return false;
-
-		}
-		if (matchLength!=null)
-			matchLength.setValue(endCheck-startCheck+1);
-		if (checkIfAnyApplicable) {
-			for (int i=startCheck; i<=endCheck; i++) 
-				if (!isInapplicable(i,it))
-					return true;
-		} else {
-			if (getCodonPosition(startCheck)==1 && getCodonPosition(startCheck+1)==2 && getCodonPosition(startCheck+2)==3) {  // it is a triplet
-				if (isInapplicable(startCheck,it) && isInapplicable(startCheck+1,it) && isInapplicable(startCheck+2,it))
-					return false;
-				if (!isInapplicable(startCheck,it) && !isInapplicable(startCheck+1,it) && !isInapplicable(startCheck+2,it))
-					return false;
+					oneApplicable = true;
+			if (oneApplicable && oneInapplicable) {
+			if (matchLength!=null)
+				matchLength.setValue(triplet[2]-triplet[0]+1);
 				return true;
 			}
 		}
 		return false;
-
 	}
 
 	/*.................................................................................................................*/

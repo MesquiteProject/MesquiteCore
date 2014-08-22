@@ -471,7 +471,6 @@ public class PairwiseAligner  {
 	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the sequences identified by the "taxon" and "site" arguments.
 	 * If object has been told to retain gaps, gaps in taxon1 will remain intact (new ones  may be added)*/
 	public long[][] alignSequences(MCategoricalDistribution data, int taxon1, int taxon2, int firstSite, int lastSite, boolean returnAlignment, MesquiteNumber score) {
-	//	Debugg.println("\n\n****** alignSequences,  taxon1: "+ taxon1 + ", taxon2: "+ taxon2 + ", lastSite: "+ lastSite + ", returnAlignment: "+ returnAlignment);
 		if (lastSite - firstSite+1 <0 || !MesquiteInteger.isCombinable(firstSite) || !MesquiteInteger.isCombinable(lastSite)){
 			firstSite = 0;
 			lastSite = data.getNumChars()-1;
@@ -492,8 +491,6 @@ public class PairwiseAligner  {
 		}
 		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
 		
-//		Debugg.println("       firstSite: "+ firstSite + ", lastSite: "+ lastSite);
-
 		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
 	
 		return aligned;

@@ -36,7 +36,7 @@ public class ClockWatcherThread extends Thread {
 		long sleepCount = 0;
 		boolean reportThreads = false;
 		boolean sleptLong = false;
-		MesquiteTrunk.mesquiteTrunk.helpSearchManager.loadManual();
+		//MesquiteTrunk.mesquiteTrunk.helpSearchManager.loadManual();
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
 			boolean previousSleptLong = sleptLong;
 			sleptLong = (sleepTime == sleep);

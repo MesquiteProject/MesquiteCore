@@ -5697,7 +5697,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			if (Notification.appearsCosmetic(notification))
 				return;
 			int code = Notification.getCode(notification);
-			if  (code==MesquiteListener.SELECTION_CHANGED)  //WAYNECHECK: is this safe?  I just added it.  Is there any way changing the selection of taxa requires updating the tree?
+			if  (code==MesquiteListener.SELECTION_CHANGED)  
 				return;
 			int[] parameters = Notification.getParameters(notification);
 			if ((parameters == null) || (code != MesquiteListener.PARTS_ADDED && code != MesquiteListener.PARTS_DELETED && code != MesquiteListener.PARTS_MOVED)) {

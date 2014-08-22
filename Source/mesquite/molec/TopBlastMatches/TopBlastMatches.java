@@ -45,8 +45,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	boolean preferencesSet = false;
 	boolean fetchTaxonomy = false;
 	boolean interleaveResults = false;
-	boolean adjustSequences = true;
-	boolean addInternalGaps = true;
+	boolean adjustSequences = false;
+	boolean addInternalGaps = false;
 //	boolean blastx = false;
 	int maxTime = 300;
 //	static int upperMaxHits = 30;
@@ -190,7 +190,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;   // because of all of the modifications
+		return false;   
 	}
 	/*.................................................................................................................*/
 	/** message if search failed to find anything.  */

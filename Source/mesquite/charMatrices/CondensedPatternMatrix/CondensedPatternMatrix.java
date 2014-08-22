@@ -62,7 +62,6 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 		}
 		else 
 			return  super.doCommand(commandName, arguments, checker);
-		//return null;
 	}
 	
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
@@ -192,7 +191,7 @@ public class CondensedPatternMatrix extends CharMatrixSource {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 300;  
 	}
 
 	/*.................................................................................................................*/

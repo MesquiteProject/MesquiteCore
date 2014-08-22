@@ -15,8 +15,10 @@ package mesquite.lists.CharListPartition;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -36,13 +38,18 @@ public class CharListPartition extends CharListAssistant {
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC, mDGC, mEGN;
 	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, mss2;
+	CharactersGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+		groups.addListener(this);
 		return true;
 	}
 	public void endJob(){
 		if (data != null)
 			data.removeListener(this);
+		if (groups != null)
+			groups.removeListener(this);
 		super.endJob();
 	}
 	MesquiteInteger pos = new MesquiteInteger(0);
@@ -233,7 +240,7 @@ public class CharListPartition extends CharListAssistant {
 		mDGC = addSubmenu(null, "Delete Group...", makeCommand("deleteGroup", this));
 		mDGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
 		mLine = addMenuItem("-",null);
-		mScs = addMenuItem("Store current partition", makeCommand("storeCurrent",  this));
+		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
 			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharacterPartition.class));

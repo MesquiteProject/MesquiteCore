@@ -85,9 +85,10 @@ public class CharGroupList extends ListModule {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
 			MesquiteString ms = new MesquiteString("");
-			CharactersGroup group = CharListPartitionUtil.makeGroup(this,getProject().getFile(0),containerOfModule(), ms);      // WAYNECHECK: how do we know this is referring to the correct file?
+			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new group label"); 
+			CharactersGroup group = CharListPartitionUtil.makeGroup(this,file,containerOfModule(), ms);      
 			if (group!=null) {
-				((CharGroupListWindow)getModuleWindow()).getTable().repaint();  //WAYNECHECK:  why is this not being repainted?
+				((CharGroupListWindow)getModuleWindow()).getTable().repaint();  
 				parametersChanged();
 			}
 			return group;
@@ -101,7 +102,7 @@ public class CharGroupList extends ListModule {
 	/*.................................................................................................................*/
 	/* following required by ListModule*/
 	public Object getMainObject(){
-		return getProject().getFileElement(CharactersGroupVector.class, 0);     // WAYNECHECK: how do we know this is referring to the correct file?
+		return getProject().getFileElement(CharactersGroupVector.class, 0);     
 	}
 	public int getNumberOfRows(){
 		if (getProject().getFileElement(CharactersGroupVector.class, 0)==null)
@@ -125,8 +126,7 @@ public class CharGroupList extends ListModule {
 	public boolean deleteRow(int row, boolean notify){
 		CharactersGroup group = ((CharGroupListWindow)getModuleWindow()).getCharGroup(row);
 		if (group!=null){
-			getProject().removeFileElement(group);//must remove first, before disposing
-			group.dispose();
+			group.deleteMe(false);
 			return true;
 
 		}
@@ -266,7 +266,10 @@ class CharGroupListWindow extends ListWindow implements MesquiteListener {
 	public void changed(Object caller, Object obj, Notification notification){
 		UndoReference undoReference = Notification.getUndoReference(notification);
 		int code = Notification.getCode(notification);
-		if (obj instanceof ListableVector && (ListableVector)obj ==groups) {
+		if (obj instanceof GroupLabel) {
+			getTable().repaintAll();
+		}
+		else if (obj instanceof ListableVector && (ListableVector)obj ==groups) {
 			if (code==MesquiteListener.NAMES_CHANGED) {
 				getTable().redrawRowNames();
 			}
@@ -286,6 +289,9 @@ class CharGroupListWindow extends ListWindow implements MesquiteListener {
 			else if (code!=MesquiteListener.ANNOTATION_CHANGED && code!=MesquiteListener.ANNOTATION_ADDED && code!=MesquiteListener.ANNOTATION_DELETED) {
 				getTable().setNumRows(groups.size());
 				getTable().synchronizeRowSelection(groups);
+				getTable().repaintAll();
+			}
+			else  {
 				getTable().repaintAll();
 			}
 		}

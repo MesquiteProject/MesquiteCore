@@ -513,6 +513,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		return newListable;
 	}
+	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
+	 * entries corresponding to excluded characters are removed from the list */
+	public boolean[] getBooleanArrayOfIncluded() {
+		boolean[] newArray = new boolean[numChars]; 
+		for (int ic=0; ic<numChars; ic++) {
+			newArray[ic] = isCurrentlyIncluded(ic);
+		}
+		return newArray;
+	}
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer, MesquiteString report){
 		if (obj ==null)
 			return true;
@@ -657,7 +666,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	}
 	public void calculateFirstLastApplicable(){
-		//Debugg.println("calc first last applicable");
 		for (int it = 0; it<numTaxa; it++)
 			calculateFirstLastApplicable(it);
 	}

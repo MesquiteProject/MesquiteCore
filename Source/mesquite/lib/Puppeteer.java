@@ -341,7 +341,7 @@ public class Puppeteer  {
 		else return MesquiteInteger.fromString(name);
 	}
 	/*--------------------------------------*/
-	private boolean debugging = false;
+	private boolean debugging = false; 
 	private boolean logOnly = false;
 	private MesquiteTimer timer;
 	private boolean showTime = false;
@@ -1161,8 +1161,10 @@ public class Puppeteer  {
 					stamp("   STARTING NEW THREAD  ");
 
 				}
+				boolean scripting = MesquiteThread.isScripting();
 				if (fineDebugging) stamp("-sc- (" + level + ")5");
-				sendCommandsOnNewThread(mb, block, stringPos, endString, skip, nb, MesquiteThread.isScripting());
+				
+				sendCommandsOnNewThread(mb, block, stringPos, endString, skip, nb, scripting);
 				if (fineDebugging) stamp("-sc- (" + level + ")6");
 				return null;
 			}

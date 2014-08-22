@@ -130,7 +130,7 @@ public class ExamplesNavigator extends FileAssistantN  {
 			while (getProject().developing)
 				;
 			String openCommand = "openFile ";
-			if (StringUtil.startsWithIgnoreCase(nextProjectName,"http:") || !getProject().getHomeFile().isLocal())
+			if (StringUtil.startsWithIgnoreCase(nextProjectName,"http") || !getProject().getHomeFile().isLocal())
 				openCommand = "openURL ";
 			String commands = "newThread; getProjectID; Integer.id *It; tell Mesquite; getWindowAutoShow; String.was *It; windowAutoShow off; closeProjectByID *Integer.id; " + openCommand;
 			commands +=  StringUtil.tokenize(MesquiteFile.composePath(getProject().getHomeDirectoryName(), nextProjectName)) + "; ifNotExists It;  showAbout; endIf; windowAutoShow *String.was; endTell;";
@@ -150,7 +150,7 @@ public class ExamplesNavigator extends FileAssistantN  {
 
 
 			String openCommand = "openFile ";
-			if (StringUtil.startsWithIgnoreCase(prevProjectName,"http:") || !getProject().getHomeFile().isLocal())
+			if (StringUtil.startsWithIgnoreCase(prevProjectName,"http") || !getProject().getHomeFile().isLocal())
 				openCommand = "openURL ";
 
 			String commands = "newThread; getProjectID; Integer.id *It; tell Mesquite; getWindowAutoShow; String.was *It; windowAutoShow off; closeProjectByID *Integer.id; " + openCommand;
@@ -169,7 +169,7 @@ public class ExamplesNavigator extends FileAssistantN  {
 			while (getProject().developing)
 				;
 			String openCommand = "openFile ";
-			if (StringUtil.startsWithIgnoreCase(path,"http:") || !getProject().getHomeFile().isLocal())
+			if (StringUtil.startsWithIgnoreCase(path,"http") || !getProject().getHomeFile().isLocal())
 				openCommand = "openURL ";
 			String commands = "newThread; getProjectID; Integer.id *It; tell Mesquite; getWindowAutoShow; String.was *It; windowAutoShow off; closeProjectByID *Integer.id; " + openCommand;
 			commands +=  StringUtil.tokenize(MesquiteFile.composePath(getProject().getHomeDirectoryName(), path)) + "; ifNotExists It;  showAbout; endIf; windowAutoShow *String.was; endTell;";

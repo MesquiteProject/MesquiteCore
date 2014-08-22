@@ -42,14 +42,14 @@ public class ColorOddAAs extends DataWindowAssistantID implements CellColorer, C
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 300;  
 	}
 
 	/*.................................................................................................................*/
@@ -87,9 +87,11 @@ public class ColorOddAAs extends DataWindowAssistantID implements CellColorer, C
 			long s = data.getAminoAcid(ic,it,true);
 			if (!CategoricalState.isImpossible(s)) {
 				String st = "Translated amino acid: " + ProteinState.toString(s, false) + " (followed by ";
-				for (int i = ic+3; i<data.getNumChars() && i< ic+60; i+=3){
-					s = data.getAminoAcid(i, it, true);
-					st += ProteinState.toString(s, false);
+				MesquiteInteger nextCharacter = new MesquiteInteger(ic);
+				for (int i = 0; i<20; i++){
+					s = data.getNextAminoAcid(nextCharacter, it, true);
+					if (s!=CategoricalState.inapplicable)
+						st += ProteinState.toString(s, false);
 				}
 				return st + ")";
 			}

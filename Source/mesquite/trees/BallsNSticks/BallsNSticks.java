@@ -465,8 +465,10 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			g.setColor(Color.red);
 		else
 			g.setColor(Color.blue);
+
 		for (int i=1; i<4; i++)
-			g.drawOval( x[node]- spotSize/2 - 2 - i, y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);
+			GraphicsUtil.drawOval(g, x[node]- spotSize/2 - 2 - i, y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);
+
 
 		g.setColor(tC);
 	}
@@ -689,8 +691,9 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			g.setColor(Color.black);
 			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
 			//GraphicsUtil.setToXOR(g);
-			g.drawOval(x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
-			g.drawOval(x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
+			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
+			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
+
 			g.setPaintMode();
 			g.setColor(Color.black);
 		}

@@ -28,7 +28,7 @@ import mesquite.lib.table.*;
 public class TaxonGroupList extends ListModule {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxonGroupListAssistant.class, "The List of Taxon Groups window can display columns showing information for each taxon group.",
-		"You can request that columns be shown using the Columns menu of the List of Taxon Groups Window. ");
+				"You can request that columns be shown using the Columns menu of the List of Taxon Groups Window. ");
 	}
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
@@ -39,15 +39,21 @@ public class TaxonGroupList extends ListModule {
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null && obj == groups);
 	}
+	public void endJob(){
+	//	if (groups != null)
+	//		groups.removeListener(this);
 
+		super.endJob();
+	}
 	public void showListWindow(Object obj){
 		setModuleWindow(new TaxonGroupListWindow(this));
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+//		groups.addListener(this);
 		((TaxonGroupListWindow)getModuleWindow()).setObject(groups);
-		//makeMenu("Character_Models");
+
 		makeMenu("List");
 
-		
+
 		if (!MesquiteThread.isScripting()){
 			TaxonGroupListAssistant assistant = (TaxonGroupListAssistant)hireNamedEmployee(TaxonGroupListAssistant.class, StringUtil.tokenize("#TaxonGroupListColor"));
 			if (assistant!= null){
@@ -78,15 +84,41 @@ public class TaxonGroupList extends ListModule {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
-			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, getProject().getFile(0));   //WAYNECHECK: how do we know this is the correct file?
+			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new group label"); 
+			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, file);   
 			if (group!=null){
-				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint();  //WAYNECHECK:  why is this not being repainted?
+				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint(); 
 				parametersChanged();
 			}
 			return group;
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
+	}
+	/*.................................................................................................................*/
+	/** passes which object changed*
+	public void changed(Object caller, Object obj, Notification notification){
+		int code = Notification.getCode(notification);
+		TaxaGroupVector vector = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+		MesquiteTable table = ((TaxonGroupListWindow)getModuleWindow()).getTable();
+		if (obj instanceof TaxaGroupVector) {
+			if (code==MesquiteListener.NAMES_CHANGED) {
+				table.redrawRowNames();
+			}
+			else if (code==MesquiteListener.SELECTION_CHANGED) {
+				table.synchronizeRowSelection(vector);
+				table.repaintAll();
+			}
+			else if (code==MesquiteListener.PARTS_ADDED || code==MesquiteListener.PARTS_DELETED || code==MesquiteListener.PARTS_CHANGED || code==MesquiteListener.PARTS_MOVED) {
+				table.setNumRows(vector.size());
+				table.synchronizeRowSelection(vector);
+				table.repaintAll();
+			}
+			else {
+				table.repaintAll();
+			}
+		}
+		super.changed(caller, obj, notification);
 	}
 	/*.................................................................................................................*/
 	public boolean rowsMovable(){
@@ -119,10 +151,11 @@ public class TaxonGroupList extends ListModule {
 	public boolean deleteRow(int row, boolean notify){
 		TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
 		if (group!=null){
-				getProject().removeFileElement(group);//must remove first, before disposing
-				group.dispose();
-				return true;
-		
+			group.deleteMe(false);
+			
+			group.dispose();
+			return true;
+
 		}
 		return false;
 	}
@@ -232,10 +265,11 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	public void setRowName(int row, String name){
 		TaxaGroup group = getTaxonGroup(row);
 		if (group!=null){
-				group.setName(name);
-				resetAllTitles();
-				getOwnerModule().resetAllMenuBars();
+			group.setName(name);
 			
+			resetAllTitles();
+			getOwnerModule().resetAllMenuBars();
+
 		}
 	}
 	public String getRowName(int row){
@@ -260,7 +294,10 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	public void changed(Object caller, Object obj, Notification notification){
 		UndoReference undoReference = Notification.getUndoReference(notification);
 		int code = Notification.getCode(notification);
-		if (obj instanceof ListableVector && (ListableVector)obj ==groups) {
+		if (obj instanceof GroupLabel) {
+			getTable().repaintAll();
+		}
+		else if (obj instanceof ListableVector && (ListableVector)obj ==groups) {
 			if (code==MesquiteListener.NAMES_CHANGED) {
 				getTable().redrawRowNames();
 			}
@@ -282,6 +319,9 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 				getTable().synchronizeRowSelection(groups);
 				getTable().repaintAll();
 			}
+			else  {
+				getTable().repaintAll();
+			}
 		}
 		super.changed(caller, obj, notification);
 	}
@@ -291,6 +331,13 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 		if (groups!=null)
 			groups.removeListener(this);
 		super.dispose();
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 300;  
 	}
 
 }

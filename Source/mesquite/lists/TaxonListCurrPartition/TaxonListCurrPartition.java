@@ -15,8 +15,10 @@ package mesquite.lists.TaxonListCurrPartition;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
@@ -35,13 +37,18 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC;
 	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, ms2;
+	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+		groups.addListener(this);
 		return true;
 	}
 	public void endJob(){
 		if (taxa != null)
 			taxa.removeListener(this);
+		if (groups != null)
+			groups.removeListener(this);
 		super.endJob();
 	}
 	private void setGroup(TaxaGroup group, String arguments){
@@ -240,7 +247,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
 		mLine = addMenuItem("-",null);
-		mScs = addMenuItem("Store current partition", makeCommand("storeCurrent",  this));
+		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
 			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));

@@ -35,6 +35,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = new CharactersGroupVector();
+		getProject().addFileElement(groups);
  		return true;
 	}
 	public void elementsReordered(ListableVector v){
@@ -42,7 +43,8 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	public NexusBlock elementAdded(FileElement e){
 		if (e instanceof CharactersGroup){
 			if (groups.indexOf(e)<0) {
-				groups.addElement(e, false);
+				groups.addElement(e, true);
+				e.addListener(groups);
 			}
 			e.setManager(this);
 			return null;
@@ -131,7 +133,9 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			if (changed)
 				data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 		}
+		getProject().removeFileElement(e);//must remove first, before disposing
 		groups.removeElement(e, true);
+		e.dispose();
 		}
 	}
 	public void elementDisposed(FileElement e){

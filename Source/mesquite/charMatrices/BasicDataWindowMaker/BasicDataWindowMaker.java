@@ -307,7 +307,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		setWindowSize(windowWidth, windowHeight);
 		if (data != null)
 			columnWidth = data.getDefaultColumnWidth();
-		MesquiteSubmenuSpec mssa = ownerModule.addSubmenu(ownerModule.addAuxiliaryMenu("Analyze"), "Analyses for Matrix", MesquiteModule.makeCommand("newAssistant", this), DataWindowAssistantA.class);
+		MesquiteSubmenuSpec mssa = ownerModule.addSubmenu(ownerModule.addAuxiliaryMenu("Analysis:Matrix"), "Analyses for Matrix", MesquiteModule.makeCommand("newAssistant", this), DataWindowAssistantA.class);
 		mssa.setCompatibilityCheck(data.getStateClass());
 		table = new MatrixTable((BasicDataWindowMaker) ownerModule, this, data, data.getTaxa().getNumTaxa(), data.getNumChars(), windowWidth, windowHeight, 110);
 		/**/
@@ -599,9 +599,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		String t;
 		if (data != null && data.hasTitle()) {
 			if (data.uniquelyNamed())
-				t = "Matrix \"" + data.getName() + "\"";
+				t = data.getName();
 			else
-				t = "Matrix \"" + data.getName() + "\" [" + data.getID() + "]";
+				t = data.getName() + " [" + data.getID() + "]";
 		}
 		else {
 			t = "Character Matrix";
@@ -3602,10 +3602,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public String getUpperCornerText() {
-		if (data == null)
+	//	if (data == null)
 			return "";
 		
-		return data.getName();
+//		return data.getName();
 	}
 	/* ............................................................................................................... */
 	public String getCornerText() {

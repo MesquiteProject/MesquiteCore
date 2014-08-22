@@ -329,15 +329,15 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (getHelpURLOwnerModule()!=null) {
 			if (!StringUtil.blank(helpURL)) {
 				String s = getHelpURLOwnerModule().getPackageIntroModule().getDirectoryPath() + getHelpURL();
-				MesquiteModule.showWebPage(s, true);
+				MesquiteModule.showWebPage(s, false);
 			}
 			else if (useManualPage)
 				getHelpURLOwnerModule().showManual();
 			else
-				MesquiteModule.showWebPage(getHelpURLOwnerModule().getPackageIntroModule().getSplashURL(), true);
+				MesquiteModule.showWebPage(getHelpURLOwnerModule().getPackageIntroModule().getSplashURL(), false);
 		}
 		else if (!StringUtil.blank(helpURL)) 
-			MesquiteModule.showWebPage(getHelpURL(), true);
+			MesquiteModule.showWebPage(getHelpURL(), false);
 	}
 	/*.................................................................................................................*/
 	public void setHelpURL (MesquiteModule ownerModule, String s) {
@@ -1860,7 +1860,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent e) {
 			if (e.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) {
 				String link = e.getDescription();
-				if (link != null && StringUtil.startsWithIgnoreCase(link, "http:"))
+				if (link != null && StringUtil.startsWithIgnoreCase(link, "http"))
 					MesquiteTrunk.showWebPage(e.getURL().toString(), false);
 				else  if (linkTouchedCommand != null)
 					linkTouchedCommand.doItNewThread(ParseUtil.tokenize(e.getDescription()), null);
