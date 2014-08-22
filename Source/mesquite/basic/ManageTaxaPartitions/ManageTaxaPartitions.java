@@ -104,6 +104,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			
 			if (groups.indexOf(e)<0) {
 				groups.addElement(e, true);
+				e.addListener(groups);
 			}
 			e.setManager(this);
 			return null;
@@ -119,6 +120,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			groups.removeElement(e, true);
 	}
 	public void deleteElement(FileElement e){
+		Debugg.println("DELETE " + e);
 		if (e instanceof TaxaGroup){
 			ListableVector d = getProject().getTaxas();
 			for (int im = 0; im<d.size(); im++){
@@ -145,7 +147,9 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				if (changed)
 					taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 			}
+			getProject().removeFileElement(e);//must remove first, before disposing
 			groups.removeElement(e, true);
+			e.dispose();
 		}
 	}
 	public Class getElementClass(){

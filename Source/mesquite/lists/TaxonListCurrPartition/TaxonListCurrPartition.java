@@ -37,13 +37,18 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC;
 	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, ms2;
+	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+		groups.addListener(this);
 		return true;
 	}
 	public void endJob(){
 		if (taxa != null)
 			taxa.removeListener(this);
+		if (groups != null)
+			groups.removeListener(this);
 		super.endJob();
 	}
 	private void setGroup(TaxaGroup group, String arguments){
@@ -60,7 +65,6 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 			if (group == null){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-				Debugg.println("TaxonListCurrentPartition " + groups);
 				Object obj = groups.getElement(name);
 				group = (TaxaGroup)obj;
 			}
@@ -259,7 +263,6 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == this)
 			return;
-		Debugg.println("changed " + obj);
 		outputInvalid();
 		parametersChanged(notification);
 	}

@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+
 import mesquite.lib.duties.*;
 
 	
@@ -58,10 +59,17 @@ public class GroupLabel extends FileElement {
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
+	/** Sets the name of this element */
+	public void setName(String name){
+		super.setName(name);
+		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+
+	}
 	/*.................................................................................................................*/
 	public void setColor(Color color){
 		this.color = color;
 		colorWasSet = true;
+		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 	}
 	/*.................................................................................................................*/
 	public Color getColor(){
@@ -77,6 +85,7 @@ public class GroupLabel extends FileElement {
 		symbol.setColor(getColor());
 		this.symbol.setColor(getColor());
 		symbolWasSet = true;
+		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 	}
 	/*.................................................................................................................*/
 	public MesquiteSymbol getSymbol(){

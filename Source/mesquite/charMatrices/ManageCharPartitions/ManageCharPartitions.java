@@ -44,6 +44,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		if (e instanceof CharactersGroup){
 			if (groups.indexOf(e)<0) {
 				groups.addElement(e, true);
+				e.addListener(groups);
 			}
 			e.setManager(this);
 			return null;
@@ -132,7 +133,9 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			if (changed)
 				data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 		}
+		getProject().removeFileElement(e);//must remove first, before disposing
 		groups.removeElement(e, true);
+		e.dispose();
 		}
 	}
 	public void elementDisposed(FileElement e){
