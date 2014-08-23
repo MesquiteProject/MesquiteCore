@@ -15,6 +15,8 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.image.*;
 
 
@@ -23,6 +25,37 @@ import java.awt.image.*;
 /** This class provides general graphics utilities */
 public class GraphicsUtil {
 	public static TexturePaint missingDataTexture = null;
+	/*_________________________________________________*/
+	public static void drawArrow(Graphics2D g2, int fromX, int fromY, int toX, int toY, int thickness) {
+		// based on Vincent Reig's stackoverflow answer http://stackoverflow.com/a/3094933
+		// create an AffineTransform 
+		// and a triangle centered on (0,0) and pointing downward
+		// somewhere outside Swing's paint loop
+		Stroke stroke = g2.getStroke();
+		g2.setStroke(new BasicStroke(thickness));
+		g2.drawLine(fromX, fromY, toX, toY);
+		g2.setStroke(stroke);
+		AffineTransform tx = new AffineTransform();
+		Line2D.Double line = new Line2D.Double(fromX, fromY, toX, toY);
+
+		Polygon arrowHead = new Polygon();  
+		int size = thickness*3;
+		arrowHead.addPoint( 0,size);
+		arrowHead.addPoint( -size, -size);
+		arrowHead.addPoint( size,-size);
+
+		// [...]
+		tx.setToIdentity();
+		double angle = Math.atan2(line.y2-line.y1, line.x2-line.x1);
+		tx.translate(line.x2, line.y2);
+		tx.rotate((angle-Math.PI/2d));  
+
+		Graphics2D g = (Graphics2D) g2.create();
+		g.setTransform(tx);   
+		g.fill(arrowHead);
+		g.dispose();
+	}
+
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns how far along the line (x,y) is */
 	public static double fractionAlongLine(int x, int y, int xStart, int yStart, int xEnd, int yEnd, boolean xBias, boolean yBias) {
@@ -214,6 +247,16 @@ public class GraphicsUtil {
 		g.setColor(Color.black);
 		g.fillPolygon(poly);
 		ColorDistribution.setComposite(g, composite);		
+	}
+	/* -------------------------------------------------*/
+	public static void fillTransparentBorderedSelectionPolygon (Graphics g, Polygon poly) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		g.setColor(Color.gray);
+		g.fillPolygon(poly);
+		ColorDistribution.setComposite(g, composite);		
+		g.setColor(Color.gray);
+		g.drawPolygon(poly);
 	}
 	/* -------------------------------------------------*/
 	public static void shadeRectangle (Graphics g, int x, int y, int w, int h, Color color) {

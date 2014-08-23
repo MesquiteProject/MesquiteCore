@@ -969,6 +969,11 @@ class BasicTreeDisplay extends TreeDisplay  {
 		((DrawTreeCoordinator)ownerModule).getNamesTask().fillTaxon(g, M);
 	}
 	/*_________________________________________________*/
+	public void redrawTaxa(Graphics g, int M) {
+	((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, getTreeDrawing().getDrawnRoot(), g);
+		
+	}
+	/*_________________________________________________*/
 	private boolean responseOK(){
 		return (!getDrawingInProcess() && (tree!=null) && (!tree.isLocked()) && ownerModule!=null &&  (ownerModule.getEmployer() instanceof TreeDisplayActive));
 	}
