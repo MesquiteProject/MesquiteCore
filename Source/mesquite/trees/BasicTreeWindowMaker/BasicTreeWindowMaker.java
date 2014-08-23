@@ -3319,8 +3319,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (currentTreeTool.isArrowTool() && fieldTouchX >= 0 && fieldTouchY >=0){
 			g.setColor(Color.blue);
 			if (GraphicsUtil.useXORMode(g, false)){
-				g.setXORMode(Color.white); //for some reason color doesn't matter in MacOS, but does in Win95
-				GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
+				//g.setXORMode(Color.white); //for some reason color doesn't matter in MacOS, but does in Win95
+				//GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
 			}
 			highlightedNodes = null;
 			highlightedTaxa = null;
@@ -3341,6 +3341,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 			fieldTouchX = -1;
 			fieldTouchY = -1;
+
 			lastFieldDragX = -1;
 			lastFieldDragY = -1;
 			return;
