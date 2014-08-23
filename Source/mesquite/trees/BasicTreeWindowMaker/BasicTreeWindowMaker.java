@@ -2203,8 +2203,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				return null;
 			if (originalTree!=null && treeEdited) {
 				((MesquiteTree)originalTree).setToClone(tree);
-				((MesquiteTree)originalTree).notifyListeners(this, new Notification(MesquiteListener.BRANCHES_REARRANGED));
-				if (((MesquiteTree)originalTree).getTreeVector() !=null)
+				if (originalTree!=null)
+					((MesquiteTree)originalTree).notifyListeners(this, new Notification(MesquiteListener.BRANCHES_REARRANGED));
+				if (originalTree!=null && ((MesquiteTree)originalTree).getTreeVector() !=null)
 					((MesquiteTree)originalTree).getTreeVector().notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 				treeEdited=false;
 				messagePanel.setHighlighted(false, !treeSourceLocked()); 
@@ -4419,7 +4420,7 @@ class MessagePanel extends Panel {
 		if (ownerModule.treeSourceTask != null && !edited){
 			String s = ownerModule.treeSourceTask.getNameAndParameters();
 			if (!StringUtil.blank(s))
-				treeSourceAddendum +=  "   [" + s + "]";
+				treeSourceAddendum =  "   [" + s + "]";
 		}
 		else
 			treeSourceAddendum = "";

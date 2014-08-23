@@ -2238,6 +2238,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 							uri=file.toURI();
 						} else
 							uri = new URI(path);
+						if (!remote && !CommandChecker.documentationComposed && autoCompose) {
+							CommandChecker checker = new CommandChecker();
+							checker.composeDocumentation();
+						}	
 						d.browse(uri);
 					}
 					catch (IOException e) {
@@ -2259,6 +2263,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 						return;
 					}
 					else { 
+						if (!remote && !CommandChecker.documentationComposed && autoCompose) {
+							CommandChecker checker = new CommandChecker();
+							checker.composeDocumentation();
+						}	
 						File testing = new File(pathToCheck);
 						if (!testing.exists()) {
 							MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the file could not be found. (" + pathToCheck + ")" );
@@ -2292,10 +2300,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 					}
 				}
 				else {
-					if (!remote && !CommandChecker.documentationComposed && autoCompose) {
-						CommandChecker checker = new CommandChecker();
-						checker.composeDocumentation();
-					}	
+					
 					try {
 						BrowserLauncher.openURL(path);
 						return;

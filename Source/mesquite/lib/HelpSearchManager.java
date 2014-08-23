@@ -178,8 +178,8 @@ public class HelpSearchManager implements Commandable {
 			String expl = ((Explainable) c).getExplanation();
 			if (stringsFound(expl, s)) {
 				result += "<li><img src = \""
-					+ MesquiteFile.massageFilePathToURL(((ImageOwner) c)
-							.getImagePath()) + "\"> ";
+						+ MesquiteFile.massageFilePathToURL(((ImageOwner) c)
+								.getImagePath()) + "\"> ";
 				result += expl+ "</li>";
 			}
 		}
@@ -192,7 +192,7 @@ public class HelpSearchManager implements Commandable {
 		return result;
 	}
 	/*
-	
+
 	String searchManual(String s, boolean useBrowser){
 		String results = "";
 		String arefStart = "showPage:";
@@ -274,7 +274,7 @@ public class HelpSearchManager implements Commandable {
 		MesquiteTrunk.mesquiteTrunk.logln(".. manual ready.");
 		manualLoading = 0;
 	}
-	*/
+	 */
 	String menuResults = null;
 	String controlResults = null;
 
@@ -299,22 +299,22 @@ public class HelpSearchManager implements Commandable {
 	/*.................................................................................................................*/
 	public void searchKeyword(String s, boolean useBrowser){
 		String results = "";
+		if (!useBrowser){
+			//ADDING RESULTS FROM CURRENT MENUS
+			menuResults = searchMenus(s, useBrowser);
 
-		//ADDING RESULTS FROM CURRENT MENUS
-		menuResults = searchMenus(s, useBrowser);
+			//ADDING RESULTS FROM CURRENT Controls
+			controlResults = searchControls(s);
 
-		//ADDING RESULTS FROM CURRENT Controls
-		controlResults = searchControls(s);
-
-		if (!StringUtil.blank(menuResults) || !StringUtil.blank(controlResults)){
-			results += "<h3>Menu items and controls in current windows matching search criteria</strong></h3><ul>";
-			if (!StringUtil.blank(menuResults))
-				results += "<li><a href = \"showMenuResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "menus.gif") + "\">&nbsp;<strong>Menu items</strong></a> in current windows</li>";
-			if (!StringUtil.blank(controlResults))
-				results += "<li><a href = \"showControlResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "buttons.gif") + "\">&nbsp;<strong>Buttons and tools</strong></a> in current windows</li>";
-			results += "</ul>";
+			if (!StringUtil.blank(menuResults) || !StringUtil.blank(controlResults)){
+				results += "<h3>Menu items and controls in current windows matching search criteria</strong></h3><ul>";
+				if (!StringUtil.blank(menuResults))
+					results += "<li><a href = \"showMenuResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "menus.gif") + "\">&nbsp;<strong>Menu items</strong></a> in current windows</li>";
+				if (!StringUtil.blank(controlResults))
+					results += "<li><a href = \"showControlResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "buttons.gif") + "\">&nbsp;<strong>Buttons and tools</strong></a> in current windows</li>";
+				results += "</ul>";
+			}
 		}
-
 		//ADDING RESULTS FROM MODULE INFORMATION
 		String smod = searchModules(s, useBrowser);
 		if (!StringUtil.blank(smod))
@@ -336,7 +336,7 @@ public class HelpSearchManager implements Commandable {
 		String sman = searchManual(s, useBrowser);
 		if (!StringUtil.blank(sman))
 			results += "<h3>Manual Pages</h3><ul>" + sman + "</ul>";
-	*/
+		 */
 
 
 		if (StringUtil.blank(results))
@@ -599,7 +599,7 @@ public class HelpSearchManager implements Commandable {
 
 		if (paths.size() > 0)
 			nextPrevString =" <a href = \"previous:" + paths.size() + "\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "leftarrow.gif") + "\"></a>";
-		
+
 		else
 			nextPrevString =" <img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "leftarrowDisabled.gif") + "\">";
 		/*
@@ -630,8 +630,8 @@ public class HelpSearchManager implements Commandable {
 			}
 		}
 		String intro = "<html>" + searchColoursString + "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" +
-		"<tr><td height=\"80\" bgcolor=\"#6C6252\"><h1><font color=\"#FFFAAD\">" + name + "</h1></font><font size = +1 color=\"#FFFAAD\">" + explanation + "</font>" +
-		"<p>" + mmi.getClassName() + "<br>";
+				"<tr><td height=\"80\" bgcolor=\"#6C6252\"><h1><font color=\"#FFFAAD\">" + name + "</h1></font><font size = +1 color=\"#FFFAAD\">" + explanation + "</font>" +
+				"<p>" + mmi.getClassName() + "<br>";
 		if (countUses < maxCount){
 			if (paths.size() > 0)
 				nextPrevString = pageString + "[Last page] " + nextPrevString + "&nbsp;<img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "rightarrowDisabled.gif") + "\">";
@@ -997,7 +997,7 @@ public class HelpSearchManager implements Commandable {
 			if (!StringUtil.blank(func.getURLString()))
 				if (func.URLinPackageIntro())
 					nameString += "<a href=\"showPage:" + MesquiteFile.massageFilePathToURL(mmi.getPackageIntroModule().getDirectoryPath() +func.getURLString())+ "\">More Information</a>.";
-//			nameString += "<a href=\"showPage:" + MesquiteFile.massageFilePathToURL(mmi.getPackageIntroModule().getDirectoryPath() +func.getURLString())+ "\" userinfo=\"browser\">More Information</a>.";
+			//			nameString += "<a href=\"showPage:" + MesquiteFile.massageFilePathToURL(mmi.getPackageIntroModule().getDirectoryPath() +func.getURLString())+ "\" userinfo=\"browser\">More Information</a>.";
 				else
 					nameString += "<a href=\"showPage:" +func.getURLString() + "\">More Information</a>.";
 			return nameString+StringUtil.lineEnding(); 
