@@ -188,14 +188,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void setCharNumChanging(boolean charNumChanging) {
 		this.charNumChanging = charNumChanging;
 	}
-	/*.................................................................................................................*
-	public UndoInstructions getUndoInstructions(){
-		return undoInstructions;
+	/*.................................................................................................................*/
+	private boolean suppressSpecsetReading = false;  //for fuse taxa & matrices, so that on merge the subsequent specsets don't take over
+	public void setSuppressSpecssetReading(boolean s){
+		suppressSpecsetReading = s;
 	}
-	/*.................................................................................................................*
-	public void setUndoInstructions(UndoInstructions undoInstructions){
-		this.undoInstructions=undoInstructions;
+	public boolean getSuppressSpecssetReading(){
+		return suppressSpecsetReading;
 	}
+
 	/*.................................................................................................................*/
 	public UndoInstructions getUndoInstructionsAllData(){
 		//undoInstructions = new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);

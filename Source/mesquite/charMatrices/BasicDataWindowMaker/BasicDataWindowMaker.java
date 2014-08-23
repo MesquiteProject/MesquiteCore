@@ -2246,7 +2246,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		if (ic >= 0 && it >= 0) { // matrix cells
 			if (table.cellColorer == mb)
 				return true;
-			if ((table.cellColorer == null || table.cellColorer instanceof mesquite.charMatrices.NoColor.NoColor) || (message != null && AlertDialog.query(this, "Cell colors", message, "Yes", "No"))) {
+			if ((table.cellColorer == null || table.cellColorer instanceof mesquite.charMatrices.NoColor.NoColor) && (message != null && AlertDialog.query(this, "Cell colors", message, "Yes", "No"))) {
 				setCellColorer(mb);
 				table.repaintAll();
 				return true;
@@ -2255,7 +2255,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		else if (ic < 0 && it >= 0) { // row names
 			if (table.rowNamesColorer == mb)
 				return true;
-			if ((table.rowNamesColorer == null || table.rowNamesColorer instanceof mesquite.charMatrices.NoColor.NoColor) || (message != null && AlertDialog.query(this, "Row name colors", message, "Yes", "No"))) {
+			if ((table.rowNamesColorer == null || table.rowNamesColorer instanceof mesquite.charMatrices.NoColor.NoColor) && (message != null && AlertDialog.query(this, "Row name colors", message, "Yes", "No"))) {
 				setRowNamesColorer(mb);
 				table.repaintAll();
 				return true;
@@ -2264,7 +2264,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		else if (ic >= 0 && it < 0) { // column names
 			if (table.columnNamesColorer == mb)
 				return true;
-			if ((table.columnNamesColorer == null || table.columnNamesColorer instanceof mesquite.charMatrices.NoColor.NoColor) || (message != null && AlertDialog.query(this, "Column name colors", message, "Yes", "No"))) {
+			if ((table.columnNamesColorer == null || table.columnNamesColorer instanceof mesquite.charMatrices.NoColor.NoColor) && (message != null && AlertDialog.query(this, "Column name colors", message, "Yes", "No"))) {
 				setColumnNamesColorer(mb);
 				table.repaintAll();
 				return true;

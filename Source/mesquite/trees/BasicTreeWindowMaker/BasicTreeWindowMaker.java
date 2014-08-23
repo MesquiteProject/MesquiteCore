@@ -2129,7 +2129,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				s = MesquiteString.queryString(this, "Store Tree As" , "Name of tree: ", tree.getName() );
 			if (s!=null) {
 				tree.setName(s);
-				TreeVector trees =  ownerModule.getProject().storeTree(this, tree);
+				TreeVector trees =  ownerModule.getProject().storeTree(this, tree, !treeSourceTask.nameMatches("StoredTrees"));
 
 				if (trees!=null) {
 					TreesManager manager = (TreesManager)ownerModule.findElementManager(TreeVector.class);
