@@ -18,7 +18,9 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 
 import mesquite.categ.lib.CategDataEditorInitD;
 import mesquite.lib.*;
@@ -3079,10 +3081,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	NameReference branchNotesRef = NameReference.getNameReference("note");
 	private int countinvert = 0;
 	public   void InvertBranch(Graphics g, int N, MesquiteInteger highlight) {
+		InvertBranch(g,N,highlight, true);
+	}
+	public   void InvertBranch(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
 		Tree t = treeDisplay.getTree();
 		if (t!=null){
 			MesquiteDouble fraction = new MesquiteDouble();
-			if (findBranch(treeDisplay.getMouseX(), treeDisplay.getMouseY(), fraction) == N){ //still in N
+			if (!onlyIfStillInBranch || findBranch(treeDisplay.getMouseX(), treeDisplay.getMouseY(), fraction) == N){ //still in N
 				TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 				highlight.setValue(N);   // sets the highlighed branch
 				if (treeDrawing!=null && !treeDisplay.repaintPending()){
@@ -3294,6 +3299,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					fieldTouchY = y;
 					lastFieldDragX = x;
 					lastFieldDragY = y;
+					GraphicsUtil.drawCross(g,fieldTouchX, fieldTouchY, 10);
 				}
 
 				boolean fieldTouchAccepted = currentTreeTool.fieldTouched(x,y,tree,modifiers);
@@ -3315,6 +3321,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				g.setXORMode(Color.white); //for some reason color doesn't matter in MacOS, but does in Win95
 				GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
 			}
+			highlightedNodes = null;
+			highlightedTaxa = null;
+
 			if (!dragSelect(modifiers, fieldTouchX, fieldTouchY, x-fieldTouchX,y-fieldTouchY)){
 				if (taxa.anySelected()){
 					taxa.deselectAll();
@@ -3400,11 +3409,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (treeDisplay.getInvalid())
 			return;
 		if (currentTreeTool.isArrowTool() && fieldTouchX >= 0 && fieldTouchY >=0){
-			g.setColor(Color.blue);
+			dragHighlight(g,modifiers, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 			if (GraphicsUtil.useXORMode(g, false)){
-				g.setXORMode(Color.black); //for some reason color doesn't matter in MacOS, but does in Win95
-				GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
-				GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
+			//	g.setXORMode(Color.black); //for some reason color doesn't matter in MacOS, but does in Win95
+			//	GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
+			//	GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 				//g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
 				//g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 			}
@@ -3490,6 +3499,80 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			selectAllTaxaInClade(tree, N);
 		return pathsSelAbove>0 || thisIsSelected;
 	}
+
+	/*-----------------------------------------*/
+	Vector highlightedNodes = new Vector();
+	Vector highlightedTaxa = new Vector();
+
+	private Vector vectorElementsInFirstButNotSecond(Vector firstVector, Vector secondVector){
+		if (secondVector==null)
+			return firstVector;
+		if (firstVector==null)
+			return null;
+		Vector vector = new Vector();
+		for (int i=0; i<firstVector.size(); i++){
+			boolean found=false;
+			for (int j=0; j<secondVector.size() && !found; j++){
+				if (((MesquiteInteger) firstVector.elementAt(i)).getValue()==((MesquiteInteger) secondVector.elementAt(j)).getValue()){
+					found=true;
+				}
+			}
+			if (!found)
+				vector.add(firstVector.elementAt(i));
+		}
+		return vector;
+	}
+	private void dragHighlight(Graphics g, int modifiers, int x, int y, int w, int h){
+		Vector nodes = new Vector();
+		Vector taxons = new Vector();
+
+		if (w < 0){
+			int nx = x + w;
+			x = nx;
+			w = -w;
+		}
+		if (h < 0){
+			int ny = y + h;
+			y = ny;
+			h = -h;
+		}
+		findContained(tree, tree.getRoot(), x, y, w, h, nodes, taxons);
+		
+		Vector nodesToUnselect= vectorElementsInFirstButNotSecond(highlightedNodes, nodes);
+		Vector taxaToUnselect= vectorElementsInFirstButNotSecond(highlightedTaxa, taxons);
+		
+		Vector nodesToSelect= null;
+		Vector taxaToSelect= null;
+		
+		if ((nodesToUnselect!=null && nodesToUnselect.size()>0) || (taxaToUnselect!=null && taxaToUnselect.size()>0)){
+			treeDisplay.update(g);
+			//GraphicsUtil.drawCross(g,fieldTouchX, fieldTouchY, 10);
+			nodesToSelect= nodes;
+			taxaToSelect= taxons;
+		} else {
+			nodesToSelect= vectorElementsInFirstButNotSecond(nodes, highlightedNodes);
+			taxaToSelect= vectorElementsInFirstButNotSecond(taxons, highlightedTaxa);
+		}
+		if (nodesToSelect.size()>0){
+			for (int i=0; i<nodesToSelect.size(); i++){
+				MesquiteInteger mi = (MesquiteInteger) nodesToSelect.elementAt(i);
+				InvertBranch(g, mi.getValue(), highlightedBranch, false);
+			}
+		}
+		if (taxaToSelect.size()>0){
+			for (int i=0; i<taxaToSelect.size(); i++){
+				MesquiteInteger mi = (MesquiteInteger) taxaToSelect.elementAt(i);
+				try{
+					treeDisplay.fillTaxon(g, mi.getValue());  
+				}
+				catch (InternalError e){ //workaround to bug in Windows Java 1.7_45
+				}
+			}
+		}
+		highlightedNodes = new Vector(nodes);
+		highlightedTaxa = new Vector(taxons);
+	}
+	/*-----------------------------------------*/
 
 	private boolean dragSelect(int modifiers, int x, int y, int w, int h){
 		Vector nodes = new Vector();
@@ -5176,6 +5259,48 @@ class BirdsEyePanel extends MesquitePanel {
 	}
 }
 
+/* ======================================================================== */
+ class TreeWindowSelectionRectangle  {
+	Rectangle selectionRect;
+	
+	public TreeWindowSelectionRectangle(Graphics2D g2, int x, int y, int w, int h){
+		this.selectionRect = new Rectangle(x,y,w,h);
+	}
 
+	public static Area createAreaFromRectangle(Rectangle rect) {
+		Path2D.Float path = new Path2D.Float();
+		path.moveTo(rect.x, rect.y);
+		path.lineTo(rect.x+rect.width, rect.y);
+		path.lineTo(rect.x+rect.width, rect.y+rect.height);
+		path.lineTo(rect.x, rect.y+rect.height);
+		path.lineTo(rect.x, rect.y);
+		path.closePath();
+		return new Area(path);
+	}
+	public void drawSelectionDifference(Graphics2D g2, Component comp, int x, int y, int w, int h) {
+		Rectangle newRect = new Rectangle(x,y,w,h);
+		GraphicsUtil.fixRectangle(newRect);
+		Area newArea = createAreaFromRectangle(newRect);
+		Area differenceArea = createAreaFromRectangle(selectionRect);
+		
+		if (differenceArea!=null) {
+			differenceArea.exclusiveOr(newArea);
+			Shape oldClip = g2.getClip();
+			g2.setClip(differenceArea);
+			if (selectionRect.contains(newRect)) { // original rect is bigger
+				comp.repaint(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height);
+				GraphicsUtil.fillTransparentSelectionRectangle(g2, x,y,w,h);
+			} else if (newRect.contains(selectionRect)) { // new rect is bigger
+				GraphicsUtil.fillTransparentSelectionArea(g2, differenceArea);
+			}
+			g2.setClip(oldClip);
+		}
+
+		
+		selectionRect.setRect(newRect);
+	
+		
+	}
+}
 
 
