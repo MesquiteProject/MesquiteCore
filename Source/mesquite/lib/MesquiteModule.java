@@ -254,6 +254,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 
 	/*.................................................................................................................*/
+	public void incrementNumStarts(){
+		getModuleInfo().incrementNumStarts();
+	}
+	/*.................................................................................................................*/
 	/** superStartJob is called automatically when an employee is hired.  This is intended for use by superclasses of modules that need
 	their own constructor-like call, without relying on the subclass to be polite enough to call super.startJob().*/
 	public boolean superStartJob(String arguments, Object condition, boolean hiredByName){
