@@ -1531,7 +1531,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return taxas.size();
 	}
 
-	public TreeVector storeTree(MesquiteWindow parent, Tree tree){
+	public TreeVector storeTree(MesquiteWindow parent, Tree tree, boolean askIfSingleBlock){
 		if (ownerModule == null || tree == null)
 			return null;
 		TreeVector trees=null;
@@ -1543,7 +1543,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
 				trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
 			}
-			else if (numLists == 1){
+			else if (numLists == 1 && !askIfSingleBlock){
 				trees = manager.getTreeBlock(tree.getTaxa(), 0);
 			}
 			else {
@@ -1553,7 +1553,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				lists[numLists] = new MesquiteString("New Trees Block...", "New Trees Block...");
 				Object obj = ListDialog.queryList(parent, "Where to store tree?", "Choose tree block in which to store tree:",MesquiteString.helpString, lists, 0);
 				if (obj instanceof MesquiteString){
-					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", "Trees");
+					ListableVector v = manager.getTreeBlockVector();
+					String suggestedName = v.getUniqueName("Trees");
+					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", suggestedName);
 					MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
 					trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
 				}

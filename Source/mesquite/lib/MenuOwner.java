@@ -703,7 +703,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			spot.add(new MenuItem("  refer to current window"));
 			menuBar.add(spot);
 			int numBeforeSpecificMenus = menuBar.getMenuCount();
-			MesquiteMenu menu;  //Debugg.println if no menus added delete white and black boxes
+			MesquiteMenu menu;  
 			if (moduleMenuSpec!=null) {
 				menu = MesquiteMenu.getMenu(moduleMenuSpec);
 			}
@@ -999,7 +999,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	private MesquitePopup fillWindowMenu(Vector menuBar, MesquiteWindow whichWindow){
 		MesquitePopup wMenu = MesquitePopup.getPopupMenu(new MesquiteMenuSpec(null, "Window", module), whichWindow.infoBar);  
 		if (whichWindow!=null) {
-			if (whichWindow.permitViewMode()){   //Debugg.println  menuchange  these should belong to window itself
+			if (whichWindow.permitViewMode()){   
 				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
 				setViewModeMenu.add(new MesquiteMenuItem("Graphics (Standard)", module, MesquiteModule.makeCommand("showPage", whichWindow), Integer.toString(0)));  //commandArgument
 				setViewModeMenu.add(new MesquiteMenuItem("Text", module, module.makeCommand("showPage", whichWindow), Integer.toString(1)));  //commandArgument
@@ -1044,7 +1044,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	private MesquiteMenu fillWindowMenu(MesquiteMenuBar menuBar, MesquiteWindow whichWindow){
 		MesquiteMenu wMenu = MesquiteMenu.getMenu(new MesquiteMenuSpec(null, "Window", module));  
 		if (whichWindow!=null) {
-			if (whichWindow.permitViewMode()){   //Debugg.println  menuchange  these should belong to window itself
+			if (whichWindow.permitViewMode()){  
 				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
 				setViewModeMenu.add(new MesquiteMenuItem("Graphics (Standard)", module, MesquiteModule.makeCommand("showPage", whichWindow), Integer.toString(0)));  //commandArgument
 				setViewModeMenu.add(new MesquiteMenuItem("Text", module, module.makeCommand("showPage", whichWindow), Integer.toString(1)));  //commandArgument

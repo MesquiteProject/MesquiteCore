@@ -305,7 +305,6 @@ public class InfoBar extends MousePanel implements Commandable {
 		
 		int rel = getWidth()  - preReleaseLoc;
 		if (mod != null) {
-			//Debugg.println  : this has been deleted from infobar; hint that there are prerelease needs to be placed elsewhere
 			
 			if (prereleaseImage !=null && releaseImage!=null){
 				if (mod.anySubstantivePrereleases())

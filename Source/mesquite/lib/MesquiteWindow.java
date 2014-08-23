@@ -353,7 +353,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 	}
 	public void popIn(){
-		if ((getPopAsTile() || isLoneWindow()) && parentFrame!=null){
+		if (isLoneWindow())
+			getOwnerModule().getFileCoordinator().getModuleWindow().getParentFrame().popIn(this);
+		else if ((getPopAsTile()) && parentFrame!=null){
 			parentFrame.popIn(this);
 		}
 		ownerModule.resetEmbeddedMenus(this);

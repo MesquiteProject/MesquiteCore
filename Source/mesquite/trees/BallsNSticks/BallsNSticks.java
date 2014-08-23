@@ -620,13 +620,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
 		fillBranch(tree, node, g);
-		//Debugg.println ???take this over to fill terminal spot rather than box, to avoid predicted/reconstructed being confused with observed
 		// need to show more informative terminal information
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		fillBranchWithColors(tree, node, colors, g);
-		//Debugg.println ???take this over to fill terminal spot rather than box, to avoid predicted/reconstructed being confused with observed
 	}
 	/*_________________________________________________*/
 	private boolean ancestorIsTriangled(Tree tree, int node) {

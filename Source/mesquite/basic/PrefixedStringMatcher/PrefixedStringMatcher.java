@@ -29,7 +29,7 @@ public class PrefixedStringMatcher extends StringMatcher {
 	}
 	/** returns true if the options are set and accepted.*/
 	public  boolean queryOptions(){
-			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
+			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 				return true;
 
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -64,7 +64,6 @@ public class PrefixedStringMatcher extends StringMatcher {
 		catch (Exception e) {
 			return false;
 		}
-		//Debugg.println("nextChars1: " + nextChars1 + ",   nextChars2: " + nextChars2 + "     " + nextChars1.equalsIgnoreCase(nextChars2));
 		if (StringUtil.blank(nextChars1) || StringUtil.blank(nextChars2))
 			return false;
 		return nextChars1.equalsIgnoreCase(nextChars2);

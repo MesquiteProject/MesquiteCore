@@ -15,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
@@ -234,6 +235,8 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	}
 
 	public void fillTaxon(Graphics g, int m){}
+	public void redrawTaxa(Graphics g, int M) {}
+
 	public boolean pointInTaxon(int m, int x, int y){return false;}
 	public boolean taxonInRectangle(Taxa taxa, int it, int x1, int y1, int x2, int y2){
 		return false;}

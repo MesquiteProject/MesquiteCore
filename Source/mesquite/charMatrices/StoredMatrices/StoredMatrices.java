@@ -157,20 +157,20 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 			
 			if (taxa !=null && taxa.isDoomed()) {
 				taxa = null;
-				if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Taxa block that is in use has been deleted"))  //Debugg.println needs to check that options set well enough to proceed anyway
+				if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Taxa block that is in use has been deleted"))  
 					return;
 				
-				logln("Taxa null or being disposed; StoredMatrices will quit.");//Debugg.println
+				logln("Taxa null or being disposed; StoredMatrices will quit.");
 				iQuit();
 				return;
 				
 			}
 			data = null;
 			dataName.setValue("No matrix is currently in use");
-			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  //Debugg.println needs to check that options set well enough to proceed anyway
+			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  
 				return;
 			
-			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");  //Debugg.println
+			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");  
 			if (dataClass!=null) {
 				if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
 					alert("No compatible character matrices were found, and so Stored Matrices cannot be used.");

@@ -84,6 +84,8 @@ public class ManageCategoricalChars extends CharMatrixManager {
 				data.setName(title);  //because otherwise titles are not set for fused matrices within ManageCharacters, since on the outside they don't know if it's new
 		}
 		else {
+			if (fuse)
+				data.setSuppressSpecssetReading(true);
 			if (taxa == null)
 				taxa = data.getTaxa();
 			data.suppressChecksum = true;

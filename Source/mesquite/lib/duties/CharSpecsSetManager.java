@@ -221,7 +221,8 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 					MesquiteMessage.discreetNotifyUser("Sorry, a " + lowerCaseTypeName() + " could not be read because its associated data set was not found.  This can occur if you are fusing files, or if you have edited files by hand or with another program.  Another possible cause is that your current Mesquite configuration doesn't include packages to read matrices of that type.  Try restarting Mesquite after selecting \"Use all installed packages\" in the Activate/Deactivate submenu of the File menu.\n\nCommand: " + command);
 					return false;
 				}
-				
+				if (data.getSuppressSpecssetReading())
+					return true;  //acting as everything is fine, but in fact specset was ignored
 				if ("=".equals(token))
 					token = ParseUtil.getToken(command, startCharT);  //getting name of first model
 

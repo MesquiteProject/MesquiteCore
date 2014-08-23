@@ -142,10 +142,11 @@ public abstract class TreeDrawing  {
 	/*_________________________________________________*/
 	/** Does the basic inverting of the color of a branch **/
 	public  void fillBranchInverted (Tree tree, int N, Graphics g) {
-		if (GraphicsUtil.useXORMode(g, true))  {
+	//	if (GraphicsUtil.useXORMode(g, true))  {
 			g.setColor(Color.black);
-			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
+			//g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
 			//GraphicsUtil.setToXOR(g);
+			g.setColor(Color.yellow);
 			try{
 				fillBranch(tree, N, g);
 			}
@@ -154,7 +155,7 @@ public abstract class TreeDrawing  {
 			}
 			g.setPaintMode();
 			g.setColor(Color.black);
-		}
+//		}
 	}
 	
 	/** Fill branch N to indicate missing data */

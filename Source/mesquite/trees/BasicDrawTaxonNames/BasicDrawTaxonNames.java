@@ -715,11 +715,12 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			textRotator.assignBackground(null);
 			gL.setColor(Color.black);
 			ColorDistribution.setComposite(gL,composite);		
-			if (selected && GraphicsUtil.useXORMode(gL, false) && !namePolys[taxonNumber].isHidden()){
-				gL.setXORMode(Color.white);
-				gL.fillPolygon(namePolys[taxonNumber]);
+			if (selected  && !namePolys[taxonNumber].isHidden()){ //&& GraphicsUtil.useXORMode(gL, false)
+				//gL.setXORMode(Color.white);
+				//gL.fillPolygon(namePolys[taxonNumber]);
+				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
 
-				gL.setPaintMode();
+			//	gL.setPaintMode();
 			}
 
 		}
@@ -983,7 +984,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	public   void fillTaxon(Graphics g, int M) {
 		try {
 			if ((namePolys!=null) && (namePolys[M]!=null) && !namePolys[M].isHidden()) {
-				g.fillPolygon(namePolys[M]);
+				GraphicsUtil.fillTransparentBorderedSelectionPolygon(g,namePolys[M]);
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e) {

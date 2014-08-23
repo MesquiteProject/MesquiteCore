@@ -45,6 +45,7 @@ public class Taxa extends FileElement {
 
 	private boolean inFlux = false;
 	private boolean duplicate = false;
+	
 
 	public Taxa(int numTaxa) {
 		super(numTaxa); // For associable
@@ -81,7 +82,6 @@ public class Taxa extends FileElement {
 				}
 			}
 	}
-
 	/* ................................................................................................................. */
 	public String searchData(String s, MesquiteString commandResult) {
 		if (commandResult != null)

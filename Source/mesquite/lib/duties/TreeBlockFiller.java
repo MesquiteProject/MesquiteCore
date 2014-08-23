@@ -119,9 +119,6 @@ public abstract class TreeBlockFiller extends MesquiteModule  {
 		fillTreeBlock(treeList,numberIfUnlimited, false);
 	}
 
-	//TEMPORARY Debugg.println  Should be only in disconnectable tree block fillers
-	public void retrieveTreeBlock(TreeVector treeList, int numberIfUnlimited){
-	}
 
   }
 

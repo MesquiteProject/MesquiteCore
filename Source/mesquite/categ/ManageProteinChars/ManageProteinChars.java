@@ -76,8 +76,11 @@ public class ManageProteinChars extends CategMatrixManager {
 			if (fuse)
 				data.setName(title);  //because otherwise titles are not set for fused matrices within ManageCharacters, since on the outside they don't know if it's new
 		}
-		else
+		else {
+			if (fuse)
+				data.setSuppressSpecssetReading(true);
 			data.suppressChecksum = true;
+		}
 		//@@@@@@@@@@@@@@@@@@@@
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
 		while (!tok.equals(";")) {

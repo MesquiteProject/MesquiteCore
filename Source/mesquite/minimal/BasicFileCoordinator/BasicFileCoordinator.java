@@ -724,7 +724,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		getProject().incrementProjectWindowSuppression();
 		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null);
 			pt.run();
+			cleanFusedReadingSuppressions();
 			getProject().decrementProjectWindowSuppression();
+	}
+	void cleanFusedReadingSuppressions(){
+		int num = getProject().getNumberCharMatrices();
+		for (int im = 0; im< num; im++){
+			CharacterData data = getProject().getCharacterMatrix(im);
+			data.setSuppressSpecssetReading(false);
+		}
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 

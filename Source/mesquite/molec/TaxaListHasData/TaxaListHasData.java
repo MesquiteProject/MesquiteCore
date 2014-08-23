@@ -51,8 +51,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
-		addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  //Debugg.println  temporary for Wayne!!!!!!
-		addMenuItem("Delete *", makeCommand("deleteStar", this));  //Debugg.println  temporary for Wayne!!!!!!
+	//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
+	//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));

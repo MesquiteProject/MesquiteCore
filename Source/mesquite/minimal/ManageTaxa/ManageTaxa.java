@@ -986,7 +986,7 @@ public class ManageTaxa extends TaxaManager {
 
 
 			if (t==null) {
-				if (fuse)
+				if (fuse && merging)
 					t = newTaxa.getNexusBlock();
 				else
 					t = newTaxa.addToFile(file, getProject(), this);

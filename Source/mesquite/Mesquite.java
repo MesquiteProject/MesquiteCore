@@ -350,7 +350,7 @@ public class Mesquite extends MesquiteTrunk
 		try {
 			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
 		} catch (IOException e) {
-			Debugg.println(" IOException trying to read equivocal texture ");
+			MesquiteMessage.println(" IOException trying to read equivocal texture ");
 		}
 		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 
@@ -748,7 +748,7 @@ public class Mesquite extends MesquiteTrunk
 			String manualString = mesquiteDirectory  + sep + "docs/mesquite" + sep + "manual.html";
 			File manual = new File(manualString);
 
-			storedManualString = manualString;  //Debugg.println get rid of this stuff!
+			storedManualString = manualString; 
 		}
 
 		setMesquiteDirectoryPath();
@@ -1479,6 +1479,18 @@ public class Mesquite extends MesquiteTrunk
 		if (helpSearchManager != null)
 			helpSearchManager.searchData(s, window);
 	}
+	
+	public String getNumModuleStarts() {
+		StringBuffer sb=new StringBuffer();
+		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+			int starts = mmi.getNumStarts();
+			if (starts>0)
+				sb.append(mmi.getClassName() + "\t" + starts+StringUtil.lineEnding());
+		}
+		return sb.toString();
+	}
+
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	String noticeLocation = "http://"; //before release, change URL to "http://"
@@ -1820,7 +1832,11 @@ public class Mesquite extends MesquiteTrunk
 					reportMemory();
 					logln("==^^^^^^^^^^^^^^^^^^^^==");
 				}
+				
 			}
+			logln("\n");
+			logln("All modules that have been started at least once, and the number of times they have been started:");
+			logln(getNumModuleStarts());
 			/*
 				if (Listened.listenersRemaining>0) {
 					for (int i = 0; i<Listened.allListeners.size(); i++){

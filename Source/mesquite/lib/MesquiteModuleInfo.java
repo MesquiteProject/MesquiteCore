@@ -76,6 +76,7 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	boolean hideable = true;
 	int versionOfFirstRelease = 0;
 	boolean def = false;
+	int numStarts = 0;
 	NexusBlockTest nexusBlockTest;
 	NexusCommandTest nexusCommandTest;
 	CompatibilityTest compatibilityTest;
@@ -278,6 +279,16 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	public Vector getMacros(){
 		return macros;
 	}
+	public int getNumStarts() {
+		return numStarts;
+	}
+	public void setNumStarts(int numStarts) {
+		this.numStarts = numStarts;
+	}
+	public void incrementNumStarts() {
+		 numStarts++;
+	}
+
 	
 	/** returns name to be used in menu item to hire the module.  By default this is the same as the name of the module, but can be different if the
 	module overrides its own getNameForMenuItem method.*/
