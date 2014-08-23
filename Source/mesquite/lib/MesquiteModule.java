@@ -73,7 +73,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.0 beta";
+		return "3.0 beta 2";
 	}
 	/*.................................................................................................................*/
 	//this should be mesquiteFeedbackXXX.py where XXX is version as integer if a release version (e.g. mesquiteFeedback273.py)
