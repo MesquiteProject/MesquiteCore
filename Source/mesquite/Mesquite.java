@@ -350,7 +350,7 @@ public class Mesquite extends MesquiteTrunk
 		try {
 			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
 		} catch (IOException e) {
-			Debugg.println(" IOException trying to read equivocal texture ");
+			MesquiteMessage.println(" IOException trying to read equivocal texture ");
 		}
 		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 
@@ -748,7 +748,7 @@ public class Mesquite extends MesquiteTrunk
 			String manualString = mesquiteDirectory  + sep + "docs/mesquite" + sep + "manual.html";
 			File manual = new File(manualString);
 
-			storedManualString = manualString;  //Debugg.println get rid of this stuff!
+			storedManualString = manualString; 
 		}
 
 		setMesquiteDirectoryPath();

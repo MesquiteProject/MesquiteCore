@@ -594,7 +594,7 @@ class SaveRenameDeleteButton extends LoadSaveDeleteButton {
 		setForeground(ColorTheme.getExtInterfaceTextContrast());
 		//ColorTheme.getExtInterfaceElement());
 	}
-	void redoMenu() {//Debugg.println  don't use this if can't save because don't have permissions
+	void redoMenu() {// don't use this if can't save because don't have permissions
 		if (popup==null)
 			popup = new MesquitePopup(this);
 		popup.removeAll(); 

@@ -93,12 +93,11 @@ public class AlterAllMatrices extends FileProcessor {
    		if (proj == null)
    			return false;
    		boolean success = true;
+   		CompatibilityTest test = alterTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
-   			//Debugg.println checkCompatibility
-   			
-   			Debugg.println("Altering matrix " + im + " (" + data.getName() + ", id = " + data.getID() + ")");
-   			success = success && alterTask.alterData(data, null, null);
+   			if (test.isCompatible(data.getStateClass(), getProject(), this))
+   				success = success && alterTask.alterData(data, null, null);
    		}
    			
    		return success;

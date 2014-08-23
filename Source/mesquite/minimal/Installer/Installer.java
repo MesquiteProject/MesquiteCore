@@ -209,7 +209,7 @@ public class Installer extends MesquiteInit {
 			buff.append("\t</installationReceipt>\n");
 		}
 		buff.append("\n</mesquite>");
-		MesquiteFile.createDirectory(getInstallationSettingsPath() );  //Debugg.println : this is a problem if user doesn't have write permission
+		MesquiteFile.createDirectory(getInstallationSettingsPath() );  
 		MesquiteFile.putFileContents(getInstallationSettingsPath() + "receipts.xml", buff.toString(), true, false);
 	}
 

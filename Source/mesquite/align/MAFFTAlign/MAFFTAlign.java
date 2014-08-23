@@ -233,7 +233,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 		if (!MesquiteTrunk.isWindows())
 			shellScript.append("  " + StringUtil.protectForUnix(inFilePath) + " > " + StringUtil.protectForUnix(outFilePath));
 		else
-			shellScript.append(" --out " + StringUtil.protectForUnix(outFilePath) + " " + StringUtil.protectForUnix(inFilePath));  //Debugg.println need to check MAFFT windows format
+			shellScript.append(" --out " + StringUtil.protectForUnix(outFilePath) + " " + StringUtil.protectForUnix(inFilePath));  
 	}
 
 
