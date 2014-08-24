@@ -41,7 +41,7 @@ public class DuplicateTaxa extends TaxonUtility {
 		public  boolean operateOnTaxa(Taxa taxa){
 			int numSelected = taxa.numberSelected();
 			if (numSelected<1){
-				discreetAlert( "You need to select at least one taxa to be duplicated.");
+				discreetAlert( "You need to select at least one taxon to be duplicated.");
 				return false;
 			}
 			boolean[] selected = new boolean[taxa.getNumTaxa()];
@@ -99,11 +99,11 @@ public class DuplicateTaxa extends TaxonUtility {
 		 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 		 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 		public int getVersionOfFirstRelease(){
-			return 276;  
+			return 300;  
 		}
 		/*.................................................................................................................*/
 		public boolean isPrerelease(){
-			return true;
+			return false;
 		}
 
 	}

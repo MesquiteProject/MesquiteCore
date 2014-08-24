@@ -74,17 +74,28 @@ public class AddCharacter extends ContDataAlterer {
 		return true;
 	}
 	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 300;  
+	}
+	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  //put release version
+		return false;  //put release version
 	}
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Add character";
+		return "Add Character";
+   	 }
+    		/*.................................................................................................................*/
+    	 public String getNameForMenuItem() {
+		return "Add Character...";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Alters continuous data by adding a continuous character.  All items of the matrix are similarly modified." ;
+ 		return "Alters continuous data by adding a continuous character from a source of characters.  All items of the matrix are similarly modified." ;
    	 }
    	 
 }

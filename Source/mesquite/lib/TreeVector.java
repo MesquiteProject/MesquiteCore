@@ -505,8 +505,14 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 					notifyListeners(this, (new Notification(MesquiteListener.PARTS_DELETED).setNotificationNumber(notification.getNotificationNumber()))); 
 			}
 		}
-		else if (!(suppressNotifyL && threadOfTreeChange == Thread.currentThread()) && obj instanceof Tree && caller != this && Notification.getCode(notification) != MesquiteListener.ANNOTATION_CHANGED && Notification.getCode(notification) != MesquiteListener.ANNOTATION_ADDED && Notification.getCode(notification) != MesquiteListener.ANNOTATION_DELETED)
+		else {
+			if (!(suppressNotifyL && threadOfTreeChange == Thread.currentThread()) 
+				&& obj instanceof Tree && caller != this 
+				&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_CHANGED 
+				&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_ADDED 
+				&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_DELETED)
 			notifyListeners(this, (new Notification(MesquiteListener.PARTS_CHANGED).setNotificationNumber(notification.getNotificationNumber()))); 
+		}
 	}
 	boolean deleteEmptyTrees(){
 		int count = 0;
