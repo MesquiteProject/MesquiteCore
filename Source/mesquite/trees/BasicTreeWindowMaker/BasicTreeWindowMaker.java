@@ -3081,10 +3081,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	/*_________________________________________________*/
 	NameReference branchNotesRef = NameReference.getNameReference("note");
 	private int countinvert = 0;
-	public   void InvertBranch(Graphics g, int N, MesquiteInteger highlight) {
-		InvertBranch(g,N,highlight, true);
+	
+	public   void InvertBranchOld(Graphics g, int N, MesquiteInteger highlight) {
+		InvertBranchOld(g,N,highlight, true);
 	}
-	public   void InvertBranch(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
+	public   void InvertBranchOld(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
 		Tree t = treeDisplay.getTree();
 		if (t!=null){
 			MesquiteDouble fraction = new MesquiteDouble();
@@ -3093,6 +3094,25 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				highlight.setValue(N);   // sets the highlighed branch
 				if (treeDrawing!=null && !treeDisplay.repaintPending()){
 					treeDrawing.fillBranchInverted(t, N, g);
+				}
+				//colorInvertBranch(t,N,g);
+				showBranchExplanation(N);
+			}
+		}
+	}
+	/*_________________________________________________*/
+	public   void HighlightBranch(Graphics g, int N, MesquiteInteger highlight) {
+		HighlightBranch(g,N,highlight, true);
+	}
+	public   void HighlightBranch(Graphics g, int N, MesquiteInteger highlight, boolean onlyIfStillInBranch) {
+		Tree t = treeDisplay.getTree();
+		if (t!=null){
+			MesquiteDouble fraction = new MesquiteDouble();
+			if (!onlyIfStillInBranch || findBranch(treeDisplay.getMouseX(), treeDisplay.getMouseY(), fraction) == N){ //still in N
+				TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
+				highlight.setValue(N);   // sets the highlighed branch
+				if (treeDrawing!=null && !treeDisplay.repaintPending()){
+					treeDrawing.highlightBranch(t, N, g);
 				}
 				//colorInvertBranch(t,N,g);
 				showBranchExplanation(N);
@@ -3127,14 +3147,28 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 	}
 	/*_________________________________________________*/
-	public   void RevertBranch(Graphics g, MesquiteInteger highlight) {
+	public   void RevertBranchOld(Graphics g, MesquiteInteger highlight) {
 		//treeDisplay.deletePendingMoveDrag();
 
 		int wasHighlighted = highlight.getValue();
 		highlight.setValue(0);
 		if (wasHighlighted> 0 && !treeDisplay.repaintPending()){
-			treeDisplay.repaint();  // need to do it this way as XOR mode no good
-			//			treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), wasHighlighted, g);
+			treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), wasHighlighted, g);
+	//		treeDisplay.getTreeDrawing().fillBranchInverted(t, N, g);
+		}
+		showTreeAnnotation();
+		//setAnnotation("", null);
+		//treeAnnotationShown = false; //so that the base Explanation can know whether to refer to the annotation
+	}
+	/*_________________________________________________*/
+	public   void UnhighlightBranch(Graphics g, MesquiteInteger highlight) {
+		//treeDisplay.deletePendingMoveDrag();
+
+		int wasHighlighted = highlight.getValue();
+		highlight.setValue(0);
+		if (wasHighlighted> 0 && !treeDisplay.repaintPending()){
+			//treeDisplay.repaint();  // need to do it this way as XOR mode no good
+			treeDisplay.getTreeDrawing().unhighlightBranch(treeDisplay.getTree(), wasHighlighted, g);
 			//treeDisplay.getTreeDrawing().fillBranchInverted(t, N, g);
 		}
 		showTreeAnnotation();
@@ -3160,21 +3194,21 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (highlightedBranch.getValue() != 0) {  // we are already in a branch
 			int wasHighlighted = highlightedBranch.getValue();
 			if (branchFound==0) {
-				RevertBranch(g, highlightedBranch);
+				UnhighlightBranch(g, highlightedBranch);
 				notifyExtrasOfBranchExit(g, wasHighlighted);
 
 				setTreeName(tree);  
 				setExplanation(baseExplanation, false);
 			}
 			else if (branchFound!=highlightedBranch.getValue())  {
-				RevertBranch(g, highlightedBranch); 
-				InvertBranch(g, branchFound, highlightedBranch);
+				UnhighlightBranch(g, highlightedBranch); 
+				HighlightBranch(g, branchFound, highlightedBranch);
 				notifyExtrasOfBranchExit(g, wasHighlighted);
 				notifyExtrasOfBranchEnter(g, branchFound);
 			}
 		}
 		else if (branchFound!=0) {   // we weren't in a branch, but now we found one
-			InvertBranch(g, branchFound, highlightedBranch); 
+			HighlightBranch(g, branchFound, highlightedBranch); 
 			notifyExtrasOfBranchEnter(g, branchFound);
 			if (tree.nodeIsTerminal(branchFound)) {
 				Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(branchFound));
@@ -3276,7 +3310,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else {
 				if (highlightedBranch.getValue() != 0) {
 					notifyExtrasOfBranchExit(g, highlightedBranch.getValue());
-					RevertBranch(g, highlightedBranch);
+					UnhighlightBranch(g, highlightedBranch);
 				}
 				currentTreeTool.branchTouched(branchFound, x, y, tree, modifiers);
 				//branchFrom = 0;
@@ -3359,7 +3393,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			if (highlightedBranch.getValue() != 0) {
 				notifyExtrasOfBranchExit(g, highlightedBranch.getValue());
-				RevertBranch(g, highlightedBranch);
+				UnhighlightBranch(g, highlightedBranch);
 			}
 			else if (highlightedTaxon >=0)
 				RevertTaxon(g, highlightedTaxon);
@@ -3427,12 +3461,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int branchFound =findBranch(x, y, fraction);
 		if (branchFound > 0) {
 			if (branchFound != dropHighlightedBranch.getValue()) {
-				RevertBranch(g, dropHighlightedBranch);
-				InvertBranch(g, branchFound, dropHighlightedBranch);
+				UnhighlightBranch(g, dropHighlightedBranch);
+				HighlightBranch(g, branchFound, dropHighlightedBranch);
 			}
 		}
 		else if (dropHighlightedBranch.getValue()>0)
-			RevertBranch(g, dropHighlightedBranch);
+			UnhighlightBranch(g, dropHighlightedBranch);
 
 		if (branchFrom!=0) {
 			if (currentTreeTool.informTransfer()) {
@@ -3548,7 +3582,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		
 		if ((nodesToUnselect!=null && nodesToUnselect.size()>0) || (taxaToUnselect!=null && taxaToUnselect.size()>0)){
 			treeDisplay.update(g);
-			//GraphicsUtil.drawCross(g,fieldTouchX, fieldTouchY, 10);
+			GraphicsUtil.drawCross(g,fieldTouchX, fieldTouchY, 10);
 			nodesToSelect= nodes;
 			taxaToSelect= taxons;
 		} else {
@@ -3558,7 +3592,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (nodesToSelect.size()>0){
 			for (int i=0; i<nodesToSelect.size(); i++){
 				MesquiteInteger mi = (MesquiteInteger) nodesToSelect.elementAt(i);
-				InvertBranch(g, mi.getValue(), highlightedBranch, false);
+				HighlightBranch(g, mi.getValue(), highlightedBranch, false);
 			}
 		}
 		if (taxaToSelect.size()>0){
