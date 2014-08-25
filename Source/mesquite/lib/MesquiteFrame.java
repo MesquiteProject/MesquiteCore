@@ -145,7 +145,12 @@ public class MesquiteFrame extends Frame implements Commandable {
 	public void dispose() {
 		if (alreadyDisposed)
 			return;
-		removeAll();
+		try{
+			removeAll();
+		}
+		catch (Exception e){
+			//strange things can happen with threading...
+		}
 		alreadyDisposed = true;
 		if (activeWindow == this)
 			activeWindow = null;
