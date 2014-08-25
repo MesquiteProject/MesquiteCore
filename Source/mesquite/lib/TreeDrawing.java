@@ -142,20 +142,38 @@ public abstract class TreeDrawing  {
 	/*_________________________________________________*/
 	/** Does the basic inverting of the color of a branch **/
 	public  void fillBranchInverted (Tree tree, int N, Graphics g) {
-	//	if (GraphicsUtil.useXORMode(g, true))  {
+		if (GraphicsUtil.useXORMode(g, true))  {
 			g.setColor(Color.black);
-			//g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
-			//GraphicsUtil.setToXOR(g);
+			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
+		//	GraphicsUtil.setToXOR(g);
+			//	g.setColor(Color.yellow);
+			try{
+				fillBranch(tree, N, g);
+			}
+			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
+
+			}
+			g.setPaintMode();
+			g.setColor(Color.black);
+		}
+	}
+	/*_________________________________________________*/
+	/** Does the basic highlighting of a branch **/
+	public  void highlightBranch (Tree tree, int N, Graphics g) {
 			g.setColor(Color.yellow);
 			try{
 				fillBranch(tree, N, g);
 			}
 			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
-			
+
 			}
 			g.setPaintMode();
 			g.setColor(Color.black);
-//		}
+	}
+	/*_________________________________________________*/
+	/** Does the basic unhighlighting of a branch **/
+	public  void unhighlightBranch (Tree tree, int N, Graphics g) {
+		treeDisplay.repaint();
 	}
 	
 	/** Fill branch N to indicate missing data */

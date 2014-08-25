@@ -366,17 +366,24 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 		return true;  //TODO: respond
 	}
 	/*_________________________________________________*/
-
-	public   void InvertBranch(TreeDisplay treeDisplay, Graphics g, int N) {
-
+	public   void InvertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=N;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	}
-
 	/*_________________________________________________*/
-	public   void RevertBranch(TreeDisplay treeDisplay, Graphics g, int N) {
+	public   void RevertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=0;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
+	}
+	/*_________________________________________________*/
+	public   void HighlightBranch(TreeDisplay treeDisplay, Graphics g, int N) {
+		highlightedBranch=N;
+		treeDisplay.getTreeDrawing().highlightBranch(treeDisplay.getTree(), N, g);
+	}
+	/*_________________________________________________*/
+	public   void UnhighlightBranch(TreeDisplay treeDisplay, Graphics g, int N) {
+		highlightedBranch=0;
+		treeDisplay.getTreeDrawing().unhighlightBranch(treeDisplay.getTree(), N, g);
 	}
 	/*_________________________________________________*/
 	public   void ScanFlash(TreeDisplay treeDisplay, Graphics g, int x, int y, int modifiers) {
@@ -392,18 +399,18 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 		if (highlightedBranch != 0) {
 			if (branchFound==0) {
 				notifyExtrasOfBranchExit(treeDisplay, g, highlightedBranch);
-				RevertBranch(treeDisplay, g, highlightedBranch);
+				UnhighlightBranch(treeDisplay, g, highlightedBranch);
 			}
 			else if (branchFound!=highlightedBranch)  {
 				notifyExtrasOfBranchExit(treeDisplay, g, highlightedBranch);
-				RevertBranch(treeDisplay, g, highlightedBranch); 
+				UnhighlightBranch(treeDisplay, g, highlightedBranch); 
 				notifyExtrasOfBranchEnter(treeDisplay, g, branchFound);
-				InvertBranch(treeDisplay, g, branchFound);
+				HighlightBranch(treeDisplay, g, branchFound);
 			}
 		}
 		else if (branchFound!=0) {
 			notifyExtrasOfBranchEnter(treeDisplay, g, branchFound);
-			InvertBranch(treeDisplay, g, branchFound); 
+			HighlightBranch(treeDisplay, g, branchFound); 
 		}
 
 	}
@@ -421,7 +428,7 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 		if (branchFound!=0) {
 			if (highlightedBranch != 0) {
 				notifyExtrasOfBranchExit(treeDisplay, g, highlightedBranch);
-				RevertBranch(treeDisplay, g, highlightedBranch);
+				UnhighlightBranch(treeDisplay, g, highlightedBranch);
 			}
 			notifyExtrasOfBranchTouch(treeDisplay, g, branchFound);
 			return true;

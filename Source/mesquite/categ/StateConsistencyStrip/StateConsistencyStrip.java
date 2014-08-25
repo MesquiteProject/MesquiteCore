@@ -57,6 +57,9 @@ public class StateConsistencyStrip extends DataColumnNamesAssistant {
 		
 		return true;
   	 }
+	public boolean loadModule(){
+		return false; // not ready
+	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CategStateForCharacter.class, getName() + " needs a module to provide a character state (e.g., the consensus state) for each character.",
 		"The character state provider is chosen initially or using the State Calculator submenu");

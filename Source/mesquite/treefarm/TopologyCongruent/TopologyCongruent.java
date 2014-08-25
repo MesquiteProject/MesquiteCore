@@ -14,7 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.TopologyCongruent;
 
 /*New October 7, '08. oliver
- * Modified 16 October '08  to use the built-in Tree.equalsTopology method - DRM 
+ * Modified 16 October 2008  to use the built-in Tree.equalsTopology method - DRM 
  * January 2012: added non-exact match. */
 import java.awt.*;
 

@@ -807,7 +807,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 	
 	public void resetEmbeddedMenus(MesquiteWindow whichWindow){
-		if (window.getShowInfoBar() && (MesquiteTrunk.isMacOSX() || !whichWindow.isLoneWindow())) // && MesquiteTrunk.isMacOSX())   //these menus belong in the window, as long as an info bar is shown
+		if ((window != null && window.getShowInfoBar()) && (MesquiteTrunk.isMacOSX() || (whichWindow == null || !whichWindow.isLoneWindow()))) // && MesquiteTrunk.isMacOSX())   //these menus belong in the window, as long as an info bar is shown
 			embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
 		else
 			embeddedMenusVector = null;

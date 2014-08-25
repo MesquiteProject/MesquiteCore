@@ -151,7 +151,7 @@ public class StoredProbModel extends ProbModelSourceLike {
  			if (MesquiteInteger.isCombinable(whichModel))
  				model = (ProbabilityModel)getProject().getCharacterModel(getCompatibilityInfo(currentStateClass), whichModel);
  			
- 			if ((model !=null || !MesquiteInteger.isCombinable(whichModel)) && currentStateClass == null && name !=null && !(model.getName().equals(name))){ // not restricted state class; could be scripting without
+ 			if (((model !=null && model instanceof ProbabilityModel) || !MesquiteInteger.isCombinable(whichModel)) && currentStateClass == null && name !=null && !(model.getName().equals(name))){ // not restricted state class; could be scripting without
  				model = (ProbabilityModel)getProject().getCharacterModel(name);
  			}
  			

@@ -180,7 +180,7 @@ public class ConsensusTree extends TreeSource {
 				iConsenser.reset(taxa);
 			boolean done = false;
 			int count = 0;
-			logln("Consensing trees " + startTree);
+			logln("Consensing trees ");
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
 				if (t == null)

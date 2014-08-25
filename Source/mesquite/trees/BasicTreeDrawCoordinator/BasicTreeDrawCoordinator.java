@@ -731,7 +731,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 				stage = 6;
 				if (bailOut(initialPending)) return;
 				if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
-					getTreeDrawing().fillBranchInverted(tree, getHighlightedBranch(),g); 
+					getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
 				stage = 7;
 				if (bailOut(initialPending)) return;
 			}
