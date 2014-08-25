@@ -560,6 +560,8 @@ public class Mesquite extends MesquiteTrunk
 		String ackn = "Mesquite makes use of BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, and iText by Lowagie & Soares  .";
 		ackn += "  Some modules make use of JAMA by The MathWorks and NIST, and JSci by Mark Hale, Jaco van Kooten and others (see Mesquite source code for details).";
 		ackn += "  The PAL library by Drummond and Strimmer is used by the GTR substitution model for DNA sequence simulations.";
+		if (MesquiteTrunk.isWindows())
+			ackn += " The Windows executable is wrapped with Launch4j by Grzegorz Kowal, copyright Grzegorz Kowal 2005-2014, distributed under a BSD license (http://opensource.org/licenses/bsd-license.html) and a MIT license (http://opensource.org/licenses/mit-license.html).";
 		logln(ackn);
 
 		logln(" ");
