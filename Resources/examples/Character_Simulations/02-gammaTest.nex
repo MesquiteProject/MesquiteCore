@@ -559,7 +559,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Manual  'mesquite:docs/mesquite/RandomSimul/simDNA.html';
+				addWebLink Manual  'http://mesquiteproject.wikispaces.com/Simulating+DNA+Evolution';
 			endTell;
 			showWindow;
 		endTell;
