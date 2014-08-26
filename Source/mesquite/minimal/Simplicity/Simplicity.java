@@ -68,8 +68,6 @@ public class Simplicity extends SimplicityManagerModule {
 		if (InterfaceManager.enabled)
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Lock In Simple Mode", makeCommand("toggleLockSimplicity",  this), lockSimplicity);
 		InterfaceManager.simplicityModule = this;  //remember me
-	//	if (MesquiteTrunk.debugMode)
-	//		mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Test Error Reporting", makeCommand("testError", this));
 		loadPreferences();
 		return true;
 	}
@@ -498,9 +496,6 @@ public class Simplicity extends SimplicityManagerModule {
 				InterfaceManager.setSimpleMode(true);
 				InterfaceManager.reset();
 			}
-		}
-		else if (checker.compare(this.getClass(), "Sends Error to Server", null, commandName, "testError")) {
-			reportToHome("TESTING ERROR REPORTING");
 		}
 		else if (checker.compare(this.getClass(), "Deletes a simplification", null, commandName, "delete")) {
 			int i = MesquiteInteger.fromString( new Parser(arguments));

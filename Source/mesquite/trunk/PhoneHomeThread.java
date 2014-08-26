@@ -40,8 +40,10 @@ public class PhoneHomeThread extends Thread {
 	public void checkForMessagesFromAllHomes(){
 		//MesquiteTrunk.incrementMenuResetSuppression();
 		try {
-			if (!MesquiteTrunk.suppressVersionReporting)
-				BaseHttpRequestMaker.contactServer(Integer.toString(MesquiteTrunk.getBuildNumber()), "http://mesquiteproject.org/pyMesquiteStartup");
+			if (!MesquiteTrunk.suppressVersionReporting){
+				StringBuffer response = new StringBuffer();
+				BaseHttpRequestMaker.contactServer(Integer.toString(MesquiteTrunk.getBuildNumber()), "http://mesquiteproject.org/pyMesquiteStartup", response);
+			}
 			//if mq3rs is included in response, then this is real response
 		}
 		catch (Throwable t){

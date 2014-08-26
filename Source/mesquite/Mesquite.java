@@ -681,6 +681,8 @@ public class Mesquite extends MesquiteTrunk
 
 		if (verboseStartup) System.out.println("main init 32 ");
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
+		if (MesquiteTrunk.debugMode)
+			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
 	} 
 
 	/*.................................................................................................................*/
@@ -2199,6 +2201,9 @@ public class Mesquite extends MesquiteTrunk
 			}
 
 		}	
+		else if (checker.compare(this.getClass(), "Sends Error to Server", null, commandName, "testError")) {
+			reportProblemToHome("TESTING ERROR REPORTING");
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
