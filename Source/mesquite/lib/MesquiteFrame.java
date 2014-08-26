@@ -43,6 +43,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 	int num = 0;
 	int id = 0;
+	int leftPoptile = -1;
 	Panel main;
 	private Panel resources;
 	Panel  poptile;
@@ -929,12 +930,14 @@ public class MesquiteFrame extends Frame implements Commandable {
 				main.setVisible(true);
 				if (effectivePoptileWidth>0){
 					poptile.setVisible(true);
+					leftPoptile = main.getWidth() + main.getX();
 					poptile.setBounds(main.getWidth() + main.getX()+effectivePBETWEENWIDTH, insets.top + tabHeight, effectivePoptileWidth, getBounds().height - insets.top - insets.bottom - tabHeight );
 					pBetweenPanel.setBounds(main.getWidth() + main.getX(), insets.top + tabHeight, effectivePBETWEENWIDTH, getBounds().height - insets.top - insets.bottom - tabHeight);
 					pBetweenPanel.setVisible(true);
 					poptile.doLayout();
 				}
 				else {
+					leftPoptile = -1;
 					poptile.setVisible(false);
 					poptile.setBounds(0,0,0,0);
 					pBetweenPanel.setVisible(false);
@@ -981,12 +984,14 @@ public class MesquiteFrame extends Frame implements Commandable {
 				main.setBounds(effectiveResourcesWidth + insets.left, insets.top, getBounds().width - insets.left - insets.right - effectiveResourcesWidth -effectivePoptileWidth-effectivePBETWEENWIDTH, getBounds().height - insets.top - insets.bottom );
 				if (effectivePoptileWidth>0){
 					poptile.setVisible(true);
+					leftPoptile = main.getWidth() + main.getX();
 					poptile.setBounds(main.getWidth() + main.getX()+effectivePBETWEENWIDTH, insets.top, effectivePoptileWidth, getBounds().height - insets.top - insets.bottom );
 					pBetweenPanel.setBounds(main.getWidth() + main.getX(), insets.top, effectivePBETWEENWIDTH, getBounds().height - insets.top - insets.bottom);
 					pBetweenPanel.setVisible(true);
 					poptile.doLayout();
 				}
 				else {
+					leftPoptile = -1;
 					poptile.setVisible(false);
 					poptile.setBounds(0,0,0,0);
 					pBetweenPanel.setVisible(false);
@@ -1487,7 +1492,11 @@ class FrameTabsPanel extends MousePanel {
 		int iconWidth = 0;
 		if (icon != null || w == frame.projectWindow)
 			iconWidth = 20;
-		drawTab(g, whichTab, frontness, tabLeft, tabRight, panelHeight, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
+		
+		
+			
+
+		drawTab(g, whichTab, w, frontness, tabLeft, tabRight, panelHeight, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
 		if (w == frame.projectWindow)
 			g.setClip(tabLeft-1, 0, tabRight -tabLeft+1, panelHeight-tabBottomLineHeight-1);
 		else
@@ -1877,7 +1886,16 @@ class FrameTabsPanel extends MousePanel {
 	}
 	/*.................................................................................................................*/
 
-	void drawTab(Graphics g, int whichTab, int frontness, int tabLeft, int tabRight, int height, int projectPanelWidth, boolean isProjectTab, boolean isMesquiteWindow){
+	void drawTab(Graphics g, int whichTab, MesquiteWindow w, int frontness, int tabLeft, int tabRight, int height, int projectPanelWidth, boolean isProjectTab, boolean isMesquiteWindow){
+		// to figure out whether strong lower edge of tab is needed, find out left edge of poptile, if showing
+		boolean forceThickLine = false;
+		if (frame.leftPoptile>0){
+			boolean popped = w.getTileLocation() == MesquiteFrame.POPTILE;
+			if (popped && tabRight<frame.leftPoptile)
+				forceThickLine = true;
+			else if (!popped && !isMesquiteWindow && !isProjectTab && tabLeft>frame.leftPoptile)
+				forceThickLine = true;
+		}
 		int roundness = 10;  
 		int top = 4;  
 		if (!(g instanceof Graphics2D))
@@ -1894,7 +1912,12 @@ class FrameTabsPanel extends MousePanel {
 				g2.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);  //highlight edge of tab
 				g2.setColor(Color.black);  //black
 				g2.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1); //primary edge of tab
-				if (!isMesquiteWindow){
+				if (forceThickLine){
+					g2.setColor(ColorTheme.getContentFrame());
+					g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, 4);
+					g2.drawLine(tabLeft-1, height-1, tabRight, height-1);
+				}
+				else if (!isMesquiteWindow){
 					g2.setColor(Color.lightGray);
 					g2.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);  //line under the tab
 				}
@@ -1907,8 +1930,16 @@ class FrameTabsPanel extends MousePanel {
 				//	g.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
 				g2.setColor(Color.darkGray);
 				g2.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1);  //primary edge of tab
+				
+				if (forceThickLine){
+					g2.setColor(ColorTheme.getContentFrame());
+					g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, 4);
+					g2.drawLine(tabLeft-1, height-1, tabRight, height-1);
+				}
+				else {
 				g2.setColor(Color.lightGray);
 				g2.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);//line under the tab
+				}
 			}
 		}
 		else { //a tab for a window hidden in the background
