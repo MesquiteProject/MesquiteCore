@@ -53,7 +53,7 @@ import mesquite.lib.*;
 public class BaseHttpRequestMaker {
     private static final int MAX_BYTES = 5000000;   
 
-	public static final String MESQUITE_VERSION_URI = "http://mesquiteproject.org/cgi-bin/mesquiteStartup.py";
+	public static final String MESQUITE_VERSION_URI = "http://mesquiteproject.org/pyMesquiteStartup";
 
 	public static boolean contactServer(String s, String URI) {
 		HttpClient client = new HttpClient();

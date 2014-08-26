@@ -153,7 +153,7 @@ public class Mesquite extends MesquiteTrunk
 		configurations = new ListableVector(); 
 		packages = new ListableVector();
 		if (isPrerelease())
-			errorReportURL =  "http://mesquiteproject.org/cgi-bin/mesquiteFeedbackPrerelease.py";
+			errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedbackPrerelease";
 
 		/* 
 (1) Look for Mesquite.pref file in .Mesquite_Prefs folder of user.home.  If exists, read it 
