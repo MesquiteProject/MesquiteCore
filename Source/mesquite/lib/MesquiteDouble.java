@@ -810,15 +810,21 @@ public class MesquiteDouble implements Listable {
 			lowerLimit*=0.1;
 		}
 		DecimalFormat myFormatter=null;
+		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
+		formatSymbols.setDecimalSeparator('.');
+		formatSymbols.setExponentSeparator("E");
+		formatSymbols.setMinusSign('-');
+		formatSymbols.setGroupingSeparator(',');
+		formatSymbols.setZeroDigit('0');
 		
 		if (allowExponentialNotation){
 			if (d>10000 || d<lowerLimit)
-				myFormatter = new DecimalFormat("0."+dec+"E0");
+				myFormatter = new DecimalFormat("0."+dec+"E0",formatSymbols);
 			else 
-				myFormatter = new DecimalFormat("#."+dec);
+				myFormatter = new DecimalFormat("#."+dec,formatSymbols);
 		}
 		else {
-			myFormatter = new DecimalFormat("#."+dec);
+			myFormatter = new DecimalFormat("#."+dec,formatSymbols);
 		}
 
 		sFromDouble = myFormatter.format(d);
