@@ -89,7 +89,7 @@ public class LogWindow extends ConsoleWindow implements SystemWindow {
 	public void containerSizeSet(int width, int height) {
 	}
 	/*.................................................................................................................*/
-	/** Sets the window size.  To be used instead of setSize. */
+	/** Sets the window size.  To be used instead of setSize.  */
 	public void setWindowSize(int width, int height) {
 		super.setWindowSize(width, height);
 		if (tA!=null)
