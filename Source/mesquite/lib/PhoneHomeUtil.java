@@ -188,7 +188,7 @@ public class PhoneHomeUtil {
 			return mmi.getVersionInt();
 	}
 	/*.................................................................................................................*/
-	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, MesquiteInteger countNotices, int forMesquiteVersionLessOrEqual, 
+	public static void processSingleNotice(MesquiteModuleInfo mmi, StringBuffer notices, boolean hideFromDialog, MesquiteInteger countNotices, int forMesquiteVersionLessOrEqual, 
 			int noticeNumber, String noticeType, String message, int lastVersionNoticed, int lastNoticeForMyVersion, int lastNotice, 
 			PhoneHomeRecord phoneHomeRecord, Vector osVector, 
 			int forBuildNumberEqualOrGreater, int forBuildNumberEqualOrLess, int forBuildNumberExactly, 
@@ -302,12 +302,14 @@ public class PhoneHomeUtil {
 				boolean skip = false;
 				if (noticeType != null && noticeType.equalsIgnoreCase("alert")){
 					//notices.append( countNotices.toString() + ". " + message + "<hr>\n");
-					notices.append(message + "<hr>\n");
-					countNotices.increment();
+					if (!hideFromDialog){
+						notices.append(message + "<hr>\n");
+						countNotices.increment();
+				}
 				}
 				//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 				else if (noticeType != null && noticeType.equalsIgnoreCase("update")){
-					if (v != null){
+					if (v != null && !hideFromDialog){
 						MesquiteString java = (MesquiteString)v.getElement("java");
 						MesquiteString requiredName = (MesquiteString)v.getElement("requires");
 						MesquiteString requiredPath = (MesquiteString)v.getElement("requiredPath");
@@ -525,6 +527,10 @@ public class PhoneHomeUtil {
 				int forBuildNumberEqualOrGreater = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberEqualOrGreater"));
 				int forBuildNumberEqualOrLess = MesquiteInteger.fromString(messageElement.elementText("forBuildNumberEqualOrLess"));
 				int noticeNumber = MesquiteInteger.fromString(messageElement.elementText("noticeNumber"));
+				String hideFromDialogString = messageElement.elementText("hideFromDialog");
+				boolean hideFromDialog = false;
+				if (hideFromDialogString != null && hideFromDialogString.equalsIgnoreCase("true"))
+					hideFromDialog = true;
 				String messageType = messageElement.elementText("messageType");
 				String message = messageElement.elementText("message");
 				Vector osVector = null;
@@ -593,7 +599,7 @@ public class PhoneHomeUtil {
 				//^^^^^^^^^^^^^^^^====install/update system ====^^^^^^^^^^^^^^^^
 
 				// process other notice tags here if they are present
-				processSingleNotice(mmi, notices, countNotices, forMesquiteVersionLessOrEqual, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberEqualOrGreater, forBuildNumberEqualOrLess, forBuildNumberExactly, forPackageVersionEqualOrGreater, forPackageVersionEqualOrLess, forPackageVersionExactly, v, adHoc);
+				processSingleNotice(mmi, notices, hideFromDialog, countNotices, forMesquiteVersionLessOrEqual, noticeNumber, messageType, message,  lastVersionNoticed, lastNoticeForMyVersion,  lastNotice,phoneHomeRecord, osVector, forBuildNumberEqualOrGreater, forBuildNumberEqualOrLess, forBuildNumberExactly, forPackageVersionEqualOrGreater, forPackageVersionEqualOrLess, forPackageVersionExactly, v, adHoc);
 
 			}
 			//INSTALLER: here go through updateRecords to figure out which are already installed, which not; which have newer versions already installed, etc.

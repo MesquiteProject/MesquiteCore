@@ -1976,7 +1976,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			setVisible(vis);
 	}
 	public void removeAll(){
+		try {
 		outerContents.removeAll();
+		}
+		catch (Exception e){
+			// sometimes exceptions are thrown, possible because of mistimed threads
+		}
 	}
 	/** Shows the window */
 	public void setVisible(boolean vis) {

@@ -68,16 +68,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "25 August 2014";   
+		return "27 August 2014";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.0 beta 2";
+		return "3.0 beta 3";
 	}
 	/*.................................................................................................................*/
-	//this should be mesquiteFeedbackXXX.py where XXX is version as integer if a release version (e.g. mesquiteFeedback273.py)
-	public static String errorReportURL =  "http://mesquiteproject.org/cgi-bin/mesquiteFeedback275.py";
+	/*.................................................................................................................*/
+	//As of 3.0 this becomes fixed, not changing with version)
+	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
 	public final static String getBuildLetter() {
@@ -89,7 +90,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	634;  
+		return 	639;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -1122,7 +1123,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		report += "\n\n\n";
 		report += logWindow.getText();
 		report += "\n\n\n";
-		reportToHome(report);
+		reportProblemToHome(report);
 		MesquiteTrunk.errorReportedToHome = true;
 	}
 	/*.................................................................................................................*/
@@ -1139,7 +1140,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else {
 			boolean q = AlertDialog.query(containerOfModule(), "Error", s + "\n\nPlease send a report of this error to the Mesquite server, to help us understand how often this happens.  None of your data will be sent." + addendum, "OK, Send Report",  "Close without sending");
 			if (q){
-				reportToHome(s + "\n\n" + details + "\n\n@@@@@@@@@@@@@@@\n\n" + logWindow.getText());
+				reportProblemToHome(s + "\n\n" + details + "\n\n@@@@@@@@@@@@@@@\n\n" + logWindow.getText());
 				MesquiteTrunk.errorReportedToHome = true;
 			}
 		}
@@ -1170,7 +1171,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (numPairs>=4)
 			pairs[3] = new NameValuePair("notes", StringUtil.tokenize(notes));
 
-		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/cgi-bin/mesquiteBeans.py")){
+		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/pyMesquiteBeans", null)){
 			if (notifyUser) 
 				MesquiteMessage.println("Bean sent to Mesquite server.");
 		}
@@ -1185,7 +1186,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
-	public void reportToHome(String s) {
+	public void reportProblemToHome(String s) {
 		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
 				"In order to fix this bug, we may need to contact you for more details.  " + 
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
@@ -1198,8 +1199,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			report += "EMAIL NOT GIVEN\n\n";
 
 		report += s + "\n";
-		if (BaseHttpRequestMaker.postToServer(report, errorReportURL))
-			MesquiteMessage.println("Report sent to Mesquite server.  Thank you!");
+		StringBuffer response = new StringBuffer();
+		if (BaseHttpRequestMaker.postToServer(report, errorReportURL, response)){
+			String r = response.toString();
+			if (r == null || r.indexOf("mq3rs")<0)
+				discreetAlert("Sorry, Mesquite was unable to communicate properly with the server to send the report.");
+			else
+				AlertDialog.noticeHTML(containerOfModule(),"Note", r, 600, 400, null);
+		}
 		else
 			discreetAlert("Sorry, Mesquite was unable to connect to the server to send the report.");
 

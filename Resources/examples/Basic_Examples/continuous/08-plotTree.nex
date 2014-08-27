@@ -72,7 +72,7 @@ END;
 
 BEGIN NOTES;
 
-	TEXT  FILE TEXT = 'The relationships of different characters and phylogeny can be visualized by plotting a tree in a character space.  In the tree window at right, the terminal taxa are placed at their positions in a space of two characters.  The internal nodes are placed at the positions corresponding to their reconstructed ancestral states.  The internal nodes are slightly paler.^n^nBy using the two scrolls you can examine the tree plotted onto other characters.  You can edit the tree to see how ancestral states are reconstructed on different trees.  You might also trace a character (in the Analysis menu) to see three characters at once.';
+	TEXT  FILE TEXT = 'The relationships of different characters and phylogeny can be visualized by plotting a tree in a character space.  In the tree window at right, the terminal taxa are placed at their positions in a space of two characters.  The internal nodes are placed at the positions corresponding to their reconstructed ancestral states.  The internal nodes are slightly paler.^n^nBy using the two scrolls you can examine the tree plotted onto other characters.  You can edit the tree to see how ancestral states are reconstructed on different trees.  You might also trace a character (in the Analysis:Tree menu) to see three characters at once.';
 
 END;
 
@@ -296,7 +296,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'The relationships of different characters and phylogeny can be visualized by plotting a tree in a character space.  In the tree window at right, the terminal taxa are placed at their positions in a space of two characters.  The internal nodes are placed at the positions corresponding to their reconstructed ancestral states.  The internal nodes are slightly paler.^n^nBy using the two scrolls you can examine the tree plotted onto other characters.  You can edit the tree to see how ancestral states are reconstructed on different trees.  You might also trace a character (in the Analysis menu) to see three characters at once.';
+				setExplanation 'The relationships of different characters and phylogeny can be visualized by plotting a tree in a character space.  In the tree window at right, the terminal taxa are placed at their positions in a space of two characters.  The internal nodes are placed at the positions corresponding to their reconstructed ancestral states.  The internal nodes are slightly paler.^n^nBy using the two scrolls you can examine the tree plotted onto other characters.  You can edit the tree to see how ancestral states are reconstructed on different trees.  You might also trace a character (in the Analysis:Tree menu) to see three characters at once.';
 				setTitle Plot_tree;
 				toggleFileNames off;
 				setPrevButtonName Previous;

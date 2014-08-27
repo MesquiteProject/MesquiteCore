@@ -36,11 +36,11 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2014.  Mesquite: A modular system for evolutionary analysis.  Version 3.0beta.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2014.  Mesquite: A modular system for evolutionary analysis.  Version 3.0beta3.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.0 beta 2";
+		return "3.0 beta 3";
 	}
 
 	/*.................................................................................................................*/
@@ -153,7 +153,7 @@ public class Mesquite extends MesquiteTrunk
 		configurations = new ListableVector(); 
 		packages = new ListableVector();
 		if (isPrerelease())
-			errorReportURL =  "http://mesquiteproject.org/cgi-bin/mesquiteFeedbackPrerelease.py";
+			errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedbackPrerelease";
 
 		/* 
 (1) Look for Mesquite.pref file in .Mesquite_Prefs folder of user.home.  If exists, read it 
@@ -681,6 +681,8 @@ public class Mesquite extends MesquiteTrunk
 
 		if (verboseStartup) System.out.println("main init 32 ");
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
+		if (MesquiteTrunk.debugMode)
+			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
 	} 
 
 	/*.................................................................................................................*/
@@ -2199,6 +2201,9 @@ public class Mesquite extends MesquiteTrunk
 			}
 
 		}	
+		else if (checker.compare(this.getClass(), "Sends Error to Server", null, commandName, "testError")) {
+			reportProblemToHome("TESTING ERROR REPORTING");
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);

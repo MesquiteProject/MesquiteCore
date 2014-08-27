@@ -357,7 +357,7 @@ Begin MESQUITE;
 					setLocation 1 22;
 					setFont SanSerif;
 					setFontSize 10;
-				setExplanation 'Available in the Analysis menu of the Tree Window is Lineages Through Time, which plots the logarithm of the number of lineages in a tree through time.  With a pure birth process, one expects the plot to be a straight line.';
+				setExplanation 'Available in the Analysis:Tree menu of the Tree Window is Lineages Through Time, which plots the logarithm of the number of lineages in a tree through time.  With a pure birth process, one expects the plot to be a straight line.';
 				setTitle Lineages_Through_Time;
 				toggleFileNames off;
 				setPrevButtonName Previous;

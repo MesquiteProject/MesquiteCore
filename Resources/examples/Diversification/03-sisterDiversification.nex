@@ -372,7 +372,7 @@ Begin MESQUITE;
 					setLocation 18 715;
 					setFont SanSerif;
 					setFontSize 10;
-				setExplanation 'This and the following two example files answer the question: are rates of diversification (speciation and extinction) associated with the state of a binary character?^n^nThis analysis, available by chosing Character-Associated Diversification from the Analysis menu of the Tree window, uses the simple sign test analysis for independent sister clade pairs in the style of Mitter, Farrell and Wiegmann 1988.  The analysis automatically finds sister clade pairs that contrast in the character state of the binary character.  Each clade must be completely uniform in state.  The number of pairs favoring state 1 (i.e. the clade with state 1 is larger) and favoring state 0 are counted and used as the basis for the sign test.';
+				setExplanation 'This and the following two example files answer the question: are rates of diversification (speciation and extinction) associated with the state of a binary character?^n^nThis analysis, available by chosing Character-Associated Diversification from the Analysis:Tree menu of the Tree window, uses the simple sign test analysis for independent sister clade pairs in the style of Mitter, Farrell and Wiegmann 1988.  The analysis automatically finds sister clade pairs that contrast in the character state of the binary character.  Each clade must be completely uniform in state.  The number of pairs favoring state 1 (i.e. the clade with state 1 is larger) and favoring state 0 are counted and used as the basis for the sign test.';
 				setTitle Sister_Clade_comparison;
 				toggleFileNames off;
 				setPrevButtonName Previous;

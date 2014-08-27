@@ -32,7 +32,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 14;
 					setActive;
-				setExplanation 'The files that Mesquite reads can either be local, for instance on your hard drive, or at a URL on the internet.  You can read the latter using the "URL" item in the Open menu of the file menu.  For instance, if you touch the Go button below, you will be taken to a file on Mesquite''s website.^n^nOnce you touch on the "Go" button, you will not have a button to return to this file.';
+				setExplanation 'The files that Mesquite reads can either be local, for instance on your hard drive, or at a URL on the internet.  You can read the latter using the "URL" item in the Open menu of the File menu.  For instance, if you touch the Go button below, you will be taken to a file on Mesquite''s website.^n^nOnce you touch on the "Go" button, you will not have a button to return to this file.';
 				setTitle Web_Links;
 				toggleFileNames off;
 				setPrevButtonName Previous;

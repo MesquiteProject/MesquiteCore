@@ -42,7 +42,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Simulations  'mesquite:docs/mesquite/RandomSimul/simDNA.html';
+				addWebLink Simulations  'http://mesquiteproject.wikispaces.com/Simulating+DNA+Evolution';
 				addFileLink Coalescence  '../Coalescence/00-introduction.nex';
 				addFileLink Return_to_main_Introduction  '../Introduction.nex';
 			endTell;

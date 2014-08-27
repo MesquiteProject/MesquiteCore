@@ -339,7 +339,7 @@ Begin MESQUITE;
 					setLocation 7 654;
 					setFont SanSerif;
 					setFontSize 10;
-				setExplanation 'A likelihood analysis can give estimates of speciation and extinction rates.  Here a method reduced from Maddison, Midford & Otto''s BiSSE method is used to calculate likelihoods for a simple birth/death model, where lambda = birth = speciation rate, and mu = death = extinction rate.^n^nThis calculation is available as Diversification (Char. Indep.) in the Analysis menu of the Tree Window.';
+				setExplanation 'A likelihood analysis can give estimates of speciation and extinction rates.  Here a method reduced from Maddison, Midford & Otto''s BiSSE method is used to calculate likelihoods for a simple birth/death model, where lambda = birth = speciation rate, and mu = death = extinction rate.^n^nThis calculation is available as Diversification (Char. Indep.) in the Analysis:Tree menu of the Tree Window.';
 				setTitle Speciation_and_Extinction_Rates;
 				toggleFileNames off;
 				setPrevButtonName Previous;

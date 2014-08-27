@@ -119,7 +119,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Menu_documentation  'mesquite:docs/mesquite/menus.html';
+				addWebLink Menu_documentation  'http://mesquiteproject.wikispaces.com/Menus';
 			endTell;
 			showWindow;
 		endTell;
