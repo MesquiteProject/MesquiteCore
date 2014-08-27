@@ -17,6 +17,7 @@ import java.awt.*;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.*;
 import mesquite.lib.duties.*;
@@ -43,8 +44,16 @@ public class PhoneHomeThread extends Thread {
 			if (!MesquiteTrunk.suppressVersionReporting){
 				StringBuffer response = new StringBuffer();
 				BaseHttpRequestMaker.contactServer(Integer.toString(MesquiteTrunk.getBuildNumber()), "http://mesquiteproject.org/pyMesquiteStartup", response);
-			}
+				String r = response.toString();
 			//if mq3rs is included in response, then this is real response
+				if (!StringUtil.blank(r) && r.indexOf("mq3rs")>=0){
+					if (r.indexOf("mq3rsshow")>=0){  //show dialog at startup!!!!
+						AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", r, 600, 400, null);
+					}
+				}
+				else if (MesquiteTrunk.debugMode)
+					MesquiteMessage.warnProgrammer("no response or incorrect response from server on startup");
+			}
 		}
 		catch (Throwable t){
 		}
