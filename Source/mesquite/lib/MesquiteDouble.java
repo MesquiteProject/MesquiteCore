@@ -733,6 +733,7 @@ public class MesquiteDouble implements Listable {
 	/** Returns string version of value, showing the given number of digits*/
    	 public static String toPrecisionSpecifiedString(double value, int precision){
   	 	DecimalFormat df = (DecimalFormat)NumberFormat.getInstance();
+  	 	df.setDecimalFormatSymbols(new EnglishDecimalFormatSymbols());
   	 	df.setMaximumFractionDigits(precision);
   	 	return df.format(value);
    	 }
@@ -773,6 +774,7 @@ public class MesquiteDouble implements Listable {
 		toStringDigitsSpecified(d,digits,s, true);
 	}
 	
+	
 	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
 	public static String toStringDigitsSpecified(double d, int digits, boolean allowExponentialNotation) {  
 		StringBuffer sb = new StringBuffer();
@@ -810,12 +812,7 @@ public class MesquiteDouble implements Listable {
 			lowerLimit*=0.1;
 		}
 		DecimalFormat myFormatter=null;
-		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
-		formatSymbols.setDecimalSeparator('.');
-		formatSymbols.setExponentSeparator("E");
-		formatSymbols.setMinusSign('-');
-		formatSymbols.setGroupingSeparator(',');
-		formatSymbols.setZeroDigit('0');
+		EnglishDecimalFormatSymbols formatSymbols = new EnglishDecimalFormatSymbols();
 		
 		if (allowExponentialNotation){
 			if (d>10000 || d<lowerLimit)
