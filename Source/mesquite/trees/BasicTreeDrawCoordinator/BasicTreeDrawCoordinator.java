@@ -456,7 +456,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				}
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets the number of trees", "[number]", commandName, "setNumBrLenDecimals")) {
+		else if (checker.compare(this.getClass(), "Sets the number of decimals in the branch length label", "[number]", commandName, "setNumBrLenDecimals")) {
 			int newNum= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newNum))
 				newNum = MesquiteInteger.queryInteger(containerOfModule(), "Set Number of Decimal Places Displayed", "Number of decimal places displayed in branch length labels:", numBrLenDecimals.getValue(), 0, 25);
