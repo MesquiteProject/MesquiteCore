@@ -1552,6 +1552,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (s != null){
 				togglePane(true, false);
 				//	treeDisplay.setSize(w,h);
+				if (treePane != null)
+					treePane.setSize(getWidth(),getHeight()-scrollWidth);
 				treeDisplay.setSize(s.width,s.height);
 				treeDisplay.setFieldSize(s.width,s.height);
 				treeDisplay.redoCalculations(88173);
