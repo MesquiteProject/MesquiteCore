@@ -118,7 +118,7 @@ public class TaxonGroupListVisibility extends TaxonGroupListAssistant  {
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
-		return "Show on Maps";
+		return "Show on Taxa Maps";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -144,10 +144,10 @@ public class TaxonGroupListVisibility extends TaxonGroupListAssistant  {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Taxon Group Visibility in Maps";
+		return "Taxon Group Visibility in Taxa Maps";
 	}
 	public String getExplanation() {
-		return "Shows whether or not a taxon group is shown on a map." ;
+		return "Shows whether or not a taxon group is shown on a taxa map." ;
 	}
 
 }

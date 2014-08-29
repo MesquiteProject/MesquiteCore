@@ -3337,6 +3337,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					lastFieldDragX = x;
 					lastFieldDragY = y;
 					GraphicsUtil.drawCross(g,fieldTouchX, fieldTouchY, 10);
+					treeDisplay.setCrossDrawn(true);
 				}
 
 				boolean fieldTouchAccepted = currentTreeTool.fieldTouched(x,y,tree,modifiers);
@@ -3380,6 +3381,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 			lastFieldDragX = -1;
 			lastFieldDragY = -1;
+			if (treeDisplay.isCrossDrawn())
+				treeDisplay.update(g);
 			return;
 		}
 		if ((!treeDisplay.getTree().isLocked()) &&  (branchFrom!=0)) {
@@ -3585,6 +3588,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if ((nodesToUnselect!=null && nodesToUnselect.size()>0) || (taxaToUnselect!=null && taxaToUnselect.size()>0)){
 			treeDisplay.update(g);
 			GraphicsUtil.drawCross(g,fieldTouchX, fieldTouchY, 10);
+			treeDisplay.setCrossDrawn(true);
 			nodesToSelect= nodes;
 			taxaToSelect= taxons;
 		} else {
