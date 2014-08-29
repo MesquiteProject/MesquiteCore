@@ -68,12 +68,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "28 August 2014";   
+		return "29 August 2014";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.0 beta 4";
+		return "3.0";
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
@@ -90,7 +90,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	641;  
+		return 	644;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -128,7 +128,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//2.75 = 564 released 30 September 2011  179839 / 91129 / 8939
 	//       = 565 included 4 October 2011  in Chromaseq release; slight changes to UndoInstructions for Chromaseq
 	//       = 566 update 10 October 2011, small fix in this module to re-enable error reporting of NullPointerExceptions and ArrayIndexOutOfBoundsExceptions
-	/*.................................................................................................................*/
+	//3.00  = 644 released 29 Aug 2014
+/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
 		return "";

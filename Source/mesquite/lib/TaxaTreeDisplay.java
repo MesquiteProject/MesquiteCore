@@ -55,6 +55,7 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	/**  */
 	protected boolean isInvalid = false;
 	/**  */
+	protected boolean crossDrawn = false;
 	
 	public double[] nodeLocsParameters = new double[8]; //parameters for use by node locs module
 	public double[] drawParameters = new double[8];//parameters for use by draw taxon module
@@ -108,6 +109,14 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	public void setTaxa(Taxa taxa) {
 		this.taxa = taxa;
 	}
+	public boolean isCrossDrawn() {
+		return crossDrawn;
+	}
+
+	public void setCrossDrawn(boolean crossDrawn) {
+		this.crossDrawn = crossDrawn;
+	}
+
 	protected boolean redoCalculationsWaiting = false;
 	public void recalculatePositions() {
 		if (!inProgress){
@@ -178,6 +187,7 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		repaintsPending++;
 		if (repaintsPending<=1){
 			super.repaint();
+			crossDrawn=false;
 		}
 	}
 	public void setFrame(boolean doFrame) {
