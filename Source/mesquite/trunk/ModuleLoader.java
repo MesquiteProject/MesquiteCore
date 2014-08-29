@@ -602,7 +602,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 //instantiateTime.start();
 					MesquiteModule mb = mesquite.instantiateModule(c);
 					if (mb!=null && mb instanceof MesquiteModule) {
-						if (mb.isPrerelease() && mb.isSubstantive()){
+						if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
+							
 							MesquiteModule.mesquiteTrunk.substantivePrereleasesFound();
 						}
 						String message = checkModuleForCompatibility(c);
