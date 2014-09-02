@@ -140,29 +140,26 @@ public class ShellScriptUtil  {
 	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
 		Process proc;
 		try {
+			String[] pathArray = null;
 			if (MesquiteTrunk.isMacOSX()){
 				if (visibleTerminal) {
-					proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
-					
+                    pathArray = new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath};
 				}
 				else {
 					scriptPath = scriptPath.replaceAll("//", "/");
-					proc = Runtime.getRuntime().exec(scriptPath);
-					//try {proc.waitFor();} catch (InterruptedException e) {}
+                   	pathArray = new String[] {scriptPath};
 				}
-//				proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
-				String[] scriptArray = new String[1];
-				scriptArray[0] = scriptPath;
-				proc = Runtime.getRuntime().exec(scriptArray);
+               	pathArray = new String[] {scriptPath};
+				proc = Runtime.getRuntime().exec(pathArray);
 			} else {
 				scriptPath = "\"" + scriptPath + "\"";
-				String[] cmd = {"cmd", "/c", scriptPath};
-				proc = Runtime.getRuntime().exec(cmd);
+				pathArray = new String[] {"cmd", "/c", scriptPath};
 			}
+			proc = Runtime.getRuntime().exec(pathArray);
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;
