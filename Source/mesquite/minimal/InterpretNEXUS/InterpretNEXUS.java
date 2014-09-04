@@ -161,6 +161,7 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 			while (bubbleBlock(blocks, (NexusBlock)bs[i]))
 				;
 		}
+		
 	}
 	/** Asks if block is sorted relative to other blocks in its file and before its file in file read order.
 	IS THIS USED??? */

@@ -91,6 +91,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private int[] taxonNumber;  
 	/** The array of node numbers of taxa; the inverse of taxonNumber.  New to 2. 7, for efficiency with large trees.  If the taxon is not in the tree this number should be negative.*/
 	private int[] nodeOfTaxon;  
+	/** A temporary array of booleans, for use currently to reset taxonNumbers (see resetNodeOfTaxonNumbers).*/
+	private boolean[] flags;  
 	/** The branch lengths of the branches.  This array is instantiated only if needed.*/
 	private double[] branchLength;
 	/** The clade name labels at the nodes.   This array is instantiated only if needed.*/
@@ -177,6 +179,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		mother= new int[numNodeSpaces];  
 		taxonNumber= new int[numNodeSpaces];  
 		nodeOfTaxon = new int[taxa.getNumTaxa()];
+		flags = new boolean[numNodeSpaces];
 		parents = new int[numNodeSpaces][];
 		if (taxa==null)
 			MesquiteMessage.warnProgrammer(" Taxa in constructor for Tree is null ");
@@ -201,6 +204,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		mother= new int[numNodeSpaces];  
 		taxonNumber= new int[numNodeSpaces];  
 		nodeOfTaxon = new int[taxa.getNumTaxa()];
+		flags = new boolean[numNodeSpaces];
 		parents = new int[numNodeSpaces][];
 		this.taxaVersion = taxaVersion;
 		if (taxa==null)
@@ -233,6 +237,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			nextSister[i]=0;
 			mother[i]=0;
 			setTaxonNumber(i, -1);
+			flags[i] = false;
 		}
 		firstDaughter[0]=-1;
 		nextSister[0]=-1;
@@ -335,6 +340,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (tree.getNumNodeSpaces()!=numNodeSpaces){
 			numNodeSpaces = tree.getNumNodeSpaces(); //extra in case bad taxa OR INTERNAL UNBRANCHED NODES
 			setNumberOfParts(numNodeSpaces);
+			flags = new boolean[numNodeSpaces];
 			firstDaughter= new int[numNodeSpaces];  
 			nextSister= new int[numNodeSpaces];  
 			mother= new int[numNodeSpaces];  
@@ -360,6 +366,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			firstDaughter[i]=tree.firstDaughter[i];
 			nextSister[i]=tree.nextSister[i];
 			mother[i]=tree.mother[i];
+			flags[i] = false;
 			setTaxonNumber(i, tree.taxonNumber[i]);
 			if (tree.parents[i]!=null) { //TODO: leave parents null until needed?
 				parents[i] = new int[tree.parents[i].length];
@@ -425,6 +432,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			nextSister= new int[numNodeSpaces];  
 			mother= new int[numNodeSpaces];  
 			taxonNumber= new int[numNodeSpaces];  
+			flags = new boolean[numNodeSpaces];
 			parents = new int[numNodeSpaces][];
 			if (tree.hasBranchLengths())
 				branchLength = new double[numNodeSpaces];
@@ -442,6 +450,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		for (int i=0; i<numNodeSpaces; i++){	
 			if (branchLength!=null && tree.hasBranchLengths())
 				branchLength[i]=tree.getBranchLength(i);
+			flags[i] = false;
 			firstDaughter[i]=tree.firstDaughterOfNode(i);
 			nextSister[i]=tree.nextSisterOfNode(i);
 			mother[i]=tree.motherOfNode(i);
@@ -1076,17 +1085,38 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return -1;
 		return taxonNumber[node]; }
 	/*-----------------------------------------*/
-	/** Refills the nodeOfTaxon array.*/
+	private void flagNodesInTree(int node){
+		flags[node] = true;
+		for (int d = firstDaughterOfNode(node); nodeExists(d) && !nodeWasFound; d = nextSisterOfNode(d))
+			flagNodesInTree(d);
+	}
+	/*-----------------------------------------*/
+	private void zeroUnflaggedNodes(int node){
+		firstDaughter[node]=0;
+		nextSister[node]=0;
+		mother[node]=0;
+		taxonNumber[node] = -1; 
+		parents[node] = null; 
+		for (int d = firstDaughterOfNode(node); nodeExists(d) && !nodeWasFound; d = nextSisterOfNode(d))
+			zeroUnflaggedNodes(d);
+	}
+	/*-----------------------------------------*/
+	/** Refills the nodeOfTaxon array. Also cleans up node spaces that used to have nodes in them.*/
 	private void resetNodeOfTaxonNumbers() {
 		if (nodeOfTaxon == null || taxa.getNumTaxa() != nodeOfTaxon.length){
 			nodeOfTaxon = new int[taxa.getNumTaxa()];
 		}
 		for (int i=1; i<nodeOfTaxon.length; i++)// Nov 2013 initialize
 				nodeOfTaxon[i] = -1;
-
-
+		for (int i=1; i<flags.length; i++)// Sept 2014
+			flags[i] = false;
+		flagNodesInTree(getRoot());
+		zeroUnflaggedNodes(getRoot());
+		for (int i=1; i<flags.length; i++)// Sept 2014
+			flags[i] = false;
+		
 		for (int i=1; i<numNodeSpaces; i++)
-			if (nodeInTree(i) && taxonNumber[i]>=0 && taxonNumber[i]<taxa.getNumTaxa() ){  // Nov 2013 check if in tree
+			if (taxonNumber[i]>=0 && taxonNumber[i]<taxa.getNumTaxa() ){  // Nov 2013 check if in tree
 				nodeOfTaxon[taxonNumber[i]] = i;
 			}
 	}

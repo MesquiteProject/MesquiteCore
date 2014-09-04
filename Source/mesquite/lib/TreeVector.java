@@ -475,6 +475,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 	long previous = -1;
 	boolean suppressNotifyL = false;
 	Thread threadOfTreeChange;
+	
 	/** For MesquiteListener interface.  Passes which object changed, along with optional integer (e.g. for character)*/
 	public void changed(Object caller, Object obj, Notification notification){
 		if (notification != null && notification.getNotificationNumber() == previous)
