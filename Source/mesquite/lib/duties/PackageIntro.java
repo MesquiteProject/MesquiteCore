@@ -85,19 +85,34 @@ public abstract class PackageIntro extends MesquiteModule implements PackageIntr
 		}
 		return 0;
 	}
+	
 	/*.................................................................................................................*/
-	/** Returns the URL for the GitHub release*/
-	public String getGitHubReleaseURL(){
+	
+	public final static int NOREPOSITORY = 0;
+	public final static int GITHUBREPOSITORY = 1;
+	
+	/*.................................................................................................................*/
+	/** Returns the kind of repository*/
+	public int getRepositoryKind(){
+		return NOREPOSITORY;
+	}
+	/** Returns the URL for the release package*/
+	public String getReleaseURL(){
 		return "";
 	}
 	/*.................................................................................................................*/
-	/** Returns the tag for the GitHub release*/
-	public String getGitHubReleaseTag(){
+	/** Returns the tag for the release tag*/
+	public String getReleaseTag(){
 		return "";
 	}
 	/*.................................................................................................................*/
-	/** Returns the repository in GitHub*/
-	public String getGitHubRepository(){
+	/** Returns the repository path on the repository server*/
+	public String getRepositoryPath(){
+		return "";
+	}
+	/*.................................................................................................................*/
+	/** Returns the repository URL*/
+	public String getRepositoryFullURL(){
 		return "";
 	}
 
