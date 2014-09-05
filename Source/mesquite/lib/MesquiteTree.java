@@ -356,6 +356,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				label = new String[numNodeSpaces];
 			if (tree.hasBranchLengths() && branchLength == null)
 				branchLength = new double[numNodeSpaces];
+			flags = new boolean[numNodeSpaces];
+
 		}
 
 		intializeTree();
@@ -1092,11 +1094,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	private void zeroUnflaggedNodes(int node){
-		firstDaughter[node]=0;
-		nextSister[node]=0;
-		mother[node]=0;
-		taxonNumber[node] = -1; 
-		parents[node] = null; 
+		if (!flags[node]){
+			firstDaughter[node]=0;
+			nextSister[node]=0;
+			mother[node]=0;
+			taxonNumber[node] = -1; 
+			parents[node] = null; 
+		}
 		for (int d = firstDaughterOfNode(node); nodeExists(d) && !nodeWasFound; d = nextSisterOfNode(d))
 			zeroUnflaggedNodes(d);
 	}
@@ -1107,14 +1111,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			nodeOfTaxon = new int[taxa.getNumTaxa()];
 		}
 		for (int i=1; i<nodeOfTaxon.length; i++)// Nov 2013 initialize
-				nodeOfTaxon[i] = -1;
+			nodeOfTaxon[i] = -1;
+
 		for (int i=1; i<flags.length; i++)// Sept 2014
 			flags[i] = false;
 		flagNodesInTree(getRoot());
 		zeroUnflaggedNodes(getRoot());
 		for (int i=1; i<flags.length; i++)// Sept 2014
 			flags[i] = false;
-		
+
 		for (int i=1; i<numNodeSpaces; i++)
 			if (taxonNumber[i]>=0 && taxonNumber[i]<taxa.getNumTaxa() ){  // Nov 2013 check if in tree
 				nodeOfTaxon[taxonNumber[i]] = i;
@@ -2730,7 +2735,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						int num = MesquiteInteger.fromString(number);
 						if (MesquiteInteger.isCombinable(num) && num>=0 && num<taxa.getNumTaxa())
 							taxonNumber = num;
-				}
+					}
 				}
 			}
 			if (taxonNumber >=0){ //taxon successfully found
@@ -2831,7 +2836,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				else
 					MesquiteMessage.printStackTrace("graft clade failed");
 
-					
+
 				return false;
 			}
 			if (!checkTreeIntegrity(root)) {
@@ -4889,14 +4894,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		System.out.println("numNodeSpaces: " + numNodeSpaces);
 		System.out.println("nodes not indicated have label[i] == null && mother[i] == 0 && firstDaughter[i] != 0 && nextSister[i] == 0 && taxonNumber[i] == -1");
 		for (int i=0; i<numNodeSpaces; i++) {
-		if (label != null){
-			if (label[i] != null && mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
-				System.out.println("node " + i + " (label "+ label[i] + " ) (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
-		}
-		else
-			if (mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
-				System.out.println("node " + i + " (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
-			
+			if (label != null){
+				if (label[i] != null && mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
+					System.out.println("node " + i + " (label "+ label[i] + " ) (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
+			}
+			else
+				if (mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
+					System.out.println("node " + i + " (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
+
 		}
 		System.out.println("<-------------------------------------");
 	}
