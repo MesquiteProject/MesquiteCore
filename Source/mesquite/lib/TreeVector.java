@@ -489,6 +489,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 
 			if (parameters!=null && parameters.length>=2 && translationTable!=null)
 				translationTable.taxaModified(Notification.getCode(notification), parameters[0], parameters[1]);
+			else translationTable.cleanUpTable();
 			for (int i=0; i<size(); i++) {//modified 19 Nov 01
 				Object o = elementAt(i);
 				if (o !=null && o instanceof MesquiteTree) {

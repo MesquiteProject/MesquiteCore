@@ -1577,7 +1577,6 @@ public class ManageTrees extends TreesManager {
 			if (trees != null && blockComments!=null && blockComments.length()>0)
 				trees.setAnnotation(blockComments.toString(), false);
 			getProject().refreshProjectWindow();
-
 			return t;
 		}
 		if (trees !=null)
@@ -1641,7 +1640,10 @@ public class ManageTrees extends TreesManager {
 			if(trees.getWriteWeights()&& weightObject!=null && weightObject instanceof MesquiteString){
 				block.append(StringUtil.tokenize(t.getName()) + " = [&W " + ((MesquiteString)weightObject).getValue() + "] " + t.writeTree(writeMode) + StringUtil.lineEnding());
 			}
-			else block.append(StringUtil.tokenize(t.getName() )+ " = " +  t.writeTree(writeMode) + StringUtil.lineEnding());
+			else {
+				String ttt = t.writeTree(Tree.BY_TABLE);
+				block.append(StringUtil.tokenize(t.getName() )+ " = " +  t.writeTree(writeMode) + StringUtil.lineEnding());
+			}
 
 		}
 		if (tB != null) block.append(tB.getUnrecognizedCommands() + StringUtil.lineEnding());

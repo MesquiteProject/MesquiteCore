@@ -2599,8 +2599,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				else {//IF LABEL already exists, then attach new ancestor
 					String s = "";
 					if (permitTruncTaxNames)
-						s =" (This may have occured because tree reading is set to permit truncated taxon names -- see Defaults menu to turn this off.)"; 
-					MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same)." + s  + " " + TreeDescription);
+						s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
+					if (numReticWarnings++ < 5)
+						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same)." + s  + " " + TreeDescription);
+					else if (numReticWarnings == 5)
+						MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
+					else if (numReticWarnings <100)
+						MesquiteMessage.println("Another tree with apparent reticulations found.");
+					else if (numReticWarnings == 100)
+						MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
+						
+						
 					setParentOfNode(labNode, motherOfNode(labNode), false);
 					setParentOfNode(labNode, motherOfNode(sN), false);
 					return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
@@ -2608,6 +2617,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			}
 		}
 	}
+	static int numReticWarnings = 0;
 	static boolean dWarn = true;
 	private boolean expectedPunctuation(String c){
 		return (")".equals(c) || ",".equals(c) || ";".equals(c) || "<".equals(c));
@@ -2757,8 +2767,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						//apparent reticulation found!
 						String s = "";
 						if (permitTruncTaxNames)
-							s =" (This may have occured because tree reading is set to permit truncated taxon names -- see Defaults menu to turn this off.)"; 
-						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names interpreted as belonging to same taxon). [" + c + "] " +s + " " + TreeDescription);
+							s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
+						if (numReticWarnings++ < 5)
+							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same). [" + c + "] " + s  + " " + TreeDescription);
+						else if (numReticWarnings == 5)
+							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
+						else if (numReticWarnings <100)
+							MesquiteMessage.println("Another tree with apparent reticulations found.");
+						else if (numReticWarnings == 100)
+							MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
 						setParentOfNode(termN, motherOfNode(termN), false);
 						setParentOfNode(termN, motherOfNode(node), false);
 						return DONT_SPROUT; //don't continue up tree
@@ -2779,8 +2796,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					if (motherOfNode(labNode) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
 						String s = "";
 						if (permitTruncTaxNames)
-							s =" (This may have occured because tree reading is set to permit truncated taxon names -- see Defaults menu to turn this off.)"; 
-						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names interpreted as belonging to same taxon). [" + c + "] " + s+ " " + TreeDescription);
+							s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
+						if (numReticWarnings++ < 5)
+							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same). [" + c + "] " + s  + " " + TreeDescription);
+						else if (numReticWarnings == 5)
+							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
+						else if (numReticWarnings <100)
+							MesquiteMessage.println("Another tree with apparent reticulations found.");
+						else if (numReticWarnings == 100)
+							MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
 						setParentOfNode(labNode, motherOfNode(labNode), false);
 						setParentOfNode(labNode, motherOfNode(node), false);
 						//c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip internal node name
@@ -3201,8 +3225,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				treeDescription.append(StringUtil.tokenize(getNodeLabel(node)));
 		}
 		else {
-			if (treeVector !=null)//use treeVector's translation table if one is available
+			if (treeVector !=null){//use treeVector's translation table if one is available
 				treeDescription.append(treeVector.getTranslationLabel(taxonNumberOfNode(node))); 
+			}
 			else
 				treeDescription.append(Integer.toString(Taxon.toExternal(taxonNumberOfNode(node))));
 		}
