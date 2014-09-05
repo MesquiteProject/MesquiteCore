@@ -14,6 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+import java.io.*;
+import java.util.Iterator;
+
+
 import mesquite.lib.*;
 
 
@@ -54,6 +58,49 @@ public abstract class PackageIntro extends MesquiteModule implements PackageIntr
 	public boolean getSearchableAsModule(){
 		return false;
 	}
+	
+	
+	/*.................................................................................................................*
+	/** Returns the number of downloads of the latest release*
+	public int getNumReleaseDownloads(){
+		if (StringUtil.notEmpty(getGitHubReleaseURL())) {
+			try {
+				GitHub github = GitHub.connect();
+				if (github!=null) {
+					GHRepository repo = github.getRepository(getGitHubRepository());
+					if (repo!=null) {
+						PagedIterable pagedIterable = repo.listReleases();
+						java.util.List releases = (java.util.List) pagedIterable.asList();
+						for (Iterator iter = releases.iterator(); iter.hasNext();) {
+							GHRelease nextRelease = (GHRelease) iter.next();
+							Debugg.println(nextRelease.getName());
+						}
+
+					}
+				}
+				 
+			}
+			catch (IOException ioe) {
+			}
+		}
+		return 0;
+	}
+	/*.................................................................................................................*/
+	/** Returns the URL for the GitHub release*/
+	public String getGitHubReleaseURL(){
+		return "";
+	}
+	/*.................................................................................................................*/
+	/** Returns the tag for the GitHub release*/
+	public String getGitHubReleaseTag(){
+		return "";
+	}
+	/*.................................................................................................................*/
+	/** Returns the repository in GitHub*/
+	public String getGitHubRepository(){
+		return "";
+	}
+
 	/*.................................................................................................................*/
 	/** Returns whether hideable*/
 	public boolean getHideable(){
