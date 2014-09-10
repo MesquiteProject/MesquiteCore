@@ -53,7 +53,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "August 2014"; //"April 2007";
+		return "September 2014"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -65,7 +65,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
