@@ -16,8 +16,6 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
-import com.apple.mrj.macos.carbon.Timer;
-
 
 
 /*.................................................................................................................*/
