@@ -667,6 +667,7 @@ public class CategoricalData extends CharacterData {
 		return super.addTaxa(starting, num);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
+
 	/**Deletes num taxa from position "starting"; returns true iff successful.*/
 	public boolean deleteTaxa(int starting, int num){
 		if (num<=0)

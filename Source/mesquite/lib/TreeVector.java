@@ -483,7 +483,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		if (notification != null)
 			previous = notification.getNotificationNumber();
 		if (obj == taxa){
-			if (Notification.appearsCosmetic(notification))
+			if (Notification.appearsCosmeticOrSelection(notification))
 				return;
 			int[] parameters = Notification.getParameters(notification);
 
