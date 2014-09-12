@@ -27,17 +27,11 @@ import mesquite.lib.table.*;
 /* ======================================================================== */
 public class DatasetsListConcatenate extends DatasetsListUtility {
 	boolean concatExcludedCharacters = false;
-	boolean prefixGroupLabelNames = false;
 	boolean anyExcluded = false;
 	boolean removeConcatenated = false;
-	boolean preferencesSet=false;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Concatenate Selected Matrices";
-	}
-	/*.................................................................................................................*/
-	public String getNameForMenuItem() {
-		return "Concatenate Selected Matrices...";
 	}
 
 	public String getExplanation() {
@@ -45,58 +39,26 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		loadPreferences();
 		return true;
 	}
-	
-	/*.................................................................................................................*/
-	public void processSingleXMLPreference(String tag, String content) {
-		if ("prefixGroupLabelNames".equalsIgnoreCase(tag))
-			prefixGroupLabelNames = MesquiteBoolean.fromTrueFalseString(content);
-		if ("concatExcludedCharacters".equalsIgnoreCase(tag))
-			concatExcludedCharacters = MesquiteBoolean.fromTrueFalseString(content);
-		if ("removeConcatenated".equalsIgnoreCase(tag))
-			removeConcatenated = MesquiteBoolean.fromTrueFalseString(content);
-
-		preferencesSet = true;
-	}
-
-	/*.................................................................................................................*/
-	public String preparePreferencesForXML() {
-		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "concatExcludedCharacters", concatExcludedCharacters);
-		StringUtil.appendXMLTag(buffer, 2, "prefixGroupLabelNames", prefixGroupLabelNames);
-		StringUtil.appendXMLTag(buffer, 2, "removeConcatenated", removeConcatenated);
-
-		preferencesSet = true;
-		return buffer.toString();
-	}
-
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
-		loadPreferences();
-
 		if (!MesquiteThread.isScripting()){
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
 			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 			if (anyExcluded) {
 				dialog.appendToHelpString("During concatenation, characters that are currently excluded will be omitted entirely from the concatenated matrix if \"Remove excluded characters\" is checked.<BR>");
 			}
-			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation. <BR>");
-			dialog.appendToHelpString("Any characters not currently assigned to groups will be assigned to a group whose name is the name of the matrix from which they came. ");
-			dialog.appendToHelpString("Those characters that where previously assigned to a group will still be assigned to that group, or, optionally, to a new group whose name is its existing group name with the matrix name prefixed to it. ");
+			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation.");
 			Checkbox deleteExcludedBox=null;
 			if (anyExcluded)
-				deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", !concatExcludedCharacters);
+				deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", concatExcludedCharacters);
 			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated);
-			Checkbox prefixGroupLabelNamesBox = dialog.addCheckBox("Prefix existing character group labels with matrix name", prefixGroupLabelNames);
 			dialog.completeAndShowDialog(true);
 			if (buttonPressed.getValue()==0)  {
 				removeConcatenated = deleteMatricesBox.getState();
-				prefixGroupLabelNames = prefixGroupLabelNamesBox.getState();
 				if (anyExcluded)
 					concatExcludedCharacters = !deleteExcludedBox.getState();
-				storePreferences();
 			}
 			dialog.dispose();
 			return (buttonPressed.getValue()==0);
@@ -134,7 +96,7 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 				starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
 			}
 
-			boolean success = starter.concatenate(data, false, concatExcludedCharacters, true, prefixGroupLabelNames, false, false);
+			boolean success = starter.concatenate(data, false, concatExcludedCharacters, false, false);
 			if (success){
 				count++;
 				if (count > 1)
