@@ -712,6 +712,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	Taxa taxa;
 	DrawTreeCoordinator treeDrawCoordTask;
 	boolean treeEdited=false;
+	boolean  editedByHand = false;
 	//private Rectangle treeRect;
 	//MesquiteScrollbar hScroll, vScroll;
 
@@ -1721,7 +1722,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			boolean retainTree = false;
 			if (MesquiteThread.isScripting() || !setToZero)
 				retainTree = true;
-			else if (treeEdited)
+			else if (treeEdited & editedByHand)
 				retainTree = !AlertDialog.query(this, "Discard edited tree?", "The tree in the window has been edited but not saved.  " 
 						+ "Do you want to discard it, or do you want to retain it in the window?\n\nIf you retain it, remember that it " 
 						+ "does not come from the source of trees currently used by the window.  "
@@ -2210,6 +2211,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				if (originalTree!=null && ((MesquiteTree)originalTree).getTreeVector() !=null)
 					((MesquiteTree)originalTree).getTreeVector().notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 				treeEdited=false;
+				editedByHand = false;
 				messagePanel.setHighlighted(false, !treeSourceLocked()); 
 				if (treeInfoPanel != null)
 					treeInfoPanel.setHighlighted(!treeSourceLocked());
@@ -2857,6 +2859,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	/*.................................................................................................................*/
 	public void treeEdited(boolean rememberEditedTree){
 		boolean wasEdited = treeEdited;
+		if (!MesquiteThread.isScripting())
+			editedByHand = true;
 		treeEdited=true;
 		if (wasEdited && treeSourceLocked()) {
 			showTreeAnnotation();
@@ -2940,6 +2944,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		MesquiteBoolean editStatusToSet = new MesquiteBoolean();
 		Tree t = setCloneOfTree(treeT, true, editStatusToSet);
 		treeEdited=editStatusToSet.getValue();
+		editedByHand = false;
 		setTreeName(t);
 		messagePanel.setHighlighted(treeEdited, !treeSourceLocked()); 
 		if (treeInfoPanel != null)

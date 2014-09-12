@@ -108,7 +108,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				currentListNumber = whichList;
 				currentTreeBlockID = currentTreeBlock.getID();
 				currentSourceFile = currentTreeBlock.getFile();
+				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
+				MesquiteTrunk.checkForResetCheckMenuItems();
 				return currentTreeBlock;
 			}
 		}
@@ -126,6 +128,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				currentSourceFile = currentTreeBlock.getFile();
 				lastUsedTreeBlock = currentTreeBlock;
 				currentListNumber = whichList;
+				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
 				return currentTreeBlock;
 			}
@@ -145,6 +148,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				currentSourceFile = currentTreeBlock.getFile();
 				lastUsedTreeBlock = currentTreeBlock;
 				currentListNumber = whichList;
+				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
 				return currentTreeBlock;
 			}
@@ -225,6 +229,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 							lastUsedTreeBlock = null;
 							currentListNumber = MesquiteInteger.unassigned;
 							currentTreeBlockID = MesquiteLong.unassigned;
+							MesquiteTrunk.resetChecks(listSubmenu);
 							parametersChanged(notification);
 						}
 					}
@@ -245,6 +250,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					lastUsedTreeBlock = null;
 					currentListNumber = MesquiteInteger.unassigned;
 					currentTreeBlockID = MesquiteLong.unassigned;
+					MesquiteTrunk.resetChecks(listSubmenu);
 				}
 				parametersChanged(notification);
 			}
@@ -273,6 +279,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			currentTreeBlock = null;
 			lastUsedTreeBlock = null;
 			currentListNumber = MesquiteInteger.unassigned;
+			MesquiteTrunk.resetChecks(listSubmenu);
 			if (preferredTaxa != null && preferredTaxa.isDoomed())
 				preferredTaxa = null; //don't say parameters changed since employer asked for those taxa
 			else
@@ -390,6 +397,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				if (!MesquiteInteger.isCombinable(currentListNumber))
 					currentListNumber = 0;
 			}
+			MesquiteTrunk.resetChecks(listSubmenu);
 		}
 		int code = 0;
 		if (lastUsedTreeBlock == null || lastUsedTreeBlock.getTaxa() == null || !lastUsedTreeBlock.getTaxa().equals(taxa)) {

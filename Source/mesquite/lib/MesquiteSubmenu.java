@@ -132,10 +132,16 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 			for (int i = 0; i<numItems; i++) {
 				MenuItem mi = getItem(i);
 				if (mi instanceof CheckboxMenuItem && mi!=null) {
-					if (mi.getLabel() != null && mi.getLabel().equals(checkString.getValue())) 
-						((CheckboxMenuItem)mi).setState(true);
-					else
-						((CheckboxMenuItem)mi).setState(false);
+					if (mi.getLabel() != null && mi.getLabel().equals(checkString.getValue())) {
+						if (mi instanceof MesquiteCheckMenuItem)
+							((MesquiteCheckMenuItem)mi).resetCheck();
+						else ((CheckboxMenuItem)mi).setState(true);
+					}
+					else {
+						if (mi instanceof MesquiteCheckMenuItem)
+							((MesquiteCheckMenuItem)mi).resetCheck();
+						else ((CheckboxMenuItem)mi).setState(false);
+					}
 
 				}
 			}
@@ -195,6 +201,8 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 			else
 				chooseItem(StringUtil.tokenize(s));
 		}	 
+		resetCheck();
+
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -258,6 +266,7 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 		}
 		else {
 	}
+		resetCheck();
 	}
 	public Class getFilter(){
 		if (msms != null && msms.getListableFilter() != null)
@@ -278,6 +287,7 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 			return;
 		}
 		command.doItMainThread(arg, CommandChecker.getQueryModeString("Submenu", command, this), this, MesquiteDialog.useWizards);
+		resetCheck();
 	}
 }
 

@@ -38,7 +38,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 	int hiddenStatus = InterfaceManager.NORMAL;
 	boolean hiddenStatusSet = false;
 	boolean hideable = true;
-
+	
 	//This is constructor used to make menu from specs
 	public MesquiteCheckMenuItem(MesquiteCMenuItemSpec specification) {
 		super();
@@ -206,6 +206,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 				chooseItem(argument);
 			}
 		}
+		resetCheck();
 	}
 	
 	public void itemStateChanged(ItemEvent e) {
@@ -234,7 +235,10 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 			else*/
 				chooseItem(argument);
 			}
+			resetCheck();
+			
 		}
+		
 	}
 	public void chooseItem(String arg) {
 		if (command == null || MesquiteTrunk.suppressMenuResponse)
@@ -248,6 +252,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 			command.doItMainThread(arg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
 		else
 			command.doItMainThread("", CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
+		resetCheck();
 	}
 }
 
