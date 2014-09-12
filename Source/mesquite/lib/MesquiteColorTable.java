@@ -240,10 +240,12 @@ public  class MesquiteColorTable  {
 		}
 	}
 	
+	double[] bins;
 	public double[] getPreferredBinBoundaries(){  //appropriate only for ContColorTable!
-		return null;
+		return bins;
 	}
 	public void setPreferredBinBoundaries(double[] b){  //appropriate only for ContColorTable!
+		bins = b;
 	}
 	
 	/** gets color for state i with given maximum state possible, from default color table*/

@@ -21,7 +21,6 @@ import mesquite.lib.characters.*;
 
 
 public class ContColorTable extends MesquiteColorTable  {
-	double[] bins;
    public ContColorTable(){
 	   super();
 	   setMode(COLORS_NO_BW);
@@ -29,12 +28,6 @@ public class ContColorTable extends MesquiteColorTable  {
 	/**resets to default mode*/
 	public void resetDefaultMode(){
 		   setMode(COLORS_NO_BW);
-	}
-	public double[] getPreferredBinBoundaries(){  //appropriate only for ContColorTable!
-		return bins;
-	}
-	public void setPreferredBinBoundaries(double[] b){  //appropriate only for ContColorTable!
-		bins = b;
 	}
 
 }
