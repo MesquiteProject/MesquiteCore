@@ -396,7 +396,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		}
 		checkTranslationTable();
 	}
-	/** returns true if stored translation table matches the passed taxa. */
+	/** returns true if every taxon in stored translation table is found within the passed taxa. */
 	public boolean tableMatchesTaxa(Taxa taxa, Vector table) {
 		if (table==null)
 			return false;
