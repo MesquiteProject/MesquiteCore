@@ -39,7 +39,6 @@ public abstract class MesquiteScrollbar extends Scrollbar implements AdjustmentL
 		return true;
 	}
 	
-	
 }
 
 

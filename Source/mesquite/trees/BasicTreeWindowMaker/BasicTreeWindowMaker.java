@@ -1340,10 +1340,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else
 			return new Dimension(treeDisplay.getWidth(),treeDisplay.getHeight());
 	}
+	
 	Rectangle getTreeViewport(){
 		if (usingPane && hScroll != null){
 			if (!isFauxScrollPane() && MesquiteTrunk.isMacOSX())
 				return new Rectangle(0,0,treeDisplay.getWidth(),treeDisplay.getHeight());
+			hScroll = treePane.getHAdjustable();
+			vScroll = treePane.getVAdjustable();
 			return new Rectangle(hScroll.getValue(), vScroll.getValue(), treePane.getContentsWidth(), treePane.getContentsHeight());
 			//SCROLLPANEreturn treePane.getViewportSize();
 		}
@@ -1528,7 +1531,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	int countSizes = 0;
 
 	void sizeDisplay(){
-
 		if (palette==null|| treeDisplay==null  ||messagePanel==null)
 			return;
 		if (treeDrawCoordTask.hasPreferredSize()){
@@ -4279,9 +4281,12 @@ class TreeScrollPane extends Panel{ //HANDMADETreeScrollPane
 			min = 0;
 		if (max < min)
 			max = min;
-		hScroll.setMinimum(min);
-		hScroll.setMaximum(max);
+		boolean touch = hScroll.setMinimumWithResetWarning(min);
+		touch = hScroll.setMaximumWithResetWarning(max) || touch;
+		if (touch)
+			scrollTouched(null, 0);
 		hScroll.setVisible(min != max);
+
 		if(min == max)
 			treeDisplay.setLocation(0, treeDisplay.getLocation().y);
 
@@ -4291,9 +4296,13 @@ class TreeScrollPane extends Panel{ //HANDMADETreeScrollPane
 			min = 0;
 		if (max < min)
 			max = min;
-		vScroll.setMinimum(min);
-		vScroll.setMaximum(max);
+		boolean touch = vScroll.setMinimumWithResetWarning(min);
+		touch = vScroll.setMaximumWithResetWarning(max) || touch;
+		if (touch)
+			scrollTouched(null, 0);
+			
 		vScroll.setVisible(min != max);
+
 		if(min == max)
 			treeDisplay.setLocation(treeDisplay.getLocation().x, 0);
 	}
@@ -4350,11 +4359,30 @@ class TWScroll extends MesquiteScrollbar {
 	int orientation;
 	public TWScroll (TreeScrollPane tsp, int orientation, int value, int visible, int min, int max){
 		super(orientation, value, visible, min, max);
+		
 		this.orientation = orientation;
 		this.tsp=tsp;
 	}
 	public void setValue(int v){
 		super.setValue(v);
+	}
+	public boolean setMinimumWithResetWarning(int m){
+		boolean resetNeeded = false;
+		if (getValue()<m){
+			setValue(m);
+			resetNeeded = true;
+		}
+		super.setMinimum(m);
+		return resetNeeded;
+	}
+	public boolean setMaximumWithResetWarning(int m){
+		boolean resetNeeded = false;
+		if (getValue()>m){
+			setValue(m);
+			resetNeeded = true;
+		}
+		super.setMaximum(m);
+		return resetNeeded;
 	}
 	public void scrollTouched(){
 		int currentValue = getValue();

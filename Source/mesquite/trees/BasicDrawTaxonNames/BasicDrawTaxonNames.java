@@ -915,6 +915,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				else
 					triangleBase = -1;
 				drawNamesOnTree(tree, drawnRoot, treeDisplay, part, triangleBase);
+		
 				g.setFont(tempFont);
 			}
 		}
