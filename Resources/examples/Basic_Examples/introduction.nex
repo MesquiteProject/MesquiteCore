@@ -58,7 +58,7 @@ Begin MESQUITE;
 				addFileLink Viewing_phylogenies_and_gene_trees  'tree_viewing/01-treeWindow.nex';
 				addFileLink Editing_and_manipulating_trees  'tree_manipulation/01-editingTrees.nex';
 				addFileLink Charts  'charts/01-charts.nex';
-				addWebLink Mesquite_Manual  'mesquite:docs/mesquite/manual.html';
+				addWebLink Mesquite_Manual  'http://mesquiteproject.wikispaces.com';
 				addFileLink Return_to_main_introduction  '../Introduction.nex';
 			endTell;
 			showWindow;

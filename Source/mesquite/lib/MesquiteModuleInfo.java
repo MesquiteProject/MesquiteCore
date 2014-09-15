@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -75,6 +76,7 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	boolean hideable = true;
 	int versionOfFirstRelease = 0;
 	boolean def = false;
+	int numStarts = 0;
 	NexusBlockTest nexusBlockTest;
 	NexusCommandTest nexusCommandTest;
 	CompatibilityTest compatibilityTest;
@@ -97,19 +99,19 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		this.mbClass = c;
 		isPrimaryChoice = mb.requestPrimaryChoice();
 		this.hireSubchoice = mb.getHireSubchoice();
-		this.name = mb.getName(); //Ã
-		this.nameForMenuItem = mb.getNameForMenuItem(); //Ã
- 		this.authors =mb.getAuthors();//Ã
- 		this.version =mb.getVersion();//Ã
+		this.name = mb.getName(); //ï¿½
+		this.nameForMenuItem = mb.getNameForMenuItem(); //ï¿½
+ 		this.authors =mb.getAuthors();//ï¿½
+ 		this.version =mb.getVersion();//ï¿½
  		
  		this.versionOfFirstRelease = mb.getVersionOfFirstRelease();
- 		this.explanation =mb.getExplanation();//Ã
+ 		this.explanation =mb.getExplanation();//ï¿½
  		this.sCitation = mb.showCitation();
- 		this.userChooseable =mb.getUserChooseable();//Ã
+ 		this.userChooseable =mb.getUserChooseable();//ï¿½
  		this.substantive = mb.isSubstantive();
  		this.prerelease = mb.isPrerelease();
- 		this.dutyClass =mb.getDutyClass();//Ã
- 		this.dutyName =mb.getDutyName();//Ã
+ 		this.dutyClass =mb.getDutyClass();//ï¿½
+ 		this.dutyName =mb.getDutyName();//ï¿½
  		this.defaultForSuper = mb.getDefaultModule();
  		this.keywords = mb.getKeywords();
  		this.versionInt = mb.getVersionInt();
@@ -128,17 +130,28 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 			hideable = (( PackageIntroInterface)mb).getHideable();
  		}
   		mb.mesquiteStartup();
-		this.nexusBlockTest = mb.getNexusBlockTest();//Ã
- 		this.nexusCommandTest = mb.getNexusCommandTest();//Ã
+		this.nexusBlockTest = mb.getNexusBlockTest();//ï¿½
+ 		this.nexusCommandTest = mb.getNexusCommandTest();//ï¿½
 		this.compatibilityTest = mb.getCompatibilityTest();
 		this.searchableAsModule = mb.getSearchableAsModule();
-		mb.getEmployeeNeeds();
+		try{
+			mb.getEmployeeNeeds();
+		}
+		catch (java.lang.NoClassDefFoundError e){
+		}
 		this.functionIconPath = mb.getFunctionIconPath();
 		this.moduleURL = mb.getURLString();
 		this.URLinPackageIntroDirectory = mb.URLinPackageIntro();
 		this.htmlExplanation = mb.getHTMLExplanation();
 		this.employeeNeedsVector = mb.getEmployeeNeedsVector();
 		this.homePhoneNumber = mb.getHomePhoneNumber();
+		String localPhoneBookPath = directoryPath + "phoneBook.txt";
+		if (MesquiteFile.fileExists(localPhoneBookPath)) {
+			String phoneNumber = MesquiteFile.getFileContentsAsString(localPhoneBookPath);
+			if (StringUtil.notEmpty(phoneNumber)) {
+				this.homePhoneNumber = phoneNumber;
+			}
+		}
 		if (employeeNeedsVector != null)
 			for (int i = 0; i< employeeNeedsVector.size(); i++){
 				EmployeeNeed need = (EmployeeNeed)employeeNeedsVector.elementAt(i);
@@ -266,6 +279,16 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	public Vector getMacros(){
 		return macros;
 	}
+	public int getNumStarts() {
+		return numStarts;
+	}
+	public void setNumStarts(int numStarts) {
+		this.numStarts = numStarts;
+	}
+	public void incrementNumStarts() {
+		 numStarts++;
+	}
+
 	
 	/** returns name to be used in menu item to hire the module.  By default this is the same as the name of the module, but can be different if the
 	module overrides its own getNameForMenuItem method.*/

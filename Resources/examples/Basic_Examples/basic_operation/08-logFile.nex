@@ -122,7 +122,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'Mesquite maintains a log file ("Mesquite log") automatically that records commands given.  You can see it by selecting the Mesquite Log menu item in the Windows menu.^n^nMesquite saves the current log file and the previous five log files automatically in the Mesquite_Support_Files on your hard disk.  If you wish to save a log file, you can copy it from that directory or rename it so that Mesquite won''t overwrite it.';
+				setExplanation 'Mesquite maintains a log file ("Mesquite log") automatically that records commands given.  You can see it by selecting the Mesquite Log menu item in the View menu.^n^nMesquite saves the current log file and the previous five log files automatically in the Mesquite_Support_Files on your hard disk.  If you wish to save a log file, you can copy it from that directory or rename it so that Mesquite won''t overwrite it.';
 				setTitle Log_file;
 				toggleFileNames off;
 				setPrevButtonName Previous;

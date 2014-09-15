@@ -1,5 +1,6 @@
-/* Mesquite Chromaseq source code.  Copyright 2005-2010 David Maddison and Wayne Maddison.
-Version 0.980   July 2010
+/* Mesquite source code.  Copyright 1997 and onward, D. Maddison and W. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -9,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
- */
+*/
 
 package mesquite.categ.StateConsistencyStrip;
 
@@ -56,6 +57,9 @@ public class StateConsistencyStrip extends DataColumnNamesAssistant {
 		
 		return true;
   	 }
+	public boolean loadModule(){
+		return false; // not ready
+	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CategStateForCharacter.class, getName() + " needs a module to provide a character state (e.g., the consensus state) for each character.",
 		"The character state provider is chosen initially or using the State Calculator submenu");
@@ -254,6 +258,8 @@ public class StateConsistencyStrip extends DataColumnNamesAssistant {
 
 		/*.................................................................................................................*/
 	 public void calculateSequence() {
+		 if (data == null)
+			 return;
 		 CategoricalState resultState = new CategoricalState();
 		 MesquiteString resultString = new MesquiteString();
 		 long[] sequence = new long[data.getNumChars()];
@@ -281,7 +287,7 @@ public class StateConsistencyStrip extends DataColumnNamesAssistant {
 
 		/*.................................................................................................................*/
 	 public void drawInCell(int ic, Graphics g, int x, int y, int w, int h, boolean selected) {
-		 if (stateTask==null) 
+		 if (stateTask==null || data == null) 
 			 return;
 		 long s= CategoricalState.inapplicable;
 		 if (consensusSequence==null)

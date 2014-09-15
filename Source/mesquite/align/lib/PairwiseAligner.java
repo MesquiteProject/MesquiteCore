@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -121,18 +122,33 @@ public class PairwiseAligner  {
 
 	}
 	
+	int preSequenceTerminalFlaggedGap = -1;
+	int postSequenceTerminalFlaggedGap = -1;
+	
+	
+	
+	public int getPreSequenceTerminalFlaggedGap() {
+		return preSequenceTerminalFlaggedGap;
+	}
+
+	public int getPostSequenceTerminalFlaggedGap() {
+		return postSequenceTerminalFlaggedGap;
+	}
+
 	private void doFlagGapArrayTerminals(long[] recipientSequence) {
 		if (gapInsertionArray==null)
 			return;
-		for (int i=0; i<gapInsertionArray.length; i++) {
+		for (int i=0; i<gapInsertionArray.length; i++) { // going up from start
 			if (gapInsertionArray[i]>0) {
 				boolean terminal=true;
 				for (int j=0; j<=i+1 && j<recipientSequence.length; j++) {
 					if (recipientSequence[j]!=MolecularState.inapplicable)
 						terminal=false;
 				}
-				if (terminal)
-					gapInsertionArray[i] = -gapInsertionArray[i];
+				if (terminal) {
+					gapInsertionArray[i] = -gapInsertionArray[i];  //having them as negative will flag them as terminal gaps
+					preSequenceTerminalFlaggedGap = i;
+				}
 				break;
 			}
 		}
@@ -143,9 +159,11 @@ public class PairwiseAligner  {
 					if (recipientSequence[j]!=MolecularState.inapplicable)
 						terminal=false;
 				}
-				if (terminal)
-					gapInsertionArray[i] = -gapInsertionArray[i];
-				break;
+				if (terminal) {
+					gapInsertionArray[i] = -gapInsertionArray[i]; //having them as negative will flag them as terminal gaps
+					postSequenceTerminalFlaggedGap = i;
+				}
+				break;  
 			}
 		}
 	}
@@ -181,14 +199,15 @@ public class PairwiseAligner  {
 				int myScore =  helper.recursivelyFillArray(0, lengthA, 0, lengthB, helper.noGap, helper.noGap);
 				ret = helper.recoverAlignment(totalGapChars, seqsWereExchanged);
 				gapInsertionArray = helper.getGapInsertionArray();  
-
+	            if (score != null)
+	                score.setValue( myScore );
 			} else {
 //				 fast (but quadratic space) alignment
 			    AlignmentHelperQuadraticSpace helper = new AlignmentHelperQuadraticSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength);
 				ret = helper.doAlignment(returnAlignment,score,keepGaps, followsGapSize, totalGapChars);
 				gapInsertionArray = helper.getGapInsertionArray();
 			}
-		
+
 			if (ret==null)
 				return null;
 			for (int i=0; i<ret.length; i++) {
@@ -213,10 +232,9 @@ public class PairwiseAligner  {
 				return null;
 			}
 			//linear space, and since it only makes one pass, it's the fastest option for score-only requests.
-			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, alphabetLength, true, keepGaps, followsGapSize);
+			AlignmentHelperLinearSpace helper = new AlignmentHelperLinearSpace(A, B, lengthA, lengthB, subs, gO, gE, gOt, gEt, alphabetLength, true, keepGaps, followsGapSize);
 			helper.fillForward(0,lengthA,0,lengthB,helper.noGap);			
-			int myScore = Math.min(helper.fH[lengthA], Math.min (helper.fD[lengthA], helper.fV[lengthA])) ;
-			
+			int myScore = Math.min(helper.fH[lengthB], Math.min (helper.fD[lengthB], helper.fV[lengthB])) ;
 			if (score != null)
 				score.setValue( myScore );
 
@@ -300,10 +318,14 @@ public class PairwiseAligner  {
 	/** If object wasn't called with gap cost arguments, this must be called or alignment will fail*/
 	public void setGapCosts(int gapOpen, int gapExtend, int gapOpenTerminal, int gapExtendTerminal){
 	    //	first gap char costs gapOpen+gapExtend, and each additional character costs gapExtend
-		this.gapOpen = gapOpen;
-		this.gapExtend = gapExtend;
-		this.gapOpenTerminal = gapOpenTerminal;
-		this.gapExtendTerminal = gapExtendTerminal;
+		if (gapOpen >=0)  //allows passing of -1 to leave as is
+			this.gapOpen = gapOpen;
+		if (gapExtend >=0)
+			this.gapExtend = gapExtend;
+		if (gapOpenTerminal >=0)
+			this.gapOpenTerminal = gapOpenTerminal;
+		if (gapExtendTerminal >=0)
+			this.gapExtendTerminal = gapExtendTerminal;
 		gapCostsInitialized = true;
 	}
 
@@ -468,7 +490,6 @@ public class PairwiseAligner  {
 			extracted2[ic-firstSite] = data.getState(ic, taxon2);
 		}
 		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
-		
 		
 		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
 	

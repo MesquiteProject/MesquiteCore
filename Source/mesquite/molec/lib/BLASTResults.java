@@ -130,7 +130,7 @@ public class BLASTResults {
 
 	public String toString(int numHits) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("   Top hits\n\tAccession\t[eValue]\tDefinition): \n");
+		sb.append("   Top hits\n\tAccession\t[eValue]\tDefinition: \n");
 		for (int i=0; i<maxHits && i<numHits && i<accession.length; i++) {
 			if (StringUtil.notEmpty(accession[i])){
 				/*				if (reversed[i])
@@ -147,6 +147,15 @@ public class BLASTResults {
 	/*.................................................................................................................*/
 	public boolean acceptableHit(int hitCount, double bitScore, double eValue) {
 		return hitCount<=maxHits;
+	}
+	/*.................................................................................................................*/
+	public boolean someHits() {
+		for (int i=0; i<maxHits; i++) {
+			if (StringUtil.notEmpty(getAccession(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -257,13 +266,11 @@ public class BLASTResults {
 
 							String s = hitElement.elementText("Hit_def");
 							setDefinition(s, numHits);
-							//	Debugg.println("Hit_def: " + s);
 
 							s = hitElement.elementText("Hit_accession");
 							setAccession(s, numHits);
 
 							s = hitElement.elementText("Hit_id");
-							//	Debugg.println("Hit_id: " + s);
 							//s=StringUtil.getItem(s,"|", 2);
 							if (StringUtil.notEmpty(s))
 								setID(s, numHits);

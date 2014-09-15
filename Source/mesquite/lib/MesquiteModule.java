@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -67,16 +68,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "1 November 2013";   
+		return "29 August 2014";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "2.75+";
+		return "3.0";
 	}
 	/*.................................................................................................................*/
-	//this should be mesquiteFeedbackXXX.py where XXX is version as integer if a release version (e.g. mesquiteFeedback273.py)
-	public static String errorReportURL =  "http://mesquiteproject.org/cgi-bin/mesquiteFeedback275.py";
+	/*.................................................................................................................*/
+	//As of 3.0 this becomes fixed, not changing with version)
+	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
 	public final static String getBuildLetter() {
@@ -88,7 +90,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	581;  
+		return 	644;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -126,7 +128,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//2.75 = 564 released 30 September 2011  179839 / 91129 / 8939
 	//       = 565 included 4 October 2011  in Chromaseq release; slight changes to UndoInstructions for Chromaseq
 	//       = 566 update 10 October 2011, small fix in this module to re-enable error reporting of NullPointerExceptions and ArrayIndexOutOfBoundsExceptions
-	/*.................................................................................................................*/
+	//3.00  = 644 released 29 Aug 2014
+/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
 		return "";
@@ -169,7 +172,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	protected  Object lastResult;
 	/** this is for modules to store their last result string for later use; intended for NumberForItem subclasses */
 	protected  String lastResultString; 
-
+	
 
 	/** The default author for this machine and user account */
 	public static Author author = new Author();
@@ -252,6 +255,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 	}
 
+	/*.................................................................................................................*/
+	public void incrementNumStarts(){
+		getModuleInfo().incrementNumStarts();
+	}
 	/*.................................................................................................................*/
 	/** superStartJob is called automatically when an employee is hired.  This is intended for use by superclasses of modules that need
 	their own constructor-like call, without relying on the subclass to be polite enough to call super.startJob().*/
@@ -336,6 +343,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			decrementMenuResetSuppression();
 		proj = null;
 		totalDisposed++;
+	}
+	/*.................................................................................................................*/
+	/** Notifies all employees that a file is about to be closed.*/
+	public void fileCloseRequested () {
+		if (employees==null || doomed)
+			return;
+		Enumeration e = employees.elements();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			MesquiteModule mbe = (MesquiteModule)obj;
+			if (mbe!=null) {
+				mbe.fileCloseRequested(); 
+			}
+		}
 	}
 	/*.................................................................................................................*/
 	/** To be called by a module to close down on its own (as opposed to being fired).  This might happen, for
@@ -930,19 +951,36 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return getRootImageDirectoryPath() + s + imageFileName;
 	}
 	/*.................................................................................................................*/
-	/** returns path to the root directory of the documentation of Mesquite*/
+	/** returns path to the root directory of the documentation of Mesquite*
 	public static String getDocsPath() {
 		String s= StringUtil.getAllButLastItem(mesquiteDirectoryPath, MesquiteFile.fileSeparator);
 		if (s==null)
 			return null;
 		else
-			return s + MesquiteFile.fileSeparator + "docs/mesquite/";
+			return s + MesquiteFile.fileSeparator + "docs/mesquite/"; xxx
 	}
 	/*.................................................................................................................*/
 	/** returns a local file path expected by the module.  This allows the module to say "I am going to need this".  Mesquite
  	check on startup and issues warning if not found . */
 	public String  getExpectedPath(){ 
 		return null;
+	}
+	/*.................................................................................................................*/
+	/** An employee can call this to know if it's ok to query for options or do any other UI interaction involving a user response.
+	 * An employer can override this to say "no".*/
+	public boolean okToInteractWithUser(int howImportant, String messageToUser){
+		if (whomToAskIfOKToInteractWithUser!=null)
+			return whomToAskIfOKToInteractWithUser.okToInteractWithUser(howImportant, messageToUser);
+		if (employer!= null)
+			return employer.okToInteractWithUser(howImportant, messageToUser);
+		return true;
+	}
+	public static final int CAN_PROCEED_ANYWAY = 0;
+	public static final int WILL_FAIL_OTHERWISE = 1;
+
+	MesquiteModule whomToAskIfOKToInteractWithUser = null;
+	public void setWhomToAskIfOKToInteractWithUser(MesquiteModule m){
+		whomToAskIfOKToInteractWithUser = m;
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in log; also in dialog if flag is set.*/
@@ -1026,6 +1064,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Displays an alert in connection to an exception*/
 	public void exceptionAlert(Throwable e, String s) {
 		MesquiteTrunk.errorReportedDuringRun = true;
+		StackTraceElement[] stt = e.getStackTrace();
+		String rep = MesquiteException.lastLocMessage() + "\n";
+		rep += getRootPath() + "\n";
+		rep += e + "\n";
+		rep += s + "\n";
+		for (int i= 0; i< stt.length; i++)
+			rep += stt[i] + "\n";
+		s = rep;
 		MesquiteDialog.cleanUpWizard();
 		Thread t = Thread.currentThread();
 		if (t instanceof MesquiteThread)
@@ -1078,7 +1124,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		report += "\n\n\n";
 		report += logWindow.getText();
 		report += "\n\n\n";
-		reportToHome(report);
+		reportProblemToHome(report);
 		MesquiteTrunk.errorReportedToHome = true;
 	}
 	/*.................................................................................................................*/
@@ -1095,7 +1141,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else {
 			boolean q = AlertDialog.query(containerOfModule(), "Error", s + "\n\nPlease send a report of this error to the Mesquite server, to help us understand how often this happens.  None of your data will be sent." + addendum, "OK, Send Report",  "Close without sending");
 			if (q){
-				reportToHome(s + "\n\n" + details + "\n\n@@@@@@@@@@@@@@@\n\n" + logWindow.getText());
+				reportProblemToHome(s + "\n\n" + details + "\n\n@@@@@@@@@@@@@@@\n\n" + logWindow.getText());
 				MesquiteTrunk.errorReportedToHome = true;
 			}
 		}
@@ -1126,7 +1172,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (numPairs>=4)
 			pairs[3] = new NameValuePair("notes", StringUtil.tokenize(notes));
 
-		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/cgi-bin/mesquiteBeans.py")){
+		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/pyMesquiteBeans", null)){
 			if (notifyUser) 
 				MesquiteMessage.println("Bean sent to Mesquite server.");
 		}
@@ -1141,7 +1187,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
-	public void reportToHome(String s) {
+	public void reportProblemToHome(String s) {
 		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
 				"In order to fix this bug, we may need to contact you for more details.  " + 
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
@@ -1154,8 +1200,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			report += "EMAIL NOT GIVEN\n\n";
 
 		report += s + "\n";
-		if (BaseHttpRequestMaker.postToServer(report, errorReportURL))
-			MesquiteMessage.println("Report sent to Mesquite server.  Thank you!");
+		StringBuffer response = new StringBuffer();
+		if (BaseHttpRequestMaker.postToServer(report, errorReportURL, response)){
+			String r = response.toString();
+			if (r == null || r.indexOf("mq3rs")<0)
+				discreetAlert("Sorry, Mesquite was unable to communicate properly with the server to send the report.");
+			else
+				AlertDialog.noticeHTML(containerOfModule(),"Note", r, 600, 400, null);
+		}
 		else
 			discreetAlert("Sorry, Mesquite was unable to connect to the server to send the report.");
 
@@ -1419,6 +1471,26 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else
 			this.lastResultString = lastResultString.getValue();
 	}
+	/*.................................................................................................................*/
+	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
+	public boolean satisfiesSnapshotMode(){
+		return (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL);
+	}
+	/*.................................................................................................................*/
+	/** return the value of items to be snapshotted when saving a macro.*/
+	public int getMacroSnapshotMode(){
+		return Snapshot.SNAPALL;
+	}
+	/*.................................................................................................................*/
+	/** return the module responsible for snapshotting when saving a macro.*/
+	public MesquiteModule getMacroSnapshotModule(){
+		return this;
+	}
+	/*.................................................................................................................*/
+	/** return the command string to get the module responsible for snapshotting when saving a macro.*/
+	public String getMacroSnapshotModuleCommand(){
+		return null;
+	}
 
 	public Object doCommand(String commandName, String arguments) {
 		return doCommand(commandName, arguments, CommandChecker.defaultChecker);
@@ -1490,10 +1562,21 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return containerOfModule();
 		}
 		else  if (checker.compare(MesquiteModule.class, null, null, commandName, "saveMacro")) {
+			MesquiteTrunk.snapshotMode = getMacroSnapshotMode();
+			MesquiteModule mb = getMacroSnapshotModule();
+			boolean otherModule = !mb.equals(this);
+			String prefix = "";
+			if (otherModule) {
+				prefix = "\t" + getMacroSnapshotModuleCommand()+";" + StringUtil.lineEnding();
+		 		prefix+="\t\ttell It;" + StringUtil.lineEnding();
+			}
+			String recipe = Snapshot.getSnapshotCommands(getMacroSnapshotModule(), null, "");
+			if (otherModule) {
+				recipe = prefix + recipe + "\t\tendTell;" + StringUtil.lineEnding();
 
-			String recipe = Snapshot.getSnapshotCommands(this, null, "");
+			}
 			MesquiteMacro.saveMacro(this, "Untitled Macro for " + getNameForMenuItem(), 0, recipe);
-
+			MesquiteTrunk.snapshotMode = Snapshot.SNAPALL;
 		}
 		else  if (checker.compare(MesquiteModule.class, null, null, commandName, "applyMacro")) {
 			MesquiteModuleInfo mmi = getModuleInfo();
@@ -1800,6 +1883,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void preWritingCheck(MesquiteFile file, String format){		
 	}
 
+
 	/** Return Mesquite commands that will put the module (approximately) back into its current state. Used
 	so that on file save, a Mesquite block can be saved that will return the user more or less to previous state. */
 	public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with
@@ -2006,7 +2090,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String manualPath;
 		String manP;
 		if (this instanceof MesquiteTrunk)
-			manP= "docs" + MesquiteFile.fileSeparator + "mesquiteTrunk.html";
+			return mesquiteWebSite;
 		else
 			manP= "manual.html";
 		manualPath = getPath() + manP; 
@@ -2036,15 +2120,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return null;
 		}
 	}
+	
+	public static final String mesquiteWebSite = "http://mesquiteproject.wikispaces.com";
 	/*.................................................................................................................*/
 	/** returns path to manual.  Null if manual doesn't exist*/
-	public String getBrowserManualPath() {
+	public String getBrowserManualPath() { 
 		if (MesquiteTrunk.isApplet()) 
 			return null;
 		String manualPath;
 		//String manP;
 		if (this instanceof MesquiteTrunk)
-			manualPath= getDocsPath() + "mesquiteTrunk.html";
+			 return mesquiteWebSite;
 		else
 			manualPath= getPath() + "manual.html";
 		File testing = new File(manualPath);
@@ -2057,7 +2143,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** shows manual for module*/
 	public void showManual() {
-		showWebPage(getBrowserManualPath(), true);
+		showWebPage(getBrowserManualPath(), false); 
 	}
 	/*.................................................................................................................*/
 	//TODO: have showWebPage(MesquiteFile file, String path) and showWebPage(MesquiteProject project, String path) to say relative to what (otherwise relative to Mesquite home folder)
@@ -2138,16 +2224,39 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				String[] browserCommand = null;
 				boolean remote = path.indexOf(":/")>=0;
 				
-				if (MesquiteTrunk.getJavaVersionAsDouble()>= 1.6){
+				boolean useDesktop = false;
+				if (MesquiteTrunk.getJavaVersionAsDouble()>= 1.6){  // let's check to see if this will work first
+					try {
+						if (Desktop.isDesktopSupported()) {
+							Desktop desktop = Desktop.getDesktop();
+							if (desktop.isSupported(Desktop.Action.BROWSE)) {
+								useDesktop = true;
+							}
+						}
+					} catch (Exception e) {
+					}
+				}
+
+				if (useDesktop){  
 					Desktop d = Desktop.getDesktop();
 					try {
-						d.browse(new URI(path));
+						URI uri = null;
+						if (path.indexOf("http:/")<0 && path.indexOf("https:/")<0){ // it's a local reference
+							File file = new File(path);
+							uri=file.toURI();
+						} else
+							uri = new URI(path);
+						if (!remote && !CommandChecker.documentationComposed && autoCompose) {
+							CommandChecker checker = new CommandChecker();
+							checker.composeDocumentation();
+						}	
+						d.browse(uri);
 					}
 					catch (IOException e) {
 						browserString = null;
 						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the web browser could not be used properly.  There may be a problem with insufficient memory or the location of the web page or browser." );
 					} catch (URISyntaxException e) {
-						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interprtable." );
+						MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the address was not interpretable." );
 					}
 				}
 				else if (MesquiteTrunk.isMacOSX()){ //Mac OS X
@@ -2162,6 +2271,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 						return;
 					}
 					else { 
+						if (!remote && !CommandChecker.documentationComposed && autoCompose) {
+							CommandChecker checker = new CommandChecker();
+							checker.composeDocumentation();
+						}	
 						File testing = new File(pathToCheck);
 						if (!testing.exists()) {
 							MesquiteTrunk.mesquiteTrunk.alert("The requested page could not be shown, because the file could not be found. (" + pathToCheck + ")" );
@@ -2195,10 +2308,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 					}
 				}
 				else {
-					if (!remote && !CommandChecker.documentationComposed && autoCompose) {
-						CommandChecker checker = new CommandChecker();
-						checker.composeDocumentation();
-					}	
+					
 					try {
 						BrowserLauncher.openURL(path);
 						return;
@@ -2436,6 +2546,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return true;
 	}
 	/*.................................................................................................................*/
+	/** Returns whether the module should be loaded on startup.  This can be overridden to exclude modules from consideration. */  
+	public boolean  loadModule(){ 
+		return true;
+	}
+	/*.................................................................................................................*/
 	public String getAppletInfo() {
 		return getName() + ", version " + getVersion();
 	}
@@ -2521,6 +2636,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public boolean getUserChooseable(){
 		return true;
 	}
+
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+	}
+
 	/*.................................................................................................................*/
 	/** Returns duty Class that module would like to hire immediately upon hiring. If a module wants to present a user with a choice of 
 	employees to hire, it can request a submenu listing these possible employees.  However, if one of these employees would like to immediately

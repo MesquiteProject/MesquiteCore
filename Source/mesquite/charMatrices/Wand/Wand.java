@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -141,9 +142,15 @@ public class Wand extends DataWindowAssistantI {
 				boolean subtractFromSelection = commandSelected && table.isCellSelected(column, row);
 				if ((arguments.indexOf("shift")<0) && !commandSelected)
 					table.deselectAll();
+				
+
 
 				table.offAllEdits();
-				if (selectByText.getValue()){
+				if (arguments.indexOf("option")>=0 && getEmployer() instanceof mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker){
+					mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker mb = (mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker)getEmployer();
+					mb.selectDataBlockInTaxon(column, row);
+				}
+				else if (selectByText.getValue()){
 					if (contiguous.getValue()){
 						String text = table.getMatrixText(column, row);
 						if (contigSel == null || contigSel.length != table.getNumColumns() || contigSel[0].length != table.getNumRows())

@@ -1,5 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison. 
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -50,11 +50,11 @@ public class aDiverseIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
  	public String getPackageCitation(){
- 		return "Midford, P. & W.P. Maddison. 2011.  Diverse Package for Mesquite.  Version 2.75. http://mesquiteproject.org";
+ 		return "Midford, P. & W.P. Maddison. 2014.  Diverse Package for Mesquite.  Version 3.00. http://mesquiteproject.org";
  	}
 	/*.................................................................................................................*/
   	 public String getPackageVersion() {
-		return "2.75";
+		return "3.00";
    	 }
  	/*.................................................................................................................*/
   	 public int getVersionOfFirstRelease() {

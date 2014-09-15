@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -115,14 +116,14 @@ public class ParsimonyMeristicLinear extends ParsAncStatesForModel {
 	{Uses the trick of taking two most distant state sets, applying binary set operator on them, then}
 	{taking result and combine it with third set using binary set operator again}*/
 		if (minD < minE) {
-			if (minE < minF)  	//{¥ minF is greatest}
+			if (minE < minF)  	//{ï¿½ minF is greatest}
 				combinefromGreatestMin(minA, maxA, minF, maxF, minD, maxD, minE, maxE);
-			else 					//{¥ minE greatest}
+			else 					//{ï¿½ minE greatest}
 				combinefromGreatestMin(minA, maxA, minE, maxE, minD, maxD, minF, maxF);
 		}
-		else if (minF > minD) //{¥ minF greatest}
+		else if (minF > minD) //{ï¿½ minF greatest}
 			combinefromGreatestMin(minA, maxA, minF, maxF, minD, maxD, minE, maxE);
-		else  						//{¥ minD greatest}
+		else  						//{ï¿½ minD greatest}
 			combinefromGreatestMin(minA, maxA, minD, maxD, minF, maxF, minE, maxE);
 	}
 

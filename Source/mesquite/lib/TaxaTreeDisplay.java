@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
@@ -53,6 +55,7 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	/**  */
 	protected boolean isInvalid = false;
 	/**  */
+	protected boolean crossDrawn = false;
 	
 	public double[] nodeLocsParameters = new double[8]; //parameters for use by node locs module
 	public double[] drawParameters = new double[8];//parameters for use by draw taxon module
@@ -74,6 +77,10 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		extras = new ListableVector();
 		this.taxa = taxa;
 		setLayout(null);
+	}
+	
+	public MesquiteModule getOwnerModule(){
+		return ownerModule;
 	}
 	
 	public int getNumTaxa() {
@@ -102,6 +109,14 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	public void setTaxa(Taxa taxa) {
 		this.taxa = taxa;
 	}
+	public boolean isCrossDrawn() {
+		return crossDrawn;
+	}
+
+	public void setCrossDrawn(boolean crossDrawn) {
+		this.crossDrawn = crossDrawn;
+	}
+
 	protected boolean redoCalculationsWaiting = false;
 	public void recalculatePositions() {
 		if (!inProgress){
@@ -172,6 +187,7 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		repaintsPending++;
 		if (repaintsPending<=1){
 			super.repaint();
+			crossDrawn=false;
 		}
 	}
 	public void setFrame(boolean doFrame) {
@@ -229,6 +245,8 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 	}
 
 	public void fillTaxon(Graphics g, int m){}
+	public void redrawTaxa(Graphics g, int M) {}
+
 	public boolean pointInTaxon(int m, int x, int y){return false;}
 	public boolean taxonInRectangle(Taxa taxa, int it, int x1, int y1, int x2, int y2){
 		return false;}

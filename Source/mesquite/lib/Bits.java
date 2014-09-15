@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -889,7 +890,7 @@ public class Bits implements Listable{
  	}
 
 	/*..........................................Bits.....................................*/
-	/** converts passed int  to string, as its bits representation.  Used for development/debugging. Ã*/
+	/** converts passed int  to string, as its bits representation.  Used for development/debugging. ï¿½*/
 	public static String toString(byte s) {
 		String temp="";
 		for (int e=7; e>=0; e--) {
@@ -901,7 +902,7 @@ public class Bits implements Listable{
 		return temp;
 	}
 	/*..........................................Bits.....................................*/
-	/** converts passed int  to string, as its bits representation.  Used for development/debugging. Ã*/
+	/** converts passed int  to string, as its bits representation.  Used for development/debugging. ï¿½*/
 	public static String toString(short s) {
 		String temp="";
 		for (int e=15; e>=0; e--) {
@@ -913,7 +914,7 @@ public class Bits implements Listable{
 		return temp;
 	}
 	/*..........................................Bits.....................................*/
-	/** converts passed int  to string, as its bits representation.  Used for development/debugging. Ã*/
+	/** converts passed int  to string, as its bits representation.  Used for development/debugging. ï¿½*/
 	public static String toString(int s) {
 		String temp="";
 		for (int e=SIZECHUNKMINUS1; e>=0; e--) {
@@ -925,7 +926,7 @@ public class Bits implements Listable{
 		return temp;
 	}
 	/*..........................................Bits.....................................*/
-	/** converts passed long  to string, as its bits representation.  Used for development/debugging. Ã*/
+	/** converts passed long  to string, as its bits representation.  Used for development/debugging. ï¿½*/
 	public static String toString(long s) {
 		String temp="";
 		for (int e=63; e>=0; e--) {

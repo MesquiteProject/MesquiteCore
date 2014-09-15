@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -518,42 +519,184 @@ public class DrawTreeUtil {
 	}
 
 	/*_________________________________________________*/
-	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
 			int xN=x[node];
 			int xnM = x[nM];
 			int yN =y[node];
-			int ynM = y[nM];
-			int halfEdge = edgewidth/2;
+			int ynM = y[nM];  // y position of mother of node
+			float halfEdge = edgewidth/2;
 			if ( g instanceof Graphics2D) {
 				BasicStroke wideStroke = new BasicStroke(width);
 				Graphics2D g2 = (Graphics2D)g;
+				Stroke stroke = g2.getStroke();
 				g2.setStroke(wideStroke);
+				Shape line;
 				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-					g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
-					g2.drawLine(xN+halfEdge,ynM,xnM,ynM);
+					if (yN!=ynM){
+						line = new Line2D.Double(xN+halfEdge,yN+halfEdge,xN+halfEdge,ynM+halfEdge);
+						g2.draw(line);
+					}
+					line = new Line2D.Double(xN+halfEdge,ynM+halfEdge,xnM+halfEdge,ynM+halfEdge);
+					if (node!=tree.getRoot())
+						g2.draw(line);
 				}
-				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //����
-					g2.drawLine(xN+halfEdge,yN,xN+halfEdge,ynM);
-					g2.drawLine(xN+halfEdge,ynM,xnM,ynM);
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ 
+					if (yN!=ynM){
+						line = new Line2D.Double(xN+halfEdge,yN-halfEdge,xN+halfEdge,ynM-halfEdge);
+						g2.draw(line);
+					}
+					line = new Line2D.Double(xN+halfEdge,ynM-halfEdge,xnM+halfEdge,ynM-halfEdge);
+					if (node!=tree.getRoot())
+						g2.draw(line);
 				}
 				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-					g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);
-					g2.drawLine(xnM,yN+halfEdge,xnM,ynM);
-
+					if (xN!=xnM){
+						line = new Line2D.Double(xN-halfEdge,yN+halfEdge,xnM-halfEdge,yN+halfEdge);  // draws the horizontal lines
+						g2.draw(line);
+					}
+					line = new Line2D.Double(xnM-halfEdge,yN+halfEdge,xnM-halfEdge,ynM+halfEdge);  // draws the vertical lines
+					if (node!=tree.getRoot())
+						g2.draw(line);
 				}
-				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //����
-					g2.drawLine(xN,yN+halfEdge,xnM,yN+halfEdge);
-					g2.drawLine(xnM,yN+halfEdge,xnM,ynM);
+				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  
+					if (xN!=xnM){
+						line = new Line2D.Double(xN+halfEdge,yN+halfEdge,xnM+halfEdge,yN+halfEdge);
+						g2.draw(line);
+					}
+					line = new Line2D.Double(xnM+halfEdge,yN+halfEdge,xnM+halfEdge,ynM+halfEdge);
+					if (node!=tree.getRoot())
+						g2.draw(line);
 				}
-				g2.setStroke(defaultStroke);
+				g2.setStroke(stroke);
 			}
 
 			if (emphasizeNodes && nodePoly!=null) {
 				Color prev = g.getColor();
-				g.setColor(Color.red);//for testing
-				g.fillPolygon(nodePoly);
+				g.setColor(Color.green);//for testing
+				//	g.fillPolygon(nodePoly);
+				g.fillRect(x[node]-1, y[node]-1,2,2);
+				g.setColor(prev);
+			}
+		}
+	}
+
+	/*_________________________________________________*/
+	public static void fillOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float lineWidth, float inset, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+		if (tree.nodeExists(node)) {
+			int nM = tree.motherOfNode(node);
+			int xN=x[node];
+			int xnM = x[nM];
+			int yN =y[node];
+			int ynM = y[nM];  // y position of mother of node
+			float xNHor, xnMHor, yNVert;
+			float ynMVert;
+			float halfLine = lineWidth/2;
+			Shape line;
+			if (g instanceof Graphics2D) {
+				BasicStroke wideStroke = new BasicStroke(lineWidth);
+				Graphics2D g2 = (Graphics2D)g;
+				Stroke stroke = g2.getStroke();
+				g2.setStroke(wideStroke);
+				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
+					xNHor = xN+start+halfLine;
+					if (xN>xnM){ // branch going to right
+						ynMVert = ynM+start+halfLine;
+						if (yN!=ynM){
+							line = new Line2D.Double(xNHor,yN+halfLine+inset,xNHor,ynM-halfLine+start);  // draws the vertical lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xNHor,ynMVert,xnM+edgewidth,ynMVert);  // draws the horizontal lines
+						if (node!=tree.getRoot())
+							g2.draw(line);
+					}
+					else { // branch going to left
+						ynMVert = ynM+edgewidth-start-halfLine;
+						if (yN!=ynM){
+							line = new Line2D.Double(xNHor,yN+halfLine+inset,xNHor,ynMVert);  // draws the vertical lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xNHor,ynMVert,xnM+halfLine,ynMVert);  // draws the horizontal lines
+						if (node!=tree.getRoot())
+							g2.draw(line);
+					}
+				}
+				else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){ //����
+					xNHor = xN+start+halfLine;
+					if (xN>xnM){ // branch going to right
+						ynMVert = ynM-start-halfLine;
+						if (yN!=ynM){
+							line = new Line2D.Double(xNHor,yN-halfLine-inset,xNHor,ynMVert);  // draws the vertical lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xNHor,ynMVert,xnM+edgewidth,ynMVert);  // draws the horizontal lines
+						if (node!=tree.getRoot())
+							g2.draw(line);
+					}
+					else { // branch going to left
+						ynMVert = ynM-edgewidth+start+halfLine;
+						if (yN!=ynM){
+							line = new Line2D.Double(xNHor,yN-halfLine-inset,xNHor,ynMVert);  // draws the vertical lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xNHor,ynMVert,xnM+halfLine,ynMVert);  // draws the horizontal lines
+						if (node!=tree.getRoot())
+							g2.draw(line);
+					}
+				}
+				else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+					yNVert = yN+start+halfLine;
+					if (yN>ynM){ // branch going down
+						xnMHor = xnM-start-halfLine;
+						if (xN!=xnM){
+							line = new Line2D.Double(xN-halfLine-inset,yNVert,xnMHor,yNVert);  // draws the horizontal lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xnMHor,yNVert,xnMHor,ynM+edgewidth+halfLine-inset);  // draws the vertical lines
+						if (node!=tree.getRoot())
+							g2.draw(line);
+					}
+					else { // branch going up
+						xnMHor = xnM+start-edgewidth+halfLine;
+						if (xN!=xnM){
+							line = new Line2D.Double(xN-halfLine-inset,yNVert,xnMHor,yNVert);  // draws the horizontal lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xnMHor,yNVert,xnMHor,ynM-halfLine+inset);  // draws the vertical lines
+						if (node!=tree.getRoot())
+							g2.draw(line);
+					}
+				}
+				else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){  //����
+					yNVert = yN+start+halfLine;
+					if (yN>ynM){ // branch going down
+						xnMHor = xnM+start+halfLine;
+						if (xN!=xnM){
+							line = new Line2D.Double(xN+halfLine+1,yNVert,xnMHor,yNVert);  // draws the horizontal lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xnMHor,yNVert,xnMHor,ynM+edgewidth+halfLine-1);  // draws the vertical lines
+						g2.draw(line);
+					}
+					else { // branch going up
+						xnMHor = xnM+edgewidth-start-halfLine;
+						if (xN!=xnM){
+							line = new Line2D.Double(xN+halfLine+inset,yNVert,xnMHor,yNVert);  // draws the horizontal lines
+							g2.draw(line);
+						}
+						line = new Line2D.Double(xnMHor,yNVert,xnMHor,ynM-halfLine+inset);  // draws the vertical lines
+						g2.draw(line);
+					}
+				}
+				g2.setStroke(stroke);
+			}
+
+			if (emphasizeNodes && nodePoly!=null) {
+				Color prev = g.getColor();
+				g.setColor(Color.green);//for testing
+				//	g.fillPolygon(nodePoly);
+				g.fillRect(x[node]-1, y[node]-1,2,2);
 				g.setColor(prev);
 			}
 		}

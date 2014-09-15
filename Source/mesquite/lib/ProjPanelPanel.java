@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -55,7 +56,13 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 
 		refresh();
 	}
-	public void resetTitle(){
+	public void setOpen(boolean b){
+		super.setOpen(false);  //sorry, closed only
+	}
+	public boolean isOpen(){
+		return false;
+	}
+public void resetTitle(){
 	}
 	public MesquiteModule getOwnerModule(){
 		return owner;
@@ -221,7 +228,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 	protected void resetSizes(int w, int h){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
-		if (!open){
+		if (!isOpen()){
 			for (int i = 0; i<subPanels.size(); i++){
 				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
 				panel.setBounds(0, 0, 0, 0);
@@ -247,7 +254,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 		}
 	}
 	boolean sizesMatch(int w, int h){
-		if (!open){
+		if (!isOpen()){
 			for (int i = 0; i<subPanels.size(); i++){
 				ClosablePanel panel = ((ClosablePanel)subPanels.elementAt(i));
 				if (panel.getWidth() != 0 || panel.getHeight() != 0)
@@ -276,7 +283,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 		return false;
 	}
 	public int getRequestedHeight(int width){
-		if (!open)
+		if (!isOpen())
 			return MINHEIGHT;
 		int total = MINHEIGHT+5;
 		if (anyGraphicalCommands())

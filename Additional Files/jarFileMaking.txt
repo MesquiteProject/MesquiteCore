@@ -1,0 +1,3 @@
+jar cvfm mesquite.jar manifest.txt mesquite org com
+
+jar cvfm mesquite.jar manifest.txt start

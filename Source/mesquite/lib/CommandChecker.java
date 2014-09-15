@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
- Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+ 
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -17,7 +18,7 @@ import java.util.*;
 import java.io.*;
 import mesquite.lib.duties.*;
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ commands ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ commands ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /*
  * includes commands, buttons, miniscrolls
  *  /* ========================================================================
@@ -167,7 +168,7 @@ public class CommandChecker {
 			checker.accumulateOnlyFrom(c.getClass());
 
 
-		c.doCommand(null, null, checker);// Ã
+		c.doCommand(null, null, checker);// ï¿½
 		if (c instanceof MesquiteModule) {
 			MesquiteModule mb = (MesquiteModule) c;
 			MesquiteMenuItemSpec.checkerMMI = checker;
@@ -247,7 +248,7 @@ public class CommandChecker {
 		checker.setHTMLMode(useHTMLmode);
 		checker.includeParameters = includeParameters;
 		command.getOwner().doCommand(command.getName(), null,
-				checker);// Ã
+				checker);// ï¿½
 		Vector exp = checker.getAccumulatedExplanations();
 		if (exp == null || exp.size() == 0)
 			return null;
@@ -470,7 +471,7 @@ public class CommandChecker {
 					checker.addString("<li>"
 							+ MesquiteModule.getShortClassName(representing)
 							+ "<ul>");
-					instance.doCommand(null, null,checker);// Ã
+					instance.doCommand(null, null,checker);// ï¿½
 					checker.addString("</ul>");
 				} catch (Exception e) {
 					if (c != null)
@@ -548,13 +549,12 @@ public class CommandChecker {
 	static String getNavBar(String leader) {
 		String s = "<table  width=\"137\"><tr><td><img src=\""
 			+ MesquiteFile.massageFilePathToURL(MesquiteModule
-					.getDocsPath()
+					.getRootPath() 
 					+ "images/mesquiteIcon.gif")
 					+ "\"></td><td><table width=\"450\" border=\"1\"  cellspacing=\"1\"><tr>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
-			+ MesquiteFile.massageFilePathToURL(MesquiteModule
-					.getDocsPath()
-					+ "manual.html") + "\">Manual</a></td>";
+			+ MesquiteModule
+					.mesquiteWebSite + "\">Manual</a></td>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
 			+ (leader + "modules.html") + "\">Modules Loaded</a></td>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
@@ -564,9 +564,9 @@ public class CommandChecker {
 			+ (leader + "puppeteer.html")
 			+ "\">General scripting commands</a></td>";
 		s += "<td align=\"center\" bgcolor=\"#f0e68c\"><a href=\""
-			+ MesquiteFile.massageFilePathToURL(MesquiteModule
-					.getDocsPath()
-					+ "scripting.html") + "\">Scripting</a></td>";
+			+ MesquiteModule
+					.mesquiteWebSite 
+					+ "//Scripts+%26+Macros" + "\">Scripting</a></td>";
 		s += "</tr></table></td></tr></table>";
 		return s;
 	}
@@ -680,9 +680,9 @@ public class CommandChecker {
 				+ "<hr><h1>Commands available for scripting</h1>");
 		commandsListing
 		.addElement("<h2>Scripting language</h2>Mesquite uses a scripting language whose specifications may be found in the <a href=\""
-				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
-						+ "scripting.html") + "\">manual</a>.");
+				+ MesquiteModule
+						.mesquiteWebSite  
+						+ "/Scripts+%26+Macros" + "\">manual</a>.");
 		commandsListing
 		.addElement("<p>There are some <a href = puppeteer.html>universal commands</a> that can be used in the scripting language.");
 		commandsListing
@@ -806,16 +806,16 @@ public class CommandChecker {
 		if (gmp != null)
 			s.append(" <img src = \""
 					+ MesquiteFile.massageFilePathToURL(MesquiteModule
-							.getDocsPath()
-							+ "images/green-ball-small.gif")
+							.getRootPath()
+							+ "images/green-ball-small.gif") 
 							+ "\"> <a href = \""
 							+ MesquiteFile.massageFilePathToURL(mBI.getDirectoryPath()
 									+ "manual.html") + "\"> Manual </a>\n");
 
 		s.append(" <img src = \""
 				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
-						+ "images/blue-ball-small.gif")
+						.getRootPath()
+						+ "images/blue-ball-small.gif")  
 						+ "\"> <a href = \""
 						+ MesquiteFile.massageFilePathToURL(commandsPath
 								+ mBI.getShortClassName() + ".html")
@@ -882,7 +882,7 @@ public class CommandChecker {
 		if (c != null) {
 			content += "<hr><h2><a href=\"#top\"><img src=\""
 				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
+						.getRootPath() 
 						+ "images/small.top.arrow.gif")
 						+ "\"</a> <a name=\"controls\"></a>Controls (including buttons and tools)</h2>";//
 			content += getComponentExplanation(c);
@@ -894,7 +894,7 @@ public class CommandChecker {
 			// MENUS
 			content += "<hr><h2><a href=\"#top\"><img src=\""
 				+ MesquiteFile.massageFilePathToURL(MesquiteModule
-						.getDocsPath()
+						.getRootPath() 
 						+ "images/small.top.arrow.gif")
 						+ "\"</a> <a name=\"menus\"></a>Menus</h2>";//
 			for (int i = 0; i < mBar.getMenuCount(); i++) {

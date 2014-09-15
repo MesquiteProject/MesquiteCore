@@ -46,7 +46,7 @@ END;
 
 BEGIN NOTES;
 
-	TEXT  FILE TEXT = 'This file contains a small set of taxa representing gene copies within a population.  The chart shows the depth to the last coalescence in a sample of 100 gene trees simulated by coalescence.  ^n^nTo change the number of trees sampled, go to the chart window and select "Number of Trees" from the Chart menu.  The effective population size (haploid) is 1000; change this by choosing "Set Ne" from the Chart window..^n^nTo duplicate this file: Select "New" from the file menu.  Once the file is established, choose "Tree Values" from the Charts menu.  Indicate "Tree Depth" as the value, then "Simulate Trees" as the tree source, "Coalescent trees" as the simulator.  Then, choose "Fixed Number of Groups" under "Grouping on X" and set number to 50.^n';
+	TEXT  FILE TEXT = 'This file contains a small set of taxa representing gene copies within a population.  The chart shows the depth to the last coalescence in a sample of 100 gene trees simulated by coalescence.  ^n^nTo change the number of trees sampled, go to the chart window and select "Number of Trees" from the Chart menu.  The effective population size (haploid) is 1000; change this by choosing "Set Ne" from the Chart window..^n^nTo duplicate this file: Select "New" from the File menu.  Once the file is established, choose "Tree Values" from the Charts menu.  Indicate "Tree Depth" as the value, then "Simulate Trees" as the tree source, "Coalescent trees" as the simulator.  Then, choose "Fixed Number of Groups" under "Grouping on X" and set number to 50.^n';
 
 END;
 

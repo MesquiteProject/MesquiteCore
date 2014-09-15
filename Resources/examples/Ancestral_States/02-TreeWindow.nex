@@ -427,7 +427,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'This is the Tree Window^n^nTo show graphically a reconstruction of ancestral states, select Trace Character History under the Analysis menu of the tree window.  You may be asked what method to use (parsimony or likelihood) and what source of characters.';
+				setExplanation 'This is the Tree Window^n^nTo show graphically a reconstruction of ancestral states, select Trace Character History under the Analysis:Tree menu of the tree window.  You may be asked what method to use (parsimony or likelihood) and what source of characters.';
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;

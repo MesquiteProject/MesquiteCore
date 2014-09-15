@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
- Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+ 
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -19,6 +20,7 @@ import java.lang.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -228,11 +230,16 @@ public class AlignUtil {
 		return false;
 	}
 	
-	public void  insertNewGaps(MolecularData data, int[] newGaps){
+	/** This inserts the needed new characters into the matrix contained in the MolecularData object.  The number of new characters
+	 * to be inserted at each site is contained in the newGaps array.  Those sites that are to receive new terminal gaps are indicated
+	 * by the values of preSequenceTerminalFlaggedGap and postSequenceTerminalFlaggedGap.
+	 * */
+	public void  insertNewGaps(MolecularData data, int[] newGaps,  int preSequenceTerminalFlaggedGap,  int postSequenceTerminalFlaggedGap){
+		//preSequenceTerminalFlaggedGap,  int postSequenceTerminalFlaggedGap added DRM 7 Aug 2014
 		int start = newGaps.length-1;
 		if (data.getNumChars()<newGaps.length)
 			start = data.getNumChars()-1;
-		for (int ic = start; ic>=0; ic--) {
+		for (int ic = start; ic>=0; ic--) {  // go down from last characters to see if there are any gaps that need to be inserted, and insert them.
 			if (newGaps[ic]>0){
 				data.addCharacters(ic-1, newGaps[ic], false); 
 				data.addInLinked(ic-1, newGaps[ic], false);
@@ -241,18 +248,21 @@ public class AlignUtil {
 		start = newGaps.length-1;
 		if (data.getNumChars()<newGaps.length)
 			start = data.getNumChars()-1;
-		for (int ic = start; ic>=0; ic--) {   // go down for start and look for negative values denoting terminals
-			if (newGaps[ic]<0){
-				int numGaps = - newGaps[ic] - (data.getNumChars()-ic);  // are extra characters needed?
+		
+		for (int ic = start; ic>=0; ic--) {   // go down from start and look for negative values denoting terminal gaps at the END that might need to be inserted
+			if (newGaps[ic]<0 && postSequenceTerminalFlaggedGap==ic){  // negative value AND this is the array position marked as the terminal gap AFTER the sequence
+				int numGaps = - newGaps[ic] - (data.getNumChars()-1-ic);  // are extra characters needed?
 				if (numGaps>0) {
 					data.addCharacters(data.getNumChars(), numGaps, false); 
 					data.addInLinked(data.getNumChars(), numGaps, false);
 				}
+				newGaps[ic]=0;  // have to zero it so that it isn't acted upon by the next loop.  *** added by DRM 7 Aug 2014
 				break;
-			}
+			} 
 		}
-		for (int ic = 0; ic<data.getNumChars() && ic<newGaps.length; ic++) {   // go down for start and look for negative values denoting terminals
-			if (newGaps[ic]<0){
+		
+		for (int ic = 0; ic<data.getNumChars() && ic<newGaps.length; ic++) {   // go up from zero and look for negative values denoting terminals
+			if (newGaps[ic]<0 && preSequenceTerminalFlaggedGap==ic){ // negative value AND this is the array position marked as the terminal gap BEFORE the sequence
 				int numGaps = - newGaps[ic] - (ic);  // are extra characters needed?
 				if (numGaps>0) {
 					data.addCharacters(0, numGaps, false); 
@@ -340,7 +350,7 @@ public class AlignUtil {
 											int gapToUse = spaceNeeded;
 											if (spaceAvailable<spaceNeeded)
 												gapToUse = spaceAvailable;
-											int added = origData.moveCells(icOrig, startOfGapOrig-1, gapToUse, itOrig,itOrig, false, true, true, false,null,null);
+											int added = origData.moveCells(icOrig, startOfGapOrig-1, gapToUse, itOrig,itOrig, false, true, true, false,null,null, null);
 											icOrig += gapToUse;
 											spaceNeeded -= gapToUse;
 											if (added>0)
@@ -363,7 +373,7 @@ public class AlignUtil {
 							if (icOrig<=icOrigEnd2){
 								int gapSize = icOrig-startOfGap;
 								//now know how big of a gap must be closed
-								int added = origData.moveCells(icOrig, icOrigEnd2, -gapSize, itOrig,itOrig, false, true, true, false,null,null);
+								int added = origData.moveCells(icOrig, icOrigEnd2, -gapSize, itOrig,itOrig, false, true, true, false,null,null, null);
 								icOrig -= gapSize;
 								if (added>0)
 									MesquiteMessage.warnProgrammer("Alignment added characters when shouldn't have");
@@ -532,6 +542,35 @@ public class AlignUtil {
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
+	/*.................................................................................................................*/
+	public static boolean integrateAlignment(long[][] alignedMatrix, MolecularData data, int icStart, int icEnd, int itStart, int itEnd){
+		if (alignedMatrix == null || data == null)
+			return false;
+		AlignUtil util = new AlignUtil();
+		Rectangle problem = null;
+		//alignedMatrix.setName("Aligned (" + data.getName() + ")");
+		boolean wasSel;
+		if (data.anySelected()) {
+			wasSel = true;
+		}
+		else {
+			wasSel = false;
+		}
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment for " + (icEnd-icStart+1) + " sites; aligned to " + alignedMatrix.length + " sites.");
+		problem = util.forceAlignment(data, icStart, icEnd, itStart, itEnd, 0, alignedMatrix);
+		if (wasSel) {
+			data.deselectAll();
+			int numCharsOrig = icEnd-icStart+1;
+			if (alignedMatrix.length>numCharsOrig)
+				numCharsOrig = alignedMatrix.length;
+			for (int i = icStart; i<icStart + numCharsOrig; i++)
+				data.setSelected(i, true);
+
+		}
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment completed.");
+
+		return true;
+	}	
 
 }
 

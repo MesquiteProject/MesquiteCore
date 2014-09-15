@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -15,7 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ parse util ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ parse util ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* this probably should move to a NEXUS library
 /* ======================================================================== */
 /** A set of string parsing methods.  Should be renamed StringParser or NEXUSParser.*/
@@ -547,12 +548,23 @@ public class ParseUtil extends StringUtil {
 			int startValue = startChar.getValue();
 			String token= getToken(s, startChar); //subcommandName
 			int count =0;
+			boolean scan = false;
 			while (token !=null && !token.equals(";")) {
 				token = getToken(s, startChar); //=
+					
 				if (token !=null && !token.equals(";")) {
 					token = getToken(s, startChar); //subcommandParameters
 					if (token != null && token.equals("-")){
-						token = token + getToken(s, startChar); //rest of negative number
+						scan = true;
+						int current = startChar.getValue();
+						String nextToken = getToken(s, startChar); //rest of negative number?
+						try {
+							double d = Double.valueOf(nextToken).doubleValue();
+							token = token +  nextToken; //rest of negative number
+						}
+						catch (NumberFormatException e) {
+							startChar.setValue(current);  // was just lone -, so back up for next token
+						}
 					}
 					count++;
 				}
@@ -568,7 +580,16 @@ public class ParseUtil extends StringUtil {
 				token = getToken(s, startChar); //=
 				token = getToken(s, startChar); //subcommandParameters
 				if (token != null && token.equals("-")){
-					token = token + getToken(s, startChar); //rest of negative number
+					int current = startChar.getValue();
+					String nextToken = getToken(s, startChar); //rest of negative number?
+					try {
+						double d = Double.valueOf(nextToken).doubleValue();
+						token = token +  nextToken; //rest of negative number
+					}
+					catch (NumberFormatException e) {
+						startChar.setValue(current);  // was just lone -, so back up for next token
+					}
+					//token = token + getToken(s, startChar); //rest of negative number
 				}
 				strings[1][i] = token; 
 			}

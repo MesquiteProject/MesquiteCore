@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -19,6 +20,8 @@ import org.dom4j.*;
 import org.dom4j.io.*;
 
 public class XMLUtil {
+	
+	public static final String FLAVOR = "flavor";
 	
 	/*.................................................................................................................*/
 	public static Element addFilledElement(Element containingElement, String name, String content) {
@@ -214,7 +217,11 @@ public class XMLUtil {
 		List prefElement = element.elements();
 		for (Iterator iter = prefElement.iterator(); iter.hasNext();) {   // this is going through all of the notices
 			Element messageElement = (Element) iter.next();
-			xmlPrefProcessor.processSingleXMLPreference(messageElement.getName(), messageElement.getText());
+			String flavor = messageElement.attributeValue(FLAVOR);
+			if (StringUtil.notEmpty(flavor))
+				xmlPrefProcessor.processSingleXMLPreference(messageElement.getName(), flavor, messageElement.getText());
+			else
+				xmlPrefProcessor.processSingleXMLPreference(messageElement.getName(), messageElement.getText());
 		}
 		
 	}

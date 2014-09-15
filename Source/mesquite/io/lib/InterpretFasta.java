@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite (package mesquite.io).  Copyright 2000 and onward, D. Maddison and W. Maddison. 
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -20,19 +20,38 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
+import mesquite.cont.lib.ContinuousData;
 
 
 /* ============  a file interpreter for FASTA files ============*/
 /** This is the class for interpreting FASTA files.  It is subclassed to make interpreters specifically for
 DNA and Protein files. */
 public abstract class InterpretFasta extends FileInterpreterI implements ReadFileFromString {
+	StringMatcher nameMatcherTask = null;
 	Class[] acceptedClasses;
+	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
+		EmployeeNeed e1 = registerEmployeeNeed(StringMatcher.class, "FASTA file import needs a way to determine if the taxon in a ; choose the one that appropriately determines the sequence names from the sample codes.", "This is activated automatically.");
+	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class};
 		return true;  //make this depend on taxa reader being found?)
 	}
 
+	public void getImportOptions(boolean fuse){
+		if (fuse) {
+			if (nameMatcherTask==null) 
+				nameMatcherTask = (StringMatcher)hireEmployee(StringMatcher.class,  "Module to determine whether a taxon name in the incoming FASTA file matches that in an existing matrix.");
+			if (nameMatcherTask==null) 
+				return;
+			else {
+				if (!nameMatcherTask.optionsSpecified())
+					if (!MesquiteThread.isScripting())
+						if (!nameMatcherTask.queryOptions())
+							return;
+			}
+		}
+}
 	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		return true;  //
@@ -64,21 +83,26 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
-	public void readString(CharacterData data, String s) {
+	public void readString(CharacterData data, String s, int insertAfterTaxon) {
 		Taxa taxa = data.getTaxa();
-		int numTaxa = taxa.getNumTaxa();
+		//int numTaxa = taxa.getNumTaxa();
+		int newTaxon = insertAfterTaxon+1;
 		Parser parser = new Parser(s);
 		parser.setPunctuationString(">");
 		String line = parser.getRawNextLine();
 		Parser firstLineParser = new Parser(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 		firstLineParser.setPunctuationString(">");
 		String token = firstLineParser.getFirstToken(line); //should be >
+		
+		int numCharToAdd = 10;  // DRM June '14  to increase speed
+		int warnCount = 0;
+		
 		while (!StringUtil.blank(line)) {
 
 			token = firstLineParser.getRemaining();  //taxon Name
-			taxa.addTaxa(numTaxa-1, 1, false);
+			taxa.addTaxa(newTaxon-1, 1, false);
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true); //notifying only matrices
-			Taxon t = taxa.getTaxon(numTaxa);
+			Taxon t = taxa.getTaxon(newTaxon);
 
 			if (t!=null) {
 				t.setName(token);
@@ -91,24 +115,33 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					char c=line.charAt(i);
 					if (c!= '\0') {
 						if (data.getNumChars() <= i) {
-							data.addCharacters(data.getNumChars()-1, 1, false);   // add a character if needed
-							data.addInLinked(data.getNumChars()-1, 1, false);
+							warnCount++;
+							data.addCharacters(data.getNumChars()-1, numCharToAdd, false);   // add a character if needed
+							data.addInLinked(data.getNumChars()-1, numCharToAdd, false);
+							if (warnCount % 50 ==0)
+								CommandRecord.tick("Importing, character " + ic);
 						
 							added++;
 						}
-						setFastaState(data,ic, numTaxa, c);    // setting state to that specified by character c
+						setFastaState(data,ic, newTaxon, c);    // setting state to that specified by character c
 					}
 					ic++;
 				}
 //				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {data.getNumChars(), added}));
 			}
-			numTaxa++;
+			newTaxon++;
 			line = parser.getRawNextLine();
 			firstLineParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 			if (StringUtil.notEmpty(line))
 				token = firstLineParser.getFirstToken(line); //should be >
 		}
 	}
+	
+	
+	public int[] getNewTaxaAdded(){
+		return null;
+	}
+
 	/*.................................................................................................................*/
 	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile) {
 			boolean wassave = data.saveChangeHistory;
@@ -129,29 +162,31 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			subParser.setPunctuationString(">");
 			parser.setPunctuationString(">");
 			String token = subParser.getFirstToken(line); //should be >
-			int charAdded = 0;
 			int numFilledChars = data.getNumChars();
 			boolean added = false;
-			boolean replaceExisting = false;
-			int originalLastTaxonNumber = data.getNumTaxa();
+			//StringMatcher nameMatcher = null;
+		//	if (MesquiteTrunk.debugMode)
+		//		nameMatcher = (MesquiteStringMatcher)hireNamedEmployee(MesquiteStringMatcher.class, "#PrefixedStringMatcher"); //TEMP
+
 			
 			while (!StringUtil.blank(line) && !abort) {
 
 				//parser.setPunctuationString(null);
 
 				token = subParser.getRemaining();  //taxon Name
-				taxonNumber = taxa.whichTaxonNumber(token);
-				replaceExisting = false;
+				taxonNumber = taxa.whichTaxonNumber(nameMatcherTask, token, false, false);   // checking to see if a taxon of that name already exists in the file
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
 					if (!MesquiteThread.isScripting()){
+						String helpString = "If you choose Replace Data, then the incoming sequence will replace any existing sequence for that taxon.  If you choose Replace If Empty, then the incoming sequence will be put into the existing spot for that taxon ONLY if that taxon has no previous data there; if there is already a sequence there, then the incoming sequence will be added as a new taxon. ";
+						helpString+= " If you choose Add As New Taxa then all incoming sequences will be added as new taxa, even if there already exist taxa in the matrix with identical names.";
 						//replaceDataOfTaxonWithSameName = AlertDialog.query(this.containerOfModule(), "Replace Data", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data", "Add As New Taxa", 2);
-						replaceDataOfTaxonWithSameNameInt = AlertDialog.query(this.containerOfModule(), "Replace Data", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data","Replace If Empty", "Add As New Taxa", 3);
+						replaceDataOfTaxonWithSameNameInt = AlertDialog.query(this.containerOfModule(), "Incoming taxa match existing taxa", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data","Replace If Empty", "Add As New Taxa", 3, helpString);
 					}
 					hasQueriedAboutSameNameTaxa= true;
 				}
 				boolean replace = false;
-				if (taxonNumber>=0) {
+				if (taxonNumber>=0) {   // a taxon number of the same name exists
 					if (replaceDataOfTaxonWithSameNameInt==REPLACEDATA) 
 						replace=true;
 					else if (replaceDataOfTaxonWithSameNameInt==REPLACEIFEMPTY && !data.hasDataForTaxon(taxonNumber)) {
@@ -162,37 +197,50 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (replace) {
 					CharacterState cs = data.makeCharacterState(); //so as to get the default state
 					int numChars = data.getNumChars();
-					replaceExisting = true;
 					if (taxonNumber<lastTaxonNumber)
 						for (int ic=0; ic<numChars; ic++)
 							data.setState(ic, taxonNumber, cs);
 					added=false;
-				} else {
-					if (data.getNumTaxa()<=lastTaxonNumber) {
-						int numTaxaAdded = 1;
-						if (lastTaxonNumber>10000)
-							numTaxaAdded=500;
-						else if (lastTaxonNumber>5000)
-							numTaxaAdded=200;
-						else if (lastTaxonNumber>2500) 
-							numTaxaAdded=100;
-						else if (lastTaxonNumber>1000)
-							numTaxaAdded=50;
-						else if (lastTaxonNumber>500)
-							numTaxaAdded=10;
-						taxa.addTaxa(lastTaxonNumber-1, numTaxaAdded, false);
+				} else {  // adding to end, not replacing an existing one
+					if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
+						taxonNumber = getLastNewTaxonFilled()+1;
+						if (taxonNumber>taxa.getNumTaxa())
+							taxonNumber=taxa.getNumTaxa();
+						setLastNewTaxonFilled(taxonNumber);
+						if (data.hasDataForTaxa(taxonNumber, taxonNumber)) {
+							MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to overwrite existing data, and so failed.");
+							taxonNumber = -1;
+						}
+					}
+					else 
+						taxonNumber = taxa.getNumTaxa();
+					
+
+					
+					setLastNewTaxonFilled(taxonNumber);
+
+					if (data.getNumTaxa()<=taxonNumber) {
+						int numTaxaAdded = getTotalFilesToImport();  // we may not need all of those, as some of them might be placed in existing taxa.
+						if (numTaxaAdded<1) numTaxaAdded =1;
+						taxa.addTaxa(taxonNumber-1, numTaxaAdded, false);
 						added=true;
 						if (newFile)
-							data.addTaxa(lastTaxonNumber-1, numTaxaAdded);
-						else
+							data.addTaxa(taxonNumber-1, numTaxaAdded);
+						else {
 							taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true);
+						}
 					}
-					taxonNumber = lastTaxonNumber;
 				}
 				
-				Taxon t = taxa.getTaxon(taxonNumber);
+				Taxon t = null;
+				
+				if (taxonNumber>=0)
+					t = taxa.getTaxon(taxonNumber);
 				
 				if (t!=null) {
+					recordAsNewlyAddedTaxon(taxa,taxonNumber);
+					
+					checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber to see if it is the biggest yet.
 					t.setName(token);
 					if (progIndicator!=null) {
 						progIndicator.setText("Reading taxon " + taxonNumber+": "+token);
@@ -212,7 +260,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						char c=subParser.nextDarkChar();
 						if (c!= '\0') {
 							if (data.getNumChars() <= ic) {
-								charAdded ++;
 								int numChars = data.getNumChars();
 								int numToAdd = 1;
 								if (numChars>10000) {
@@ -254,16 +301,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					abort = true;
 				}
 			}
-			if (lastTaxonNumber<taxa.getNumTaxa())
-				if (data.hasDataForTaxa(lastTaxonNumber+1, taxa.getNumTaxa()-1))
-					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra taxa, but these contained data, and so were not deleted");
-				else
-					taxa.deleteTaxa(lastTaxonNumber, taxa.getNumTaxa()-lastTaxonNumber, true);   // add a character if needed
+			if (getMultiFileImport() && getImportFileNumber()>=getTotalFilesToImport()-1)  // last import
+				if (getOriginalNumTaxa()>0 && getMaximumTaxonFilled()>=getOriginalNumTaxa() && getMaximumTaxonFilled()<taxa.getNumTaxa()-1)    
+					if (!taxa.taxaHaveAnyData(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
+						taxa.deleteTaxa(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-getMaximumTaxonFilled(), true);   // delete a character if needed
 			if (numFilledChars<data.getNumChars())
 				if (data.hasDataForCharacters(numFilledChars+1, data.getNumChars()-1))
 					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra characters, but these contained data, and so were not deleted");
 				else
-					data.deleteCharacters(numFilledChars+1, data.getNumChars()-numFilledChars, true);   // add a character if needed
+					data.deleteCharacters(numFilledChars+1, data.getNumChars()-numFilledChars, true);   // delete a character if needed
 
 /*		
 	 		if (charAdded>0) {
@@ -273,7 +319,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 */
 
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 		
 
 			finishImport(progIndicator, file, abort);
@@ -353,7 +399,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	/*.................................................................................................................*/
 
-	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
+	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export FASTA Options", buttonPressed);
 		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file prepared for GenBank submission.");
@@ -407,7 +453,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected boolean taxonHasData(CharacterData data, int it){
 		for (int ic = 0; ic<data.getNumChars(); ic++) {
 			if (!writeOnlySelectedData || (data.getSelected(ic))){
-				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it))
+				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
 					return true;
 			}
 		}
@@ -438,18 +484,24 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (StringUtil.notEmpty(sup))
 					outputBuffer.append(sup);
 				outputBuffer.append(getLineEnding());
+				
 				for (int ic = 0; ic<numChars; ic++) {
 					if (!writeOnlySelectedData || (data.getSelected(ic))){
 						int currentSize = outputBuffer.length();
 						boolean wroteMoreThanOneSymbol = false;
-						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it)))
+						boolean wroteSymbol = false;
+						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
 							outputBuffer.append(getUnassignedSymbol());
+	                        counter ++;
+	                        wroteSymbol = true;
+						}
 						else if (includeGaps || (!data.isInapplicable(ic,it))) {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+							counter ++;
+							wroteSymbol = true;
                         }
 						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-                        counter ++;
-                        if ((counter % 50 == 1) && (counter > 1)) {    // modulo
+                        if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
                             outputBuffer.append(getLineEnding());
                         }
 
@@ -478,7 +530,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		Taxa taxa = data.getTaxa();
 		if (!MesquiteThread.isScripting() && !usePrevious)
-			if (!getExportOptions(data.anySelected(), taxa.anySelected()))
+			if (!getExportOptions(data, data.anySelected(), taxa.anySelected()))
 				return false;
 
 		StringBuffer outputBuffer = getDataAsFileText(file, data);

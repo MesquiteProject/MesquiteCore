@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -13,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+
 import mesquite.lib.duties.*;
 
 	
@@ -24,6 +26,8 @@ public class GroupLabel extends FileElement {
 	int id;
 	boolean colorWasSet = false;
 	boolean symbolWasSet = false;
+	boolean recentlyModified = false;
+	boolean visible = true;
 	static int numLabels;
 	static {
 		numLabels = 0;
@@ -49,10 +53,23 @@ public class GroupLabel extends FileElement {
 	public String getTypeName(){
 		return "Group Label";
 	}
+	public boolean isVisible() {
+		return visible;
+	}
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+	/** Sets the name of this element */
+	public void setName(String name){
+		super.setName(name);
+		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+
+	}
 	/*.................................................................................................................*/
 	public void setColor(Color color){
 		this.color = color;
 		colorWasSet = true;
+		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 	}
 	/*.................................................................................................................*/
 	public Color getColor(){
@@ -65,7 +82,10 @@ public class GroupLabel extends FileElement {
 	/*.................................................................................................................*/
 	public void setSymbol(MesquiteSymbol symbol){
 		this.symbol = symbol;
+		symbol.setColor(getColor());
+		this.symbol.setColor(getColor());
 		symbolWasSet = true;
+		notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 	}
 	/*.................................................................................................................*/
 	public MesquiteSymbol getSymbol(){
@@ -74,6 +94,12 @@ public class GroupLabel extends FileElement {
 	/*.................................................................................................................*/
 	public boolean symbolSet(){
 		return symbolWasSet;
+	}
+	public boolean isRecentlyModified() {
+		return recentlyModified;
+	}
+	public void setRecentlyModified(boolean recentlyModified) {
+		this.recentlyModified = recentlyModified;
 	}
 	
 	/*.................................................................................................................*/

@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -49,7 +50,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public static boolean Java2Davailable = true;
 	protected MesquiteCommand showCommand, showInfoBarCommand, saveAsTextCommand, printCommand, printToFitCommand;
 	protected MesquiteCommand setFontCommand, setFontSizeCommand, listEmployeesCommand, doMacroCommand, showExplanationsCommand;
-	protected MesquiteCommand showSnapshotCommand, sendScriptCommand, showFileCommand, closeWindowCommand;
+	protected MesquiteCommand showSnapshotCommand, sendScriptCommand, showFileCommand, closeWindowCommand, tileOutWindowCommand, popOutWindowCommand;
 	protected MesquiteCommand printToPDFCommand;
 	public static boolean pdfOutputAvailable = true; 
 	boolean readyToPaint = true;
@@ -83,9 +84,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public static final int infoBarHeightAllowance = 22;
 	protected int infoBarHeight = infoBarHeightAllowance;
 	boolean queryMode = false;
-	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem;
+	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
+
 	private MesquiteMenuItemSpec ptfMMIS;
 	private MesquiteMenuItemSpec pPDFMMIS;
+	private MesquiteMenuItemSpec popOutWindowMSpec;
 	private boolean showInfoBar = false;
 	private StringBuffer logText;
 	public static Frame dialogAnchor;
@@ -236,6 +239,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		doMacroCommand =MesquiteModule.makeCommand("doMacro", this);
 		showFileCommand = MesquiteModule.makeCommand("showFile", ownerModule);
 		closeWindowCommand = MesquiteModule.makeCommand("closeWindow", this);
+		popOutWindowCommand = MesquiteModule.makeCommand("togglePopOutWindow", this);
+		tileOutWindowCommand = MesquiteModule.makeCommand("toggleTileOutWindow", this);
 		showExplanationsCommand =MesquiteModule.makeCommand("showExplanations", this);
 		showSnapshotCommand = MesquiteModule.makeCommand("showSnapshot", this);
 		sendScriptCommand = MesquiteModule.makeCommand("sendScript", this);
@@ -246,6 +251,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		explanationsMenuItem.disconnectable = false;
 		cloneWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Clone Window", getOwnerModule(), MesquiteModule.makeCommand("cloneWindow", this)));
 		cloneWindowMenuItem.disconnectable = false;
+		popOutWindowMSpec = new MesquiteMenuItemSpec(null, "Pop Out as Separate Window", getOwnerModule(), popOutWindowCommand);
+		popOutWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Pop Out as Separate Window", getOwnerModule(), popOutWindowCommand));
+		popOutWindowMenuItem.disconnectable = false;
+		tileOutWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Put in Separate Tile", getOwnerModule(), tileOutWindowCommand));
+		tileOutWindowMenuItem.disconnectable = false;
 		saveRecipeMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Save Window as Macro...", getOwnerModule(), MesquiteModule.makeCommand("saveMacroForWindow", this)));
 		saveRecipeMenuItem.disconnectable = false;
 		snapshotMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null,"Show Snapshot", getOwnerModule(), showSnapshotCommand));
@@ -255,6 +265,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		closeWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close Window", getOwnerModule(), closeWindowCommand));
 		closeWindowMenuItem.disconnectable = false;
 		closeWindowMenuItem.setShortcut(closeWindowShortcut);	
+
+		
+		
 		menuBar = new MesquiteMenuBar(this);
 		//setMenuBar(menuBar);  //���
 		parentFrame.setWindowLocation(60, 10, false, false); //default window position
@@ -264,6 +277,20 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		closeable = true;
 		windowFinishedBuilding = true;
 	}
+	
+	public void setPopTileMenuItemNames(){
+		popOutWindowMenuItem.setLabel("Pop Out as Separate Window");
+		tileOutWindowMenuItem.setLabel("Put in Separate Tile");
+		if (isPoppedOut()) {
+			if (getPopAsTile()) {
+				tileOutWindowMenuItem.setLabel("Return Tile to Main Window");
+			}
+			else
+				popOutWindowMenuItem.setLabel("Reset within Main Window");
+		} 
+
+	}
+	
 	public void startWindowTimer(){
 		if (windowTimer!=null)
 			windowTimer.start();
@@ -316,11 +343,22 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	public void setPopAsTile(boolean popAsTile){
 		this.popAsTile = popAsTile;
+		ownerModule.resetEmbeddedMenus(this);
 	}
 
 	public void popOut(boolean setVisible){
-		if (!isLoneWindow())
+		if (!isLoneWindow() && parentFrame!=null){
 			parentFrame.popOut(this, setVisible);
+			ownerModule.resetEmbeddedMenus(this);
+		}
+	}
+	public void popIn(){
+		if (isLoneWindow())
+			getOwnerModule().getFileCoordinator().getModuleWindow().getParentFrame().popIn(this);
+		else if ((getPopAsTile()) && parentFrame!=null){
+			parentFrame.popIn(this);
+		}
+		ownerModule.resetEmbeddedMenus(this);
 	}
 
 	public boolean isLoneWindow(){
@@ -1938,7 +1976,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			setVisible(vis);
 	}
 	public void removeAll(){
+		try {
 		outerContents.removeAll();
+		}
+		catch (Exception e){
+			// sometimes exceptions are thrown, possible because of mistimed threads
+		}
 	}
 	/** Shows the window */
 	public void setVisible(boolean vis) {
@@ -2416,6 +2459,24 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				p.dialogScript(module, module.containerOfModule(), "owner module (" + module.getName() + ") of this window");
 			}
 		}
+		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is tiled out or not", null, commandName, "toggleTileOutWindow")) {  
+			if (isPoppedOut()){
+				popIn();
+				popOutWindowMSpec.setEnabled(true);
+			}
+			else {
+				setPopAsTile(true);
+				popOut(true);
+			}
+		}
+		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is popped out or not", null, commandName, "togglePopOutWindow")) { 
+			if (isPoppedOut())
+				popIn();  
+			else if (compactWindows){
+				setPopAsTile(false);
+				popOut(true);
+			}
+		}
 		else if (checker.compare(MesquiteWindow.class, "Sets which page of the window (graphics, text, explanations, parameters, employee tree, etc.) is showing", "[page number]", commandName, "showPage")) {
 			if (infoBar==null)
 				return null;
@@ -2734,6 +2795,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			Object obj = e.nextElement();
 			MesquiteWindow mw = (MesquiteWindow)obj;
 			mw.resetTitle();
+			mw.infoBar.repaint();
 		}
 	}
 	/*.................................................................................................................*/
@@ -3033,7 +3095,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	String title = "Mesquite Window";
 	public void setTitle(String name) {
-
+		if (title != null && name != null && title.equals(name))
+			return;
 		title = name;
 		if (parentFrame != null)
 			parentFrame.windowTitleChanged(this);

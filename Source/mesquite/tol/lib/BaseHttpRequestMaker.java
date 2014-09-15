@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -52,9 +53,9 @@ import mesquite.lib.*;
 public class BaseHttpRequestMaker {
     private static final int MAX_BYTES = 5000000;   
 
-	public static final String MESQUITE_VERSION_URI = "http://mesquiteproject.org/cgi-bin/mesquiteStartup.py";
+	public static final String MESQUITE_VERSION_URI = "http://mesquiteproject.org/pyMesquiteStartup";
 
-	public static boolean contactServer(String s, String URI) {
+	public static boolean contactServer(String s, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
 		NameValuePair[] pairs = new NameValuePair[1];
@@ -64,9 +65,9 @@ public class BaseHttpRequestMaker {
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 	    		new DefaultHttpMethodRetryHandler(3, false));
 		
-		return executeMethod(client, method);
+		return executeMethod(client, method, response);
 	}
-	public static boolean postToServer(String s, String URI) {
+	public static boolean postToServer(String s, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		PostMethod method = new PostMethod(URI);
 		method.addParameter("OS", StringEscapeUtils.escapeHtml(System.getProperty("os.name") + "\t" + System.getProperty("os.version")));
@@ -79,9 +80,9 @@ public class BaseHttpRequestMaker {
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 	    		new DefaultHttpMethodRetryHandler(3, false));
 		
-		return executeMethod(client, method);
+		return executeMethod(client, method, response);
 	}
-	public static boolean sendInfoToServer(NameValuePair[] pairs, String URI) {
+	public static boolean sendInfoToServer(NameValuePair[] pairs, String URI, StringBuffer response) {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
 		method.setQueryString(pairs);
@@ -89,9 +90,9 @@ public class BaseHttpRequestMaker {
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 	    		new DefaultHttpMethodRetryHandler(3, false));
 		
-		return executeMethod(client, method);
+		return executeMethod(client, method, response);
 	}
-	protected static boolean executeMethod(HttpClient client, HttpMethod method) {
+	protected static boolean executeMethod(HttpClient client, HttpMethod method, StringBuffer response) {
 		boolean success = true;
 	    try {
 	        // Execute the method.
@@ -103,7 +104,8 @@ public class BaseHttpRequestMaker {
 
 	        // Read the response body.
 	        byte[] responseBody = method.getResponseBody();
-
+	       if (response != null)
+	    	   response.append(new String(responseBody));
 	        // Deal with the response.
 	        // Use caution: ensure correct character encoding and is not binary data
 	        System.out.println(new String(responseBody));

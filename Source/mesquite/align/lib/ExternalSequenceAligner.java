@@ -1,7 +1,8 @@
 package mesquite.align.lib;
 
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -19,6 +20,7 @@ import java.lang.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -91,25 +93,50 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		return "";
 	}
 	/*.................................................................................................................*/
+	public String getHelpURL(){
+		return "";
+	}
+	/*.................................................................................................................*/
+	/** If a subclass wishes to add more options to the GUI dialog box, the GUI elements (CheckBoxes, etc.) should created in an override of this method. */
+	public void queryProgramOptions(ExtensibleDialog dialog) {
+	}
+	/*.................................................................................................................*/
+	/** Any GUI elements (CheckBoxes, etc.) that were created in queryProgramOptions should have their values harvested here. */
+	public void processQueryProgramOptions(ExtensibleDialog dialog) {
+	}
+	/*.................................................................................................................*/
+	/** The command-line flags for the queryProgramOptions should be entered here. */
+	public String getQueryProgramOptions() {
+		return "";
+	}
+	/*.................................................................................................................*/
 	public boolean queryOptions() {
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  
+			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel(getProgramName() + " - File Locations & Options");
 		dialog.appendToHelpString(getHelpString());
+		dialog.setHelpURL(getHelpURL());
 
 		programPathField = dialog.addTextField("Path to " + getProgramName() + ":", programPath, 40);
 		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
 		programBrowseButton.setActionCommand("programBrowse");
 
 		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
+		
+		queryProgramOptions(dialog);
 
-		SingleLineTextField programOptionsField = dialog.addTextField(getProgramName() + " options:", programOptions, 26, true);
+		SingleLineTextField programOptionsField = dialog.addTextField("Additional " + getProgramName() + " options:", programOptions, 26, true);
+		
+
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			programPath = programPathField.getText();
 			programOptions = programOptionsField.getText();
 			includeGaps = includeGapsCheckBox.getState();
+			processQueryProgramOptions(dialog);
 			storePreferences();
 		}
 		dialog.dispose();
@@ -136,6 +163,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		//rename taxa so program doesn't screw around with names
 		for (int it=0; it<newTaxa.getNumTaxa(); it++)
 			newTaxa.setTaxonName(it, "t" + it);
+		logln("Number of taxa to be aligned: " + newTaxa.getNumTaxa());
 		CharMatrixManager matrixManager = data.getMatrixManager();
 		int numNewChars=0;
 		int firstChar = -1;
@@ -225,13 +253,23 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		boolean success = false;
 		
 		logln("Exporting file for " + getProgramName());
-		if (taxaToAlign!=null)
+		int numTaxaToAlign=data.getNumTaxa();
+
+		
+		if (taxaToAlign!=null){
 			success = saveExportFile(data, rootDir, fileName, taxaToAlign, firstSite, lastSite);
+			int count=0;
+			for (int j=0; j<taxaToAlign.length; j++)
+				if (taxaToAlign[j])
+					count++;
+			numTaxaToAlign=count;
+		}
 		else if (!(firstTaxon==0 && lastTaxon==matrix.getNumTaxa())) {  // we are doing something other than all taxa.
 			boolean[] taxaToAlignLocal = new boolean[matrix.getNumTaxa()];
 			for (int it = 0; it<matrix.getNumTaxa(); it++)
 				taxaToAlignLocal[it] =  (it>=firstTaxon && it<= lastTaxon);
 			success = saveExportFile(data, rootDir, fileName, taxaToAlignLocal, firstSite, lastSite);
+			numTaxaToAlign=lastTaxon-firstTaxon+1;
 		}
 		else
 			success = saveExportFile(data, rootDir, fileName, null, -1, -1);
@@ -251,16 +289,17 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
 		shellScript.append(getProgramCommand());
 		StringBuffer argumentsForLogging = new StringBuffer();
+		logln("Options: " + programOptions + " " + getQueryProgramOptions());
 		if (programOptionsComeFirst()){
-			shellScript.append(" " + programOptions + " ");
-			argumentsForLogging.append(" " + programOptions + " ");
+			shellScript.append(" " + programOptions + " " + getQueryProgramOptions() + " ");
+			argumentsForLogging.append(" " + programOptions + " " + getQueryProgramOptions() + " ");
 		}
 		appendDefaultOptions(shellScript, fileName,  outFileName,  data);
 		appendDefaultOptions(argumentsForLogging, fileName,  outFileName,  data);
 		
 		if (!programOptionsComeFirst()){
-			shellScript.append(" " + programOptions);
-			argumentsForLogging.append(" " + programOptions);
+			shellScript.append(" " + programOptions + " "+ getQueryProgramOptions());
+			argumentsForLogging.append(" " + programOptions + " "+ getQueryProgramOptions());
 		}
 		shellScript.append(StringUtil.lineEnding());
 //		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
@@ -277,7 +316,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		 success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
 
 		if (success){
-			logln("Alignment completed in " + timer.timeSinceLastInSeconds() + " seconds");
+			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
+			logln("Processing results...");
 			FileCoordinator coord = getFileCoordinator();
 			MesquiteFile tempDataFile = null;
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
@@ -294,13 +334,25 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			Taxa originalTaxa =  data.getTaxa();
 
 			if (alignedData!=null) {
+				logln("Acquired aligned data");
 				int numChars = alignedData.getNumChars();
 				//sorting to get taxon names in correct order
 				int[] keys = new int[alignedData.getNumTaxa()];
 				for (int it = 0; it<alignedData.getNumTaxa(); it++){
 					String name = alignedTaxa.getTaxonName(it);
 					keys[it] = MesquiteInteger.fromString(name.substring(1, name.length()));  //this is original taxon number
-					if (!MesquiteInteger.isCombinable(keys[it])) {
+					if (it<numTaxaToAlign && !MesquiteInteger.isCombinable(keys[it])) {
+						MesquiteMessage.println("Processing unsuccessful: can't find incoming taxon \"" + name+"\"");
+						MesquiteMessage.println("  Taxa in incoming: ");
+						for (int i=0; i<alignedData.getNumTaxa(); i++) {
+							MesquiteMessage.println("    "+ alignedTaxa.getTaxonName(i) + "\tsome data: " + alignedData.hasDataForTaxon(i));
+						}
+						MesquiteMessage.println("  Number of taxa in incoming matrix: "+ alignedTaxa.getNumTaxa());
+						if (taxaToAlign!=null) {
+							MesquiteMessage.println("  Number of taxa set to true in taxaToAlign: "+ numTaxaToAlign);
+						}
+						MesquiteMessage.println("  Number of taxa in original: "+ data.getNumTaxa());
+
 						success=false;
 						break;
 					}
@@ -330,7 +382,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 							}
 					}
 				}
-			}
+			} else
+				MesquiteMessage.println("Processing unsuccessful: alignedData is null");
+
 			if (tempDataFile!=null)
 				tempDataFile.close();
 			getProject().decrementProjectWindowSuppression();

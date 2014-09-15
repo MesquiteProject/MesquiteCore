@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -19,6 +20,7 @@ import java.util.Vector;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.StringMatcher;
 
 /* ======================================================================== */
 /**
@@ -36,12 +38,14 @@ public class Taxa extends FileElement {
 	public static boolean inventUniqueIDs = false;
 	private String uniqueID; // id's of the taxa block
 
+
 	public static final int MAXNUMTAXA = 100000;
 	public static int totalCreated = 0;
 	int id = 0;
 
 	private boolean inFlux = false;
 	private boolean duplicate = false;
+	
 
 	public Taxa(int numTaxa) {
 		super(numTaxa); // For associable
@@ -78,7 +82,6 @@ public class Taxa extends FileElement {
 				}
 			}
 	}
-
 	/* ................................................................................................................. */
 	public String searchData(String s, MesquiteString commandResult) {
 		if (commandResult != null)
@@ -390,8 +393,44 @@ public class Taxa extends FileElement {
 
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
-	public int whichTaxonNumber(String taxonName, boolean caseSensitive,
-			boolean forgivingOfTruncation) {
+	public int whichTaxonNumberUsingMatcher(StringMatcher nameMatcher, String taxonName) {
+		if (StringUtil.blank(taxonName))
+			return -1;
+		for (int i = 0; i < numTaxa; i++){  //check UniqueID's
+			String uniqueID = taxon[i].getUniqueID();
+			if (uniqueID != null && taxonName.equals(uniqueID))
+				return i;
+		}
+		int tN0 = MesquiteInteger.fromString(taxonName, false);
+		if (MesquiteInteger.isCombinable(tN0) && tN0 >= 1 && tN0 <= numTaxa) {
+			return Taxon.toInternal(tN0);
+		}
+
+		int match = -1;
+		int numMatches = 0;
+		for (int i = 0; i < numTaxa; i++) {
+			String ti = taxon[i].getName();
+			if (ti != null  && nameMatcher.stringsMatch(ti, taxonName)) {
+				match = i;
+				numMatches++;
+			}
+		}
+		if (numMatches < 2 && match >= 0)
+			return match;
+
+		// System.out.println("ERROR: bad taxon name: "+ taxonName);
+		return -1;
+	}
+	/* ................................................................................................................. */
+	/** returns which taxon (i.e., its number) has the given name */
+	public int whichTaxonNumber(StringMatcher nameMatcher, String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
+		if (nameMatcher==null || nameMatcher.useDefaultMatching())
+			return whichTaxonNumber(taxonName, caseSensitive, forgivingOfTruncation);
+		return whichTaxonNumberUsingMatcher(nameMatcher, taxonName);
+	}
+	/* ................................................................................................................. */
+	/** returns which taxon (i.e., its number) has the given name */
+	public int whichTaxonNumber(String taxonName, boolean caseSensitive, boolean forgivingOfTruncation) {
 		if (StringUtil.blank(taxonName))
 			return -1;
 		// second, see if there is an exact match
@@ -513,6 +552,42 @@ public class Taxa extends FileElement {
 		// System.out.println("ERROR: bad taxon name: "+ taxonName);
 		return -1;
 	}
+	/* ................................................................................................................. */
+	/**
+	 * returns which taxon (i.e., its number) has the given name, doing reverse
+	 * search from last to first
+	 */
+	public int whichTaxonNumberUsingMatcherRev(StringMatcher nameMatcher, String taxonName) {
+		if (StringUtil.blank(taxonName))
+			return -1;
+
+		for (int i = numTaxa - 1; i >= 0; i--)
+			if (nameMatcher.stringsMatch(taxonName, taxon[i].getName()))
+				return i;
+		try {
+			int tNum = Taxon.toInternal(MesquiteInteger.fromString(taxonName, false));
+			if ((tNum < numTaxa) && (tNum >= 0))
+				return tNum;
+		} catch (NumberFormatException e) {
+			System.out.println("ERROR: bad taxon number/taxon name: "
+					+ taxonName);
+			return -1;
+		}
+		// System.out.println("ERROR: bad taxon name: "+ taxonName);
+		return -1;
+	}
+	
+	/* ................................................................................................................. */
+	/**
+	 * returns which taxon (i.e., its number) has the given name, doing reverse
+	 * search from last to first
+	 */
+	public int whichTaxonNumberRev(StringMatcher nameMatcher, String taxonName, boolean caseSensitive) {
+		if (nameMatcher==null)
+			return whichTaxonNumberRev(taxonName, caseSensitive);
+		return whichTaxonNumberUsingMatcherRev(nameMatcher, taxonName);
+	}
+
 
 	/* ................................................................................................................. */
 	/** returns which number has the given taxon. */
@@ -543,7 +618,7 @@ public class Taxa extends FileElement {
 			if (count == 1)
 				candidate = base;
 			else
-				candidate = base + "." + count;  //Debugg.println  Is addition of period OK?
+				candidate = base + "." + count;  
 			if (whichTaxonNumber(candidate) < 0)
 				return candidate;
 			count++;
@@ -1221,6 +1296,20 @@ public class Taxa extends FileElement {
 	 */
 	public boolean isDuplicate() {
 		return duplicate;
+	}
+
+	
+	/**
+	 * Returns whether this there is any data matrix containing data for taxa itStart through itEnd inclusive.
+	 */
+	public boolean taxaHaveAnyData( int itStart, int itEnd){
+		int numMatrices = getProject().getNumberCharMatrices(null, this, CharacterData.class, true);
+		for (int iM = 0; iM < numMatrices; iM++){
+			CharacterData data = getProject().getCharacterMatrixVisible( this, iM, CharacterData.class);
+			if (data.hasDataForTaxa(itStart, itEnd))
+				return true;
+		}
+		return false;
 	}
 
 	/**

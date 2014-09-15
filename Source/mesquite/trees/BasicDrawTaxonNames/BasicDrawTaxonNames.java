@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -126,6 +127,11 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			treeDisplay.forceRepaint();
 	}
 	/*.................................................................................................................*/
+	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
+	public boolean satisfiesSnapshotMode(){
+		return (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || MesquiteTrunk.snapshotMode == Snapshot.SNAPDISPLAYONLY);
+	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		if (myFont!=null)
@@ -170,7 +176,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				else
 					current = namesAngle/2/Math.PI*360;
 				MesquiteDouble d = new MesquiteDouble(current);
-				if (!QueryDialogs.queryDouble(containerOfModule(), "Names Angle", "Angle of taxon names, in degrees clockwise from horizontal.  Use \"?\" to indicate default.  Typical settings are between 0 degrees and -90 degrees.  0 = text reads from left to right (long dash = Ñ); -90 = text reads from bottom to top (long dash = |); -45 = text angled diagonally (long dash = /).  This setting applies only when tree is in UP orientation", d))
+				if (!QueryDialogs.queryDouble(containerOfModule(), "Names Angle", "Angle of taxon names, in degrees clockwise from horizontal.  Use \"?\" to indicate default.  Typical settings are between 0 degrees and -90 degrees.  0 = text reads from left to right (long dash = ï¿½); -90 = text reads from bottom to top (long dash = |); -45 = text angled diagonally (long dash = /).  This setting applies only when tree is in UP orientation", d))
 					return null;
 				namesAngle = d.getValue();
 				if (MesquiteDouble.isCombinable(namesAngle))
@@ -709,11 +715,12 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			textRotator.assignBackground(null);
 			gL.setColor(Color.black);
 			ColorDistribution.setComposite(gL,composite);		
-			if (selected && GraphicsUtil.useXORMode(gL, false) && !namePolys[taxonNumber].isHidden()){
-				gL.setXORMode(Color.white);
-				gL.fillPolygon(namePolys[taxonNumber]);
+			if (selected  && !namePolys[taxonNumber].isHidden()){ //&& GraphicsUtil.useXORMode(gL, false)
+				//gL.setXORMode(Color.white);
+				//gL.fillPolygon(namePolys[taxonNumber]);
+				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
 
-				gL.setPaintMode();
+			//	gL.setPaintMode();
 			}
 
 		}
@@ -977,7 +984,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	public   void fillTaxon(Graphics g, int M) {
 		try {
 			if ((namePolys!=null) && (namePolys[M]!=null) && !namePolys[M].isHidden()) {
-				g.fillPolygon(namePolys[M]);
+				GraphicsUtil.fillTransparentBorderedSelectionPolygon(g,namePolys[M]);
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e) {

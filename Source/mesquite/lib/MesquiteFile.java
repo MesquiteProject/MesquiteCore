@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -436,10 +437,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			else if (directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))
 				directoryName = MesquiteTrunk.suggestedDirectory + directoryName;
 			else
-				directoryName = MesquiteTrunk.suggestedDirectory + fileSeparator + directoryName;
+				directoryName = MesquiteTrunk.suggestedDirectory + directoryName + fileSeparator;  //Dec 2013 this was backwards!
+				
+
 
 		}
-		if (fileExists(directoryName+ fileName)) {
+		if ((directoryName.indexOf("//")<0) && fileExists(directoryName+ fileName)) { //Dec 2013 added check on double //
 			MesquiteFile mF = new MesquiteFile();
 			mF.local = true;
 			mF.fileName = fileName;
@@ -582,7 +585,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		//    first, acquire the name of the remote file 
 		if (StringUtil.blank(urlString))
 			return false;
-		if (!(urlString.toLowerCase().startsWith("ftp://") || urlString.toLowerCase().startsWith("http://"))) {
+		if (!(urlString.toLowerCase().startsWith("ftp://") || urlString.toLowerCase().startsWith("http://") || urlString.toLowerCase().startsWith("https://"))) {
 			return false;
 		}
 		String fileName = "downloadedFile";
@@ -1143,6 +1146,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return d;
 		int count=0;
 		if (f.startsWith("http://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
+			return f;
+		if (f.startsWith("https://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
 			return f;
 		if (f.startsWith("file://")) //NOTE: Assumes if first is / then is /hardDrive/directory...etc.
 			return f;
@@ -1966,7 +1971,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** returns the file position of the start of the next block; returns blockName */
 	public String goToNextBlockStart(MesquiteLong startPos) {
 		MesquiteInteger status = new MesquiteInteger(0);
-		StringBuffer command = new StringBuffer(getNextCommand(status, null)); //����
+		StringBuffer command = new StringBuffer(getNextCommand(status, null)); //������������
 
 		if (!StringUtil.blank(command)) {
 			if (status.getValue()==0) {  //in middle of block; need to continue reading until get to end of block
@@ -2015,6 +2020,19 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public ListableVector getFileElements() {
 		return fileElements;
 	}
+	/*.................................................................................................................*/
+	/** appends a number to the end of the path until it finds that no file or directory does not exist at that path */
+	public static String getUniqueNumberedPath(String path) {
+		if (!fileOrDirectoryExists(path+"1"))
+			return path+"1";
+
+		int count = 1;
+		while (fileOrDirectoryExists(path+count)) {
+			count++;
+
+		}
+		return path + count;
+	}	
 	/*.................................................................................................................*/
 	/** appends a number to the end of the path until it finds that no file or directory does not exist at that path */
 	public static String getUniqueModifiedPath(String path) {
@@ -2080,7 +2098,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static long fileOrDirectoryLastModified(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.println("double // in path " + path);
+				MesquiteMessage.printStackTrace("double // in path " + path); 
 			File testing = new File(path);
 			return testing.lastModified();
 		}
@@ -2091,7 +2109,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean fileOrDirectoryExists(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.println("double // in path " + path);
+				MesquiteMessage.printStackTrace("double // in path " + path);
 			File testing = new File(path);
 			if (testing.exists())
 				return true;
@@ -2099,19 +2117,15 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return false;
 	}	
 
-	public static boolean fileExists(String directoryName, String fileName){
+	public static boolean fileExists(String directoryName, String fileName){ //Dec 2013.  Why was this appending existing directory to suggested?  Was generating double // errors
 		if (fileExists(directoryName+ fileName))  
 			return true;
-		else {
-			if (StringUtil.blank(directoryName))
-				directoryName = MesquiteTrunk.suggestedDirectory;
-			else if (directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))
-				directoryName = MesquiteTrunk.suggestedDirectory + directoryName;
-			else
-				directoryName = MesquiteTrunk.suggestedDirectory + fileSeparator + directoryName;
-			return fileExists(directoryName +fileName);
+		else if (StringUtil.blank(directoryName))
+			return fileExists(MesquiteTrunk.suggestedDirectory +fileName);
+		else if (!(directoryName.endsWith(fileSeparator) || directoryName.endsWith("/"))) 
+			return fileExists(directoryName + fileSeparator +fileName);
 
-		}
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -2119,7 +2133,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static boolean fileExists(String path) {
 		if (path != null) {
 			if (path.indexOf("//")>=0)
-				MesquiteMessage.println("double // in path " + path);
+				MesquiteMessage.printStackTrace("double // in path " + path);  
 			File testing = new File(path);
 			if (testing.exists() && !testing.isDirectory())
 				return true;
@@ -2314,9 +2328,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					lastLines = addStringToEnd(lastLines, newS);
 					newS =readLine(stream, sBb, remnant);
 				}
-				
+
 				if (someStrings(lastLines)) {
-					//Debugg.println("\n" + concatStrings(lastLines));
 					return concatStrings(lastLines);
 				}
 			}
@@ -2348,6 +2361,38 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				}
 				if (!StringUtil.blank(lastS))
 					return lastS;
+			}
+			catch( FileNotFoundException e ) {
+			} 
+			catch( IOException e ) {
+			}
+		}
+		else {
+		}
+
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** Returns the last dark line of the file.  path is relative to the root of the package heirarchy; i.e. for file in
+	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
+	public static String getFileLastDarkLine(String relativePath) {
+		DataInputStream stream;
+		StringBuffer sBb= new StringBuffer(100);
+		String lastS = null;
+		MesquiteInteger remnant = new MesquiteInteger(-1);
+		if (!MesquiteTrunk.isApplet()) {
+			try {
+				stream = new DataInputStream(new FileInputStream(relativePath));
+				String lastDarkLine = null;
+				String newS = " ";
+				while (newS != null) {
+					lastS = newS;
+					newS =readLine(stream, sBb, remnant);
+					if (!StringUtil.blank(newS)) 
+						lastDarkLine=newS;
+				}
+				if (!StringUtil.blank(lastDarkLine))
+					return lastDarkLine;
 			}
 			catch( FileNotFoundException e ) {
 			} 
@@ -2458,7 +2503,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 			catch( FileNotFoundException e ) {
 				if (warn) MesquiteMessage.warnProgrammer("File Busy or Not Found (z5) : " + relativePath);
-				//MesquiteMessage.printStackTrace();
 				return null;
 			} 
 			catch( IOException e ) {
@@ -2648,7 +2692,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		catch( IOException e ) {
 			if (warnIfProblem)
 				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "\n   " + e.getMessage());
-			//MesquiteMessage.printStackTrace();
+			//MesquiteMessage.printStackTrace();  
 			return null;
 		}
 		return s.toString();
@@ -2688,16 +2732,21 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 	}
 
-	/** Returns the contents of the file at the url*/
-	public static boolean downloadURLContents(String urlPath, String writePath, boolean warnIfProblem, boolean showProgressIndicator) {
+	/** Downloads the contents of the file at the url to a local file*/
+	// 0 if unknown problem in downloading/writing
+	// -1 if problem reading from server
+	// -2 if problem writing download
+	public static int downloadURLContents(String urlPath, String writePath, boolean warnIfProblem, boolean showProgressIndicator) {
 		URLConnection uC;
 		OutputStream outFile = null;
 		InputStream  input = null;
 		ProgressIndicator progIndicator=null;
+		int doing = 0;
 		try {
 			byte[] buf = new byte[1024];
+			doing = 1; //
 			URL url = new URL(urlPath);
-			outFile = new BufferedOutputStream(new FileOutputStream(writePath));
+			//outFile = new BufferedOutputStream(new FileOutputStream(writePath));
 			uC = url.openConnection();
 			int length = uC.getContentLength();
 			if (showProgressIndicator) {
@@ -2711,7 +2760,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			int numRead;
 			long numWritten = 0;
 			while ((numRead = input.read(buf)) != -1) {
+				doing = 2;
+				if (outFile == null)
+					outFile = new BufferedOutputStream(new FileOutputStream(writePath));
+					
 				outFile.write(buf, 0, numRead);
+				doing = 1;
 				numWritten += numRead;
 				CommandRecord.tick("" + numWritten + " bytes downloaded");
 				if (progIndicator!=null){
@@ -2719,8 +2773,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					progIndicator.setCurrentValue(numWritten);
 				}
 			}
+			doing = 1;
 			input.close();
+			doing = 2;
 			outFile.close();
+			doing = 0;
 			if (progIndicator!=null)
 				progIndicator.goAway();
 		} 
@@ -2731,13 +2788,13 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 			if (progIndicator!=null)
 				progIndicator.goAway();
-			return false;
+			return -doing;
 		}
-		return true;
+		return 1;
 
 	}
 	/** Returns the contents of the file at the url*/
-	public static boolean downloadURLContents(String urlPath, String writePath, boolean warnIfProblem) {
+	public static int downloadURLContents(String urlPath, String writePath, boolean warnIfProblem) {
 		return downloadURLContents(urlPath, writePath, warnIfProblem, false);
 	}
 	/*.................................................................................................................*/

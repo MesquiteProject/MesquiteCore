@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -1594,6 +1595,8 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public void setAssociatedObject(NameReference nRef, int index, Object value){
 		setAssociatedObject(nRef, index, value, false);
 	}
+	
+
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
 	public void setAssociatedObject(NameReference nRef, int index, Object value, boolean setAsBetween){

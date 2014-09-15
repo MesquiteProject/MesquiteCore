@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -197,11 +198,27 @@ public class CategoricalData extends CharacterData {
 			for (int it=itStart; it<=itEnd; it++) {
 				int itSource = it-itStart;
 				int icSource = ic-icStart;
-				if (itSource<sourceData.getNumTaxa() || icSource<sourceData.getNumChars())
+				if (itSource<sourceData.getNumTaxa() && icSource<sourceData.getNumChars())
 					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
 			}
 		}
-		resetChangedSinceSave();
+		resetCellMetadata();
+
+	}
+	/** Copies the block of data from the source to this data object */
+	public void copyDataBlock(CharacterData sourceData, int icSourceStart,  int itSourceStart, int icStart, int icEnd, int itStart, int itEnd){
+		if (sourceData == null)
+			return;
+		
+		for (int ic=icStart; ic<=icEnd; ic++){
+			for (int it=itStart; it<=itEnd; it++) {
+				int itSource = it-itStart+itSourceStart;
+				int icSource = ic-icStart+icSourceStart;
+				if (it<getNumTaxa() && ic<getNumChars() && itSource<sourceData.getNumTaxa() && icSource<sourceData.getNumChars())
+					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
+			}
+		}
+		resetCellMetadata();
 
 	}
 
@@ -220,13 +237,29 @@ public class CategoricalData extends CharacterData {
 						setState(ic, it, ((CategoricalData)sourceData).getStateRaw(ic, it)); 
 				}
 			}
-			resetChangedSinceSave();
+			resetCellMetadata();
 		}
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** copy the basic data.  Does not copy the associated specs sets etc.*/
 	public  void copyData(CharacterData sourceData){
 		copyData(sourceData,false);
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/**returns a copy of simply the data matrix with symbols */
+	public CategoricalData getDataCopy(){
+		CategoricalData data = (CategoricalData)makeCharacterData(numTaxa, numChars);
+		if (symbols!=null)
+			for (int i=0; i<=CategoricalState.maxCategoricalState && i<symbols.length; i++) {
+				data.setSymbolDirect(i, symbols[i]);
+			}
+		for (int ic=0; ic<numChars; ic++){
+			for (int it=0; it<numTaxa; it++) {
+				data.setState(ic, it, getStateRaw(ic, it)); 
+			}
+		}
+		data.resetCellMetadata();
+		return data;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**clone this CharacterData and return new copy.  Does not clone the associated specs sets etc.*/ //TODO: here should use super.setToClone(data) to handle specssets etc.???
@@ -251,7 +284,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -280,7 +313,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic-icStart, true);
 		}
-		data.resetChangedSinceSave();
+		data.resetCellMetadata();
 		return data;
 	}
 
@@ -884,6 +917,7 @@ public class CategoricalData extends CharacterData {
 				stampHistoryChange(ic, it);
 			}
 		}
+		calculateFirstLastApplicable();
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**get matrix and return as StsOfCharacters */
@@ -1170,7 +1204,7 @@ public class CategoricalData extends CharacterData {
 	/*..........................................  CategoricalData  ..................................................*/
 	/** sets the state of character ic in taxon it to inapplicable*/
 	public  void setToInapplicable(int ic, int it){
-		setState(ic, it, CategoricalState.unassigned);
+		setState(ic, it, CategoricalState.inapplicable);
 		setDirty(true, ic, it);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
@@ -1733,6 +1767,38 @@ public class CategoricalData extends CharacterData {
 		return maxState;
 	}
 	/*-----------------------------------------------------------*/
+	/** checks to see if the two cells have the same states */
+	public boolean sameState(int ic1, int it1, int ic2, int it2){
+		CharacterState cs1 = getCharacterState(null, ic1, it1);
+		CharacterState cs2 = getCharacterState(null, ic2, it2);
+		return cs1.equals(cs2);
+	}
+	/*-----------------------------------------------------------*/
+	/** checks to see if the two cells have the same states */
+	public boolean sameStateIgnoreCase(int ic1, int it1, int ic2, int it2){
+		CategoricalState cs1 = (CategoricalState)getCharacterState(null, ic1, it1);
+		CategoricalState cs2 = (CategoricalState)getCharacterState(null, ic2, it2);
+		return cs1.equalsIgnoreCase(cs2);
+	}
+	/*-----------------------------------------------------------*/
+	/** checks to see if the two characters have identical distributions of states */
+	public boolean samePattern(int oic, int ic){
+		
+		for (int it=0; it<numTaxa; it++) {
+			if (!sameState(oic, it, ic, it))
+				return false;
+		}
+		return true;
+	}
+	/*-----------------------------------------------------------*/
+	/** checks to see if the two characters have identical distributions of states */
+	public void clearCharacter(int ic){
+		
+		for (int it=0; it<numTaxa; it++) {
+			setToInapplicable(ic,it);
+		}
+	}
+	/*-----------------------------------------------------------*/
 	public void equalizeCharacter(CharacterData oData, int oic, int ic){
 		//state names
 		if (oData instanceof CategoricalData){
@@ -1927,12 +1993,12 @@ public class CategoricalData extends CharacterData {
 		}
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/** appends to buffer string describing the state(s) of character ic in taxon it. Ã*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it. ï¿½*/
 	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay){
 		statesIntoStringBufferCore(ic,s,sb,forDisplay, true, true);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/** appends to buffer string describing the state(s) of character ic in taxon it. Ã*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it. ï¿½*/
 	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		if (s==CategoricalState.inapplicable) {
 			if (includeInapplicable)
@@ -1965,7 +2031,7 @@ public class CategoricalData extends CharacterData {
 		}
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/** appends to buffer string describing the state(s) of character ic in taxon it.Ã*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it.ï¿½*/
 	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		if (notInStorage(ic, it)) //illegal check
 			return;
@@ -1973,12 +2039,12 @@ public class CategoricalData extends CharacterData {
 		statesIntoStringBufferCore(ic,s,sb, forDisplay, includeInapplicable, includeUnassigned);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/** appends to buffer string describing the state(s) of character ic in taxon it.Ã*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it.ï¿½*/
 	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay){
 		statesIntoStringBuffer(ic,it,sb, forDisplay, true, true);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/** appends to buffer string describing the state(s) of character ic in taxon it.Ã*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it.ï¿½*/
 	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, String separatorForMultistate, String bracketForMultistateStart, String bracketForMultistateEnd){
 		if (notInStorage(ic, it)) //illegal check
 			return;
@@ -2008,7 +2074,7 @@ public class CategoricalData extends CharacterData {
 		}
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/** appends to buffer string describing the state(s) of character ic in taxon it. Ã*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it. ï¿½*/
 	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb){
 		if (notInStorage(ic, it)) //illegal check
 			return;
@@ -2058,7 +2124,7 @@ public class CategoricalData extends CharacterData {
 	CategoricalState tempState = (CategoricalState)makeCharacterState(); //a utility CategoricalState for the fromChar method, which isn't static
 
 	/*..........................................  CategoricalData  ..................................................*/
-	/**Set the state at character ic from the string s, beginning at position pos in the string. Ã*/ 
+	/**Set the state at character ic from the string s, beginning at position pos in the string. ï¿½*/ 
 	public long fromString(int ic, Parser parser, boolean fromEditor, MesquiteInteger resultCode, MesquiteString result){
 		if (ic>=numChars || ic < 0) { //does not allow request for state for character other than those in matrix
 			if (resultCode!=null)
@@ -2205,7 +2271,7 @@ public class CategoricalData extends CharacterData {
 		return 0L;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/**Set the state at character ic from the string s, beginning at position pos in the string. Ã*/ 
+	/**Set the state at character ic from the string s, beginning at position pos in the string. ï¿½*/ 
 	public long fromStringQuickNexusReading(int ic, Parser parser, MesquiteInteger resultCode){
 		long stateSet = 0;
 		int multi = 0;
@@ -2277,7 +2343,7 @@ public class CategoricalData extends CharacterData {
 		return stateSet;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	/** Given a character, what state set is implied.  Looks up character among current symbols. Ã*/
+	/** Given a character, what state set is implied.  Looks up character among current symbols. ï¿½*/
 	public long fromChar(char state){
 		if (state == getInapplicableSymbol())
 			return CategoricalState.inapplicable;

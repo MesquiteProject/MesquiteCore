@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite (package mesquite.io).  Copyright 2000 and onward, D. Maddison and W. Maddison. 
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -175,9 +175,13 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 				if (writeCodPosPartition) {
 					//codon positions if nucleotide
 					String codPos = "";
+					boolean[] include = null;
+					if (removeExcluded)
+						include = data.getBooleanArrayOfIncluded();
+
 					CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
 					for (int iw = 0; iw<4; iw++){
-						String locs = codSet.getListOfMatches(iw, totNumChars);
+						String locs = codSet.getListOfMatches(iw, totNumChars,include);
 						if (!StringUtil.blank(locs)) {
 							String charSetName = "";
 							if (iw==0) 

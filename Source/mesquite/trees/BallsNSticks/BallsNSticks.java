@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -464,8 +465,10 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			g.setColor(Color.red);
 		else
 			g.setColor(Color.blue);
+
 		for (int i=1; i<4; i++)
-			g.drawOval( x[node]- spotSize/2 - 2 - i, y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);
+			GraphicsUtil.drawOval(g, x[node]- spotSize/2 - 2 - i, y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);
+
 
 		g.setColor(tC);
 	}
@@ -617,13 +620,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
 		fillBranch(tree, node, g);
-		//Debugg.println ???take this over to fill terminal spot rather than box, to avoid predicted/reconstructed being confused with observed
 		// need to show more informative terminal information
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		fillBranchWithColors(tree, node, colors, g);
-		//Debugg.println ???take this over to fill terminal spot rather than box, to avoid predicted/reconstructed being confused with observed
 	}
 	/*_________________________________________________*/
 	private boolean ancestorIsTriangled(Tree tree, int node) {
@@ -688,8 +689,9 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			g.setColor(Color.black);
 			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
 			//GraphicsUtil.setToXOR(g);
-			g.drawOval(x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
-			g.drawOval(x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
+			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4);
+			GraphicsUtil.drawOval(g,x[node]- spotSize/2 + 3, y[node]- spotSize/2 + 3, spotSize - 6, spotSize - 6);
+
 			g.setPaintMode();
 			g.setColor(Color.black);
 		}

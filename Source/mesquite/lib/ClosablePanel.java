@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -20,9 +21,9 @@ public class ClosablePanel extends MousePanel {
 	public static final int MINHEIGHT = 20;
 	protected int height = MINHEIGHT;
 	protected int currentHeight = 60;
-	protected boolean open = false;
-	protected boolean wholeOpen = false;
-	protected boolean showTriangle = true;
+	private boolean open = false;
+	private boolean wholeOpen = false;
+	private boolean showTriangle = false;
 	protected ClosablePanelContainer container;
 	protected String title = "";
 	protected Color bgTopColor = Color.white;
@@ -138,8 +139,8 @@ public class ClosablePanel extends MousePanel {
 			triangleOffset += 10;
 		}
 		g.setColor(textColor);
-		if (title != null){
-			g.drawString(title, tightness + triangleOffset, MINHEIGHT-4);
+		if (getTitle() != null){
+			g.drawString(getTitle(), tightness + triangleOffset, MINHEIGHT-4);
 		}
 
 	}

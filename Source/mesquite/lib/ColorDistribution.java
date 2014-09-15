@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -265,6 +266,15 @@ public class ColorDistribution {
 		else
 			return light;
 	}
+	public static Color getContrasting(Color c){
+		if (c==null){
+			return Color.black;
+		}
+		int red = (255-c.getRed());
+		int green = (255-c.getGreen());
+		int blue = (255-c.getBlue());
+		return new Color(red,green,blue);
+	}
 	public static int getStandardColorNumber(String name){
 		int ci = standardColorNames.indexOf(name);
 		return ci;
@@ -302,6 +312,11 @@ public class ColorDistribution {
 		if (ci<0)
 			return null;
 		return (Color)standardColorsDimmed.getValue(ci);
+	}
+	public static boolean equalColors(Color color1, Color color2) {
+		if (color1==null || color2==null)
+			return false;
+		return (color1.getBlue()==color2.getBlue()&&color1.getRed()==color2.getRed()&&color1.getGreen()==color2.getGreen());
 	}
 	/** Initialize colors by setting the number of colors to 0, the weights to 0, and the colors to null*/
 	public void initialize() {

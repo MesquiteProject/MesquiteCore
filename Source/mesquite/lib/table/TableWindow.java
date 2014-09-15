@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,6 +15,7 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 
 
@@ -162,6 +164,24 @@ public abstract class TableWindow extends MesquiteWindow {
 		else return  super.doCommand(commandName, arguments, checker);
 		return null;
  	}
+	/*.................................................................................................................*/
+	public boolean shiftDown(String arguments){
+		if (StringUtil.blank(arguments))
+			return false;
+		 return (arguments.indexOf("shift")>=0);
+	}
+	/*.................................................................................................................*/
+	public boolean commandDown(String arguments){
+		if (StringUtil.blank(arguments))
+			return false;
+		 return (arguments.indexOf("command")>=0);
+	}
+	/*.................................................................................................................*/
+	public boolean optionDown(String arguments){
+		if (StringUtil.blank(arguments))
+			return false;
+		 return (arguments.indexOf("option")>=0);
+	}
 	/*.................................................................................................................*/
 	public void paintContents(Graphics g) {
 		if (getTable()==null) return;
