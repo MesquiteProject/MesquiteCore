@@ -337,7 +337,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		else if (checker.compare(this.getClass(), "Suppresses responding to parameters changed.", null, commandName, "desuppressEPCResponse")) {
 			suppressEPCResponse = false;
 			if (basicTreeWindow != null)
-				basicTreeWindow.resetForTreeSource(false, false);
+				basicTreeWindow.resetForTreeSource(false, false, MesquiteInteger.inapplicable);
 		}
 		else if (checker.compare(this.getClass(), "Sets the tree in the window to the description passed", "[standard tree description]", commandName, "setTree")) { //added 10 Jan 02 for use in Send Script dialog
 			if (basicTreeWindow!=null){
@@ -442,7 +442,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				return;
 			if (Notification.getCode(notification) == MesquiteListener.ITEMS_ADDED){
 				if (basicTreeWindow.usingDefaultBush){
-					basicTreeWindow.resetForTreeSource(false, false); 
+					basicTreeWindow.resetForTreeSource(false, false, Notification.getCode(notification)); 
 					basicTreeWindow.contentsChanged();
 				}
 				else
@@ -453,7 +453,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 			else if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED){
 				basicTreeWindow.originalTree = null;
-				basicTreeWindow.resetForTreeSource(false, false); //if switching between tree blocks, should reset to zero!  If storing tree in tree block, shouldn't!
+				basicTreeWindow.resetForTreeSource(false, false, Notification.getCode(notification)); //if switching between tree blocks, should reset to zero!  If storing tree in tree block, shouldn't!
 				basicTreeWindow.contentsChanged();
 			}
 		}
@@ -556,7 +556,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	public Tree goToTreeNumber(int index){
 		if (basicTreeWindow == null)
 			return null;
-		return basicTreeWindow.goToTreeNumber(index);
+		return basicTreeWindow.goToTreeNumber(index, true);
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
@@ -765,6 +765,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	int highlightedTaxon=-1;
 	int taxonTouched = -1;
 	int xFrom, yFrom, xTo, yTo, fieldTouchX, fieldTouchY, lastFieldDragX, lastFieldDragY;
+	static final int CONTINUE_WITH_EDITED = 1;
+	static final int CHANGE_TREE_WITH_SOURCE = 0;
+	static final int ASK_USER_TREE_CHANGE = 2;
+
+	static int editedTreeMODE = CHANGE_TREE_WITH_SOURCE;
 
 	boolean usingDefaultBush = false;
 	private int currentTreeNumber = 0;
@@ -779,6 +784,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	MesquiteTree undoTree = null;
 	MesquiteTree previousTree = null;
 	TreeVector recentEditedTrees;
+	Tree previousEditedTree;
 	int maxRecentEditedTrees = 20;
 
 	MesquiteCommand undoCommand, copyCommand, pasteCommand;
@@ -788,7 +794,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	Tree originalTree;
 	boolean baseExplanationUsed=false;
 	boolean treeAnnotationShown = false;
-	MesquiteMenuItemSpec storeTreeMenuItem, storeTreeAsMenuItem;
+	MesquiteMenuItemSpec storeTreeMenuItem, storeTreeAsMenuItem, recoverEditedMenuItem;
 	MesquiteMenuItemSpec floatLegendsItem;
 	int oldH = 0;
 	int oldV = 0;
@@ -913,6 +919,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			storeTreeAsMenuItem = ownerModule.addMenuItem( "Store Copy of Tree As...", ownerModule.makeCommand("storeTreeAs",  this));
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
 
+		ownerModule.addMenuItem( "-", null);
+		recoverEditedMenuItem = ownerModule.addMenuItem( "Recover Last Edited Tree", ownerModule.makeCommand("recoverLastEditedTree",  this));
+		ownerModule.addMenuItem( "Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode",  this));
 		ownerModule.addMenuItem( "-", null);
 
 		ownerModule.addMenuItem( "Choose Tree...", ownerModule.makeCommand("chooseTree",  this));
@@ -1080,6 +1089,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("toggleRerootLadderize".equalsIgnoreCase(tag))
 			ladderizeAfterReroot.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		else if ("editedTreeMode".equalsIgnoreCase(tag)){
+			int x = MesquiteInteger.fromString(content);
+			if (MesquiteInteger.isCombinable(x))
+				editedTreeMODE = x;
+		}
 	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String flavor, String content) {
@@ -1089,6 +1103,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "toggleRerootLadderize", ladderizeAfterReroot);   
+		StringUtil.appendXMLTag(buffer, 2, "editedTreeMode", editedTreeMODE);  
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
@@ -1340,7 +1355,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else
 			return new Dimension(treeDisplay.getWidth(),treeDisplay.getHeight());
 	}
-	
+
 	Rectangle getTreeViewport(){
 		if (usingPane && hScroll != null){
 			if (!isFauxScrollPane() && MesquiteTrunk.isMacOSX())
@@ -1699,17 +1714,64 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			storeTreeAsMenuItem.setName("Store Copy of Tree As...");
 		resetTitle();
 		if (!MesquiteThread.isScripting()){
-			resetForTreeSource(setToZero, true);
+			resetForTreeSource(setToZero, true, MesquiteInteger.inapplicable);
 			contentsChanged();
 			treeDisplay.repaint();
 		}
 		else {
-			resetForTreeSource(setToZero, true);
+			resetForTreeSource(setToZero, true, MesquiteInteger.inapplicable);
+		}
+	}
+	private void zapPreviousEdited(boolean resetEnabling){
+		boolean wasEnabled = false;
+		if (resetEnabling){
+			if (recoverEditedMenuItem!= null)
+				wasEnabled = recoverEditedMenuItem.isEnabled();
+		}
+		if (previousEditedTree != null)
+			previousEditedTree.dispose();
+		previousEditedTree = null;
+		if (recoverEditedMenuItem!= null)
+			recoverEditedMenuItem.setEnabled(false);
+		if (resetEnabling){
+			if (recoverEditedMenuItem != null && wasEnabled != recoverEditedMenuItem.isEnabled())
+				MesquiteTrunk.resetMenuItemEnabling();
 		}
 	}
 	/*.................................................................................................................*/
-
-	public void resetForTreeSource(boolean setToZero, boolean firstTimeTreeSource) {
+	public void queryEditedTreeRetention() {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(this, "Retain Edited Tree?",buttonPressed);  
+		queryDialog.addLabel("Retain Edited Tree?");
+		queryDialog.addLargeOrSmallTextLabel("If you have edited a tree in the tree window, then you ask for a change in the tree source, do you want retain the edited tree, or immediately " +
+		" go to the new tree implied by the change in the tree source?  Choose an option:");
+		RadioButtons alignRadios = queryDialog.addRadioButtons(new String[] {"Switch to new tree, but remember edited tree for later recovery", 
+				"Continue to show edited tree", "Ask each time whether to continue with the edited tree, or switch to the new tree"}, editedTreeMODE);
+		
+		queryDialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			int oldMode = editedTreeMODE;
+			editedTreeMODE = alignRadios.getValue();
+			if (oldMode != editedTreeMODE)
+				ownerModule.storePreferences();
+		}
+		queryDialog.dispose();
+	}
+	/* Three modes:
+	 * verbose: if the tree source changes, or its parameters change, and there is an edited tree, then user is pestered to retain edited tree or not UNLESS change was trees added or deleted,
+	 * 		in which case the edited tree is retained
+	 * quiet retain (old style): continue to show edited tree even though it may not match source
+	 * quiet shift: always discard edited tree, but 
+	 * 
+	static final int CONTINUE_WITH_EDITED = 1;
+	static final int CHANGE_TREE_WITH_SOURCE = 0;
+	static final int ASK_USER_TREE_CHANGE = 2;
+	static int editedTreeMODE = CHANGE_TREE_WITH_SOURCE;
+*/
+	/*.................................................................................................................*/
+	
+	
+	void resetForTreeSource(boolean setToZero, boolean firstTimeTreeSource, int notificationCode) {
 		resetTitle();
 		if (firstTimeTreeSource)
 			warningGivenForTreeSource = false;
@@ -1719,21 +1781,37 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		}
 
-
 		if (tree!=null) {
 			boolean retainTree = false;
-			if (MesquiteThread.isScripting() || !setToZero)
+			if (MesquiteThread.isScripting() || editedTreeMODE == CONTINUE_WITH_EDITED || notificationCode == MesquiteListener.ITEMS_ADDED  ||  notificationCode == MesquiteListener.PARTS_ADDED  || notificationCode == MesquiteListener.PARTS_DELETED )
 				retainTree = true;
-			else if (treeEdited & editedByHand)
-				retainTree = !AlertDialog.query(this, "Discard edited tree?", "The tree in the window has been edited but not saved.  " 
-						+ "Do you want to discard it, or do you want to retain it in the window?\n\nIf you retain it, remember that it " 
+			else if (editedTreeMODE == ASK_USER_TREE_CHANGE && treeEdited && editedByHand)
+				retainTree = !AlertDialog.query(this, "Retain edited tree?", "The tree in the window has been edited but not saved.  " 
+						+ "Do you want to go to the new tree, or do you want to continue to show the edited tree in the window?\n\nIf you continue, remember that it " 
 						+ "does not come from the source of trees currently used by the window.  "
 						+ "To see the first tree that does belong to the source, hit the Enter arrow of the " 
-						+ "Tree scroll in the upper left of the tree window.", "Discard", "Retain", 0);
-
-
-			if (retainTree & treeEdited)
-				editedTree = tree;  // if this is done, and the tree is unot disposed, then it will be remembered
+						+ "Tree scroll in the upper left of the tree window.", "Switch to new tree", "Continue showing edited tree", 0);
+			else
+				retainTree = false;
+			boolean wasEnabled = false;
+			if (recoverEditedMenuItem!= null)
+				wasEnabled = recoverEditedMenuItem.isEnabled();
+			if (treeEdited){
+				if (retainTree) {
+					editedTree = tree;  // if this is done, and the tree is unot disposed, then it will be remembered
+					zapPreviousEdited(false);
+				}
+				else {
+					previousEditedTree = tree.cloneTree();
+					if (recoverEditedMenuItem!= null)
+						recoverEditedMenuItem.setEnabled(true);
+				}
+			}
+			else {
+				zapPreviousEdited(false);
+			}
+			if (recoverEditedMenuItem != null && wasEnabled != recoverEditedMenuItem.isEnabled())
+				MesquiteTrunk.resetMenuItemEnabling();
 			unhookPreviousTree();
 			if (!retainTree)
 				tree.dispose();
@@ -1747,9 +1825,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 		palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees-1)); 
 		if (setToZero || currentTreeNumber>= numTrees)
-			goToTreeNumber(0);
+			goToTreeNumber(0, false);
 		else
-			goToTreeNumber(currentTreeNumber);
+			goToTreeNumber(currentTreeNumber, false);
 
 
 
@@ -1776,7 +1854,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees-1)); 
 		if (currentTreeNumber>= numTrees && MesquiteInteger.isCombinable(numTrees)) {
 			currentTreeNumber = numTrees -1;
-			goToTreeNumber(currentTreeNumber);
+			goToTreeNumber(currentTreeNumber, true);
 		}
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
@@ -2077,6 +2155,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
     	 		}
     	 	}
 		 */
+		else if (checker.compare(this.getClass(), "Sets the tree to that described by the string passed", "[Parenthesis notation string of tree]", commandName, "queryEditedTreeMode")) {
+			queryEditedTreeRetention();
+		}
 		else if (checker.compare(this.getClass(), "Sets the tree to that described by the string passed", "[Parenthesis notation string of tree]", commandName, "setTree")) {
 			String descr = ParseUtil.getFirstToken(arguments, pos);
 
@@ -2092,6 +2173,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (MesquiteInteger.isCombinable(r) && r < recentEditedTrees.size()) {
 				MesquiteBoolean editStatusToSet = new MesquiteBoolean();
 				Tree t = setCloneOfTree(recentEditedTrees.getTree(r), false, editStatusToSet);
+				treeEdited(editStatusToSet.getValue());
+				setTreeName(t);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Recovers the last edited tree", null, commandName, "recoverLastEditedTree")) {
+			if (previousEditedTree !=null) {
+				MesquiteBoolean editStatusToSet = new MesquiteBoolean();
+				Tree t = setCloneOfTree(previousEditedTree, false, editStatusToSet);
 				treeEdited(editStatusToSet.getValue());
 				setTreeName(t);
 			}
@@ -2119,12 +2208,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return new MesquiteInteger(currentTreeNumber);
 		}
 		else if (checker.compare(this.getClass(), "Sets the tree to be the i'th one from the current tree source", "[number of tree to be shown]", commandName, "setTreeNumber")) {
-			return goToTreeNumber(MesquiteTree.toInternal(MesquiteInteger.fromFirstToken(arguments, pos)));
+			return goToTreeNumber(MesquiteTree.toInternal(MesquiteInteger.fromFirstToken(arguments, pos)), true);
 		}
 		else if (checker.compare(this.getClass(), "Present a dialog box to choose a tree from the current tree source", null, commandName, "chooseTree")) {
 			int ic=treeSourceTask.queryUserChoose(taxa, "for tree window");
 			if (MesquiteInteger.isCombinable(ic)) {
-				return goToTreeNumber(ic);
+				return goToTreeNumber(ic, true);
 			}
 
 		}
@@ -2151,9 +2240,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						showTreeListOnSave = false;
 
 						if (treeSourceTask!=null && "Stored Trees".equalsIgnoreCase(treeSourceTask.getName())){
+							boolean oldSuppress = ((BasicTreeWindowMaker)ownerModule).suppressEPCResponse;
+							((BasicTreeWindowMaker)ownerModule).suppressEPCResponse		= true;
 							TreeVector v = (TreeVector)treeSourceTask.doCommand("setTreeBlockByID", "" + trees.getID(), CommandChecker.defaultChecker);
+							((BasicTreeWindowMaker)ownerModule).suppressEPCResponse = oldSuppress;
 							if (v == trees) {
-								goToTreeNumber(trees.size()-1);
+								goToTreeNumber(trees.size()-1, true);
 							}
 						}
 						numTreesChanged();
@@ -2213,6 +2305,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				if (originalTree!=null && ((MesquiteTree)originalTree).getTreeVector() !=null)
 					((MesquiteTree)originalTree).getTreeVector().notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 				treeEdited=false;
+				zapPreviousEdited(true);
 				editedByHand = false;
 				messagePanel.setHighlighted(false, !treeSourceLocked()); 
 				if (treeInfoPanel != null)
@@ -2772,7 +2865,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		MesquiteFile.appendFileContents(MesquiteFile.composePath(directory, fileName), StringUtil.lineEnding(), false);
 		for (int iTree = 0; iTree<numTrees; iTree++){
-			goToTreeNumber(iTree);
+			goToTreeNumber(iTree, false);
 			MesquiteFile.appendFileContents(MesquiteFile.composePath(directory, fileName), "Tree " + (iTree+1), false);
 			for (int i = 0; i<list.length; i++) {
 				ObjectContainer econtainer = (ObjectContainer)list[i];
@@ -2811,7 +2904,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				numTrees = treeSourceTask.getNumberOfTrees(taxa);
 		}
 		//return tree to former state
-		goToTreeNumber(iCT);
+		goToTreeNumber(iCT, false);
 		if (returnTree != null) {
 			setTree(returnTree);
 			treeEdited(false);
@@ -2864,6 +2957,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (!MesquiteThread.isScripting())
 			editedByHand = true;
 		treeEdited=true;
+		zapPreviousEdited(true);
 		if (wasEdited && treeSourceLocked()) {
 			showTreeAnnotation();
 		}
@@ -2926,13 +3020,26 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 		if (currentTreeNumber+1 >= numTrees)
 			return null;
-		return goToTreeNumber(currentTreeNumber+1);
+		return goToTreeNumber(currentTreeNumber+1, true);
 	}
 	/*.................................................................................................................*/
-	public Tree goToTreeNumber(int index){
+	public Tree goToTreeNumber(int index, boolean rememberEdited){
 		currentTreeNumber = index;
 		if (MesquiteThread.isScripting() && ((BasicTreeWindowMaker)ownerModule).suppressEPCResponse)
 			return null;
+		if (rememberEdited){
+			boolean wasEnabled = false;
+			if (recoverEditedMenuItem!= null)
+				wasEnabled = recoverEditedMenuItem.isEnabled();
+			if (treeEdited){
+				previousEditedTree = tree.cloneTree();
+				if (recoverEditedMenuItem!= null)
+					recoverEditedMenuItem.setEnabled(true);
+			}
+			if (recoverEditedMenuItem != null && wasEnabled != recoverEditedMenuItem.isEnabled())
+				MesquiteTrunk.resetMenuItemEnabling();
+		}
+
 		Tree treeT = treeSourceTask.getTree(taxa, index);
 		if (treeT == null){  //source may have not known how many trees; ask if it would revise its current number of trees
 			int numTrees = treeSourceTask.getNumberOfTrees(taxa);
@@ -3090,7 +3197,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	/*_________________________________________________*/
 	NameReference branchNotesRef = NameReference.getNameReference("note");
 	private int countinvert = 0;
-	
+
 	public   void InvertBranchOld(Graphics g, int N, MesquiteInteger highlight) {
 		InvertBranchOld(g,N,highlight, true);
 	}
@@ -3163,7 +3270,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		highlight.setValue(0);
 		if (wasHighlighted> 0 && !treeDisplay.repaintPending()){
 			treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), wasHighlighted, g);
-	//		treeDisplay.getTreeDrawing().fillBranchInverted(t, N, g);
+			//		treeDisplay.getTreeDrawing().fillBranchInverted(t, N, g);
 		}
 		showTreeAnnotation();
 		//setAnnotation("", null);
@@ -3459,9 +3566,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (currentTreeTool.isArrowTool() && fieldTouchX >= 0 && fieldTouchY >=0){
 			dragHighlight(g,modifiers, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 			if (GraphicsUtil.useXORMode(g, false)){
-			//	g.setXORMode(Color.black); //for some reason color doesn't matter in MacOS, but does in Win95
-			//	GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
-			//	GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
+				//	g.setXORMode(Color.black); //for some reason color doesn't matter in MacOS, but does in Win95
+				//	GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
+				//	GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 				//g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
 				//g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 			}
@@ -3585,13 +3692,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			h = -h;
 		}
 		findContained(tree, tree.getRoot(), x, y, w, h, nodes, taxons);
-		
+
 		Vector nodesToUnselect= vectorElementsInFirstButNotSecond(highlightedNodes, nodes);
 		Vector taxaToUnselect= vectorElementsInFirstButNotSecond(highlightedTaxa, taxons);
-		
+
 		Vector nodesToSelect= null;
 		Vector taxaToSelect= null;
-		
+
 		if ((nodesToUnselect!=null && nodesToUnselect.size()>0) || (taxaToUnselect!=null && taxaToUnselect.size()>0)){
 			treeDisplay.update(g);
 			GraphicsUtil.drawCross(g,fieldTouchX, fieldTouchY, 10);
@@ -4061,6 +4168,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			tree = t;
 			tree.setName("Untitled Tree");
 			treeEdited = true;
+			zapPreviousEdited(true);
 			hookCurrentTree();
 			treeChanged( true);
 			palette.paletteScroll.setEnableEnter(true);
@@ -4099,7 +4207,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else
 				editStatusToSet.setValue(false);
 
-			
+
 			if (treeToClone != null)  {
 				if (tree !=null) {
 					unhookPreviousTree();
@@ -4300,7 +4408,7 @@ class TreeScrollPane extends Panel{ //HANDMADETreeScrollPane
 		touch = vScroll.setMaximumWithResetWarning(max) || touch;
 		if (touch)
 			scrollTouched(null, 0);
-			
+
 		vScroll.setVisible(min != max);
 
 		if(min == max)
@@ -4359,7 +4467,7 @@ class TWScroll extends MesquiteScrollbar {
 	int orientation;
 	public TWScroll (TreeScrollPane tsp, int orientation, int value, int visible, int min, int max){
 		super(orientation, value, visible, min, max);
-		
+
 		this.orientation = orientation;
 		this.tsp=tsp;
 	}
@@ -5335,9 +5443,9 @@ class BirdsEyePanel extends MesquitePanel {
 }
 
 /* ======================================================================== */
- class TreeWindowSelectionRectangle  {
+class TreeWindowSelectionRectangle  {
 	Rectangle selectionRect;
-	
+
 	public TreeWindowSelectionRectangle(Graphics2D g2, int x, int y, int w, int h){
 		this.selectionRect = new Rectangle(x,y,w,h);
 	}
@@ -5357,7 +5465,7 @@ class BirdsEyePanel extends MesquitePanel {
 		GraphicsUtil.fixRectangle(newRect);
 		Area newArea = createAreaFromRectangle(newRect);
 		Area differenceArea = createAreaFromRectangle(selectionRect);
-		
+
 		if (differenceArea!=null) {
 			differenceArea.exclusiveOr(newArea);
 			Shape oldClip = g2.getClip();
@@ -5371,10 +5479,10 @@ class BirdsEyePanel extends MesquitePanel {
 			g2.setClip(oldClip);
 		}
 
-		
+
 		selectionRect.setRect(newRect);
-	
-		
+
+
 	}
 }
 

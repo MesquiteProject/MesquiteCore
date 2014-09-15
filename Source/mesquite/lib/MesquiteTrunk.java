@@ -395,7 +395,14 @@ public abstract class MesquiteTrunk extends MesquiteModule
 					resetEnabling(menu);
 				}
 			}
-
+			Vector v = mw.getOwnerModule().embeddedMenusVector;
+			if (v != null){
+				for (int i = 0; i< v.size(); i++){
+				Menu menu = (Menu)v.elementAt(i);
+				
+				resetEnabling(menu);
+			}
+			}
 		}
 		}
 		catch (Exception e){
@@ -449,6 +456,11 @@ public abstract class MesquiteTrunk extends MesquiteModule
 					Menu menu = mbar.getMenu(imenu);
 					resetChecks(menu);
 				}
+			}
+			Vector v = mw.getOwnerModule().embeddedMenusVector;
+			for (int i = 0; i< v.size(); i++){
+				Menu menu = (Menu)v.elementAt(i);
+				resetChecks(menu);
 			}
 			
 

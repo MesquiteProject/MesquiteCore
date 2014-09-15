@@ -1154,6 +1154,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (nfi!=null) {
 			nfi.writeFile(getProject(), nMF);
 		}
+		else 
+			MesquiteMessage.println("File interpreter not found to write file " + nMF.getName());
 	}
 	/*.................................................................................................................*/
 	/** Finds the first employee in the heirarchy that manages a particular subclass of FileElement */

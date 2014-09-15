@@ -17,6 +17,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -70,8 +71,14 @@ public class ExportMatricesBatch extends FileInit  {
 				s += " noTrees ";
 				if (usePrevious)
 					s+= " usePrevious";
-				coord.export(matrixExportFormat, file, s);
+				boolean success = coord.export(matrixExportFormat, file, s);
+				if (!success)
+						MesquiteMessage.println("FILE SAVING FAILED (" + matrixExportFormatName + ") for " + file.getName());
+
 			}
+			else 
+				MesquiteMessage.println("FILE SAVING FAILED because intepreter not found (" + matrixExportFormatName + ") for " + file.getName());
+
 		}
 	}
 	/*.................................................................................................................*/

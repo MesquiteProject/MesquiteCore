@@ -331,7 +331,7 @@ public class Mesquite extends MesquiteTrunk
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
-				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Rutger Vos, Jeff Oliver, Daisie Hung"
+				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Rutger Vos, Jeff Oliver, Daisie Huang"
 				+ "\nDevelopment Team Alumnus: Danny Mandel\n";
 
 		if (verboseStartup) System.out.println("main init 11");
