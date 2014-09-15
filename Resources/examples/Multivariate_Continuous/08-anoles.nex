@@ -522,7 +522,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'The tree is now plotted in a 3-dimensional space of principal components.  You can rotate the view using the green bars, and change the magnification using the red bar.  The larger spots are closer to you.  Enjoy your flight through morphospace.^n^nNote that the species from Cuba are highlighted.  If you turn on "Use Fog" in the Drawing menu, and de-select the Cuban species in the tree window above, the more distant the point in the third dimension, the more it will be dimmed.';
+				setExplanation 'The tree is now plotted in a 3-dimensional space of principal components.  You can rotate the view using the green bars, and change the magnification using the red bar.  The larger spots are closer to you.  Enjoy your flight through morphospace.^n^nNote that the species from Cuba are highlighted.  If you turn on "Use Fog" in the Display menu, and de-select the Cuban species in the tree window above, the more distant the point in the third dimension, the more it will be dimmed.';
 				setTitle 3D_plot;
 				toggleFileNames off;
 				setPrevButtonName Previous;

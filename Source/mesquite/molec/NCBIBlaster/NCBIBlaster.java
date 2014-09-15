@@ -18,11 +18,20 @@ public class NCBIBlaster extends Blaster {
 	public boolean initialize() {
 		return true;
 	}
+	
+	public  int getUpperLimitMaxHits(){
+		return 40;
+	}
+
+	/*.................................................................................................................*/
+	public String getDatabaseName () {
+		return "NCBI GenBank";
+	}
 
 	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse, boolean writeCommand) {
 		timer.timeSinceLast();
 		NCBIUtil.blastForMatches(blastType, sequenceName, sequence, isNucleotides, numHits, 300, eValueCutoff, blastResponse);
-		logln("Blast completed in " +timer.timeSinceLastInSeconds()+" seconds");
+		logln("BLAST completed in " +timer.timeSinceLastInSeconds()+" seconds");
 	}
 
 	public String getFastaFromIDs(String[] idList, boolean isNucleotides, StringBuffer fastaBlastResults) {
@@ -47,16 +56,16 @@ public class NCBIBlaster extends Blaster {
 
 
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 
 	public String getName() {
-		return "Blast NCBI Server";
+		return "BLAST NCBI GenBank Server";
 	}
 
 	public String getExplanation() {
-		return "Blasts the NCBI GenBank server at NIH";
+		return "BLASTs the NCBI GenBank server at NIH";
 	}
 
 

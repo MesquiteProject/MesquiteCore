@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -3191,7 +3192,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		if (!branchLengthUnassigned(node)) {
 			treeDescription.append(':');
-			treeDescription.append(MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1)); //add -1 to signal full accuracy 17 Dec 01
+			String bL = MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1);
+			treeDescription.append(bL); //add -1 to signal full accuracy 17 Dec 01
 		}
 		String a = writeAssociated(node, associatedUseComments);
 		treeDescription.append(a);
@@ -5723,8 +5725,10 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			if (Notification.appearsCosmetic(notification))
 				return;
 			int code = Notification.getCode(notification);
+			if  (code==MesquiteListener.SELECTION_CHANGED)  
+				return;
 			int[] parameters = Notification.getParameters(notification);
-			if (parameters == null || (code != MesquiteListener.PARTS_ADDED && code != MesquiteListener.PARTS_DELETED && code != MesquiteListener.PARTS_MOVED)) {
+			if ((parameters == null) || (code != MesquiteListener.PARTS_ADDED && code != MesquiteListener.PARTS_DELETED && code != MesquiteListener.PARTS_MOVED)) {
 				reconcileTaxa(code, notification);
 				return;
 			}

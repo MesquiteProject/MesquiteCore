@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -13,10 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+
 import mesquite.lib.duties.*;
 
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ commands ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ commands ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* includes commands,  buttons, miniscrolls
 
 /* ======================================================================== */
@@ -25,6 +27,8 @@ module to its current state on file read-in or in other contexts (e.g., cloning 
 recurses through the employee tree, collecting their Snapshots, and using them to compose a Mesquite block
 for a NEXUS file that will return the active modules and windows to their current state.*/
 public class Snapshot {
+	public static final int SNAPALL = 0;
+	public static final int SNAPDISPLAYONLY = 1;
 	String[] lines;
 	MesquiteModule[] modules;
 	boolean[] conditional;
@@ -172,37 +176,37 @@ public class Snapshot {
 	}
 	
 	public String toString(MesquiteFile file, String spacer){
-		String temp ="";
+ 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i<getNumLines(); i++) {
 				//if conditional then wait to se if anything added
 			if (getLine(i)==null)
 				;
 			else if (getConditional(i) && getModule(i)!=null) {
-			 	String emp = getSnapshotCommands(getModule(i), file, spacer);
+				String emp = getSnapshotCommands(getModule(i), file, spacer);
 				if (!StringUtil.blank(emp)) {
-				 		temp +=spacer + getLine(i) + StringUtil.lineEnding();
-				 		temp += spacer + "tell It;" + StringUtil.lineEnding();
-				 		temp += emp;
-				 		temp += spacer + "endTell;" + StringUtil.lineEnding();
-			 		}
+					sb.append(spacer + getLine(i) + StringUtil.lineEnding());
+					sb.append(spacer + "tell It;" + StringUtil.lineEnding());
+					sb.append(emp);
+					sb.append(spacer + "endTell;" + StringUtil.lineEnding());
+				}
 			}
 			else {
- 				temp += spacer + getLine(i) + StringUtil.lineEnding();
+				sb.append(spacer + getLine(i) + StringUtil.lineEnding());
   				MesquiteModule mb = getModule(i);
   				if (mb != null) {
 			 		String emp = getSnapshotCommands(mb, file, spacer);
 					if (!StringUtil.blank(emp)) {
-				 		temp += spacer + "tell It;" + StringUtil.lineEnding();
-				 		temp += emp;
-				 		temp += spacer + "endTell;" + StringUtil.lineEnding();
+						sb.append(spacer + "tell It;" + StringUtil.lineEnding());
+						sb.append(emp);
+						sb.append(spacer + "endTell;" + StringUtil.lineEnding());
 			 		}
   				}
 			}
 		}
-		return temp;
+		return sb.toString();
 	}
 	public static String getIDSnapshotCommands(FileElementManager module, MesquiteFile file, String spacer) {
- 		String temp = ""; //use buffer!!!
+ 		StringBuffer sb = new StringBuffer();
   		spacer += "\t"; 
 		Snapshot snapshot = module.getIDSnapshot(file);
 		if (snapshot != null) {
@@ -213,79 +217,86 @@ public class Snapshot {
 				else if (snapshot.getConditional(i) && snapshot.getModule(i)!=null) {
 				 	String emp = getSnapshotCommands(snapshot.getModule(i), file, spacer);
 					if (!StringUtil.blank(emp)) {
-					 		temp +=spacer + snapshot.getLine(i) + StringUtil.lineEnding();
-					 		temp += spacer + "tell It;" + StringUtil.lineEnding();
-					 		temp += emp;
-					 		temp += spacer + "endTell;" + StringUtil.lineEnding();
+							sb.append(spacer + snapshot.getLine(i) + StringUtil.lineEnding());
+							sb.append(spacer + "tell It;" + StringUtil.lineEnding());
+							sb.append(emp);
+							sb.append(spacer + "endTell;" + StringUtil.lineEnding());
 				 		}
 				}
  				else {
-	 				temp += spacer + snapshot.getLine(i) + StringUtil.lineEnding();
+ 					sb.append(spacer + snapshot.getLine(i) + StringUtil.lineEnding());
 	  				MesquiteModule mb = snapshot.getModule(i);
 	  				if (mb != null) {
 				 		String emp = getSnapshotCommands(mb, file, spacer);
 						if (!StringUtil.blank(emp)) {
-					 		temp += spacer + "tell It;" + StringUtil.lineEnding();
-					 		temp += emp;
-					 		temp += spacer + "endTell;" + StringUtil.lineEnding();
+							sb.append(spacer + "tell It;" + StringUtil.lineEnding());
+							sb.append(emp);
+							sb.append(spacer + "endTell;" + StringUtil.lineEnding());
 				 		}
 	  				}
   				}
 			}
 		}
- 		return temp;
+ 		return sb.toString();
 	}
+
+
 	/** accumulate snapshot (e.g., as for MESQUITE block of NEXUS file) beginning at the passed module, as if
-	writing for the file indicated.  The spacer string is passed to prefix lines with tabs to give an indented organization.
-	
-	A problem to be solved are dependencies among modules (especially TreeContexts).  If a snapshot creating a module A needed by module B is written
-	after the snapshot creating module B, then module B on starting up will not find the needed module A.   */
+		writing for the file indicated.  The spacer string is passed to prefix lines with tabs to give an indented organization.
+
+		A problem to be solved are dependencies among modules (especially TreeContexts).  If a snapshot creating a module A needed by module B is written
+		after the snapshot creating module B, then module B on starting up will not find the needed module A.   */
 	public static String getSnapshotCommands(MesquiteModule module, MesquiteFile file, String spacer) {
- 		String temp = ""; //use buffer!!!
-  		spacer += "\t"; 
+
+
+		StringBuffer sb = new StringBuffer();
+		spacer += "\t"; 
+		String previousSpacer = spacer;
 		Snapshot snapshot = module.getSnapshot(file);
 		if (snapshot != null) {
 			for (int i = 0; i<snapshot.getNumLines(); i++) {
-					//if conditional then wait to se if anything added
+				//if conditional then wait to se if anything added
 				if (snapshot.getLine(i)==null)
 					;
 				else if (snapshot.getConditional(i) && snapshot.getModule(i)!=null) {
-				 	String emp = getSnapshotCommands(snapshot.getModule(i), file, spacer);
+					String emp = getSnapshotCommands(snapshot.getModule(i), file, spacer);
 					if (!StringUtil.blank(emp)) {
-					 		temp +=spacer + snapshot.getLine(i) + StringUtil.lineEnding();
-					 		temp += spacer + "tell It;" + StringUtil.lineEnding();
-					 		temp += emp;
-					 		temp += spacer + "endTell;" + StringUtil.lineEnding();
-				 		}
+						sb.append(spacer + snapshot.getLine(i) + StringUtil.lineEnding());
+						sb.append(spacer + "tell It;" + StringUtil.lineEnding());
+						sb.append(emp);
+						sb.append(spacer + "endTell;" + StringUtil.lineEnding());
+					}
 				}
- 				else {
-	 				temp += spacer + snapshot.getLine(i) + StringUtil.lineEnding();
-	  				MesquiteModule mb = snapshot.getModule(i);
-	  				if (mb != null) {
-				 		String emp = getSnapshotCommands(mb, file, spacer);
+				else {
+					sb.append(spacer + snapshot.getLine(i) + StringUtil.lineEnding());
+					MesquiteModule mb = snapshot.getModule(i);
+					if (mb != null) {
+						String emp = getSnapshotCommands(mb, file, spacer);
 						if (!StringUtil.blank(emp)) {
-					 		temp += spacer + "tell It;" + StringUtil.lineEnding();
-					 		temp += emp;
-					 		temp += spacer + "endTell;" + StringUtil.lineEnding();
-				 		}
-	  				}
-  				}
+							sb.append(spacer + "tell It;" + StringUtil.lineEnding());
+							sb.append(emp);
+							sb.append(spacer + "endTell;" + StringUtil.lineEnding());
+						}
+					}
+				}
 			}
-	  		//deal with all employees not dealt with in snapshot
+			//deal with all employees not dealt with in snapshot
+			spacer = previousSpacer;
+
 			for (int i = 0; i< module.getNumberOfEmployees(); i++) {
 				MesquiteModule mb = (MesquiteModule)module.getEmployeeVector().elementAt(i);
-	 			if (!snapshot.modulePresent(mb)) {  //employee not covered in snapshot
-			 		String emp = getSnapshotCommands(mb, file, spacer);
+				if (!snapshot.modulePresent(mb) && (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || mb.satisfiesSnapshotMode())) {  //employee not covered in snapshot
+					String emp = getSnapshotCommands(mb, file, spacer);
 					if (!StringUtil.blank(emp)) {
-				 		temp +=spacer + "getEmployee " + StringUtil.tokenize(module.getEmployeeReference(mb)) + ";" + StringUtil.lineEnding();//quote
-				 		temp += spacer + "tell It;" + StringUtil.lineEnding();
-				 		temp += emp;
-				 		temp += spacer + "endTell;" + StringUtil.lineEnding();
-			 		}
-	 			}
+						sb.append(spacer + "getEmployee " + StringUtil.tokenize(module.getEmployeeReference(mb)) + ";" + StringUtil.lineEnding());//quote
+						sb.append(spacer + "tell It;" + StringUtil.lineEnding());
+						sb.append(emp);
+						sb.append(spacer + "endTell;" + StringUtil.lineEnding());
+					}
+				}
 			}
 		}
- 		return temp;
+		return sb.toString();
 	}
 }
 

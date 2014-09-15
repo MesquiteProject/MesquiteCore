@@ -502,7 +502,7 @@ Begin MESQUITE;
 					setFont SanSerif;
 					setFontSize 10;
 					setActive;
-				setExplanation 'Here the sequence matrix is colored not by colors for A, C, G and T, but by GC content using a moving window analysis.  For each site in each sequence, the density of blue shows the average GC content over a moving window of bases to the left and right of the site.  The moving window width can be changed using the "Moving Window" menu item in the Matrix menu of the character matrix editor window.';
+				setExplanation 'Here the sequence matrix is colored not by colors for A, C, G and T, but by GC content using a moving window analysis.  For each site in each sequence, the density of blue shows the average GC content over a moving window of bases to the left and right of the site.  The moving window width can be changed using the "Moving Window" menu item in the Display menu of the character matrix editor window.';
 				setTitle GC_bias;
 				toggleFileNames off;
 				setPrevButtonName Previous;

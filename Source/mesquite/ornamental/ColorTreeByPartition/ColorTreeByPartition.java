@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -16,6 +17,7 @@ package mesquite.ornamental.ColorTreeByPartition;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -41,6 +43,11 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 		return "Color Branches by Partition";
 	}
 
+	/*.................................................................................................................*/
+	/** return whether or not this module should have snapshot saved when saving a macro given the current snapshot mode.*/
+	public boolean satisfiesSnapshotMode(){
+		return (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || MesquiteTrunk.snapshotMode == Snapshot.SNAPDISPLAYONLY);
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -90,6 +97,7 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 	ColorTreeByPartition branchNotesModule;
 	TaxaPartition partitions = null;
 	ColorDistribution[] colors;
+	TaxaGroup[][] groupsAtNode;
 	boolean showColors;
 	public ColorByPartitionExtra (ColorTreeByPartition ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
@@ -126,6 +134,19 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 	public String textForLegend(){
 		return null;
 	}
+
+	void fillNext(TaxaGroup[] t, TaxaGroup group){
+		for (int i = 0; i<t.length; i++)
+			if (t[i] == group){ //already there
+				return;
+			}
+		for (int i = 0; i<t.length; i++)
+			if (t[i] == null){
+				t[i] = group;
+				return;
+			}
+
+	}
 	/*.................................................................................................................*/
 	public   void harvestColorsDOWN(Tree tree, int node) {
 		if (partitions != null){
@@ -134,45 +155,69 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 				int taxonNumber = tree.taxonNumberOfNode(node);
 				TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
 				if (mi!=null) {
-					if (mi.getColor() != null)
-						colors[node].setColor(0, mi.getColor());
+					fillNext(groupsAtNode[node], mi);
 				}
 			}
 			else 	for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 				harvestColorsDOWN(tree, d);
-				//here, pull all colors from tips
-				for (int i=0; i<colors[d].getNumColors(); i++){
-					if (colors[node].indexOf(colors[d].getColor(i))<0)
-						colors[node].setColor(count++, colors[d].getColor(i));
+
+				for (int i=0; i<groupsAtNode[d].length; i++){
+					if (groupsAtNode[d][i] != null)
+						fillNext(groupsAtNode[node], groupsAtNode[d][i]);
 				}
 			}
+			int counter = 0;
+			for (int i=0; i<groupsAtNode[node].length; i++){
+				if (groupsAtNode[node][i] != null)
+					colors[node].setColor(counter++, groupsAtNode[node][i].getColor());
+			}
+
 		}
+
 	}
-	int numDescWithColor(Tree tree, int node, Color c){
+
+	boolean inArray(TaxaGroup[] gs, TaxaGroup g){
+		for (int i = 0; i<gs.length; i++)
+			if (gs[i] == g)
+				return true;
+		return false;
+	}
+
+	int numDescWithGroup(Tree tree, int node, TaxaGroup c){
 		int count = 0;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-			if (colors[d].indexOf(c)>=0)
+			if (inArray(groupsAtNode[d], c))
 				count++;
 		return count;
 	}
-	ColorDistribution temp = new ColorDistribution();
+	TaxaGroup[] tempGroups;
 	/*.................................................................................................................*/
 	public   void harvestColorsUP(Tree tree, int node) {
 		if (partitions != null){
 			if (tree.nodeIsInternal(node)){
 				//rule is: if color is found in more than one descendent, the color it
 
+				for (int i=0; i < tempGroups.length; i++)
+					tempGroups[i] = null;
+
+				for (int i=0; i<groupsAtNode[node].length; i++) //store groups in temporary space
+					fillNext(tempGroups, groupsAtNode[node][i]);
+
 				int count = 0;
-				temp.initialize();
-				for (int i=0; i<colors[node].getNumColors(); i++) //store colors in temporary space
-					temp.setColor(count++, colors[node].getColor(i));
 				colors[node].initialize();
+				for (int i=0; i < groupsAtNode[node].length; i++)
+					groupsAtNode[node][i] = null;
+
 				count = 0;
-				for (int i=0; i<temp.getNumColors(); i++){
-					int numDesc = numDescWithColor(tree, node, temp.getColor(i));
-					if (numDesc>1 || (numDesc == 1 && node != tree.getRoot() && colors[tree.motherOfNode(node)].indexOf(temp.getColor(i))>=0))
-						colors[node].setColor(count++, temp.getColor(i));
-				}
+				for (int i=0; i<tempGroups.length; i++){
+					if (tempGroups[i] != null){
+						int numDesc = numDescWithGroup(tree, node, tempGroups[i]);
+						if (numDesc>1 || (numDesc == 1 && node != tree.getRoot() && inArray(groupsAtNode[tree.motherOfNode(node)], tempGroups[i]))){
+							groupsAtNode[node][count] = tempGroups[i];
+							colors[node].setColor(count++, tempGroups[i].getColor());
+						}
+					}
+				}				
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					harvestColorsUP(tree, d);
 			}
@@ -192,12 +237,25 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 				colors[i] = new ColorDistribution();
 			colors[i].initialize();
 		}
-		
-		if (taxa == null){
+
+		if (taxa == null)
 			partitions = (TaxaPartition)tree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
-		}
 		else
 			partitions = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+		if (groupsAtNode == null || groupsAtNode.length != tree.getNumNodeSpaces())
+			groupsAtNode = new TaxaGroup[tree.getNumNodeSpaces()][];
+		TaxaGroupVector groups = (TaxaGroupVector)ownerModule.getProject().getFileElement(TaxaGroupVector.class, 0);
+		int numGroups = groups.size();
+		if (tempGroups == null || tempGroups.length != numGroups)
+			tempGroups = new TaxaGroup[numGroups];
+		for (int i= 0; i< groupsAtNode.length; i++){
+			if (groupsAtNode[i] == null || groupsAtNode[i].length != numGroups)
+				groupsAtNode[i] = new TaxaGroup[numGroups];
+			else for (int k = 0; k<groupsAtNode[i].length; k++)
+				groupsAtNode[i][k] = null;
+		}
+
+
 		harvestColorsDOWN(tree, tree.getRoot());
 		harvestColorsUP(tree, tree.getRoot());
 		needsReharvesting = false;

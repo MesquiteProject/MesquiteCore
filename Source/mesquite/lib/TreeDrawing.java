@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -15,7 +16,6 @@ package mesquite.lib;
 import java.awt.*;
 import java.awt.geom.Line2D;
 
-import mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 import mesquite.lib.duties.*;
 import mesquite.trees.lib.TaxonPolygon;
 /*===  Mesquite Basic Class Library:  Trees    ===*/
@@ -24,7 +24,7 @@ import mesquite.trees.lib.TaxonPolygon;
 
 
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ trees ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ trees ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* ======================================================================== */
 /**This is the base class for the drawing of the tree.  It contains the information about
 the number of nodes, and the x and y positions of the nodes.  It should be subclassed by tree drawing modules, 
@@ -285,16 +285,35 @@ public abstract class TreeDrawing  {
 		if (GraphicsUtil.useXORMode(g, true))  {
 			g.setColor(Color.black);
 			g.setXORMode(Color.white);  //for some reason color makes no difference in MacOS, but is inversion color in Win95 
-			//GraphicsUtil.setToXOR(g);
+		//	GraphicsUtil.setToXOR(g);
+			//	g.setColor(Color.yellow);
 			try{
 				fillBranch(tree, N, g);
 			}
 			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
-			
+
 			}
 			g.setPaintMode();
 			g.setColor(Color.black);
 		}
+	}
+	/*_________________________________________________*/
+	/** Does the basic highlighting of a branch **/
+	public  void highlightBranch (Tree tree, int N, Graphics g) {
+			g.setColor(Color.yellow);
+			try{
+				fillBranch(tree, N, g);
+			}
+			catch (InternalError e){  //added because of bug in jdk 1.7_45 on windows, crashing with internal error on getRaster
+
+			}
+			g.setPaintMode();
+			g.setColor(Color.black);
+	}
+	/*_________________________________________________*/
+	/** Does the basic unhighlighting of a branch **/
+	public  void unhighlightBranch (Tree tree, int N, Graphics g) {
+		treeDisplay.repaint();
 	}
 	
 	/** Fill branch N to indicate missing data */
@@ -314,8 +333,16 @@ public abstract class TreeDrawing  {
 	/** Fill branch N with indicated set of colors */
 	public abstract void fillBranchWithColors(Tree tree, int N, ColorDistribution colors, Graphics g);
 
+	boolean fillBranchColorSequenceWarned = false;
 	/** Fill branch N with indicated set of colors as a sequence, e.g. for stochastic character mapping.  This is not abstract because many tree drawers would have difficulty implementing it */
 	public void fillBranchWithColorSequence(Tree tree, int N, ColorEventVector colors, Graphics g){
+		if (!fillBranchColorSequenceWarned){
+			fillBranchColorSequenceWarned = true;
+			MesquiteModule module = MesquiteTrunk.mesquiteTrunk;
+			if (treeDisplay != null && treeDisplay.getOwnerModule() != null)
+				module = treeDisplay.getOwnerModule();
+			module.alert("The current tree form does not support sequences of changes along branches.  Try selecting another, such as Classic Square Tree.");
+		}
 	}
 	
 	public boolean isAtNode(MesquiteDouble fraction) {
@@ -391,9 +418,6 @@ public abstract class TreeDrawing  {
 	/** Fill terminal box of node "node" with indicated set of colors */
 	public abstract void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g);
 	
-	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
-		return false;
-	}
 	/*.................................................................................................................*/
 	/** Find which terminal box is at x,y */
 	public int findTerminalBox(Tree tree,  int N, int x, int y) {
@@ -425,7 +449,12 @@ public abstract class TreeDrawing  {
 			drawnRoot = tree.getRoot();
 		return findTerminalBox(tree, drawnRoot, x, y); 
 	}
+	
+	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
+		return false;
+	}
 	/*.................................................................................................................*/
+
 	/** Draw highlight for branch N with current color of graphics context */
 	public void drawHighlight(Tree tree, int N, Graphics g, boolean flip){}
 

@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -630,22 +631,25 @@ public class MesquiteInteger implements Listable{
 		return queryInteger( parent,  title,  message, "",  current,  minimum,  maximum,  allowCancel);
 	}
 	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
-	public static int queryInteger(MesquiteWindow parent, String title, String message, String help, int current, int minimum, int maximum, boolean allowCancel) {
-		if (current>maximum)
+	public static int queryInteger(MesquiteWindow parent, String title, String message, String secondaryMessage, String help, int current, int minimum, int maximum, boolean allowCancel) {
+		if (MesquiteInteger.isCombinable(maximum) && current>maximum)
 			current=maximum;
-		else if (current<minimum)
+		else if (MesquiteInteger.isCombinable(minimum) && current<minimum)
 			current=minimum;
 		MesquiteInteger io = new MesquiteInteger(current);
 		boolean done=false;
-		if (StringUtil.blank(help))
-			help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + MesquiteInteger.toString(current) 
-			+ "; the minimum value permitted is " + MesquiteInteger.toString(minimum)+ " and the maximum value permitted is " + MesquiteInteger.toString(maximum);
-		
+		if (StringUtil.blank(help)) {
+			help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + MesquiteInteger.toString(current) + ". ";
+			if (MesquiteInteger.isCombinable(minimum))
+				help += "The minimum value permitted is " + MesquiteInteger.toString(minimum)+ ". ";
+			if (MesquiteInteger.isCombinable(maximum))
+				help += "The maximum value permitted is " + MesquiteInteger.toString(maximum)+ ". ";
+		}
 		while (!done) {
 			//IntegerDialog id = new IntegerDialog(parent, title, message, io);
 			//id.dispose();
-			QueryDialogs.queryInteger(parent, title, message, help, allowCancel, io);
-			if (!io.isCombinable() || (io.getValue()<=maximum && io.getValue()>=minimum))
+			QueryDialogs.queryInteger(parent, title, message, secondaryMessage, help, allowCancel, io);
+			if (!io.isCombinable() || ((!MesquiteInteger.isCombinable(maximum) || io.getValue()<=maximum) && (!MesquiteInteger.isCombinable(minimum) ||  io.getValue()>=minimum)))
 				done=true;
 			else {
 				if (maximum==infinite)
@@ -658,8 +662,16 @@ public class MesquiteInteger implements Listable{
 		return io.getValue();
 	}
 	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
+	public static int queryInteger(MesquiteWindow parent, String title, String message, String help, int current, int minimum, int maximum, boolean allowCancel) {
+		return queryInteger(parent, title, message, null, help, current, minimum, maximum, allowCancel);
+	}
+	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
 	public static int queryInteger(MesquiteWindow parent, String title, String message, int current, int minimum, int maximum) {
 		return queryInteger(parent, title, message, current, minimum, maximum, true);
+	}
+	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
+	public static int queryInteger(MesquiteWindow parent, String title, String message, String secondaryMessage, String help, int current, int minimum, int maximum) {
+		return queryInteger(parent, title, message, secondaryMessage, help, current, minimum, maximum, true);
 	}
 	/** Presents dialog querying user for an integers, with a check for minimum and maximum */
 	public static int queryInteger(MesquiteWindow parent, String title, String message, String help, int current, int minimum, int maximum) {

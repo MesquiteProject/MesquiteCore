@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -153,12 +154,23 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				data = null;
 				return;
 			}
+			
 			if (taxa !=null && taxa.isDoomed()) {
+				taxa = null;
+				if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Taxa block that is in use has been deleted"))  
+					return;
+				
 				logln("Taxa null or being disposed; StoredMatrices will quit.");
 				iQuit();
 				return;
+				
 			}
-			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");
+			data = null;
+			dataName.setValue("No matrix is currently in use");
+			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  
+				return;
+			
+			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");  
 			if (dataClass!=null) {
 				if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
 					alert("No compatible character matrices were found, and so Stored Matrices cannot be used.");
@@ -177,6 +189,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 			}
 			data.addListener(this);
 			dataName.setValue(data.getName());
+			
 			parametersChanged();
 		}
 	}

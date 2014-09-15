@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.*;
 import java.awt.image.*;
 
 
@@ -22,6 +24,45 @@ import java.awt.image.*;
 /** This class provides general graphics utilities */
 public class GraphicsUtil {
 	public static TexturePaint missingDataTexture = null;
+	/*_________________________________________________*/
+	public static void drawArrow(Graphics2D g2, int fromX, int fromY, int toX, int toY, int thickness) {
+		// based on Vincent Reig's stackoverflow answer http://stackoverflow.com/a/3094933
+		// create an AffineTransform 
+		// and a triangle centered on (0,0) and pointing downward
+		// somewhere outside Swing's paint loop
+		Stroke stroke = g2.getStroke();
+		g2.setStroke(new BasicStroke(thickness));
+		g2.drawLine(fromX, fromY, toX, toY);
+		g2.setStroke(stroke);
+		AffineTransform tx = new AffineTransform();
+		Line2D.Double line = new Line2D.Double(fromX, fromY, toX, toY);
+
+		Polygon arrowHead = new Polygon();  
+		int size = thickness*3;
+		arrowHead.addPoint( 0,size);
+		arrowHead.addPoint( -size, -size);
+		arrowHead.addPoint( size,-size);
+
+		// [...]
+		tx.setToIdentity();
+		double angle = Math.atan2(line.y2-line.y1, line.x2-line.x1);
+		tx.translate(line.x2, line.y2);
+		tx.rotate((angle-Math.PI/2d));  
+
+		Graphics2D g = (Graphics2D) g2.create();
+		g.setTransform(tx);   
+		g.fill(arrowHead);
+		g.dispose();
+	}
+	/*_________________________________________________*/
+	public static void drawCross(Graphics g, int x, int y, int size) {
+		Shape oldClip = g.getClip();
+		g.setClip(x-size, y-size, size*2, size*2);
+		g.drawLine(x, y-size, x, y+size);
+		g.drawLine(x-size, y, x+size, y);
+		g.setClip(oldClip);
+	}
+
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns how far along the line (x,y) is */
 	public static double fractionAlongLine(int x, int y, int xStart, int yStart, int xEnd, int yEnd, boolean xBias, boolean yBias) {
@@ -57,6 +98,24 @@ public class GraphicsUtil {
 			return Math.abs(1.0*(y-yStart)/(yEnd-yStart));
 		return Math.abs(1.0*(x-xStart)/(xEnd-xStart));
 	}
+
+	/* ............................................................................................................... */
+	/** Returns the width of string in the current Graphics */
+	public static int stringWidth(Graphics g, String s) {
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		if (fm==null)
+			return -1;
+		return fm.stringWidth(s);
+	}
+	/* ............................................................................................................... */
+	/** Returns the width of string in the current Graphics */
+	public static int stringHeight(Graphics g, String s) {
+		FontMetrics fm = g.getFontMetrics(g.getFont());
+		if (fm==null)
+			return -1;
+		return fm.getMaxAscent()+ fm.getMaxDescent();
+	}
+
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns the value of x at the middle of the line */
 	public static int xCenterOfLine(int x1, int y1, int x2, int y2) {
@@ -184,7 +243,7 @@ public class GraphicsUtil {
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics(g,0.3f);		
-		g.setColor(Color.black);
+		g.setColor(Color.gray);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		
 	}
@@ -192,9 +251,47 @@ public class GraphicsUtil {
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics(g,0.3f);		
-		g.setColor(Color.black);
+		g.setColor(Color.gray);
 		g.fillPolygon(poly);
 		ColorDistribution.setComposite(g, composite);		
+	}
+	/* -------------------------------------------------*/
+	public static void fillTransparentSelectionArea (Graphics2D g, Area area) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		g.setColor(Color.gray);
+		g.fill(area);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	/* -------------------------------------------------*/
+	public static void fillTransparentBorderedSelectionRectangle (Graphics g, int x, int y, int w, int h) {
+		if (w < 0){
+			int nx = x + w;
+			x = nx;
+			w = -w;
+		}
+		if (h < 0){
+			int ny = y + h;
+			y = ny;
+			h = -h;
+		}
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		g.setColor(Color.gray);
+		g.fillRect(x,y,w,h);
+		ColorDistribution.setComposite(g, composite);		
+		g.setColor(Color.gray);
+		g.drawRect(x,y,w,h);
+	}
+	/* -------------------------------------------------*/
+	public static void fillTransparentBorderedSelectionPolygon (Graphics g, Polygon poly) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics(g,0.3f);		
+		g.setColor(Color.gray);
+		g.fillPolygon(poly);
+		ColorDistribution.setComposite(g, composite);		
+		g.setColor(Color.gray);
+		g.drawPolygon(poly);
 	}
 	/* -------------------------------------------------*/
 	public static void shadeRectangle (Graphics g, int x, int y, int w, int h, Color color) {
@@ -216,6 +313,20 @@ public class GraphicsUtil {
 	public static void darkenRectangle (Graphics g, int x, int y, int w, int h) {
 		darkenRectangle(g,x,y,w,h,0.2f);
 	}
+	/* -------------------------------------------------*/
+	public static void fixRectangle (Rectangle rect) {
+		if (rect.width < 0){
+			int nx = rect.x + rect.width;
+			rect.x = nx;
+			rect.width = -rect.width;
+		}
+		if (rect.height < 0){
+			int ny = rect.y + rect.height;
+			rect.y = ny;
+			rect.height = -rect.height;
+		}
+	}
+
 	/* -------------------------------------------------*/
 	public static void drawRect (Graphics g, int x, int y, int w, int h) {
 		if (w < 0){
@@ -258,8 +369,24 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
+	public static void drawOval(Graphics g, int x, int y, int w, int h){
+		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.drawOval(x,y,w,h); 
+			g2.setStroke(st);
+		}
+		catch(NullPointerException e){
+			MesquiteMessage.warnProgrammer("npe in draw oval x " + x + " y " + y + " w " + w + " h " + h);
+		}
+	}
+	/* -------------------------------------------------*/
 	public static void fillOval(Graphics g, int x, int y, int w, int h, boolean threeD){
 		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			if (threeD){
 				Color c = g.getColor();
 				Color current = c;
@@ -276,7 +403,9 @@ public class GraphicsUtil {
 				if (c!=null) g.setColor(c);
 			}
 			else
-				g.fillOval(x,y,w,h); 
+				g2.fillOval(x,y,w,h); 
+			g2.setStroke(st);
+
 		}
 		catch(NullPointerException e){
 			MesquiteMessage.warnProgrammer("npe in fill oval x " + x + " y " + y + " w " + w + " h " + h);

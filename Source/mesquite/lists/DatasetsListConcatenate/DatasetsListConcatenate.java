@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -17,6 +18,7 @@ import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -25,6 +27,8 @@ import mesquite.lib.table.*;
 /* ======================================================================== */
 public class DatasetsListConcatenate extends DatasetsListUtility {
 	boolean concatExcludedCharacters = false;
+	boolean anyExcluded = false;
+	boolean removeConcatenated = false;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Concatenate Selected Matrices";
@@ -40,8 +44,25 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		if (!MesquiteThread.isScripting()){
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			if (anyExcluded) {
+				dialog.appendToHelpString("During concatenation, characters that are currently excluded will be omitted entirely from the concatenated matrix if \"Remove excluded characters\" is checked.<BR>");
+			}
+			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation.");
+			Checkbox deleteExcludedBox=null;
+			if (anyExcluded)
+				deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", concatExcludedCharacters);
+			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated);
+			dialog.completeAndShowDialog(true);
+			if (buttonPressed.getValue()==0)  {
+				removeConcatenated = deleteMatricesBox.getState();
+				if (anyExcluded)
+					concatExcludedCharacters = !deleteExcludedBox.getState();
+			}
+			dialog.dispose();
+			return (buttonPressed.getValue()==0);
 
-			concatExcludedCharacters = !AlertDialog.query(containerOfModule(), "Remove excluded characters?","Remove excluded characters?", "Yes", "No");
 		}
 		return true;
 	}
@@ -52,15 +73,14 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
-		boolean anyExcluded = false;
 		for (int im = 0; im < datas.size(); im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (data.numCharsCurrentlyIncluded() < data.getNumChars())
 				anyExcluded = true;
 		}
-		if (anyExcluded)
-			queryOptions();
-		CharacterData starter = null;
+		if (!queryOptions())
+			return false;
+		CharacterData starter = null;   // this will be the new concatenated matrix
 		int count = 0;
 		int countFailed = 0;
 		String name = "";
@@ -82,6 +102,8 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 				if (count > 1)
 					name = name + "+";
 				name = name + "(" + data.getName() + ")";
+				if (removeConcatenated)
+						data.deleteMe(false);
 			}
 			else 
 				countFailed++;
@@ -105,8 +127,15 @@ public class DatasetsListConcatenate extends DatasetsListUtility {
 		return true;  
 	}
 	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 300;  
+	}
+	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	public void endJob() {
 		super.endJob();

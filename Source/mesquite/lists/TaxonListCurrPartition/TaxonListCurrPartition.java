@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,8 +15,10 @@ package mesquite.lists.TaxonListCurrPartition;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
@@ -34,13 +37,18 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC;
 	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, ms2;
+	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+		groups.addListener(this);
 		return true;
 	}
 	public void endJob(){
 		if (taxa != null)
 			taxa.removeListener(this);
+		if (groups != null)
+			groups.removeListener(this);
 		super.endJob();
 	}
 	private void setGroup(TaxaGroup group, String arguments){
@@ -105,6 +113,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 		}
 	}
+	
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -149,31 +158,10 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Creates a new group for use in taxon partitions", null, commandName, "newGroup")) {
-			String n = "Untitled Group";
-			if (taxa.getFile()!=null)
-				n = taxa.getFile().getFileElements().getUniqueName(n);
-			GroupDialog d = new GroupDialog(getProject(),containerOfModule(), "New Taxon Group", n, Color.white, null, TaxaGroup.supportsSymbols());
-			d.completeAndShowDialog();
-			String name = d.getName();
-			boolean ok = d.query()==0;
-			Color c = d.getColor();
-			MesquiteSymbol symbol = d.getSymbol();
-
-			d.dispose();
-			if (!ok)
-				return null;
-			//String name = MesquiteString.queryString(containerOfModule(), "New character group", "New character group label", "Untitled Group");
-			if (StringUtil.blank(name))
-				return null;
-			TaxaGroup group = new TaxaGroup();
-			group.setName(name);
-			if (symbol!=null)
-				group.setSymbol(symbol);
-			group.addToFile(taxa.getFile(), getProject(), null);
-			setGroup(group, name);
-			if (c!=null) {
-				group.setColor(c);
-			}
+			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, taxa.getFile());
+			if (group!=null)
+				setGroup(group, group.getName());
+			return group;
 		}
 		else if (checker.compare(this.getClass(), "Stores the current taxa partition as a TAXAPARTITION", null, commandName, "storeCurrent")) {
 			if (taxa!=null){
@@ -259,7 +247,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
 		mLine = addMenuItem("-",null);
-		mScs = addMenuItem("Store current partition", makeCommand("storeCurrent",  this));
+		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {
 			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));

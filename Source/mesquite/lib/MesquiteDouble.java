@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -732,6 +733,7 @@ public class MesquiteDouble implements Listable {
 	/** Returns string version of value, showing the given number of digits*/
    	 public static String toPrecisionSpecifiedString(double value, int precision){
   	 	DecimalFormat df = (DecimalFormat)NumberFormat.getInstance();
+  	 	df.setDecimalFormatSymbols(new EnglishDecimalFormatSymbols());
   	 	df.setMaximumFractionDigits(precision);
   	 	return df.format(value);
    	 }
@@ -772,8 +774,71 @@ public class MesquiteDouble implements Listable {
 		toStringDigitsSpecified(d,digits,s, true);
 	}
 	
+	
+	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
+	public static String toStringDigitsSpecified(double d, int digits, boolean allowExponentialNotation) {  
+		StringBuffer sb = new StringBuffer();
+		if (d==unassigned|| d==infinite||d==negInfinite ||d==impossible ||d==inapplicable){
+			if (d==unassigned) 
+				sb.append("?"); //changed from "unassigned" June 02
+			else if (d==infinite) 
+				sb.append("infinite");
+			else if (d==negInfinite)
+				sb.append("neg.infinite");  
+			else if (d==impossible)
+				sb.append("impossible");  
+			else if (d==inapplicable)
+				sb.append("inapplicable"); 
+			return sb.toString();
+		}
+		else if (d == 0.0){
+			sb.append("0.0");
+			return sb.toString();
+		}
+		if (d<0){
+			d = -d;
+			sb.append('-');
+		}
+		String sFromDouble;
+		
+		
+		if (digits<0){ //added 17 Dec 01.  digits < 0 signals full accuracy
+			digits=20;
+		}
+		String dec = "";
+		double lowerLimit=1.0;
+		for(int i=1; i<=digits; i++){
+			dec+="#";
+			lowerLimit*=0.1;
+		}
+		DecimalFormat myFormatter=null;
+		EnglishDecimalFormatSymbols formatSymbols = new EnglishDecimalFormatSymbols();
+		
+		if (allowExponentialNotation){
+			if (d>10000 || d<lowerLimit)
+				myFormatter = new DecimalFormat("0."+dec+"E0",formatSymbols);
+			else 
+				myFormatter = new DecimalFormat("#."+dec,formatSymbols);
+		}
+		else {
+			myFormatter = new DecimalFormat("#."+dec,formatSymbols);
+		}
+
+		sFromDouble = myFormatter.format(d);
+		if (digits==0) 
+			sFromDouble = StringUtil.removeLastCharacterIfMatch(sFromDouble, '.');
+		sb.append(sFromDouble);
+		return sb.toString();
+
+	}
 	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
 	public static void toStringDigitsSpecified(double d, int digits, StringBuffer s, boolean allowExponentialNotation) {  
+		if (s==null)
+			return;
+		s.append(toStringDigitsSpecified(d,digits,allowExponentialNotation));
+	}
+	/** Appends string version of value, showing the given number of digits, to StringBuffer*/
+	public static void toStringDigitsSpecifiedOld(double d, int digits, StringBuffer s, boolean allowExponentialNotation) {  
 		if (s==null)
 			return;
 		if (d==unassigned|| d==infinite||d==negInfinite ||d==impossible ||d==inapplicable){

@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -15,6 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 import java.text.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.characters.*;
 
@@ -76,13 +78,41 @@ public abstract class NexusBlock implements Listable, Identifiable {
 		}
 		return -1;
 	}
-	public static void equalizeOrdering(ListableVector v, ListableVector nexusBlocks){
-		for (int i = 0; i<v.size(); i++){
+	public static void equalizeOrdering(ListableVector v, ListableVector nexusBlocks){ 
+		// start at back of v
+		// put each one in place in nexus blocks just after last nexusBlock it must be after
+		
+		for (int i = v.size()-1; i>=0; i--){
 			Object e = v.elementAt(i);
 			int blockNum = findCorrespondingBlock(nexusBlocks, (FileElement)e);
-			if (blockNum >=0)
-				nexusBlocks.moveParts(blockNum, 1, i-1);
+			if (blockNum >=0){
+				nexusBlocks.moveParts(blockNum, 1, 0);
+				bubbleBlockDown(nexusBlocks, (NexusBlock)nexusBlocks.elementAt(0));
+			}
 		}
+	}
+	public static boolean bubbleBlockDown(ListableVector blocks, NexusBlock nb){
+		if (nb==null)
+			return false;
+		
+		int index = blocks.indexOf(nb); //find current height
+		if (index >=0){
+			int height = index;
+			//make sure block is in OK place
+			for (int i = index+1; i<blocks.size(); i++) { //now look to all higher to see if nb should jump above them
+				NexusBlock nR = (NexusBlock)blocks.elementAt(i);
+				if (nb.mustBeAfter(nR) && (nb.getFile()==nR.getFile())) { //nb needs to fall below nR
+					height = i;  //remember height of nR
+				}
+			}
+			if (height > index){ //nb needs to fall to height; move it
+				blocks.removeElement(nb, false);
+				blocks.insertElementAt(nb, height, false);
+				return true;
+			}
+		}
+		return false;
+
 	}
 	public void setDefaultTaxa(Taxa t){
 		if (t==null)

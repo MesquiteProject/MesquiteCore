@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -32,6 +33,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteBoolean broadScale;
 	MesquiteBoolean showBranchLengths;
 	boolean resetShowBranchLengths = false;
+	int fixedTaxonDistance = 0;
 
 	static final int totalHeight = 0;
 	static final int stretchfactor = 1;
@@ -83,6 +85,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
 			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);
 		}
+		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null, "Centered Branches", makeCommand("toggleCenter", this), center);
 		addMenuItem("Set Current Orientation as Default", makeCommand("setDefaultOrientation",  this));
 
@@ -145,12 +148,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 		temp.addLine("toggleBroadScale " + broadScale.toOffOnString());
 		temp.addLine("toggleCenter " + center.toOffOnString());
 		temp.addLine("toggleEven " + even.toOffOnString());
+		temp.addLine("setFixedTaxonDistance " + fixedTaxonDistance); 
+
 		if (fixedScale)
 			temp.addLine("setFixedScaling " + MesquiteDouble.toString(fixedDepth) );
 		return temp;
 	}
-	/*.................................................................................................................*/
+
 	boolean stretchWasSet = false;
+	MesquiteInteger pos = new MesquiteInteger();
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "(For old scripts) Sets whether or not to stretch the tree to fit the drawing area", "[on = stretch; off]", commandName, "stretchToggle")) {
 			inhibitStretch.toggleValue(parser.getFirstToken(arguments));
@@ -158,7 +165,26 @@ public class NodeLocsStandard extends NodeLocsVH {
 			stretchWasSet = true;
 			parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to inhibit automatic stretching the tree to fit the drawing area", "[on =inihibit stretch; off]", commandName, "inhibitStretchToggle")) {
+		else 	if (checker.compare(this.getClass(), "Sets a fixed distance between taxa for drawing the tree", "[distance in pixels]", commandName, "setFixedTaxonDistance")) {
+
+			int newDistance= MesquiteInteger.fromFirstToken(arguments, pos);
+			if (!MesquiteInteger.isCombinable(newDistance))
+				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", "(Use a value of 0 to tell Mesquite to calculate the distance itself.)", "", fixedTaxonDistance, 0, 99, true);
+			if (newDistance>=0 && newDistance<100 && newDistance!=fixedTaxonDistance) {
+				fixedTaxonDistance=newDistance;
+/*				Enumeration e = drawings.elements();
+				while (e.hasMoreElements()) {
+					Object obj = e.nextElement();
+					SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
+					treeDrawing.treeDisplay.setFixedTaxonSpacing(newDistance);
+				}
+				*/
+				
+				if ( !MesquiteThread.isScripting()) parametersChanged(new Notification(TREE_DRAWING_SIZING_CHANGED));
+			}
+
+		}
+	else if (checker.compare(this.getClass(), "Sets whether or not to inhibit automatic stretching the tree to fit the drawing area", "[on =inihibit stretch; off]", commandName, "inhibitStretchToggle")) {
 			inhibitStretch.toggleValue(parser.getFirstToken(arguments));
 			stretchWasSet = true;
 			parametersChanged();
@@ -791,7 +817,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 				if (treeDisplay.inhibitStretchByDefault != inhibitStretch.getValue())
 					inhibitStretch.setValue(treeDisplay.inhibitStretchByDefault);
 			}*/
-			int fixedTaxonDistance = treeDisplay.getFixedTaxonSpacing();
+			treeDisplay.setFixedTaxonSpacing(fixedTaxonDistance);  //NEW
+		//	int fixedTaxonDistance = treeDisplay.getFixedTaxonSpacing();  OLD code
 			lastOrientation = treeDisplay.getOrientation();
 			//this.treeDisplay = treeDisplay; 
 			if (!leaveScaleAlone) {
@@ -1235,6 +1262,14 @@ public class NodeLocsStandard extends NodeLocsVH {
 		if (c !=null)
 			g.setColor(c);
 		g.setPaintMode();
+	}
+
+	public int getFixedTaxonDistance() {
+		return fixedTaxonDistance;
+	}
+
+	public void setFixedTaxonDistance(int fixedTaxonDistance) {
+		this.fixedTaxonDistance = fixedTaxonDistance;
 	}
 }
 

@@ -1,13 +1,14 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
-Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison.
+
+
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code.
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
 
 Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 Mesquite's web site is http://mesquiteproject.org
 
-This source code and its compiled class files are free and modifiable under the terms of 
+This source code and its compiled class files are free and modifiable under the terms of
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
@@ -32,7 +33,7 @@ public class StringUtil {
 		lineSeparator = System.getProperty("line.separator"); //"\n"
 	}
 
-	public static FontMetrics defaultFontMetrics = null; 
+	public static FontMetrics defaultFontMetrics = null;
 	// standard line ends:  UNIX: LF (\n),   Mac: CR (\r),   DOS:  CR LF (\r\n)
 	public static final String defaultLineEnd = "\r\n";
 	public static final String defaultWhitespace = " \t\n\r\f\b" + (char)0;
@@ -40,13 +41,20 @@ public class StringUtil {
 	public static final String defaultPunctuationPlusLB = defaultPunctuation + "\n\r"; //Note: & isn't punctuation by NEXUS format //[] added Nov 03
 	public static final String xmlPunctuation = "(){}:,;+<>=\\*/\''\"[]$%#^";
 	public static final String allPunctuation = "(){}:,;+<>=\\*/\''\"[]$%#^&@!-|";
-	public static final char defaultQuote = '\''; 
+	public static final char defaultQuote = '\'';
 	public static final String digits = "0123456789";
-	public static final char argumentMarker = '@'; 
+	public static final char argumentMarker = '@';
 
 	/*.................................................................................................................*
 	public static String getUniqueObjectID(){
 		return "Mesquite"+ MesquiteTrunk.mesquiteTrunk.getVersion() + URL+startupTimeMillis;
+	}
+	/*.................................................................................................................*/
+	public static String getDateDayOnly() {
+		long startupTime = System.currentTimeMillis();
+		Date dnow = new Date(startupTime);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+		return sdf.format(dnow);
 	}
 	/*.................................................................................................................*/
 	public static String getDateTime(Date date) {
@@ -548,10 +556,10 @@ public class StringUtil {
 	public static int getStringDrawLength(Graphics g, String s){
 		if (g!=null) {
 			FontMetrics fm = getFontMetrics(g);
-			if (fm!=null) 
+			if (fm!=null)
 				return fm.stringWidth(s);
 		}
-		if (defaultFontMetrics!=null) 
+		if (defaultFontMetrics!=null)
 			return defaultFontMetrics.stringWidth(s); //added Dec 2001
 		return 0;
 	}
@@ -576,7 +584,7 @@ public class StringUtil {
 	public static int getTextLineHeight(Graphics g){
 		if (g!=null) {
 			FontMetrics fm = getFontMetrics(g);
-			if (fm!=null) 
+			if (fm!=null)
 				return fm.getHeight();
 		}
 		return 0;
@@ -585,7 +593,7 @@ public class StringUtil {
 	public static int getMaxCharWidth(Component component){
 		if (component!=null) {
 			FontMetrics fm = getFontMetrics(component);
-			if (fm!=null) 
+			if (fm!=null)
 				return fm.getMaxAdvance();
 		}
 		return 0;
@@ -594,7 +602,7 @@ public class StringUtil {
 	public static int getTextLineHeight(Component component){
 		if (component!=null) {
 			FontMetrics fm = getFontMetrics(component);
-			if (fm!=null) 
+			if (fm!=null)
 				return fm.getHeight();
 		}
 		return 0;
@@ -679,7 +687,7 @@ public class StringUtil {
 				}*/
 			return "'" + sb.toString() + defaultQuote;
 		}
-		else 
+		else
 			return  "'" + token + defaultQuote;
 	}
 	/*.................................................................................................................*/
@@ -687,7 +695,7 @@ public class StringUtil {
 		if (token == null)
 			return "";
 		if (hasPunctuation(token,punctuationString) || token.indexOf("_")>=0 || hasSpecial(token))  //28Feb05: added "_" so that this forced quoted token to preserve the underscore
-			return quote(token, sb);  
+			return quote(token, sb);
 		if (sb == null)
 			sb = new StringBuffer(token);
 		else {
@@ -725,7 +733,7 @@ public class StringUtil {
 		if (token==null) return 0;
 		int numMatches = 0;
 		for (int i=0; i<token.length(); i++) {
-			if (token.charAt(i)==c) 
+			if (token.charAt(i)==c)
 				numMatches++;
 		}
 		return numMatches;
@@ -783,9 +791,9 @@ public class StringUtil {
 		if (token == null)
 			return "";
 		String trimmedString = token.trim();
-		int charPos = trimmedString.lastIndexOf((int)c) ;  
+		int charPos = trimmedString.lastIndexOf((int)c) ;
 		if (charPos == trimmedString.length()-1)   // then the last none-whitespace is the character c
-			return token.substring(0,token.lastIndexOf((int)c)-1);
+			return token.substring(0,token.lastIndexOf((int)c));   //DRM March 2014:  changed from 0,token.lastIndexOf((int)c-1
 		else
 			return token;
 	}
@@ -804,7 +812,7 @@ public class StringUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static String stripWhitespace(String token) { 
+	public static String stripWhitespace(String token) {
 		if (token == null)
 			return "";
 		StringBuffer sb = new StringBuffer();
@@ -937,7 +945,7 @@ public class StringUtil {
 		if (useNEXUSRules) {
 			MesquiteMessage.warnProgrammer("numTokens doesn't support NEXUS rules yet!!!");
 		}
-		else 
+		else
 			try {
 				while (pos<s.length()) {
 					if (!whitespace(s.charAt(pos),defaultWhitespace)) {// we are at start of a new token
@@ -959,7 +967,7 @@ public class StringUtil {
 		if (c<0)
 			return true;
 		if (c==0)
-			return false;  
+			return false;
 
 
 		if (whitespaceString!=null)
@@ -1081,7 +1089,7 @@ public class StringUtil {
 		if (s==null) return null;
 		StringBuffer buffer = new StringBuffer(s.length()*2);
 		for (int i=0; i<s.length(); i++) {
-			if (Character.isSpaceChar(s.charAt(i))) 
+			if (Character.isSpaceChar(s.charAt(i)))
 				buffer.append("%20");
 			else if (s.charAt(i)=='>')
 				buffer.append("%3E");
@@ -1148,96 +1156,96 @@ public class StringUtil {
 				buffer.append("\\'");
 			else if (s.charAt(i)=='/')
 				buffer.append("\\/");
-			else if (s.charAt(i)=='Ò')
+			else if (s.charAt(i)=='â€œ')
 				buffer.append("\\\"");
-			else if (s.charAt(i)=='Ó')
+			else if (s.charAt(i)=='â€')
 				buffer.append("\\\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
 			else
 				buffer.append(s.charAt(i));
 		}
-		return buffer.toString();  		 
+		return buffer.toString();
 	}
 	private static char stripAccent(char a){
 		if ((int)a==65533)
 			return '_';
-		if (a=='Ž')
+		if (a=='Ã©')
 			return 'e';
-		else if (a=='‡')
+		else if (a=='Ã¡')
 			return 'a';
-		else if (a=='—')
+		else if (a=='Ã³')
 			return 'o';
-		else if (a=='œ')
+		else if (a=='Ãº')
 			return 'u';
-		else if (a=='’')
+		else if (a=='Ã­')
 			return 'i';
-		else if (a=='ƒ')
+		else if (a=='Ã‰')
 			return 'E';
-		else if (a=='ç')
+		else if (a=='Ã')
 			return 'A';
-		else if (a=='ê')
+		else if (a=='Ã')
 			return 'I';
-		else if (a=='î')
+		else if (a=='Ã“')
 			return 'O';
-		else if (a=='ò')
+		else if (a=='Ãš')
 			return 'U';
 
-		else if (a=='')
+		else if (a=='Ã¨')
 			return 'e';
-		else if (a=='ˆ')
+		else if (a=='Ã ')
 			return 'a';
-		else if (a=='˜')
+		else if (a=='Ã²')
 			return 'o';
-		else if (a=='')
+		else if (a=='Ã¹')
 			return 'u';
-		else if (a=='“')
+		else if (a=='Ã¬')
 			return 'i';
-		else if (a=='é')
+		else if (a=='Ãˆ')
 			return 'E';
-		else if (a=='Ë')
+		else if (a=='Ã€')
 			return 'A';
-		else if (a=='í')
+		else if (a=='ÃŒ')
 			return 'I';
-		else if (a=='ñ')
+		else if (a=='Ã’')
 			return 'O';
-		else if (a=='ô')
+		else if (a=='Ã™')
 			return 'U';
 
-		else if (a=='‘')
+		else if (a=='Ã«')
 			return 'e';
-		else if (a=='Š')
+		else if (a=='Ã¤')
 			return 'a';
-		else if (a=='š')
+		else if (a=='Ã¶')
 			return 'o';
-		else if (a=='Ÿ')
+		else if (a=='Ã¼')
 			return 'u';
-		else if (a=='•')
+		else if (a=='Ã¯')
 			return 'i';
-		else if (a=='è')
+		else if (a=='Ã‹')
 			return 'E';
-		else if (a=='€')
+		else if (a=='Ã„')
 			return 'A';
-		else if (a=='ì')
+		else if (a=='Ã')
 			return 'I';
-		else if (a=='…')
+		else if (a=='Ã–')
 			return 'O';
-		else if (a=='†')
+		else if (a=='Ãœ')
 			return 'U';
 
-		else if (a=='¿')
+		else if (a=='Ã¸')
 			return 'o';
 
-		else if (a=='¯')
-			return '¯';
+		else if (a=='Ã˜')
+			return 'Ã˜';
 
-		else if (a=='–')
+		else if (a=='Ã±')
 			return 'n';
-		else if (a=='„')
+		else if (a=='Ã‘')
 			return 'N';
-		else if (a=='')
+		else if (a=='Ã§')
 			return 'C';
-		else if (a=='‚')
+		else if (a=='Ã‡')
 			return 'C';
 		return 0;
 	}
@@ -1268,7 +1276,7 @@ public class StringUtil {
 			else
 				buffer.append(s.charAt(i));
 		}
-		return buffer.toString();  		 
+		return buffer.toString();
 	}
 	/*.................................................................................................................*/
 	public static String cleanXMLEscapeCharacters(String s) {
@@ -1282,7 +1290,7 @@ public class StringUtil {
 		newString = replace(newString,"&gt;",">");
 		newString = replace(newString,"&apos;","'");
 		newString = replace(newString,"&quot;","\"");
-		return newString;  		 
+		return newString;
 	}
 
 	/*.................................................................................................................*/
@@ -1290,21 +1298,34 @@ public class StringUtil {
 		sb.append("<?xml version=\"1.0\"?>\n");
 	}
 	/*.................................................................................................................*/
-	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, boolean addLineFeed){
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute, boolean addLineFeed){
 		if (sb!=null) {
 			for (int i=1; i<=numTabs; i++){
 				sb.append("\t");
 			}
 			sb.append("<");
 			sb.append(tag);
+			if (StringUtil.notEmpty(attributeName) && StringUtil.notEmpty(attribute)){
+				sb.append(" " + attributeName +"=\"");
+				sb.append(attribute);
+				sb.append("\"");
+			}
 			sb.append(">");
 			if (addLineFeed)
 				sb.append("\n");
 		}
 	}
 	/*.................................................................................................................*/
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, boolean addLineFeed){
+		appendStartXMLTag(sb,numTabs,tag, null, null, false);
+	}
+	/*.................................................................................................................*/
 	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag){
 		appendStartXMLTag(sb,numTabs,tag,false);
+	}
+	/*.................................................................................................................*/
+	public static void appendStartXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute){
+		appendStartXMLTag(sb,numTabs,tag,attributeName, attribute, false);
 	}
 	/*.................................................................................................................*/
 	public static void appendEndXMLTag(StringBuffer sb, int numTabs, String tag){
@@ -1314,7 +1335,7 @@ public class StringUtil {
 			}
 			sb.append("</");
 			sb.append(tag);
-			sb.append(">\n"); 
+			sb.append(">\n");
 		}
 	}
 	/*.................................................................................................................*/
@@ -1322,13 +1343,31 @@ public class StringUtil {
 		if (sb!=null) {
 			sb.append("</");
 			sb.append(tag);
-			sb.append(">\n"); 
+			sb.append(">\n");
 		}
 	}
 	/*.................................................................................................................*/
 	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String content){
 		if (sb!=null) {
 			appendStartXMLTag(sb,numTabs,tag);
+			if (content!=null)
+				sb.append(StringUtil.protectForXML(content));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String flavor, String content){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, XMLUtil.FLAVOR, StringUtil.protectForXML(flavor));
+			if (content!=null)
+				sb.append(StringUtil.protectForXML(content));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String attributeName, String attribute, String content){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, attributeName, StringUtil.protectForXML(attribute));
 			if (content!=null)
 				sb.append(StringUtil.protectForXML(content));
 			appendEndXMLTag(sb,tag);
@@ -1413,12 +1452,12 @@ public class StringUtil {
 					buffer.append(s.charAt(i));
 				else if (stripAccent(s.charAt(i))!= 0)
 					buffer.append(stripAccent(s.charAt(i)));
-				else 
+				else
 					buffer.append('_');
 			}
-			else if (s.charAt(i)=='Ò')
+			else if (s.charAt(i)=='â€œ')
 				buffer.append("\"");
-			else if (s.charAt(i)=='Ó')
+			else if (s.charAt(i)=='â€')
 				buffer.append("\"");
 			else if (stripAccent(s.charAt(i))!= 0)
 				buffer.append(stripAccent(s.charAt(i)));
@@ -1524,7 +1563,7 @@ public class StringUtil {
 	public static boolean stringsEqual(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null) 
+		if (a == null || b == null)
 			return false;
 		return (a.equals(b));
 	}
@@ -1532,7 +1571,7 @@ public class StringUtil {
 	public static boolean stringsEqualIgnoreCase(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null) 
+		if (a == null || b == null)
 			return false;
 		return (a.equalsIgnoreCase(b));
 	}
@@ -1540,7 +1579,7 @@ public class StringUtil {
 	public static boolean stringsEqualIgnoreCaseIgnoreBlanksUnderlines(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null) 
+		if (a == null || b == null)
 			return false;
 		if (a.equalsIgnoreCase(b))
 			return true;
@@ -1552,7 +1591,7 @@ public class StringUtil {
 	public static boolean startsWithIgnoreCase(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null) 
+		if (a == null || b == null)
 			return false;
 		if (b.length()> a.length())
 			return false;
@@ -1568,7 +1607,7 @@ public class StringUtil {
 	public static String blankIfNull(String line) {
 		if (line==null)
 			return "";
-		else 
+		else
 			return line;
 	}
 	/*.................................................................................................................*/
@@ -1641,7 +1680,7 @@ public class StringUtil {
 	public static boolean blank(FileBlock line) {
 		if (line==null)
 			return true;
-		else 
+		else
 			return line.isEmpty();
 	}
 

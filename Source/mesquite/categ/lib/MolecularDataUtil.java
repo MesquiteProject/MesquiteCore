@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 
 import mesquite.basic.ManageSetsBlock.ManageSetsBlock;
 import mesquite.lib.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.duties.ElementManager;
 import mesquite.lists.lib.ListModule;
@@ -37,31 +38,76 @@ public class MolecularDataUtil {
 				alignUtil.insertNewGaps((MolecularData)data, newGaps);
 			Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
 
-			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inapproppriately altered data!", warnCheckSum, originalCheckSum);
+			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			return true;
 		}
 		return false;
 	}
 	/*.................................................................................................................*/
-	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, int itStart, int itEnd, boolean allowNewGaps) {
+	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, Bits taxaToAdjust, int comparisonTaxon, boolean allowNewInternalGaps, boolean verbose) {
 		MesquiteNumber score = new MesquiteNumber();
 		AlignUtil alignUtil = new AlignUtil();
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(true,data);
-		aligner.setAllowNewInternalGaps(allowNewGaps);
-		for (int it=itStart; it<=itEnd; it++) {
-			if (it!=referenceTaxon) {
+		aligner.setAllowNewInternalGaps(allowNewInternalGaps);
+		int numTaxa = data.getNumTaxa();
+		boolean defaultWarnCheckSum  =true;
+		MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
+		long originalCheckSum;
+		for (int it=0; it<=numTaxa; it++) {
+			if (taxaToAdjust.isBitOn(it) && it!=referenceTaxon) {
+				if (verbose) 
+					module.logln("Aligning taxon " + (it+1) + " to taxon " + (referenceTaxon+1));
+				originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,it, it);
 				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 				int[] newGaps = aligner.getGapInsertionArray();
-				if (newGaps!=null)
-					alignUtil.insertNewGaps((MolecularData)data, newGaps);
+				if (newGaps!=null){
+					alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
+					data.notifyListeners(module, new Notification(CharacterData.PARTS_ADDED, null, null));
+					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
+				}
 				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
+				if (problem!=null)
+					module.logln("problem with alignment: " + problem.toString());
+				((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,it, it, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			}
 		}
 
 	}
+
 	/*.................................................................................................................*/
-	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, boolean allowNewGaps) {
-		pairwiseAlignMatrix(module, data,referenceTaxon, 0, data.getNumTaxa()-1, allowNewGaps);
+	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, Bits taxaToAdjust, int comparisonTaxon, boolean allowNewInternalGaps) {
+		pairwiseAlignMatrix(module, data, referenceTaxon,taxaToAdjust, comparisonTaxon, allowNewInternalGaps, false);
+	}
+
+	/*.................................................................................................................*/
+	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, int itStart, int itEnd, boolean allowNewInternalGaps) {
+		MesquiteNumber score = new MesquiteNumber();
+		AlignUtil alignUtil = new AlignUtil();
+		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(true,data);
+		aligner.setAllowNewInternalGaps(allowNewInternalGaps);
+//		boolean defaultWarnCheckSum  =true;
+//		MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
+//		long originalCheckSum;
+//		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,itStart, itEnd);
+		for (int it=itStart; it<=itEnd; it++) {
+			if (it!=referenceTaxon) {
+				long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), referenceTaxon, it,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
+				int[] newGaps = aligner.getGapInsertionArray();
+				if (newGaps!=null){
+					alignUtil.insertNewGaps((MolecularData)data, newGaps,  aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
+					data.notifyListeners(module, new Notification(CharacterData.PARTS_ADDED, null, null));
+					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
+				}
+				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
+			}
+		}
+//		((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,itStart, itEnd, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
+		
+
+	}
+	/*.................................................................................................................*/
+	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, boolean allowNewInternalGaps) {
+		pairwiseAlignMatrix(module, data,referenceTaxon, 0, data.getNumTaxa()-1, allowNewInternalGaps);
 	}
 	/*.................................................................................................................*/
 	public static void shiftAlignTaxon(MolecularData data, int referenceTaxon, int taxonToAlign) {
@@ -113,10 +159,14 @@ public class MolecularDataUtil {
 	}
 
 	/*.................................................................................................................*/
-	protected static double alignmentScoreRatioToRCScore(DNAData data, int it1, int it2) {
+	protected static double alignmentScoreRatioToRCScore(DNAData data, MesquiteModule module, int it1, int it2, boolean verbose) {
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(false,data);
+		if (verbose)
+			module.logln("\nComparing " + data.getTaxa().getTaxonName(it2) + " to " + data.getTaxa().getTaxonName(it1) );
+		
 		if (aligner==null)
 			return 0.0;
+		//aligner.setGapCosts(-1, -1, 100, 100);
 		int firstSite = 0;
 		int lastSite = data.getNumChars()-1;
 		int numChars = lastSite - firstSite+1;
@@ -130,19 +180,35 @@ public class MolecularDataUtil {
 		}
 		MesquiteNumber alignScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignScore);
-
+		if (verbose)
+			module.logln("   Alignment score: " + alignScore);
 		for (int ic = firstSite; ic<=lastSite; ic++){
 			extracted2[lastSite-ic] = DNAState.complement(data.getState(ic, it2));
 		}
 		MesquiteNumber alignRCScore = new MesquiteNumber();
 		aligner.alignSequences(extracted1, extracted2, false, alignRCScore);
+		if (verbose)
+			module.logln("   Alignment score with " + data.getTaxa().getTaxonName(it2) + " reverse complemented: " + alignRCScore);
+
 		alignScore.divideBy(alignRCScore);
+		
+		if (verbose)
+			module.logln("   Ratio: " + alignScore.getDoubleValue());
+		
 		return alignScore.getDoubleValue();
 
    	 }
+	/*.................................................................................................................*/
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean verbose) {
+		reverseComplementSequencesIfNecessary(data,  module,  taxa,  itStart,  itEnd,  baseOnStopCodons, false, verbose);
+	}
 
 	/*.................................................................................................................*/
-	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons) {
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
+		reverseComplementSequencesIfNecessary( data,  module,  taxa,  itStart,  itEnd,  0,  baseOnStopCodons,  againstAllOthers,  verbose);
+		}
+	/*.................................................................................................................*/
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, int comparisonTaxon, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
 
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
@@ -153,25 +219,82 @@ public class MolecularDataUtil {
 			}
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
 				int stops = getMinimumStops(data, it, modelSet);
-				data.reverseComplement(0, data.getNumChars()-1, it, false, false);
+				data.reverseComplement(0, data.getNumChars()-1, it, false, true);
 				int stopsRC = getMinimumStops(data, it, modelSet);
 				if (stops<=stopsRC) {
-					data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+					data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
 				} else
-					module.logln("Reverse complemented sequence " + (it+1));
+					module.logln("  Reverse complemented " + taxa.getTaxonName(it));
 			}
 		} else {
 			for (int it = itStart; it<taxa.getNumTaxa() && it<=itEnd; it++) {
-				double score = alignmentScoreRatioToRCScore((DNAData)data, 0, it);
-				if (score>1.0){
-					data.reverseComplement(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
-					module.logln("Reverse complemented sequence " + (it+1));
+			   
+				double score = 0;
+/*				if (againstAllOthers && false){
+					for (int ik = itStart; ik<taxa.getNumTaxa() && ik<=itEnd; ik++)
+						if (ik != it){
+							double thisScore = alignmentScoreRatioToRCScore((DNAData)data, module, ik, it, true);
+							score += thisScore;
+						}
+					score = score/(itEnd-itStart);
 				}
+				else {
+				*/
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, true);
+		//		}
+				
+				if (score>1.0){
+					data.reverseComplement(0, data.getNumChars(), it, false, true);  
+					module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+				}
+			//	else
+			//		module.logln("Sequence not reverse complemented " + (it+1));
+
 			}
 		
 		}
 	}
 	
+	/*.................................................................................................................*/
+	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, Bits taxaToAdjust, int comparisonTaxon, boolean baseOnStopCodons, boolean verbose) {
+
+		if (baseOnStopCodons) {
+			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
+			if (modelSet == null) {
+				modelSet= new CodonPositionsSet("Codon Positions", data.getNumChars(), data);
+				modelSet.addToFile(data.getFile(), module.getProject(), module.findElementManager(CodonPositionsSet.class)); //THIS
+				data.setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
+			}
+			for (int it = 0; it<taxa.getNumTaxa() ; it++) {
+				if (taxaToAdjust.isBitOn(it)) {
+					int stops = getMinimumStops(data, it, modelSet);
+					data.reverseComplement(0, data.getNumChars()-1, it, false, true);
+					int stopsRC = getMinimumStops(data, it, modelSet);
+					if (stops<=stopsRC) {
+						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
+					} else
+						module.logln("  Reverse complemented " + taxa.getTaxonName(it));
+				}
+			}
+		} else {
+			for (int it = 0; it<taxa.getNumTaxa(); it++) {
+				if (taxaToAdjust.isBitOn(it)) {
+
+					double score = 0;
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, true);
+
+					if (score>1.0){
+						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
+						module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+					}
+					//	else
+					//		module.logln("Sequence not reverse complemented " + (it+1));
+
+				}
+			}
+
+		}
+	}
 	/*.................................................................................................................*/
 	public static int numApplicable(long[] sequence) {
 		int count = 0;

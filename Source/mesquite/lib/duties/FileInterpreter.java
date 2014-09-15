@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -15,6 +16,7 @@ package mesquite.lib.duties;
 import java.awt.*;
 import java.util.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 
@@ -36,6 +38,9 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean writeTaxaWithAllMissing = true;  //default changed to true as true  after 2. 75
 	public boolean writeExcludedCharacters = true;
 	
+	protected String filePath=null;
+
+	
 	protected static int REPLACEDATA = 0;
 	protected static int REPLACEIFEMPTY = 1;
 	protected static int ADDASNEW = 2;
@@ -46,6 +51,12 @@ public abstract class FileInterpreter extends MesquiteModule  {
 //	protected boolean replaceDataOfTaxonWithSameName = defaultReplaceDataOfTaxonWithSameName;
 	protected int replaceDataOfTaxonWithSameNameInt = defaultReplaceDataOfTaxonWithSameNameInt;
 	protected boolean hasQueriedAboutSameNameTaxa = defaultHasQueriedAboutSameNameTaxa;
+	protected int totalFilesToImport = 1;
+	protected int importFileNumber = 0;
+	protected boolean multiFileImport = false;
+	protected int lastNewTaxonFilled = -1;
+	protected int maximumTaxonFilled =-1;
+	protected int originalNumTaxa =-1;
 
 	public Class getDutyClass() {
 		return FileInterpreter.class;
@@ -66,6 +77,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 //		replaceDataOfTaxonWithSameName = defaultReplaceDataOfTaxonWithSameName;
 		replaceDataOfTaxonWithSameNameInt = defaultReplaceDataOfTaxonWithSameNameInt;
 		hasQueriedAboutSameNameTaxa = defaultHasQueriedAboutSameNameTaxa;
+		
 	}
 
 	/** This is deprecated and should not be overridden.  The subsequent methods should be used instead.*/
@@ -85,8 +97,11 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public boolean canExportData(Class dataClass){
 		return canExport();
 	}
-
-
+	
+	public int[] getNewTaxaAdded(){
+		return null;
+	}
+	
 	/** Returns whether the module can read (import) files with data of class dataClass*/
 	public boolean canImport(Class dataClass){
 		return canImport();
@@ -137,6 +152,40 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		return "";
 	}
 
+	NameReference previousTaxaNameRef = new NameReference("previousTaxon");
+	NameReference newlyAddedTaxaNameRef = new NameReference("newlyAddedTaxon");
+	
+	/*.................................................................................................................*/
+	public void startRecordingTaxa(Taxa taxa){
+		taxa.clearAllAssociatedBits(newlyAddedTaxaNameRef);
+		taxa.clearAllAssociatedBits(previousTaxaNameRef);
+		for (int it=0; it<taxa.getNumTaxa(); it++)
+			recordAsPreviousTaxon(taxa,it);
+	}
+	/*.................................................................................................................*/
+	public void recordAsPreviousTaxon(Taxa taxa, int it){
+		taxa.setAssociatedBit(previousTaxaNameRef, it, true);
+	}
+	/*.................................................................................................................*/
+	public void recordAsNewlyAddedTaxon(Taxa taxa, int it){
+		taxa.setAssociatedBit(newlyAddedTaxaNameRef, it, true);
+	}
+	/*.................................................................................................................*/
+	public Bits getNewlyAddedTaxa(Taxa taxa){
+		Bits newTaxa = new Bits(taxa.getNumTaxa());
+		newTaxa.clearAllBits();
+		for (int it=0; it<taxa.getNumTaxa(); it++)
+			if (taxa.getAssociatedBit(newlyAddedTaxaNameRef, it))
+				newTaxa.setBit(it);
+		return newTaxa;
+	}
+	/*.................................................................................................................*/
+	public void endRecordingTaxa(Taxa taxa){
+		taxa.clearAllAssociatedBits(newlyAddedTaxaNameRef);
+		taxa.clearAllAssociatedBits(previousTaxaNameRef);
+	}
+
+
 	/*.................................................................................................................*/
 	protected String stripNex(String name) {
 		if (name == null)
@@ -165,7 +214,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			progIndicator.goAway();
 		if (file!=null) 
 			file.closeReading();
-		if (abort){ //¥¥¥		
+		if (abort){ //ï¿½ï¿½ï¿½		
 			if (file!=null)
 				file.close();
 			resetAllMenuBars();
@@ -247,12 +296,27 @@ public abstract class FileInterpreter extends MesquiteModule  {
 
 	}
 	/*.................................................................................................................*/
+	public String getExportedFileDirectory(){
+		return MesquiteFile.getDirectoryPathFromFilePath(filePath);
+	}
+	/*.................................................................................................................*/
+	public String getExportedFilePath(){
+		return filePath;
+	}
+	/*.................................................................................................................*/
+	public String getExportedFileName(){
+		if (filePath!=null) {
+			return MesquiteFile.getFileNameFromFilePath(filePath);
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public void saveExportedFile(String output, String arguments, String suggestedFileName) {
 
-		String path = getPathForExport(arguments, suggestedFileName, null, null);
-		if (path!=null) {
-			logln("Exporting file to " + path);
-			MesquiteFile.putFileContents(path, output, true);
+		filePath = getPathForExport(arguments, suggestedFileName, null, null);
+		if (filePath!=null) {
+			logln("Exporting file to " + filePath);
+			MesquiteFile.putFileContents(filePath, output, true);
 			logln("Export complete.");
 		}
 	}
@@ -261,6 +325,48 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		return null;
 	}
+	public int getTotalFilesToImport() {
+		return totalFilesToImport;
+	}
+	public void setTotalFilesToImport(int totalFilesToImport) {
+		this.totalFilesToImport = totalFilesToImport;
+	}
+	public int getImportFileNumber() {
+		return importFileNumber;
+	}
+	public void setImportFileNumber(int importFileNumber) {
+		this.importFileNumber = importFileNumber;
+	}
+	public boolean getMultiFileImport() {
+		return multiFileImport;
+	}
+	public void setMultiFileImport(boolean multiFileImport) {
+		this.multiFileImport = multiFileImport;
+	}
+	public int getLastNewTaxonFilled() {
+		return lastNewTaxonFilled;
+	}
+	public void setLastNewTaxonFilled(int lastNewTaxonFilled) {
+		this.lastNewTaxonFilled = lastNewTaxonFilled;
+		maximumTaxonFilled = lastNewTaxonFilled;
+	}
+	public int getMaximumTaxonFilled() {
+		return maximumTaxonFilled;
+	}
+	public void setMaximumTaxonFilled(int maximumTaxonFilled) {
+		this.maximumTaxonFilled = maximumTaxonFilled;
+	}
+	public void checkMaximumTaxonFilled(int taxonFilled) {
+		if (taxonFilled> this.maximumTaxonFilled)
+			 maximumTaxonFilled = taxonFilled;
+	}
+	public int getOriginalNumTaxa() {
+		return originalNumTaxa;
+	}
+	public void setOriginalNumTaxa(int originalNumTaxa) {
+		this.originalNumTaxa = originalNumTaxa;
+	}
+
 
 }
 

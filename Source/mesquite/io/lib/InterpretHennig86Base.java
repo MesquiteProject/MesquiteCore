@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite (package mesquite.io).  Copyright 2000 and onward, D. Maddison and W. Maddison. 
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -1201,7 +1201,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 			}
 		}
 		newData.saveChangeHistory = wassave;
-		newData.resetChangedSinceSave();
+		newData.resetCellMetadata();
 		return newData;
 	}
 	/*As of 2. 73 recognizing different default symbol lists to eliminate different step counting when ordered and states span I and O.
@@ -1413,7 +1413,7 @@ class HennigDREAD extends HennigXDREAD {
 			ownerModule.logln("MATCH subcommand could not be found.");
 			return false;
 		}
-		c = parser.nextDarkChar();  //¥¥ set matchchar to this, set matchcharon;
+		c = parser.nextDarkChar();  //ï¿½ï¿½ set matchchar to this, set matchcharon;
 		return true;
 	}
 	/*.................................................................................................................*/

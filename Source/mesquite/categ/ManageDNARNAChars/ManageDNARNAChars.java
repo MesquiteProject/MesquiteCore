@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -9,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.categ.ManageDNARNAChars;
 
 import java.util.*;
@@ -23,11 +24,11 @@ import mesquite.categ.lib.*;
 /* ======================================================================== 
 Manages DNA and RNA data matrices */
 public class ManageDNARNAChars extends CategMatrixManager {
-	
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
-  	 }
+	}
 	public Class getDataClass(){
 		return DNAData.class;
 	}
@@ -63,7 +64,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		else
 			proj = getProject();
 		CategoricalData data= null;
-		
+
 		//@@@@@@@@@@@@@@@@@@@@
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
 
@@ -81,8 +82,11 @@ public class ManageDNARNAChars extends CategMatrixManager {
 				if (fuse)
 					data.setName(title);  //because otherwise titles are not set for fused matrices within ManageCharacters, since on the outside they don't know if it's new
 			}
-			else
+			else {
+				if (fuse)
+					data.setSuppressSpecssetReading(true);
 				data.suppressChecksum = true;
+			}
 			((DNAData)data).setDisplayAsRNA(true);
 		}
 		else {
@@ -99,8 +103,11 @@ public class ManageDNARNAChars extends CategMatrixManager {
 				if (fuse)
 					data.setName(title);  //because otherwise titles are not set for fused matrices within ManageCharacters, since on the outside they don't know if it's new
 			}
-		else
-			data.suppressChecksum = true;
+			else{
+				if (fuse)
+					data.setSuppressSpecssetReading(true);
+				data.suppressChecksum = true;
+			}
 		}
 		data.interleaved = false;   //reset default in case this is fused
 		//@@@@@@@@@@@@@@@@@@@@
@@ -116,7 +123,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 				if ("=".equals(e)){
 					String y = ParseUtil.getToken(formatCommand, stringPos); //yes or no ?
 					data.interleaved = ("yes".equalsIgnoreCase(y));
-						
+
 				}
 				else {
 					stringPos.setValue(sp);
@@ -250,7 +257,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append(endLine);
 		}
 		//if (data.getTaxa().getName()!=null  && getProject().getNumberTaxas(cB.getFile())>1){ //before 13 Dec 01 had been this
-		if ((file==null || !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //¥¥¥ should have an isUntitled method??
+		if ((file==null || !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //ï¿½ï¿½ï¿½ should have an isUntitled method??
 			blocks.append("\tLINK TAXA = ");
 			blocks.append(StringUtil.tokenize(data.getTaxa().getName()));
 			blocks.append(endLine);
@@ -300,7 +307,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append(getCharStateLabels(data));
 
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
-		
+
 		blocks.append( StringUtil.lineEnding());
 		if (!file.useSimplifiedNexus){
 			String idsCommand = null;
@@ -312,23 +319,23 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		if (cB !=null)
 			blocks.append(cB.getUnrecognizedCommands() + StringUtil.lineEnding());
 		blocks.append("END;" + StringUtil.lineEnding());
-	//	MesquiteModule.mesquiteTrunk.mesquiteMessage("DNA matrix composed", 1, 0);
+		//	MesquiteModule.mesquiteTrunk.mesquiteMessage("DNA matrix composed", 1, 0);
 
 		file.writeLine( blocks.toString());
 	}
 
 
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Manage DNA/RNA matrices";
-   	 }
-   	 
+	}
+
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Manages DNA/RNA data matrices (including read/write in NEXUS file)." ;
-   	 }
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Manages DNA/RNA data matrices (including read/write in NEXUS file)." ;
+	}
 }
-	
-	
+
+
 

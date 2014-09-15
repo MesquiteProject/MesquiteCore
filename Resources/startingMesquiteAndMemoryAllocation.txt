@@ -1,6 +1,6 @@
 To Run Mesquite
 
-To run Mesquite, you need Java installed.  Mesquite now runs only on Java 1.4 and higher.  We suggest Java 1.5 or higher.
+To run Mesquite, you need Java installed.  Mesquite now runs only on Java 1.4 and higher.  We suggest Java 1.6 on Mac OS X, Java 1.7 on others.
 
 Once Mesquite_Folder is installed, you can start Mesquite as follows:
 
@@ -8,19 +8,17 @@ Once Mesquite_Folder is installed, you can start Mesquite as follows:
 Mac OS X
 There are 3 ways to start Mesquite under OS X:
 
-1. Default: Double click Mesquite.app
-
-2. To run Mesquite with more memory: Double click Mesquite (500MB).app or Mesquite (1GB).app  (Hint: if you want to adjust the memory allocated, right click on the application's icon, go to info.plist in Contents, and change Xmx512M to Xmx700M or higher)
+1. Default: Double click Mesquite[500GB].app,  Mesquite[1GB].app, or  Mesquite[2GB].app, depending on how much memory you want to give to Mesquite.
 
 3. Or, to adjust how exactly Mesquite starts, including memory allocation:
-Run Mesquite by double clicking the file Run_MesquiteOSX.command.  If double clicking this file does not start Mesquite, select the file in the Finder, choose Get Info, and change the "Open With" to "Terminal.app", which is in /Applications/Utilities/
+Run Mesquite by double clicking the file Mesquite_Start_Script.command.  If double clicking this file does not start Mesquite, select the file in the Finder, choose Get Info, and change the "Open With" to "Terminal.app", which is in /Applications/Utilities/
 
 To give Mesquite even more memory, open the file with a text editor and edit the line:
 
    java  -Xmx500M -Xss2m -Djava.library.path=lib -cp . mesquite.Mesquite
 
 The part -Xmx500M indicates how much heap memory to give to Mesquite in general. With more heap memory Mesquite can handle more trees, bigger matrices, bigger charts, and so on.
-The part -Xss2m indicates how much stack memory to give to each thread.  With more stack memory, Mesquite can handle bigger trees, e.g. more than 5000 taxa.  To be able to handle 10000 taxa, you may need to increase this to 4m
+The part -Xss2m indicates how much stack memory to give to each thread.  With more stack memory, Mesquite can handle bigger trees, e.g. more than 5000 taxa.  To be able to handle 10000 taxa, you may need to increase this to 4m.
 
 If you change these settings, make sure you don't introduce any spaces.
 
@@ -40,12 +38,10 @@ Windows
 
 There are 3 ways to start Mesquite under Windows:
 
-1. Default: use the installer and double click Mesquite.exe
+1. Default: use the installer and double click one of the executable icons (Mesquite[500MB].exe,  Mesquite[1GB].exe,  Mesquite[2GB].exe), depending on how much memory you want to give to Mesquite.
 
-2. To run Mesquite with more memory: use the alternative high memory installer (available at mesquiteproject.org), reinstall Mesquite, and double click Mesquite.exe.
-
-3. Or, to adjust how exactly Mesquite starts, including memory allocation:
-Run Mesquite by double clicking the file Run_MesquiteWindows.bat.  To give Mesquite even more memory, open the file with a text editor and edit the line:
+2. Or, to adjust how exactly Mesquite starts, including memory allocation:
+Run Mesquite by double clicking the file Mesquite_Start_Script.bat.  To give Mesquite even more memory, open the file with a text editor and edit the line:
 
    java  -Xmx500M -Xss2m -Djava.library.path=lib -cp . mesquite.Mesquite
 
@@ -58,7 +54,8 @@ If you change these settings, make sure you don't introduce any spaces.
 ==================
 Linux etc.
 
-Run Mesquite by double clicking run_mesquite.sh
+Run Mesquite by double clicking mesquite.sh or running mesquite.sh from the command line like this:
+	./mesquite.sh
 
 Alternatively, run it from the command line by cd'ing into Mesquite_Folder and then giving a command like this:
 
@@ -75,5 +72,5 @@ This can handle big matrices and trees, but you'll probably need at least 2 GB m
 
    java  -Xmx3000M -Xss4m -d64 -Djava.library.path=lib -cp . mesquite.Mesquite
 
-This gives much memory to Mesquite, but 3000 MB (= 3 GB) memory exceeds the ability of 32 bit Java.  For that reason the command -d64 was added, to indicate you want to use 64 bit java.  This is available only on intel-based Macs with Core 2 Duo or better processors and updated versions of Java.
+This gives much memory to Mesquite, but 3000 MB (= 3 GB) memory exceeds the ability of 32 bit Java.  For that reason the command -d64 was added, to indicate you want to use 64 bit java.  
 

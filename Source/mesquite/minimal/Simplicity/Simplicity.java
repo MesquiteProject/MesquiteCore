@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -33,7 +34,7 @@ public class Simplicity extends SimplicityManagerModule {
 	/*todo
 	 *  --  have default.xml that is loaded if there is none in prefs yet
 	 *  -- all hidden; none hidden; 
-	 ÃÃÃ  -- accomodate packages with no intro
+	 ï¿½ï¿½ï¿½  -- accomodate packages with no intro
 	 * -- menu searching should say that item is hidden??? or at least warn some not found because simple interface?
 	 *  -- manual pages for simplification
 	 *  -- design several simplifications
@@ -67,8 +68,6 @@ public class Simplicity extends SimplicityManagerModule {
 		if (InterfaceManager.enabled)
 			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Lock In Simple Mode", makeCommand("toggleLockSimplicity",  this), lockSimplicity);
 		InterfaceManager.simplicityModule = this;  //remember me
-	//	if (MesquiteTrunk.debugMode)
-	//		mesquiteTrunk.addMenuItem(MesquiteTrunk.fileMenu, "Test Error Reporting", makeCommand("testError", this));
 		loadPreferences();
 		return true;
 	}
@@ -477,7 +476,7 @@ public class Simplicity extends SimplicityManagerModule {
 		}*/
 		else if (checker.compare(this.getClass(), "Saves the current simplification", null, commandName, "saveCurrent")) {
 			MesquiteString result = new MesquiteString("Custom Simplification");
-			if (QueryDialogs.queryString(containerOfModule(), "Simplification Name", "Name of ÄSimplification:", result)){
+			if (QueryDialogs.queryString(containerOfModule(), "Simplification Name", "Name of ï¿½Simplification:", result)){
 				String contents =  makeSettingsFile(result.getValue());
 				String path = MesquiteFile.getUniqueModifiedFileName(getInstallationSettingsPath() + "simplification", "xml");
 
@@ -497,9 +496,6 @@ public class Simplicity extends SimplicityManagerModule {
 				InterfaceManager.setSimpleMode(true);
 				InterfaceManager.reset();
 			}
-		}
-		else if (checker.compare(this.getClass(), "Sends Error to Server", null, commandName, "testError")) {
-			reportToHome("TESTING ERROR REPORTING");
 		}
 		else if (checker.compare(this.getClass(), "Deletes a simplification", null, commandName, "delete")) {
 			int i = MesquiteInteger.fromString( new Parser(arguments));

@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -50,6 +51,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
+	//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
+	//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
@@ -96,9 +99,55 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				zapData(data);
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "deleteds () and anything between", null, commandName, "deletePrepended")) {
+			if (observedStates == null || taxa == null)
+				return null;
+			boolean anySelected = taxa.anySelected();
+			for (int it = 0; it<taxa.getNumTaxa(); it++){
+				if ((!anySelected || taxa.getSelected(it))){
+					String note = getNote(it);
+					while (!StringUtil.blank(note) && note.indexOf("(")>=0){
+						int start = note.indexOf("(");
+						int end = note.indexOf(")");
+						String firstBit = "";
+						if (start>0)
+							firstBit = note.substring(0, start);
+						note = firstBit + note.substring(end+1, note.length());
+					}
+					setNote(it, note);
+
+				}
+			}
+			outputInvalid();
+			parametersChanged();
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "deletes *", null, commandName, "deleteStar")) {
+			if (observedStates == null || taxa == null)
+				return null;
+			boolean anySelected = taxa.anySelected();
+			for (int it = 0; it<taxa.getNumTaxa(); it++){
+				if ((!anySelected || taxa.getSelected(it))){
+					String note = getNote(it);
+					while (!StringUtil.blank(note) && note.indexOf("*")>=0){
+						int start = note.indexOf("*");
+						String firstBit = "";
+						if (start>0)
+							firstBit = note.substring(0, start);
+						note = firstBit + note.substring(start+1, note.length());
+					}
+					setNote(it, note);
+
+				}
+			}
+			outputInvalid();
+			parametersChanged();
+			return null;
+		}
 		else if (checker.compare(this.getClass(), "Prepends to the note the sequence length (including N\'s and ?\'s) for the selected taxa", null, commandName, "prependLength")) {
 			if (observedStates == null || taxa == null)
 				return null;
+			boolean anySelected = taxa.anySelected() || table.anyCellSelected();
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
 				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
 					String note = getNote(it);
@@ -227,11 +276,11 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return 0;
 			if (cs instanceof MolecularState){
 				if (!cs.isInapplicable())  //if Molecular, then count missing & with state
-				count++;
+					count++;
 			}
 			else
 				if (!cs.isInapplicable() && !cs.isUnassigned())  //if Molecular, then count missing & with state
-				count++;
+					count++;
 
 
 		}
@@ -300,6 +349,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		}
 		data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 		outputInvalid();
+		parametersChanged();
 	}
 
 	/*.................................................................................................................*/
@@ -309,8 +359,19 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	}
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int it, boolean selected){
-		if (observedStates == null)
+		if (observedStates == null){
 			doCalcs();
+			if (observedStates==null)
+				return null;
+		}
+		if (observedStates.getParentData() != null){
+			CharacterData data = observedStates.getParentData();
+			Associable tInfo = data.getTaxaInfo(false);
+			NameReference genBankColor = NameReference.getNameReference("genbankcolor");
+			Object obj = tInfo.getAssociatedObject(genBankColor,  it);  //not saved to file
+			if (obj instanceof Color)
+				return (Color)obj;
+		}
 		if (bits ==null || it <0 || it > bits.getSize())
 			return null;
 		String note = getNote(it);

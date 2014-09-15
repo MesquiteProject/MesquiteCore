@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -23,6 +24,9 @@ import mesquite.lists.lib.GroupDialog;
 
 /** Manages specifications of character partitions, including reading and writing from NEXUS files */
 public class ManageCharPartitions extends CharSpecsSetManager {
+	final static String listOfCharacterGroupsName = "List of Character Group Labels";
+
+	
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.CharPartitionList.CharPartitionList.class, getName() + "  uses an assistant to display a list window.",
 		"The assistant is arranged automatically");
@@ -31,6 +35,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = new CharactersGroupVector();
+		getProject().addFileElement(groups);
  		return true;
 	}
 	public void elementsReordered(ListableVector v){
@@ -38,7 +43,8 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	public NexusBlock elementAdded(FileElement e){
 		if (e instanceof CharactersGroup){
 			if (groups.indexOf(e)<0) {
-				groups.addElement(e, false);
+				groups.addElement(e, true);
+				e.addListener(groups);
 			}
 			e.setManager(this);
 			return null;
@@ -127,7 +133,9 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			if (changed)
 				data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 		}
+		getProject().removeFileElement(e);//must remove first, before disposing
 		groups.removeElement(e, true);
+		e.dispose();
 		}
 	}
 	public void elementDisposed(FileElement e){
@@ -135,8 +143,54 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			groups.removeElement(e, false);
 	}
 	public void projectEstablished(){
+		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, listOfCharacterGroupsName, makeCommand("showCharacterGroups",  this));
+//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu,"List of Character Groups", makeCommand("showCharacterGroups",  this),  (ListableVector)getProject().taxas);
+//		mmis2.setOwnerModuleID(getID());
+//		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		groups.addToFile(getProject().getHomeFile(), getProject(), this);
 		super.projectEstablished();
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
+			 if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals(listOfCharacterGroupsName)) {
+				temp.addLine("showCharacterGroups ", e); 
+			}
+		}
+		return temp;
+	}
+	/*.................................................................................................................*/
+	 public ManagerAssistant showCharacterGroupList(Object obj, String listerName){
+	 		//Check to see if already has lister for this
+/*	 		boolean found = false;
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant)
+				if (((ManagerAssistant)e).showing(obj)) {
+					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					return ((ManagerAssistant)e);
+				}
+		}
+		*/
+		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
+			if (lister!=null) {
+				lister.showListWindow(null);
+	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+	 				lister.getModuleWindow().setVisible(true);
+	 		}
+		return lister;
+	 		
+}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Shows list of the character groups", null, commandName, "showCharacterGroups")) {
+					return showCharacterGroupList(null, listOfCharacterGroupsName);
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		//return null;
 	}
 	public Class getElementClass(){
 		return CharacterPartition.class;

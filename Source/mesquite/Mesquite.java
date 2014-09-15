@@ -1,6 +1,7 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
-Version 2.75, September 2011.
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,9 +15,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
+
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
+import java.net.*;
 
 import javax.imageio.ImageIO;
 
@@ -33,24 +36,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2011.  Mesquite: A modular system for evolutionary analysis.  Version 2.75.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2014.  Mesquite: A modular system for evolutionary analysis.  Version 3.0.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "2.75+";
+		return "3.0";
 	}
-	
+
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 275;
+		return 300;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 2.75;
+		return 3.00;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "October 2011"; //"April 2007";
+		return "August 2014"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -62,21 +65,21 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed ee = registerEmployeeNeed(FileCoordinator.class, "The file coordinator supervises activities with files.",
-		"These are activated when new projects/files are made or read. ");
+				"These are activated when new projects/files are made or read. ");
 		ee.setAsEntryPoint(null);
 		EmployeeNeed e = registerEmployeeNeed(MesquiteInit.class, "INIT modules assist Mesquite.",
-		"These are activated automatically. ");
+				"These are activated automatically. ");
 		e.setAsEntryPoint(null);
 		EmployeeNeed e2 = registerEmployeeNeed(BrowseHierarchy.class, "Mesquite uses these modules for hierarchical display of employee and project trees.",
-		"These are activated automatically. ");
+				"These are activated automatically. ");
 		e2.setAsEntryPoint(null);
 		EmployeeNeed e3 = registerEmployeeNeed(WindowHolder.class, "Mesquite uses a WindowHolder to assist displaying windows.",
-		"These are activated automatically. ");
+				"These are activated automatically. ");
 		e3.setAsEntryPoint(null);
 	}
 	ClockWatcherThread cwt;
@@ -87,7 +90,7 @@ public class Mesquite extends MesquiteTrunk
 	private boolean preferencesSet = false;
 	protected int lastVersionUsedInt = 0;
 	protected String lastVersionRun = "1.04";
-	private String storedManualString = null;
+	//private String storedManualString = null;
 	private boolean showLogWindow = true;
 	private boolean showAbout = true;
 	private boolean consoleMode = false;
@@ -139,9 +142,9 @@ public class Mesquite extends MesquiteTrunk
 	{
 		boolean verboseStartup = false;
 		long startingTime = System.currentTimeMillis();
-		  System.setProperty("awt.useSystemAAFontSettings","on");
-		  System.setProperty("swing.aatext", "true");
-	if (verboseStartup) System.out.println("main init 1");
+		System.setProperty("awt.useSystemAAFontSettings","on");
+		System.setProperty("swing.aatext", "true");
+		if (verboseStartup) System.out.println("main init 1");
 		if (isApplet())
 			mesquiteTrunk = this;
 		author.setCurrent(true);
@@ -150,7 +153,7 @@ public class Mesquite extends MesquiteTrunk
 		configurations = new ListableVector(); 
 		packages = new ListableVector();
 		if (isPrerelease())
-			errorReportURL =  "http://mesquiteproject.org/cgi-bin/mesquiteFeedbackPrerelease.py";
+			errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedbackPrerelease";
 
 		/* 
 (1) Look for Mesquite.pref file in .Mesquite_Prefs folder of user.home.  If exists, read it 
@@ -164,16 +167,54 @@ public class Mesquite extends MesquiteTrunk
 		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 
 		//finding mesquite directory
-		StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
-		while (st.hasMoreElements()){
-			String token = st.nextToken();
-			File mesquiteClass = new File(token + MesquiteFile.fileSeparator + "mesquite" + MesquiteFile.fileSeparator + "Mesquite.class");
-			if (mesquiteClass.exists()) {
-				mesquiteDirectory = new File(token);
-				if (!mesquiteDirectory.exists())
-					mesquiteDirectory = null;
+		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
+		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
+
+		String sepp = MesquiteFile.fileSeparator;
+		if (loc.indexOf(sepp)<0){
+			sepp = "/";
+			if (loc.indexOf(sepp)<0)
+				System.out.println("Not a recognized separator in path to Mesquite class!");
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			
+			try {
+			    URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+
+			
+			
+			
+		}
+		else {
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			try {
+			    URI uri = new URI(loc);
+				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
 			}
 		}
+
+		if (mesquiteDirectory == null){
+			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
+			while (st.hasMoreElements()){
+				String token = st.nextToken();
+				File mesquiteClass = new File(token + MesquiteFile.fileSeparator + "mesquite" + MesquiteFile.fileSeparator + "Mesquite.class");
+				if (mesquiteClass.exists()) {
+					mesquiteDirectory = new File(token);
+					if (!mesquiteDirectory.exists())
+						mesquiteDirectory = null;
+				}
+			}
+		}
+
+
+
 		if (mesquiteDirectory ==null){
 			File mesquiteClass = new File(System.getProperty("user.dir") + MesquiteFile.fileSeparator + "mesquite" + MesquiteFile.fileSeparator + "Mesquite.class");
 			if (mesquiteClass.exists()) {
@@ -222,16 +263,16 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 5");
 		if (!MesquiteModule.prefsDirectory.exists() || !MesquiteModule.prefsDirectory.isDirectory()) {
 			makeNewPrefsDirectory = true;
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 		}
 		else if (prefsFile.exists() || prefsFileXML.exists()) {
 			if (MesquiteModule.mesquiteDirectory==null) 
-				findMesquiteDirectory();
+				setMesquiteDirectoryPath();
 			else
 				setMesquiteDirectoryPath();
 		}
 		else {
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 		}
 		if (verboseStartup) System.out.println("main init 6");
 
@@ -241,7 +282,7 @@ public class Mesquite extends MesquiteTrunk
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
 			if (!preferencesSet) {
-				findMesquiteDirectory();
+				setMesquiteDirectoryPath();
 			}
 		}
 		if (verboseStartup) System.out.println("main init 7");
@@ -286,12 +327,12 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2011 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2014 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
-			+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
-			+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
-			+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Rutger Vos, Jeff Oliver, Daisie Hung"
-			+ "\nDevelopment Team Alumnus: Danny Mandel\n";
+				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
+				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
+				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Rutger Vos, Jeff Oliver, Daisie Hung"
+				+ "\nDevelopment Team Alumnus: Danny Mandel\n";
 
 		if (verboseStartup) System.out.println("main init 11");
 		logWindow = new LogWindow(logInitString);
@@ -304,12 +345,12 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else
 			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquite.gif");
-		
+
 		BufferedImage equiv = null;
 		try {
-		    equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
+			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
 		} catch (IOException e) {
-			Debugg.println(" IOException trying to read equivocal texture ");
+			MesquiteMessage.println(" IOException trying to read equivocal texture ");
 		}
 		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
 
@@ -470,7 +511,7 @@ public class Mesquite extends MesquiteTrunk
 		boolean minimalStartup = MesquiteFile.fileExists(MesquiteModule.getRootPath() + "minimalStartup");
 		if (minimalStartup)
 			logln("File called \"minimalStartup\" detected at " + MesquiteModule.getRootPath()+ ".  Mesquite will start with a minimal configuration of modules.");
-	
+
 
 		if (verboseStartup) System.out.println("main init 26");
 		mBL.init(configFile, configurations, minimalStartup);
@@ -499,7 +540,7 @@ public class Mesquite extends MesquiteTrunk
 				if (!StringUtil.blank(mmi.getPackageCitation()))
 					s += " [" + mmi.getPackageCitation() + "]";
 				logln(s);
-				
+
 			}
 		}
 		if (!first)
@@ -519,6 +560,8 @@ public class Mesquite extends MesquiteTrunk
 		String ackn = "Mesquite makes use of BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, and iText by Lowagie & Soares  .";
 		ackn += "  Some modules make use of JAMA by The MathWorks and NIST, and JSci by Mark Hale, Jaco van Kooten and others (see Mesquite source code for details).";
 		ackn += "  The PAL library by Drummond and Strimmer is used by the GTR substitution model for DNA sequence simulations.";
+		if (MesquiteTrunk.isWindows())
+			ackn += " The Windows executable is wrapped with Launch4j by Grzegorz Kowal, copyright Grzegorz Kowal 2005-2014, distributed under a BSD license (http://opensource.org/licenses/bsd-license.html) and a MIT license (http://opensource.org/licenses/mit-license.html).";
 		logln(ackn);
 
 		logln(" ");
@@ -530,7 +573,7 @@ public class Mesquite extends MesquiteTrunk
 		openExternalSMS.setCommand(makeCommand("openGeneral", this));
 		openExternalSMS.setList(GeneralFileMaker.class);
 
-		addMenuItem(helpMenu, "Mesquite Manual", makeCommand("showHomePage",  this));
+		addMenuItem(helpMenu, "Mesquite Documentation", makeCommand("showHomePage",  this));
 		addMenuItem(helpMenu, "Support and Advice", makeCommand("showSupport",  this));
 		addMenuItem(helpMenu, "Modules Loaded", makeCommand("showModules",  this));
 		addMenuItem(helpMenu, "Keyword Search...", makeCommand("keywordSearch",  this));
@@ -638,6 +681,8 @@ public class Mesquite extends MesquiteTrunk
 
 		if (verboseStartup) System.out.println("main init 32 ");
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
+		if (MesquiteTrunk.debugMode)
+			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
 	} 
 
 	/*.................................................................................................................*/
@@ -693,7 +738,7 @@ public class Mesquite extends MesquiteTrunk
 				mesquiteDirectoryPath+= MesquiteFile.fileSeparator;
 		}
 	}
-	/*.................................................................................................................EMBEDDED delete this if embedded */
+	/*.................................................................................................................EMBEDDED delete this if embedded *
 	private void findMesquiteDirectory(){
 		String sep = "" + MesquiteFile.fileSeparator;
 		if (mesquiteDirectory!=null) {
@@ -704,29 +749,10 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 		else {
-			String manualString = System.getProperty("user.dir")  + sep + "docs/mesquite" + sep + "manual.html";
+			String manualString = mesquiteDirectory  + sep + "docs/mesquite" + sep + "manual.html";
 			File manual = new File(manualString);
-			if (!manual.exists()) {
-				if (!StringUtil.blank(storedManualString))
-					manual = new File(storedManualString);
-				if (manual.exists()) {
-					MesquiteModule.mesquiteDirectory = new File(StringUtil.getAllButLastItem(StringUtil.getAllButLastItem(StringUtil.getAllButLastItem(storedManualString, sep),sep),sep) + sep);
-				}
-				else {
-					manualString = MesquiteFile.checkFilePath(System.getProperty("user.dir") + sep + "docs/mesquite" + sep + "manual.html", "Please find the Mesquite manual file named \"manual.html\", which should be in the \"docs/mesquite\" directory.");
-					if (manualString == null || !manualString.endsWith("manual.html")) {
-						MesquiteTrunk.mesquiteTrunk.discreetAlert("Sorry, the manual was not found correctly.  Mesquite will not function properly.");
-					}
-					else {
-						storedManualString = manualString;
-						MesquiteModule.mesquiteDirectory = new File(StringUtil.getAllButLastItem(StringUtil.getAllButLastItem(StringUtil.getAllButLastItem(manualString, sep),sep),sep)+sep);
-					}
-				}
-			}
-			else {
-				MesquiteModule.mesquiteDirectory = new File(System.getProperty("user.dir") + sep);
-				storedManualString = manualString;
-			}
+
+			storedManualString = manualString; 
 		}
 
 		setMesquiteDirectoryPath();
@@ -738,7 +764,7 @@ public class Mesquite extends MesquiteTrunk
 			//showLogWindow=prefs[0].charAt(0) == 'L';
 			if (prefs.length<2)
 				return;
-			storedManualString = prefs[1];
+			//storedManualString = prefs[1];
 			if (prefs.length<3)
 				return;
 
@@ -755,7 +781,7 @@ public class Mesquite extends MesquiteTrunk
 			if (prefs.length<6)
 				return;
 			/* EMBEDDED disable if embedded */
-			findMesquiteDirectory();
+			setMesquiteDirectoryPath();
 			/**/
 			if (prefs.length<7)
 				return;
@@ -840,7 +866,7 @@ public class Mesquite extends MesquiteTrunk
 	public void processSingleXMLPreference (String tag, String content) {
 		preferencesSet = true; //done to see that prefs file found; if not ask for registration
 		if ("storedManualString".equalsIgnoreCase(tag)){
-			storedManualString = (content);
+		//	storedManualString = (content);  DEFUNCT with v. 3
 		}
 		else if ("textEdgeCompensationHeight".equalsIgnoreCase(tag)){
 			int iq = MesquiteInteger.fromString(content);
@@ -952,7 +978,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 		/* EMBEDDED disable if embedded */
-		findMesquiteDirectory();
+		setMesquiteDirectoryPath();
 		/**/
 
 	}
@@ -960,7 +986,7 @@ public class Mesquite extends MesquiteTrunk
 	String previousMesquitePath = "";
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
+	//	StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationHeight", MesquiteModule.textEdgeCompensationHeight);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationWidth", MesquiteModule.textEdgeCompensationWidth);  
 		StringUtil.appendXMLTag(buffer, 2, "numUses", numUses);  
@@ -1126,10 +1152,10 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "This is the central module for the Mesquite system. " +
-		"In it is the main method that starts up the Mesquite application.  This module" +
-		"loads information for all of the other modules, and hires FileCoordinator " +
-		"modules as needed to deal with open files.  Thus, in the tree of employees" +
-		"that active modules make, this module is at its root.";
+				"In it is the main method that starts up the Mesquite application.  This module" +
+				"loads information for all of the other modules, and hires FileCoordinator " +
+				"modules as needed to deal with open files.  Thus, in the tree of employees" +
+				"that active modules make, this module is at its root.";
 	}
 	/*.................................................................................................................*/
 	public String getParameters() {
@@ -1166,11 +1192,8 @@ public class Mesquite extends MesquiteTrunk
 	/*New code added April.02.07 oliver*/ //TODO: delete new code comments
 	/*.................................................................................................................*/
 	private void openMesquiteFAQ(){
-		String manualPath = mesquiteDirectoryPath + "docs/mesquite" + MesquiteFile.fileSeparator + "Help/MesquiteFAQ.html" ; 
-		File testing = new File(manualPath);
-		if (testing.exists()) {
+		String manualPath = mesquiteWebSite + "/FAQ" ; 
 			showWebPage(manualPath, false);
-		}
 	}
 	/*End new code added April.02.07 oliver*/
 
@@ -1460,6 +1483,18 @@ public class Mesquite extends MesquiteTrunk
 		if (helpSearchManager != null)
 			helpSearchManager.searchData(s, window);
 	}
+	
+	public String getNumModuleStarts() {
+		StringBuffer sb=new StringBuffer();
+		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+			int starts = mmi.getNumStarts();
+			if (starts>0)
+				sb.append(mmi.getClassName() + "\t" + starts+StringUtil.lineEnding());
+		}
+		return sb.toString();
+	}
+
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	String noticeLocation = "http://"; //before release, change URL to "http://"
@@ -1583,9 +1618,9 @@ public class Mesquite extends MesquiteTrunk
 			Listable[] list = ListDialog.queryListMultiple(containerOfModule(), "Macro Information", "These are the installed macros.  Touch on their names to see an explanation.", MesquiteString.helpString, ud, null);
 		}
 		else if (checker.compare(this.getClass(), "Crashes with a NullPointerException", null, commandName, "crash")) {
-				logln("Mesquite will now crash with a NullPointerException.  Please enjoy.");
-				MesquiteInteger mi = null;
-				logln("This will crash: " +mi.getValue());
+			logln("Mesquite will now crash with a NullPointerException.  Please enjoy.");
+			MesquiteInteger mi = null;
+			logln("This will crash: " +mi.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Checks for notices or installs at the location specified", null, commandName, "checkNotices")) {
 			noticeLocation = MesquiteString.queryString(containerOfModule(), "Notices Location", "Indicate URL to notices file to be checked.  (For instance, for Mesquite the default notices file is at " + getHomePhoneNumber() + ")", noticeLocation);
@@ -1654,8 +1689,8 @@ public class Mesquite extends MesquiteTrunk
 				cr =new CommandRecord((CommandThread)null, false);
 				if (comRec == null)
 					cr.setFromCommandLine(Thread.currentThread() instanceof ConsoleThread);
-					else
-						cr.setFromCommandLine(comRec.isFromCommandLine());
+				else
+					cr.setFromCommandLine(comRec.isFromCommandLine());
 			}
 			else
 				cr = comRec;
@@ -1801,7 +1836,11 @@ public class Mesquite extends MesquiteTrunk
 					reportMemory();
 					logln("==^^^^^^^^^^^^^^^^^^^^==");
 				}
+				
 			}
+			logln("\n");
+			logln("All modules that have been started at least once, and the number of times they have been started:");
+			logln(getNumModuleStarts());
 			/*
 				if (Listened.listenersRemaining>0) {
 					for (int i = 0; i<Listened.allListeners.size(); i++){
@@ -1964,9 +2003,15 @@ public class Mesquite extends MesquiteTrunk
 			if (MesquiteTrunk.isApplet()) 
 				return null;
 			String packageURL= parser.getFirstToken(arguments); //MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator + "modules.html";
-			File testing = new File(packageURL);
-			if (testing.exists()) {
-				showWebPage(packageURL, false);
+			if (StringUtil.notEmpty(packageURL)) {
+				if (packageURL.startsWith("http"))
+					showWebPage(packageURL,false);
+				else {
+					File testing = new File(packageURL);
+					if (testing.exists()) {
+						showWebPage(packageURL, false);
+					}
+				}
 			}
 		}
 		else if (checker.compare(this.getClass(), "Shows web page of available commands for scripting", null, commandName, "showCommands")) {
@@ -1982,31 +2027,21 @@ public class Mesquite extends MesquiteTrunk
 				showWebPage(commandListPath, true);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Shows home page of Mesquite manual", null, commandName, "showHomePage")) {
+		else if (checker.compare(this.getClass(), "Shows home page of Mesquite", null, commandName, "showHomePage")) {
 			if (MesquiteTrunk.isApplet()) 
 				return null;
-			if (!CommandChecker.documentationComposed) {
-				CommandChecker cchecker = new CommandChecker();
-				cchecker.composeDocumentation();
-			}	
-			String manualPath = mesquiteDirectoryPath + "docs/mesquite" + MesquiteFile.fileSeparator + "manual.html" ; 
-			File testing = new File(manualPath);
-			if (testing.exists()) {
-				showWebPage(manualPath, false);
-			}
+			
+			String manualPath = mesquiteWebSite; 
+			//File testing = new File(manualPath);
+			showWebPage(manualPath, false);
+
 		}
 		else if (checker.compare(this.getClass(), "Shows Support page of Mesquite manual", null, commandName, "showSupport")) {
 			if (MesquiteTrunk.isApplet()) 
 				return null;
-			if (!CommandChecker.documentationComposed) {
-				CommandChecker cchecker = new CommandChecker();
-				cchecker.composeDocumentation();
-			}	
-			String manualPath = mesquiteDirectoryPath + "docs/mesquite" + MesquiteFile.fileSeparator + "support.html" ; 
-			File testing = new File(manualPath);
-			if (testing.exists()) {
+			
+			String manualPath = mesquiteWebSite + "/Getting+Help" ;
 				showWebPage(manualPath, false);
-			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether the Mesquite window appears automatically when no windows are showing", "[on or off]", commandName, "windowAutoShow")){
 			MesquiteWindow.autoShow = MesquiteBoolean.fromOffOnString(ParseUtil.getFirstToken(arguments, stringPos));
@@ -2166,6 +2201,9 @@ public class Mesquite extends MesquiteTrunk
 			}
 
 		}	
+		else if (checker.compare(this.getClass(), "Sends Error to Server", null, commandName, "testError")) {
+			reportProblemToHome("TESTING ERROR REPORTING");
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);

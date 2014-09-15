@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 2001-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 2001 and onward, D. Maddison and W. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -39,14 +40,15 @@ public class HelpSearchManager implements Commandable {
 			return;
 		searchWindowBabysitter = MesquiteTrunk.mesquiteTrunk.hireNamedEmployee (WindowHolder.class, "#WindowBabysitter");
 		HSWindow ww = new HSWindow(searchWindowBabysitter, new MesquiteCommand("linkTouched", this), "Search", true);
-		searchWindowBabysitter.setModuleWindow(ww);
+		if (searchWindowBabysitter != null)
+			searchWindowBabysitter.setModuleWindow(ww);
 		//	ww.setWindowSize(620, 400, false);
 	}
 
 	public void showHTML(String s){
 		if (searchWindowBabysitter== null)
 			makeWindow();
-		if (searchWindowBabysitter.getModuleWindow()!= null){
+		if (searchWindowBabysitter != null && searchWindowBabysitter.getModuleWindow()!= null){
 			MesquiteHTMLWindow w = (MesquiteHTMLWindow)searchWindowBabysitter.getModuleWindow();
 			if (w != null){
 				w.setText(s);
@@ -176,8 +178,8 @@ public class HelpSearchManager implements Commandable {
 			String expl = ((Explainable) c).getExplanation();
 			if (stringsFound(expl, s)) {
 				result += "<li><img src = \""
-					+ MesquiteFile.massageFilePathToURL(((ImageOwner) c)
-							.getImagePath()) + "\"> ";
+						+ MesquiteFile.massageFilePathToURL(((ImageOwner) c)
+								.getImagePath()) + "\"> ";
 				result += expl+ "</li>";
 			}
 		}
@@ -190,32 +192,7 @@ public class HelpSearchManager implements Commandable {
 		return result;
 	}
 	/*
-	String searchManualFiles(String s, String path){
-		java.io.File f = new java.io.File(path);
-		String result = "";
-		if (f.isDirectory()){
-			String[] files = f.list();
-			for (int i=0; i<files.length; i++) {
-				String subPath = path + files[i];
-				java.io.File f2 = new java.io.File(subPath);
-				if (f2.isDirectory())
-					subPath += MesquiteFile.fileSeparator;
-				result += searchManualFiles(s, subPath);
-			}
-		}
-		else {
-			if (path.endsWith(".html")){
 
-				String page = MesquiteFile.getFileContentsAsString(path);
-
-				if (stringsFound(page, s)){
-					result = "<li><a href = \"showPage:" +path + "\">manual page</a></li>";
-				}
-			}
-		}
-		return result;
-	}
-	 */
 	String searchManual(String s, boolean useBrowser){
 		String results = "";
 		String arefStart = "showPage:";
@@ -297,6 +274,7 @@ public class HelpSearchManager implements Commandable {
 		MesquiteTrunk.mesquiteTrunk.logln(".. manual ready.");
 		manualLoading = 0;
 	}
+	 */
 	String menuResults = null;
 	String controlResults = null;
 
@@ -321,29 +299,30 @@ public class HelpSearchManager implements Commandable {
 	/*.................................................................................................................*/
 	public void searchKeyword(String s, boolean useBrowser){
 		String results = "";
+		if (!useBrowser){
+			//ADDING RESULTS FROM CURRENT MENUS
+			menuResults = searchMenus(s, useBrowser);
 
-		//ADDING RESULTS FROM CURRENT MENUS
-		menuResults = searchMenus(s, useBrowser);
+			//ADDING RESULTS FROM CURRENT Controls
+			controlResults = searchControls(s);
 
-		//ADDING RESULTS FROM CURRENT Controls
-		controlResults = searchControls(s);
-
-		if (!StringUtil.blank(menuResults) || !StringUtil.blank(controlResults)){
-			results += "<h3>Menu items and controls in current windows matching search criteria</strong></h3><ul>";
-			if (!StringUtil.blank(menuResults))
-				results += "<li><a href = \"showMenuResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "menus.gif") + "\">&nbsp;<strong>Menu items</strong></a> in current windows</li>";
-			if (!StringUtil.blank(controlResults))
-				results += "<li><a href = \"showControlResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "buttons.gif") + "\">&nbsp;<strong>Buttons and tools</strong></a> in current windows</li>";
-			results += "</ul>";
+			if (!StringUtil.blank(menuResults) || !StringUtil.blank(controlResults)){
+				results += "<h3>Menu items and controls in current windows matching search criteria</strong></h3><ul>";
+				if (!StringUtil.blank(menuResults))
+					results += "<li><a href = \"showMenuResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "menus.gif") + "\">&nbsp;<strong>Menu items</strong></a> in current windows</li>";
+				if (!StringUtil.blank(controlResults))
+					results += "<li><a href = \"showControlResults:\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "buttons.gif") + "\">&nbsp;<strong>Buttons and tools</strong></a> in current windows</li>";
+				results += "</ul>";
+			}
 		}
-
 		//ADDING RESULTS FROM MODULE INFORMATION
 		String smod = searchModules(s, useBrowser);
 		if (!StringUtil.blank(smod))
 			results += "<h3><strong>Modules</strong><ul>" + smod + "</ul></h3>";
 
 		//ADDING RESULTS FROM MANUAL
-		if (manualLoading == 1){
+		/*
+		 * if (manualLoading == 1){
 			try {
 				while (manualLoading >0)
 					Thread.sleep(20);
@@ -357,7 +336,7 @@ public class HelpSearchManager implements Commandable {
 		String sman = searchManual(s, useBrowser);
 		if (!StringUtil.blank(sman))
 			results += "<h3>Manual Pages</h3><ul>" + sman + "</ul>";
-
+		 */
 
 
 		if (StringUtil.blank(results))
@@ -620,7 +599,7 @@ public class HelpSearchManager implements Commandable {
 
 		if (paths.size() > 0)
 			nextPrevString =" <a href = \"previous:" + paths.size() + "\"><img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "leftarrow.gif") + "\"></a>";
-		
+
 		else
 			nextPrevString =" <img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "leftarrowDisabled.gif") + "\">";
 		/*
@@ -651,8 +630,8 @@ public class HelpSearchManager implements Commandable {
 			}
 		}
 		String intro = "<html>" + searchColoursString + "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" +
-		"<tr><td height=\"80\" bgcolor=\"#6C6252\"><h1><font color=\"#FFFAAD\">" + name + "</h1></font><font size = +1 color=\"#FFFAAD\">" + explanation + "</font>" +
-		"<p>" + mmi.getClassName() + "<br>";
+				"<tr><td height=\"80\" bgcolor=\"#6C6252\"><h1><font color=\"#FFFAAD\">" + name + "</h1></font><font size = +1 color=\"#FFFAAD\">" + explanation + "</font>" +
+				"<p>" + mmi.getClassName() + "<br>";
 		if (countUses < maxCount){
 			if (paths.size() > 0)
 				nextPrevString = pageString + "[Last page] " + nextPrevString + "&nbsp;<img border = 0 src = \"" +MesquiteFile.massageFilePathToURL(MesquiteTrunk.getRootImageDirectoryPath() +  "rightarrowDisabled.gif") + "\">";
@@ -1018,7 +997,7 @@ public class HelpSearchManager implements Commandable {
 			if (!StringUtil.blank(func.getURLString()))
 				if (func.URLinPackageIntro())
 					nameString += "<a href=\"showPage:" + MesquiteFile.massageFilePathToURL(mmi.getPackageIntroModule().getDirectoryPath() +func.getURLString())+ "\">More Information</a>.";
-//			nameString += "<a href=\"showPage:" + MesquiteFile.massageFilePathToURL(mmi.getPackageIntroModule().getDirectoryPath() +func.getURLString())+ "\" userinfo=\"browser\">More Information</a>.";
+			//			nameString += "<a href=\"showPage:" + MesquiteFile.massageFilePathToURL(mmi.getPackageIntroModule().getDirectoryPath() +func.getURLString())+ "\" userinfo=\"browser\">More Information</a>.";
 				else
 					nameString += "<a href=\"showPage:" +func.getURLString() + "\">More Information</a>.";
 			return nameString+StringUtil.lineEnding(); 

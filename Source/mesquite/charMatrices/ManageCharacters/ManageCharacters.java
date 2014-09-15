@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -829,7 +830,7 @@ public class ManageCharacters extends CharactersManager {
 			MesquiteModule mb = findNearestColleagueWithName("Data Window Coordinator");
 			if (mb != null)
 				mb.doCommand("showDataWindow", MesquiteInteger.toString(getProject().getNumberCharMatrices()-1), checker);
-			newMatrix.resetChangedSinceSave();
+			newMatrix.resetCellMetadata();
 
 			resetAllMenuBars();
 			decrementMenuResetSuppression();
@@ -882,7 +883,10 @@ public class ManageCharacters extends CharactersManager {
 						for (int ic=0; ic<parent.getNumChars() && ic<matrix.getNumChars(); ic++)
 							newMatrix.setCharacterName(ic, parent.getCharacterName(ic));
 					}
-
+					CharWeightSet weightSet= (CharWeightSet)parent.getCurrentSpecsSet(CharWeightSet.class);  //DRM added 1 May 14
+					if (weightSet!=null) {
+						newMatrix.setCurrentSpecsSet(weightSet, CharWeightSet.class); 
+					}
 				}
 				String name = MesquiteString.queryShortString(containerOfModule(), "Name Matrix", "Name of New Matrix", getProject().getCharacterMatrices().getUniqueName(matrix.getName()));
 				if (name == null){
@@ -902,7 +906,7 @@ public class ManageCharacters extends CharactersManager {
 				fireEmployee(characterSourceTask);
 				getProject().decrementProjectWindowSuppression();
 				resetAllMenuBars();
-				newMatrix.resetChangedSinceSave();
+				newMatrix.resetCellMetadata();
 				return newMatrix;
 			}
 		}
@@ -994,8 +998,9 @@ public class ManageCharacters extends CharactersManager {
 			else {
 				//Check to see if already has lister for this
 				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), true);
-				if (data != null)
+				if (data != null){
 					return showCharactersList(data);
+				}
 				int t = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(t) && t<getProject().getNumberCharMatrices()) {//restriction to checker.getFile() deleted 13 Dec 01
 					data = getProject().getCharacterMatrix(t, true);//restriction to checker.getFile() deleted 13 Dec 01
@@ -2049,7 +2054,7 @@ public class ManageCharacters extends CharactersManager {
 		 if (data != null && blockComments!=null && blockComments.length()>0)
 			 data.setAnnotation(blockComments.toString(), false);
 		 if (data !=null) {
-			 data.resetChangedSinceSave();
+			 data.resetCellMetadata();
 		 }
 		 if (fuse) {
 			 data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));

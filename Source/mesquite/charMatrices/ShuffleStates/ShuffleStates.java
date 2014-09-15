@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -34,8 +35,10 @@ public class ShuffleStates extends DataAlterer {
    	/** Called to alter data in those cells selected in table*/
    	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
    			boolean did=false;
+   			if (data == null)
+   				return false;
    			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
-   	 		if (table==null && data!=null){
+   	 		if (table==null){
 					for (int i=0; i<data.getNumChars(); i++)
 						shuffleCells(data, i, 0, data.getNumTaxa()-1);
 					return true;

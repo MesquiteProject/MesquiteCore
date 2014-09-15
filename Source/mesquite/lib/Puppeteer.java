@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -19,7 +20,7 @@ import mesquite.lib.duties.*;
 import java.util.*;
 import java.io.*;
 
-/* ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ commands ¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ commands ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 /* includes commands,  buttons, miniscrolls
 
 
@@ -340,7 +341,7 @@ public class Puppeteer  {
 		else return MesquiteInteger.fromString(name);
 	}
 	/*--------------------------------------*/
-	private boolean debugging = false;
+	private boolean debugging = false; 
 	private boolean logOnly = false;
 	private MesquiteTimer timer;
 	private boolean showTime = false;
@@ -1160,8 +1161,10 @@ public class Puppeteer  {
 					stamp("   STARTING NEW THREAD  ");
 
 				}
+				boolean scripting = MesquiteThread.isScripting();
 				if (fineDebugging) stamp("-sc- (" + level + ")5");
-				sendCommandsOnNewThread(mb, block, stringPos, endString, skip, nb, MesquiteThread.isScripting());
+				
+				sendCommandsOnNewThread(mb, block, stringPos, endString, skip, nb, scripting);
 				if (fineDebugging) stamp("-sc- (" + level + ")6");
 				return null;
 			}

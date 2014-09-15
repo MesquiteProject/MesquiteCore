@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -14,8 +15,10 @@ package mesquite.lists.CharListPartition;
 /*~~  */
 
 import mesquite.lists.lib.*;
+
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -35,13 +38,18 @@ public class CharListPartition extends CharListAssistant {
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss, mEGC, mDGC, mEGN;
 	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, mss2;
+	CharactersGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+		groups.addListener(this);
 		return true;
 	}
 	public void endJob(){
 		if (data != null)
 			data.removeListener(this);
+		if (groups != null)
+			groups.removeListener(this);
 		super.endJob();
 	}
 	MesquiteInteger pos = new MesquiteInteger(0);
@@ -232,7 +240,7 @@ public class CharListPartition extends CharListAssistant {
 		mDGC = addSubmenu(null, "Delete Group...", makeCommand("deleteGroup", this));
 		mDGC.setList((StringLister)getProject().getFileElement(CharactersGroupVector.class, 0));
 		mLine = addMenuItem("-",null);
-		mScs = addMenuItem("Store current partition", makeCommand("storeCurrent",  this));
+		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
 			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharacterPartition.class));

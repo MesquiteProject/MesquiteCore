@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -53,73 +54,89 @@ public class CodonPositionsSet  extends CharNumSet {
 		return success;
 	}
   	
-	int endSequenceByThree(int targetPos, int numChars, int ic){
+	int endSequenceByThree(int targetPos, int numChars, int ic, int mainCount, boolean[] include, MesquiteInteger charNumberOfLastThird){
 		int unassignedPosition=4;
-		int previousThird = ic;
-		for (int ik = ic+1; ik< numChars; ik++){
-			int thisPos = getInt(ik);
-			if (thisPos == targetPos || (thisPos==MesquiteInteger.unassigned && (targetPos==unassignedPosition))) {
-				//is a match; if not modulus 3 on from ic then return previousThird 
-				if ((ik-ic) % 3 !=0)
-					return previousThird;
-				else
-					previousThird = ik;
+		int previousThird = mainCount; 
+		charNumberOfLastThird.setValue(ic);  //store the char number of the previous end of the triplets
+		int count=mainCount;
+		int ik=0;
+		for (ik = ic+1; ik< numChars; ik++){
+			if (include==null || ik>=include.length || include[ik]){
+				count++;
+				int thisPos = getInt(ik);
+				if (thisPos == targetPos || (thisPos==MesquiteInteger.unassigned && (targetPos==unassignedPosition))) {
+					//is a match; if not modulus 3 on from ic then return previousThird 
+					if ((count-mainCount) % 3 !=0){
+						return previousThird;
+					}
+					else {
+						charNumberOfLastThird.setValue(ik);  //store the char number of the previous end of the triplets
+						previousThird = count;
+					}
+				}
+				else {
+					//is not a match; if modulus 3 on from ic then return previousThird 
+					if ((count-mainCount) % 3 ==0){
+						return previousThird;
+					}
+				}
 			}
-			else {
-				//is not a match; if modulus 3 on from ic then return previousThird 
-				if ((ik-ic) % 3 ==0)
-					return previousThird;
-			}
-
 		}
 		return previousThird;
 	}
   	public String getListOfMatches(int targetPos){
-  		return getListOfMatches(targetPos, 0);
+  		return getListOfMatches(targetPos, 0, null);
   	}
   	
- 	public String getListOfMatches(int targetPos, int offset){  //offset is number to add to character numbers
-		int lastWritten = -1;
-		int unassignedPosition=4;
-		String thisValueString = "";
-		int continuing = 0;
-		for (int ic=0; ic<getNumberOfParts(); ic++) {
-			int thisPos = getInt(ic);
-			if (thisPos == targetPos || (thisPos==MesquiteInteger.unassigned && (targetPos==unassignedPosition))) {
-				if (continuing == 0) {
-					//first, check to see if there is a series of thirds....
-					int lastThird = endSequenceByThree(targetPos, getNumberOfParts(), ic);
-					//if so, then go the series of thirds 
-					if (lastThird != ic){
-						thisValueString += " " + CharacterStates.toExternal(ic+offset) + " - " +  CharacterStates.toExternal(lastThird+offset) + "\\3";
-						ic = lastThird;
-					}
-					else { //otherwise write as normal*/
-						lastWritten = ic;
-						thisValueString += " " + CharacterStates.toExternal(ic+offset);
-						continuing = 1;
-					}
-				}
-				else if (continuing == 1) {
-					thisValueString += "-";
-					continuing = 2;
-				}
-			}
-			else if (continuing>0) {
-				if (lastWritten != ic-1){
-					thisValueString += " " + CharacterStates.toExternal(ic-1+offset);
-					lastWritten = ic-1;
-				}
-				else
-					lastWritten = -1;
-				continuing = 0;
-			}
+ 	public String getListOfMatches(int targetPos, int offset, boolean[] include){  //offset is number to add to character numbers
 
+ 		int lastWritten = -1;
+		int unassignedPosition=4;
+		String list = "";
+		int continuing = 0;
+		int count = -1;
+		MesquiteInteger charNumberOfLastThird = new MesquiteInteger(-1);
+		for (int ic=0; ic<getNumberOfParts(); ic++) {
+			if (include==null || ic>=include.length || include[ic]){   // it's one to consider
+				count++;
+				int thisPos = getInt(ic);
+				if (thisPos == targetPos || (thisPos==MesquiteInteger.unassigned && (targetPos==unassignedPosition))) {
+					if (continuing == 0) { 
+						//first, check to see if there is a series of thirds....
+						int lastThird = endSequenceByThree(targetPos, getNumberOfParts(), ic, count, include, charNumberOfLastThird);
+						//if so, then go the series of thirds 
+						if (lastThird != count){
+							list += " " + CharacterStates.toExternal(count+offset) + " - " +  CharacterStates.toExternal(lastThird+offset) + "\\3";
+							ic = charNumberOfLastThird.getValue();
+							count = lastThird;
+						}
+						else { //otherwise write as normal*/
+							lastWritten = count;
+							list += " " + CharacterStates.toExternal(count+offset);
+							continuing = 1;
+						}
+					}
+					else if (continuing == 1) {  // we know there are at least two in a row of the same thing
+						list += "-";
+						continuing = 2;   //now set it so that we are waiting for the last one in the series
+					}
+				}
+				else if (continuing>0) {   // we are in a contiguous stretch of the same thing
+					if (lastWritten != count-1){  // last one we wrote wasn't the one just before
+						list += " " + CharacterStates.toExternal(count-1+offset);
+						lastWritten = count-1;
+					}
+					else
+						lastWritten = -1;
+					continuing = 0;
+				}
+			}
 		}
-		if (continuing>1) {
-			thisValueString += " " + CharacterStates.toExternal(data.getNumChars()-1+offset) + " ";
+		if (continuing>1) {  // we are waiting for the last one
+			list += " " + CharacterStates.toExternal(count+offset) + " ";
+			//thisValueString += " " + CharacterStates.toExternal(data.getNumChars()-1+offset) + " ";
 		}
-		return thisValueString;
+		return list;
  	}
 }
 

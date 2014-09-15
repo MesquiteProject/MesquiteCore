@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
- Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+ 
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -440,8 +441,8 @@ class NodeLocsCircularExtra extends TreeDisplayBkgdExtra {
 	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 		if (locsModule.showScale.getValue() && locsModule.showBranchLengths.getValue())
 			locsModule.drawGrid(g, tree.tallestPathAboveNode(drawnRoot, 1.0), locsModule.scaling, locsModule.treeCenter);
-		g.setColor(Color.green);
-		g.fillOval(locsModule.centerx-8, locsModule.centery-8, 16, 16);
+		//g.setColor(Color.green);
+		//g.fillOval(locsModule.centerx-8, locsModule.centery-8, 16, 16);
 	}
 	/*.................................................................................................................*/
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {

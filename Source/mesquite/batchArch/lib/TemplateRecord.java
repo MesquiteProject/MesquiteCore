@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 2001-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 2001 and onward, D. Maddison and W. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -409,7 +410,7 @@ public class TemplateRecord  implements Listable, Explainable {
 		ListableVector v = snippetsNeeded();
 		outputBuffer = new StringBuffer[numFiles];
 		for (int i=0; i<numFiles; i++) {
-			outputBuffer[i] = new StringBuffer(numReplicates*(200));//¥¥¥
+			outputBuffer[i] = new StringBuffer(numReplicates*(200));//ï¿½ï¿½ï¿½
 			if (!StringUtil.blank(startText[i])) 
 				outputBuffer[i].append(replaceUniversalCode(startText[i].toString(), baseName,v));
 		}
@@ -420,7 +421,7 @@ public class TemplateRecord  implements Listable, Explainable {
 			return;
 		ListableVector v = snippetsNeeded();
 		for (int i=0; i<numFiles; i++) {
-			if (outputBuffer[i] !=null){//¥¥¥
+			if (outputBuffer[i] !=null){//ï¿½ï¿½ï¿½
 				if (!StringUtil.blank(textForEachFile[i])){
 					String s = StringUtil.replace(textForEachFile[i].toString(),"<number>",""+iMatrix);
 					s = replaceUniversalCode(s,baseName,v);
@@ -437,7 +438,7 @@ public class TemplateRecord  implements Listable, Explainable {
 			return;
 		ListableVector v = snippetsNeeded();
 		for (int i=0; i<numFiles; i++) {
-			if (outputBuffer[i] != null) {//¥¥¥
+			if (outputBuffer[i] != null) {//ï¿½ï¿½ï¿½
 				if (!StringUtil.blank(endText[i])){
 					String s = replaceUniversalCode(endText[i].toString(), baseName,v);
 					if (outputBuffer[i].length()>0 && !StringUtil.blank(s))

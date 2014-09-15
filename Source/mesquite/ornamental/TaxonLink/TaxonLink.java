@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -250,7 +251,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 				String link = (String)tree.getTaxa().getAssociatedObject(linkNameRef, M);
 				if (link!=null) {
 					if (StringUtil.startsWithIgnoreCase(link, "http:") || StringUtil.startsWithIgnoreCase(link, "https:") || link.endsWith(".html") || link.endsWith(".htm") || link.endsWith(".HTML") || link.endsWith(".HTM")) {  //assumed to be web page
-						if (StringUtil.startsWithIgnoreCase(link, "http:")) 
+						if (StringUtil.startsWithIgnoreCase(link, "http")) 
 							taxonLinkModule.showWebPage(link, false);
 						else
 							taxonLinkModule.showWebPage(MesquiteFile.composePath(taxonLinkModule.getProject().getHomeDirectoryName(),  link), false);
@@ -258,7 +259,7 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 					else {
 						ownerModule.logln("Jumping to " + link);
 						String openCommand = "openFile ";
-						if (StringUtil.startsWithIgnoreCase(link, "http:")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
+						if (StringUtil.startsWithIgnoreCase(link, "http")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
 							openCommand = "openGeneral  Open_URL ";
 						}
 
@@ -323,14 +324,14 @@ class TaxonLinkToolExtra extends TreeDisplayExtra implements Commandable  {
 				String link = c.getLink();
 				if (link!=null) {
 					if (!link.endsWith(".nex")) {  //assumed to be web page
-						if (StringUtil.startsWithIgnoreCase(link, "http:")) 
+						if (StringUtil.startsWithIgnoreCase(link, "http")) 
 							taxonLinkModule.showWebPage(link, false);
 						else
 							taxonLinkModule.showWebPage(MesquiteFile.composePath(taxonLinkModule.getProject().getHomeDirectoryName(),  link), false);
 					}
 					else {
 						String openCommand = "openFile ";
-						if (StringUtil.startsWithIgnoreCase(link, "http:")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
+						if (StringUtil.startsWithIgnoreCase(link, "http")|| !taxonLinkModule.getProject().getHomeFile().isLocal()) {
 							openCommand = "openURL ";
 						}
 

@@ -392,7 +392,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Next;
-				addWebLink Scripting_Documentation  'mesquite:docs/mesquite/scripting.html';
+				addWebLink Scripting_Documentation  'http://mesquiteproject.wikispaces.com/Scripts+%26+Macros';
 			endTell;
 			showWindow;
 		endTell;

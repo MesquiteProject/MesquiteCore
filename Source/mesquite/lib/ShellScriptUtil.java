@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -22,6 +23,7 @@ import mesquite.lib.duties.*;
  * make a MesquiteExternalProcess that extends Process and stores things like 
  * 		OutputStream inputToProcess = proc.getOutputStream();
 		OutputStreamWriter inputStreamsWriter = new OutputStreamWriter(inputToProcess);
+	- all of the isWindows, StringUtil.lineEnding() needs to use line endings etc. from the computer running the process, not the local computer.
 
  * */
 
@@ -68,7 +70,7 @@ public class ShellScriptUtil  {
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
 		if (MesquiteTrunk.isWindows())
-			return "del -f " + StringUtil.protectForWindows(filePath) +StringUtil.lineEnding();
+			return "del " + StringUtil.protectForWindows(filePath) +StringUtil.lineEnding();
 		else
 			return "rm -f " + StringUtil.protectForUnix(filePath) +StringUtil.lineEnding();
 	}
@@ -153,14 +155,16 @@ public class ShellScriptUtil  {
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
-				proc = Runtime.getRuntime().exec(scriptPath);
+				String[] scriptArray = new String[1];
+				scriptArray[0] = scriptPath;
+				proc = Runtime.getRuntime().exec(scriptArray);
 			} else {
 				scriptPath = "\"" + scriptPath + "\"";
 				String[] cmd = {"cmd", "/c", scriptPath};
 				proc = Runtime.getRuntime().exec(cmd);
 			}
 		}  catch (IOException e) {
-			MesquiteMessage.println("Script execution failed.");
+			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;
 		}
 		if (proc != null) {
@@ -175,8 +179,18 @@ public class ShellScriptUtil  {
 	public static boolean setScriptFileToBeExecutable(String scriptPath) throws IOException {
 		Process proc;
 		try {
-			if (!MesquiteTrunk.isWindows())
-				Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+			//Original implementation (permission change was not complete before script execution attempted)
+			//if (!MesquiteTrunk.isWindows())
+			//	Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+			if(!MesquiteTrunk.isWindows()){
+				proc = Runtime.getRuntime().exec(new String[] {"chmod", "+x", scriptPath } );
+				try{// waitFor() so thread waits for permission change to complete before trying to run the script
+					proc.waitFor();
+				} catch (InterruptedException e){
+					MesquiteMessage.println("Thread interrupted while waiting for change in ownership.");
+					return false;
+				}
+			}
 		}
 		catch (IOException e) {
 			MesquiteMessage.println("Script cannot be set to be executable.");

@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -720,9 +721,18 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	public void includeFileFuse(String pathName, String importer, String arguments, int fileType){ //make new/read new linked file  DONE special to put on same thread
+		getProject().incrementProjectWindowSuppression();
 		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null);
 			pt.run();
-		
+			cleanFusedReadingSuppressions();
+			getProject().decrementProjectWindowSuppression();
+	}
+	void cleanFusedReadingSuppressions(){
+		int num = getProject().getNumberCharMatrices();
+		for (int im = 0; im< num; im++){
+			CharacterData data = getProject().getCharacterMatrix(im);
+			data.setSuppressSpecssetReading(false);
+		}
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 
@@ -814,6 +824,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		ready = true;
 		if (getModuleWindow()!=null) {
 			getModuleWindow().getParentFrame().showFrontWindow();
+		//	getModuleWindow().getParentFrame().fixFrontness();
 		}
 
 		resetAllMenuBars();
@@ -921,6 +932,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					iQuit();
 				}
 				else {
+					fileCloseRequested();
 					ListableVector files = getProject().getFiles();
 					if (files != null){
 
@@ -958,6 +970,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					fi.close();
 				}
 				else if (fi.isLocal()){
+					fileCloseRequested();
 					String message = "Do you want to save changes to \"" + fi.getName() + "\" before closing?";
 					int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
 					if (q==0) 
@@ -1065,6 +1078,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public void saveFile(MesquiteFile fi){
 		if (getProject() ==null)
 			return;
+		getProject().incrementProjectWindowSuppression();
 		MainThread.incrementSuppressWaitWindow();
 		if (fi != null) { 
 			if (fi.isLocal()){
@@ -1076,20 +1090,24 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				MesquiteMessage.notifyUser("File \"" + fi.getName() + "\" cannot be written because it was accessed as a URL");
 		}
 		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	/*  */
 	public void saveFileAs(int id){
 		if (getProject() ==null)
 			return;
+		getProject().incrementProjectWindowSuppression();
 		MesquiteFile fi;
 		if (!MesquiteInteger.isCombinable(id) && getProject().getNumberLinkedFiles()==1)
 			fi = getProject().getHomeFile();
 		else
 			fi = getProject().getFileByID(id);
 		saveFileAs(fi);
+		getProject().decrementProjectWindowSuppression();
 	}
 	public void saveFileAs(MesquiteFile fi){
+		getProject().incrementProjectWindowSuppression();
 		MainThread.incrementSuppressWaitWindow();
 		if (fi !=null){
 			/*if (!fi.isLocal())
@@ -1102,10 +1120,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		//TODO: change titles of windows and menu items!!!
 		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
 	}
 	public void renameAndSaveFile(int id, String name){
 		if (StringUtil.blank(name))
 			return;
+		getProject().incrementProjectWindowSuppression();
 		MainThread.incrementSuppressWaitWindow();
 		MesquiteFile fi;
 		if (!MesquiteInteger.isCombinable(id) && getProject().getNumberLinkedFiles()==1)
@@ -1118,6 +1138,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			writeFile(fi);
 		}
 		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	/*  */
@@ -1253,7 +1274,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		Listable fInt = ListDialog.queryList(fd.containerOfModule(), "Translate File", message, MesquiteString.helpString,fInterpretersCanImport, 0);
 
 		if (fInt instanceof FileInterpreterI && !MesquiteThread.isScripting())
-			((FileInterpreterI)fInt).getImportOptions();
+			((FileInterpreterI)fInt).getImportOptions(fuse);
 
 		if (fd!=null)
 			fireEmployee(fd);
@@ -2014,7 +2035,13 @@ class FileRead implements CommandRecordHolder, Runnable {
 	public void run() {
 		MesquiteThread.numFilesBeingRead++;
 		try {
+			if (ownerModule.getProject() != null)
+			ownerModule.getProject().incrementProjectWindowSuppression();
+
 			readLinkedFile(path);
+			if (ownerModule.getProject() != null)
+				ownerModule.getProject().decrementProjectWindowSuppression();
+
 		}
 		catch (Exception e){
 			MesquiteFile.throwableToLog(this, e);

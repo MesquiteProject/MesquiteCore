@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 2001-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 2001 and onward, D. Maddison and W. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -328,15 +329,15 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (getHelpURLOwnerModule()!=null) {
 			if (!StringUtil.blank(helpURL)) {
 				String s = getHelpURLOwnerModule().getPackageIntroModule().getDirectoryPath() + getHelpURL();
-				MesquiteModule.showWebPage(s, true);
+				MesquiteModule.showWebPage(s, false);
 			}
 			else if (useManualPage)
 				getHelpURLOwnerModule().showManual();
 			else
-				MesquiteModule.showWebPage(getHelpURLOwnerModule().getPackageIntroModule().getSplashURL(), true);
+				MesquiteModule.showWebPage(getHelpURLOwnerModule().getPackageIntroModule().getSplashURL(), false);
 		}
 		else if (!StringUtil.blank(helpURL)) 
-			MesquiteModule.showWebPage(getHelpURL(), true);
+			MesquiteModule.showWebPage(getHelpURL(), false);
 	}
 	/*.................................................................................................................*/
 	public void setHelpURL (MesquiteModule ownerModule, String s) {
@@ -1430,13 +1431,17 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 
 	/*.................................................................................................................*/
 	public List addList (Object names, MesquiteInteger selected, String message) {
+		return addList(names, selected, message, 4);
+	}
+	/*.................................................................................................................*/
+	public List addList (Object names, MesquiteInteger selected, String message, int numLines) {
 		if (message!=null)
 			constraints.fill=GridBagConstraints.NONE;
 		Panel newPanel = addNewDialogPanel();
 		if (message!=null) {
 			newPanel.add(new Label(message));
 		}
-		List list = new List(4,false);
+		List list = new List(numLines,false);
 
 		newPanel.setLayout(new GridLayout(1,1));
 		newPanel.add(list);
@@ -1855,7 +1860,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent e) {
 			if (e.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) {
 				String link = e.getDescription();
-				if (link != null && StringUtil.startsWithIgnoreCase(link, "http:"))
+				if (link != null && StringUtil.startsWithIgnoreCase(link, "http"))
 					MesquiteTrunk.showWebPage(e.getURL().toString(), false);
 				else  if (linkTouchedCommand != null)
 					linkTouchedCommand.doItNewThread(ParseUtil.tokenize(e.getDescription()), null);

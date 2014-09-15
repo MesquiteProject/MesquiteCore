@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -102,14 +103,14 @@ public class TaxonList extends ListModule {
 			addMenuItem( "Save selected as set...", makeCommand("saveSelectedRows", this));
 			addMenuItem( "-", null);
 
-			/* default columns*/
+			/* default columns*
 			TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#DefaultTaxaOrder"));
 			if (assistant!= null){
 				((TaxonListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
 			/* removed as default v. 2. 01; returned for v. 2. 5 */
-			assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
+			TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
 			if (assistant!= null){
 				((TaxonListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);

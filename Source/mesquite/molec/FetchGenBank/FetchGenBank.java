@@ -1,4 +1,5 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -89,7 +90,7 @@ public class FetchGenBank extends DataUtility {
 				logln("\nRequesting sequences.\n");
 				StringBuffer report = new StringBuffer();
 				String fasta = NCBIUtil.fetchGenBankSequences(idList,data instanceof DNAData, this, true, report);
-				NCBIUtil.importFASTASequences(data, fasta, this, report);
+				NCBIUtil.importFASTASequences(data, fasta, this, report, -1, -1, false, false);
 				log(report.toString());
 				return StringUtil.notEmpty(fasta);
 

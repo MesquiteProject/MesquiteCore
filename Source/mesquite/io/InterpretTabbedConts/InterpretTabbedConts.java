@@ -1,5 +1,5 @@
-/* Mesquite (package mesquite.io).  Copyright 2000-2011 D. Maddison and W. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite (package mesquite.io).  Copyright 2000 and onward, D. Maddison and W. Maddison. 
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -46,7 +46,7 @@ public class InterpretTabbedConts extends FileInterpreterI {
 	public boolean canImport() {  
 		 return true;
 	}
-	public void getImportOptions(){
+	public void getImportOptions(boolean fuse){
 		firstLineAreCharacterNames = AlertDialog.query(containerOfModule(), "Import", "Does the first line of the file contain character names?", "Yes", "No", 1);  //post-1.03
 	}
 /*.................................................................................................................*/
@@ -132,7 +132,7 @@ public class InterpretTabbedConts extends FileInterpreterI {
 				}
 			}
 			data.saveChangeHistory = wassave;
-			data.resetChangedSinceSave();
+			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 		}
 		decrementMenuResetSuppression();

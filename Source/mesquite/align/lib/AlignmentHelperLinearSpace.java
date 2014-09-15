@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison. 
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -12,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.align.lib;
 
 import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.Debugg;
+import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteNumber;
 
@@ -117,8 +120,6 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	
 	public void fillForward(int firstRow, int lastRow, int firstColumn, int lastColumn, int shape) {
 		
-		//int lengthA = lastRow - firstRow + 1;
-		//int lengthB = lastColumn - firstColumn + 1;
 		int i,j;
 		
 		int gapExtendOnB, gapExtendOnA;
@@ -132,14 +133,14 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		} else if ( shape == gapInB) {
 			fV[firstColumn] = 0;
 		}
-		
-		//fill row-by-row. First row is a special case 
-		gapExtendOnA = (0==firstRow || lengthB==firstRow) ? gapExtendTerminal : gapExtend ;		
-		for (j=firstColumn+1; j<=lastColumn; j++) {			
+
+		//fill row-by-row. First row is a special case
+		gapExtendOnA = (0==firstRow || lengthA==firstRow) ? gapExtendTerminal : gapExtend ;
+		for (j=firstColumn+1; j<=lastColumn; j++) {
 			fD[j] = fV[j] = bigNumber;
-			fH[j] = fH[firstColumn] + gapExtendOnA*(j-firstColumn);		
-		}
-		
+			fH[j] = fH[j-1] + gapExtendOnA;
+        }
+
 
 		int tmp1H, tmp1D, tmp1V, tmp2H, tmp2D, tmp2V;
 	//reuse the arrays, treating it as the next row in the DP table. Keep one temp variable for each array
@@ -169,40 +170,37 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				if (isMinimize) {
 					fV[j] = Math.min(  fH[j] + gapOpenOnB + gapExtendOnB,  
 							Math.min ( fD[j]  + gapOpenOnB + gapExtendOnB ,
-											 fV[j] + gapExtendOnB));
+									   fV[j] + gapExtendOnB));
 
 					fH[j] = Math.min(  fH[j-1] + gapExtendOnA,  
-								Math.min ( fD[j-1] + gapOpenOnA + gapExtendOnA,
-												 fV[j-1] + gapOpenOnA + gapExtendOnA));
+							Math.min ( fD[j-1] + gapOpenOnA + gapExtendOnA,
+					  				   fV[j-1] + gapOpenOnA + gapExtendOnA));
 	
 					fD[j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.min(  tmp1H, Math.min ( tmp1D , tmp1V));
 				} else { //maximize
 					fV[j] = Math.max(  fH[j] + gapOpenOnB + gapExtendOnB,  
 							Math.max ( fD[j] + gapOpenOnB + gapExtendOnB ,
-											 fV[j] + gapExtendOnB));					
+									   fV[j] + gapExtendOnB));
 					
 					fH[j] = Math.max(  fH[j-1] + gapExtendOnA,  
-								Math.max( fD[j-1] + gapOpenOnA + gapExtendOnA,
-												fV[j-1] + gapOpenOnA + gapExtendOnA));
+							Math.max(  fD[j-1] + gapOpenOnA + gapExtendOnA,
+									   fV[j-1] + gapOpenOnA + gapExtendOnA));
 					
 					fD[j] = AlignUtil.getCost(subs,A[i-1],B[j-1],alphabetLength) +  Math.max(  tmp1H , Math.max( tmp1D, tmp1V ));
 				}
+
 				tmp1H = tmp2H;
 				tmp1D = tmp2D;
 				tmp1V = tmp2V;
 			}
 		}
-		
-		
-		
 	}
+
 	public void fillReverse(int firstRow, int lastRow, int firstColumn, int lastColumn, int shape) {
 
 	    int i,j;
 		int gapExtendOnA;
 		int gapOpenOnA;	
-		
-		
 		rH[lastColumn] = rV[lastColumn] = (lengthB==lastColumn) ? gapOpenTerminal : gapOpen;;
 		rD[lastColumn] = 0;
 		
@@ -213,10 +211,10 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		}
 		
 		//fill row-by-row. Last row is a special case 
-		gapExtendOnA = (0==lastRow || lengthB==lastRow) ? gapExtendTerminal : gapExtend ;
+		gapExtendOnA = (0==lastRow || lengthA==lastRow) ? gapExtendTerminal : gapExtend ;
 		for (j=lastColumn-1; j>=firstColumn; j--) {
 			rD[j] = rV[j] = bigNumber;
-			rH[j] = rH[lastColumn] + gapExtendOnA*(lastColumn-j);
+            rH[j] = rH[j+1] + gapExtendOnA;
 		}
 		
 		int tmp1H, tmp1D, tmp1V, tmp2H, tmp2D, tmp2V;
@@ -226,7 +224,7 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 			tmp1D = rD[lastColumn];
 			tmp1V = rV[lastColumn];
 
-			rD[lastColumn] = rH[lastColumn] = bigNumber;
+			rD[lastColumn] = rH[lastColumn] = bigNumber ;
 			rV[lastColumn] +=  (0==lastColumn || lengthB==lastColumn) ? gapExtendTerminal : gapExtend ;
 			
 			gapOpenOnA =  (0==i) ? gapOpenTerminal : gapOpen;
@@ -283,11 +281,11 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 		fillArrays(firstRow, lastRow, firstColumn, lastColumn, precedingShape, succeedingShape );
 		
 		int midRow = (firstRow + lastRow)/2;  //in seqA
-		
+
 		int i, verticalColScore, diagonalColScore; 
 		int bestColScore = bigNumber , bestCol = -1, bestColShape = noGap;
-		for (i=firstColumn; i<=lastColumn; i++) {			
-			gapOpenOnB =  (0==i || lengthB==i) ? gapOpenTerminal : gapOpen;
+		for (i=firstColumn; i<=lastColumn; i++) {
+			gapOpenOnB  =  (0==i || lengthB==i) ? gapOpenTerminal : gapOpen;
 			gapExtendOnB = (0==i || lengthB==i) ? gapExtendTerminal : gapExtend ;
 			// best of the ways of leaving the i,j cell of the full DP table with a vertical edge 
 			verticalColScore = Math.min(fH[i] + rH[i] + gapExtendOnB + gapOpenOnB,
@@ -310,11 +308,10 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				int b = B[i];
 				int s = AlignUtil.getCost(subs,a,b,alphabetLength);
 				diagonalColScore = Math.min(fH[i], Math.min (fD[i], fV[i])) +
-										Math.min(rH[i+1], Math.min (rD[i+1], rV[i+1])) +
-										s;
+								   Math.min(rH[i+1], Math.min (rD[i+1], rV[i+1])) +
+								   s;
 			}
 			// no need to track horizontal edges - those are already stored in the forward and reverse arrays
-			
 			if (verticalColScore < diagonalColScore) {
 				if ( verticalColScore < bestColScore) {
 					bestColScore = verticalColScore;
@@ -329,10 +326,10 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 				}				
 			}
 		}
-		
 		lastB_BeforeNextA[midRow] = bestCol;
 		shapeLeavingPosInA[midRow] = bestColShape;
 				
+
 		//	Recurse to find the full list of cells through which the alignment passes.
 		if ( firstRow != midRow){
 			recursivelyFillArray(firstRow, midRow, firstColumn, bestCol, precedingShape, bestColShape);

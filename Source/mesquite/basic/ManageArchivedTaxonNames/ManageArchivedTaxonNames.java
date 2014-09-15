@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -15,16 +16,44 @@ package mesquite.basic.ManageArchivedTaxonNames;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
 public class ManageArchivedTaxonNames extends SpecsSetManager {
+	final static String listOfAlternativeNameSetsName = "List of Alternative Name Sets";
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
 
 
+	/*.................................................................................................................*/
+	/** A method called immediately after the file has been read in.*/
+	public void projectEstablished() {
+		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,listOfAlternativeNameSetsName, makeCommand("showAlternativeNamesList",  this), (ListableVector)getProject().taxas);
+		mmis.setOwnerModuleID(getID());
+		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		super.projectEstablished();
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals(listOfAlternativeNameSetsName)) {
+				Object o = e.doCommand("getTaxa", null, CommandChecker.defaultChecker);
+
+				if (o !=null && o instanceof Taxa) {
+					//int wh =getProject().getTaxaReference((Taxa)o);
+					temp.addLine("showAlternativeNamesList " + getProject().getTaxaReferenceExternal((Taxa)o), e); 
+				}
+				else
+					temp.addLine("showAlternativeNamesList ", e); 
+			}
+		}
+		return temp;
+	}
 	public void elementsReordered(ListableVector v){
 	}
 	/*.................................................................................................................*/
@@ -78,7 +107,19 @@ public class ManageArchivedTaxonNames extends SpecsSetManager {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "", null, commandName, "")) {
+		if (checker.compare(this.getClass(), "Shows lists of the alternative name sets", null, commandName, "showAlternativeNamesList")) {
+			if (StringUtil.blank(arguments)) {
+				for (int i = 0; i< getProject().getNumberTaxas(checker.getFile()); i++) {
+					showSpecsSets(getProject().getTaxa(checker.getFile(), i), listOfAlternativeNameSetsName);
+				}
+			}
+			else {
+				Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
+				if (t!=null ) {
+					return showSpecsSets(t, listOfAlternativeNameSetsName);
+				}
+			}
+//			alert("Sorry, there are no taxa partitions");
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

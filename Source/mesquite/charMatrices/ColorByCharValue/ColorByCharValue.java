@@ -1,5 +1,6 @@
-/* Mesquite source code.  Copyright 1997-2011 W. Maddison and D. Maddison.
-Version 2.75, September 2011.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -21,7 +22,7 @@ import mesquite.lib.table.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class ColorByCharValue extends DataWindowAssistantI implements CellColorer, CellColorerCharacters, CellColorerMatrix {
+public class ColorByCharValue extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForCharacter.class, getName() + " colors the columns (characters) of the matrix to reflect some value for the character.",
 				"You can request a value to calculate initially, or later under the Values for Colors submenu.");
