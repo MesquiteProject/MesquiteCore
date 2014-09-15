@@ -1,4 +1,8 @@
 Mesquite_Folder/
+# Workspace files #
+###################
+*.iml
+
 # Compiled source #
 ###################
 *.com
