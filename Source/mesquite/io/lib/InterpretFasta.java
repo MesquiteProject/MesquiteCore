@@ -497,10 +497,11 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						}
 						else if (includeGaps || (!data.isInapplicable(ic,it))) {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+							counter ++;
+							wroteSymbol = true;
                         }
 						wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-                        counter ++;
-                        if ((counter % 50 == 1) && (counter > 1)) {    // modulo
+                        if ((counter % 50 == 1) && (counter > 1) && wroteSymbol) {    // modulo
                             outputBuffer.append(getLineEnding());
                         }
 
