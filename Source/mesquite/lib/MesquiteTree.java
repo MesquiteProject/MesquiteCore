@@ -2740,7 +2740,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					fromWhichNamer = 4;
 				}
 				if (taxonNumber<0){
-					if (MesquiteTree.permitT0Names && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
+					if (MesquiteTree.permitT0Names && c != null && c.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there 
 						String number = c.substring(1, c.length());
 						int num = MesquiteInteger.fromString(number);
 						if (MesquiteInteger.isCombinable(num) && num>=0 && num<taxa.getNumTaxa())

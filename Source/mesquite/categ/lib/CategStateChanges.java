@@ -200,7 +200,7 @@ public class CategStateChanges {
 				for (int i=0; i<samplingLimit; i++) {
 					if (progIndicator!=null && i % 1000 == 0)
 						progIndicator.setCurrentValue(i);
-					if (progIndicator.isAborted())
+					if (progIndicator!=null && progIndicator.isAborted())
 						break;
 					resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
 					if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
@@ -217,7 +217,7 @@ public class CategStateChanges {
 						resultStates = (CategoricalHistory)historySource.getMapping(i, resultStates, null);
 						if (progIndicator!=null && i % 1000 == 0)
 							progIndicator.setCurrentValue(i);
-						if (progIndicator.isAborted())
+						if (progIndicator!=null && progIndicator.isAborted())
 							break;
 						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
 							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node,null);
@@ -231,7 +231,7 @@ public class CategStateChanges {
 						resultStates = (CategoricalHistory)historySource.getMapping(RandomBetween.getLongStatic(0,numMappings-1),resultStates,null);
 						if (progIndicator!=null && i % 1000 == 0)
 							progIndicator.setCurrentValue(i);
-						if (progIndicator.isAborted())
+						if (progIndicator!=null && progIndicator.isAborted())
 							break;
 						if (resultStates instanceof mesquite.categ.lib.CategoricalHistory) {
 							array= ((mesquite.categ.lib.CategoricalHistory)resultStates).harvestStateChanges(tree, node, null);

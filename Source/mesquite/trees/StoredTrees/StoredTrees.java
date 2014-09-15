@@ -194,7 +194,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (preferredTaxa != null){
 			preferredTaxa.removeListener(this);
 		}
-		managerVectorOfTreeBlocks.removeListener(this);
+		if (managerVectorOfTreeBlocks!= null)
+			managerVectorOfTreeBlocks.removeListener(this);
 
 		super.endJob();
 	}

@@ -125,7 +125,7 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 		Taxa taxa = data.getTaxa();
 
 		MCharactersDistribution m =  characterSourceTask.getCurrentMatrix(taxa);
-		if (m == null)
+		if (m == null || !(m.getParentData() instanceof ProteinData))
 			return false;
 		ProteinData proteinData = (ProteinData)m.getParentData();
 
