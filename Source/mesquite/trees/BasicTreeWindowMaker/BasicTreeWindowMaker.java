@@ -4585,10 +4585,14 @@ class MessagePanel extends Panel {
 		repaint();
 	}
 
-	public void setHighlighted(boolean edited, boolean storedTrees) {
+	void setHighlighted(boolean edited, boolean storedTrees) {
 		this.showDiamond = edited;
-		if (edited)
-			modifiedString ="Edited, based on ";
+		if (edited){
+			if (!MesquiteThread.isScripting())
+				modifiedString ="Edited, based on ";
+			else
+				modifiedString ="Modified, based on ";
+		}
 		else
 			modifiedString = "";
 		if (edited && !storedTrees)
