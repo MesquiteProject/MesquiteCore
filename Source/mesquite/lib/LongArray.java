@@ -94,6 +94,14 @@ public class LongArray implements Listable {
 			d.values[i] =  values[i];
 	}
 	/*...........................................................*/
+	public void copyTo(DoubleArray d){
+		if (d==null || d.values.length!=values.length)
+			return;
+		for (int i=0; i<values.length; i++){
+			d.values[i] =  MesquiteDouble.toDouble(values[i]);
+		}
+	}
+	/*...........................................................*/
 	/** turns value to absolute value. */
 	public void abs() {
 		for (int i=0; i<values.length; i++){

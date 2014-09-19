@@ -395,7 +395,14 @@ public abstract class MesquiteTrunk extends MesquiteModule
 					resetEnabling(menu);
 				}
 			}
-
+			Vector v = mw.getOwnerModule().embeddedMenusVector;
+			if (v != null){
+				for (int i = 0; i< v.size(); i++){
+				Menu menu = (Menu)v.elementAt(i);
+				
+				resetEnabling(menu);
+			}
+			}
 		}
 		}
 		catch (Exception e){
@@ -450,6 +457,11 @@ public abstract class MesquiteTrunk extends MesquiteModule
 					resetChecks(menu);
 				}
 			}
+			Vector v = mw.getOwnerModule().embeddedMenusVector;
+			for (int i = 0; i< v.size(); i++){
+				Menu menu = (Menu)v.elementAt(i);
+				resetChecks(menu);
+			}
 			
 
 		}
@@ -477,6 +489,38 @@ public abstract class MesquiteTrunk extends MesquiteModule
 				resetChecks((Menu)mi);
 			else if (mi instanceof MesquiteCheckMenuItem) {
 				((MesquiteCheckMenuItem)mi).resetCheck();
+			}
+		}
+	}
+	/*.................................................................................................................*/
+	private static void resetChecks(Menu menu, MesquiteMenuSpec menuSpec) {
+		int numItems = menu.getItemCount();
+		for (int i = 0; i<numItems; i++) {
+			MenuItem mi = menu.getItem(i);
+			if (mi instanceof MesquiteSubmenu && menuSpec == ((MesquiteSubmenu)mi).getSpecification()) {
+				((MesquiteSubmenu)mi).resetCheck();
+				resetChecks((Menu)mi);
+			}
+			else if (mi instanceof Menu)
+				resetChecks((Menu)mi, menuSpec);
+			else if (mi instanceof MesquiteCheckMenuItem && menu instanceof MesquiteSubmenu && menuSpec == ((MesquiteSubmenu)menu).getSpecification()) {
+				((MesquiteCheckMenuItem)mi).resetCheck();
+			}
+		}
+	}
+	/*.................................................................................................................*/
+	public static void resetChecks(MesquiteMenuSpec menuSpec) {
+		Enumeration e = mesquiteTrunk.windowVector.elements();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			MesquiteWindow mw = (MesquiteWindow)obj;
+			MenuBar mbar = mw.getMenuBar();
+			if (mbar!=null) {
+				int numMenus = mbar.getMenuCount();
+				for (int imenu = 0; imenu<numMenus; imenu++) {
+					Menu menu = mbar.getMenu(imenu);
+					resetChecks(menu, menuSpec);
+				}
 			}
 		}
 	}

@@ -464,7 +464,7 @@ public class ManageTrees extends TreesManager {
 			}
 			return treeFillerTask;
 		}
-	/*	else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
+		/*	else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
 			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, treeFillerTask);
 			fillingTreesNow = true;
 
@@ -485,7 +485,7 @@ public class ManageTrees extends TreesManager {
 			}
 			return null;
 		}
-		*/
+		 */
 		else if (checker.compare(this.getClass(), "Fires the tree source for use in filling newly created tree blocks",null, commandName, "fireTreeSource")) { 
 			if (treeFillerTask!=null) {
 				fireEmployee(treeFillerTask);
@@ -1305,19 +1305,31 @@ public class ManageTrees extends TreesManager {
 	}
 	/*.................................................................................................................*/
 	public Taxa findTaxaMatchingTable(TreeVector trees, MesquiteProject proj, MesquiteFile file, Vector table) {
+		ListableVector candidates = new ListableVector();
 		for (int itx=0; itx< proj.getNumberTaxas(file); itx++) { //first check in this file
 			Taxa tempTaxa = proj.getTaxa(file, itx);
 			if (trees.tableMatchesTaxa(tempTaxa, table)) {
-				return tempTaxa;
+				candidates.addElement(tempTaxa, false);
 			}
 		}
 		for (int itx=0; itx< proj.getNumberTaxas(); itx++) {//then in project as a whole
 			Taxa tempTaxa = proj.getTaxa(itx);
-			if (trees.tableMatchesTaxa(tempTaxa, table)) {
-				return tempTaxa;
+			if (candidates.indexOf(tempTaxa)<0 && trees.tableMatchesTaxa(tempTaxa, table)) {
+				candidates.addElement(tempTaxa, false);
 			}
 		}
-		return null;
+		if (candidates.size() == 0)
+			return null;
+		if (candidates.size() == 1)
+			return (Taxa)candidates.elementAt(0);
+		Listable result = ListDialog.queryList(containerOfModule(), "Choose taxa block", "There is a tree block (" + trees.getName() + ") that does not specify the taxa block to which it pertains." + 
+			" There is more than one taxa block with which it would be compatible.  Please choose its taxa block.", 
+				"", candidates, 0);
+
+		if (result == null)
+			return (Taxa)candidates.elementAt(0);
+
+		return (Taxa)result;
 	}
 	/*.................................................................................................................*/
 	public NexusBlockTest getNexusBlockTest(){ return new TreeBlockTest();}
@@ -1577,7 +1589,6 @@ public class ManageTrees extends TreesManager {
 			if (trees != null && blockComments!=null && blockComments.length()>0)
 				trees.setAnnotation(blockComments.toString(), false);
 			getProject().refreshProjectWindow();
-
 			return t;
 		}
 		if (trees !=null)
@@ -1641,7 +1652,10 @@ public class ManageTrees extends TreesManager {
 			if(trees.getWriteWeights()&& weightObject!=null && weightObject instanceof MesquiteString){
 				block.append(StringUtil.tokenize(t.getName()) + " = [&W " + ((MesquiteString)weightObject).getValue() + "] " + t.writeTree(writeMode) + StringUtil.lineEnding());
 			}
-			else block.append(StringUtil.tokenize(t.getName() )+ " = " +  t.writeTree(writeMode) + StringUtil.lineEnding());
+			else {
+				String ttt = t.writeTree(Tree.BY_TABLE);
+				block.append(StringUtil.tokenize(t.getName() )+ " = " +  t.writeTree(writeMode) + StringUtil.lineEnding());
+			}
 
 		}
 		if (tB != null) block.append(tB.getUnrecognizedCommands() + StringUtil.lineEnding());

@@ -294,7 +294,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 			setTitle(project.getName());
 		else
 			setTitle(project.getHomeFileName());
-		
+
 
 	}
 	public void fixFrontness(){
@@ -785,7 +785,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	/*.................................................................................................................*/
 	public void setSavedDimensions(int w, int h){
 		savedW = w;
-		if ((windows.size()>1)){
+		if (windows != null && (windows.size()>1)){
 			savedHWithoutTabs = h - tabHeight;
 			savedHWithTabs = h;
 		}
@@ -1268,7 +1268,17 @@ class FrameTabsPanel extends MousePanel {
 		frame.frontWindow.setExplanation(getTabTitle(whichTab));
 
 	}
-
+	private MesquiteWindow getWindow(int i){
+		try {
+			MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+			return w;
+		}
+		catch(Exception e){
+		}
+		catch(Error e){
+		}
+		return null;
+	}
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
 			int i = findTab(x);
@@ -1288,7 +1298,7 @@ class FrameTabsPanel extends MousePanel {
 					frame.toggleMinimize(i);
 				}
 				else {
-					MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(tabTouched);
+					MesquiteWindow w = getWindow(tabTouched);
 					if (isProjectWindow(w))
 						return;
 					frame.showPage(i);
@@ -1297,7 +1307,9 @@ class FrameTabsPanel extends MousePanel {
 			else if (tabTouched != MesquiteInteger.unassigned){
 				if (tabTouched<0 || tabTouched>= frame.windows.size())
 					return;
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(tabTouched);
+				MesquiteWindow w = getWindow(tabTouched);
+				if (w == null)
+					return;
 				if (w.isPoppedOut())
 					return;
 				if (MesquiteWindow.checkDoomed(w)){
@@ -1349,7 +1361,9 @@ class FrameTabsPanel extends MousePanel {
 		if (tabOver != lastTabOver && tabOver > 0 && (lefts==null || tabOver<lefts.length) ){
 			Graphics g = getGraphics();
 			if (g != null){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(tabOver);
+				MesquiteWindow w = getWindow(tabOver);
+				if (w == null)
+					return;
 				drawAndFillTab (g, w,  lefts[tabOver],  rights[tabOver],  tabOver, scaling);
 			}
 			explainTab(tabOver);
@@ -1357,7 +1371,9 @@ class FrameTabsPanel extends MousePanel {
 		if (tabOver != lastTabOver && lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length)  && lastTabOver < frame.windows.size()){
 			Graphics g = getGraphics();
 			if (g != null){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(lastTabOver);
+				MesquiteWindow w = getWindow(lastTabOver);
+				if (w == null)
+					return;
 				drawAndFillTab (g, w,  lefts[lastTabOver],  rights[lastTabOver],  lastTabOver, scaling);
 			}
 		}
@@ -1375,7 +1391,9 @@ class FrameTabsPanel extends MousePanel {
 		if (tabOver != lastTabOver && tabOver > 0 && (lefts==null || tabOver<lefts.length) ){
 			Graphics g = getGraphics();
 			if (g != null){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(tabOver);
+				MesquiteWindow w = getWindow(tabOver);
+				if (w == null)
+					return;
 				drawAndFillTab (g, w,  lefts[tabOver],  rights[tabOver],  tabOver, scaling);
 				entryTime=-1;
 			}
@@ -1383,7 +1401,9 @@ class FrameTabsPanel extends MousePanel {
 		if (tabOver != lastTabOver && lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length)  && lastTabOver < frame.windows.size()){
 			Graphics g = getGraphics();
 			if (g != null){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(lastTabOver);
+				MesquiteWindow w = getWindow(lastTabOver);
+				if (w == null)
+					return;
 				drawAndFillTab (g, w,  lefts[lastTabOver],  rights[lastTabOver],  lastTabOver, scaling);
 			}
 		}
@@ -1401,7 +1421,9 @@ class FrameTabsPanel extends MousePanel {
 		if (lastTabOver>=0 && (lefts==null || lastTabOver<lefts.length) && (lastTabOver < frame.windows.size())){
 			Graphics g = getGraphics();
 			if (g != null){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(lastTabOver);
+				MesquiteWindow w = getWindow(lastTabOver);
+				if (w == null)
+					return;
 				drawAndFillTab (g, w,  lefts[lastTabOver],  rights[lastTabOver],  lastTabOver, scaling);
 			}
 			lastTabOver = -1;
@@ -1413,7 +1435,7 @@ class FrameTabsPanel extends MousePanel {
 		if (checker.compare(this.getClass(), "Pops out the window", null, commandName, "popOut")) {
 			int i = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
 			if (MesquiteInteger.isCombinable(i)){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+				MesquiteWindow w = getWindow(i);
 				if (w != null)
 					w.setPopAsTile(false);
 				frame.popOut(i, true);
@@ -1422,7 +1444,7 @@ class FrameTabsPanel extends MousePanel {
 		else if (checker.compare(this.getClass(), "Tiles out the window", null, commandName, "tileOut")) {
 			int i = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
 			if (MesquiteInteger.isCombinable(i)){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+				MesquiteWindow w = getWindow(i);
 				if (w != null)
 					w.setPopAsTile(true);
 				frame.popOut(i, true);
@@ -1431,7 +1453,7 @@ class FrameTabsPanel extends MousePanel {
 		else if (checker.compare(this.getClass(), "Closes window", null, commandName, "closeWindow")) {
 			int i = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
 			if (MesquiteInteger.isCombinable(i)){
-				MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
+				MesquiteWindow w = getWindow(i);
 				if (w != null){
 					if (frame.goAwayOrShow(i))  //showing goaway
 						frame.windowGoAway(i);
@@ -1492,9 +1514,9 @@ class FrameTabsPanel extends MousePanel {
 		int iconWidth = 0;
 		if (icon != null || w == frame.projectWindow)
 			iconWidth = 20;
-		
-		
-			
+
+
+
 
 		drawTab(g, whichTab, w, frontness, tabLeft, tabRight, panelHeight, projectPanelWidth, w == frame.projectWindow, w instanceof SystemWindow);
 		if (w == frame.projectWindow)
@@ -1930,15 +1952,15 @@ class FrameTabsPanel extends MousePanel {
 				//	g.drawRoundRect(tabLeft, top, tabRight - tabLeft - 2, height+60, roundness, roundness);
 				g2.setColor(Color.darkGray);
 				g2.drawRoundRect(tabLeft-1, top-1, tabRight - tabLeft, height+62, roundness+1, roundness+1);  //primary edge of tab
-				
+
 				if (forceThickLine){
 					g2.setColor(ColorTheme.getContentFrame());
 					g2.fillRect(tabLeft-1, height-4, tabRight-tabLeft+1, 4);
 					g2.drawLine(tabLeft-1, height-1, tabRight, height-1);
 				}
 				else {
-				g2.setColor(Color.lightGray);
-				g2.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);//line under the tab
+					g2.setColor(Color.lightGray);
+					g2.drawLine(tabLeft-1, top+height-5, tabRight, top+height-5);//line under the tab
 				}
 			}
 		}

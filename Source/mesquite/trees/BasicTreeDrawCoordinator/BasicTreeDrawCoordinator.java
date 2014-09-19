@@ -603,7 +603,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 	}
 	static int cr = 0;
 	public void repaint(boolean resetTree) {  //TODO: this whole system needs revamping.  
-		if (ownerModule.isDoomed())
+		if (ownerModule == null || ownerModule.isDoomed())
 			return;
 
 		if (tree!=null && resetTree) {

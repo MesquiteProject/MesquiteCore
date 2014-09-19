@@ -396,7 +396,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		}
 		checkTranslationTable();
 	}
-	/** returns true if stored translation table matches the passed taxa. */
+	/** returns true if every taxon in stored translation table is found within the passed taxa. */
 	public boolean tableMatchesTaxa(Taxa taxa, Vector table) {
 		if (table==null)
 			return false;
@@ -475,6 +475,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 	long previous = -1;
 	boolean suppressNotifyL = false;
 	Thread threadOfTreeChange;
+	
 	/** For MesquiteListener interface.  Passes which object changed, along with optional integer (e.g. for character)*/
 	public void changed(Object caller, Object obj, Notification notification){
 		if (notification != null && notification.getNotificationNumber() == previous)
@@ -482,12 +483,13 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		if (notification != null)
 			previous = notification.getNotificationNumber();
 		if (obj == taxa){
-			if (Notification.appearsCosmetic(notification))
+			if (Notification.appearsCosmeticOrSelection(notification))
 				return;
 			int[] parameters = Notification.getParameters(notification);
 
 			if (parameters!=null && parameters.length>=2 && translationTable!=null)
 				translationTable.taxaModified(Notification.getCode(notification), parameters[0], parameters[1]);
+			else translationTable.cleanUpTable();
 			for (int i=0; i<size(); i++) {//modified 19 Nov 01
 				Object o = elementAt(i);
 				if (o !=null && o instanceof MesquiteTree) {

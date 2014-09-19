@@ -68,7 +68,7 @@ public class DatasetsListDuplicate extends DatasetsListUtility {
 
 			starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
 
-			boolean success = starter.concatenate(data, false, duplicateExcludedCharacters, false, false);
+			boolean success = starter.concatenate(data, false, duplicateExcludedCharacters, false, false, false, false);
 			if (success){
 				starter.setName(datas.getUniqueName(data.getName() + " (duplicate)"));
 			}

@@ -420,7 +420,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 					text[i] = table.getMatrixText(column, i);
 				}
 
-			    
 				for (int i=1; i<assoc.getNumberOfParts(); i++) {
 					for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {
 						swapParts(assoc, j, j+1, text);

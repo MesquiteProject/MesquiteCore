@@ -301,7 +301,7 @@ public class ListTable extends MesquiteTable {
 		
 			if (window.getCurrentTool()== window.arrowTool)  {
 				
-				ListAssistant assistant = window.findAssistant(column);
+					ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
 						if (!assistant.arrowTouchInRow(row, clickCount>1)){
 							if (assistant.isCellEditable(row))
@@ -312,6 +312,7 @@ public class ListTable extends MesquiteTable {
 				}
 				else
 					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+				
 			}
 			else
 				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
@@ -358,6 +359,29 @@ public class ListTable extends MesquiteTable {
 		showAnnotationAndExplanation(row);
 		if (window.getCurrentTool()== window.arrowTool) {
 			if (!window.interceptRowNameTouch(row, regionInCellH, regionInCellV, modifiers)) {
+				if (row >= 0 && MesquiteEvent.commandOrControlKeyDown(modifiers)){
+					Object a = ownerModule.getMainObject();
+					if (a instanceof ListableVector){
+						ListableVector v = (ListableVector)a;
+						if (row < v.size()){
+							Listable rObj = v.elementAt(row);
+							if (rObj instanceof FileElement){
+								FileElement hN = (FileElement)rObj;
+								MesquitePopup popup = new MesquitePopup(this);
+								hN.addToBrowserPopup(popup);
+								popup.showPopup(0, getTopOfRow(row) + getColumnNamesRowHeight() + 20);						
+								return;
+							}
+						}
+							
+					}
+					else if (a instanceof Vector){
+					}
+					else if (a instanceof Taxa){
+					}
+					else if (a instanceof CharacterData){
+					}
+				}
 				if (clickCount>1 && isRowNameEditable(row)){
 					window.setCurrentTool(window.ibeamTool);
 					window.getPalette().setCurrentTool(window.ibeamTool); 

@@ -142,7 +142,6 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 						traceLegend.resetColor(traceModule.whichColorsModified[box], traceModule.newColors[box]);
 				modColorsIncorporated = true;
 				traceModule.startingColors = traceLegend.getModColorsCommand();
-
 			}
 			String s = "";
 			if (!traceModule.showStateWeights.getValue())

@@ -1233,7 +1233,22 @@ public class MesquiteDouble implements Listable {
   		catch (NullPointerException e){}
   		return impossible;
 	}
-	
+	/** Returns whether a string can be interpreted as a double. */
+	public static boolean interpretableAsDouble(String s,  MesquiteInteger pos) {
+		int oldPos = pos.getValue();
+		boolean interpretable = fromString(s, pos)!= impossible;
+		pos.setValue(oldPos);
+		return interpretable;
+	}	
+	/** Returns whether a string can be interpreted as a double. */
+	public static boolean interpretableAsDouble(String s,  MesquiteInteger pos, int posToSet) {
+		int oldPos = pos.getValue();
+		if (posToSet >=0)
+			pos.setValue(posToSet);
+		boolean interpretable = fromString(s, pos)!= impossible;
+		pos.setValue(oldPos);
+		return interpretable;
+	}	
 	/*--------------------------------QUERY DIALOGS--------------------------*/
 	/** Presents dialog querying user for a double, with no check for minimum and maximum */
 	public static double queryDouble(MesquiteWindow parent, String title, String message, double current) {

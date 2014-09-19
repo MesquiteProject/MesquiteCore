@@ -164,6 +164,10 @@ public class Listened implements Listenable {
 			return;
 		if (listeners!=null) {
 			if (notifySuppress==0){
+				boolean timeListeners = true;
+				MesquiteTimer timer = new MesquiteTimer();
+				timer.start();
+				
 				notifications++;
 	 			if (classes !=null)
 	 				classes.record(getClass());
@@ -184,7 +188,11 @@ public class Listened implements Listenable {
 			 				if (dumpNotified && m<timers.length)
 			 					timers[m].start();
 			 				if (MesquiteTrunk.debugMode) {
+			 					timer.timeSinceLast();
 			 					ls[m].changed(caller, this, notification);
+			 					long time = timer.timeSinceLast();
+			 					if (time>20)
+			 						MesquiteMessage.println("@Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
 			 				} else {
 			 					try {
 			 						ls[m].changed(caller, this, notification);
