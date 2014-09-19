@@ -73,7 +73,6 @@ public abstract class PackageIntro extends MesquiteModule implements PackageIntr
 						java.util.List releases = (java.util.List) pagedIterable.asList();
 						for (Iterator iter = releases.iterator(); iter.hasNext();) {
 							GHRelease nextRelease = (GHRelease) iter.next();
-							Debugg.println(nextRelease.getName());
 						}
 
 					}

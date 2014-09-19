@@ -209,7 +209,7 @@ public class ExportMatricesBatch extends FileInit  {
 				alert("Sorry, no source of characters was found for Export Matrices & Batch Files");
 				return null;
 			}
-			
+			getProject().incrementProjectWindowSuppression();
 			//Need block of taxa, basename, basePath, template, number of matrices, matrix source (along with its parameters), 
     			String basePath = directoryPath + MesquiteFile.fileSeparator + baseName;
 			FileCoordinator coord = getFileCoordinator();
@@ -257,7 +257,12 @@ public class ExportMatricesBatch extends FileInit  {
 					}
 					if (!includeMatrices) {
 						System.gc();
-						template.composeAccessoryFilesReplicate(iMatrix, 0, baseName, basePath);
+						String matrixName = null;
+						if (matrix.getParentData()!= null)
+							matrixName = matrix.getParentData().getName();
+						else
+							matrixName = matrix.getName();
+						template.composeAccessoryFilesReplicate(iMatrix, matrixName, 0, baseName, basePath);
 					}
 					else if (manager != null){
 						logVerbose = manager.isLogVerbose();
@@ -283,7 +288,7 @@ public class ExportMatricesBatch extends FileInit  {
 							matrix.setBasisTree(null);
 						}
 						System.gc();
-						template.composeAccessoryFilesReplicate(iMatrix, 0, baseName, basePath);
+						template.composeAccessoryFilesReplicate(iMatrix, characterSourceTask.getMatrixName(taxa, iMatrix), 0, baseName, basePath);
 						manager.setLogVerbose(logVerbose);
 					}
 					MesquiteThread.setSuppressAllProgressIndicatorsCurrentThread(false);
@@ -326,6 +331,7 @@ public class ExportMatricesBatch extends FileInit  {
 				
 			if (progIndicator!=null) 
 				progIndicator.goAway();//���
+			getProject().decrementProjectWindowSuppression();
 			return null;
 	}
 	/*.................................................................................................................*/

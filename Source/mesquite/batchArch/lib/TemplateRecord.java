@@ -416,7 +416,7 @@ public class TemplateRecord  implements Listable, Explainable {
 		}
 	}
 	/*.................................................................................................................*/
-	public void composeAccessoryFilesReplicate(int iMatrix, int section, String baseName, String basePath){
+	public void composeAccessoryFilesReplicate(int iMatrix, String matrixName, int section, String baseName, String basePath){
 		if (outputBuffer==null)
 			return;
 		ListableVector v = snippetsNeeded();
@@ -424,6 +424,8 @@ public class TemplateRecord  implements Listable, Explainable {
 			if (outputBuffer[i] !=null){//���
 				if (!StringUtil.blank(textForEachFile[i])){
 					String s = StringUtil.replace(textForEachFile[i].toString(),"<number>",""+iMatrix);
+					if (matrixName != null)
+						s = StringUtil.replace(s,"<matrixName>",matrixName);
 					s = replaceUniversalCode(s,baseName,v);
 					if (outputBuffer[i].length()>0 && !StringUtil.blank(s))
 						outputBuffer[i].append(StringUtil.lineEnding()+StringUtil.lineEnding());
