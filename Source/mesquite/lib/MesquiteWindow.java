@@ -2519,32 +2519,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			return graphics[0].getPalette();
 		}
 		else if (checker.compare(MesquiteWindow.class, "Clones the window if possible", null, commandName, "cloneWindow")) {
-			String cloneCommand = ownerModule.getEmployer().getClonableEmployeeCommand(ownerModule);
-			if (!StringUtil.blank(cloneCommand)){
-				cloneCommand += "\ntell It;\n";
-				cloneCommand += Snapshot.getSnapshotCommands(ownerModule, null, "");
-				cloneCommand += "\nendTell;";
-				Puppeteer p = new Puppeteer(ownerModule.getEmployer());
-				MesquiteInteger pos = new MesquiteInteger(0);
-				CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
-				CommandRecord record = new CommandRecord(true);
-				MesquiteThread.setCurrentCommandRecord(record);
-				MesquiteModule.incrementMenuResetSuppression();	
-				Object obj = p.sendCommands(ownerModule.getEmployer(), cloneCommand, pos, "", false, null,CommandChecker.defaultChecker);
-				MesquiteModule.decrementMenuResetSuppression();	
+			ownerModule.getEmployer().cloneEmployee(ownerModule);
 
-				if (obj != null){
-					MesquiteWindow w = null;
-					if (obj instanceof MesquiteWindow)
-						w = (MesquiteWindow)obj;
-					else if (obj instanceof MesquiteModule)
-						w = ((MesquiteModule)obj).getModuleWindow();
-					if (w!=null)
-						w.doCommand("setLocation", Integer.toString(w.getLocation().x + 20) + " " + (w.getLocation().y + 20),CommandChecker.defaultChecker);
-				}
-
-				MesquiteThread.setCurrentCommandRecord(previous);
-			}
 		}
 		else if (checker.compare(MesquiteWindow.class, "Saves a macro that serves as a macro to reproduce an analysis or window", null, commandName, "saveMacroForWindow")) {
 			saveWindowMacro(0);
