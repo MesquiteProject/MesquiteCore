@@ -169,6 +169,10 @@ public class ConsensusTree extends TreeSource {
 	}
 	/*.................................................................................................................*/
 	public Tree getTree(Taxa taxa, int ic) {  
+		return getTree(taxa,ic,true);
+	}
+	/*.................................................................................................................*/
+	public Tree getTree(Taxa taxa, int ic, boolean verbose) {  
 		oldTaxa = taxa;
 
 		int numTrees = checkNumTrees(taxa);
@@ -180,7 +184,7 @@ public class ConsensusTree extends TreeSource {
 				iConsenser.reset(taxa);
 			boolean done = false;
 			int count = 0;
-			logln("Consensing trees ");
+			if (verbose) logln("Consensing trees ");
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
 				if (t == null)
@@ -190,13 +194,16 @@ public class ConsensusTree extends TreeSource {
 					CommandRecord.tick("Processing tree " + (i+1));
 					startTree++;
 					count++;
-					if (startTree % 1000 == 0)
-						log(" " + startTree + " ");
-					else if (count % 100==0)
-						log(".");
+					if (verbose) {
+						if (startTree % 1000 == 0)
+							log(" " + startTree + " ");
+						else if (count % 100==0)
+							log(".");
+					}
 				}
 			}
-			logln("Trees consensed");
+			if (verbose)
+				logln("Trees consensed");
 			//			if (count>0)
 			tree = iConsenser.getConsensus();
 			if (tree instanceof MesquiteTree)
@@ -210,7 +217,8 @@ public class ConsensusTree extends TreeSource {
 			if (tree instanceof MesquiteTree)
 				((MesquiteTree)tree).setName(consenser.getName() + " from " + treeSource.getNameAndParameters());
 		}
-		logln("");
+		if (verbose)
+			logln("");
 
 		return tree;
 	}
