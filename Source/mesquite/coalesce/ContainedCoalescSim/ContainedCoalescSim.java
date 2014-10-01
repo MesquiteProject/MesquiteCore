@@ -219,6 +219,16 @@ public class ContainedCoalescSim extends ContainedTreeSim {
    	 public boolean showCitation(){
    	 	return true;
    	 }
+ 	/*.................................................................................................................*/
+   	 /**@return	<p>The base population size from {@link #coalescenceTask}, if available. Returns {@code MesquiteInteger.unassigned} 
+   	  * if {@code coalescenceTask == null}.</p>*/
+   	 public int getPopulationSize() {
+   		 if (coalescenceTask != null) {
+   			 return coalescenceTask.getPopulationSize();
+   		 } else {
+   			 return MesquiteInteger.unassigned;
+   		 }
+   	 }
 }
 
 
