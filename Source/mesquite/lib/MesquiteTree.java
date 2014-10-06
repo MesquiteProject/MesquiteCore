@@ -178,12 +178,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nextSister= new int[numNodeSpaces];  
 		mother= new int[numNodeSpaces];  
 		taxonNumber= new int[numNodeSpaces];  
-		nodeOfTaxon = new int[taxa.getNumTaxa()];
 		flags = new boolean[numNodeSpaces];
 		parents = new int[numNodeSpaces][];
 		if (taxa==null)
 			MesquiteMessage.warnProgrammer(" Taxa in constructor for Tree is null ");
 		else {
+			nodeOfTaxon = new int[taxa.getNumTaxa()];
 			oldNumTaxa = taxa.getNumTaxa();
 			taxaVersion = taxa.getVersionNumber();
 			taxaIDs = taxa.getTaxaIDs();

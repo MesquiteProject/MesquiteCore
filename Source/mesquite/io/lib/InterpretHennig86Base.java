@@ -139,24 +139,35 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	}
 	/*...............................................  read tree ....................................................*/
 	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
-	public boolean readClade(MesquiteTree tree, int node, Parser treeParser) {
+	public boolean readClade(MesquiteTree tree, int node, Parser treeParser, NameReference valuesAtNodes) {
 
 		// from BasicTreeWindowMaker in Minimal
 
 		String c = treeParser.getNextToken();
 		if ("(".equals(c)){  //internal node
 			int sprouted = tree.sproutDaughter(node, false);
-			readClade(tree, sprouted, treeParser);
+			readClade(tree, sprouted, treeParser, valuesAtNodes);
 			boolean keepGoing = true;
 			while (keepGoing) {
 				int loc = treeParser.getPosition();
 				String next = treeParser.getNextToken();
-				if (")".equals(next))
+				if (")".equals(next)) {  
 					keepGoing = false;
+					loc = treeParser.getPosition();
+					next = treeParser.getNextToken();
+					 if ("=".equals(next)) {
+						next = treeParser.getNextToken();
+						int value = MesquiteInteger.fromString(next);
+						tree.setAssociatedDouble(valuesAtNodes, node, 0.01*value, true);  // value will be a percentage
+
+					//	Debugg.println("node: " + node + ", value: " + value);
+					} else
+						treeParser.setPosition(loc);
+				}
 				else {
 					treeParser.setPosition(loc);
 					sprouted = tree.sproutDaughter(node, false);
-					keepGoing = readClade(tree, sprouted, treeParser);
+					keepGoing = readClade(tree, sprouted, treeParser, valuesAtNodes);
 				}
 			}
 			return true;
@@ -179,14 +190,14 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 
 	}
 	/*.................................................................................................................*/
-	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString){
+	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString, NameReference valuesAtNodes){
 		if (StringUtil.blank(line))
 			return null;
 		Parser treeParser;
 		treeParser =  new Parser();
 		line = line.trim();
 		treeParser.setQuoteCharacter((char)0);
-		treeParser.setPunctuationString("():[];,@+");
+		treeParser.setPunctuationString("():[];,@+=");
 		String lowerLine = line.toLowerCase();
 		int treadpos = lowerLine.indexOf("tread");   // check to see it is at start
 		if (treadpos>=0){
@@ -249,7 +260,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 					MesquiteTree t = new MesquiteTree(taxa);
 					MesquiteInteger pos = new MesquiteInteger(0);
 					treeParser.setString(treeDescription);
-					readClade(t, t.getRoot(), treeParser);
+					readClade(t, t.getRoot(), treeParser, valuesAtNodes);
 					t.setAsDefined(true);
 					t.setName("Imported tree " + treeNumber);
 					return t;
@@ -1505,10 +1516,10 @@ class HennigTREAD extends HennigNonaCommand {
 			line = parser.getRawNextDarkLine();
 			tree = null;
 			if (progIndicator==null) {
-				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progress, taxa, line, false, quote);
+				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progress, taxa, line, false, quote, null);
 			}
 			else 
-				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progIndicator, taxa, line, false, quote);
+				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progIndicator, taxa, line, false, quote, null);
 			if (tree!=null)
 				trees.addElement(tree, false);
 		}

@@ -86,6 +86,10 @@ public class IntegerField  {
 		return isInteger;
 	}
 	/*.................................................................................................................*/
+	public void setValue (int value) {
+		textField.setText(MesquiteInteger.toString(value));
+	}
+	/*.................................................................................................................*/
 	public int getValue () {
 		String s = textField.getText();
 		if (s != null && s.equals("?"))
