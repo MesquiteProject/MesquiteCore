@@ -1896,6 +1896,24 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		MesquiteInteger boundary = new MesquiteInteger(0);
 		return isConvex(terminals, boundary);
 	}
+	
+	public  void convertBranchLengthToNodeValue(int node, NameReference nameRef){
+		if (nodeIsInternal(node)) {
+			double bl = getBranchLength(node); 
+			if (MesquiteDouble.isCombinable(bl)){
+				setAssociatedDouble(nameRef, node, 0.01*bl, true);  // value will be a percentage
+			}
+			for (int d = firstDaughterOfNode(node); nodeExists(d) && !nodeWasFound; d = nextSisterOfNode(d))
+				convertBranchLengthToNodeValue(d, nameRef);
+		}
+	}
+	
+	public  void convertBranchLengthsToNodeValue(String nameRefString){
+		NameReference nameRef = NameReference.getNameReference("consensusFrequency");
+		convertBranchLengthToNodeValue(getRoot(), nameRef);
+	}
+
+	
 	/*-----------------------------------------*/
 	/** Returns the nth terminal node in the clade (0 based), from left to right.  If is too low or high,
 	 returns 0.*/
