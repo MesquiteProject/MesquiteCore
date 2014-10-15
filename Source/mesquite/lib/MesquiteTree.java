@@ -627,7 +627,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		int[] newMother= new int[newNumNodeSpaces];  
 		int[] newTaxonNumber= new int[newNumNodeSpaces];  
 		int[][] newParents = new int[newNumNodeSpaces][];
+		boolean[] newFlags = new boolean[newNumNodeSpaces];
 		for (int i=0; i<numNodeSpaces && i<newNumNodeSpaces; i++) {
+			newFlags[i] = flags[i];
 			newFirstDaughter[i]=firstDaughter[i];
 			newNextSister[i]=nextSister[i];
 			newMother[i]=mother[i];
@@ -635,6 +637,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			newParents[i] = parents[i]; 
 		}
 		for (int i=numNodeSpaces; i<newNumNodeSpaces; i++) {
+			newFlags[i] = false;
 			newFirstDaughter[i]=0;
 			newNextSister[i]=0;
 			newMother[i]=0;
@@ -646,6 +649,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		mother = newMother ;
 		taxonNumber = newTaxonNumber;
 		parents=newParents;
+		flags = newFlags;
 		if (branchLength!=null) {
 			double[] newBranchLength = new double[newNumNodeSpaces];
 			for (int i=0; i<numNodeSpaces && i<newNumNodeSpaces; i++)
