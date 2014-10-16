@@ -464,7 +464,7 @@ public class ManageTrees extends TreesManager {
 			}
 			return treeFillerTask;
 		}
-		/*	else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
+		else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
 			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, treeFillerTask);
 			fillingTreesNow = true;
 
@@ -475,7 +475,7 @@ public class ManageTrees extends TreesManager {
 		else if (checker.compare(this.getClass(), "Informs Manage trees that trees are ready", "[ID of tree block filler module]", commandName, "treesReady")) { 
 			// may need to pass more info to be able to connect to right filltask etc, especially if multithreading
 			if (treeFillerTask != null){
-				TreeVector trees = new TreeVector(getProject().getTaxa(0)); -- need to get right taxa block!
+				TreeVector trees = new TreeVector(getProject().getTaxa(0)); //-- need to get right taxa block!
 				treeFillerTask.retrieveTreeBlock(trees, 100);
 				trees.addToFile(getProject().getHomeFile(), getProject(), this);
 				doneQuery(treeFillerTask, trees.getTaxa(), trees, true);
@@ -485,7 +485,7 @@ public class ManageTrees extends TreesManager {
 			}
 			return null;
 		}
-		 */
+		
 		else if (checker.compare(this.getClass(), "Fires the tree source for use in filling newly created tree blocks",null, commandName, "fireTreeSource")) { 
 			if (treeFillerTask!=null) {
 				fireEmployee(treeFillerTask);
@@ -1823,7 +1823,7 @@ class TreeBlockThread extends MesquiteThread {
 	}
 
 }
-/* ======================================================================== *
+/* ======================================================================== */
 class TreeBlockMonitorThread extends MesquiteThread {
 	ManageTrees ownerModule;
 	TreeBlockFiller fillTask;
@@ -1850,7 +1850,7 @@ class TreeBlockMonitorThread extends MesquiteThread {
 	public String getCurrentCommandExplanation(){
 		return null;
 	}
-	/*.............................................*
+	/*.............................................*/
 	public void run() {
 		Reconnectable reconnectable = fillTask.getReconnectable();
 		if (reconnectable != null){
@@ -1859,7 +1859,7 @@ class TreeBlockMonitorThread extends MesquiteThread {
 		threadGoodbye();
 
 	}
-	/*.............................................*
+	/*.............................................*/
 	public void dispose(){
 		ownerModule = null;
 		fillTask = null;

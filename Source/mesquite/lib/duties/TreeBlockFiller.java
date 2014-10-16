@@ -120,6 +120,11 @@ public abstract class TreeBlockFiller extends MesquiteModule  {
 	}
 
 
+	public void retrieveTreeBlock(TreeVector treeList, int numberIfUnlimited){
+		fillTreeBlock(treeList,numberIfUnlimited, false);
+	}
+
+
   }
 
 
