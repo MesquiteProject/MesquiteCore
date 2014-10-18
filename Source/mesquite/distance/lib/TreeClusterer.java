@@ -228,7 +228,7 @@ public abstract class TreeClusterer extends MesquiteModule {
 			return;
 		else {	
 			numDaughtersOfRoot--;  //this will be number once branch moved
-			for (int tie = 0; tie<countPairs && !progIndicator.isAborted(); tie++){
+			for (int tie = 0; tie<countPairs && !progIndicator.isAborted() && !isDoomed(); tie++){
 				int thisPath = path;
 				if (tie>0) {
 					countPaths++;
