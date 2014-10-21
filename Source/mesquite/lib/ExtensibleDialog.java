@@ -1918,9 +1918,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		MesquiteMessage.notifyUser("Values unacceptable.");
 	}
 	/*.................................................................................................................*/
-	/* David: this overridden here because dlog was getting disposed for any button, even if not primary.  Might be 
-	good to store Buttons directly and not just strings; that way to know easily if button hit was button desired */
-	public void mouseReleased(MouseEvent e){
+	public void checkForButtonHit(MouseEvent e){
 		if (e.getComponent() instanceof Button) {
 			if (e.getComponent().getBounds().contains(e.getComponent().getBounds().x+e.getX(),e.getComponent().getBounds().y+e.getY())) {
 				String label = ((Button)e.getComponent()).getLabel();
@@ -1938,6 +1936,17 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			}
 
 		}
+	}
+	/*.................................................................................................................*/
+	/* David: this overridden here because dlog was getting disposed for any button, even if not primary.  Might be 
+	good to store Buttons directly and not just strings; that way to know easily if button hit was button desired */
+	public void mouseReleased(MouseEvent e){
+		checkForButtonHit(e);
+	}
+	/*.................................................................................................................*/
+	public void mousePressed(MouseEvent e){
+		if (MesquiteTrunk.isMacOSXYosemite())  // workaround because of bug in Yosemite
+			checkForButtonHit(e);
 	}
 
 	public void selectButton(String label){ //for use by scripting & console
