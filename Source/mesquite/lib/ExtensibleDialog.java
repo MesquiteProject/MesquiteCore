@@ -125,7 +125,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		c.gridwidth=1;
 		c.gridheight=1;
 		c.fill=GridBagConstraints.BOTH;
-		c.anchor=GridBagConstraints.CENTER;
+		c.anchor=GridBagConstraints.WEST;
 		return c;
 	}
 	/*.................................................................................................................*/
@@ -222,6 +222,27 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		samePanelAsLast = false;
 		return lastPanel;
 	}
+	/*.................................................................................................................*
+	public void setAlignmentOfLastPanel (int alignment) {
+		if (lastPanel!=null) {
+			GridBagConstraints constraints = null;
+			if (currentGridBag!=null) {
+				constraints = currentGridBag.getConstraints(lastPanel);
+				if (constraints!=null) {
+					constraints.anchor = alignment;
+					currentGridBag.setConstraints(lastPanel,constraints);
+				}
+			}
+			else {
+				constraints = gridBag.getConstraints(lastPanel);
+				if (constraints!=null) {
+					constraints.anchor = alignment;
+					gridBag.setConstraints(lastPanel,constraints);
+				}
+			}
+		}
+	}
+
 	/*.................................................................................................................*/
 	public Panel addNewDialogPanel () {
 		return addNewDialogPanel(null,null);
@@ -233,6 +254,10 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public Panel addNewDialogPanel (GridBagConstraints c) {
 		return addNewDialogPanel(null, c);
+	}
+	/*.................................................................................................................*/
+	public Panel getLastPanel () {
+		return lastPanel;
 	}
 	/*.................................................................................................................*/
 	public void addToDialog (Component component, Object c) {

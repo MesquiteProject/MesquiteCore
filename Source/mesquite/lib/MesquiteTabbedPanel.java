@@ -30,7 +30,7 @@ public class MesquiteTabbedPanel extends JPanel  {
 		add(tabbedPane);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 	}
-	public void addPanel(String title, boolean setAsAddPanel){
+	public JPanel addPanel(String title, boolean setAsAddPanel){
 		JPanel panel = new JPanel();
 		tabbedPane.addTab(title, panel);
 		//panel.add(new Checkbox("testing panel " + numPanels));
@@ -38,6 +38,7 @@ public class MesquiteTabbedPanel extends JPanel  {
 		if (setAsAddPanel && dialog!=null)
 			dialog.setAddJPanel(panel);
 		numPanels++;
+		return panel;
 	}
 	public JPanel getTabPanel(int i) {
 		Component c = tabbedPane.getComponentAt(i);
