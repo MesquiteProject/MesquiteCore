@@ -302,7 +302,8 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
-
+		writeTaxaWithAllMissing = false;
+		
 		CharacterData data = findDataToExport(file, arguments);
 		Taxa t = null;
 		if (data != null)
