@@ -555,6 +555,10 @@ public class NCBIUtil {
 	}
 	/*.................................................................................................................*/
 	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps){
+		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, addNewInternalGaps, "");
+	}
+	/*.................................................................................................................*/
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps, String appendToTaxonName){
 		if (data==null)
 			return;
 		
@@ -566,10 +570,10 @@ public class NCBIUtil {
 			insertAfterTaxon = insertAfterTaxonRequested;
 		if (data instanceof ProteinData) {
 			InterpretFastaProtein importer = new InterpretFastaProtein();
-			importer.readString(data,fastaSequences, insertAfterTaxon);
+			importer.readString(data,fastaSequences, insertAfterTaxon,appendToTaxonName);
 		} else {
 			InterpretFastaDNA importer = new InterpretFastaDNA();
-			importer.readString(data,fastaSequences, insertAfterTaxon);
+			importer.readString(data,fastaSequences, insertAfterTaxon,appendToTaxonName);
 		}
 		data.setCharNumChanging(false);
 		taxa.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));

@@ -47,6 +47,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	boolean interleaveResults = false;
 	boolean adjustSequences = false;
 	boolean addInternalGaps = false;
+	boolean appendQueryName = false;
 //	boolean blastx = false;
 	int maxTime = 300;
 //	static int upperMaxHits = 30;
@@ -83,6 +84,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			adjustSequences = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("addInternalGaps".equalsIgnoreCase(tag))
 			addInternalGaps = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("appendQueryName".equalsIgnoreCase(tag))
+			appendQueryName = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("blastType".equalsIgnoreCase(tag))
 			blastType = MesquiteInteger.fromString(content);
 		else if ("eValueCutoff".equalsIgnoreCase(tag))
@@ -101,6 +104,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
 		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
 		StringUtil.appendXMLTag(buffer, 2, "addInternalGaps", addInternalGaps);  
+		StringUtil.appendXMLTag(buffer, 2, "appendQueryName", appendQueryName);  
 		StringUtil.appendXMLTag(buffer, 2, "adjustSequences", adjustSequences);  
 //		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
 		StringUtil.appendXMLTag(buffer, 2, "eValueCutoff", eValueCutoff);  
@@ -119,6 +123,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	Checkbox interleaveResultsCheckBox;
 	Checkbox adjustSequencesCheckBox;
 	Checkbox addInternalGapsCheckBox;
+	Checkbox appendQueryNameCheckBox;
 	/*.................................................................................................................*/
 	private void checkEnabling(){
 		//importCheckBox.setEnabled(!blastXCheckBox.getState());
@@ -145,6 +150,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		interleaveResultsCheckBox = dialog.addCheckBox("insert hits after sequence that was BLASTed",interleaveResults);
 		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement in needed and align imported sequences",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
+		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
 		
 		IntegerField maxTimeField = dialog.addIntegerField("Maximum time for BLAST response (seconds):",  maxTime,5);
 	//	blastXCheckBox.addItemListener(this);
@@ -165,6 +171,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			interleaveResults = interleaveResultsCheckBox.getState();
 			adjustSequences = adjustSequencesCheckBox.getState();
 			addInternalGaps = addInternalGapsCheckBox.getState();
+			appendQueryName = appendQueryNameCheckBox.getState();
 			maxTime=maxTimeField.getValue();
 			storePreferences();
 		}
@@ -266,10 +273,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			StringBuffer blastResponse = new StringBuffer();
 			String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
 
+			String appendToTaxonName = "";
+			if (appendQueryName)
+				appendToTaxonName = " ["+data.getTaxa().getTaxonName(it)+"]";
+
 
 			numTaxaAdded = data.getNumTaxa();
 			if (StringUtil.notEmpty(newSequencesAsFasta))
-				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps);
+				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, appendToTaxonName);
 			else
 				logln("BLAST database returned no sequences in response to query.");
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
