@@ -470,42 +470,6 @@ public class MolecularData extends CategoricalData {
 		return false;
 	}
 	
-	public int getNumSequenceBlocks(int it, int icStart, int icEnd) {
-		int count=0;
-		boolean inBlock=false;
-		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {
-			if (!isInapplicable(ic, it) && !inBlock){  // start of block
-				inBlock=true;
-				count++;
-			} else if (isInapplicable(ic,it) && inBlock){  // block has ended
-				inBlock=false;
-			}
-		}
-		return count;
-	}
-	
-	public void getSequenceBlockBoundaries(int it, int icStart, int icEnd, int whichBlock, MesquiteInteger blockStart, MesquiteInteger blockEnd) {
-		if (blockStart==null || blockEnd==null) 
-			return;
-		int count=0;
-		boolean inBlock=false;
-		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {
-			if (!isInapplicable(ic, it) && !inBlock){  // start of block
-				inBlock=true;
-				count++;
-				if (count==whichBlock) {
-					blockStart.setValue(ic);
-				}
-			} else if (isInapplicable(ic,it) && inBlock){  // block has ended
-				inBlock=false;
-				if (count==whichBlock) {
-					blockEnd.setValue(ic);
-				}
-			}
-		}
-		if (blockStart.isCombinable()&&!blockEnd.isCombinable()) // end didn't get assigned, but start did
-			blockEnd.setValue(getNumChars()-1);
-	}
 
 	
 	public void collapseGapsInCellBlock(int it, int icStart, int icEnd, boolean notify) {

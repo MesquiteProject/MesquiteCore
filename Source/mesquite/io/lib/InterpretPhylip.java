@@ -24,7 +24,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
-
+//TODO:   have option to not write empty taxa?
 
 /* ============  a file interpreter for Phylip files ============*/
 
