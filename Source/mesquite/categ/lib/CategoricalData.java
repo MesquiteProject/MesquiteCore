@@ -2038,6 +2038,15 @@ public class CategoricalData extends CharacterData {
 		}
 	}
 	/*..........................................  CategoricalData  ..................................................*/
+	/** appends to buffer string describing the state(s) specified in the long array s.  The first element in s is presumed (for the sake of state symbols
+	 * and state names) to correspond to character ic. */
+	public void statesIntoStringBufferCore(int ic, long[] s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+		for (int i=0; i<s.length; i++) {
+			statesIntoStringBufferCore(ic+i, s[i],  sb, forDisplay, includeInapplicable, includeUnassigned);
+		}
+	}
+
+	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
 	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay){
 		statesIntoStringBufferCore(ic,s,sb,forDisplay, true, true);
