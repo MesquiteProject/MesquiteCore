@@ -53,6 +53,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 //	static int upperMaxHits = 30;
 
 	double eValueCutoff = 10.0;
+	int wordSize  = 11;
 
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -88,6 +89,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			appendQueryName = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("blastType".equalsIgnoreCase(tag))
 			blastType = MesquiteInteger.fromString(content);
+		else if ("wordSize".equalsIgnoreCase(tag))
+			wordSize = MesquiteInteger.fromString(content);
 		else if ("eValueCutoff".equalsIgnoreCase(tag))
 			eValueCutoff = MesquiteDouble.fromString(content);
 		else if ("maxTime".equalsIgnoreCase(tag))
@@ -110,6 +113,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "eValueCutoff", eValueCutoff);  
 		StringUtil.appendXMLTag(buffer, 2, "maxHits", maxHits);  
 		StringUtil.appendXMLTag(buffer, 2, "blastType", blastType);  
+		StringUtil.appendXMLTag(buffer, 2, "wordSize", wordSize);  
 		StringUtil.appendXMLTag(buffer, 2, "saveResultsToFile", saveResultsToFile);  
 
 		preferencesSet = true;
@@ -143,6 +147,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 //		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
+		IntegerField wordSizeField = dialog.addIntegerField("Word size:",  wordSize,5,4,Integer.MAX_VALUE);
 		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
@@ -171,6 +176,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			interleaveResults = interleaveResultsCheckBox.getState();
 			adjustSequences = adjustSequencesCheckBox.getState();
 			addInternalGaps = addInternalGapsCheckBox.getState();
+			wordSize = wordSizeField.getValue();
 			appendQueryName = appendQueryNameCheckBox.getState();
 			maxTime=maxTimeField.getValue();
 			storePreferences();
@@ -314,9 +320,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		//blasterTask.setBlastx(blastx);
 		blasterTask.setBlastType(blastType);
 		if (data instanceof ProteinData)
-			blasterTask.blastForMatches("blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,response, true);
+			blasterTask.blastForMatches("blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,wordSize, response, true);
 		else {	
-			blasterTask.basicDNABlastForMatches(blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, response, true);
+			blasterTask.basicDNABlastForMatches(blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, wordSize, response, true);
 		}
 
 		BLASTResults blastResults = new BLASTResults(maxHits);

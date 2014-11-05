@@ -187,7 +187,7 @@ public class NCBIUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static String getBlastPutQueryURL(String blastType, boolean isNucleotides, String sequenceName, StringBuffer sequence,  int maxHits,  StringBuffer report){
+	public static String getBlastPutQueryURL(String blastType, boolean isNucleotides, String sequenceName, StringBuffer sequence,  int maxHits,  double eValueCutoff, int wordSize, StringBuffer report){
 		if (sequence==null)
 			return null;
 
@@ -204,6 +204,10 @@ public class NCBIUtil {
 				url+="Nucleotides";
 			else
 				url+="Protein";
+			if (wordSize>0)
+				url += "&WORD_SIZE=" + wordSize;
+			if (eValueCutoff >= 0.0)
+				url += "&EXPECT=" + eValueCutoff;
 			url += "&HITLIST_SIZE="+ maxHits + "&CMD=Put&QUERY=";
 			return url+seq;
 		}
@@ -822,9 +826,9 @@ public class NCBIUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse){
+	public static void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse){
 		StringBuffer report = new StringBuffer();
-		String searchString = NCBIUtil.getBlastPutQueryURL(blastType, isNucleotides, sequenceName, new StringBuffer(sequence),numHits, report);
+		String searchString = NCBIUtil.getBlastPutQueryURL(blastType, isNucleotides, sequenceName, new StringBuffer(sequence),numHits, eValueCutoff, wordSize, report);
 
 		if (!StringUtil.blank(searchString)) {
 			try {
