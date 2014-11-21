@@ -74,6 +74,11 @@ public class DatasetList extends ListLVModule {
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
+			assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, "#MatrixListVisible");
+			if (assistant!= null){
+				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
+				assistant.setUseMenubar(false);
+			}
 
 		}
 		resetContainingMenuBar();

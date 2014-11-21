@@ -94,7 +94,7 @@ public String preparePreferencesForXML () {
 		for (int iM = 0; iM < numMatrices; iM++){
 			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
 			if (!(data instanceof CategoricalData)){
-				discreetAlert( "You cannot merge taxa if they have character matrices that aren't categorical or molecular");
+				discreetAlert( "You cannot merge taxa if they have character matrices that aren't categorical or molecular. The character matrix that can't be merged is: " + data.getName());
 				return false;
 			}
 		}
