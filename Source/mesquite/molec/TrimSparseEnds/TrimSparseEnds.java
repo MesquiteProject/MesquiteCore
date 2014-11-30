@@ -24,8 +24,7 @@ public class TrimSparseEnds extends DNADataAlterer {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
-	int threshold = 1;  //if at least <threshhold> taxa have data, the character is kept
-
+	double percentage = 0.0;
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
@@ -37,19 +36,18 @@ public class TrimSparseEnds extends DNADataAlterer {
 			return false;
 		}
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
-			MesquiteInteger io = new MesquiteInteger(threshold);
-			boolean ok = QueryDialogs.queryInteger(containerOfModule(), "Threshold for trimming at start and end", "How many taxa need to have recorded nucleotides (i.e. non-gaps) for the site to be kept?",  true, io);
-			if (!ok)
-   				return false;
-			int temp = io.getValue();
-			if (MesquiteInteger.isCombinable(temp))
-				threshold = temp;
+			double d = MesquiteDouble.queryDouble(containerOfModule(), "Threshold for trimming at start and end", "What percentage of taxa need to have recorded nucleotides (i.e. non-gaps) for the site to be kept?",  percentage, 0.0, 100.0);
+
+			if (MesquiteDouble.isCombinable(d))
+				percentage = d;
 			else
 				return false;
 			
 		}
 		DNAData data = (DNAData)dData;
-
+		int threshold = (int)(((percentage-0.000001)/100.00)*data.getNumTaxa()) + 1;
+		if (threshold > data.getNumTaxa())
+			threshold = data.getNumTaxa();
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
 		boolean changed = false;
 		boolean passed = false;
