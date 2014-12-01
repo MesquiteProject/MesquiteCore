@@ -45,7 +45,7 @@ public class TrimSparseEnds extends DNADataAlterer {
 			
 		}
 		DNAData data = (DNAData)dData;
-		int threshold = (int)(((percentage-0.000001)/100.00)*data.getNumTaxa()) + 1;
+		int threshold = (int)(((percentage-0.000001)/100.00)*data.getNumTaxa()) + 1;  //Debugg.println this will delete if percentage is 0 and all missing; shouldn't
 		if (threshold > data.getNumTaxa())
 			threshold = data.getNumTaxa();
 		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();

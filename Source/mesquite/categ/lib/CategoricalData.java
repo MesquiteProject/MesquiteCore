@@ -1133,6 +1133,38 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns whether the character ic is inapplicable to taxon it*/
+	public  boolean isInternalInapplicable(int ic, int it){
+		if (!isInapplicable(ic, it))
+			return false;
+		// it is inappllicable.  But is it internal?  
+		if (ic< getNumChars()/2){ // first half, look left first
+			boolean foundState = false;
+			for (int icc = ic-1; icc>=0 && !foundState; icc--)  //look left for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+			foundState = false;
+			for (int icc = ic+1; icc<getNumChars() && !foundState; icc++)  //look right for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+		}
+		else {
+			boolean foundState = false;
+			for (int icc = ic+1; icc<getNumChars() && !foundState; icc++)  //look right for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+			foundState = false;
+			for (int icc = ic-1; icc>=0 && !foundState; icc--)  //look left for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+		}
+		return true;
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns whether the character ic is inapplicable to taxon it*/
 	public  boolean isInapplicable(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return(s== CategoricalState.inapplicable || s==CategoricalState.impossible);

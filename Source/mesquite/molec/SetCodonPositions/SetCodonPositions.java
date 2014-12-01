@@ -111,14 +111,22 @@ public class SetCodonPositions extends DNADataAlterer {
 	boolean skippable(int ic, DNAData data){
 		if (skipPercentage >99.99999)
 			return false;
-		int countWithoutData = 0;
-		int threshold = (int)((skipPercentage+0.000001)/100.00*data.getNumTaxa());
-		for (int it = 0; it<data.getNumTaxa() && countWithoutData<=threshold; it++)
-			if (data.isInapplicable(ic, it)) 
-				countWithoutData++;
-		if (countWithoutData>threshold)
-			return true;
-		return false;
+		
+		
+		int countWithData = 0;
+		int countInternalInapplicable = 0;
+		int keepThreshold = (int)((100-skipPercentage-0.000001)/100.00*data.getNumTaxa());
+		for (int it = 0; it<data.getNumTaxa(); it++)  // && countWithData<keepThreshold
+			if (!data.isInapplicable(ic, it)) 
+				countWithData++;
+			else if (data.isInternalInapplicable(ic, it)) 
+				countInternalInapplicable++;
+		if (countWithData>keepThreshold)
+			return false;
+		int thresholdSkip = (int)((skipPercentage+0.000001)/100.00*(countWithData + countInternalInapplicable));
+		if (countInternalInapplicable<=thresholdSkip)
+			return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	private void setPositions(int position,  boolean notify, boolean noColumnsSelected, DNAData data, MesquiteTable table){
@@ -135,9 +143,10 @@ public class SetCodonPositions extends DNADataAlterer {
 			if (modelSet != null) {
 				for (int ic=0; ic<data.getNumChars(); ic++) {
 					if (noColumnsSelected || isSelected(ic, data, table)){
-						if (skippable(ic, data)) 
+						if (skippable(ic, data)) { 
 							modelSet.setValue(ic, 0);
-
+							
+						}
 						else {
 							modelSet.setValue(ic, num);
 							num.setValue(num.getIntValue()+1);
