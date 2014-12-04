@@ -202,6 +202,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	}
 	public abstract void setRowName(int row, String name);
 	public abstract String getRowName(int row);
+	public abstract String getRowNameForSorting(int row);
 	public int getSingleNameUndoConstant() {
 		return UndoInstructions.CANTUNDO;
 	}
@@ -443,7 +444,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				String[] text = new String[assoc.getNumberOfParts()];
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
-					text[i] = getRowName(i);
+					text[i] = getRowNameForSorting(i);
 				}
 				for (int i=1; i<assoc.getNumberOfParts(); i++) {
 					for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {

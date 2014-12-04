@@ -432,7 +432,8 @@ public class ManageCharacters extends CharactersManager {
 			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
 			if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("Character List")) {
 				CharacterData data = (CharacterData)e.doCommand("getData", null, CommandChecker.defaultChecker);
-				temp.addLine("showCharacters " + getProject().getCharMatrixReferenceExternal(data), e); //getProject().getMatrixNumber(data), e); 
+				if (data != null)
+					temp.addLine("showCharacters " + getProject().getCharMatrixReferenceExternal(data), e); //getProject().getMatrixNumber(data), e); 
 			}
 		}
 		return temp;
