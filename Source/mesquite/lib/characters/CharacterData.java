@@ -1908,6 +1908,28 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 		return false;
 	}
 
+	public boolean removeTaxaThatAreEntirelyGaps(){
+		boolean removedSome = false;
+		int numT = getNumTaxa();
+		for (int it = numT; it>=0; it--){
+			if (entirelyInapplicableTaxon(it)) {
+				int numToDelete = 1;
+				int firstToDelete = it;
+				for (int it2 =it-1; it2>=0; it2--){
+					if (entirelyInapplicableTaxon(it2)) {
+						numToDelete++;
+						firstToDelete= it2;
+					} else break;
+				}
+				deleteTaxa(firstToDelete, numToDelete);
+				it=it-numToDelete+1;
+				removedSome=true;
+			}
+		}
+		return removedSome;
+	}
+
+
 
 
 	public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
@@ -2014,6 +2036,12 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 	}
 	public boolean entirelyInapplicable(int ic){
 		for (int it = 0; it< numTaxa; it++)
+			if (!isInapplicable(ic, it))
+				return false;
+		return true;
+	}
+	public boolean entirelyInapplicableTaxon(int it){
+		for (int ic = 0; ic< numChars; ic++)
 			if (!isInapplicable(ic, it))
 				return false;
 		return true;
