@@ -2538,7 +2538,7 @@ public class CategoricalData extends CharacterData {
 		for (int ic=0; ic<getNumChars(); ic++) {
 			long s1 = getState(ic,it1);
 			long s2 = getState(ic,it2);
-			if (	(s1& CategoricalState.statesBitsMask) != 0L && (s2& CategoricalState.statesBitsMask) != 0L)
+			if ((s1& CategoricalState.statesBitsMask) != 0L && (s2& CategoricalState.statesBitsMask) != 0L)
 				mergedAssigned = true;
 
 			long sMerged = CategoricalState.mergeStates(s1,s2);
@@ -2546,36 +2546,7 @@ public class CategoricalData extends CharacterData {
 		}
 		return mergedAssigned;
 	}
-	/*..........................................CategoricalData.....................................*/
-	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
-	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
-	 * unassigned + assigned or inapplicable + assigned */
-	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
-		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
-			return null;
-		boolean[] mA = new boolean[taxaToMerge.length];
-		boolean mergedAssigned = false;
-		boolean firstHasData = hasDataForTaxon(sinkTaxon);
-		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
-			if (it!=sinkTaxon && taxaToMerge[it]){
-				boolean mergingHadData = hasDataForTaxon(it);
-				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it);
-				if (mergingHadData && ! firstHasData){
-					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
-					Associable a = getTaxaInfo(false);
-					if (a != null)
-						a.swapParts(sinkTaxon, it);
-				}
-				mA[it] = ma;   
-				mergedAssigned = mergedAssigned | ma;
 
-			}
-		}
-		if (mergedAssigned)
-			return mA;
-		else
-			return null;
-	}
 
 }
 

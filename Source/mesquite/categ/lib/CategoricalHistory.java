@@ -339,7 +339,7 @@ public class CategoricalHistory extends CategoricalAdjustable implements Charact
 	/*..........................................CategoricalHistory................*/
 	public MesquiteColorTable getColorTable(MesquiteColorTable colorTable) {
 
-		if (colorTable == null || !(colorTable instanceof CategColorTable))
+		if (colorTable == null) // || !(colorTable instanceof CategColorTable))
 			return new CategColorTable();
 		return colorTable;
 	}

@@ -117,7 +117,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	protected static boolean defaultHideMesquiteWindow = false;
 	public static boolean substantivePrereleasesExist = false;
 	public static int numPrevLogs = 5;
-	
+
 	public static int  maxNumMatrixUndoTaxa = 1000;
 	public static int  maxNumMatrixUndoChars = 15000;
 
@@ -127,7 +127,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public int lastNotice = 0;  //here for phone home system
 	public int lastNoticeForMyVersion = 0;//here for phone home system
 	public int lastVersionNoticed = 0;//here for phone home system
-	
+
 	public StringBuffer jarFilesLoaded = new StringBuffer();
 
 
@@ -387,27 +387,27 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Updates the  menu items to ensure that they are enabled or disabled as appropriate.  */
 	public final static void resetMenuItemEnabling(){
 		try {
-		Enumeration e = mesquiteTrunk.windowVector.elements();
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			MesquiteWindow mw = (MesquiteWindow)obj;
-			MenuBar mbar = mw.getMenuBar();
-			if (mbar!=null) {
-				int numMenus = mbar.getMenuCount();
-				for (int imenu = 0; imenu<numMenus; imenu++) {
-					Menu menu = mbar.getMenu(imenu);
-					resetEnabling(menu);
+			Enumeration e = mesquiteTrunk.windowVector.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				MesquiteWindow mw = (MesquiteWindow)obj;
+				MenuBar mbar = mw.getMenuBar();
+				if (mbar!=null) {
+					int numMenus = mbar.getMenuCount();
+					for (int imenu = 0; imenu<numMenus; imenu++) {
+						Menu menu = mbar.getMenu(imenu);
+						resetEnabling(menu);
+					}
+				}
+				Vector v = mw.getOwnerModule().embeddedMenusVector;
+				if (v != null){
+					for (int i = 0; i< v.size(); i++){
+						Menu menu = (Menu)v.elementAt(i);
+
+						resetEnabling(menu);
+					}
 				}
 			}
-			Vector v = mw.getOwnerModule().embeddedMenusVector;
-			if (v != null){
-				for (int i = 0; i< v.size(); i++){
-				Menu menu = (Menu)v.elementAt(i);
-				
-				resetEnabling(menu);
-			}
-			}
-		}
 		}
 		catch (Exception e){
 		}
@@ -449,27 +449,31 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		if (resetCheckSuppressed)
 			return;
 		try {
-		Enumeration e = mesquiteTrunk.windowVector.elements();
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			MesquiteWindow mw = (MesquiteWindow)obj;
-			MenuBar mbar = mw.getMenuBar();
-			if (mbar!=null) {
-				int numMenus = mbar.getMenuCount();
-				for (int imenu = 0; imenu<numMenus; imenu++) {
-					Menu menu = mbar.getMenu(imenu);
-					resetChecks(menu);
+			Enumeration e = mesquiteTrunk.windowVector.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				MesquiteWindow mw = (MesquiteWindow)obj;
+				MenuBar mbar = mw.getMenuBar();
+				if (mbar!=null) {
+					int numMenus = mbar.getMenuCount();
+					for (int imenu = 0; imenu<numMenus; imenu++) {
+						Menu menu = mbar.getMenu(imenu);
+						resetChecks(menu);
+					}
 				}
-			}
-			Vector v = mw.getOwnerModule().embeddedMenusVector;
-			for (int i = 0; i< v.size(); i++){
-				Menu menu = (Menu)v.elementAt(i);
-				resetChecks(menu);
-			}
-			
+				if (mw.getOwnerModule() != null){
+					Vector v = mw.getOwnerModule().embeddedMenusVector;
+					if (v != null){
+						for (int i = 0; i< v.size(); i++){
+							Menu menu = (Menu)v.elementAt(i);
+							resetChecks(menu);
+						}
+					}
+				}
 
-		}
-		resetNeededForCheckMenuItems = false;
+
+			}
+			resetNeededForCheckMenuItems = false;
 		}
 		catch (Exception e){
 		}
@@ -481,7 +485,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 
 	/*.................................................................................................................*/
-	private static void resetChecks(Menu menu) {
+	public static void resetChecks(Menu menu) {
 		int numItems = menu.getItemCount();
 		for (int i = 0; i<numItems; i++) {
 			MenuItem mi = menu.getItem(i);

@@ -3505,6 +3505,64 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 		else
 			return "entries";
 	}
+	
+	/*..........................................CharacterData.....................................*/
+	/**merges the states for taxon it2 into it1  within this Data object */
+	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
+			return false;
+
+		boolean mergedAssigned = false;
+		CharacterState cs1= null;
+		CharacterState cs2= null;
+		for (int ic=0; ic<getNumChars(); ic++) {
+			cs1 = getCharacterState(cs1, ic,it1);
+			cs2 = getCharacterState(cs2, ic,it2);
+			if (cs1.isCombinable() && cs2.isCombinable()){ //both have states; just leave first state as is
+				mergedAssigned = true;
+			}
+			else if (cs1.isCombinable()){  // taxon 1 has state but not taxon 2; just use first
+			}
+			else if (cs2.isCombinable()){  // taxon 2 has state but not taxon 1; just use second
+				setState( ic, it1, cs2);
+			}
+			else {
+				setToUnassigned( ic, it1);
+			}
+		}
+		return mergedAssigned;
+	}
+	/*..........................................CharacterData.....................................*/
+	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
+	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
+	 * unassigned + assigned or inapplicable + assigned */
+	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
+		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
+			return null;
+		boolean[] mA = new boolean[taxaToMerge.length];
+		boolean mergedAssigned = false;
+		boolean firstHasData = hasDataForTaxon(sinkTaxon);
+		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
+			if (it!=sinkTaxon && taxaToMerge[it]){
+				boolean mergingHadData = hasDataForTaxon(it);
+				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it);
+				if (mergingHadData && ! firstHasData){
+					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
+					Associable a = getTaxaInfo(false);
+					if (a != null)
+						a.swapParts(sinkTaxon, it);
+				}
+				mA[it] = ma;   
+				mergedAssigned = mergedAssigned | ma;
+
+			}
+		}
+		if (mergedAssigned)
+			return mA;
+		else
+			return null;
+	}
+
 }
 
 

@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ancstates.ShadeStatesOnTree;
 
 import java.util.*;
+
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -154,7 +155,6 @@ class ShadeStatesDecorator extends TreeDecorator {
 			if (dataInDaughterClade)
 				anyDataInClade = true;
 		}
-
 		//This is the tracing of changes along the internode, for instance for stochastic character mapping
 		colorSequence = statesAtNodes.getColorSequenceAtNode(N, colorTable);
 		if (colorSequence != null) {

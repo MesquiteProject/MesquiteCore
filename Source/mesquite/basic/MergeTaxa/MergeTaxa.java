@@ -91,13 +91,16 @@ public String preparePreferencesForXML () {
 			return false;
 		}
 		int numMatrices = getProject().getNumberCharMatrices(taxa);
+		boolean nonCategFound = false;
 		for (int iM = 0; iM < numMatrices; iM++){
 			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
 			if (!(data instanceof CategoricalData)){
-				discreetAlert( "You cannot merge taxa if they have character matrices that aren't categorical or molecular. The character matrix that can't be merged is: " + data.getName());
-				return false;
+				nonCategFound = true;
 			}
 		}
+		if (nonCategFound)
+			discreetAlert( "Some character matrices are neither categorical nor molecular (e.g. are continuous, meristic). For these matrices, if more than one of the merged taxa have states in some characters, only the first taxon's states will be kept.");
+
 		if (!MesquiteThread.isScripting()){
 			boolean OK = AlertDialog.query(containerOfModule(), "Merge?", "Are you sure you want to merge the selected taxa?  You will not be able to undo this.  " 
 					+ "Their character states in their character matrices will be merged.  " 
@@ -171,10 +174,14 @@ public String preparePreferencesForXML () {
 	//	selected[firstSelected] = false;
 		String report = "";
 		for (int iM = 0; iM < numMatrices; iM++){
-			CategoricalData data = (CategoricalData)getProject().getCharacterMatrix(taxa, iM);
+			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
 			boolean[] ma = data.mergeTaxa(firstSelected, selected);
 			if (ma!= null){
-				report += "For matrix " + data.getName() + ", the following taxa when merged to taxon \"" + originalTaxonName + "\" required merging of character states:\n";
+				if (data instanceof CategoricalData)
+					report += "For matrix " + data.getName() + ", the following taxa when merged to taxon \"" + originalTaxonName + "\" required merging of character states:\n";
+				else
+					report += "For matrix " + data.getName() + ", states of the following taxa may have been discarded when merging with taxon \"" + originalTaxonName + "\":\n";
+					
 				for (int it = 0; it< ma.length; it++){
 					if (ma[it])
 						report += "  " + taxa.getTaxonName(it) + "\n";
@@ -194,7 +201,7 @@ public String preparePreferencesForXML () {
 			alert(report);
 		taxa.notifyListeners(this, new Notification(PARTS_DELETED));
 		for (int iM = 0; iM < numMatrices; iM++){
-			CategoricalData data = (CategoricalData)getProject().getCharacterMatrix(taxa, iM);
+			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
 			data.notifyListeners(this, new Notification(PARTS_DELETED));
 		}
 		return true;
