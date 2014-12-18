@@ -2847,6 +2847,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						boolean success = taxa.addTaxa(taxa.getNumTaxa(), 1, true);
 						if (success){
 							taxa.setTaxonName(taxa.getNumTaxa()-1, c);
+							oldNumTaxa = taxa.getNumTaxa();
+							taxaIDs = taxa.getTaxaIDs();
 							setTaxonNumber(node, taxa.getNumTaxa()-1, false);
 							inProgressAddingTaxa = false;
 							return CONTINUE;
