@@ -147,7 +147,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 //		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
-		IntegerField wordSizeField = dialog.addIntegerField("Word size:",  wordSize,5,4,Integer.MAX_VALUE);
+		IntegerField wordSizeField = dialog.addIntegerField("Word size:",  wordSize,5,0,Integer.MAX_VALUE);
 		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
