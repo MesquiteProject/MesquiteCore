@@ -46,6 +46,7 @@ public class ManageTrees extends TreesManager {
 	ListableVector treesVector;
 	ListableVector taxas;
 	TreeBlockFiller treeFillerTask;  //For make new trees block from  //Debugg.println: should have vector of these so that there isn't only one, for reentrancy etc.; also treesReady command needs to specify an id of a treeFillerTask
+	String treeFillerTaxaAssignedID = null;
 	Vector blockListeners = null;
 	boolean fillingTreesNow = false;
 	MesquiteBoolean separateThreadFill;
@@ -255,7 +256,7 @@ public class ManageTrees extends TreesManager {
 
 		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){
 			temp.addLine("restartTreeSource ", treeFillerTask);
-			temp.addLine("reconnectTreeSource ");
+			temp.addLine("reconnectTreeSource " + StringUtil.tokenize(treeFillerTaxaAssignedID));
 		}
 		else if (showTreeFiller && treeFillerTask !=null)
 			temp.addLine("setTreeSource ", treeFillerTask);
@@ -415,6 +416,7 @@ public class ManageTrees extends TreesManager {
 			if (taxa == null)
 				return null;
 			TreeBlockSource treeFillerTask;
+			treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);
 			if (StringUtil.blank(arguments))
 				treeFillerTask = (TreeBlockSource)hireEmployee(TreeBlockSource.class, "Save copies of trees blocks from:");
 			else
@@ -443,6 +445,7 @@ public class ManageTrees extends TreesManager {
 				}
 				if (!showTreeFiller){
 					fireEmployee(treeFillerTask);
+					treeFillerTaxaAssignedID = null;
 				}
 				resetAllMenuBars();
 			}
@@ -476,7 +479,8 @@ public class ManageTrees extends TreesManager {
 			return treeFillerTask;
 		}
 		else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
-			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, treeFillerTask);
+			Debugg.println("reconnectTreeSource " + arguments);
+			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, parser.getFirstToken(arguments), treeFillerTask);
 			fillingTreesNow = true;
 			fillerThreads.addElement(thread);
 
@@ -487,7 +491,8 @@ public class ManageTrees extends TreesManager {
 		else if (checker.compare(this.getClass(), "Informs Manage trees that trees are ready", "[ID of tree block filler module]", commandName, "treesReady")) { 
 			// may need to pass more info to be able to connect to right filltask etc, especially if multithreading
 			if (treeFillerTask != null){
-				TreeVector trees = new TreeVector(getProject().getTaxa(0)); //-- need to get right taxa block!
+				Debugg.println("TREES READY " + arguments);
+				TreeVector trees = new TreeVector(getProject().getTaxa(0)); //Debugg.println -- need to get right taxa block!
 				treeFillerTask.retrieveTreeBlock(trees, 100);
 				trees.addToFile(getProject().getHomeFile(), getProject(), this);
 				doneQuery(treeFillerTask, trees.getTaxa(), trees, true);
@@ -502,6 +507,7 @@ public class ManageTrees extends TreesManager {
 			if (treeFillerTask!=null) {
 				fireEmployee(treeFillerTask);
 				treeFillerTask = null;
+				treeFillerTaxaAssignedID = null;
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the tree source for use in filling newly created tree blocks", "[name of tree block filler module]", commandName, "setTreeSource")) { 
@@ -519,6 +525,7 @@ public class ManageTrees extends TreesManager {
 			if (treeFillerTask!=null) {
 				fireEmployee(treeFillerTask);
 				treeFillerTask = null;
+				treeFillerTaxaAssignedID = null;
 			}
 		}
 		else if (checker.compare(this.getClass(), "Links file with trees", null, commandName, "linkTreeFile")) { 
@@ -617,6 +624,7 @@ public class ManageTrees extends TreesManager {
 				discreetAlert( "Sorry, another new tree block is currently being filled.  You must wait for that to finish before asking for another new tree block.");
 				return null;
 			}
+			treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);
 			boolean useID = false;
 			MesquiteFile file=null;
 			String idd = parser.getNextToken();
@@ -808,6 +816,7 @@ public class ManageTrees extends TreesManager {
 		if (taxa==null || file == null)
 			return null;
 
+		treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);
 		TreeVector trees = new TreeVector(taxa);
 		if (trees == null)
 			return null;
@@ -847,6 +856,7 @@ public class ManageTrees extends TreesManager {
 			doneQuery(treeFillerTask, taxa, trees, suppressAsk);
 			if (!showTreeFiller){
 				fireEmployee(treeFillerTask);
+				treeFillerTaxaAssignedID = null;
 			}
 			if (autoSave != null && autoSave.getValue()){
 				FileCoordinator fCoord = getFileCoordinator();
@@ -1866,9 +1876,12 @@ class TreeBlockMonitorThread extends FillerThread {
 	TreeBlockFiller fillTask;
 	CommandRecord comRec = null;
 	boolean aborted = true;
-	public TreeBlockMonitorThread (ManageTrees ownerModule, TreeBlockFiller fillTask) {
+	String taxaIDString = null;
+	
+	public TreeBlockMonitorThread (ManageTrees ownerModule, String taxaID, TreeBlockFiller fillTask) {
 		super(ownerModule);
 		this.fillTask = fillTask;
+		taxaIDString = taxaID;
 		setCurrent(1);
 		CommandRecord cr = MesquiteThread.getCurrentCommandRecord();
 		boolean sc;
@@ -1891,7 +1904,7 @@ class TreeBlockMonitorThread extends FillerThread {
 	public void run() {
 		Reconnectable reconnectable = fillTask.getReconnectable();
 		if (reconnectable != null){
-			reconnectable.reconnectToRequester(new MesquiteCommand("treesReady", ownerModule));
+			reconnectable.reconnectToRequester(new MesquiteCommand("treesReady", taxaIDString, ownerModule));
 		}
 		threadGoodbye();
 

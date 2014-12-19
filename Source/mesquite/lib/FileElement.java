@@ -13,12 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Image;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
 
-import mesquite.categ.lib.CategoricalData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileCoordinator;
 
 
 
@@ -102,7 +105,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 
 	public void setAssignedIDNumber(long i){
 		assignedIDNumber = i;
-		assignedIDString = Long.toString(assignedIDNumber);
+		assignedIDString = Long.toString(assignedIDNumber);  //Debugg.println is this working?
 		if (file != null)
 			assignedIDString += "." + file.getID();
 	}
