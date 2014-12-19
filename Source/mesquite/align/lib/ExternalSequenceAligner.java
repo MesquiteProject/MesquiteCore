@@ -329,6 +329,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				tempDataFile = (MesquiteFile)coord.doCommand("linkFile", StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getProteinImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			MesquiteThread.setCurrentCommandRecord(oldCR);
 			CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
+			alignedData.removeTaxaThatAreEntirelyGaps();
 			long[][] aligned = null;
 			Taxa alignedTaxa =  alignedData.getTaxa();
 			Taxa originalTaxa =  data.getTaxa();
@@ -341,11 +342,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 				for (int it = 0; it<alignedData.getNumTaxa(); it++){
 					String name = alignedTaxa.getTaxonName(it);
 					keys[it] = MesquiteInteger.fromString(name.substring(1, name.length()));  //this is original taxon number
-					if (it<numTaxaToAlign && !MesquiteInteger.isCombinable(keys[it])) {
+					if (it<numTaxaToAlign && !MesquiteInteger.isCombinable(keys[it])) {   // unsuccessful
 						MesquiteMessage.println("Processing unsuccessful: can't find incoming taxon \"" + name+"\"");
 						MesquiteMessage.println("  Taxa in incoming: ");
 						for (int i=0; i<alignedData.getNumTaxa(); i++) {
-							MesquiteMessage.println("    "+ alignedTaxa.getTaxonName(i) + "\tsome data: " + alignedData.hasDataForTaxon(i));
+							MesquiteMessage.println("    "+ alignedTaxa.getTaxonName(i) + " (" + i + ")\tsome data: " + alignedData.hasDataForTaxon(i));
 						}
 						MesquiteMessage.println("  Number of taxa in incoming matrix: "+ alignedTaxa.getNumTaxa());
 						if (taxaToAlign!=null) {
