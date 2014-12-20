@@ -415,36 +415,36 @@ public class ManageTrees extends TreesManager {
 				taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to save copies of trees blocks?");
 			if (taxa == null)
 				return null;
-			TreeBlockSource treeFillerTask;
+			TreeBlockSource treeBlocksForExportTask;
 			treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);
 			if (StringUtil.blank(arguments))
-				treeFillerTask = (TreeBlockSource)hireEmployee(TreeBlockSource.class, "Save copies of trees blocks from:");
+				treeBlocksForExportTask = (TreeBlockSource)hireEmployee(TreeBlockSource.class, "Save copies of trees blocks from:");
 			else
-				treeFillerTask = (TreeBlockSource)hireNamedEmployee(TreeBlockSource.class, arguments);
-			if (treeFillerTask != null) {
+				treeBlocksForExportTask = (TreeBlockSource)hireNamedEmployee(TreeBlockSource.class, arguments);
+			if (treeBlocksForExportTask != null) {
 				String basePath = MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)");
 				if (StringUtil.blank(basePath)) {
-					fireEmployee(treeFillerTask);
+					fireEmployee(treeBlocksForExportTask);
 					resetAllMenuBars();
 					return null;
 				}
-				treeFillerTask.initialize(taxa);
+				treeBlocksForExportTask.initialize(taxa);
 
-				int num = treeFillerTask.getNumberOfTreeBlocks(taxa);
+				int num = treeBlocksForExportTask.getNumberOfTreeBlocks(taxa);
 				if (!MesquiteInteger.isCombinable(num))
 					num = MesquiteInteger.queryInteger(containerOfModule(), "How many trees blocks?", "How many trees blocks of which to save copies?", 10);
 				if (!MesquiteInteger.isCombinable(num)) {
-					fireEmployee(treeFillerTask);
+					fireEmployee(treeBlocksForExportTask);
 					resetAllMenuBars();
 					return null;
 				}
 				for (int iBlock = 0; iBlock<num; iBlock++){
-					TreeVector trees = treeFillerTask.getBlock(taxa, iBlock);
+					TreeVector trees = treeBlocksForExportTask.getBlock(taxa, iBlock);
 					if (trees!=null)
 						exportTreesBlock(trees, basePath + iBlock + ".nex");
 				}
 				if (!showTreeFiller){
-					fireEmployee(treeFillerTask);
+					fireEmployee(treeBlocksForExportTask);
 					treeFillerTaxaAssignedID = null;
 				}
 				resetAllMenuBars();
@@ -479,7 +479,6 @@ public class ManageTrees extends TreesManager {
 			return treeFillerTask;
 		}
 		else if (checker.compare(this.getClass(), "Reconnects to unfinished tree block filling", "[name of tree block filler module]", commandName, "reconnectTreeSource")) { 
-			Debugg.println("reconnectTreeSource " + arguments);
 			TreeBlockMonitorThread thread = new TreeBlockMonitorThread(this, parser.getFirstToken(arguments), treeFillerTask);
 			fillingTreesNow = true;
 			fillerThreads.addElement(thread);
@@ -491,8 +490,13 @@ public class ManageTrees extends TreesManager {
 		else if (checker.compare(this.getClass(), "Informs Manage trees that trees are ready", "[ID of tree block filler module]", commandName, "treesReady")) { 
 			// may need to pass more info to be able to connect to right filltask etc, especially if multithreading
 			if (treeFillerTask != null){
-				Debugg.println("TREES READY " + arguments);
-				TreeVector trees = new TreeVector(getProject().getTaxa(0)); //Debugg.println -- need to get right taxa block!
+				String taxaID = parser.getFirstToken(arguments);
+				Taxa taxa = null;
+				if (taxaID !=null)
+					taxa = getProject().getTaxa(taxaID);
+				if (taxa == null)
+					taxa = getProject().getTaxa(0);
+				TreeVector trees = new TreeVector(taxa); 
 				treeFillerTask.retrieveTreeBlock(trees, 100);
 				trees.addToFile(getProject().getHomeFile(), getProject(), this);
 				doneQuery(treeFillerTask, trees.getTaxa(), trees, true);
@@ -1904,6 +1908,7 @@ class TreeBlockMonitorThread extends FillerThread {
 	public void run() {
 		Reconnectable reconnectable = fillTask.getReconnectable();
 		if (reconnectable != null){
+			Debugg.println("refreshsuppression " + fillTask.getProject().refreshSuppression);
 			reconnectable.reconnectToRequester(new MesquiteCommand("treesReady", taxaIDString, ownerModule));
 		}
 		threadGoodbye();

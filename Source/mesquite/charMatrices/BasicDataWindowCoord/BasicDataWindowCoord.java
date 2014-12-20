@@ -116,7 +116,8 @@ public class BasicDataWindowCoord extends FileInit {
 			}
 		}
 		else { 
-			data =  getProject().getCharacterMatrixByReference(file, parser.getFirstToken(arguments), true);
+			// in general, will only show user visible matrices.  However, if arguments starts with #, then assume a direct, non-numbered request that will be obeyed even if not user visible
+			data =  getProject().getCharacterMatrixByReference(file, parser.getFirstToken(arguments), !arguments.startsWith("#"));
 		}
 		return data;
 	}

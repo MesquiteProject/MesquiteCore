@@ -1666,7 +1666,6 @@ class FrameTabsPanel extends MousePanel {
 		int edges = (intertabSpace + defaultBackEdge) * numTabs; //NOTE: this is not calculated quite properly, causing David's compaction when many windows
 		if (frame.frontMostInLocation(MesquiteFrame.POPTILE)!=null)
 			edges += 30;
-
 		//~~~~~~Setting up sizing/scaling~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		fontChosen = 0;
 		scaling = 1.0;
@@ -1694,6 +1693,7 @@ class FrameTabsPanel extends MousePanel {
 			//trial run the tab widths
 			narrowest = 500000;
 			widest = 0;
+			int totalWidth = 0;
 			//			int leftMargin = 0;
 			//			int rightMargin = panelWidth - defaultBackEdge;
 			//	int i = 0;
@@ -1732,6 +1732,7 @@ class FrameTabsPanel extends MousePanel {
 					else
 						rightMargin -= offer;		
 						 */
+						totalWidth += offer;
 						if (offer + iconWidth > widest)
 							widest = offer + iconWidth;
 						else if (offer + iconWidth < narrowest){
@@ -1746,7 +1747,7 @@ class FrameTabsPanel extends MousePanel {
 
 
 			//if some tabs are very narrow AND there is a big variance in tab size, then delete characters from long tabs and try again 			
-			if (1.0*widest/narrowest > 2.0 && narrowest < 30 && widest>30){
+			if (1.0*widest/narrowest > 2.0 && narrowest < 30 && widest>30 && totalWidth + 100 > panelWidth){
 				//Delete last character of longest string & recalculate totalString
 				int max = 0;
 				int whichMax = -1;

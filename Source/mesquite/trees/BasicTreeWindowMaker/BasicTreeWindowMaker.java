@@ -452,7 +452,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				basicTreeWindow.numTreesChanged(); 
 			}
 			else if (Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED){
-				basicTreeWindow.originalTree = null;
+				basicTreeWindow.originalTree = null;  //otree
 				basicTreeWindow.resetForTreeSource(false, false, Notification.getCode(notification)); //if switching between tree blocks, should reset to zero!  If storing tree in tree block, shouldn't!
 				basicTreeWindow.contentsChanged();
 			}
@@ -864,7 +864,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else
 			tempTree = taxa.getDefaultTree();
 
-		originalTree = tempTree;
+		originalTree = tempTree;  //otree
 		if (tempTree == null) {
 			tree = taxa.getDefaultTree();
 			usingDefaultBush = true;
@@ -1835,7 +1835,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			//originalTree = null;
 			setTree(editedTree);
 			if (firstTimeTreeSource)
-				originalTree = null;
+				originalTree = null;  //otree
 			treeEdited(false);
 		}
 
@@ -4214,7 +4214,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					tree.dispose();
 				}
 				if (resetOriginal && !treeEdited)
-					this.originalTree = treeToClone;
+					this.originalTree = treeToClone;  //otree
 				tree = treeToClone.cloneTree();
 			}
 			hookCurrentTree();

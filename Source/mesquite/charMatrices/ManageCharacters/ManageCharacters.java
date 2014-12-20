@@ -997,8 +997,9 @@ public class ManageCharacters extends CharactersManager {
 				return null;
 			}
 			else {
+				// in general, will only show user visible matrices.  However, if arguments starts with #, then assume a direct, non-numbered request that will be obeyed even if not user visible
 				//Check to see if already has lister for this
-				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), true);
+				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), !arguments.startsWith("#"));  
 				if (data != null){
 					return showCharactersList(data);
 				}
