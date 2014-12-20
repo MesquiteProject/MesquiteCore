@@ -472,6 +472,8 @@ public class ManageTrees extends TreesManager {
 			return lister;
 		}
 		else if (checker.compare(this.getClass(), "Restarts to unfinished tree block filling", "[name of tree block filler module]", commandName, "restartTreeSource")) { 
+			if (treeFillerTask != null)
+				Debugg.printStackTrace("oops restartTreeSource "+ treeFillerTask);
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
 			if (temp!=null) {
 				treeFillerTask = temp;
@@ -500,8 +502,7 @@ public class ManageTrees extends TreesManager {
 				treeFillerTask.retrieveTreeBlock(trees, 100);
 				trees.addToFile(getProject().getHomeFile(), getProject(), this);
 				doneQuery(treeFillerTask, trees.getTaxa(), trees, true);
-				fireEmployee(treeFillerTask);
-				fillingTreesNow = false;
+				fireTreeFiller();
 				resetAllMenuBars();
 			}
 			return null;
@@ -509,9 +510,7 @@ public class ManageTrees extends TreesManager {
 
 		else if (checker.compare(this.getClass(), "Fires the tree source for use in filling newly created tree blocks",null, commandName, "fireTreeSource")) { 
 			if (treeFillerTask!=null) {
-				fireEmployee(treeFillerTask);
-				treeFillerTask = null;
-				treeFillerTaxaAssignedID = null;
+				fireTreeFiller();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the tree source for use in filling newly created tree blocks", "[name of tree block filler module]", commandName, "setTreeSource")) { 
@@ -519,18 +518,13 @@ public class ManageTrees extends TreesManager {
 				discreetAlert( "Sorry, a new tree block is currently being filled.  You must wait for that to finish before setting a new tree source.");
 				return null;
 			}
+			if (treeFillerTask != null)
+				Debugg.printStackTrace("oops setTreeSource "+ treeFillerTask);
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
 			if (temp!=null) {
 				treeFillerTask = temp;
 			}
 			return treeFillerTask;
-		}
-		else if (checker.compare(this.getClass(), "Fires the tree source for use in filling newly created tree blocks",null, commandName, "fireTreeSource")) { 
-			if (treeFillerTask!=null) {
-				fireEmployee(treeFillerTask);
-				treeFillerTask = null;
-				treeFillerTaxaAssignedID = null;
-			}
 		}
 		else if (checker.compare(this.getClass(), "Links file with trees", null, commandName, "linkTreeFile")) { 
 			MesquiteModule fCoord = getFileCoordinator();
@@ -796,6 +790,13 @@ public class ManageTrees extends TreesManager {
 		}
 
 	}
+	
+	void fireTreeFiller(){
+		fireEmployee(treeFillerTask);
+		treeFillerTask = null;
+		treeFillerTaxaAssignedID = null;
+		fillingTreesNow = false;
+}
 	/*-----------------------------------------------------------------*/
 	Object newTreeBlockFilledInt(String commandName, String arguments, CommandChecker checker, boolean suppressAsk, String taskName, boolean isInference){
 		//arguments that should be accepted: (1) tree source, (2) which taxa, (3)  file id, (4) name of tree block, (5) how many trees  [number of taxa block] [identification number of file in which the tree block should be stored] [name of tree block] [how many trees to make]
@@ -859,8 +860,7 @@ public class ManageTrees extends TreesManager {
 
 			doneQuery(treeFillerTask, taxa, trees, suppressAsk);
 			if (!showTreeFiller){
-				fireEmployee(treeFillerTask);
-				treeFillerTaxaAssignedID = null;
+				fireTreeFiller();
 			}
 			if (autoSave != null && autoSave.getValue()){
 				FileCoordinator fCoord = getFileCoordinator();
@@ -1830,8 +1830,7 @@ class TreeBlockThread extends FillerThread {
 				if (!aborted){
 					if (trees.size()==before) {
 						ownerModule.alert("Sorry, no trees were returned by " + fillTask.getName());
-						ownerModule.fireEmployee(fillTask);
-						ownerModule.fillingTreesNow = false;
+						ownerModule.fireTreeFiller();
 
 					}
 					else {
@@ -1841,8 +1840,7 @@ class TreeBlockThread extends FillerThread {
 					if (trees.size()!=before)
 						ownerModule.doneQuery(fillTask, trees.getTaxa(), trees, suppressAsk);
 				}
-				ownerModule.fireEmployee(fillTask);
-				ownerModule.fillingTreesNow = false;
+				ownerModule.fireTreeFiller();
 				if (okToSave && autoSave != null && autoSave.getValue()){
 					FileCoordinator fCoord = ownerModule.getFileCoordinator();
 					fCoord.writeFile(file);
