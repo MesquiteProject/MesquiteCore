@@ -15,13 +15,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
-
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
 import java.net.*;
 
 import javax.imageio.ImageIO;
+
+import com.apple.mrj.MRJFileUtils;
+import com.apple.mrj.MRJOSType;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -177,23 +179,23 @@ public class Mesquite extends MesquiteTrunk
 				System.out.println("Not a recognized separator in path to Mesquite class!");
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			
+
 			try {
-			    URI uri = new URI(loc);
+				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
 
-			
-			
-			
+
+
+
 		}
 		else {
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			try {
-			    URI uri = new URI(loc);
+				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -866,7 +868,7 @@ public class Mesquite extends MesquiteTrunk
 	public void processSingleXMLPreference (String tag, String content) {
 		preferencesSet = true; //done to see that prefs file found; if not ask for registration
 		if ("storedManualString".equalsIgnoreCase(tag)){
-		//	storedManualString = (content);  DEFUNCT with v. 3
+			//	storedManualString = (content);  DEFUNCT with v. 3
 		}
 		else if ("textEdgeCompensationHeight".equalsIgnoreCase(tag)){
 			int iq = MesquiteInteger.fromString(content);
@@ -986,7 +988,7 @@ public class Mesquite extends MesquiteTrunk
 	String previousMesquitePath = "";
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
-	//	StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
+		//	StringUtil.appendXMLTag(buffer, 2, "storedManualString", storedManualString);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationHeight", MesquiteModule.textEdgeCompensationHeight);  
 		StringUtil.appendXMLTag(buffer, 2, "textEdgeCompensationWidth", MesquiteModule.textEdgeCompensationWidth);  
 		StringUtil.appendXMLTag(buffer, 2, "numUses", numUses);  
@@ -1193,7 +1195,7 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	private void openMesquiteFAQ(){
 		String manualPath = mesquiteWebSite + "/FAQ" ; 
-			showWebPage(manualPath, false);
+		showWebPage(manualPath, false);
 	}
 	/*End new code added April.02.07 oliver*/
 
@@ -1483,7 +1485,7 @@ public class Mesquite extends MesquiteTrunk
 		if (helpSearchManager != null)
 			helpSearchManager.searchData(s, window);
 	}
-	
+
 	public String getNumModuleStarts() {
 		StringBuffer sb=new StringBuffer();
 		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
@@ -1836,7 +1838,7 @@ public class Mesquite extends MesquiteTrunk
 					reportMemory();
 					logln("==^^^^^^^^^^^^^^^^^^^^==");
 				}
-				
+
 			}
 			logln("\n");
 			logln("All modules that have been started at least once, and the number of times they have been started:");
@@ -2030,7 +2032,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Shows home page of Mesquite", null, commandName, "showHomePage")) {
 			if (MesquiteTrunk.isApplet()) 
 				return null;
-			
+
 			String manualPath = mesquiteWebSite; 
 			//File testing = new File(manualPath);
 			showWebPage(manualPath, false);
@@ -2039,9 +2041,9 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Shows Support page of Mesquite manual", null, commandName, "showSupport")) {
 			if (MesquiteTrunk.isApplet()) 
 				return null;
-			
+
 			String manualPath = mesquiteWebSite + "/Getting+Help" ;
-				showWebPage(manualPath, false);
+			showWebPage(manualPath, false);
 		}
 		else if (checker.compare(this.getClass(), "Sets whether the Mesquite window appears automatically when no windows are showing", "[on or off]", commandName, "windowAutoShow")){
 			MesquiteWindow.autoShow = MesquiteBoolean.fromOffOnString(ParseUtil.getFirstToken(arguments, stringPos));
@@ -2294,6 +2296,8 @@ public class Mesquite extends MesquiteTrunk
 	/* separated as a constructor in v. 2. 01 in preparation for Mesquite being instantiated other than as standalone application */
 	public Mesquite(String args[]){
 		super();
+		boolean outputVersion = false;
+		boolean otherArgumentFound = false;
 		if (args !=null){
 			startupArguments = new String[args.length];
 			for (int i=0; i<args.length; i++){
@@ -2313,10 +2317,32 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.startedFromExecutable = true;
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
+					else if (args[i].equals("--version"))
+						outputVersion = true;
+					else
+						otherArgumentFound = true;
 				}
 			}
 		}
+		//if passed --version then write text file with stringForVersion, tab, stringForBuild
+		if (outputVersion){
+			Writer stream;
+			try {
+				stream = new OutputStreamWriter(new FileOutputStream("MesquiteVersion.txt"));
+				stream.write(getVersion() + "\t" + getBuildNumber());
+				stream.flush();
+				stream.close();
+			}
+			catch( Throwable e ) {
+			}
 
+			System.out.println(getVersion() + "\t" + getBuildNumber());
+			if (!otherArgumentFound){
+				if (!startedAsLibrary)
+					System.exit(0);
+				return;
+			}
+		}
 		if (MesquiteTrunk.debugMode)
 			System.out.println("main constructor 1");
 		MesquiteWindow.componentsPainted = new ClassVector();//for detecting efficiency problems

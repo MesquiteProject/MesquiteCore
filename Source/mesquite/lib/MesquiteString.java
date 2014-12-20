@@ -52,6 +52,13 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		return id;
 	}
 	
+	String referentID = null; //so that object whose name is recorded in MesquiteString can also be identified by an ID
+	public String getReferentID(){
+		return referentID;
+	}
+	public void setReferentID(String rID){
+		 referentID = rID;
+	}
 	public String getValue() {
 		if (isNull)
 			return null;
