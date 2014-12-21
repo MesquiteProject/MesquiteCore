@@ -16,6 +16,7 @@ package mesquite.charMatrices.StoredCharacters;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -117,6 +118,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 					if (MesquiteInteger.isCombinable(which)) {
 						d = getProject().getCharacterMatrixVisible(which);
 						useMatrix(taxa, d);
+						dataName.setReferentID(Long.toString(d.getID()));
 						dataName.setValue(d.getName());
 						currentChar = 0;
 						parametersChanged();
@@ -128,6 +130,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 					useFirstMatrix(taxa);
 					if (d == null)
 						return null;
+					dataName.setReferentID(Long.toString(d.getID()));
 					dataName.setValue(d.getName());
 					currentChar = 0;
 					parametersChanged();
@@ -138,6 +141,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 					taxa = d.getTaxa();
 				mss.setCompatibilityCheck(taxa);
 				useMatrix(taxa, d);
+				dataName.setReferentID(Long.toString(d.getID()));
 				dataName.setValue(d.getName());
 				currentChar = 0;
 				parametersChanged();
@@ -183,6 +187,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 				return;
 			}
 			data = null;
+			dataName.setReferentID(null);
 			dataName.setValue("No matrix is currently in use");
 		/*
 			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + " used by \"" + getEmployer().getEmployer().getName() + "\") has been deleted.  Another matrix will be sought.");
@@ -548,6 +553,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 				data.removeListener(this);
 			removeIndirectListeners(data);
 			data = tempData;
+			dataName.setReferentID(Long.toString(data.getID()));
 			dataName.setValue(data.getName());
 			data.addListener(this);
 		}
@@ -559,6 +565,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 				data.removeListener(this);
 			removeIndirectListeners(data);
 			data = tempData;
+			dataName.setReferentID(Long.toString(data.getID()));
 			dataName.setValue(data.getName());
 			data.addListener(this);
 		}

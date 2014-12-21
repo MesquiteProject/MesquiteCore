@@ -296,9 +296,10 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 	public MesquiteColorTable getColorTable(MesquiteColorTable colorTable) {
 
 	if (colorTable == null)
-			colorTable =  new ContColorTable();
+			colorTable =  new MesquiteColorTable();
 	
-	   colorTable.setMode(MesquiteColorTable.COLORS_NO_BW);
+	   if (colorTable.getMode() == MesquiteColorTable.COLORS)
+		   colorTable.setMode(MesquiteColorTable.COLORS_NO_BW);
 
 		return colorTable;
 	}

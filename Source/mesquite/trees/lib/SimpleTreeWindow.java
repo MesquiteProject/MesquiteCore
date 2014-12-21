@@ -32,6 +32,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	public int highlightedBranch=0;
 	TreeTool arrowTool;
 	String defaultExplanation;
+	ScrollPane scrollPane;
 	protected Tree tree;
 	protected SimpleTreeWindowMaker ownerModule;
 	public SimpleTreeWindow ( SimpleTreeWindowMaker ownerModule, DrawTreeCoordinator treeDrawCoordTask){
@@ -59,8 +60,10 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Analysis", MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantA.class);
 		mss = ownerModule.addSubmenu(null, "Display", MesquiteModule.makeCommand("newAssistantD",  this), TreeDisplayAssistantD.class);
 		treeDisplay =treeDrawCoordTask.createOneTreeDisplay(taxa, this); //TODO: set tree display when tree is set for first time
+		scrollPane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+		scrollPane.add(treeDisplay);
 		sizeDisplays();
-		addToWindow(treeDisplay);
+		addToWindow(scrollPane);
 		resetTitle();
 	}
 	/*.................................................................................................................*/
@@ -193,6 +196,19 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	int minFieldWidth = -1;
+	int minFieldHeight = -1;
+	public void setMinimumFieldSize(int w, int h){  // if either parameter is negative, then use natural window size
+		minFieldWidth = w;
+		minFieldHeight = h;
+	}
+	
+	public int getOrientation(){
+		if (treeDisplay == null)
+			return -1;
+		return treeDisplay.getOrientation();
+	}
 	/*.................................................................................................................*/
 	public void sizeDisplays(){
 		if (treeDisplay == null || messagePanel == null)
@@ -200,8 +216,18 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		totalWidth = getWidth();
 		totalHeight = getHeight() - 16;
 		treeDisplay.setLocation(0,0);
-		treeDisplay.setSize(totalWidth,totalHeight);
-		treeDisplay.setFieldSize(totalWidth,totalHeight);
+		scrollPane.setSize(totalWidth,totalHeight);
+		scrollPane.setLocation(0,0);
+		
+		int w = totalWidth;
+		int h = totalHeight;
+		if (w<minFieldWidth)
+			w = minFieldWidth;
+		if (h<minFieldHeight)
+			h = minFieldHeight;
+		
+		treeDisplay.setSize(w,h);
+		treeDisplay.setFieldSize(w, h);
 		messagePanel.setSize(totalWidth, 16);
 		messagePanel.setLocation(0, totalHeight);
 		resetDisplay(treeDisplay);
