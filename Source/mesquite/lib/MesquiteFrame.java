@@ -706,6 +706,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	 */
 	
 	private void reconnect(MesquiteWindow w){
+		if (w == null)
+			return;
 		if (w.getTileLocation() == RESOURCES || isPrimarylMesquiteFrame)
 			return;
 		for (int i = 0; i<windows.size(); i++){  //This is a workaround for bug in OS X Java 1.7 and higher by which panels behind would leak to panels in front
