@@ -105,7 +105,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 
 	public void setAssignedIDNumber(long i){
 		assignedIDNumber = i;
-		assignedIDString = Long.toString(assignedIDNumber);  //Debugg.println is this working?
+		assignedIDString = Long.toString(assignedIDNumber);  
 		if (file != null)
 			assignedIDString += "." + file.getID();
 	}

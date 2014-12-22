@@ -45,7 +45,7 @@ public class ManageTrees extends TreesManager {
 	}
 	ListableVector treesVector;
 	ListableVector taxas;
-	TreeBlockFiller treeFillerTask;  //For make new trees block from  //Debugg.println: should have vector of these so that there isn't only one, for reentrancy etc.; also treesReady command needs to specify an id of a treeFillerTask
+	TreeBlockFiller treeFillerTask;  //For make new trees block from  //Should have vector of these so that there isn't only one, for reentrancy etc.; also treesReady command needs to specify an id of a treeFillerTask
 	String treeFillerTaxaAssignedID = null;
 	Vector blockListeners = null;
 	boolean fillingTreesNow = false;
@@ -472,8 +472,6 @@ public class ManageTrees extends TreesManager {
 			return lister;
 		}
 		else if (checker.compare(this.getClass(), "Restarts to unfinished tree block filling", "[name of tree block filler module]", commandName, "restartTreeSource")) { 
-			if (treeFillerTask != null)
-				Debugg.printStackTrace("oops restartTreeSource "+ treeFillerTask);
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
 			if (temp!=null) {
 				treeFillerTask = temp;
@@ -518,8 +516,6 @@ public class ManageTrees extends TreesManager {
 				discreetAlert( "Sorry, a new tree block is currently being filled.  You must wait for that to finish before setting a new tree source.");
 				return null;
 			}
-			if (treeFillerTask != null)
-				Debugg.printStackTrace("oops setTreeSource "+ treeFillerTask);
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
 			if (temp!=null) {
 				treeFillerTask = temp;
@@ -1906,7 +1902,6 @@ class TreeBlockMonitorThread extends FillerThread {
 	public void run() {
 		Reconnectable reconnectable = fillTask.getReconnectable();
 		if (reconnectable != null){
-			Debugg.println("refreshsuppression " + fillTask.getProject().refreshSuppression);
 			reconnectable.reconnectToRequester(new MesquiteCommand("treesReady", taxaIDString, ownerModule));
 		}
 		threadGoodbye();
