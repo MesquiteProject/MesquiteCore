@@ -18,6 +18,7 @@ import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -50,7 +51,9 @@ public class DatasetList extends ListLVModule {
 		return true;
 	}
 	public void showListWindow(Object obj){
-		setModuleWindow(new ListableVectorWindow(this));
+		CharMatricesListWindow charMatricesListWindow = new CharMatricesListWindow(this);
+		charMatricesListWindow.setDatas(datas);
+		setModuleWindow(charMatricesListWindow); 
 		((ListableVectorWindow)getModuleWindow()).setObject(datas);
 		datas.addListener(this);
 		makeMenu("List");
