@@ -46,6 +46,10 @@ public abstract class ListAssistant extends MesquiteModule  {
 	public Color getBackgroundColorOfCell(int ic, boolean selected){
 		return null;
 	}
+	/** Gets text color for cell for row ic.  Override it if you want to change the color from the default. */
+	public Color getTextColorOfCell(int ic, boolean selected){
+		return null;
+	}
 	/*...............................................................................................................*/
 	/** returns whether or not a cell of table is editable.*/
 	public boolean isCellEditable(int row){
