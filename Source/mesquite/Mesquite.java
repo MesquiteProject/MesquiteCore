@@ -1802,10 +1802,12 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteTrunk.startupShutdownThread = Thread.currentThread();
 
 			incrementMenuResetSuppression();
+			attemptingToQuit = true;
 			if (!closeAllProjects()){
 				decrementMenuResetSuppression();
 				//CommandRecord.checkThread = true;
 				System.out.println("Quit cancelled");
+				attemptingToQuit = false;
 				return null;
 			}
 			if (debugMode){

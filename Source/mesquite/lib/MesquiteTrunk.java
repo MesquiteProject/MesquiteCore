@@ -34,6 +34,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean startedAsLibrary = false;
 	//turns on checking of classes in FileElement, NexusBlock and MesquiteCommand (possibly others), to detect memory leaks
 	public static final boolean checkMemory = false;
+	public static boolean attemptingToQuit = false;
 	public static LeakFinder leakFinderObject;
 	public static String tempDirectory ="";
 	public static String[] startupArguments = null;  //ask if flag "-myFlag" is in startupArguments by StringArray.indexOf(MesquiteTrunk.startupArguments, "-myFlag")>=0

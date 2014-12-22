@@ -107,6 +107,8 @@ public class EAWTHandler implements FileOpener {
 		public void handleQuit (ApplicationEvent e){
 			if (quitting)
 				return;
+			if (MesquiteTrunk.attemptingToQuit)
+				return;
 			quitting = true;
 			QT q = new QT();
 			String MRJversion = System.getProperty("mrj.version");
