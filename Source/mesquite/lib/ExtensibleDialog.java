@@ -1970,7 +1970,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void mousePressed(MouseEvent e){
-		if (MesquiteTrunk.isMacOSXYosemite())  // workaround because of bug in Yosemite
+		if (MesquiteTrunk.isMacOSXYosemite() && MesquiteTrunk.isJavaVersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
 			checkForButtonHit(e);
 	}
 

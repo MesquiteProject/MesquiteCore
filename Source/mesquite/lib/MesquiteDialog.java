@@ -881,7 +881,7 @@ public abstract class MesquiteDialog implements Commandable, Listable, Component
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if (MesquiteTrunk.isMacOSXYosemite() && e.getComponent() instanceof Button) {
+		if (MesquiteTrunk.isMacOSXYosemite() && MesquiteTrunk.isJavaVersionLessThan(1.7) && e.getComponent() instanceof Button) {
 			buttonHit(((Button) e.getComponent()).getLabel(), (Button) e.getComponent());
 			dispose();
 		}

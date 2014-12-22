@@ -301,10 +301,12 @@ public class MesquiteFrame extends Frame implements Commandable {
 		MesquiteWindow w = frontMostInLocation(MesquiteFrame.POPTILE);
 		if (w!= null && poptile.getComponentZOrder(w.outerContents) != 0){
 			showInLayout(w.getTileLocation(), Integer.toString(w.getID()));	
+			reconnect(w);
 		}
 		w = frontMostInLocation(MesquiteFrame.MAIN);
 		if (w != null && main.getComponentZOrder(w.outerContents) != 0){
 			showInLayout(w.getTileLocation(), Integer.toString(w.getID()));	
+			reconnect(w);
 		}
 	}
 	public void incrementPanelWidth(BetweenPanel p, int w){
@@ -365,7 +367,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (w == frontWindow)
 			return;
 		showPage(Integer.toString(w.getID()));
-
 	}
 
 	/*.................................................................................................................*/
@@ -540,6 +541,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 			 }
 		}
 
+		MesquiteWindow fw = frontMostInLocation(MAIN);
+		reconnect(fw);
 	}
 	public void popIn(MesquiteWindow w){
 		if (windows == null || (!w.popAsTile && windows.indexOf(w)>=0))  //POPOUTBUGS: If window is popped out in separate window, then this doesn't work, in part as windows.indexOf(w)=0 but there is only one window.  
@@ -648,6 +651,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 			}
 			if (!isVisible())
 				setVisible(true);
+			reconnect(w);
 		}
 		else {
 			if (w == frontWindow){
@@ -683,6 +687,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 				}
 				else if (windows.size() == 1)
 					resetSizes(true);
+				reconnect(w);
 			}
 			catch (Exception e){  //this might occur if disposing as this call is coming in
 			}
@@ -699,7 +704,53 @@ public class MesquiteFrame extends Frame implements Commandable {
 			System.out.println("      front -- " + frontWindow.getTitle());
 	}
 	 */
+	
+	private void reconnect(MesquiteWindow w){
+		if (w.getTileLocation() == RESOURCES || isPrimarylMesquiteFrame)
+			return;
+		for (int i = 0; i<windows.size(); i++){  //This is a workaround for bug in OS X Java 1.7 and higher by which panels behind would leak to panels in front
+			MesquiteWindow ww = (MesquiteWindow)windows.elementAt(i);
+			if (ww != w && ww.getTileLocation() == w.getTileLocation()){ 
+				ww.disconnectGraphics();
+			}
+		}
+		w.reconnectGraphics();
+		invalidate();
+		validate();
+		
+	}
+	
+	private void refreshGraphics(){
+		for (int i = 0; i<windows.size(); i++){  //This is a workaround for bug in OS X Java 1.7 and higher by which panels behind would leak to panels in front
+			MesquiteWindow ww = (MesquiteWindow)windows.elementAt(i);
+		//	ww.validate();
+		}
+	}
+
 	public void setAsFrontWindow(MesquiteWindow w){
+		//	frontWindow = null;
+		if (w != null && windows.indexOf(w)>=0) {
+			if (w.getOwnerModule() != null && w.getOwnerModule().isDoomed())
+				return;
+			w.readyToPaint = true;
+			frontWindow = w;
+			if (project != null && windows.indexOf(project.getCoordinatorModule().getModuleWindow())>=0)
+				project.activeWindowOfProject = w;
+			if (orderedWindows != null && orderedWindows.indexOf(w) != orderedWindows.size()-1){
+				orderedWindows.remove(w);
+				orderedWindows.addElement(w);
+			}
+		
+			reconnect(w);
+			
+
+		}	
+		if (w != null)
+			setMenuBar(w, w.getMenuBar());
+		if (tabs !=null)
+			tabs.repaint();
+	}
+	public void OLDsetAsFrontWindow(MesquiteWindow w){
 		//	frontWindow = null;
 		if (w != null && windows.indexOf(w)>=0) {
 			if (w.getOwnerModule() != null && w.getOwnerModule().isDoomed())
@@ -722,8 +773,10 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 	public void showFrontWindow(){
 		fixFrontness();
-		if (frontWindow != null)
+		if (frontWindow != null){
 			showInLayout(frontWindow.getTileLocation(), Integer.toString(frontWindow.getID()));	
+		resetSizes(true);
+	}
 	}
 	/*.................................................................................................................*/
 	/** Shows the window */
