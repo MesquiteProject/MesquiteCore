@@ -42,8 +42,6 @@ public class MatrixListVisible extends DataSetsListAssistant implements Mesquite
 		return 270;  
 	}
 	/*.................................................................................................................*/
-	ListableVector datas=null;
-	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Toggle Visibility", makeCommand("toggleVisibility", this));
 		return true;
@@ -116,15 +114,6 @@ public class MatrixListVisible extends DataSetsListAssistant implements Mesquite
 		}
 	}
 	
-	/** Gets text color for cell for row ic.  Override it if you want to change the color from the default. */
-	public Color getTextColorOfCell(int ic, boolean selected){
-		if (datas ==null || ic<0 || ic>= datas.size())
-			return null;
-		CharacterData data =((CharacterData)datas.elementAt(ic));
-		if (data!=null && !data.isUserVisible())
-			return Color.gray;
-		return null;
-	}
 
 
 	public String getWidestString(){
