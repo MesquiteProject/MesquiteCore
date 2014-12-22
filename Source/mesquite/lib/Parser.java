@@ -33,6 +33,7 @@ public class Parser extends StringUtil {
 	char quoteChar = defaultQuote;
 	boolean lineEndingsDark = false;
 	MesquiteInteger pos;
+	boolean hyphensArePartOfNumbers = true;
 	StringBuffer line = new StringBuffer(1000);
 	public Parser(){
 		pos = new MesquiteInteger(0);
@@ -567,7 +568,7 @@ public class Parser extends StringUtil {
 					recordStartOfToken();
 					buffer.append(getQuoted());
 				}
-				else if (c == '-') {
+				else if (c == '-' && hyphensArePartOfNumbers) {
 					char cod = charOnDeck(1);
 					char cod2 = charOnDeck(2);
 					if ((digits.indexOf(cod)>=0)||(cod=='.' && (digits.indexOf(cod2)>=0))) {
@@ -647,7 +648,7 @@ public class Parser extends StringUtil {
 					buffer.append(getQuotedUnaltered(buffer2).toString());
 					buffer.append(quoteChar);
 				}
-				else if (c == '-') {
+				else if (c == '-'  && hyphensArePartOfNumbers) {
 					char cod = charOnDeck(1);
 					char cod2 = charOnDeck(2);
 					if ((digits.indexOf(cod)>=0)||(cod=='.' && (digits.indexOf(cod2)>=0))) {
@@ -723,7 +724,7 @@ public class Parser extends StringUtil {
 					buffer.append(getQuotedUnaltered(buffer2).toString());
 					buffer.append(quoteChar);
 				}
-				else if (c == '-') {
+				else if (c == '-' && hyphensArePartOfNumbers) {
 					char cod = charOnDeck(1);
 					char cod2 = charOnDeck(2);
 					if ((digits.indexOf(cod)>=0)||(cod=='.' && (digits.indexOf(cod2)>=0))) {
@@ -802,7 +803,7 @@ public class Parser extends StringUtil {
 					/*�*/StringUtil.append(token, getQuotedUnaltered(buffer2));
 					token.append(quoteChar);
 				}
-				else if (c == '-') {
+				else if (c == '-' && hyphensArePartOfNumbers) {
 					char cod = charOnDeck(1);
 					char cod2 = charOnDeck(2);
 					if ((digits.indexOf(cod)>=0)||(cod=='.' && (digits.indexOf(cod2)>=0))) {
@@ -872,7 +873,7 @@ public class Parser extends StringUtil {
 					recordStartOfToken();
 					buffer.append(getQuoted());
 				}
-				else if (c == '-') {
+				else if (c == '-' && hyphensArePartOfNumbers) {
 					char cod = charOnDeck(1);
 					char cod2 = charOnDeck(2);
 					if ((digits.indexOf(cod)>=0)||(cod=='.' && (digits.indexOf(cod2)>=0))) {
@@ -1521,6 +1522,12 @@ public class Parser extends StringUtil {
 	/*.................................................................................................................*/
 	protected static boolean closingCommentBracket(char c) {
 		return (c==closeCommentBracket && allowComments);
+	}
+	public boolean getHyphensArePartOfNumbers() {
+		return hyphensArePartOfNumbers;
+	}
+	public void setHyphensArePartOfNumbers(boolean hyphensArePartOfNumbers) {
+		this.hyphensArePartOfNumbers = hyphensArePartOfNumbers;
 	}
 }
 
