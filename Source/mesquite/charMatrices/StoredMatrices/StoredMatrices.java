@@ -16,6 +16,7 @@ package mesquite.charMatrices.StoredMatrices;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -166,6 +167,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				
 			}
 			data = null;
+			dataName.setReferentID(null);
 			dataName.setValue("No matrix is currently in use");
 			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  
 				return;
@@ -188,6 +190,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				return;
 			}
 			data.addListener(this);
+			dataName.setReferentID(Long.toString(data.getID()));
 			dataName.setValue(data.getName());
 			
 			parametersChanged();
@@ -253,6 +256,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 		if (proposed != null && proposed.getTaxa() == taxa){ //new matrix being proposed
 			if (proposed == data) 
 				return;
+			dataName.setReferentID(Long.toString(proposed.getID()));
 			dataName.setValue(proposed.getName());
 			if (data !=null)
 				data.removeListener(this);

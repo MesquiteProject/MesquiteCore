@@ -1167,7 +1167,22 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** Gets the main graphics content area in which modules can add their components */
 	public Component getGraphicsZero() {
+		if (graphics == null)
+			return null;
 		return graphics[0];
+	}
+	/*.................................................................................................................*/
+	/** Hides or disconnects the main graphics panel of the window */
+	public void disconnectGraphics() {
+		if (interContents == null )
+			return;
+		outerContents.remove(interContents);
+	}
+	/** Hides or disconnects the main graphics panel of the window */
+	public void reconnectGraphics() {
+		if (interContents == null )
+			return;
+		outerContents.add(interContents, "InterContents"); 
 	}
 	/*.................................................................................................................*/
 	/** Gets the main graphics content area in which modules can add their components */
@@ -2010,7 +2025,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (vis)
 			parentFrame.setVisible(true);
 		doingShow = false;
-		if (!wasVis && vis && graphics[0]!=null && (!MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(Thread.currentThread()) || (!(this instanceof SystemWindow) && !(this instanceof mesquite.trunk.AboutWindow))))
+		if (!wasVis && vis && graphics != null && graphics[0]!=null && (!MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(Thread.currentThread()) || (!(this instanceof SystemWindow) && !(this instanceof mesquite.trunk.AboutWindow))))
 			graphics[0].requestFocusInWindow();
 	}
 	/*--------------------------------MENU BARS ----------------------------------*/

@@ -1840,6 +1840,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
+		MesquiteTrunk.resetMenuItemEnabling();
 		//resetLockImage();
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
@@ -2982,6 +2983,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		dropHighlightedBranch.setValue(0);
 		branchFrom = 0;
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
+		MesquiteTrunk.resetMenuItemEnabling();
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
 	}
@@ -3062,6 +3064,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.paletteScroll.setCurrentValue(MesquiteTree.toExternal(currentTreeNumber));
 		//resetLockImage();
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
+		MesquiteTrunk.resetMenuItemEnabling();
 		resetBaseExplanation();
 		checkPanelPositionsLegal();
 
@@ -3979,6 +3982,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				((TreeWindowAssistant)mb).setTree(tree);  
 			}
 		}
+		storeTreeMenuItem.setEnabled(!treeSourceLocked());
+		MesquiteTrunk.resetMenuItemEnabling();
 		showTreeAnnotation();
 		sizeDisplay();
 		contentsChanged();
@@ -4183,6 +4188,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return null;
 		}
 		usingDefaultBush = false;
+		originalTree = null;
 		if (treeDisplay!=null) {
 			if (treeToClone == null) {
 				if (!treeEdited){
@@ -4213,7 +4219,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					unhookPreviousTree();
 					tree.dispose();
 				}
-				if (resetOriginal && !treeEdited)
+				if (resetOriginal) // && !treeEdited)
 					this.originalTree = treeToClone;  //otree
 				tree = treeToClone.cloneTree();
 			}

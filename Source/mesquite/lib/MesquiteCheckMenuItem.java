@@ -25,7 +25,7 @@ import mesquite.lib.simplicity.InterfaceManager;
 public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandable, ActionListener, ItemListener{
 	public MesquiteCommand command, resetCommand;
 	private MesquiteModule ownerModule;
-	public String itemName;
+	public String itemName, itemID;
 	public String argument;
 	public Class dutyClass = null;
 	MesquiteBoolean checkBoolean;
@@ -59,6 +59,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 		if (specification.shortcut!=null)
 			setShortcut(new MenuShortcut(specification.shortcut.getValue(), specification.shortcutNeedsShift));
 		this.itemName = specification.itemName;
+		this.itemID = specification.referentID;
 		this.argument = specification.argument;
 		//As a test of whether it's necessary to remember ownerModule, commented out:  this.ownerModule = specification.ownerModule;
 		this.command = specification.command;
@@ -169,13 +170,26 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	public Object getReferent(){
 		return referent;
 	}
+	
+	public void setReferentID(String id){
+		itemID = id;
+	}
+	public String getReferentID(){
+		return itemID;
+	}
 	public void resetCheck() {
 		if (checkBoolean != null)
 			setState(checkBoolean.getValue());
 		else if (selected!=null) {
 			if (selected.getValue()== null)
 				setState(false);
-			else setState(selected.getValue().equals(itemName));
+			else {
+				if (selected.getReferentID() != null && itemID != null){
+					setState(selected.getValue().equals(itemName) && selected.getReferentID().equals(itemID));
+				}
+				else
+					setState(selected.getValue().equals(itemName));
+			}
 		}
 		previousState = getState();
 	}

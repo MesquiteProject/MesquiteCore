@@ -20,7 +20,7 @@ import mesquite.lib.duties.*;
 /**A tree block.  Trees are added to it when trees are read from file or stored.  Many methods could be built here, for 
 instance to go through all trees and prune taxa deleted.
 Translation table is stored with each TreeVector.*/
-public class TreeVector extends ListableVector implements Trees, Commandable, CompatibilityChecker, MesquiteListener {
+public class TreeVector extends ListableVector implements Trees, Commandable, Identifiable, CompatibilityChecker, MesquiteListener {
 	Taxa taxa = null;
 	TranslationTable translationTable;
 	public static long totalCreated = 0;

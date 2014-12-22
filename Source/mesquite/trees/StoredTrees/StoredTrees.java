@@ -102,6 +102,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					return null;
 				if (lastUsedTreeBlock !=null) 
 					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
 				lastUsedTreeBlock = currentTreeBlock;
@@ -122,6 +123,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					return null;
 				if (lastUsedTreeBlock !=null) 
 					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
 				currentTreeBlockID = currentTreeBlock.getID();
@@ -142,6 +144,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				currentTreeBlock = tr;
 				if (lastUsedTreeBlock !=null) 
 					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
 				currentTreeBlockID = currentTreeBlock.getID();
@@ -411,9 +414,11 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (currentTreeBlock != null)
 			currentTreeBlockID = currentTreeBlock.getID();
 
-		if (blockName != null && currentTreeBlock != null)
+		if (blockName != null && currentTreeBlock != null){
+		blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 			blockName.setValue(currentTreeBlock.getName());
-
+		}
+		
 		if (lastUsedTreeBlock!=currentTreeBlock) {
 			if (lastUsedTreeBlock !=null) 
 				lastUsedTreeBlock.removeListener(this);

@@ -80,6 +80,7 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 	protected void newResultsAvailable(TaxaSelectionSet outgroupSet){
 		MesquiteString title = new MesquiteString();
 		Tree tree = getLatestTree(null, null, title);
+		
 		if (tree instanceof AdjustableTree) {
 			((AdjustableTree)tree).standardize(outgroupSet, false);
 		}
@@ -87,8 +88,25 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 		if (tree != null && tWindowMaker != null){ 
 			tWindowMaker.setTree(tree);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
-			if (title.isBlank() && w != null && w instanceof SimpleTreeWindow)
-				((SimpleTreeWindow)w).setWindowTitle(title.getValue());
+			if (w != null && w instanceof SimpleTreeWindow){
+				SimpleTreeWindow stw = (SimpleTreeWindow)w;
+				if (title.isBlank())
+					stw.setWindowTitle(title.getValue());
+				
+				int taxonSpacing = 14;
+				int numTaxaInTree = tree.numberOfTerminalsInClade(tree.getRoot());
+				int orientation = stw.getOrientation();
+				if (orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT){
+					stw.setMinimumFieldSize(-1, numTaxaInTree*taxonSpacing);  
+				}
+				else if (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN){
+					stw.setMinimumFieldSize(numTaxaInTree*taxonSpacing, -1);  
+				}
+				else 
+					stw.setMinimumFieldSize(-1, -1); 
+				stw.sizeDisplays();
+				
+			}
 			String commands = getExtraIntermediateTreeWindowCommands();
 			if (!StringUtil.blank(commands)) {
 				if (w != null){

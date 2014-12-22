@@ -61,7 +61,7 @@ public class NumberForMatricesFP extends FileProcessor {
 	}
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
-   	 	return false;
+   	 	return true;
    	 }
 	/*.................................................................................................................*/
    	 public boolean isSubstantive(){
