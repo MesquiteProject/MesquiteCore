@@ -125,7 +125,7 @@ public class Histogram extends DrawChart {
 			sizeItem = addMenuItem("Drawing Size...", sizeDrawingCommand);
 			 */
 			MesquiteSubmenuSpec analysis = addSubmenu(null, "Analysis", makeCommand("newAssistant", this), HistogramAssistantA.class);
-			MesquiteSubmenuSpec mCloseAsst = addSubmenu(null, "Close");
+			MesquiteSubmenuSpec mCloseAsst = addSubmenu(null, "Close Analysis");
 			addMenuItem("-", null);
 			mCloseAsst.setList(getEmployeeVector());
 			mCloseAsst.setListableFilter(HistogramAssistantA.class);
