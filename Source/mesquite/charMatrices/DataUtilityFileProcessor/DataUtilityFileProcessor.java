@@ -62,7 +62,7 @@ public class DataUtilityFileProcessor extends FileProcessor {
 	}
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
-   	 	return true;
+   	 	return false;
    	 }
 	/*.................................................................................................................*/
    	 public boolean isSubstantive(){
@@ -76,7 +76,7 @@ public class DataUtilityFileProcessor extends FileProcessor {
  	}
  	/*.................................................................................................................*/
  	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
- 		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setDataUtility")) {
+ 		if (checker.compare(this.getClass(), "Sets the data utility module", "[name of module]", commandName, "setDataUtility")) {
  			DataUtility temp =  (DataUtility)replaceEmployee(DataUtility.class, arguments, "Data utility", utilityTask);
  			if (temp!=null) {
  				utilityTask = temp;
