@@ -5601,7 +5601,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		MesquiteMessage.warnProgrammer(warning);
 		return false;
 	}
-	private void reconcileTaxa(int code, Notification notification){
+	public void reconcileTaxa(int code, Notification notification){
 		//check id list of taxa to see that it matches; otherwise add or subtract taxa;  ASSUMES TAXA DELETED OR ADDED BUT NOT MOVED!!!!!!
 		int newNumTaxa = taxa.getNumTaxa();
 		if (newNumTaxa == oldNumTaxa) {
