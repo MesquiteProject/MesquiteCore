@@ -68,7 +68,10 @@ public class SortTaxaByTree extends TreeUtility {
 		}
 	}
 	public boolean isSubstantive(){
-		return false;
+		return true;
+	}
+	public boolean isPrerelease(){
+		return true;
 	}
 	/*.................................................................................................................*/
     	 public String getName() {

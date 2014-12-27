@@ -1778,7 +1778,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		ExtensibleDialog queryDialog = new ExtensibleDialog(this, "Retain Edited Tree?",buttonPressed);  
 		queryDialog.addLabel("Retain Edited Tree?");
 		queryDialog.addLargeOrSmallTextLabel("The tree in the window has been edited but not saved.  " +
-				"Do you want to go to the new tree, or do you want to continue to show the edited tree in the window?\n\nIf you continue, remember that the tree " 
+				"Do you want to go to the new tree, or do you want to continue to show the edited tree in the window?\n\nIf you continue to show the edited tree, remember that the tree " 
 				+ "shown might not come from the source of trees currently used by the window.");
 
 		queryDialog.appendToHelpString( "If you choose to continue showing the edited tree, you can store the edited tree by selecting Store Tree As from the Tree menu."
