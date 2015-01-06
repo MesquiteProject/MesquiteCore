@@ -75,12 +75,12 @@ public class SortTaxaByTree extends TreeUtility {
 	}
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Sort Taxa By Order in Tree";
+		return "Reorder Taxa By Tree";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Sorts taxa to match the order in the tree.";
+ 		return "Reorders taxa to match the order in the tree.";
    	 }
    	 
 }

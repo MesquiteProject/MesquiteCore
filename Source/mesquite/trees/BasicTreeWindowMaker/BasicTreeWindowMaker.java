@@ -1758,8 +1758,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(this, "Retain Edited Tree?",buttonPressed);  
 		queryDialog.addLabel("Retain Edited Tree?");
-		queryDialog.addLargeOrSmallTextLabel("If you have edited a tree in the tree window, then you ask for a change in the tree source, do you want retain the edited tree, or immediately " +
-				" go to the new tree implied by the change in the tree source?  Choose an option:");
+		queryDialog.addLargeOrSmallTextLabel("If you have edited a tree in the tree window, then you ask for a change in the tree source, do you want retain the edited tree, or go immediately " +
+				" to the new tree implied by the change in the tree source?  Choose an option:");
 		RadioButtons alignRadios = queryDialog.addRadioButtons(new String[] {"Switch to new tree, but remember edited tree for later recovery", 
 				"Continue to show edited tree", "Ask each time whether to continue with the edited tree, or switch to the new tree"}, editedTreeMODE);
 

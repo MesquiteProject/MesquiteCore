@@ -674,6 +674,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 					poptileLayout.removeLayoutComponent(w.getOuterContentsArea());	
 					poptile.remove(w.getOuterContentsArea());
 				}
+				int loc = w.getTileLocation();
 				windows.removeElement(w);
 				w.removedFromParent();
 				orderedWindows.removeElement(w);
@@ -687,7 +688,9 @@ public class MesquiteFrame extends Frame implements Commandable {
 				}
 				else if (windows.size() == 1)
 					resetSizes(true);
-				reconnect(w);
+				MesquiteWindow fw = frontMostInLocation(loc);
+				if (fw != null)
+					reconnect(fw);
 			}
 			catch (Exception e){  //this might occur if disposing as this call is coming in
 			}
