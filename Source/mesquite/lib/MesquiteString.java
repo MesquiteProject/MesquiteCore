@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -47,17 +47,17 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		this(value);
 		this.name = name;
 	}	
-	
+
 	public long getID(){
 		return id;
 	}
-	
+
 	String referentID = null; //so that object whose name is recorded in MesquiteString can also be identified by an ID
 	public String getReferentID(){
 		return referentID;
 	}
 	public void setReferentID(String rID){
-		 referentID = rID;
+		referentID = rID;
 	}
 	public String getValue() {
 		if (isNull)
@@ -90,9 +90,9 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		if (s==null)
 			return false;
 		return ("?".equals(s) || "unassigned".equalsIgnoreCase(s) || "estimate".equalsIgnoreCase(s));
-		
+
 	}
-	
+
 	public void setValue(String value) {
 		setValue(value, true);
 	}
@@ -103,9 +103,10 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		}
 		setValue(value.toString(), true);
 	}
-	
+
 	public void setValue(String value, boolean notify) {
 		if (value==null){
+			sb.setLength(0);
 			if (!isNull){
 				isNull = true;
 				if (bound)
@@ -128,9 +129,11 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 				MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
 		}
 	}
-	
+
 	public void append(String value) {
 		if (value!=null) {
+			if (isNull)
+				sb.setLength(0);
 			isNull = false;
 			sb.append(value);
 			if (bound)
@@ -140,8 +143,13 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 	}
 	public void prepend(String value) {
 		if (value!=null) {
-			isNull = false;
-			sb.insert(0,value);
+			if (isNull){
+				sb.setLength(0);
+				isNull = false;
+				sb.append(value);
+			}
+			else
+				sb.insert(0,value);
 			if (bound)
 				MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
 			notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
@@ -179,9 +187,9 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		return io.getValue();
 	}
 	public static void queryTwoStrings(MesquiteWindow parent, String title, String label1, String label2, MesquiteBoolean answer, MesquiteString resp1, MesquiteString resp2, boolean secondLong) {
-		 new TwoStringsDialog(parent, title, label1, label2, answer, resp1, resp2,false, secondLong);
+		new TwoStringsDialog(parent, title, label1, label2, answer, resp1, resp2,false, secondLong);
 	}
- 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 }
 
 

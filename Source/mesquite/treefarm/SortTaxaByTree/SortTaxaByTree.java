@@ -44,8 +44,6 @@ public class SortTaxaByTree extends TreeUtility {
 			tree.reconcileTaxa(MesquiteListener.PARTS_MOVED, null);
 		}
 		taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
-
-//		taxa.moveTaxa(taxon, 1, count.getValue(), false);
 	}
 	
 	
@@ -71,7 +69,7 @@ public class SortTaxaByTree extends TreeUtility {
 		return true;
 	}
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
     	 public String getName() {
