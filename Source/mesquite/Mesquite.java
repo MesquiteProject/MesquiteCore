@@ -38,24 +38,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2014.  Mesquite: A modular system for evolutionary analysis.  Version 3.01.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.02.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.01";
+		return "3.02";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 301;
+		return 302;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.01;
+		return 3.02;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "September 2014"; //"April 2007";
+		return "January 2015"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -67,7 +67,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -329,7 +329,7 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2014 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2015 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"

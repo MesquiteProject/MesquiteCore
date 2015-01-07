@@ -347,6 +347,8 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	}
 	public void windowResized(){
 		if (contents != null){
+			explanation.setSize(getWidth(), getHeight());
+			contents.setSize(getWidth(), getHeight());
 			contents.invalidate();
 			contents.validate();
 		}

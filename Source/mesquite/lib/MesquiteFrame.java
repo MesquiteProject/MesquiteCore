@@ -948,6 +948,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 		storeInsets(insets);
 		int effectiveResourcesWidth = resourcesWidth;
 		boolean effectiveResourcesFullWindow = resourcesFullWindow;
+	if (windows == null)
+			return;
 		if (windows.size()==1 && frontMostInLocation(RESOURCES)!= null)
 			effectiveResourcesFullWindow= true;
 		if (resourcesClosedWhenMinimized)
@@ -1061,7 +1063,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 				resources.doLayout();
 				main.doLayout();
 			}
-			if (resizeContainedWindows){
+			if (resizeContainedWindows & windows != null){
 				for (int i = 0; i<windows.size(); i++){
 					MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 					try {
