@@ -1781,7 +1781,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				"Do you want to go to the new tree, or do you want to continue to show the edited tree in the window?\n\nIf you continue to show the edited tree, remember that the tree " 
 				+ "shown might not come from the source of trees currently used by the window.");
 
-		queryDialog.appendToHelpString( "If you choose to continue showing the edited tree, you can store the edited tree by selecting Store Tree As from the Tree menu."
+		queryDialog.appendToHelpString( "If you choose to go to the new tree, you may be able to recover the edited tree by selecting Recover Last Edited Tree in the Tree menu. " 
+				+ "\n\nIf you choose to continue showing the edited tree, you can store the edited tree by selecting Store Tree As from the Tree menu."
 				+ " To see a tree that belongs to the source of trees used by the window, hit the Enter arrow of the " 
 				+ "Tree scroll in the upper left of the tree window.");
 		Checkbox dontAsk = queryDialog.addCheckBox("Don't ask again. (To change preference, choose Edited Tree Handling Options from the Tree menu.)", false);		
