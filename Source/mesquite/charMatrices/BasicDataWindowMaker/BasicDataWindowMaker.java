@@ -197,6 +197,8 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 
 	/* ................................................................................................................. */
 	public CharacterData getCharacterData() {
+		if (data.isDisposed())
+			return null;
 		return data;
 	}
 

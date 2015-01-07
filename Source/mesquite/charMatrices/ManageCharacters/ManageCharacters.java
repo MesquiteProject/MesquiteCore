@@ -432,7 +432,8 @@ public class ManageCharacters extends CharactersManager {
 			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
 			if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("Character List")) {
 				CharacterData data = (CharacterData)e.doCommand("getData", null, CommandChecker.defaultChecker);
-				temp.addLine("showCharacters " + getProject().getCharMatrixReferenceExternal(data), e); //getProject().getMatrixNumber(data), e); 
+				if (data != null)
+					temp.addLine("showCharacters " + getProject().getCharMatrixReferenceExternal(data), e); //getProject().getMatrixNumber(data), e); 
 			}
 		}
 		return temp;
@@ -996,8 +997,9 @@ public class ManageCharacters extends CharactersManager {
 				return null;
 			}
 			else {
+				// in general, will only show user visible matrices.  However, if arguments starts with #, then assume a direct, non-numbered request that will be obeyed even if not user visible
 				//Check to see if already has lister for this
-				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), true);
+				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), !arguments.startsWith("#"));  
 				if (data != null){
 					return showCharactersList(data);
 				}

@@ -18,6 +18,7 @@ import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -234,10 +235,16 @@ class ModelsListWindow extends ListWindow implements MesquiteListener {
 		}
 	}
 	public String getRowName(int row){
-		if (models!=null)
+		if (models!=null){
+			if (row<0 && row >= models.size())
+				return null;
 			return ((Listable)models.elementAt(row)).getName();
+		}
 		else
 			return null;
+	}
+	public String getRowNameForSorting(int row){
+		return getRowName(row);
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/

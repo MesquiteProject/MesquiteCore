@@ -205,13 +205,16 @@ public class QueryDialogs  {
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
-	public static boolean queryString(MesquiteWindow parent, String title, String message, MesquiteString value, int numRows, boolean hasDefault, boolean useSmallText) {
+	public static boolean queryString(MesquiteWindow parent, String title, String message, String help, MesquiteString value, int numRows, boolean hasDefault, boolean useSmallText) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(parent, title,buttonPressed);
 		if (!hasDefault)
 			queryDialog.setDefaultButton(null);
 		if (StringUtil.blank(queryDialog.getHelpString()) && queryDialog.isInWizard())
-			queryDialog.appendToHelpString("<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a string of text.");
+			queryDialog.appendToHelpString("<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a string of text. ");
+		if (StringUtil.notEmpty(help))
+			queryDialog.appendToHelpString(help);
+
 		queryDialog.addLargeOrSmallTextLabel(message);
 		SingleLineTextArea textArea = queryDialog.addSingleLineTextArea(value.getValue(),numRows);
 		textArea.addKeyListener(queryDialog);
@@ -228,6 +231,10 @@ public class QueryDialogs  {
 		if (buttonPressed.getValue()!=0) 
 			value.setValue((String)null);
 		return (buttonPressed.getValue()==0);
+	}
+	/*.................................................................................................................*/
+	public static boolean queryString(MesquiteWindow parent, String title, String message, MesquiteString value, int numRows, boolean hasDefault, boolean useSmallText) {
+		return queryString( parent,  title,  message,  "", value, numRows,  hasDefault,  useSmallText);
 	}
 	/*.................................................................................................................*/
 	public static boolean queryString(MesquiteWindow parent, String title, String message, MesquiteString value, int numRows) {

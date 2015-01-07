@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -22,10 +22,10 @@ import mesquite.lib.simplicity.InterfaceManager;
 /* ======================================================================== */
 /** A class for checkboxmenuitems.*/
 
-public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionListener, ItemListener{
-	public MesquiteCommand command;
+public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandable, ActionListener, ItemListener{
+	public MesquiteCommand command, resetCommand;
 	private MesquiteModule ownerModule;
-	public String itemName;
+	public String itemName, itemID;
 	public String argument;
 	public Class dutyClass = null;
 	MesquiteBoolean checkBoolean;
@@ -38,10 +38,11 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 	int hiddenStatus = InterfaceManager.NORMAL;
 	boolean hiddenStatusSet = false;
 	boolean hideable = true;
-	
+
 	//This is constructor used to make menu from specs
 	public MesquiteCheckMenuItem(MesquiteCMenuItemSpec specification) {
 		super();
+		resetCommand = new MesquiteCommand("reset", this);
 		addActionListener(this);
 		addItemListener(this);
 		if (specification.itemName == null) {
@@ -58,6 +59,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 		if (specification.shortcut!=null)
 			setShortcut(new MenuShortcut(specification.shortcut.getValue(), specification.shortcutNeedsShift));
 		this.itemName = specification.itemName;
+		this.itemID = specification.referentID;
 		this.argument = specification.argument;
 		//As a test of whether it's necessary to remember ownerModule, commented out:  this.ownerModule = specification.ownerModule;
 		this.command = specification.command;
@@ -72,6 +74,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 	}
 	public MesquiteCheckMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command, String argument, MesquiteString selected) {
 		super();
+		resetCommand = new MesquiteCommand("reset", this);
 		addActionListener(this);
 		addItemListener(this);
 		this.itemName = itemName;
@@ -86,20 +89,20 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 		this.command = command;
 		this.checkBoolean = null;
 		this.selected = selected;
-		
+
 		if (selected!=null) {
 			if (selected.getValue() == null)
 				setState(false);
 			else
 				setState(selected.getValue().equals(itemName)); 
-				//setState(StringUtil.tokenize(selected.getValue()).equals(argument));  //why is this using the argument (and hence needs to tokenize) instead of the itemName?
+			//setState(StringUtil.tokenize(selected.getValue()).equals(argument));  //why is this using the argument (and hence needs to tokenize) instead of the itemName?
 			selected.bindMenuItem();
 		}
 		previousState = getState();
 		if (command==null)
 			setEnabled(false);
 	}
-	
+
 	public void setHiddenStatus(int hiddenStatus){
 		setHiddenStatus(hiddenStatus, null);
 	}
@@ -143,8 +146,8 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 		return specification;
 	}
 	public void resetEnable() {
-	 	if (specification != null)
-	 		setEnabled(specification.isEnabled());
+		if (specification != null)
+			setEnabled(specification.isEnabled());
 	}
 	public void disconnect(){
 		//if (command!=null && command.getOwner()==ownerModule) //MEMORY shouldn't adways set null
@@ -167,18 +170,30 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 	public Object getReferent(){
 		return referent;
 	}
-	 public void resetCheck() {
-	 	if (checkBoolean != null)
-	 		setState(checkBoolean.getValue());
+	
+	public void setReferentID(String id){
+		itemID = id;
+	}
+	public String getReferentID(){
+		return itemID;
+	}
+	public void resetCheck() {
+		if (checkBoolean != null)
+			setState(checkBoolean.getValue());
 		else if (selected!=null) {
 			if (selected.getValue()== null)
 				setState(false);
-			else
-				setState(selected.getValue().equals(itemName)); 
+			else {
+				if (selected.getReferentID() != null && itemID != null){
+					setState(selected.getValue().equals(itemName) && selected.getReferentID().equals(itemID));
+				}
+				else
+					setState(selected.getValue().equals(itemName));
+			}
 		}
 		previousState = getState();
-	 }
-	 Journal j =null;
+	}
+	Journal j =null;
 	public void actionPerformed(ActionEvent e) {
 		//Event queue
 		if (previousState != getState()) {   
@@ -200,18 +215,21 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 			}
 			else	{
 				previousState = getState();
-			if ((e.getModifiers() & ActionEvent.ALT_MASK)!=0)
-				MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
-			else
-				chooseItem(argument);
+				if ((e.getModifiers() & ActionEvent.ALT_MASK)!=0)
+					MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
+				else {
+					chooseItem(argument);
+					return;
+				}
 			}
 		}
 		resetCheck();
 	}
-	
+
 	public void itemStateChanged(ItemEvent e) {
 		//Event queue
 		if (previousState != getState()) {   
+			
 			if (disposed)
 				MesquiteMessage.notifyUser("Warning: attempt to use disposed checked menu item");
 			if (command==null)
@@ -227,18 +245,18 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 					setHiddenStatus(InterfaceManager.NORMAL);
 					MesquiteTrunk.resetAllMenuBars();
 				}
+				resetCheck();
 			}
 			else {
 				previousState = getState();
-			/*if ((e.modifiers & ActionEvent.ALT_MASK)!=0)
+				/*if ((e.modifiers & ActionEvent.ALT_MASK)!=0)
 				MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
 			else*/
 				chooseItem(argument);
 			}
-			resetCheck();
-			
+
 		}
-		
+
 	}
 	public void chooseItem(String arg) {
 		if (command == null || MesquiteTrunk.suppressMenuResponse)
@@ -252,7 +270,17 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements ActionLis
 			command.doItMainThread(arg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
 		else
 			command.doItMainThread("", CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
-		resetCheck();
+		resetCommand.doItMainThread("", null, false, false, this);
+	}
+
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "resetsChecks", null, commandName, "resetCheckMenus")) {
+
+			MesquiteTrunk.resetCheckMenuItems();
+			MesquiteTrunk.checkForResetCheckMenuItems();   
+			
+		}
+		return null;
 	}
 }
 

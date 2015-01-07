@@ -159,7 +159,7 @@ public class IOUtil {
 			MesquiteTree t = new MesquiteTree(taxa);
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
 			//t.setTreeVector(treeVector);
-			t.readTree(line,namer);
+			t.readTree(line,namer, null, "():;,[]\'");  //tree reading adjusted to use Newick punctuation rather than NEXUS
 			/*MesquiteInteger pos = new MesquiteInteger(0);
 			treeParser.setString(line);
 			readClade(t, t.getRoot());

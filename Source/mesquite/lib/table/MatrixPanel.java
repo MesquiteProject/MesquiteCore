@@ -415,13 +415,14 @@ timer6.end();
 							}
 							if (selected)
 								GraphicsUtil.fillTransparentSelectionRectangle(g,oldLineX+1,oldLineY+1,table.columnWidths[c]-1, table.rowHeights[r]-1);
-							Color textColor;
-							if (selected)
-								textColor = Color.white;
-							else if (table.getCellDimmed(c,r))
-								textColor = Color.gray;
-							else
-								textColor = Color.black;
+							Color textColor = table.getTextColor(c, r, selected);
+							if (textColor==null)
+								if (selected)
+									textColor = Color.white;
+								else if (table.getCellDimmed(c,r))
+									textColor = Color.gray;
+								else
+									textColor = Color.black;
 							g.setColor(textColor);
 							table.drawMatrixCellString(g, fm, oldLineX,oldLineY,table.columnWidths[c], table.rowHeights[r], c, r, supplied);
 						}
@@ -448,6 +449,8 @@ timer6.end();
 			g.setColor(ColorTheme.getContentEdgeDark());  //used to be light
 
 			g.drawRect(0, 0, resetWidth-1, resetHeight-1);
+		}
+		catch (ArrayIndexOutOfBoundsException e){
 		}
 		catch (Throwable e){
 			MesquiteMessage.warnProgrammer("Exception or Error in drawing table (Matrix Panel); details in Mesquite log file");

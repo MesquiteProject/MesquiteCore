@@ -343,7 +343,7 @@ public class UndoInstructions implements Undoer {
 			CharacterState csAfter = data.getCharacterState(null, icStart, itStart);
 			notification =new Notification(MesquiteListener.DATA_CHANGED, new int[] { icStart, itStart }) ;
 			subcodes = new int[] {MesquiteListener.SINGLE_CELL};
-			if (csBefore.isInapplicable()==csAfter.isInapplicable())
+			if (csBefore != null && csAfter != null && csBefore.isInapplicable()==csAfter.isInapplicable())
 				subcodes = new int[] {MesquiteListener.SINGLE_CELL, MesquiteListener.CELL_SUBSTITUTION};
 			notification.setSubcodes(subcodes);
 

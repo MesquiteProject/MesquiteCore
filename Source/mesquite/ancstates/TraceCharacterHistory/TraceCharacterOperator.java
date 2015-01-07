@@ -13,15 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.ancstates.TraceCharacterHistory;
 
-import java.util.*;
 import java.awt.*;
-import java.awt.event.*;
 
-import mesquite.categ.lib.CategInternodeEvent;
-import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements CharHistoryContainer {

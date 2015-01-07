@@ -80,9 +80,9 @@ public abstract class TreeBlockFiller extends MesquiteModule  {
    	 the methods of TreeSource if this object is of the TreeSource subclass.  If this is not a TreeSource, 
    	 this method should be overridden*/
   	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited, boolean verbose){
-  		if (treeList==null)
+  		if (treeList==null || abort)
   			return;
-  		if (this instanceof TreeSource) {
+  		if (this instanceof TreeSource && !abort) {
   			Taxa taxa = treeList.getTaxa();
   			TreeSource ts = (TreeSource)this;
   			int numTrees = ts.getNumberOfTrees(taxa);
@@ -96,7 +96,7 @@ public abstract class TreeBlockFiller extends MesquiteModule  {
   			}
 			if (verbose) 
 				logln("Trees about to be made by " + getName());
-  			for(int i=1; i<numTrees && tree != null; i++) {
+  			for(int i=1; i<numTrees && tree != null  && !isDoomed() && !abort; i++) {
   				tree = ts.getTree(taxa, i);
   				if (tree!=null)  {
   					CommandRecord.tick("Adding tree to trees block " + i);
@@ -109,6 +109,7 @@ public abstract class TreeBlockFiller extends MesquiteModule  {
 			treeList.setAnnotation ("Parameters: "  + getParameters(), false);
 
   		}
+  		abort = false;
   	}
   	
 	 /** Fills the passed tree block with trees.  The parameter numberIfUnlimited indicates how many trees
@@ -119,6 +120,15 @@ public abstract class TreeBlockFiller extends MesquiteModule  {
 		fillTreeBlock(treeList,numberIfUnlimited, false);
 	}
 
+
+	public void retrieveTreeBlock(TreeVector treeList, int numberIfUnlimited){
+		retrieveTreeBlock(treeList,numberIfUnlimited);
+	}
+
+	protected boolean abort = false;
+	public void abortFilling(){
+		abort = true;
+	}
 
   }
 

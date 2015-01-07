@@ -28,7 +28,19 @@ public class RadioButtons implements ItemListener {
 	Panel newPanel;
 	GridBagConstraints constraints;
 	/*.................................................................................................................*/
+	public RadioButtons (ExtensibleDialog dialog, String[] labels, Panel[] subPanels, int defaultBox) {
+
+		initialize(dialog,labels,subPanels, defaultBox);
+
+	}
+	/*.................................................................................................................*/
 	public RadioButtons (ExtensibleDialog dialog, String[] labels, int defaultBox) {
+		initialize(dialog,labels,null, defaultBox);
+		
+	}
+	
+	/*.................................................................................................................*/
+	void initialize (ExtensibleDialog dialog, String[] labels, Panel[] subPanels, int defaultBox) {
 
 		this.dialog = dialog;
 		cbg = new CheckboxGroup();
@@ -38,7 +50,7 @@ public class RadioButtons implements ItemListener {
 		newPanel = dialog.addNewDialogPanel();  
 
 		GridBagLayout gridBag = new GridBagLayout();
-		 constraints = new GridBagConstraints();
+		constraints = new GridBagConstraints();
 		constraints.gridx=0;
 		constraints.gridy = GridBagConstraints.RELATIVE;
 		constraints.gridwidth=1;
@@ -54,6 +66,8 @@ public class RadioButtons implements ItemListener {
 			checkboxArray[i] = new Checkbox(labels[i], cbg, true);
 			checkboxArray[i].addItemListener(this);
 			newPanel.add(checkboxArray[i]);
+			if (subPanels!=null && i<subPanels.length)
+				newPanel.add(subPanels[i]);
 			gridBag.setConstraints(checkboxArray[i],constraints);
 		}
 		if (defaultBox>=0 && defaultBox<numCheckBoxes) {
@@ -66,6 +80,7 @@ public class RadioButtons implements ItemListener {
 		}
 
 	}
+
 	public void itemStateChanged(ItemEvent e){
 		dialog.requestFocus();
 	}
@@ -95,6 +110,12 @@ public class RadioButtons implements ItemListener {
 	/*.................................................................................................................*/
 	public CheckboxGroup getCheckBoxGroup () {
 		return cbg;
+	}
+	/*.................................................................................................................*/
+	public Checkbox getCheckbox(int i) {
+		if (i>=0 && i<numCheckBoxes)
+			return checkboxArray[i];
+		return null;
 	}
 	/*.................................................................................................................*/
 	public int getValue () {

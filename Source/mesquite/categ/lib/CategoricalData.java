@@ -80,6 +80,43 @@ public class CategoricalData extends CharacterData {
 		return (matrix!=null || matrixShort!=null) && numTaxa>0 && numChars>0;
 	}
 
+	public int getNumDataBlocks(int it, int icStart, int icEnd) {
+		int count=0;
+		boolean inBlock=false;
+		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {
+			if (!isInapplicable(ic, it) && !inBlock){  // start of block
+				inBlock=true;
+				count++;
+			} else if (isInapplicable(ic,it) && inBlock){  // block has ended
+				inBlock=false;
+			}
+		}
+		return count;
+	}
+	
+	public void getDataBlockBoundaries(int it, int icStart, int icEnd, int whichBlock, MesquiteInteger blockStart, MesquiteInteger blockEnd) {
+		if (blockStart==null || blockEnd==null) 
+			return;
+		int count=0;
+		boolean inBlock=false;
+		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {
+			if (!isInapplicable(ic, it) && !inBlock){  // start of block
+				inBlock=true;
+				count++;
+				if (count==whichBlock) {
+					blockStart.setValue(ic);
+				}
+			} else if (isInapplicable(ic,it) && inBlock){  // block has ended
+				inBlock=false;
+				if (count==whichBlock) {
+					blockEnd.setValue(ic);
+				}
+			}
+		}
+		if (blockStart.isCombinable()&&!blockEnd.isCombinable()) // end didn't get assigned, but start did
+			blockEnd.setValue(getNumChars()-1);
+	}
+
 	/*.................................................................................................................*/
 	public String searchData(String s, MesquiteString commandResult) {
 		if (commandResult != null)
@@ -1096,6 +1133,38 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns whether the character ic is inapplicable to taxon it*/
+	public  boolean isInternalInapplicable(int ic, int it){
+		if (!isInapplicable(ic, it))
+			return false;
+		// it is inappllicable.  But is it internal?  
+		if (ic< getNumChars()/2){ // first half, look left first
+			boolean foundState = false;
+			for (int icc = ic-1; icc>=0 && !foundState; icc--)  //look left for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+			foundState = false;
+			for (int icc = ic+1; icc<getNumChars() && !foundState; icc++)  //look right for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+		}
+		else {
+			boolean foundState = false;
+			for (int icc = ic+1; icc<getNumChars() && !foundState; icc++)  //look right for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+			foundState = false;
+			for (int icc = ic-1; icc>=0 && !foundState; icc--)  //look left for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+		}
+		return true;
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns whether the character ic is inapplicable to taxon it*/
 	public  boolean isInapplicable(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return(s== CategoricalState.inapplicable || s==CategoricalState.impossible);
@@ -1782,6 +1851,13 @@ public class CategoricalData extends CharacterData {
 		return cs1.equalsIgnoreCase(cs2);
 	}
 	/*-----------------------------------------------------------*/
+	/** checks to see if the two cells have the same states */
+	public boolean sameStateIgnoreCase(int ic1, int it1, int ic2, int it2, boolean allowMissing, boolean allowNearExact, boolean allowSubset){
+		CategoricalState cs1 = (CategoricalState)getCharacterState(null, ic1, it1);
+		CategoricalState cs2 = (CategoricalState)getCharacterState(null, ic2, it2);
+		return cs1.equals(cs2,allowMissing,allowNearExact,allowSubset);
+	}
+	/*-----------------------------------------------------------*/
 	/** checks to see if the two characters have identical distributions of states */
 	public boolean samePattern(int oic, int ic){
 		
@@ -1993,6 +2069,15 @@ public class CategoricalData extends CharacterData {
 			return cm;
 		}
 	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** appends to buffer string describing the state(s) specified in the long array s.  The first element in s is presumed (for the sake of state symbols
+	 * and state names) to correspond to character ic. */
+	public void statesIntoStringBufferCore(int ic, long[] s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+		for (int i=0; i<s.length; i++) {
+			statesIntoStringBufferCore(ic+i, s[i],  sb, forDisplay, includeInapplicable, includeUnassigned);
+		}
+	}
+
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
 	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay){
@@ -2453,7 +2538,7 @@ public class CategoricalData extends CharacterData {
 		for (int ic=0; ic<getNumChars(); ic++) {
 			long s1 = getState(ic,it1);
 			long s2 = getState(ic,it2);
-			if (	(s1& CategoricalState.statesBitsMask) != 0L && (s2& CategoricalState.statesBitsMask) != 0L)
+			if ((s1& CategoricalState.statesBitsMask) != 0L && (s2& CategoricalState.statesBitsMask) != 0L)
 				mergedAssigned = true;
 
 			long sMerged = CategoricalState.mergeStates(s1,s2);
@@ -2461,36 +2546,7 @@ public class CategoricalData extends CharacterData {
 		}
 		return mergedAssigned;
 	}
-	/*..........................................CategoricalData.....................................*/
-	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
-	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
-	 * unassigned + assigned or inapplicable + assigned */
-	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
-		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
-			return null;
-		boolean[] mA = new boolean[taxaToMerge.length];
-		boolean mergedAssigned = false;
-		boolean firstHasData = hasDataForTaxon(sinkTaxon);
-		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
-			if (it!=sinkTaxon && taxaToMerge[it]){
-				boolean mergingHadData = hasDataForTaxon(it);
-				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it);
-				if (mergingHadData && ! firstHasData){
-					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
-					Associable a = getTaxaInfo(false);
-					if (a != null)
-						a.swapParts(sinkTaxon, it);
-				}
-				mA[it] = ma;   
-				mergedAssigned = mergedAssigned | ma;
 
-			}
-		}
-		if (mergedAssigned)
-			return mA;
-		else
-			return null;
-	}
 
 }
 

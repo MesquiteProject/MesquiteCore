@@ -1506,10 +1506,17 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				Listable mw = (Listable)obj;
 
 				String name = null;
-				if (mw instanceof MesquiteModule)
+				String referentID = null;
+				if (mw instanceof MesquiteModule) {
 					name = ((MesquiteModule)mw).getNameForMenuItem();
-				else
+					referentID = Long.toString(((MesquiteModule)mw).getID());
+				}
+				else {
 					name = mw.getName();
+					if (mw instanceof Identifiable) {
+						referentID = Long.toString(((Identifiable)mw).getID());
+					}
+				}
 
 				if (msms.getListableFilter()==null || msms.getListableFilter().isInstance(mw) || mw instanceof CompatibilityChecker) {
 
@@ -1530,6 +1537,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 							;
 						else if (submenu.getSelected()!=null){ //selected string available for checkmark 
 							MesquiteCheckMenuItem m =new MesquiteCheckMenuItem(name, null /*msms.ownerModule*/, msms.command, j.toString() + " " + ParseUtil.tokenize(name), submenu.getSelected());
+							m.setReferentID(referentID);
 							j.add(1);
 							//m.setDocument(msms.getDocumentItems());
 							m.setHiddenStatus(hiddenStatus);

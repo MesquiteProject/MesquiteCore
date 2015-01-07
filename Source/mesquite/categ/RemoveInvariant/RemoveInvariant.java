@@ -41,6 +41,7 @@ public class RemoveInvariant extends DataAlterer {
 		for (int ic = cData.getNumChars()-1; ic>=0; ic--){
 			if (!cData.charIsVariable(ic, false)) {
 				cData.deleteCharacters(ic, 1, false);
+				cData.deleteInLinked(ic, 1, false);
 				removedSome=true;
 			}
 		}

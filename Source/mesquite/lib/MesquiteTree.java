@@ -178,12 +178,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nextSister= new int[numNodeSpaces];  
 		mother= new int[numNodeSpaces];  
 		taxonNumber= new int[numNodeSpaces];  
-		nodeOfTaxon = new int[taxa.getNumTaxa()];
 		flags = new boolean[numNodeSpaces];
 		parents = new int[numNodeSpaces][];
 		if (taxa==null)
 			MesquiteMessage.warnProgrammer(" Taxa in constructor for Tree is null ");
 		else {
+			nodeOfTaxon = new int[taxa.getNumTaxa()];
 			oldNumTaxa = taxa.getNumTaxa();
 			taxaVersion = taxa.getVersionNumber();
 			taxaIDs = taxa.getTaxaIDs();
@@ -627,7 +627,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		int[] newMother= new int[newNumNodeSpaces];  
 		int[] newTaxonNumber= new int[newNumNodeSpaces];  
 		int[][] newParents = new int[newNumNodeSpaces][];
+		boolean[] newFlags = new boolean[newNumNodeSpaces];
 		for (int i=0; i<numNodeSpaces && i<newNumNodeSpaces; i++) {
+			newFlags[i] = flags[i];
 			newFirstDaughter[i]=firstDaughter[i];
 			newNextSister[i]=nextSister[i];
 			newMother[i]=mother[i];
@@ -635,6 +637,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			newParents[i] = parents[i]; 
 		}
 		for (int i=numNodeSpaces; i<newNumNodeSpaces; i++) {
+			newFlags[i] = false;
 			newFirstDaughter[i]=0;
 			newNextSister[i]=0;
 			newMother[i]=0;
@@ -646,6 +649,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		mother = newMother ;
 		taxonNumber = newTaxonNumber;
 		parents=newParents;
+		flags = newFlags;
 		if (branchLength!=null) {
 			double[] newBranchLength = new double[newNumNodeSpaces];
 			for (int i=0; i<numNodeSpaces && i<newNumNodeSpaces; i++)
@@ -1896,6 +1900,24 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		MesquiteInteger boundary = new MesquiteInteger(0);
 		return isConvex(terminals, boundary);
 	}
+	
+	public  void convertBranchLengthToNodeValue(int node, NameReference nameRef){
+		if (nodeIsInternal(node)) {
+			double bl = getBranchLength(node); 
+			if (MesquiteDouble.isCombinable(bl)){
+				setAssociatedDouble(nameRef, node, 0.01*bl, true);  // value will be a percentage
+			}
+			for (int d = firstDaughterOfNode(node); nodeExists(d) && !nodeWasFound; d = nextSisterOfNode(d))
+				convertBranchLengthToNodeValue(d, nameRef);
+		}
+	}
+	
+	public  void convertBranchLengthsToNodeValue(String nameRefString){
+		NameReference nameRef = NameReference.getNameReference("consensusFrequency");
+		convertBranchLengthToNodeValue(getRoot(), nameRef);
+	}
+
+	
 	/*-----------------------------------------*/
 	/** Returns the nth terminal node in the clade (0 based), from left to right.  If is too low or high,
 	 returns 0.*/
@@ -2633,29 +2655,29 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	static final int CONTINUE = 0;
 	static final int DONT_SPROUT = 1;
 	static final int FAILED = 2;
-	private int readClade(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer) {
+	private int readClade(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer,  String whitespaceString, String punctuationString) {
 		if (StringUtil.blank(TreeDescription))
 			return FAILED;
 
-		String c = ParseUtil.getToken(TreeDescription, stringLoc);
+		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
 		if ("<".equals(c)) {
 			while (!">".equals(c)  && c != null) 
-				c=ParseUtil.getToken(TreeDescription, stringLoc);
-			c=ParseUtil.getToken(TreeDescription, stringLoc);
+				c=ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
+			c=ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);
 		}
 		if ("(".equals(c)){  //internal node
 			int sprouted = sproutDaughter(node, false);
-			int result = readClade(TreeDescription, sprouted,stringLoc, namer);
+			int result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
 			if (result == FAILED)//������������������������
 				return FAILED;
-			c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma
+			c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma
 			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c) || "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
 				c = readNamedInternal(TreeDescription, c, sprouted, stringLoc);
 			}
 			while (":".equals(c) || "<".equals(c)|| "%".equals(c) || "#".equals(c)) {
 				if (":".equals(c)) {
 					readLength(TreeDescription, sprouted, stringLoc);
-					c = ParseUtil.getToken(TreeDescription, stringLoc);  //get next token
+					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 1");
 						return FAILED;
@@ -2663,7 +2685,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 				else if ("%".equals(c) || "#".equals(c)) {
 					skipValue(TreeDescription, sprouted, stringLoc);
-					c = ParseUtil.getToken(TreeDescription, stringLoc);  //get next token
+					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 2");
 						return FAILED;
@@ -2671,7 +2693,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 				else if ("<".equals(c)) {
 					readAssociated(TreeDescription, sprouted, stringLoc);
-					c = ParseUtil.getToken(TreeDescription, stringLoc);  //get next token
+					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 3");
 						return FAILED;
@@ -2681,17 +2703,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			while (",".equals(c)) {
 				if (result == CONTINUE)
 					sprouted = sproutDaughter(node, false);
-				result = readClade(TreeDescription, sprouted,stringLoc, namer);
+				result = readClade(TreeDescription, sprouted,stringLoc, namer, whitespaceString, punctuationString);
 				if (result == FAILED) //������������������������
 					return FAILED;
-				c = ParseUtil.getToken(TreeDescription, stringLoc); //skip parens or next comma
+				c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString); //skip parens or next comma
 				if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c)|| "%".equals(c) || "#".equals(c))){ // name of internal node!!!!
 					c = readNamedInternal(TreeDescription, c, sprouted, stringLoc);
 				}
 				while (":".equals(c) || "<".equals(c)|| "%".equals(c) || "#".equals(c)) {
 					if (":".equals(c)) {
 						readLength(TreeDescription, sprouted, stringLoc);
-						c = ParseUtil.getToken(TreeDescription, stringLoc);  //get next token
+						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 4");
 							return FAILED;
@@ -2699,7 +2721,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 					else if ("%".equals(c) || "#".equals(c)) {
 						skipValue(TreeDescription, sprouted, stringLoc);
-						c = ParseUtil.getToken(TreeDescription, stringLoc);  //get next token
+						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 5");
 							return FAILED;
@@ -2707,7 +2729,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 					else if ("<".equals(c)) {
 						readAssociated(TreeDescription, sprouted, stringLoc);
-						c = ParseUtil.getToken(TreeDescription, stringLoc);  //get next token
+						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 6");
 							return FAILED;
@@ -2825,6 +2847,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						boolean success = taxa.addTaxa(taxa.getNumTaxa(), 1, true);
 						if (success){
 							taxa.setTaxonName(taxa.getNumTaxa()-1, c);
+							oldNumTaxa = taxa.getNumTaxa();
+							taxaIDs = taxa.getTaxaIDs();
 							setTaxonNumber(node, taxa.getNumTaxa()-1, false);
 							inProgressAddingTaxa = false;
 							return CONTINUE;
@@ -2854,7 +2878,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean graftCladeFromDescription(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer) {
 		setTaxonNumber(node, -1);
 		try {
-			if (readClade(TreeDescription, node, stringLoc, namer) == FAILED){
+			if (readClade(TreeDescription, node, stringLoc, namer, null, null) == FAILED){
 				if (lastUnrecognizedName != null)
 					MesquiteMessage.warnProgrammer("graft clade failed; taxon name unrecognized: " + lastUnrecognizedName);
 				else
@@ -2897,6 +2921,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, TaxonNamer namer) {
+		return readTree(TreeDescription, null, null, null);
+	}
+	
+	/** Reads the tree description string and sets the tree object to store the tree described.*/
+	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
 		deassignAssociated();
 
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
@@ -2904,7 +2933,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		intializeTree();
 		lastUnrecognizedName = null;
 		try {
-			if (readClade(TreeDescription, root, stringLoc, namer) == FAILED){
+			if (readClade(TreeDescription, root, stringLoc, namer, whitespaceString, punctuationString) == FAILED){
 				if (lastUnrecognizedName != null)
 					MesquiteMessage.warnProgrammer("read clade failed; taxon name unrecognized: " + lastUnrecognizedName);
 				else
@@ -2921,14 +2950,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, "Problem reading tree");
 			return false;
 		}
-		String c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma or parens
+		String c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 		if (!StringUtil.blank(c) && !(";".equals(c))){  //TODO: all these "equals" should be replaced by StringUtil static methods
 			if (!((",".equals(c))||(")".equals(c)) || (":".equals(c)) || "<".equals(c) || "%".equals(c) || "#".equals(c)))// name of internal node!!!!
 				c = readNamedInternal(TreeDescription, c, root, stringLoc);
 			while (":".equals(c) || "<".equals(c)|| "%".equals(c) || "#".equals(c)) {
 				if (":".equals(c)) {
 					readLength(TreeDescription, root, stringLoc);
-					c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma or parens
+					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					if (!expectedPunctuation(c)) {
 						intializeTree();
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 7");
@@ -2937,7 +2966,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 				else if ("%".equals(c)||"#".equals(c)) {
 					skipValue(TreeDescription, root, stringLoc);
-					c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma or parens
+					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					if (!expectedPunctuation(c)) {
 						intializeTree();
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 8");
@@ -2946,7 +2975,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				}
 				else if ("<".equals(c)) {
 					readAssociated(TreeDescription, root, stringLoc);
-					c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma or parens
+					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 						intializeTree();
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 9");
@@ -2954,11 +2983,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 					if ("<".equals(c)){
 						readAttachedProperties(TreeDescription, stringLoc);
-						c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma or parens
+						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					}
 					if ("<".equals(c)){
 						readExtras(TreeDescription, stringLoc);
-						c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip comma or parens
+						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					}
 				}
 			}
@@ -5572,7 +5601,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		MesquiteMessage.warnProgrammer(warning);
 		return false;
 	}
-	private void reconcileTaxa(int code, Notification notification){
+	public void reconcileTaxa(int code, Notification notification){
 		//check id list of taxa to see that it matches; otherwise add or subtract taxa;  ASSUMES TAXA DELETED OR ADDED BUT NOT MOVED!!!!!!
 		int newNumTaxa = taxa.getNumTaxa();
 		if (newNumTaxa == oldNumTaxa) {

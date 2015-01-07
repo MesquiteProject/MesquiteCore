@@ -99,12 +99,14 @@ public class AlterAllMatrices extends FileProcessor {
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
    			return false;
-   		boolean success = true;
+   		boolean success = false;
    		CompatibilityTest test = alterTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
-   			if (test.isCompatible(data.getStateClass(), getProject(), this))
-   				success = success && alterTask.alterData(data, null, null);
+   			if (test.isCompatible(data.getStateClass(), getProject(), this)) {
+   				success = true;
+   				alterTask.alterData(data, null, null);  // do not measure success based upon whether data were altered.
+   			}
    		}
    			
    		return success;

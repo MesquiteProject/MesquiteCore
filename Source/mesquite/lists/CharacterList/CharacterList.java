@@ -486,6 +486,15 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 		else
 			return null;
 	}
+	public String getRowNameForSorting(int row){
+		if (data!=null && row<data.getNumChars()){
+			if (!data.characterHasName(row))
+				return "";
+			return data.getCharacterName(row);
+		}
+		else
+			return null;
+	}
 	/*...............................................................................................................*/
 	public void setRowNameColor(Graphics g, int row){
 		//		g.setColor(Color.black);
@@ -498,6 +507,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){
 		if (data==null || (obj instanceof Taxa &&  (Taxa)obj ==data.getTaxa())||(obj instanceof CharacterData && (CharacterData)obj ==data)) {
+			data = null;
 			if (ownerModule!=null) {
 				ownerModule.iQuit();
 			}

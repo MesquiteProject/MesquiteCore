@@ -220,6 +220,15 @@ public class ListTable extends MesquiteTable {
 			return null;
 		return assistant.getBackgroundColorOfCell(row,selected);
 	}
+	
+	/* ............................................................................................................... */
+	public Color getTextColor(int column, int row, boolean selected){
+		ListAssistant assistant = window.findAssistant(column);
+		if (assistant == null)
+			return null;
+		return assistant.getTextColorOfCell(row,selected);
+	}
+
 	public void drawMatrixCell(Graphics g, int x, int y,  int w, int h, int column, int row, boolean selected){  
 		ListAssistant assistant = window.findAssistant(column);
 		if (assistant!=null) {

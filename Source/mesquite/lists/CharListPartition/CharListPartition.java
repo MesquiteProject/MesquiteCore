@@ -221,6 +221,7 @@ public class CharListPartition extends CharListAssistant {
 		deleteMenuItem(mss);
 		deleteMenuItem(mss2);
 		deleteMenuItem(mScs);
+	//	deleteMenuItem(mScsPF);
 		deleteMenuItem(mRssc);
 		deleteMenuItem(mLine);
 		deleteMenuItem(mLine2);
@@ -244,6 +245,7 @@ public class CharListPartition extends CharListAssistant {
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
 			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharacterPartition.class));
+		//mScsPF = addMenuItem("Create Partition Based upon RAxML Format...", makeCommand("createByRAxML",  this));
 		this.data = data;
 		this.table = table;
 		if (data != this.data){

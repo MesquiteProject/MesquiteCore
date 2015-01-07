@@ -3258,6 +3258,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return null;
 	}
 	/* ............................................................................................................... */
+	//to be overridden to change color; works only for MatrixPanel, and only when useString & overriding permit it
+	public Color getTextColor(int column, int row, boolean selected){
+		return null;
+	}
+	/* ............................................................................................................... */
 	/**
 	 * ���� HAVE THIS BY COLUMNS; ALSO HAVE COLUMN NAMES AND ROW NAMES JUSTIFYABLE
 	 */

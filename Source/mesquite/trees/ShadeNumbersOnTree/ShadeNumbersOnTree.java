@@ -36,6 +36,7 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Display");
 		addCheckMenuItemToSubmenu(null, mss, "Label nodes", makeCommand("toggleLabels", this), showLabels);
 		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
+		addCheckMenuItemToSubmenu(null, mss, "Display as percentage", makeCommand("toggleDisplayPercentage", this), usePercentages);  
 		addCheckMenuItemToSubmenu(null, mss, "Include labels for terminals", makeCommand("toggleLabelTerminals", this), labelTerminals);  
 		addCheckMenuItemToSubmenu(null, mss, "Labels with background", makeCommand("toggleRectangle", this), backRect);
 		addItemToSubmenu(null, mss, "-", null);
@@ -54,6 +55,7 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
   	 	temp.addLine("toggleShade " + shadeBranches.toOffOnString());
   	 	temp.addLine("toggleRectangle " + backRect.toOffOnString());
   	 	temp.addLine("toggleLog " + useLogScale.toOffOnString());
+  	 	temp.addLine("toggleDisplayPercentage " + usePercentages.toOffOnString());
 		temp.addLine("setDigits " + digits); 
  	 	return temp;
   	 }
@@ -72,6 +74,10 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
     	 	else if (checker.compare(this.getClass(), "Sets whether labels are also shown for the terminals", "[on = color; off]", commandName, "toggleLabelTerminals")) {
     	 		labelTerminals.toggleValue(parser.getFirstToken(arguments));
 			parametersChanged();
+    	 	}
+    	 	else if (checker.compare(this.getClass(), "Sets whether numbers are shown as percentages", "[on = yes; off]", commandName, "toggleDisplayPercentage")) {
+    	 		usePercentages.toggleValue(parser.getFirstToken(arguments));
+    	 		parametersChanged();
     	 	}
     	 	else if (checker.compare(this.getClass(), "Sets whether branches are shaded", "[on = color; off]", commandName, "toggleShade")) {
     	 		shadeBranches.toggleValue(parser.getFirstToken(arguments));
@@ -164,7 +170,11 @@ class ShadeNumbersDecorator extends TreeDecorator {
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			writeAtNode(numbers, g, fm, d, tree);
 		if ((tree.nodeIsInternal(N) || ownerModule.getLabelTerminals()) && !numbers.isUnassigned(N)) {
-			String s = numbers.toString(N,ownerModule.digits, false);
+			MesquiteNumber numberToDisplay = new MesquiteNumber(numbers.getMesquiteNumber(N));
+			if (ownerModule.getUsePercentages()) {
+				numberToDisplay.multiplyBy(100);
+			}
+			String s = numberToDisplay.toString(ownerModule.digits, false);
 			int stringWidth = fm.stringWidth(s);
 			int stringHeight = fm.getMaxAscent()+fm.getMaxDescent(); //numbers wouldn't actually reach max descent
 

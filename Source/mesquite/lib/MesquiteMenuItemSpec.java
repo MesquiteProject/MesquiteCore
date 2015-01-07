@@ -24,6 +24,7 @@ public class MesquiteMenuItemSpec implements Listable {
 	public MesquiteCommand command;
 	private MesquiteModule ownerModule;
 	protected String itemName;
+	protected String referentID;
 	protected MesquiteMenuSpec whichMenu;
 	protected String argument = null;
 	protected MesquiteSubmenuSpec submenu;
@@ -110,6 +111,12 @@ public class MesquiteMenuItemSpec implements Listable {
 	}
 	public void setName(String name){
 		 itemName = name;
+	}
+	public void setReferentID(String name){
+		 referentID = name;
+	}
+	public String getReferentID(){
+		 return referentID;
 	}
 	public void disconnect(){
 		//if (command!=null && command.getOwner()==ownerModule) //MEMORY shouldn't adways set null

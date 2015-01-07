@@ -138,6 +138,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** Increments suppression level of menus; if 0 then menus can be reset. */
 	public void incrementProjectWindowSuppression(){
 		refreshSuppression++;
+		
 		if (refreshSuppression ==0)
 			refreshSuppression = 1;
 	}

@@ -470,6 +470,8 @@ public class MolecularData extends CategoricalData {
 		return false;
 	}
 	
+
+	
 	public void collapseGapsInCellBlock(int it, int icStart, int icEnd, boolean notify) {
 		int lastFilled = icStart-1;
 		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {

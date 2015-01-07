@@ -1767,6 +1767,45 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		return null;
 	}
 
+	/* ................................................................................................................. */
+	/** Clones employee if possible */
+	public Object cloneEmployee(MesquiteModule employee) {
+		if (employee == null)
+			return null;
+		String cloneCommand = getClonableEmployeeCommand(employee);
+		if (!StringUtil.blank(cloneCommand)){
+			cloneCommand += "\ntell It;\n";
+			cloneCommand += Snapshot.getSnapshotCommands(employee, null, "");
+			cloneCommand += "\nendTell;";
+			Puppeteer p = new Puppeteer(module);
+			MesquiteInteger pos = new MesquiteInteger(0);
+			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+			CommandRecord record = new CommandRecord(true);
+			MesquiteThread.setCurrentCommandRecord(record);
+			MesquiteModule.incrementMenuResetSuppression();	
+			Object obj = p.sendCommands(this, cloneCommand, pos, "", false, null,CommandChecker.defaultChecker);
+			MesquiteModule.decrementMenuResetSuppression();	
+			MesquiteModule cloned = null;
+			if (obj != null){
+				MesquiteWindow w = null;
+				if (obj instanceof MesquiteWindow){
+					w = (MesquiteWindow)obj;
+					cloned = w.getOwnerModule();
+				}
+				else if (obj instanceof MesquiteModule){
+					w = ((MesquiteModule)obj).getModuleWindow();
+					cloned = ((MesquiteModule)obj);
+				}
+				if (w!=null)
+					w.doCommand("setLocation", Integer.toString(w.getLocation().x + 20) + " " + (w.getLocation().y + 20),CommandChecker.defaultChecker);
+			}
+
+			MesquiteThread.setCurrentCommandRecord(previous);
+			return cloned;
+		}
+		return null;
+	}
+	
 	private String whichModInfo(MesquiteModuleInfo mbi) {
 		if (mbi == null)
 			return "NULL";

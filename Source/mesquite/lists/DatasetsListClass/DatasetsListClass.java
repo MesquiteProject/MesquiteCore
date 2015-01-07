@@ -33,8 +33,6 @@ public class DatasetsListClass extends DataSetsListAssistant implements Mesquite
 		return "Indicates type of character data matrix (e.g., continuous, DNA, etc.)." ;
 	}
 	/*.................................................................................................................*/
-	ListableVector datas=null;
-	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		/* hire employees here */
 		return true;

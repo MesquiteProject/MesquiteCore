@@ -125,7 +125,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		c.gridwidth=1;
 		c.gridheight=1;
 		c.fill=GridBagConstraints.BOTH;
-		c.anchor=GridBagConstraints.CENTER;
+		c.anchor=GridBagConstraints.WEST;
 		return c;
 	}
 	/*.................................................................................................................*/
@@ -222,6 +222,27 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		samePanelAsLast = false;
 		return lastPanel;
 	}
+	/*.................................................................................................................*
+	public void setAlignmentOfLastPanel (int alignment) {
+		if (lastPanel!=null) {
+			GridBagConstraints constraints = null;
+			if (currentGridBag!=null) {
+				constraints = currentGridBag.getConstraints(lastPanel);
+				if (constraints!=null) {
+					constraints.anchor = alignment;
+					currentGridBag.setConstraints(lastPanel,constraints);
+				}
+			}
+			else {
+				constraints = gridBag.getConstraints(lastPanel);
+				if (constraints!=null) {
+					constraints.anchor = alignment;
+					gridBag.setConstraints(lastPanel,constraints);
+				}
+			}
+		}
+	}
+
 	/*.................................................................................................................*/
 	public Panel addNewDialogPanel () {
 		return addNewDialogPanel(null,null);
@@ -233,6 +254,10 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public Panel addNewDialogPanel (GridBagConstraints c) {
 		return addNewDialogPanel(null, c);
+	}
+	/*.................................................................................................................*/
+	public Panel getLastPanel () {
+		return lastPanel;
 	}
 	/*.................................................................................................................*/
 	public void addToDialog (Component component, Object c) {
@@ -1918,9 +1943,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		MesquiteMessage.notifyUser("Values unacceptable.");
 	}
 	/*.................................................................................................................*/
-	/* David: this overridden here because dlog was getting disposed for any button, even if not primary.  Might be 
-	good to store Buttons directly and not just strings; that way to know easily if button hit was button desired */
-	public void mouseReleased(MouseEvent e){
+	public void checkForButtonHit(MouseEvent e){
 		if (e.getComponent() instanceof Button) {
 			if (e.getComponent().getBounds().contains(e.getComponent().getBounds().x+e.getX(),e.getComponent().getBounds().y+e.getY())) {
 				String label = ((Button)e.getComponent()).getLabel();
@@ -1938,6 +1961,17 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			}
 
 		}
+	}
+	/*.................................................................................................................*/
+	/* David: this overridden here because dlog was getting disposed for any button, even if not primary.  Might be 
+	good to store Buttons directly and not just strings; that way to know easily if button hit was button desired */
+	public void mouseReleased(MouseEvent e){
+		checkForButtonHit(e);
+	}
+	/*.................................................................................................................*/
+	public void mousePressed(MouseEvent e){
+		if (MesquiteTrunk.isMacOSXYosemite() && MesquiteTrunk.isJavaVersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
+			checkForButtonHit(e);
 	}
 
 	public void selectButton(String label){ //for use by scripting & console

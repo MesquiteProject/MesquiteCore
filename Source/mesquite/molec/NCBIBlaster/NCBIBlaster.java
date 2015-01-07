@@ -28,9 +28,9 @@ public class NCBIBlaster extends Blaster {
 		return "NCBI GenBank";
 	}
 
-	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse, boolean writeCommand) {
+	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeCommand) {
 		timer.timeSinceLast();
-		NCBIUtil.blastForMatches(blastType, sequenceName, sequence, isNucleotides, numHits, 300, eValueCutoff, blastResponse);
+		NCBIUtil.blastForMatches(blastType, sequenceName, sequence, isNucleotides, numHits, 300, eValueCutoff, wordSize, blastResponse);
 		logln("BLAST completed in " +timer.timeSinceLastInSeconds()+" seconds");
 	}
 
