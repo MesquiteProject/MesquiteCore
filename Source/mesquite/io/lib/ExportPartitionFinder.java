@@ -9,6 +9,7 @@ import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.lib.Arguments;
 import mesquite.lib.EmployeeNeed;
+import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteFile;
@@ -119,6 +120,15 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		}
 		return false;
 	}
+	boolean hasSomeCodPos(NumberArray numberArray){
+		for (int i=0;  i<numberArray.getNumParts(); i++) {
+			if ((numberArray.getInt(i)>=1 && numberArray.getInt(i)<=3)) {
+				return true;
+			}
+
+		}
+		return false;
+	}
 	/*.................................................................................................................*/
 	public String getPartitionList(CharacterData data, CharacterPartition charPartition, boolean separateCodePos){
 		boolean subdivideByCodPos = false;
@@ -130,6 +140,25 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		}
 
 		StringBuffer sb = new StringBuffer();
+		if (charPartition == null){
+			boolean hasCodPos = subdivideByCodPos && hasSomeCodPos(codPosSet.getNumberArray());
+			if (!separateCodePos || !hasCodPos)
+				return null;
+			String s = "";
+			String q = IntegerArray.getListOfMatches(codPosSet.getNumberArray(), 0,1);  //noncoding
+			if (q != null) {
+				sb.append(s+"nonCoding" + " = ");
+				sb.append(q + ";\n");
+			}
+			for (int codpos = 1; codpos<=3; codpos++) {
+				q = IntegerArray.getListOfMatches(codPosSet.getNumberArray(), codpos,1);
+				if (q != null) {
+					sb.append(s+"pos"+codpos + " = ");
+					sb.append(q + ";\n");
+				}
+			}
+		}
+		else {
 		CharactersGroup[] parts = charPartition.getGroups();
 		if (parts!=null)
 			for (int i=0; i<parts.length; i++) {
@@ -143,6 +172,11 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 				boolean hasCodPos = subdivideByCodPos && hasSomeCodPos(partition, parts[i], codPosSet.getNumberArray());
 
 				if (subdivideByCodPos && hasCodPos) {
+					q = ListableVector.getListOfMatches(partition, parts[i], codPosSet.getNumberArray(), 0,1, true);  //noncoding
+					if (q != null) {
+						sb.append(s+"_nonCoding" + " = ");
+						sb.append(q + ";\n");
+					}
 					for (int codpos = 1; codpos<=3; codpos++) {
 						q = ListableVector.getListOfMatches(partition, parts[i], codPosSet.getNumberArray(), codpos,1, true);
 						if (q != null) {
@@ -159,6 +193,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 					}
 				}
 			}
+		}
 		return sb.toString();
 	}
 
@@ -314,8 +349,6 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 			return false;
 		}
 		CharacterPartition partition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
-		if (partition==null)
-			return false;
 		Taxa taxa = data.getTaxa();
 		boolean dataAnySelected = false;
 		if (data != null)
@@ -323,6 +356,10 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		if (!MesquiteThread.isScripting())
 			if (!getExportOptions(dataAnySelected, taxa.anySelected()))
 				return false;
+		if (partition==null && !separateCodPos) {
+			discreetAlert("The data cannot be exported because partitions (character groups) are not assigned, and use of codon positions is not requested.");
+			return false;
+		}
 
 		int numTaxa = taxa.getNumTaxa();
 

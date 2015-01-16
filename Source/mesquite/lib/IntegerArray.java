@@ -421,6 +421,44 @@ public class IntegerArray  implements Listable  {
 	/** returns a string listing the elements of the array that are equal to the passed number.  In the format
 	of NEXUS character, taxa lists (e.g., "1- 3 6 201-455".  The offset is what the first element is to be numbered
 	(e.g., 0 or 1)  */
+	public static String getListOfMatches(NumberArray values, int target, int offset) {
+		int continuing = 0;
+		String s="";
+		boolean found=false;
+		int lastWritten = -1;
+		for (int i=0; i<values.getSize(); i++) {
+			if (values.getInt(i)==target) {
+				found=true;
+				if (continuing == 0) {
+					s += " " + (i + offset);
+					lastWritten = i;
+					continuing = 1;
+				}
+				else if (continuing == 1) {
+					s += " - ";
+					continuing = 2;
+				}
+			}
+			else if (continuing >0) {
+				if (lastWritten != i-1) {
+					s += " " + (i-1 + offset);
+					lastWritten = i-1;
+				}
+				else
+					lastWritten = -1;
+				continuing = 0;
+			}
+		}
+		if (continuing>1)
+			s += " " + (values.getSize()-1 + offset);
+		if (found)
+			return s;
+		else
+			return null;
+	}
+	/** returns a string listing the elements of the array that are equal to the passed number.  In the format
+	of NEXUS character, taxa lists (e.g., "1- 3 6 201-455".  The offset is what the first element is to be numbered
+	(e.g., 0 or 1)  */
 	public static String getListOfMatches(int[] values, int target, int offset) {
 		int continuing = 0;
 		String s="";
