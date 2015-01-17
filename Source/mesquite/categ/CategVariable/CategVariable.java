@@ -55,7 +55,7 @@ public class CategVariable extends BooleanForCharacter {
 	}
 	/*.................................................................................................................*/
 	public String getFalseString(){
-		return "� 1 state";
+		return "≤ 1 state";
 	}
 
 
