@@ -1138,6 +1138,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setDirty(true);
 	}
 	/*-----------------------------------------*/
+	/** Sets whether or not the part is selected */
+	public void setSelected(int partStart, int partEnd, boolean select) {
+		for (int i=partStart; i<=partEnd; i++)
+			setSelected(i,select);
+	}
+	/*-----------------------------------------*/
 	/** Returns whether the part is selected */
 	public boolean getSelected(int part) {
 		if (!inBounds(part))
