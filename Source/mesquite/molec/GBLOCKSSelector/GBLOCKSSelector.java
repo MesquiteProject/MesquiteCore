@@ -438,9 +438,9 @@ public class GBLOCKSSelector extends CharacterSelector {
 			logln("Maximum number of contiguous non-conserved positions: " + CP);
 			logln("Minimum length of a block: " + BL);
 			if (removeAllGaps)
-				logln("Allowed gap positions: none");
+				logln("Allowed gaps within a position: none");
 			else {
-				logln("Allowed gap positions: " + gapThresholdInt + " (fraction of total: " + gapThreshold + ")");
+				logln("Allowed fraction of gaps within a position: " + gapThreshold);
 			}
 			
 			logln("Flank positions of the blocks chosen by the GBLOCKS algorithm: ");
