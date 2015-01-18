@@ -36,6 +36,7 @@ public class GBLOCKSSelector extends CharacterSelector {
 	int gapThresholdInt = 0;
 	boolean removeAllGaps = true;
 	boolean selectOnesToExclude = true;
+	boolean countWithinApplicable = true;
 
 	boolean preferencesSet = false;
 
@@ -65,6 +66,8 @@ public class GBLOCKSSelector extends CharacterSelector {
 			gapThreshold = MesquiteDouble.fromString(content);
 		if ("selectOnesToExclude".equalsIgnoreCase(tag))
 			selectOnesToExclude = MesquiteBoolean.fromTrueFalseString(content);
+		if ("countWithinApplicable".equalsIgnoreCase(tag))
+			countWithinApplicable = MesquiteBoolean.fromTrueFalseString(content);
 
 		preferencesSet = true;
 	}
@@ -76,8 +79,9 @@ public class GBLOCKSSelector extends CharacterSelector {
 		StringUtil.appendXMLTag(buffer, 2, "FS", FS);  
 		StringUtil.appendXMLTag(buffer, 2, "CP", CP);  
 		StringUtil.appendXMLTag(buffer, 2, "BL", BL);  
-		StringUtil.appendXMLTag(buffer, 2, "selectOnesToExclude", selectOnesToExclude);  
 		StringUtil.appendXMLTag(buffer, 2, "gapThreshold", gapThreshold);  
+		StringUtil.appendXMLTag(buffer, 2, "selectOnesToExclude", selectOnesToExclude);  
+		StringUtil.appendXMLTag(buffer, 2, "countWithinApplicable", countWithinApplicable);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -94,10 +98,13 @@ public class GBLOCKSSelector extends CharacterSelector {
 		String helpString = "This feature will select characters using the GBLOCKS algorithm, as described in Castresana (2000).";
 
 		dialog.appendToHelpString(helpString);
-		MesquiteTabbedPanel tabbedPanel = dialog.addMesquiteTabbedPanel();
+		
+		dialog.addLabel("Select Characters using Extended GBLOCKS Algorithm");
 		
 		DoubleField ISfield = dialog.addDoubleField("Minimum fraction of identical residues for conserved positions", IS, 4);
 		DoubleField FSfield = dialog.addDoubleField("Minimum fraction of identical residues for highly-conserved positions", FS, 4);
+		Checkbox countWithinApplicableCheckbox = dialog.addCheckBox("count fraction only within taxa with non-gaps at that position", countWithinApplicable);
+		dialog.addHorizontalLine(1);
 		IntegerField CPfield = dialog.addIntegerField("Maximum length of non-conserved blocks", CP, 4);
 		IntegerField BLfield = dialog.addIntegerField("Minimum length of a block", BL, 4);
 
@@ -115,6 +122,7 @@ public class GBLOCKSSelector extends CharacterSelector {
 			BL = BLfield.getValue();
 			gapThreshold = gapThresholdField.getValue();
 			selectOnesToExclude = selectOnesToExcludeCheckbox.getState();
+			countWithinApplicable = countWithinApplicableCheckbox.getState();
 			storePreferences();
 		}
 		dialog.dispose();
@@ -132,7 +140,7 @@ public class GBLOCKSSelector extends CharacterSelector {
 	}
 
 	/*.................................................................................................................*/
-	int maxProportionIdenticalResidues (CategoricalData data, int ic) {
+	int maxNumberIdenticalResidues (CategoricalData data, int ic) {
 		int[] numTaxaWithResidue = null;
 		if (data instanceof DNAData)
 			numTaxaWithResidue= new int[DNAState.maxDNAState+1];
@@ -156,6 +164,16 @@ public class GBLOCKSSelector extends CharacterSelector {
 		}
 
 		return maxCount;
+	}
+	/*.................................................................................................................*/
+	int numNonGaps (CategoricalData data, int ic) {
+		int count=0;
+		for (int it = 0; it<data.getNumTaxa(); it++) {   // calculate proportions
+			if (!data.isInapplicable(ic, it)) { 
+				count++;
+			}
+		}
+		return count;
 	}
 
 	/*.................................................................................................................*/
@@ -192,13 +210,23 @@ public class GBLOCKSSelector extends CharacterSelector {
 			if (tooManyGaps(data,ic))
 				status[ic] = NONCONSERVED; 
 			else {
-				int maxIdentical = maxProportionIdenticalResidues(data, ic);
-				if (maxIdentical<ISint)
-					status[ic] = NONCONSERVED; 
-				else if (maxIdentical<FSint)
-					status[ic] = CONSERVED; 
-				else 
-					status[ic] = HIGHLYCONSERVED; 
+				int maxIdentical = maxNumberIdenticalResidues(data, ic);
+				if (!countWithinApplicable) {
+					if (maxIdentical<ISint)
+						status[ic] = NONCONSERVED; 
+					else if (maxIdentical<FSint)
+						status[ic] = CONSERVED; 
+					else 
+						status[ic] = HIGHLYCONSERVED; 
+				} else {
+					int totalResidues = numNonGaps(data,ic);
+					if (1.0*maxIdentical/totalResidues<IS)
+						status[ic] = NONCONSERVED; 
+					else if (1.0*maxIdentical/totalResidues<FS)
+						status[ic] = CONSERVED; 
+					else 
+						status[ic] = HIGHLYCONSERVED; 
+				}
 			}
 		}
 	}
@@ -388,14 +416,21 @@ public class GBLOCKSSelector extends CharacterSelector {
 			}
 
 			logln("\nGBLOCKS analysis");
-			logln("Minimum number of identical residues for a conserved position: " + ISint);
-			logln("Minimum number of identical residues for a highly-conserved position: " + FSint);
+			if (countWithinApplicable) {
+				logln("Minimum fraction of identical residues for a conserved position: " + IS);
+				logln("Minimum fraction of identical residues for a highly-conserved position: " + FS);
+				logln("Counting fraction within only those taxa that have non-gaps at that position");
+			} else {
+				logln("Minimum number of identical residues for a conserved position: " + ISint);
+				logln("Minimum number of identical residues for a highly-conserved position: " + FSint);
+				logln("Counting fraction within all taxa");
+			}
 			logln("Maximum number of contiguous non-conserved positions: " + CP);
 			logln("Minimum length of a block: " + BL);
 			if (removeAllGaps)
 				logln("Allowed gap positions: none");
 			else {
-				logln("Allowed gap positions: " + gapThresholdInt);
+				logln("Allowed gap positions: " + gapThresholdInt + " (fraction of total: " + gapThreshold + ")");
 			}
 			
 			logln("Flank positions of the blocks chosen by the GBLOCKS algorithm: ");
