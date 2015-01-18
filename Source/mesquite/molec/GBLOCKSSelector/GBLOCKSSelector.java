@@ -16,6 +16,8 @@ package mesquite.molec.GBLOCKSSelector;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.*;
 
 import mesquite.categ.lib.*;
@@ -24,19 +26,28 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class GBLOCKSSelector extends CharacterSelector {
+public class GBLOCKSSelector extends CharacterSelector implements ActionListener {
 
-	double IS = 0.50;   // fraction of identical residues that is upper boundary for non-conserved sequences
+	
+	static final double defaultIS = 0.50;   
+	static final double defaultFS = 0.85;  
+	static final int defaultCP=8;  
+	static final int defaultBL=10;  
+	static final double defaultGapThreshold = 0.0;
+	static final boolean defaultSelectOnesToExclude = true;
+	static final boolean defaultCountWithinApplicable = false;
+
+	double IS = defaultIS;   // fraction of identical residues that is upper boundary for non-conserved sequences
 	int ISint=0;  // integral version of above
-	double FS = 0.85;  // fraction of identical residues that is upper boundary for conserved sequences
+	double FS = defaultFS;  // fraction of identical residues that is upper boundary for conserved sequences
 	int FSint = 0;  //integeral version of above
-	int CP=8;  //block size limit for non-conserved blocks
-	int BL=10;  //  small region block size limit 
-	double gapThreshold = 0.0;
+	int CP=defaultCP;  //block size limit for non-conserved blocks
+	int BL=defaultBL;  //  small region block size limit 
+	double gapThreshold = defaultGapThreshold;
 	int gapThresholdInt = 0;
 	boolean removeAllGaps = true;
-	boolean selectOnesToExclude = true;
-	boolean countWithinApplicable = true;
+	boolean selectOnesToExclude = defaultSelectOnesToExclude;
+	boolean countWithinApplicable = defaultCountWithinApplicable;
 	boolean[] hasApplicable=null;
 
 	boolean preferencesSet = false;
@@ -87,7 +98,14 @@ public class GBLOCKSSelector extends CharacterSelector {
 		preferencesSet = true;
 		return buffer.toString();
 	}
-	
+	Button useDefaultsButton = null;
+	DoubleField ISfield = null;
+	DoubleField FSfield=null;
+	Checkbox countWithinApplicableCheckbox=null;
+	IntegerField CPfield =null;
+	IntegerField BLfield=null;
+	DoubleField gapThresholdField=null;
+	Checkbox selectOnesToExcludeCheckbox=null;
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
@@ -102,18 +120,21 @@ public class GBLOCKSSelector extends CharacterSelector {
 		
 		dialog.addLabel("Select Characters using Extended GBLOCKS Algorithm");
 		
-		DoubleField ISfield = dialog.addDoubleField("Minimum fraction of identical residues for conserved positions", IS, 4);
-		DoubleField FSfield = dialog.addDoubleField("Minimum fraction of identical residues for highly-conserved positions", FS, 4);
-		Checkbox countWithinApplicableCheckbox = dialog.addCheckBox("count fraction only within taxa with non-gaps at that position", countWithinApplicable);
+		ISfield = dialog.addDoubleField("Minimum fraction of identical residues for conserved positions", IS, 4);
+		FSfield = dialog.addDoubleField("Minimum fraction of identical residues for highly-conserved positions", FS, 4);
+		countWithinApplicableCheckbox = dialog.addCheckBox("count fraction only within taxa with non-gaps at that position", countWithinApplicable);
 		dialog.addHorizontalLine(1);
-		IntegerField CPfield = dialog.addIntegerField("Maximum length of non-conserved blocks", CP, 4);
-		IntegerField BLfield = dialog.addIntegerField("Minimum length of a block", BL, 4);
+		CPfield = dialog.addIntegerField("Maximum length of non-conserved blocks", CP, 4);
+		BLfield = dialog.addIntegerField("Minimum length of a block", BL, 4);
 
-		DoubleField gapThresholdField = dialog.addDoubleField("Fraction of gaps allowed in a character", gapThreshold, 4);
+		gapThresholdField = dialog.addDoubleField("Fraction of gaps allowed in a character", gapThreshold, 4);
 		
 		dialog.addHorizontalLine(1);
 
-		Checkbox selectOnesToExcludeCheckbox = dialog.addCheckBox("select blocks to be excluded", selectOnesToExclude);
+		selectOnesToExcludeCheckbox = dialog.addCheckBox("select blocks to be excluded", selectOnesToExclude);
+		dialog.addNewDialogPanel();
+		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
+		useDefaultsButton.setActionCommand("setToDefaults");
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -128,6 +149,18 @@ public class GBLOCKSSelector extends CharacterSelector {
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
+	}
+	/*.................................................................................................................*/
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
+			ISfield.setValue(defaultIS);	
+			FSfield.setValue(defaultFS);
+			CPfield.setValue(defaultCP);
+			BLfield.setValue(defaultBL);
+			gapThresholdField.setValue(defaultGapThreshold);
+			selectOnesToExcludeCheckbox.setState(defaultSelectOnesToExclude);
+			countWithinApplicableCheckbox.setState(defaultCountWithinApplicable);
+		} 
 	}
 
 	/*.................................................................................................................*/
