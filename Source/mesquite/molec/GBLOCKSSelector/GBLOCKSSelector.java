@@ -472,7 +472,7 @@ public class GBLOCKSSelector extends CharacterSelector {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Selects characters according to the GBLOCKS algorithm (Castresana, 2000)." ;
+		return "Selects characters according to an extended version of the GBLOCKS algorithm (Castresana, 2000)." ;
 	}
 
 }
