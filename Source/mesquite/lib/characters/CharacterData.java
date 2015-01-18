@@ -625,6 +625,14 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 	public int getNumTaxa() {
 		return getNumTaxa(true);
 	}
+	/** returns number of taxa in data matrix*/
+	public int getNumTaxaWithAnyApplicable() {
+		int count=0;
+		for (int it=0; it<getNumTaxa(); it++) 
+			if (anyApplicableAfter(0,it))
+				count++;
+		return count;
+	}
 	/** returns number of characters in data matrix*/
 	public int getNumChars() {
 		return getNumChars(true);

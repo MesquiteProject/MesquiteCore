@@ -37,6 +37,7 @@ public class GBLOCKSSelector extends CharacterSelector {
 	boolean removeAllGaps = true;
 	boolean selectOnesToExclude = true;
 	boolean countWithinApplicable = true;
+	boolean[] hasApplicable=null;
 
 	boolean preferencesSet = false;
 
@@ -178,6 +179,8 @@ public class GBLOCKSSelector extends CharacterSelector {
 
 	/*.................................................................................................................*/
 	boolean tooManyGaps (CategoricalData data, int ic) {
+		if (hasApplicable==null)
+			return false;
 		if (removeAllGaps) {
 			for (int it = 0; it<data.getNumTaxa(); it++) {
 				if (data.isInapplicable(ic, it))
@@ -186,7 +189,7 @@ public class GBLOCKSSelector extends CharacterSelector {
 		} else {
 			int count = 0;
 			for (int it = 0; it<data.getNumTaxa(); it++) {
-				if (data.isInapplicable(ic, it))
+				if (data.isInapplicable(ic, it) && it<hasApplicable.length && hasApplicable[it])
 					count++;
 			}
 			if (count >gapThresholdInt)
@@ -276,10 +279,17 @@ public class GBLOCKSSelector extends CharacterSelector {
 			if(!queryOptions())
 				return;
 			
-			ISint= (int)(IS*data.getNumTaxa())+1;
-			FSint= (int)(FS*data.getNumTaxa());
-			gapThresholdInt = 			(int)(gapThreshold*data.getNumTaxa());
+			hasApplicable = new boolean[data.getNumTaxa()];
+			for (int it = 0; it<data.getNumTaxa() && it<hasApplicable.length; it++) {
+				hasApplicable[it]=data.anyApplicableAfter(0, it);
+			}
+
+			int numTaxaWithApplicable = data.getNumTaxaWithAnyApplicable();
+			ISint= (int)(IS*numTaxaWithApplicable)+1;
+			FSint= (int)(FS*numTaxaWithApplicable);
+			gapThresholdInt = 	(int)(gapThreshold*numTaxaWithApplicable);
 			removeAllGaps=(gapThreshold==0.0);
+			
 			
 			boolean[] setToSelect = new boolean[data.getNumChars()];
 			int[] status = new int[data.getNumChars()];
@@ -437,7 +447,7 @@ public class GBLOCKSSelector extends CharacterSelector {
 			logln(results.toString());
 			
 			if (selectOnesToExclude)
-				logln("\nNote:  selected characters are those that are the more least conserved and more ambiguously aligned regions, and would typically be excluded before analysis.");
+				logln("\nNote:  selected characters are those that are the least conserved and more ambiguously aligned regions, and would typically be excluded before analysis.");
 			else 
 				logln("\nNote:  selected characters are those that are the more conserved regions, and would typically be included in any analysis.");
 
