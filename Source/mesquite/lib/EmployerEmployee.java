@@ -1798,8 +1798,9 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 				}
 				if (w!=null)
 					w.doCommand("setLocation", Integer.toString(w.getLocation().x + 20) + " " + (w.getLocation().y + 20),CommandChecker.defaultChecker);
-			}
+				w.getParentFrame().showPage(Integer.toString(w.getID()));
 
+			}
 			MesquiteThread.setCurrentCommandRecord(previous);
 			return cloned;
 		}

@@ -2534,8 +2534,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			return graphics[0].getPalette();
 		}
 		else if (checker.compare(MesquiteWindow.class, "Clones the window if possible", null, commandName, "cloneWindow")) {
-			ownerModule.getEmployer().cloneEmployee(ownerModule);
-
+			MesquiteModule cloned = (MesquiteModule)ownerModule.getEmployer().cloneEmployee(ownerModule);
 		}
 		else if (checker.compare(MesquiteWindow.class, "Saves a macro that serves as a macro to reproduce an analysis or window", null, commandName, "saveMacroForWindow")) {
 			saveWindowMacro(0);
