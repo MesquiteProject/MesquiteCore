@@ -438,7 +438,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		try {
 			popUp.show(cont, x,y);
 		}
-		catch (RuntimeException e){
+		catch (Exception e){
 		}
 		//cont.remove(popUp); //todo: this is zapping the menu on linux immediately
 	}

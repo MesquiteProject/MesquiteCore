@@ -346,8 +346,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void showPage(MesquiteWindow w){
-		if (w == frontWindow)
-			return;
+	//	if (w == frontWindow)
+	//		return;
 		showPage(Integer.toString(w.getID()));
 		setAsFrontWindow(w);
 
@@ -364,8 +364,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (i <0 || i>=windows.size())
 			return;
 		MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
-		if (w == frontWindow)
-			return;
+	//	if (w == frontWindow)
+	//		return;
 		showPage(Integer.toString(w.getID()));
 	}
 
