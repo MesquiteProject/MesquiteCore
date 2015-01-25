@@ -163,7 +163,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		if (parts!=null)
 			for (int i=0; i<parts.length; i++) {
 				String s = parts[i].getName();
-				s = StringUtil.cleanseStringOfFancyChars(s);
+				s = StringUtil.cleanseStringOfFancyChars(s, false, true);
 				s = StringUtil.blanksToUnderline(s);
 				String q = null;
 				Listable[] partition = (Listable[])charPartition.getProperties();
