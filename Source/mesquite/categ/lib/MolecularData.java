@@ -351,7 +351,14 @@ public class MolecularData extends CategoricalData {
 
 	
 	/*..........................................  CategoricalData  ..................................................*/
-	/**Reverses the data from character icStart to icEnd in taxon it. */
+	/**Reverses the associated bits for all characters. */
+	public void reverseAssociated(){
+		int numChars = getNumChars();
+		for (int ic = 0; ic<numChars/2; ic++)
+			swapAssociated(ic, numChars-ic-1);
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/**Reverses the data from character icStart to icEnd in taxon it. */  
 	public void reverse(int icStart, int icEnd, int it, boolean reverseTerminalGaps, boolean adjustCellLinked){
 		//reversing; deal with inversions
 		if (trackInversions){
