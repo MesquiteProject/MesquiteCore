@@ -38,8 +38,11 @@ public class UserNamePasswordDialog extends ExtensibleDialog {
 		this.answer = answer;
 		answer.setValue(false);
 		
+		addBlankLine();
 		addLabel(label1 + ": ", Label.LEFT);
 		str1Result = addTextField(this.str1.getValue());
+		addBlankLine();
+		
 		addLabel(label2 + ": ", Label.LEFT);
 		if (secondLong) {
 			str2ResultLong = addTextArea(this.str2.getValue(),3);
