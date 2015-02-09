@@ -513,6 +513,17 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**swaps characters first and second*/
+	public  boolean swapAssociated(int first, int second){
+		if (first<0 || first >= numChars)
+			return false;
+		if (second<0 || second >= numChars)
+			return false;
+
+		return super.swapParts(first,second);
+
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/**swaps characters first and second*/
 	public  boolean swapParts(int first, int second){
 		if (first<0 || first >= numChars)
 			return false;
@@ -832,7 +843,7 @@ public class CategoricalData extends CharacterData {
 	 * If adjustLinks is true, then the linked matrices will also have their cells reversed.  adjustLinks should be true
 	 * in almost all cases, as reversing without it will disrupt linkages between matrices and cause features in
 	 * Mesquite to fail (e.g., within Chromaseq). */
-	public void reverse(int icStart, int icEnd, int it, boolean reverseTerminalGaps, boolean adjustCellLinked){
+	public void reverse(int icStart, int icEnd, int it, boolean reverseTerminalGaps, boolean adjustCellLinked){//Debugg.println(should footnotes, cell objects be reversed?  See all issues in deleteParts of CharacterData
 		int ic1;
 		int ic2; 
 		if (reverseTerminalGaps) {
