@@ -1793,12 +1793,13 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 					cloned = w.getOwnerModule();
 				}
 				else if (obj instanceof MesquiteModule){
-					w = ((MesquiteModule)obj).getModuleWindow();
+					w = ((MesquiteModule)obj).getModuleWindow(); // Not all employees may have a window, so this may return null
 					cloned = ((MesquiteModule)obj);
 				}
-				if (w!=null)
+				if (w!=null) {
 					w.doCommand("setLocation", Integer.toString(w.getLocation().x + 20) + " " + (w.getLocation().y + 20),CommandChecker.defaultChecker);
-				w.getParentFrame().showPage(Integer.toString(w.getID()));
+					w.getParentFrame().showPage(Integer.toString(w.getID())); // Only do this if w != null
+				}
 
 			}
 			MesquiteThread.setCurrentCommandRecord(previous);
