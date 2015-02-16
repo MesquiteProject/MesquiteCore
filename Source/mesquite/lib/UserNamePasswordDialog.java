@@ -18,39 +18,43 @@ import java.awt.*;
 import javax.swing.*;
 
 /*===============================================*/
-/** A dialog box to return two strings*/
+/** A dialog box to allow the user to enter a username and password for authentication. */
 public class UserNamePasswordDialog extends ExtensibleDialog {
-	SingleLineTextField str1Result;
-	MesquitePasswordField str2Result;
-	TextArea str2ResultLong;
-	MesquiteString str1;
-	MesquiteString str2;
+	SingleLineTextField userNameField;
+	MesquitePasswordField passwordField;
+	MesquiteString userName;
+	MesquiteString passWord;
 	MesquiteBoolean answer;
 
 
 
-	public UserNamePasswordDialog (MesquiteWindow parent,  String title, String label1, String label2, MesquiteBoolean answer,  MesquiteString str1, MesquiteString str2) {
+	public UserNamePasswordDialog (MesquiteWindow parent,  String title, String helpString, String helpURL, String label1, String label2, MesquiteBoolean answer,  MesquiteString str1, MesquiteString str2) {
 		super(parent,title);
-		this.str2 = str2;
-		this.str1 = str1;
+		this.passWord = str2;
+		this.userName = str1;
 		this.answer = answer;
 		answer.setValue(false);
 
+		if (StringUtil.notEmpty(helpString))
+			appendToHelpString(helpString);
+
+		if (StringUtil.notEmpty(helpURL))
+			setHelpURL(helpURL);
 
 		addLabel(title, Label.CENTER, true, true);
 		addBlankLine();
-		str1Result = addTextField(label1, this.str1.getValue(),25);
+		userNameField = addTextField(label1, userName.getValue(),26);
 		addBlankLine();
 
-		str2Result = addPasswordField(label2,this.str2.getValue(), 20);
+		passwordField = addPasswordField(label2,passWord.getValue(), 20);
 
-		str2Result.requestFocus();
+		passwordField.requestFocus();
 
 		completeAndShowDialog(true,null);
 		boolean ok = (query()==0);
 		if (ok) {
-			str1.setValue(str1Result.getText());
-			str2.setValue(new String(str2Result.getPassword()));
+			str1.setValue(userNameField.getText());
+			str2.setValue(new String(passwordField.getPassword()));
 
 			answer.setValue(true);
 		}
