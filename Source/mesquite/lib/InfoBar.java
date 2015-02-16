@@ -235,6 +235,11 @@ public class InfoBar extends MousePanel implements Commandable {
 				g2.drawArc(-2,-2, 20, 20, -180, -90);
 			//	g2.drawArc(10,10, 8, 8, -180, -90);
 			}
+			catch (NoClassDefFoundError exception) {
+				g2.setStroke(new BasicStroke(4));
+				g2.drawArc(-2,-2, 20, 20, -180, -90);
+			//	g2.drawArc(10,10, 8, 8, -180, -90);
+			}
 			g2.setStroke(st);
 		} 
 		else {

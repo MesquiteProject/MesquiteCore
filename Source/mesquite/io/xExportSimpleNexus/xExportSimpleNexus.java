@@ -124,6 +124,8 @@ public class xExportSimpleNexus extends FileInterpreterI {
 		}
 		else {
 			boolean usePrevious = args.parameterExists("usePrevious");
+			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options"))
+				usePrevious = true;
 			data = (CategoricalData)getProject().chooseData(containerOfModule(), file, null, CategoricalState.class, "Select data to export");
 			if (data ==null) {
 				showLogWindow(true);

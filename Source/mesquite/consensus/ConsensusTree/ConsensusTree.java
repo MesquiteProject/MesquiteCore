@@ -264,7 +264,7 @@ public class ConsensusTree extends TreeSource {
 			}
 			else if (notification.getCode() != MesquiteListener.SELECTION_CHANGED){
 				startTree =  0;
-				parametersChanged();
+				parametersChanged(new Notification(notification.getCode()));
 			}
 		}
 	}

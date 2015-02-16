@@ -15,6 +15,8 @@ package mesquite.mb.lib;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -23,7 +25,7 @@ import mesquite.categ.lib.*;
 
 
 
-public abstract class ExportForMrBayesLib extends FileInterpreterI {
+public abstract class ExportForMrBayesLib extends FileInterpreterI implements ActionListener {
 
 
 	/*.................................................................................................................*/
@@ -52,6 +54,28 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI {
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 	}
 
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		 if ("defaultSearchString".equalsIgnoreCase(tag))
+			 defaultSearchString = StringUtil.cleanXMLEscapeCharacters(content);
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "defaultSearchString", defaultSearchString);  
+		return buffer.toString();
+	}
+	/*.................................................................................................................*/
+	public  void actionPerformed(ActionEvent e) {
+		 if (e.getActionCommand().equalsIgnoreCase("defSearch")) {
+			String temp = MesquiteString.queryString(containerOfModule(), "Default Search String", "Default string setting search parameters for MCMC run", defaultSearchString, 5);
+			if (temp != null){
+				defaultSearchString = temp;
+				storePreferences();
+			}
+		}
+	}
+
 
 	/* ============================  exporting ============================*/
 	/*.................................................................................................................*/
@@ -60,7 +84,7 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI {
 	protected boolean useData = true;
 	protected String addendum = "";
 	protected String fileName = "untitled.nex";
-
+	static String defaultSearchString = "mcmcp ngen= 10000000 relburnin=yes burninfrac=0.25 printfreq=1000  samplefreq=1000 nchains=4 savebrlens=yes;";
 	/*.................................................................................................................*/
 	public abstract String getProgramName();
 	/*.................................................................................................................*/
@@ -78,9 +102,11 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI {
 		Checkbox simplifyNamesCheckBox = exportDialog.addCheckBox("simplify names as required for " + getProgramName(), simplifyNames);
 		exportDialog.addLabel("MrBayes block: ");
 
-		addendum = getMrBayesBlock(data);
 
 		TextArea fsText =exportDialog.addTextAreaSmallFont(addendum,16);
+		exportDialog.addBlankLine();
+		Button setDefaultSearchStringButton = exportDialog.addAListenedButton("Set Default Search String...",null, this);
+		setDefaultSearchStringButton.setActionCommand("defSearch");
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
 
@@ -96,7 +122,8 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI {
 
 	private String basicBlock(){
 		String sT = "begin mrbayes;\n\tset autoclose=yes nowarn=yes;";
-		sT +="\n\tlset nst=6 rates=invgamma;\n\tunlink statefreq=(all) revmat=(all) shape=(all) pinvar=(all); \n\tprset applyto=(all) ratepr=variable;\n\tmcmcp ngen= 10000000 relburnin=yes burninfrac=0.25  printfreq=1000  samplefreq=1000 nchains=4 savebrlens=yes;\n\tmcmc;\n\tsumt;\nend;";
+		sT +="\n\tlset nst=6 rates=invgamma;\n\tunlink statefreq=(all) revmat=(all) shape=(all) pinvar=(all); \n\tprset applyto=(all) ratepr=variable;\n\t" +
+				defaultSearchString + "\n\tmcmc;\n\tsumt;\nend;";
 
 		return sT;
 	}
@@ -219,7 +246,7 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI {
 		s=getPostPRSETCommands();  
 		if (StringUtil.notEmpty(s))
 			sT +=s + "\n";
-		sT += "\tmcmcp ngen= 10000000 relburnin=yes burninfrac=0.25 printfreq=1000  samplefreq=1000 nchains=4 savebrlens=yes;\n\tmcmc;\n\tsumt;\nend;";
+		sT += "\t" + defaultSearchString + "\n\tmcmc;\n\tsumt;\nend;";
 
 		return sT;
 	}
@@ -251,6 +278,8 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI {
 		if (file !=null)
 			suggested = file.getFileName();
 		MesquiteFile f;
+		loadPreferences();
+		addendum = getMrBayesBlock(data);
 		if (!usePrevious){
 			if (!getExportOptions(data, data.anySelected(), data.getTaxa().anySelected()))
 				return false;
