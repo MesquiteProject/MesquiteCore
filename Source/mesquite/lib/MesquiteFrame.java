@@ -1964,6 +1964,16 @@ class FrameTabsPanel extends MousePanel {
 			g2.fillRect(pathLeft+1, pathTop-1, pathRight-pathLeft, 1);
 			g2.drawLine(pathLeft+3, pathTop-1, pathRight, pathTop-1);
 		}
+		catch (NoClassDefFoundError error) {
+			int pathLeft = projectPanelWidth;
+			int pathRight = projectPanelWidth+4;  //+14
+			int pathTop = panelHeight;
+			g2.fillRect(pathLeft+4, pathTop-4, pathRight-pathLeft, 4);
+			g2.fillRect(pathLeft+3, pathTop-3, pathRight-pathLeft, 3);
+			g2.fillRect(pathLeft+2, pathTop-2, pathRight-pathLeft, 2);
+			g2.fillRect(pathLeft+1, pathTop-1, pathRight-pathLeft, 1);
+			g2.drawLine(pathLeft+3, pathTop-1, pathRight, pathTop-1);
+		}
 		g2.setStroke(st);
 
 	}
@@ -2068,6 +2078,11 @@ class FrameTabsPanel extends MousePanel {
 							g2.fillRect(tabLeft, height-5, 3, 3);
 							g2.fillRect(tabLeft, height-7, 1, 4);
 						}
+						catch (NoClassDefFoundError exception) {
+							g2.fillRect(tabLeft+1, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft-1+5, tabBottomLineHeight);
+							g2.fillRect(tabLeft, height-5, 3, 3);
+							g2.fillRect(tabLeft, height-7, 1, 4);
+						}
 					} else {
 						g2.fillRect(tabLeft-4, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft+4, tabBottomLineHeight);
 					}
@@ -2090,6 +2105,13 @@ class FrameTabsPanel extends MousePanel {
 						g2.fill(path);
 					}
 					catch (ClassNotFoundException exception) {
+						g2.fillRect(projectPanelWidth+4, height-4, tabRight-projectPanelWidth, 4);
+						g2.fillRect(projectPanelWidth+3, height-3, tabRight-projectPanelWidth, 3);
+						g2.fillRect(projectPanelWidth+2, height-2, tabRight-projectPanelWidth, 2);
+						g2.fillRect(projectPanelWidth+1, height-1, tabRight-projectPanelWidth, 1);
+						g2.drawLine(projectPanelWidth+3, height-1, tabRight, height-1);
+					}
+					catch (NoClassDefFoundError exception) {
 						g2.fillRect(projectPanelWidth+4, height-4, tabRight-projectPanelWidth, 4);
 						g2.fillRect(projectPanelWidth+3, height-3, tabRight-projectPanelWidth, 3);
 						g2.fillRect(projectPanelWidth+2, height-2, tabRight-projectPanelWidth, 2);
@@ -2145,6 +2167,18 @@ class BetweenPanel extends MousePanel{
 			g2.fill(path);
 		}
 		catch (ClassNotFoundException exception) {
+			g2.setColor(ColorTheme.getContentFrame());
+			int pathLeft = 0;
+			int pathRight = 12;  //+14
+			int pathTop = 0;
+			int pathBottom = 8;  //+10
+			g2.fillRect(pathLeft+4, pathTop-4, pathRight-pathLeft, 4);
+			g2.fillRect(pathLeft+3, pathTop-3, pathRight-pathLeft, 3);
+			g2.fillRect(pathLeft+2, pathTop-2, pathRight-pathLeft, 2);
+			g2.fillRect(pathLeft+1, pathTop-1, pathRight-pathLeft, 1);
+			g2.drawLine(pathLeft+3, pathTop-1, pathRight, pathTop-1);
+		}
+		catch (NoClassDefFoundError exception) {
 			g2.setColor(ColorTheme.getContentFrame());
 			int pathLeft = 0;
 			int pathRight = 12;  //+14

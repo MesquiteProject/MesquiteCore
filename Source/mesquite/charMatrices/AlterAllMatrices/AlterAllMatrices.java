@@ -41,7 +41,7 @@ public class AlterAllMatrices extends FileProcessor {
 			if (alterTask == null)
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
-		else {
+		else if (!MesquiteThread.isScripting()) {
 			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Transformer of matrices");
 			if (alterTask == null)
 				return sorry(getName() + " couldn't start because no tranformer module obtained.");
@@ -60,6 +60,11 @@ public class AlterAllMatrices extends FileProcessor {
 	public int getVersionOfFirstRelease(){
 		return 300;  
 	}
+ 	public String getNameForProcessorList() {
+ 		if (alterTask != null)
+ 			return getName() + "(" + alterTask.getName() + ")";
+ 		return getName();
+   	}
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
    	 	return false;
@@ -79,7 +84,7 @@ public class AlterAllMatrices extends FileProcessor {
  		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setDataAlterer")) {
  			DataAlterer temp =  (DataAlterer)replaceEmployee(DataAlterer.class, arguments, "Data alterer", alterTask);
  			if (temp!=null) {
- 				alterTask = temp;
+				alterTask = temp;
  				return alterTask;
  			}
  
@@ -96,6 +101,8 @@ public class AlterAllMatrices extends FileProcessor {
 	/*.................................................................................................................*/
    	/** Called to alter file. */
    	public boolean processFile(MesquiteFile file){
+   		if (alterTask == null)
+   			return false;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
    			return false;

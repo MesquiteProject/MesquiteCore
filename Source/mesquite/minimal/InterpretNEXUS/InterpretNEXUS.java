@@ -607,7 +607,8 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 		//boolean setTC = !MesquiteFile.fileExists(mNF.getPath());
 		if (mNF.openWriting(true)) {
 			if (mNF.exporting == 1){
-				getExportOptions(false, false);
+				if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options"))
+					getExportOptions(false, false);
 			}
 			checkIntegrityForWriting(getFileCoordinator(), mNF);
 			mNF.setIsNexus(true);

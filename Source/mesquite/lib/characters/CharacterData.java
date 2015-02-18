@@ -405,7 +405,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return group;
 	}
 
-public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean createNewGroups, boolean prefixGroupNamesIfAlreadyAssigned, MesquiteModule ownerModule) {
+	public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean createNewGroups, boolean prefixGroupNamesIfAlreadyAssigned, MesquiteModule ownerModule) {
 		if (icEnd<icStart)
 			return;
 		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
@@ -584,7 +584,36 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 	public abstract String getDataTypeName();
 
 	/** clones the data set.  Does not clone the associated specs sets etc.*/
-	public abstract CharacterData cloneData(); //TODO: ? SHOULD HERE PASS boolean to say whether to DEAL WITH CHARACTER SPEC SETS, character names, etc.
+	public abstract CharacterData cloneData(); //SHOULD HERE PASS boolean to say whether to DEAL WITH CHARACTER SPEC SETS, character names, etc.
+
+	public void copyCurrentSpecsSetsTo(CharacterData targetData){
+		Vector specsVectors = getSpecSetsVectorVector();
+		if (specsVectors!=null){ 
+			for (int i=0; i<specsVectors.size(); i++) { 
+				SpecsSetVector origSV = (SpecsSetVector)specsVectors.elementAt(i);
+				SpecsSet origSS = origSV.getCurrentSpecsSet();
+				if (origSS!=null) {
+					Class specsClass = origSV.getType();
+					SpecsSet cloneSS = targetData.getCurrentSpecsSet(specsClass);
+					if (cloneSS == null){
+						cloneSS = origSS.makeSpecsSet(targetData, getNumberOfParts());
+						if (cloneSS != null){
+							if (targetData instanceof FileElement){
+								cloneSS.addToFile(((FileElement)targetData).getFile(), ((FileElement)targetData).getProject(), ((FileElement)targetData).getProject().getCoordinatorModule().findElementManager(specsClass)); 
+							}
+							targetData.setCurrentSpecsSet(cloneSS, specsClass);
+						}
+					}
+					if (cloneSS != null){
+						for (int ic = 0; ic< getNumChars() && ic< targetData.getNumChars(); ic++){
+							cloneSS.equalizeSpecs(origSS, ic, ic);
+						}
+					}
+				}
+
+			}
+		}
+	}
 	//TODO: also need setToClone(data) method to set specsets and names etc. including super.setToClone()
 
 	/**clones a portion of CharacterData and return new copy.  Does not clone the associated specs sets etc.*/ //TODO: here should use super.setToClone(data) to handle specssets etc.???
@@ -999,23 +1028,11 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 		}
 	}
 	/*-----------------------------------------------------------*/
-	/**Swaps characters first and second.*/
-	public boolean swapParts(int first, int second){
+	/**Swaps metadata for cells of characters first and second.*/
+	public boolean swapCellMetadata(int first, int second){
 		if (!checkThread(false))
 			return false;
-		StringArray.swapParts(characterNames, first, second); 
 		StringArray.swapColumns(footnotes,  first, second); 
-		StringArray.swapParts(characterIllustrationPath,  first, second); 
-
-		StringArray.swapParts(uniqueIDs, first, second);
-		//adjusting character id's 
-		if (first<charIDs.length && second<charIDs.length){
-			long oldFirst  = charIDs[first];
-			charIDs[first] = charIDs[second];
-			charIDs[second] = oldFirst;
-		}
-		notifyOfChangeLowLevel(MesquiteListener.PARTS_SWAPPED, first, second, 0);  
-
 		if (cellObjects.size()>0){
 			for (int k =0; k<cellObjects.size(); k++){
 				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
@@ -1025,11 +1042,60 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 		}
 		Bits.swapColumns(cellObjectsDisplay,  first, second);
 		Bits.swapColumns(changedSinceSave,  first, second);
+
+		uncheckThread();
+		return true;
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps metadata for cells of characters first and second in taxon it.*/
+	public boolean swapCellMetadata(int first, int second, int it){
+		if (!checkThread(false))
+			return false;
+		StringArray.swapCell(footnotes,  first, second, it); 
+		if (cellObjects.size()>0){
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				Object[][] oldObjects = objArray.getMatrix();
+				Object2DArray.swapCell(oldObjects,  first, second, it);
+			}
+		}
+		Bits.swapCell(cellObjectsDisplay,  first, second, it);
+		Bits.swapCell(changedSinceSave,  first, second, it);
+
+		uncheckThread();
+		return true;
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps metadata for characters first and second.*/
+	public boolean swapCharacterMetadata(int first, int second){
+		if (!checkThread(false))
+			return false;
+
+		StringArray.swapParts(characterIllustrationPath,  first, second); 
+		StringArray.swapParts(characterNames, first, second); 
+		StringArray.swapParts(uniqueIDs, first, second);
+		//adjusting character id's 
+		if (first<charIDs.length && second<charIDs.length){
+			long oldFirst  = charIDs[first];
+			charIDs[first] = charIDs[second];
+			charIDs[second] = oldFirst;
+		}
+		notifyOfChangeLowLevel(MesquiteListener.PARTS_SWAPPED, first, second, 0);  
+
 		calculateFirstLastApplicable();
 		MesquiteImage.swapParts( characterIllustrations,  first, second); 
 		nMove++;
 		boolean swapped =  super.swapParts( first, second);
 		uncheckThread();
+		return swapped;
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps characters first and second.*/
+	public boolean swapParts(int first, int second){
+		boolean meta = swapCellMetadata(first, second);
+		if (!meta)
+			return false;
+		boolean swapped =  swapCharacterMetadata( first, second);  // this includes call to super.swapParts!!!!!
 		return swapped;
 	}
 
@@ -3513,7 +3579,7 @@ public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean cre
 		else
 			return "entries";
 	}
-	
+
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object */
 	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2) {

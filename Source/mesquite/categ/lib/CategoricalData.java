@@ -77,7 +77,7 @@ public class CategoricalData extends CharacterData {
 
 	/** true if the matrix is a valid one */
 	public boolean isValid(){
-		return (matrix!=null || matrixShort!=null) && numTaxa>0 && numChars>0;
+		return (matrix!=null || matrixShort!=null) && numTaxa>0; // && numChars>0;
 	}
 
 	public int getNumDataBlocks(int it, int icStart, int icEnd) {
@@ -843,7 +843,7 @@ public class CategoricalData extends CharacterData {
 	 * If adjustLinks is true, then the linked matrices will also have their cells reversed.  adjustLinks should be true
 	 * in almost all cases, as reversing without it will disrupt linkages between matrices and cause features in
 	 * Mesquite to fail (e.g., within Chromaseq). */
-	public void reverse(int icStart, int icEnd, int it, boolean reverseTerminalGaps, boolean adjustCellLinked){//Debugg.println(should footnotes, cell objects be reversed?  See all issues in deleteParts of CharacterData
+	public void reverse(int icStart, int icEnd, int it, boolean reverseTerminalGaps, boolean adjustCellLinked){
 		int ic1;
 		int ic2; 
 		if (reverseTerminalGaps) {
@@ -856,8 +856,9 @@ public class CategoricalData extends CharacterData {
 		}
 		int numChars = ic2-ic1+1;
 		int halfWay = numChars/2;
-		for (int ic= 0; ic<halfWay; ic++)
+		for (int ic= 0; ic<halfWay; ic++){
 			tradeStatesBetweenCharactersInternal(ic1+ic,ic2-ic,it,false, false);  // don't ask it to adjust linked as we will do it ourselves, below
+		}
 
 
 		if (adjustCellLinked){
@@ -868,6 +869,29 @@ public class CategoricalData extends CharacterData {
 						((CategoricalData)d).tradeStatesBetweenCharactersInternal(ic1+ic,ic2-ic,it,false, false);
 					else
 						d.tradeStatesBetweenCharacters(ic1+ic,ic2-ic,it,false);
+				}
+
+			}
+		}
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/**Reverses the metadata from character icStart to icEnd.  
+	 * If adjustLinks is true, then the linked matrices will also have their metadata reversed.  adjustLinks should be true
+	 * in almost all cases, as reversing without it will disrupt linkages between matrices and cause features in
+	 * Mesquite to fail */
+	public void reverseCharacterMetadata(int icStart, int icEnd, boolean adjustCellLinked){
+		int numChars = icEnd-icStart+1;
+		int halfWay = numChars/2;
+		for (int ic= 0; ic<halfWay; ic++){
+			swapCharacterMetadata(icStart+ic,icEnd-ic);  // don't ask it to adjust linked as we will do it ourselves, below
+		}
+
+
+		if (adjustCellLinked){
+			for (int i=0; i<linkedDatas.size(); i++){
+				CharacterData d= (CharacterData)linkedDatas.elementAt(i);
+				for (int ic= 0; ic<halfWay; ic++){
+					d.swapCharacterMetadata(icStart+ic,icEnd-ic);
 				}
 
 			}

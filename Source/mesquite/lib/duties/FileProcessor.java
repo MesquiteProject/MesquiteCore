@@ -32,6 +32,9 @@ public abstract class FileProcessor extends MesquiteModule  {
  		return "File Processor";
    	}
    	
+ 	public String getNameForProcessorList() {
+ 		return getName();
+   	}
    	/** if returns true, then requests to remain on even after alterFile is called.  Default is false*/
    	public boolean pleaseLeaveMeOn(){
    		return false;
@@ -41,7 +44,7 @@ public abstract class FileProcessor extends MesquiteModule  {
    	public  boolean processFile(MesquiteFile file){
    		return true;
    	}
-   	
+  	
 	/*.................................................................................................................*/
 	/** Called to process file. */
 	public boolean processFile(MesquiteFile file, MesquiteString notice){

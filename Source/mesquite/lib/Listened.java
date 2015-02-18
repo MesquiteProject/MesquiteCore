@@ -164,6 +164,7 @@ public class Listened implements Listenable {
 			return;
 		if (listeners!=null) {
 			if (notifySuppress==0){
+				MesquiteThread.incrementDuringNotification();
 				boolean timeListeners = true;
 				MesquiteTimer timer = new MesquiteTimer();
 				timer.start();
@@ -219,6 +220,7 @@ public class Listened implements Listenable {
 						System.out.print(" (" + m + ") " + timers[m].getAccumulatedTime());
 					System.out.println();
 				}
+				MesquiteThread.decrementDuringNotification();
 	 		}
 	 		else {
 	 			notifyPending = true;

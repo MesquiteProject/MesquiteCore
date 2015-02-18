@@ -229,7 +229,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 	/*.................................................................................................................*/
 	/** For TreeContextListener */
 	public void treeChanged(Tree tree) { 
-		parametersChanged();
+		parametersChanged(new Notification());
 	}
 	/*.................................................................................................................*/
 	/** For TreeContextListener */

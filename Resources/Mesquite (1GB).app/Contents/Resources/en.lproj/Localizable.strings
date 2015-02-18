@@ -1,0 +1,3 @@
+"JRELoadError" = "This Mesquite executable uses Java 1.7 or higher, which was not successfully found and loaded. Please install the latest version of Java from java.com, and try again.";
+"MainClassNameRequired" = "Main class name is required.";
+"JavaDirectoryNotFound" = "Unable to enumerate Java directory contents.";

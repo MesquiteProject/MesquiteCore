@@ -196,6 +196,32 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		return false;
 	}
 	 */
+	/*----------------*/
+	int duringNotification = 0;
+	public static boolean isDuringNotification(){
+		Thread t = Thread.currentThread();
+		if (!(t instanceof MesquiteThread))
+			return false;
+		MesquiteThread mt = (MesquiteThread)t;
+		return mt.duringNotification >0;
+	}
+	public static void incrementDuringNotification(){
+		Thread t = Thread.currentThread();
+		if (!(t instanceof MesquiteThread))
+			return;
+		MesquiteThread mt = (MesquiteThread)t;
+		mt.duringNotification++;
+	}
+	public static void decrementDuringNotification(){
+		Thread t = Thread.currentThread();
+		if (!(t instanceof MesquiteThread))
+			return;
+		MesquiteThread mt = (MesquiteThread)t;
+		mt.duringNotification--;
+		if (mt.duringNotification < 0)
+			mt.duringNotification = 0;
+	}
+	/*----------------*/
 	public static boolean isScripting(){
 		return isScripting(false);
 	}
