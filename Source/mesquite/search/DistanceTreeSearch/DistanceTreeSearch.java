@@ -11,23 +11,28 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.search.LikelihoodTreeSearch;
+package mesquite.search.DistanceTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
 import mesquite.search.lib.*;
 
 /* ======================================================================== */
-public class LikelihoodTreeSearch extends TreeSearch  {
+public class DistanceTreeSearch extends TreeSearch  {
 	public String getName() {
-		return "Likelihood Tree Search";
+		return "Distance Analysis";
 	}
 	public String getExplanation() {
-		return "Supplies trees resulting from a search for maximum likelihood trees.";
+		return "Supplies trees resulting from a tree inference based upon distances.";
 	}
 	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return false;
+	}
+
+	/*.................................................................................................................*/
 	public Class getHireSubchoice(){
-		return LikelihoodAnalysis.class;  
+		return DistanceAnalysis.class;  
 	}
 
 }
