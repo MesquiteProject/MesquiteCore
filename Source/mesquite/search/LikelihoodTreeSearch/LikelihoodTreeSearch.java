@@ -20,7 +20,7 @@ import mesquite.search.lib.*;
 /* ======================================================================== */
 public class LikelihoodTreeSearch extends TreeSearch  {
 	public String getName() {
-		return "Likelihood Tree Search";
+		return "Likelihood Tree Inference";
 	}
 	public String getExplanation() {
 		return "Supplies trees resulting from a search for maximum likelihood trees.";

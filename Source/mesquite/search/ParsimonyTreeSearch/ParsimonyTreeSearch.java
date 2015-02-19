@@ -20,7 +20,7 @@ import mesquite.search.lib.*;
 /* ======================================================================== */
 public class ParsimonyTreeSearch extends TreeSearch  {
 	public String getName() {
-		return "Parsimony Tree Search";
+		return "Parsimony Tree Inference";
 	}
 	public String getExplanation() {
 		return "Supplies trees resulting from a search for most parsimonious trees.";
