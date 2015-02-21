@@ -873,13 +873,17 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				return true;
 			}
 			catch( FileNotFoundException e ) {
-				if (warn) 
+				if (warn) {
+					MesquiteMessage.printStackTrace();
 					MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"File Busy or Not Found (1): \ndirectory <" + directoryName + "> \nfile <" + fileName + ">");
-			} 
+				}
+				} 
 			catch( IOException e ) {
-				if (warn)
+				if (warn){
+					MesquiteMessage.printStackTrace();
 					MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"IO exception in openReading (local) for <" + directoryName + "> \nfile <" + fileName + "> " + e.getMessage());
-			}
+				}
+				}
 		}
 		else {
 			if (url!=null) {
@@ -891,9 +895,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					return true;
 				}
 				catch( IOException e ) {
-					if (warn)
+					if (warn){
+						MesquiteMessage.printStackTrace();
 						MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"IO exception in openReading (url) for <" + directoryName + "> \nfile <" + fileName + "> " + e.getMessage() );
-				}
+					}
+					}
 			}
 			/*else if (streamFromHeaven !=null) {
 
@@ -996,11 +1002,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return true;
 		}
 		catch( FileNotFoundException e ) {
-			//MesquiteMessage.printStackTrace();
+			MesquiteMessage.printStackTrace();
 			MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"File Busy or Not Found  (2): \ndirectory <" + directoryName + "> \nfile <" + fileName + "> "  + tempFileName);
 		} 
 		catch( IOException e ) {
-			//MesquiteMessage.printStackTrace();
+			MesquiteMessage.printStackTrace();
 			MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"IO exception in openWriting for <" + directoryName + "> \nfile <" + fileName + "> " + e.getMessage());
 		}
 		return false;

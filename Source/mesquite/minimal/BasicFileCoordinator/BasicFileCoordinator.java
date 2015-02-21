@@ -850,6 +850,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	/** A method called immediately after a file has been read in.*/
+	public void wrapUpAfterFileRead(MesquiteFile f) {
+				broadcastFileRead(this, f);
+	}
+	/*.................................................................................................................*/
+	/** A method called immediately after a file has been read in.*/
 	void broadcastFileRead(MesquiteModule module, MesquiteFile f) {
 		if (module==null)
 			return;

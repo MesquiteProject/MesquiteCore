@@ -143,6 +143,11 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	}
 
 	/*.................................................................................................................*/
+	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, ProgressIndicator progIndicator, String arguments) {
+		readFileCore(parser, file, data, taxa, 0, progIndicator, arguments, true);
+	}
+
+	/*.................................................................................................................*/
 	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile) {
 			boolean wassave = data.saveChangeHistory;
 			data.saveChangeHistory = false;

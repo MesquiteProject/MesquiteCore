@@ -789,6 +789,39 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			}
 		}
 	}	
+	/*.................................................................................................................*/
+	public void removeAllFileElements(boolean notify) {
+			if (taxas != null){
+				for (int i = 0; i< taxas.size(); i++){
+					FileElement element = (FileElement)taxas.elementAt(i);
+					element.deleteMe(false);
+				}
+				taxas.removeAllElements(notify);
+			}
+		
+			if (datas != null){
+				for (int i = 0; i< datas.size(); i++){
+					FileElement element = (FileElement)datas.elementAt(i);
+					element.deleteMe(false);
+				}
+				datas.removeAllElements(notify);
+			}
+		
+			if (charModels != null){
+				for (int i = 0; i< charModels.size(); i++){
+					FileElement element = (FileElement)charModels.elementAt(i);
+					element.deleteMe(false);
+				}
+				charModels.removeAllElements(notify);
+			}
+
+			if (otherElements != null){
+				for (int i = 0; i< otherElements.size(); i++){
+					FileElement element = (FileElement)otherElements.elementAt(i);
+					element.deleteMe(false);
+				}
+			}
+	}	
 
 	/*.................................................................................................................*/
 	/** Returns the number of FileElements that are subclasses of the given class.  */
