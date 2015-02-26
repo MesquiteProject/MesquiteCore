@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.lib.*;
+import mesquite.lib.characters.CharactersBlock;
 import mesquite.lib.duties.*;
 
 
@@ -161,10 +162,21 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 			while (bubbleBlock(blocks, (NexusBlock)bs[i]))
 				;
 		}
+		//This is a kludge because of problems with mustBeAfter (as of 3.03)
+		for (int i=count-1; i>=0; i--) {
+			if (bs[i] instanceof CharactersBlock){
+				blocks.removeElement((NexusBlock)bs[i], false);
+				blocks.insertElementAt((NexusBlock)bs[i], 0, false);
+			}
+			if (bs[i] instanceof TaxaBlock){
+				blocks.removeElement((NexusBlock)bs[i], false);
+				blocks.insertElementAt((NexusBlock)bs[i], 0, false);
+			}
+		}
 		
 	}
 	/** Asks if block is sorted relative to other blocks in its file and before its file in file read order.
-	IS THIS USED??? */
+	NOT USED as of 3.02 */
 	private boolean needsToMove(ListableVector blocks, NexusBlock nb){
 		if (nb==null)
 			return false;
@@ -195,7 +207,8 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 		}
 		return false;
 	}
-	/** Check to see if blocks sorted properly across all files in order of file saving.*/
+	/** Check to see if blocks sorted properly across all files in order of file saving.
+	NOT USED as of 3.02 */
 	private  boolean sortedAcrossFiles(ListableVector blocks){
 		if (blocks==null)
 			return true;
