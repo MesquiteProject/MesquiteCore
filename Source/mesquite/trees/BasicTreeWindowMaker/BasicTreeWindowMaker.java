@@ -457,7 +457,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
 					basicTreeWindow.taxa.removeListener((MesquiteTree)basicTreeWindow.originalTree);
 				basicTreeWindow.originalTree = null;  //otree
-				
+
 				basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); //if switching between tree blocks, should reset to zero!  If storing tree in tree block, shouldn't!
 				basicTreeWindow.contentsChanged();
 			}
@@ -5543,14 +5543,21 @@ class TreeWindowSelectionRectangle  {
 	}
 
 	public static Area createAreaFromRectangle(Rectangle rect) {
-		Path2D.Float path = new Path2D.Float();
-		path.moveTo(rect.x, rect.y);
-		path.lineTo(rect.x+rect.width, rect.y);
-		path.lineTo(rect.x+rect.width, rect.y+rect.height);
-		path.lineTo(rect.x, rect.y+rect.height);
-		path.lineTo(rect.x, rect.y);
-		path.closePath();
-		return new Area(path);
+
+		MesquitePath2DFloat path = new MesquitePath2DFloat();
+		if (path.OK()){
+			path.moveTo(rect.x, rect.y);
+			path.lineTo(rect.x+rect.width, rect.y);
+			path.lineTo(rect.x+rect.width, rect.y+rect.height);
+			path.lineTo(rect.x, rect.y+rect.height);
+			path.lineTo(rect.x, rect.y);
+			path.closePath();
+			return path.getArea();
+		}
+		else{
+			return null;
+		}
+
 	}
 	public void drawSelectionDifference(Graphics2D g2, Component comp, int x, int y, int w, int h) {
 		Rectangle newRect = new Rectangle(x,y,w,h);

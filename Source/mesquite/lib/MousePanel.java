@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.table.AutoScrollThread;
 
@@ -62,6 +63,7 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 	}
 	public MousePanel() {
 		super();
+		
 		try {
 			setFocusTraversalKeysEnabled(false);
 		}
