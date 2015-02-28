@@ -137,6 +137,14 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		availableCommands[6] = new HennigNSTATES(this, parser);
 		availableCommands[cnamesElement] = new HennigCNAMES(this, parser);
 	}
+	
+	/*...............................................  read tree ....................................................*/
+	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
+	public boolean readClade(MesquiteTree tree, int node, Parser treeParser, NameReference valuesAtNodes) {
+		return readClade( tree,  node,  treeParser,  valuesAtNodes, null);
+
+	}
+
 	/*...............................................  read tree ....................................................*/
 	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
 	public boolean readClade(MesquiteTree tree, int node, Parser treeParser, NameReference valuesAtNodes, int[] taxonNumberTranslation) {
@@ -192,6 +200,10 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			return false;
 		}
 
+	}
+	/*.................................................................................................................*/
+	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString, NameReference valuesAtNodes){
+		return  readTREAD( progIndicator,  taxa,  line,  firstTree,  quoteString,  valuesAtNodes, null);
 	}
 	/*.................................................................................................................*/
 	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString, NameReference valuesAtNodes, int[] taxonNumberTranslation){
