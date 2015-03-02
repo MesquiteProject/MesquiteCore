@@ -394,13 +394,14 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 
 	/*.................................................................................................................*/
 	public boolean characterShouldBeIncluded(CharacterData data, int ic) {
-		return ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)));
+		return (!writeOnlySelectedData || (data.getSelected(ic)));
+		//return ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)));
 	}
 	/*.................................................................................................................*/
 	public int getLastCharacterToBeIncluded(CharacterData data) {
-		if (writeExcludedCharacters && writeOnlySelectedData)
+		if (writeOnlySelectedData)
 			return data.lastSelected();
-		if (!writeExcludedCharacters) {
+	/*	if (!writeExcludedCharacters) {
 			for (int ic=data.getNumChars()-1; ic>=0; ic--) {
 				if (data.isCurrentlyIncluded(ic)) {
 					if (!writeOnlySelectedData || data.getSelected(ic))
@@ -408,6 +409,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 				}
 			}
 		}
+		*/
 		return data.getNumChars()-1;
 	}
 	/*.................................................................................................................*/
@@ -1416,10 +1418,10 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		
 		
 		int numCharWrite = 0;
-		if (fileInterpreter.writeExcludedCharacters)
+/*		if (!fileInterpreter.writeExcludedCharacters)
 			numCharWrite =data.numCharsCurrentlyIncluded(fileInterpreter.writeOnlySelectedData);
 		else
-			numCharWrite = data.numberSelected(fileInterpreter.writeOnlySelectedData);
+*/			numCharWrite = data.numberSelected(fileInterpreter.writeOnlySelectedData);
 		
 		
 		int countTaxa = 0;
