@@ -68,7 +68,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "28 February 2015";   
+		return "1 March 2015";   
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -90,7 +90,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	693;  
+		return 	694;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -2651,6 +2651,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	the employee is started via startJob, the tokenized string of the name of the
 	module that the user requested as subemployee is passed as an argument.*/
 	public  Class getHireSubchoice(){return null;}
+	/*.................................................................................................................*/
+	/** Returns duty Classes that module should NOT hire immediately upon hiring. */
+	public  Class[] getDontHireSubchoice(){return null;}
 	/*.................................................................................................................*/
 	/** Called during Mesquite startup when the list of available modules is being constructed.*/
 	public void mesquiteStartup(){
