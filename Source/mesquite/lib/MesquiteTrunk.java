@@ -140,6 +140,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean suppressErrorReporting = false;
 	public static boolean noBeans = false;
 	public static boolean startedFromExecutable = false;
+	public static boolean startedFrom17Executable = false;
 	public static boolean debugMode = false;
 	public static boolean mesquiteExiting = false;
 	public static int snapshotMode = Snapshot.SNAPALL;

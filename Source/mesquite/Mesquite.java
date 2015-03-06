@@ -182,7 +182,8 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("@ " + loc);
 
 			try {
-				loc = StringUtil.encodeForURL(loc);
+				if (startedFrom17Executable)
+					loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -198,7 +199,8 @@ public class Mesquite extends MesquiteTrunk
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			System.out.println("@ " + loc);
 			try {
-				loc = StringUtil.encodeForURL(loc);
+				if (startedFrom17Executable)
+					loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -2321,6 +2323,8 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.noBeans = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
+					else if (args[i].equals("-mq17"))
+						MesquiteTrunk.startedFrom17Executable = true;
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))
