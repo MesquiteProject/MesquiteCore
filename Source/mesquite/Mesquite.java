@@ -139,6 +139,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
+	static boolean startedFromOSXJava17Executable = false;
 	/*.................................................................................................................*/
 	public void init()
 	{
@@ -182,7 +183,7 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("@ " + loc);
 
 			try {
-				if (startedFrom17Executable)
+				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
 					loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
@@ -199,7 +200,7 @@ public class Mesquite extends MesquiteTrunk
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			System.out.println("@ " + loc);
 			try {
-				if (startedFrom17Executable)
+				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
 					loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
@@ -2324,7 +2325,7 @@ public class Mesquite extends MesquiteTrunk
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
 					else if (args[i].equals("-mq17"))
-						MesquiteTrunk.startedFrom17Executable = true;
+						startedFromOSXJava17Executable = true;
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))

@@ -38,7 +38,7 @@
 <key>CFBundleShortVersionString</key>
 <string>1.0</string>
 <key>CFBundleSignature</key>
-<string>MESQ</string>
+<string>????</string>
 <key>CFBundleVersion</key>
 <string>1</string>
 <key>NSHumanReadableCopyright</key>
@@ -47,15 +47,16 @@
 <string>start.Mesquite</string>
 <key>JVMOptions</key>
 <array>
-	<string>-Djri.ignore.ule=&quot;yes&quot;</string>
-	<string>-Dapple.awt.graphics.UseQuartz=true</string>
-	<string>-Djava.library.path=lib</string>
-	<string>-Xss8m</string>
-	<string>-Xmx2000m</string>
+<string>-Djri.ignore.ule="yes"</string>
+<string>-Dapple.awt.graphics.UseQuartz=true</string>
+<string>-Djava.library.path=lib</string>
+<string>-Xss8m</string>
+<string>-Xmx2000m</string>
 </array>
 <key>JVMArguments</key>
 <array>
-	<string>-mqex</string>
+<string>-mqex</string>
+<string>-mq17</string>
 </array>
 </dict>
 </plist>
