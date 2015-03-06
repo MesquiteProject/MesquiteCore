@@ -179,8 +179,10 @@ public class Mesquite extends MesquiteTrunk
 				System.out.println("Not a recognized separator in path to Mesquite class!");
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			System.out.println("@ " + loc);
 
 			try {
+				loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -194,7 +196,9 @@ public class Mesquite extends MesquiteTrunk
 		else {
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			System.out.println("@ " + loc);
 			try {
+				loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {

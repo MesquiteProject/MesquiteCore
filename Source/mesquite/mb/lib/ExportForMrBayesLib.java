@@ -144,7 +144,7 @@ public abstract class ExportForMrBayesLib extends FileInterpreterI implements Ac
 		if (!writeStandardPartition && !writeCodPosPartition) {
 			return basicBlock();
 		}
-		String sT = "begin mrbayes;\n\tset autoclose=no nowarn=yes;  ";
+		String sT = "begin mrbayes;\n\tset autoclose=yes nowarn=yes;  ";
 		CharInclusionSet incl = null;
 		if (data !=null) {
 			incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
