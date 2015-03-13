@@ -28,6 +28,7 @@ public class Notification implements Identifiable {
 	long nn = -1;
 	static long numCreated = 0;
 	UndoReference undoReference = null;
+	Class objectClass = null;
 	
 	public Notification(int code, int[] parameters){
 		this();
@@ -74,6 +75,12 @@ public class Notification implements Identifiable {
 	}
 	public int[] getParameters(){
 		return parameters;
+	}
+	public Class getObjectClass(){
+		return objectClass;
+	}
+	public void setObjectClass(Class c){
+		this.objectClass=c;
 	}
 	public int[] getSubcodes(){
 		return subcodes;

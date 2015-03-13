@@ -453,13 +453,15 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			else if (code == MesquiteListener.NUM_ITEMS_CHANGED){
 				basicTreeWindow.numTreesChanged(); 
 			}
-			else if (code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.PARTS_ADDED && code != MesquiteListener.PARTS_CHANGED && code != MesquiteListener.PARTS_MOVED && code != MesquiteListener.PARTS_DELETED){
-				if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
-					basicTreeWindow.taxa.removeListener((MesquiteTree)basicTreeWindow.originalTree);
-				basicTreeWindow.originalTree = null;  //otree
+			else if (!(notification != null && notification.getObjectClass() == Taxa.class)){  //if notification came from TAxa changes, don't respond, as that will be handled otherwise
+				if (code != MesquiteListener.SELECTION_CHANGED ){ 
+					if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
+						basicTreeWindow.taxa.removeListener((MesquiteTree)basicTreeWindow.originalTree);
+					basicTreeWindow.originalTree = null;  //otree
 
-				basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); //if switching between tree blocks, should reset to zero!  If storing tree in tree block, shouldn't!
-				basicTreeWindow.contentsChanged();
+					basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); //if switching between tree blocks, should reset to zero!  If storing tree in tree block, shouldn't!
+					basicTreeWindow.contentsChanged();
+				}
 			}
 		}
 		else  {

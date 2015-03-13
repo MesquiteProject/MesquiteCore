@@ -487,7 +487,7 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 	/*.................................................................................................................*/
 	/** Finds the first employee in the heirarchy that  has a particular name.*/
 	private MesquiteModule findEmployeeThatCanRead(MesquiteModule module, FileBlock block, String blockName) {
-		if (blockName ==null)
+		if (blockName ==null || module == null)
 			return null;
 		Enumeration enumeration=module.getEmployeeVector().elements();
 		while (enumeration.hasMoreElements()){
