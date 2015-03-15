@@ -95,6 +95,11 @@ public class ShellScriptRunner implements Commandable  {
 	}	
 	
 	/*.................................................................................................................*/
+	public void resetLastModified(int i){
+		if (i>=0 && i<lastModified.length)
+			lastModified[i]=0;
+	}
+	/*.................................................................................................................*/
 	public void processOutputFiles(){
 		if (outputFileProcessor!=null && outputFilePaths!=null && lastModified !=null) {
 			String[] paths = outputFileProcessor.modifyOutputPaths(outputFilePaths);
@@ -108,8 +113,6 @@ public class ShellScriptRunner implements Commandable  {
 			}
 		}
 	}
-
-
 
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
