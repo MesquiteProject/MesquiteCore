@@ -1920,8 +1920,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	/** sets the state of character ic in taxon it to inapplicable*/
 	public  abstract void setToInapplicable(int ic, int it);
+	/** sets the state of all characters in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
+	public void setToInapplicable(int it) {
+		for (int ic=0; ic<numChars; ic++)
+			setToInapplicable(ic,it);
+	}
 	/** sets the state of character ic in taxon it to unassigned*/
 	public  abstract void setToUnassigned(int ic, int it);
+	/** sets the state of all characters in taxon it to unassigned*/
+	public void setToUnassigned(int it) {
+		for (int ic=0; ic<numChars; ic++)
+			setToUnassigned(ic,it);
+	}
 	/** sets the state of character ic in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
 	public  abstract void deassign(int ic, int it);
 

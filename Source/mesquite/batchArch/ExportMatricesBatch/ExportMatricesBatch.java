@@ -38,6 +38,8 @@ public class ExportMatricesBatch extends FileInit  {
 	MesquiteSubmenuSpec mss;//D!
 	CharMatrixSource characterSourceTask;
 	String directoryPath, baseName;
+	boolean writeOnlySelectedTaxa=false;
+
 	
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -93,6 +95,9 @@ public class ExportMatricesBatch extends FileInit  {
 		}
  	 	return temp;
   	 }
+  	 
+ 	Checkbox writeOnlySelectedTaxaCheckBox = null;
+
 	/*.................................................................................................................*/
 	public Object exportMatricesAndBatchFiles (String arguments,  boolean includeMatrices) {
  		//ask user how which taxa, how many characters
@@ -160,6 +165,9 @@ public class ExportMatricesBatch extends FileInit  {
 			if (!MesquiteInteger.isCombinable(num)) {
 				numReps = dialog.addTextField("Number of replicates:  ","10",8);
 			}
+			if (taxa.anySelected()) {
+				 writeOnlySelectedTaxaCheckBox = dialog.addCheckBox("include data only for selected taxa", writeOnlySelectedTaxa);
+			}
 			dialog.completeAndShowDialog();
 			
 			
@@ -175,12 +183,15 @@ public class ExportMatricesBatch extends FileInit  {
 			if (!MesquiteInteger.isCombinable(num)) 
 				return bailOut(null, characterSourceTask, null);
 
-    	 		String directoryPath = MesquiteFile.chooseDirectory("Choose location for saving files:"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+			String directoryPath = MesquiteFile.chooseDirectory("Choose location for saving files:"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 			if (StringUtil.blank(directoryPath))
 				return bailOut(null, characterSourceTask, null);
-    	 		
-    	 		dialog.dispose();
-    	 		dialog = null;
+
+			if (writeOnlySelectedTaxaCheckBox!=null)
+				writeOnlySelectedTaxa= writeOnlySelectedTaxaCheckBox.getState();
+
+				dialog.dispose();
+			dialog = null;
 			
 			//StringBuffer outputBuffer=null;
 			String s2 = "";
@@ -194,8 +205,12 @@ public class ExportMatricesBatch extends FileInit  {
 		MainThread.decrementSuppressWaitWindow();
 		return null;
 	}
+	
+	
 	boolean saveBasisTrees = true;
 	
+	/*.................................................................................................................*/
+
 	private Object export(TemplateRecord template,String directoryPath, String baseName,Taxa taxa,  boolean includeMatrices, CharMatrixSource characterSourceTask, int num){
 			if (template == null) {
 				alert("Sorry, the batch file template was not found");
@@ -273,6 +288,11 @@ public class ExportMatricesBatch extends FileInit  {
 							trees.addElement(matrix.getBasisTree().cloneTree(), false);//no need to establish listener to Taxa, as temporary
 						}
 						newMatrix = matrix.makeCharacterData(manager, taxa);
+						if (writeOnlySelectedTaxa) {
+							for (int it=0; it<taxa.getNumTaxa(); it++) 
+								if (!taxa.getSelected(it))
+									newMatrix.setToInapplicable(it);
+						}
 						newMatrix.setName(characterSourceTask.getMatrixName(taxa, iMatrix));
 						
 						logln(newMatrix.getExplanation() + "\n");	
