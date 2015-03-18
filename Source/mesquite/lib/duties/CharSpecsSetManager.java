@@ -15,6 +15,7 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 
@@ -136,7 +137,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(modelSet.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices()>1)
+				if (file.getProject().getNumberCharMatrices()>1 || (!file.useSimplifiedNexus && !data.hasDefaultName() && !NexusBlock.suppressTITLE))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s+= "  = "+  sT + ";" + StringUtil.lineEnding();
 			}

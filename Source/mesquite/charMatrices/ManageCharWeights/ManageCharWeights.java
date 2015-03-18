@@ -16,6 +16,7 @@ package mesquite.charMatrices.ManageCharWeights;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -130,7 +131,7 @@ public class ManageCharWeights extends CharSpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(wtSet.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices()>1)
+				if (file.getProject().getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&& !data.hasDefaultName() && !NexusBlock.suppressTITLE))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s+= " = "+  sT + ";" + StringUtil.lineEnding();
 			}

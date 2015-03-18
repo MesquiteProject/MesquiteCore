@@ -16,6 +16,7 @@ package mesquite.categ.ManageCategoricalChars;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -646,7 +647,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					String dataSpec = "";
 					if (project.getNumberTaxas()>1)
 						dataSpec = " TAXA = " +  StringUtil.tokenize(data.getTaxa().getName()) + "";
-					if (project.getNumberCharMatrices()>1)
+					if (project.getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&& !data.hasDefaultName() && !NexusBlock.suppressTITLE))
 						dataSpec += " CHARACTERS = " +  StringUtil.tokenize(data.getName()) + "";
 					for (int ic = 0; ic<data.getNumChars(); ic++){
 						for (int is = 0; is<=CategoricalState.maxCategoricalState; is++){
