@@ -164,7 +164,9 @@ public class ManageMesquiteBlock extends ScriptingManager {
 	/*.................................................................................................................*/
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
-		if (fuse)
+		boolean suppressRead = parser.hasFileReadingArgument(fileReadingArguments, "suppressMesquiteBlockRead") || !file.readMesquiteBlock;
+		
+		if (fuse || suppressRead)
 			return null;
 		
 		incrementMenuResetSuppression();

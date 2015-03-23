@@ -529,6 +529,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 
+		boolean imp = false; //was it imported???
 
 		if (thisFile!=null && !StringUtil.blank(thisFile.getFileName())) {
 
@@ -536,7 +537,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			logln("");
 
 			FileInterpreter fileInterp;
-			boolean imp = false; //was it imported???
 
 
 
@@ -610,9 +610,22 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		decrementMenuResetSuppression();
 		if (p!=null)
 			p.refreshProjectWindow();
-		if (noWindowsShowing())
+		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
-
+			if (imp){
+				if (getProject().getNumberCharMatrices()>0){
+					MesquiteModule mbb = findEmployeeWithName("Data Window Coordinator");
+					if (mbb != null)
+						mbb.doCommand("showDataWindow", "0", CommandChecker.defaultChecker);
+				}
+				else if (getProject().getNumberTaxas()>0){
+					MesquiteModule mbb = findEmployeeWithName("Manage TAXA blocks");
+					if (mbb != null)
+						mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
+				}
+			}
+		}
+		
 		if (thisFile != null && thisFile.getCloseAfterReading()){
 			closeFile(thisFile);
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);

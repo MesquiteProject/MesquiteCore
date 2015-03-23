@@ -62,6 +62,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public Vector foreignElements; //keeps list of foreign elements to report to user after file read; may be disposed immediately after report
 	public boolean useDataBlocks = false;  //todo: this is temporary until general format options system built
 	public boolean useSimplifiedNexus = false;  //todo: this is temporary until general format options system built
+	public boolean readMesquiteBlock = true;  //todo: this is temporary until general format options system built
 	public boolean useStandardizedTaxonNames = false;  //todo: this is temporary until general format options system built
 	public boolean interleaveAllowed = true; //todo: this is temporary until general format options system built
 	public boolean simplifyNames = false;  //todo: this is temporary until general format options system built
