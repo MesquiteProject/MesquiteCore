@@ -362,7 +362,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		else
 			file.write("BEGIN CHARACTERS");
 		file.write(endLine);
-		if (( !file.useSimplifiedNexus) && data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.suppressTitles)) && !NexusBlock.suppressTITLE))){
 			file.write("\tTITLE  ");
 			file.write( StringUtil.tokenize(data.getName()));
 			file.write(endLine);
@@ -647,7 +647,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					String dataSpec = "";
 					if (project.getNumberTaxas()>1)
 						dataSpec = " TAXA = " +  StringUtil.tokenize(data.getTaxa().getName()) + "";
-					if (project.getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&& !data.hasDefaultName() && !NexusBlock.suppressTITLE))
+					if (project.getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&&  !file.suppressTitles && !data.hasDefaultName() && !NexusBlock.suppressTITLE))
 						dataSpec += " CHARACTERS = " +  StringUtil.tokenize(data.getName()) + "";
 					for (int ic = 0; ic<data.getNumChars(); ic++){
 						for (int is = 0; is<=CategoricalState.maxCategoricalState; is++){

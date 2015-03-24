@@ -310,8 +310,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 						makeFileDialog.dispose();
 						TaxaManager mTaxa = (TaxaManager)findEmployeeWithDuty(TaxaManager.class);
 						Object t = null;
-						if (mTaxa!=null)
+						if (mTaxa!=null) 
 							t = mTaxa.doCommand("newTaxa",Integer.toString(numberTaxa.getValue()) + " " + ParseUtil.tokenize(nameTaxa.getText()), CommandChecker.defaultChecker); //treat as scripting so as not to complain if something not found 19Jan02
+						
 						if (t!=null){
 							if (mcm.getState()){
 								CharactersManager mChars = (CharactersManager)findEmployeeWithDuty(CharactersManager.class);
@@ -321,8 +322,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 									showSubstantiveWindow = true;
 								}
 							}
-							if (!showSubstantiveWindow)
+							if (!showSubstantiveWindow){
 								showProjectWindow();
+								mTaxa.doCommand("showTaxa","0", CommandChecker.defaultChecker);
+							}
 
 						}
 						else {

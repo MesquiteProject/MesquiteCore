@@ -1163,7 +1163,7 @@ public class ManageCharacters extends CharactersManager {
 				CharacterData data = getProject().getCharacterMatrix(i);
 				if (data.getFile()==file && data.getWritable()){
 					String eL =";" + StringUtil.lineEnding();
-					if ((project.getNumberCharMatrices()>1  || (!file.useSimplifiedNexus&& !data.hasDefaultName() && !NexusBlock.suppressTITLE)) || project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
+					if ((project.getNumberCharMatrices()>1  || (!file.useSimplifiedNexus&& !file.suppressTitles &&  !data.hasDefaultName() && !NexusBlock.suppressTITLE)) || project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 						s.append("\tCHARACTERS = " +  StringUtil.tokenize(data.getName(), null, tokSB) +" TAXA = " +  StringUtil.tokenize(data.getTaxa().getName(), null, tokSB) + eL);
 					String textDataSpec = "\tTEXT  ";
 					Associable as = data.getTaxaInfo(false);

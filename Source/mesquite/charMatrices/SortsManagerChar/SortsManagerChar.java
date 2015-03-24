@@ -130,7 +130,7 @@ public class SortsManagerChar extends CharSpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(sorting.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&& !data.hasDefaultName() && !NexusBlock.suppressTITLE))
+				if (writeLinkWithCharacterMatrixName(file, data))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s+= " = "+  sT + ";" + StringUtil.lineEnding();
 			}

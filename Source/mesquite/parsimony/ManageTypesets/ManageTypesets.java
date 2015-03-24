@@ -106,7 +106,7 @@ public class ManageTypesets extends CharSpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(modelSet.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices(file)>1|| (!file.useSimplifiedNexus&& !data.hasDefaultName() && !NexusBlock.suppressTITLE)) 
+				if (writeLinkWithCharacterMatrixName(file, data))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s+= "  = "+  sT + ";" + StringUtil.lineEnding();
 			}

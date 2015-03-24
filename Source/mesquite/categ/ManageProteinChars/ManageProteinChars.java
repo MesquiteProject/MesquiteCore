@@ -17,6 +17,7 @@ package mesquite.categ.ManageProteinChars;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -223,7 +224,7 @@ public class ManageProteinChars extends CategMatrixManager {
 		else
 			blocks.append("BEGIN CHARACTERS");
 		blocks.append(endLine);
-		if ((file==null || !file.useSimplifiedNexus) && data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.suppressTitles)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);

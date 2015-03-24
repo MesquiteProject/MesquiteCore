@@ -15,6 +15,7 @@ package mesquite.meristic.ManageMeristicChars;
 /*~~  */
 
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -249,7 +250,7 @@ public class ManageMeristicChars extends CharMatrixManager {
 		//StringBuffer blocks = new StringBuffer(cData.getNumChars()*cData.getNumTaxa()*10*cData.getNumItems());
 		StringBuffer line = new StringBuffer(cData.getNumChars()*10*cData.getNumItems());
 		file.write("BEGIN CHARACTERS;" + StringUtil.lineEnding());
-		if (cData.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if (cData.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.suppressTitles)) && !NexusBlock.suppressTITLE))){
 			file.write("\tTITLE  " + StringUtil.tokenize(cData.getName()) + ";" + StringUtil.lineEnding());
 		}
 
