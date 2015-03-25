@@ -224,7 +224,7 @@ public class ManageProteinChars extends CategMatrixManager {
 		else
 			blocks.append("BEGIN CHARACTERS");
 		blocks.append(endLine);
-		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.suppressTitles)) && !NexusBlock.suppressTITLE))){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);
@@ -263,7 +263,7 @@ public class ManageProteinChars extends CategMatrixManager {
 			blocks.append(" INTERLEAVE");
 		blocks.append(" GAP = " + data.getInapplicableSymbol() + " MISSING = " + data.getUnassignedSymbol());
 		blocks.append(endLine);
-		if (data.isLinked() && !file.useSimplifiedNexus){
+		if (data.isLinked() && !file.useSimplifiedNexus  && !file.useConservativeNexus){
 			blocks.append("\tOPTIONS ");
 			Vector ds = data.getDataLinkages();
 			for (int i = 0; i<ds.size(); i++) {
@@ -277,7 +277,7 @@ public class ManageProteinChars extends CategMatrixManager {
 
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
 
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				blocks.append("\t" + idsCommand + StringUtil.lineEnding());

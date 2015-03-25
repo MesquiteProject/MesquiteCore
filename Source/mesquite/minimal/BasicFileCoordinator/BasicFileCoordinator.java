@@ -1290,6 +1290,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				fInterpretersCanImport[count++] = fInterpreters[i];
 		}
+		fInterpretersCanImport = prioritize(fInterpretersCanImport, FileInterpreterI.class);
 		boolean fuse = parser.hasFileReadingArgument(arguments, "fuseTaxaCharBlocks");
 		String message = "Please choose an interpreter for this file";
 		if (fuse)
@@ -1597,6 +1598,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					catch (Exception e){
 					}
 				}
+				//prioritize list
+				fInterpretersCanExport = prioritize(fInterpretersCanExport, FileInterpreterI.class);
+
 				exporter = (FileInterpreterI)ListDialog.queryList(containerOfModule(), "Export format", "Export part or all of the information as a file of the following format",MesquiteString.helpString, fInterpretersCanExport, 0);
 			}
 			export(exporter, file, arguments);

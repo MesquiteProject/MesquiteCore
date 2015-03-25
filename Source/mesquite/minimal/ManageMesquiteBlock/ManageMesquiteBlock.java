@@ -254,6 +254,8 @@ public class ManageMesquiteBlock extends ScriptingManager {
 	public String getAutoBlock(MesquiteFile file){
 		if (file!= getProject().getHomeFile())
 			return "";
+		if (file.useConservativeNexus || file.useSimplifiedNexus)
+			return "";
 		FileCoordinator fCoord = getFileCoordinator();
 
 		String snapshot = ""; //here use getIDSnapshots for all FileElementManager employees of the fCoord; avoids problems of assigning character matrix ID after taxon list window shown

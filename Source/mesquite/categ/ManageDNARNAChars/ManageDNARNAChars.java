@@ -251,7 +251,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		else
 			blocks.append("BEGIN CHARACTERS");
 		blocks.append(endLine);
-		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.suppressTitles)) && !NexusBlock.suppressTITLE))){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);
@@ -309,7 +309,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
 
 		blocks.append( StringUtil.lineEnding());
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus && !file.useConservativeNexus){
 			String idsCommand = null;
 			if (!StringUtil.blank(data.getUniqueID()))
 				idsCommand = "BLOCKID " + data.getUniqueID() + ";" + StringUtil.lineEnding();

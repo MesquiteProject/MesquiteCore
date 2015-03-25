@@ -60,7 +60,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	}
 	/*.................................................................................................................*/
 	protected boolean writeLinkWithCharacterMatrixName(MesquiteFile file, CharacterData data){
-		return (file.getProject().getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&&  !file.suppressTitles && !data.hasDefaultName() && !NexusBlock.suppressTITLE));
+		return (file.getProject().getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&&  !file.useConservativeNexus && !data.hasDefaultName() && !NexusBlock.suppressTITLE));
 	}
 	
 /*.................................................................................................................*/
