@@ -31,7 +31,7 @@ public class ProcessFile extends FileInit {
 		return true;
 	}
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	boolean firstTime = true;
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
