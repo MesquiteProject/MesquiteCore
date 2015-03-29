@@ -16,7 +16,9 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Debugg;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteTrunk;
 
 public class AlignmentHelperLinearSpace extends AlignmentHelper {
 
@@ -201,6 +203,10 @@ public class AlignmentHelperLinearSpace extends AlignmentHelper {
 	    int i,j;
 		int gapExtendOnA;
 		int gapOpenOnA;	
+		if (lastColumn<0){
+			MesquiteTrunk.mesquiteTrunk.logln("LastColumn in AlignmentHelperLinearSpace.fillReverse is NEGATIVE!");
+			return;
+		}
 		rH[lastColumn] = rV[lastColumn] = (lengthB==lastColumn) ? gapOpenTerminal : gapOpen;;
 		rD[lastColumn] = 0;
 		
