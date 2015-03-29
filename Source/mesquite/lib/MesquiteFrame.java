@@ -497,7 +497,13 @@ public class MesquiteFrame extends Frame implements Commandable {
 	public void popOut(int i, boolean makeVisible){
 		if (windows.size() == 1)
 			return;
-		MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
+		MesquiteWindow w = null;
+		try {
+			w = (MesquiteWindow)windows.elementAt(i);
+		}
+		catch (Exception e){
+			return;
+		}
 		if (w.popAsTile){
 			removePage(w); //setVisible(w, false);  //remove from resources
 			w.poppedOut = true;

@@ -434,8 +434,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		else
 			popUp.removeAll();
 		composeMenuDescendants(popUp);
-		cont.add(popUp);
 		try {
+			cont.add(popUp);
 			popUp.show(cont, x,y);
 		}
 		catch (Exception e){

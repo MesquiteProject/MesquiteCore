@@ -56,7 +56,7 @@ public class BipartitionVector extends Vector {
 		allTaxa = new Bits(numTaxa);
 		bits1 = new Bits(numTaxa);
 		bits2 = new Bits(numTaxa);
-		branchLengths = new double[numTaxa*2];
+		branchLengths = new double[MesquiteTree.standardNumNodeSpaces(taxa)];
 		for (int i=0; i<branchLengths.length; i++){
 			branchLengths[i] = MesquiteDouble.unassigned;
 		}
@@ -75,7 +75,7 @@ public class BipartitionVector extends Vector {
 			if (b!=null)
 				b.reset();
 		}
-		for (int i=0; i<numTaxa; i++){
+		for (int i=0; i<branchLengths.length; i++){
 			branchLengths[i] = MesquiteDouble.unassigned;
 		}
 

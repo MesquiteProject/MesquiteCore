@@ -237,12 +237,15 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	}
 	/*.................................................................................................................*/
 	public TreeDisplay[] createTreeDisplays(int numDisplays, Taxa taxa, MesquiteWindow window) {
+		int numTaxa = 100;
+		if (taxa != null)
+			numTaxa = taxa.getNumTaxa();
 		treeDisplays = new BasicTreeDisplay[numDisplays];
 		this.numDisplays=numDisplays;
 		for (int i=0; i<numDisplays; i++) {
 			treeDisplays[i] = new BasicTreeDisplay(this, taxa);
 			treeDisplays[i].setDrawTaxonNames(terminalNamesTask);
-			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], taxa.getNumTaxa()));
+			treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], numTaxa));
 			treeDisplays[i].suppressDrawing(suppression);
 		}
 		return treeDisplays;
@@ -335,7 +338,8 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					vis[i] = treeDisplays[i].isVisible();
 					treeDisplays[i].setVisible(false);
 					treeDisplays[i].suppressDrawing(true);
-					treeDisplays[i].getTreeDrawing().dispose();
+					if (treeDisplays[i].getTreeDrawing() != null)
+						treeDisplays[i].getTreeDrawing().dispose();
 					treeDisplays[i].setTreeDrawing(null);
 				}
 				temp = (DrawTree)replaceEmployee(DrawTree.class, arguments, "Form of tree?", treeDrawTask);

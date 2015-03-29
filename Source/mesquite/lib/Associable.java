@@ -861,47 +861,51 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public boolean addParts(int starting, int num){
 		if (num==0)
 			return false;
-		totalPartsAdded+=num;
-		if (starting<0) starting = -1;
-		if (starting>numParts) starting = numParts;
+		try {
+			totalPartsAdded+=num;
+			if (starting<0) starting = -1;
+			if (starting>numParts) starting = numParts;
+			if (bits!=null) {
+				for (int i=0; i< bits.size(); i++) {
+					Bits b = (Bits)bits.elementAt(i);
+					b.addParts(starting, num);
+				}
+			}
+			if (longs!=null) {
+				for (int i=0; i< longs.size(); i++) {
+					LongArray b = (LongArray)longs.elementAt(i);
+					b.addParts(starting, num, MesquiteLong.unassigned);
+				}
+			}
+			if (doubles!=null)
+				for (int i=0; i< doubles.size(); i++) {
+					DoubleArray b = (DoubleArray)doubles.elementAt(i);
+					b.addParts(starting, num);
+				}
+			if (objects!=null)
+				for (int i=0; i< objects.size(); i++) {
+					ObjectArray b = (ObjectArray)objects.elementAt(i);
+					b.addParts(starting, num); //comments handled here
+				}
+			if (defaultOrder != null){
+				defaultOrder = addToOrder(defaultOrder,starting,num);
+			}
+			if (currentOrder != null){
+				currentOrder = addToOrder(currentOrder,starting,num);
+			}
+			if (previousOrder != null){
+				previousOrder = addToOrder(previousOrder,starting,num);
+			}
+			if (justAdded!=null) {
+				justAdded.addParts(starting, num);
+			}
+			numParts = numParts+num;
+			for (int i=0;i<num; i++)
+				setJustAdded(starting+i+1, true);
+		}
+		catch (Exception e){
+		}
 
-		if (bits!=null) {
-			for (int i=0; i< bits.size(); i++) {
-				Bits b = (Bits)bits.elementAt(i);
-				b.addParts(starting, num);
-			}
-		}
-		if (longs!=null) {
-			for (int i=0; i< longs.size(); i++) {
-				LongArray b = (LongArray)longs.elementAt(i);
-				b.addParts(starting, num, MesquiteLong.unassigned);
-			}
-		}
-		if (doubles!=null)
-			for (int i=0; i< doubles.size(); i++) {
-				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				b.addParts(starting, num);
-			}
-		if (objects!=null)
-			for (int i=0; i< objects.size(); i++) {
-				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				b.addParts(starting, num); //comments handled here
-			}
-		if (defaultOrder != null){
-			defaultOrder = addToOrder(defaultOrder,starting,num);
-		}
-		if (currentOrder != null){
-			currentOrder = addToOrder(currentOrder,starting,num);
-		}
-		if (previousOrder != null){
-			previousOrder = addToOrder(previousOrder,starting,num);
-		}
-		if (justAdded!=null) {
-			justAdded.addParts(starting, num);
-		}
-		numParts = numParts+num;
-		for (int i=0;i<num; i++)
-			setJustAdded(starting+i+1, true);
 		setDirty(true);
 		return true;
 	}

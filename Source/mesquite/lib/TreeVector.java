@@ -310,7 +310,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 	}
 	/** Set the label of the taxon with given name to be the label passed*/
 	public void setTranslationLabel(String label, String taxonName, boolean checkDuplicates){
-		if (translationTable==null)
+		if (translationTable==null || taxonName == null)
 			return;
 		if (taxa==null)
 			return;

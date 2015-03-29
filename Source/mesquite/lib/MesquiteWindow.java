@@ -353,8 +353,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 	}
 	public void popIn(){
-		if (isLoneWindow())
-			getOwnerModule().getFileCoordinator().getModuleWindow().getParentFrame().popIn(this);
+		if (isLoneWindow()){
+			try {
+				getOwnerModule().getFileCoordinator().getModuleWindow().getParentFrame().popIn(this);
+			}
+			catch(Exception e){
+			}
+		}
 		else if ((getPopAsTile()) && parentFrame!=null){
 			parentFrame.popIn(this);
 		}
@@ -1176,13 +1181,21 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void disconnectGraphics() {
 		if (interContents == null )
 			return;
+		try {
 		outerContents.remove(interContents);
-	}
+		}
+		catch (Exception e){
+		}
+		}
 	/** Hides or disconnects the main graphics panel of the window */
 	public void reconnectGraphics() {
 		if (interContents == null )
 			return;
-		outerContents.add(interContents, "InterContents"); 
+		try {
+			outerContents.add(interContents, "InterContents"); 
+		}
+		catch (Exception e){
+		}
 	}
 	/*.................................................................................................................*/
 	/** Gets the main graphics content area in which modules can add their components */
@@ -1481,7 +1494,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/** Set the text in the explanation area.  This text is not editable */
 	public String getAnnotation(){
 		if (annotationArea!=null) {
+			try {
 			return annotationArea.getExplanation();
+			}
+			catch(Exception e){
+			}
 		}
 		return null;
 	}
@@ -1489,7 +1506,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/** Sets the text in the explanation area.  This text is not editable */
 	public void setExplanation(String text){
 		if (explanationArea!=null) {
+			try {
 			explanationArea.setExplanation(text);
+			}
+			catch(Exception e){
+			}
 		}
 	}
 	/*.................................................................................................................*/

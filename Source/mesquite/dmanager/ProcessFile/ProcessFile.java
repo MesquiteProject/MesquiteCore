@@ -73,7 +73,7 @@ public class ProcessFile extends FileInit {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Calls a File Processor to process the current file" ;
+		return "Calls a File Processor to process the current file.  Options depend on modules installed." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

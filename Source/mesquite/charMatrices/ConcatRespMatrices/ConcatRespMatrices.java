@@ -126,6 +126,14 @@ public class ConcatRespMatrices extends CharMatrixSource {
 		currentMatrix = im;
 		MCharactersDistribution matrix1 = dataTask1.getMatrix(taxa, im);
 		MCharactersDistribution matrix2 = dataTask2.getMatrix(taxa, im);
+		if (matrix1 == null || matrix2 == null){
+			discreetAlert("Sorry, can't concatenate because one or the other matrix contains no information");
+			return null;
+		}
+		if (matrix1.getStateClass() == null || matrix2.getStateClass() == null){
+			discreetAlert("Sorry, can't concatenate because one or the other matrix is not of a recognized type");
+			return null;
+		}
 		if (!matrix1.getStateClass().isAssignableFrom(matrix2.getStateClass())){
 			discreetAlert("Sorry, can't concatenate because matrices are of different types");
 			return null;

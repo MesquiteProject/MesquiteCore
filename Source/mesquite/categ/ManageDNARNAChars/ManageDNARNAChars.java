@@ -64,6 +64,8 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		else
 			proj = getProject();
 		CategoricalData data= null;
+		if (stringPos == null)
+			stringPos = new MesquiteInteger(0);
 
 		//@@@@@@@@@@@@@@@@@@@@
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
@@ -112,7 +114,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		data.interleaved = false;   //reset default in case this is fused
 		//@@@@@@@@@@@@@@@@@@@@
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
-		while (!tok.equals(";")) {
+		while (tok != null && !tok.equals(";")) {
 			if (tok.equalsIgnoreCase("TRANSPOSE")) {
 				alert("Sorry, Transposed matrices of DNA characters can't yet be read");
 				return null;

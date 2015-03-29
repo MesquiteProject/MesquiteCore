@@ -1516,9 +1516,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		else if (checker.compare(this.getClass(), "Save all files in project", null, commandName, "saveFiles")) {  //all files in project
 			String fileNames ="";
-			
-			for (int i = 0; i< proj.getNumberLinkedFiles(); i++)
-				fileNames += "\n\n   " + proj.getFile(i).getFileName();
+			if (proj == null)
+				return null;
+			for (int i = 0; i< proj.getNumberLinkedFiles(); i++){
+				if (proj.getFile(i) != null)
+					fileNames += "\n\n   " + proj.getFile(i).getFileName();
+			}
 			if (MesquiteThread.isScripting() || AlertDialog.query(containerOfModule(), "Save All Files?", "Do you want to save all of the following files?" + fileNames + "\n\n(If you want to save only one, go to the submenu of the File menu.)"))
 				saveAllFiles();
 		}
@@ -1613,7 +1616,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			closeFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));
 		}
 		else if (checker.compare(this.getClass(), "Show file on disk", "[number of file]", commandName, "showFileOnDisk")) {
-
+			if (getProject() == null)
+				return null;
 			String path = "";
 			int id = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
 			MesquiteFile fi = getProject().getFileByID(id);
@@ -1625,7 +1629,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					MesquiteFile.showDirectory(path);
 					return null;
 				}
-				else {
+				else if (fi.getURL()!= null){
+					
 					path = fi.getURL().toString();
 					showWebPage(path, false);
 					return null;

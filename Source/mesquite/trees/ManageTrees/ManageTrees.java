@@ -1613,7 +1613,8 @@ public class ManageTrees extends TreesManager {
 			}
 			if (trees != null && blockComments!=null && blockComments.length()>0)
 				trees.setAnnotation(blockComments.toString(), false);
-			getProject().refreshProjectWindow();
+			if (getProject() != null)
+				getProject().refreshProjectWindow();
 			return t;
 		}
 		if (trees !=null)

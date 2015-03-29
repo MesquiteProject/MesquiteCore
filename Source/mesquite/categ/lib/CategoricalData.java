@@ -66,6 +66,7 @@ public class CategoricalData extends CharacterData {
 		}
 		catch (OutOfMemoryError e){
 			MesquiteMessage.warnProgrammer("Sorry, the Character Matrix could not be created because of lack of memory.  See file memory.txt in the Mesquite_Folder.");
+			discreetAlert("Sorry, the Character Matrix could not be created because of lack of memory.  See file memory.txt in the Mesquite_Folder.");
 			matrix = null;
 			numChars = 0;
 			numTaxa = 0;

@@ -1610,7 +1610,9 @@ public class ManageCharacters extends CharactersManager {
 				 Taxa taxa = nBlock.getDefaultTaxa();
 				 CharacterData data = nBlock.getDefaultCharacters();
 				// IntegerArray translationTable = (IntegerArray)taxa.getAttachment("originalIndicesDupRead");
-				 IntegerArray translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
+				 IntegerArray translationTable = null;
+				 if (taxa != null && file != null)
+					 translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
 				 if (fuse && translationTable == null)
 					 return false;
 				 for (int i=0; i<subcommands[0].length; i++){

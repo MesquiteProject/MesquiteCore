@@ -520,7 +520,10 @@ public class DrawTreeUtil {
 
 	/*_________________________________________________*/
 	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+		if (width< 0)
+			width = 0;
 		if (tree.nodeExists(node)) {
+			
 			int nM = tree.motherOfNode(node);
 			int xN=x[node];
 			int xnM = x[nM];
