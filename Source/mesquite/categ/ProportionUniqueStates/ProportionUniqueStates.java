@@ -177,7 +177,7 @@ public class ProportionUniqueStates extends NumberForTaxon {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	public String getParameters() {
 		return "Proportion unique states in taxon in matrix from: " + matrixSourceTask.getParameters();
@@ -187,6 +187,13 @@ public class ProportionUniqueStates extends NumberForTaxon {
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Reports the proportion of unique states in a taxon for a data matrix." ;
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 303;  
 	}
 
 }

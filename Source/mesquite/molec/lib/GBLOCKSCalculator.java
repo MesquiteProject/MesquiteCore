@@ -361,7 +361,6 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 				if (status[ic]==NONCONSERVED){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
-						//Debugg.println("start of conserved block: " + (ic+1));
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 > CP)  // block is big enough to be selected
@@ -369,7 +368,6 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
-						//Debugg.println("   end of conserved block: " + (ic));
 						if (ic-blockStart > CP)  // block is big enough to be selected
 							setToSelectRange(charToMark,blockStart,ic-1);
 					}	
@@ -385,14 +383,12 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 				if (!charToMark[ic]){  // we are in a remaining block
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
-						//Debugg.println("start of remaining block: " + (ic+1));
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						examineRemainingBlock(status, charToMark,blockStart,ic);
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
-						//Debugg.println("   end of remaining block: " + (ic));
 						if (ic-blockStart > CP)  // block is big enough to be selected
 							examineRemainingBlock(status, charToMark,blockStart,ic-1);
 					}	
@@ -407,7 +403,6 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 				if (!charToMark[ic]){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
-						//Debugg.println("start of conserved block: " + (ic+1));
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 < BL){  // block is big enough to be selected
@@ -416,7 +411,6 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
-						//Debugg.println("   end of conserved block: " + (ic));
 						if (ic-blockStart < BL){  // block is big enough to be selected
 							setToSelectRange(charToMark,blockStart,ic-1);
 						}
@@ -442,7 +436,6 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 				if (!charToMark[ic]){
 					if (blockStart<0){  // start of block, so set the value
 						blockStart = ic;
-						//Debugg.println("start of conserved block: " + (ic+1));
 					}
 					if (ic==data.getNumChars()-1) {  // end of matrix, so need to check if block is big enough
 						if (ic-blockStart+1 < BL){  // block is big enough to be selected
@@ -451,7 +444,6 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 					}
 				} else {  // let's check to see if we have reached the end of a non-conserved block
 					if (blockStart>=0){ // we were within a conserved block, now just one past it
-						//Debugg.println("   end of conserved block: " + (ic));
 						if (ic-blockStart < BL){  // block is big enough to be selected
 							setToSelectRange(charToMark,blockStart,ic-1);
 						}
