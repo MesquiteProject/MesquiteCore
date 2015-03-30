@@ -32,7 +32,7 @@ public class ShellScriptUtil  {
 	static int sleepTime = 50;
 
 	/*.................................................................................................................*/
-	public static String protectForShellScript(String s) {
+	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
 		if (MesquiteTrunk.isWindows())
 			return StringUtil.protectForWindows(s);
 		else
