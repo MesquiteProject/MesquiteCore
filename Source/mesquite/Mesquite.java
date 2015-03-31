@@ -38,24 +38,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.02.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.03.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.02+";
+		return "3.03";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 302;
+		return 303;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.02;
+		return 3.03;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "January 2015"; //"April 2007";
+		return "March 2015"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -67,7 +67,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

@@ -176,7 +176,7 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 
 	}
 	/** Asks if block is sorted relative to other blocks in its file and before its file in file read order.
-	NOT USED as of 3.02 */
+	NOT USED as of 3. 02 */
 	private boolean needsToMove(ListableVector blocks, NexusBlock nb){
 		if (nb==null)
 			return false;
@@ -208,7 +208,7 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 		return false;
 	}
 	/** Check to see if blocks sorted properly across all files in order of file saving.
-	NOT USED as of 3.02 */
+	NOT USED as of 3. 02 */
 	private  boolean sortedAcrossFiles(ListableVector blocks){
 		if (blocks==null)
 			return true;
