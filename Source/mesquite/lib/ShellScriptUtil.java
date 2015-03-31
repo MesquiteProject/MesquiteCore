@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
 import java.util.*;
 import java.io.*;
 
-import mesquite.lib.duties.*;
 
 /* TODO: 
  * make a MesquiteExternalProcess that extends Process and stores things like 

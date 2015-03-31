@@ -1194,7 +1194,7 @@ public class Mesquite extends MesquiteTrunk
 		if (addMesquiteToSearch.getValue())
 			textToGoogle += "+" + "Mesquite";
 		if (restrictSearchToManual.getValue())
-			textToGoogle += "&as_sitesearch=http%3A%2F%2Fmesquiteproject.org%2FMesquite_Folder%2Fdocs%2Fmesquite%2F";
+			textToGoogle += "&as_sitesearch=http%3A%2F%2Fmesquiteproject.wikispaces.com%2F";
 		showWebPage("http://www.google.com/search?q=" + textToGoogle, false);
 	}
 	/*End new code added Feb.05.07 oliver*/
