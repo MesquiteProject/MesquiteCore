@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
 import java.util.*;
 import java.io.*;
 
-import mesquite.lib.duties.*;
 
 /* TODO: 
  * make a MesquiteExternalProcess that extends Process and stores things like 
@@ -32,7 +30,7 @@ public class ShellScriptUtil  {
 	static int sleepTime = 50;
 
 	/*.................................................................................................................*/
-	public static String protectForShellScript(String s) {
+	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
 		if (MesquiteTrunk.isWindows())
 			return StringUtil.protectForWindows(s);
 		else

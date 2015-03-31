@@ -360,8 +360,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 				}
 				if (success) {
-					for (int i=1; i<alignedTaxa.getNumTaxa(); i++) {
-						for (int j= i-1; j>=0 && keys[j]>keys[j+1]; j--) {
+					for (int i=1; i<alignedTaxa.getNumTaxa() ; i++) {
+						for (int j= i-1; j>=0 && j+1<keys.length && keys[j]>keys[j+1]; j--) {
 							alignedTaxa.swapParts(j, j+1);
 							int kj = keys[j];
 							keys[j] = keys[j+1];

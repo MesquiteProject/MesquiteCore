@@ -1278,7 +1278,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		return findAndHire(dutyClass, null, explanation);
 	}
 	/* ................................................................................................................. */
-	private Listable[] prioritize(Listable[] moduleInfos, Class dutyClass){
+	protected Listable[] prioritize(Listable[] moduleInfos, Class dutyClass){
 		if (moduleInfos == null)
 			return null;
 		boolean secondaryExist = false;
@@ -1293,6 +1293,27 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		for (int i= 0; i< moduleInfos.length; i++)
 			if (!((Prioritizable)moduleInfos[i]).isFirstPriority(dutyClass))
 				p[count++] = moduleInfos[i];
+		return p;
+	}
+	/* ................................................................................................................. */
+	protected MesquiteModule[] prioritize(MesquiteModule[] modules, Class dutyClass){
+		if (modules == null)
+			return null;
+		boolean secondaryExist = false;
+		MesquiteModule[] p = new MesquiteModule[modules.length];
+		int count = 0;
+		for (int i= 0; i< modules.length; i++){
+			MesquiteModuleInfo mmi = modules[i].getModuleInfo();
+			if (((Prioritizable)mmi).isFirstPriority(dutyClass))
+				p[count++] = modules[i];
+			else
+				secondaryExist = true;
+		}
+		for (int i= 0; i< modules.length; i++){
+			MesquiteModuleInfo mmi = modules[i].getModuleInfo();
+			if (!((Prioritizable)mmi).isFirstPriority(dutyClass))
+				p[count++] = modules[i];
+		}
 		return p;
 	}
 
@@ -1793,13 +1814,15 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 					cloned = w.getOwnerModule();
 				}
 				else if (obj instanceof MesquiteModule){
-					w = ((MesquiteModule)obj).getModuleWindow();
+					w = ((MesquiteModule)obj).getModuleWindow(); // Not all employees may have a window, so this may return null
 					cloned = ((MesquiteModule)obj);
 				}
-				if (w!=null)
+				if (w!=null) {
 					w.doCommand("setLocation", Integer.toString(w.getLocation().x + 20) + " " + (w.getLocation().y + 20),CommandChecker.defaultChecker);
-			}
+					w.getParentFrame().showPage(Integer.toString(w.getID())); // Only do this if w != null
+				}
 
+			}
 			MesquiteThread.setCurrentCommandRecord(previous);
 			return cloned;
 		}

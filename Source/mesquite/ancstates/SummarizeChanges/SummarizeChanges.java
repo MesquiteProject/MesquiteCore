@@ -587,7 +587,13 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 					historyTask.prepareForMappings(true);
 					historyTask.prepareHistory(tempTree, currentChar);
 
-					tempCharStates = (CategoricalHistory)historyTask.getMapping(0, tempCharStates, null);
+					CharacterHistory ch = historyTask.getMapping(0, tempCharStates, null);
+					if (!(ch instanceof CategoricalHistory)){
+						discreetAlert("To summarize changes, they must be of categorical characters.  Continuous and meristic characters cannot be summarized.  We don't know how you managed to get to this point, but the calculation will fail.");
+						resultString.setValue("Calculation not done; character type incompatible");
+						return;
+					}
+					tempCharStates = (CategoricalHistory)ch;
 					if (tempCharStates!=null) {
 						oneValidMapping = true;
 						if (stateChanges==null) {

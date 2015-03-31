@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.search.TreeSearch;
+package mesquite.search.lib;
 /*~~  */
 
 import java.util.*;
@@ -21,10 +21,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class TreeSearch extends TreeInferer implements Incrementable {
-	public String getName() {
-		return "Tree Search";
-	}
+public abstract class TreeSearch extends TreeInferer implements Incrementable {
 	public String getExplanation() {
 		return "Supplies trees resulting from a search to optimize some value.";
 	}
@@ -33,7 +30,7 @@ public class TreeSearch extends TreeInferer implements Incrementable {
 		"The method to search for trees can be selected initially");
 	}
 	/*.................................................................................................................*/
-	TreeSearcher searchTask;
+	protected TreeSearcher searchTask;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

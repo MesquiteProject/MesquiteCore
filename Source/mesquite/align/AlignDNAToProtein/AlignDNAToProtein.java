@@ -132,6 +132,22 @@ public class AlignDNAToProtein extends DNADataAltererCon {
 		return forceAlignment((DNAData)data,proteinData, it);
 	}
 
+	public boolean alterBlockOfCharacters(CharacterData data, int icStart, int icEnd) {
+		if (data==null || !(data instanceof DNAData))
+			return false;
+		Taxa taxa = data.getTaxa();
+
+		MCharactersDistribution m =  characterSourceTask.getCurrentMatrix(taxa);
+		if (m == null || !(m.getParentData() instanceof ProteinData))
+			return false;
+		ProteinData proteinData = (ProteinData)m.getParentData();
+		boolean result = false;
+		for (int it = 0; it< data.getNumTaxa(); it++){
+			boolean success = forceAlignment((DNAData)data,proteinData, it);
+			result = result || success;
+		}
+		return result;
+	}
 	public String getName() {
 		return "Align DNA to Protein";
 	}

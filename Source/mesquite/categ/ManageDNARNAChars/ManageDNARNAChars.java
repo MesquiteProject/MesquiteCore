@@ -64,6 +64,8 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		else
 			proj = getProject();
 		CategoricalData data= null;
+		if (stringPos == null)
+			stringPos = new MesquiteInteger(0);
 
 		//@@@@@@@@@@@@@@@@@@@@
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
@@ -112,7 +114,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		data.interleaved = false;   //reset default in case this is fused
 		//@@@@@@@@@@@@@@@@@@@@
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
-		while (!tok.equals(";")) {
+		while (tok != null && !tok.equals(";")) {
 			if (tok.equalsIgnoreCase("TRANSPOSE")) {
 				alert("Sorry, Transposed matrices of DNA characters can't yet be read");
 				return null;
@@ -251,7 +253,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		else
 			blocks.append("BEGIN CHARACTERS");
 		blocks.append(endLine);
-		if ((file==null || !file.useSimplifiedNexus) && data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);
@@ -309,7 +311,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
 
 		blocks.append( StringUtil.lineEnding());
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus && !file.useConservativeNexus){
 			String idsCommand = null;
 			if (!StringUtil.blank(data.getUniqueID()))
 				idsCommand = "BLOCKID " + data.getUniqueID() + ";" + StringUtil.lineEnding();

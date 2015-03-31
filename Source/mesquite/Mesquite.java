@@ -38,24 +38,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.02.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.03.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.02";
+		return "3.03";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 302;
+		return 303;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.02;
+		return 3.03;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "January 2015"; //"April 2007";
+		return "March 2015"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -139,6 +139,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
+	static boolean startedFromOSXJava17Executable = false;
 	/*.................................................................................................................*/
 	public void init()
 	{
@@ -179,8 +180,11 @@ public class Mesquite extends MesquiteTrunk
 				System.out.println("Not a recognized separator in path to Mesquite class!");
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			System.out.println("@ " + loc);
 
 			try {
+				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
+					loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -194,7 +198,10 @@ public class Mesquite extends MesquiteTrunk
 		else {
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
 			loc = loc.substring(0, loc.lastIndexOf(sepp));
+			System.out.println("@ " + loc);
 			try {
+				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
+					loc = StringUtil.encodeForURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -391,8 +398,8 @@ public class Mesquite extends MesquiteTrunk
 			prepareMesquite();
 		}
 		if (verboseStartup) System.out.println("main init 18");
-		if (isJavaVersionLessThan(1.4)){
-			discreetAlert("This version of Mesquite now requires Java 1.4 or higher.  Please update your version of Java, or use an older version of Mesquite.  Please be aware however that earlier versions of Mesquite may have bugs that affect your results.  Please check the Mesquite website for information.");
+		if (isJavaVersionLessThan(1.6)){
+			discreetAlert("This version of Mesquite requires Java 1.6 or higher.  Please update your version of Java, or use an older version of Mesquite.  Please be aware however that earlier versions of Mesquite may have bugs that affect your results.  Please check the Mesquite website for information.");
 			exit(true, 0);
 		}
 
@@ -1187,7 +1194,7 @@ public class Mesquite extends MesquiteTrunk
 		if (addMesquiteToSearch.getValue())
 			textToGoogle += "+" + "Mesquite";
 		if (restrictSearchToManual.getValue())
-			textToGoogle += "&as_sitesearch=http%3A%2F%2Fmesquiteproject.org%2FMesquite_Folder%2Fdocs%2Fmesquite%2F";
+			textToGoogle += "&as_sitesearch=http%3A%2F%2Fmesquiteproject.wikispaces.com%2F";
 		showWebPage("http://www.google.com/search?q=" + textToGoogle, false);
 	}
 	/*End new code added Feb.05.07 oliver*/
@@ -2317,6 +2324,8 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.noBeans = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
+					else if (args[i].equals("-mq17"))
+						startedFromOSXJava17Executable = true;
 					else if (args[i].equals("-d"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))

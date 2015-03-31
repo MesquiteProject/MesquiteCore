@@ -243,8 +243,11 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			}
 			else if (obj instanceof Taxa){
 				boolean respond = (code==MesquiteListener.ITEMS_ADDED || code==MesquiteListener.PARTS_CHANGED || code==MesquiteListener.PARTS_ADDED || code==MesquiteListener.PARTS_DELETED || code==MesquiteListener.PARTS_MOVED);
-				if (respond)
+				if (respond){
+					if (notification != null)
+						notification.setObjectClass(Taxa.class);
 					parametersChanged(notification);
+				}
 			}
 			else {
 				if (obj instanceof TreeVector && ((TreeVector)obj).size()==0 && obj == currentTreeBlock) {

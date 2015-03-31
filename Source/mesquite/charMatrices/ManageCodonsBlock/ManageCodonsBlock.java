@@ -15,8 +15,10 @@ package mesquite.charMatrices.ManageCodonsBlock;
 /*~~  */
 
 import java.util.*;
+
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -55,7 +57,13 @@ public class ManageCodonsBlock extends FileInit {
 		commandParser.setString(block.toString());
 		MesquiteInteger startCharC = new MesquiteInteger(0);
 		String s;
-		CodonsBlock sB = new CodonsBlock(file, this); 
+		//CodonsBlock sB = new CodonsBlock(file, this); 
+		NexusBlock[] bs = getProject().getNexusBlocks(CodonsBlock.class, file);//added Sept 2011
+		CodonsBlock sB = null;
+		if (bs == null || bs.length == 0)
+			sB = new CodonsBlock(file, this); //TODO: should this store the sets??
+		else
+			sB= (CodonsBlock)bs[0];
 		int numChars=0;
 		while (!StringUtil.blank(s=commandParser.getNextCommand(startCharC))) {
 			String commandName = parser.getFirstToken(s);

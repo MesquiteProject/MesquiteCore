@@ -137,16 +137,24 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		availableCommands[6] = new HennigNSTATES(this, parser);
 		availableCommands[cnamesElement] = new HennigCNAMES(this, parser);
 	}
+	
 	/*...............................................  read tree ....................................................*/
 	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
 	public boolean readClade(MesquiteTree tree, int node, Parser treeParser, NameReference valuesAtNodes) {
+		return readClade( tree,  node,  treeParser,  valuesAtNodes, null);
+
+	}
+
+	/*...............................................  read tree ....................................................*/
+	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
+	public boolean readClade(MesquiteTree tree, int node, Parser treeParser, NameReference valuesAtNodes, int[] taxonNumberTranslation) {
 
 		// from BasicTreeWindowMaker in Minimal
 
 		String c = treeParser.getNextToken();
 		if ("(".equals(c)){  //internal node
 			int sprouted = tree.sproutDaughter(node, false);
-			readClade(tree, sprouted, treeParser, valuesAtNodes);
+			readClade(tree, sprouted, treeParser, valuesAtNodes, taxonNumberTranslation);
 			boolean keepGoing = true;
 			while (keepGoing) {
 				int loc = treeParser.getPosition();
@@ -160,14 +168,13 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 						int value = MesquiteInteger.fromString(next);
 						tree.setAssociatedDouble(valuesAtNodes, node, 0.01*value, true);  // value will be a percentage
 
-					//	Debugg.println("node: " + node + ", value: " + value);
 					} else
 						treeParser.setPosition(loc);
 				}
 				else {
 					treeParser.setPosition(loc);
 					sprouted = tree.sproutDaughter(node, false);
-					keepGoing = readClade(tree, sprouted, treeParser, valuesAtNodes);
+					keepGoing = readClade(tree, sprouted, treeParser, valuesAtNodes, taxonNumberTranslation);
 				}
 			}
 			return true;
@@ -179,7 +186,12 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			int taxonNumber = MesquiteInteger.fromString(c);
 			if (taxonNumber <0 || !MesquiteInteger.isCombinable(taxonNumber)) 
 				taxonNumber = tree.getTaxa().whichTaxonNumber(c); 
-			if (taxonNumber >=0 && MesquiteInteger.isCombinable(taxonNumber)){ //taxon successfully found
+			if (taxonNumber >=0 && MesquiteInteger.isCombinable(taxonNumber)){ //taxon specifier is a number
+				if (taxonNumberTranslation!=null && taxonNumber<taxonNumberTranslation.length) {  // better push it through the translation array
+					int newNumber = taxonNumberTranslation[taxonNumber];
+					if (newNumber >=0 && MesquiteInteger.isCombinable(newNumber))
+						taxonNumber = newNumber;
+				}
 				if (tree.nodeOfTaxonNumber(taxonNumber)<=0){  // first time taxon encountered
 					tree.setTaxonNumber(node, taxonNumber, false);
 					return true;
@@ -191,6 +203,10 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	}
 	/*.................................................................................................................*/
 	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString, NameReference valuesAtNodes){
+		return  readTREAD( progIndicator,  taxa,  line,  firstTree,  quoteString,  valuesAtNodes, null);
+	}
+	/*.................................................................................................................*/
+	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString, NameReference valuesAtNodes, int[] taxonNumberTranslation){
 		if (StringUtil.blank(line))
 			return null;
 		Parser treeParser;
@@ -260,7 +276,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 					MesquiteTree t = new MesquiteTree(taxa);
 					MesquiteInteger pos = new MesquiteInteger(0);
 					treeParser.setString(treeDescription);
-					readClade(t, t.getRoot(), treeParser, valuesAtNodes);
+					readClade(t, t.getRoot(), treeParser, valuesAtNodes, taxonNumberTranslation);
 					t.setAsDefined(true);
 					t.setName("Imported tree " + treeNumber);
 					return t;
@@ -377,6 +393,26 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	}	
 
 	/*.................................................................................................................*/
+	public boolean characterShouldBeIncluded(CharacterData data, int ic) {
+		return (!writeOnlySelectedData || (data.getSelected(ic)));
+		//return ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)));
+	}
+	/*.................................................................................................................*/
+	public int getLastCharacterToBeIncluded(CharacterData data) {
+		if (writeOnlySelectedData)
+			return data.lastSelected();
+	/*	if (!writeExcludedCharacters) {
+			for (int ic=data.getNumChars()-1; ic>=0; ic--) {
+				if (data.isCurrentlyIncluded(ic)) {
+					if (!writeOnlySelectedData || data.getSelected(ic))
+						return ic;
+				}
+			}
+		}
+		*/
+		return data.getNumChars()-1;
+	}
+	/*.................................................................................................................*/
 
 	public boolean getExportOptionsSimple(boolean dataSelected, boolean taxaSelected){   // an example of a simple query, that only proved line delimiter choice; not used here
 		return (ExporterDialog.query(this,containerOfModule(), "Export TNT/Nona/Hennig86 Options")==0);
@@ -401,6 +437,12 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		CategoricalData catData = (CategoricalData)data;
 		HennigXDREAD dread = (HennigXDREAD)availableCommands[0];
 		HennigXDREAD xread = (HennigXDREAD)availableCommands[1];
+		
+		if (file != null){
+			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
+			writeExcludedCharacters = file.writeExcludedCharacters;
+		}
+
 
 		StringBuffer outputBuffer = new StringBuffer(taxa.getNumTaxa()*(20 + data.getNumChars()));
 		if (getIncludeQuotes())
@@ -704,10 +746,12 @@ class HennigCCODE extends HennigNonaCommand {
 		int counter = 0;
 		int outerLoopCharNumber = -1;
 		int innerLoopCharNumber = 0;
+		
+		int lastCharIncluded = ownerModule.getLastCharacterToBeIncluded(data);
 
 		if (weightSet != null)
 			while (ic< numChars) {
-				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
+				if (ownerModule.characterShouldBeIncluded(data, ic)){
 					outerLoopCharNumber++;
 					if (weightSet.isUnassigned(ic))
 						icWeight = 1;  //unassigned treated as 1
@@ -722,7 +766,7 @@ class HennigCCODE extends HennigNonaCommand {
 						boolean foundFirstBreak = false;
 						innerLoopCharNumber = outerLoopCharNumber;
 						for (int icFollow=ic+1; icFollow<numChars; icFollow++) {
-							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(icFollow))) {
+							if (ownerModule.characterShouldBeIncluded(data, icFollow)){
 								innerLoopCharNumber++;
 								int icFollowWeight = 0;
 								if (weightSet.isUnassigned(icFollow))
@@ -736,7 +780,7 @@ class HennigCCODE extends HennigNonaCommand {
 									if (scopeStart==-1) {
 										scopeStart=innerLoopCharNumber; 
 									}
-									if ((icFollow==numChars-1 && !fileInterpreter.writeOnlySelectedData)||(icFollow==data.lastSelected() && fileInterpreter.writeOnlySelectedData)) {
+									if ((icFollow==lastCharIncluded)) {   // deal with excluded characters
 										ccodePart += scopeToString(scopeStart, innerLoopCharNumber);
 										if (!foundFirstBreak)
 											ic=numChars;
@@ -774,7 +818,7 @@ class HennigCCODE extends HennigNonaCommand {
 		counter = 0;
 		if (modelSet!=null)
 			while (ic<numChars) {
-				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
+				if (ownerModule.characterShouldBeIncluded(data, ic)) {
 					if (nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) {
 						if (firstTime) {
 							if (ownerModule.additiveIsDefault())
@@ -784,15 +828,13 @@ class HennigCCODE extends HennigNonaCommand {
 							firstTime=false;
 						}
 						scopeStart=counter;
-						while (ic<numChars && ((nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) ||  (fileInterpreter.writeOnlySelectedData && (!data.getSelected(ic)))  )) {
+						while (ic<numChars && ((nonDefaultName.equalsIgnoreCase(modelSet.getModel(ic).getName())) ||  !ownerModule.characterShouldBeIncluded(data,ic)  )) {
 							ic++;
-							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic)))
+							if (ownerModule.characterShouldBeIncluded(data, ic))
 								counter++;
 						}
-						if (ic>=numChars-1 && !fileInterpreter.writeOnlySelectedData)
-							ccodePart += scopeToString(scopeStart, numChars-1);
-						else if (ic==data.lastSelected() && fileInterpreter.writeOnlySelectedData)
-							ccodePart += scopeToString(scopeStart, data.lastSelected());
+						if (ic>=lastCharIncluded)
+							ccodePart += scopeToString(scopeStart, lastCharIncluded);
 						else
 							ccodePart += scopeToString(scopeStart, counter-1);
 					}
@@ -813,22 +855,20 @@ class HennigCCODE extends HennigNonaCommand {
 		counter = 0;
 		if (inclusionSet!=null)
 			while (ic<numChars) {
-				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
+				if (ownerModule.characterShouldBeIncluded(data, ic)) {
 					if (!inclusionSet.isBitOn(ic)) {   // i.e, bit is off
 						if (firstTime) {
 							ccodePart+=" ] ";
 							firstTime=false;
 						}
 						scopeStart=counter;
-						while (ic<numChars && ((!inclusionSet.isBitOn(ic)) ||  (fileInterpreter.writeOnlySelectedData && (!data.getSelected(ic)))  )) {
+						while (ic<numChars && ((!inclusionSet.isBitOn(ic)) ||  !ownerModule.characterShouldBeIncluded(data,ic)  )) {
 							ic++;
-							if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic)))
+							if (ownerModule.characterShouldBeIncluded(data, ic))
 								counter++;
 						}
-						if (ic>=numChars-1 && !fileInterpreter.writeOnlySelectedData)
-							ccodePart += scopeToString(scopeStart, numChars-1);
-						else if (ic==data.lastSelected() && fileInterpreter.writeOnlySelectedData)
-							ccodePart += scopeToString(scopeStart, data.lastSelected());
+						if (ic>=lastCharIncluded)
+							ccodePart += scopeToString(scopeStart, lastCharIncluded);
 						else
 							ccodePart += scopeToString(scopeStart, counter-1);
 					}
@@ -991,7 +1031,7 @@ class HennigCNAMES extends HennigNonaCommand {
 
 		for (int ic = 0; ic<numChars; ic++) {
 
-			if ((!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic)))&&(data.characterHasName(ic)||data.hasStateNames(ic))) {
+			if (ownerModule.characterShouldBeIncluded(data, ic) &&(data.characterHasName(ic)||data.hasStateNames(ic))) {
 				incrementAndUpdateProgIndicator(progIndicator,"Exporting character and state names");
 				outputBuffer.append("{"+counter+" ");
 				if (data.characterHasName(ic))
@@ -1009,7 +1049,7 @@ class HennigCNAMES extends HennigNonaCommand {
 				}
 				outputBuffer.append(";" + fileInterpreter.getLineEnding());
 			}
-			if (!fileInterpreter.writeOnlySelectedData || data.getSelected(ic))
+			if (ownerModule.characterShouldBeIncluded(data,ic))
 				counter++;
 		}
 
@@ -1083,7 +1123,7 @@ class HennigCOMMENTS extends HennigNonaCommand {
 		for (int it = 0; it<numTaxa; it++){
 			charCounter = 0;
 			for (int ic = 0; ic<numChars; ic++) {
-				if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))) {
+				if (ownerModule.characterShouldBeIncluded(data, ic)) {
 					String note = data.getAnnotation(ic, it);
 					if (note !=null){
 						outputBuffer.append("{"+it+" " + charCounter + " ");
@@ -1375,18 +1415,30 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 			else if (charData instanceof ProteinData) 
 				outputBuffer.append("nstates prot;"+fileInterpreter.getLineEnding());
 		outputBuffer.append(getCommandName()+fileInterpreter.getLineEnding());
-		int numCharWrite = data.numberSelected(fileInterpreter.writeOnlySelectedData);
-		int numTaxaWrite = taxa.numberSelected(fileInterpreter.writeOnlySelectedTaxa);
+		
+		
+		int numCharWrite = 0;
+/*		if (!fileInterpreter.writeExcludedCharacters)
+			numCharWrite =data.numCharsCurrentlyIncluded(fileInterpreter.writeOnlySelectedData);
+		else
+*/			numCharWrite = data.numberSelected(fileInterpreter.writeOnlySelectedData);
+		
+		
+		int countTaxa = 0;
+		for (int it = 0; it<numTaxa; it++)
+			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || data.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
+				countTaxa++;
+		int numTaxaWrite = countTaxa;
 
 		outputBuffer.append(Integer.toString(numCharWrite)+" ");
 		outputBuffer.append(Integer.toString(numTaxaWrite)+fileInterpreter.getLineEnding());
 
 		for (int it = 0; it<numTaxa; it++){
-			if (!fileInterpreter.writeOnlySelectedTaxa || (taxa.getSelected(it))){
+			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || data.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters))){
 				incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
 				outputBuffer.append(StringUtil.tokenize(taxa.getTaxonName(it),";") + "\t");
 				for (int ic = 0; ic<numChars; ic++) {
-					if (!fileInterpreter.writeOnlySelectedData || (data.getSelected(ic))){
+					if (ownerModule.characterShouldBeIncluded(data, ic)){
 						if (ownerModule.getConvertGapsToMissing() && data.isInapplicable(ic, it))
 							outputBuffer.append("?");
 						else
@@ -1516,10 +1568,10 @@ class HennigTREAD extends HennigNonaCommand {
 			line = parser.getRawNextDarkLine();
 			tree = null;
 			if (progIndicator==null) {
-				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progress, taxa, line, false, quote, null);
+				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progress, taxa, line, false, quote, null, null);
 			}
 			else 
-				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progIndicator, taxa, line, false, quote, null);
+				tree = ((InterpretHennig86Base)ownerModule).readTREAD(progIndicator, taxa, line, false, quote, null, null);
 			if (tree!=null)
 				trees.addElement(tree, false);
 		}

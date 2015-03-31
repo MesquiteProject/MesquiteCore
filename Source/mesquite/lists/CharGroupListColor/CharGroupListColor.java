@@ -103,7 +103,7 @@ public class CharGroupListColor extends CharGroupListAssistant  {
 		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
 			String newColorText = parser.getFirstToken(arguments);
 			if (StringUtil.blank(newColorText)){
-				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+				CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 				if (groups!=null  && table != null) {
 					Color oldColor = null;
 					boolean variable = false;

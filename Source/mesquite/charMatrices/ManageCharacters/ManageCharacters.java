@@ -1163,7 +1163,7 @@ public class ManageCharacters extends CharactersManager {
 				CharacterData data = getProject().getCharacterMatrix(i);
 				if (data.getFile()==file && data.getWritable()){
 					String eL =";" + StringUtil.lineEnding();
-					if (project.getNumberCharMatrices()>1 || project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
+					if ((project.getNumberCharMatrices()>1  || (!file.useSimplifiedNexus&& !file.useConservativeNexus &&  !data.hasDefaultName() && !NexusBlock.suppressTITLE)) || project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 						s.append("\tCHARACTERS = " +  StringUtil.tokenize(data.getName(), null, tokSB) +" TAXA = " +  StringUtil.tokenize(data.getTaxa().getName(), null, tokSB) + eL);
 					String textDataSpec = "\tTEXT  ";
 					Associable as = data.getTaxaInfo(false);
@@ -1610,7 +1610,9 @@ public class ManageCharacters extends CharactersManager {
 				 Taxa taxa = nBlock.getDefaultTaxa();
 				 CharacterData data = nBlock.getDefaultCharacters();
 				// IntegerArray translationTable = (IntegerArray)taxa.getAttachment("originalIndicesDupRead");
-				 IntegerArray translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
+				 IntegerArray translationTable = null;
+				 if (taxa != null && file != null)
+					 translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
 				 if (fuse && translationTable == null)
 					 return false;
 				 for (int i=0; i<subcommands[0].length; i++){

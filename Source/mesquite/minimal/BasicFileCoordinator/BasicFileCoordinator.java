@@ -310,8 +310,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 						makeFileDialog.dispose();
 						TaxaManager mTaxa = (TaxaManager)findEmployeeWithDuty(TaxaManager.class);
 						Object t = null;
-						if (mTaxa!=null)
+						if (mTaxa!=null) 
 							t = mTaxa.doCommand("newTaxa",Integer.toString(numberTaxa.getValue()) + " " + ParseUtil.tokenize(nameTaxa.getText()), CommandChecker.defaultChecker); //treat as scripting so as not to complain if something not found 19Jan02
+						
 						if (t!=null){
 							if (mcm.getState()){
 								CharactersManager mChars = (CharactersManager)findEmployeeWithDuty(CharactersManager.class);
@@ -321,8 +322,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 									showSubstantiveWindow = true;
 								}
 							}
-							if (!showSubstantiveWindow)
+							if (!showSubstantiveWindow){
 								showProjectWindow();
+								mTaxa.doCommand("showTaxa","0", CommandChecker.defaultChecker);
+							}
 
 						}
 						else {
@@ -529,6 +532,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 
+		boolean imp = false; //was it imported???
 
 		if (thisFile!=null && !StringUtil.blank(thisFile.getFileName())) {
 
@@ -536,7 +540,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			logln("");
 
 			FileInterpreter fileInterp;
-			boolean imp = false; //was it imported???
 
 
 
@@ -610,9 +613,22 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		decrementMenuResetSuppression();
 		if (p!=null)
 			p.refreshProjectWindow();
-		if (noWindowsShowing())
+		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
-
+			if (imp){
+				if (getProject().getNumberCharMatrices()>0){
+					MesquiteModule mbb = findEmployeeWithName("Data Window Coordinator");
+					if (mbb != null)
+						mbb.doCommand("showDataWindow", "0", CommandChecker.defaultChecker);
+				}
+				else if (getProject().getNumberTaxas()>0){
+					MesquiteModule mbb = findEmployeeWithName("Manage TAXA blocks");
+					if (mbb != null)
+						mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
+				}
+			}
+		}
+		
 		if (thisFile != null && thisFile.getCloseAfterReading()){
 			closeFile(thisFile);
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
@@ -847,6 +863,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				broadcastProjectEstablished(employee);
 			}
 		}
+	}
+	/*.................................................................................................................*/
+	/** A method called immediately after a file has been read in.*/
+	public void wrapUpAfterFileRead(MesquiteFile f) {
+				broadcastFileRead(this, f);
 	}
 	/*.................................................................................................................*/
 	/** A method called immediately after a file has been read in.*/
@@ -1269,6 +1290,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				fInterpretersCanImport[count++] = fInterpreters[i];
 		}
+		fInterpretersCanImport = prioritize(fInterpretersCanImport, FileInterpreterI.class);
 		boolean fuse = parser.hasFileReadingArgument(arguments, "fuseTaxaCharBlocks");
 		String message = "Please choose an interpreter for this file";
 		if (fuse)
@@ -1494,9 +1516,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		else if (checker.compare(this.getClass(), "Save all files in project", null, commandName, "saveFiles")) {  //all files in project
 			String fileNames ="";
-			
-			for (int i = 0; i< proj.getNumberLinkedFiles(); i++)
-				fileNames += "\n\n   " + proj.getFile(i).getFileName();
+			if (proj == null)
+				return null;
+			for (int i = 0; i< proj.getNumberLinkedFiles(); i++){
+				if (proj.getFile(i) != null)
+					fileNames += "\n\n   " + proj.getFile(i).getFileName();
+			}
 			if (MesquiteThread.isScripting() || AlertDialog.query(containerOfModule(), "Save All Files?", "Do you want to save all of the following files?" + fileNames + "\n\n(If you want to save only one, go to the submenu of the File menu.)"))
 				saveAllFiles();
 		}
@@ -1576,6 +1601,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					catch (Exception e){
 					}
 				}
+				//prioritize list
+				fInterpretersCanExport = prioritize(fInterpretersCanExport, FileInterpreterI.class);
+
 				exporter = (FileInterpreterI)ListDialog.queryList(containerOfModule(), "Export format", "Export part or all of the information as a file of the following format",MesquiteString.helpString, fInterpretersCanExport, 0);
 			}
 			export(exporter, file, arguments);
@@ -1588,7 +1616,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			closeFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));
 		}
 		else if (checker.compare(this.getClass(), "Show file on disk", "[number of file]", commandName, "showFileOnDisk")) {
-
+			if (getProject() == null)
+				return null;
 			String path = "";
 			int id = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
 			MesquiteFile fi = getProject().getFileByID(id);
@@ -1600,7 +1629,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					MesquiteFile.showDirectory(path);
 					return null;
 				}
-				else {
+				else if (fi.getURL()!= null){
+					
 					path = fi.getURL().toString();
 					showWebPage(path, false);
 					return null;

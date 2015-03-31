@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 
 
@@ -34,6 +35,9 @@ public abstract class FileInterpreterI extends FileInterpreter  {
 	/** called after hired in case interpreter wants to query user about import*/
 	public void getImportOptions(boolean fuse){
 	}
+  	 public String[] getDefaultModule() {
+    	 	return new String[] {"#InterpretFastaDNA", "#InterpretFastaProtein"};
+    	 }
 	
 }
 

@@ -85,6 +85,8 @@ public class DefaultTrees extends TreeSource {
    	}
 	/*.................................................................................................................*/
    	public Tree getTree(Taxa taxa, int itree) {
+   		if (taxa == null)
+   			return null;
    		currentTree = itree;
    		if (itree==BUSH) {
 			MesquiteTree tree = new MesquiteTree(taxa);

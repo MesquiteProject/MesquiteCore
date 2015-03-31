@@ -40,7 +40,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	MesquiteTable table;
 	CharacterData data;
 	BooleanForCharacter booleanTask;
-	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem;
+	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem, selectMatchesItem;
 	MesquiteBoolean standardDirection = new MesquiteBoolean(true);
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -104,10 +104,12 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	public void deleteRemoveMenuItem() {
 		deleteMenuItem(closeMenuItem);
 		deleteMenuItem(toggleDirectionItem);
+		deleteMenuItem(selectMatchesItem);
 	}
 	public void addRemoveMenuItem() {
 		closeMenuItem= addMenuItem(null,"Remove Info Strip", makeCommand("remove", this));
 		toggleDirectionItem= addMenuItem(null,"Flip Dark/Light", makeCommand("toggleDirection", this));
+		selectMatchesItem= addMenuItem(null,"Select Characters Satisfying Criterion", makeCommand("selectMatches", this));
 	}
 
 
@@ -132,6 +134,26 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	}
 
 	/*.................................................................................................................*/
+	public void selectSame(boolean selectTrue) { 
+		if (data == null || booleanTask==null || table ==null)
+			return;
+		boolean selectionChange = false;
+		for (int ic=0; ic<data.getNumChars(); ic++) {
+			MesquiteBoolean result = new MesquiteBoolean();
+			MesquiteString resultString = new MesquiteString();
+			booleanTask.calculateBoolean( data,  ic,  result,  resultString);
+			
+			if (result.getValue()==selectTrue){
+				if (!table.isColumnSelected(ic))
+					selectionChange=true;
+				table.selectColumn(ic);
+			}
+		}
+		if (selectionChange)
+   			data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+	}
+
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a boolean for a character", "[name of module]", commandName, "setValueTask")) {
 			BooleanForCharacter temp= (BooleanForCharacter)replaceEmployee(BooleanForCharacter.class, arguments, "Boolean for a character", booleanTask);
@@ -143,6 +165,9 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Removes the Info Strip", null, commandName, "remove")) {
 			iQuit();
+		}
+		else if (checker.compare(this.getClass(), "Selects characters with a value of true for this boolean", null, commandName, "selectMatches")) {
+			selectSame(true);
 		}
 		else if (checker.compare(this.getClass(), "Toggles the dark/light display", "[on, off]", commandName, "toggleDirection")) {
 			standardDirection.toggleValue(parser.getFirstToken(arguments));

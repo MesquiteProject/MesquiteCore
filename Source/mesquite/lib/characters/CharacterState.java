@@ -97,9 +97,9 @@ public abstract class CharacterState {
 	public abstract boolean equals(CharacterState s, boolean allowMissing);
 	/** returns the subclass of CharacterData that is equivalent to this character type (i.e., in which sort of
 	matrix would this character state reside?*/
-	public abstract boolean equals(CharacterState s, boolean allowMissing, boolean allowNearExact);
-	public boolean equals(CharacterState s, boolean allowMissing, boolean allowNearExact, boolean allowSubset) {
-		return equals(s, allowMissing, allowNearExact, false);
+	public  abstract boolean equals(CharacterState s, boolean allowMissing, boolean allowNearExact);
+	public boolean equals(CharacterState s, boolean allowMissing, boolean allowNearExact, boolean allowSubset){
+		return equals(s, allowMissing, allowNearExact);
 	}
 	/** returns the subclass of CharacterData that is equivalent to this character type (i.e., in which sort of
 	matrix would this character state reside?*/

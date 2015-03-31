@@ -1241,6 +1241,12 @@ public class DNAData extends MolecularData {
 		complement(icStart, icEnd, it, adjustCellLinked);
 	}
 
+	
+	public void reverseComplement(int icStart, int icEnd, boolean adjustCellLinked) { //NOTE: this version reverses character metadata (codon positions, etc.)
+		reverse(icStart, icEnd, adjustCellLinked);
+		for (int it = 0; it<getNumTaxa(); it++)
+			complement(icStart, icEnd, it, adjustCellLinked);
+	}
 	/* .......................................... DNAData .................................................. */
 	/** Returns IUPAC symbol of a state */
 	public static String getIUPACSymbol(long s) {

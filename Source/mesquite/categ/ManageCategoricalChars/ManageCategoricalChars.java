@@ -16,6 +16,7 @@ package mesquite.categ.ManageCategoricalChars;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -361,13 +362,13 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		else
 			file.write("BEGIN CHARACTERS");
 		file.write(endLine);
-		if (( !file.useSimplifiedNexus) && data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			file.write("\tTITLE  ");
 			file.write( StringUtil.tokenize(data.getName()));
 			file.write(endLine);
 		}
 		//if (data.getTaxa().getName()!=null  && getProject().getNumberTaxas(cB.getFile())>1){ //before 13 Dec 01 had been this
-		if (( !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
+		if (( !file.useSimplifiedNexus && !file.useConservativeNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 			file.write("\tLINK TAXA = ");
 			file.write(StringUtil.tokenize(data.getTaxa().getName()));
 			file.write(endLine);
@@ -411,7 +412,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write(" " + ((CategoricalData)data).getSymbol(i));
 		file.write("\"");
 		file.write(endLine);
-		if (data.isLinked() && !file.useSimplifiedNexus){
+		if (data.isLinked() && !file.useSimplifiedNexus  && !file.useConservativeNexus){
 			file.write("\tOPTIONS ");
 			Vector ds = data.getDataLinkages();
 			for (int i = 0; i<ds.size(); i++) {
@@ -473,7 +474,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		}
 		file.write(StringUtil.lineEnding());
 		file.write(endLine);
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				file.write("\t" + idsCommand + StringUtil.lineEnding());
@@ -646,7 +647,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					String dataSpec = "";
 					if (project.getNumberTaxas()>1)
 						dataSpec = " TAXA = " +  StringUtil.tokenize(data.getTaxa().getName()) + "";
-					if (project.getNumberCharMatrices()>1)
+					if (project.getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&&  !file.useConservativeNexus && !data.hasDefaultName() && !NexusBlock.suppressTITLE))
 						dataSpec += " CHARACTERS = " +  StringUtil.tokenize(data.getName()) + "";
 					for (int ic = 0; ic<data.getNumChars(); ic++){
 						for (int is = 0; is<=CategoricalState.maxCategoricalState; is++){

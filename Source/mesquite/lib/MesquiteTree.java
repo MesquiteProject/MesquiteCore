@@ -2938,6 +2938,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					MesquiteMessage.warnProgrammer("read clade failed; taxon name unrecognized: " + lastUnrecognizedName);
 				else
 					MesquiteMessage.printStackTrace("read clade failed");
+				if (MesquiteTrunk.debugMode)
+					MesquiteMessage.discreetNotifyUser("\nTree description: \n"+TreeDescription +"\n");
 
 				intializeTree();
 

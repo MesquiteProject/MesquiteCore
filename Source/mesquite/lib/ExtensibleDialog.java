@@ -1505,6 +1505,41 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return list;
 	}
 	/*.................................................................................................................*/
+	public MesquitePasswordField addPasswordField (String message, String initialString, int fieldLength) {
+		if (message!=null)
+			constraints.fill=GridBagConstraints.NONE;
+		Panel newPanel = addNewDialogPanel();
+		Label fieldLabel = null;
+		if (message!=null) {
+			newPanel.add(fieldLabel = new Label(message));
+		}
+		MesquitePasswordField textField;
+		if (initialString == null)
+			initialString = "";
+		if (fieldLength>=1) {
+			textField =new MesquitePasswordField(initialString,fieldLength);
+		}
+		else {
+			newPanel.setLayout(new GridLayout(1,1));
+			textField =new MesquitePasswordField(initialString);
+			textField.setSize(new Dimension(dialogWidth-sideBuffer*2, textField.getSize().height));
+			newPanel.setSize(textField.getSize());
+		}
+		textField.setBackground(Color.white);
+		textField.setLabel(fieldLabel);
+		newPanel.add(textField);
+		focalComponent = textField;
+		textField.selectAll();
+		try {
+			if (MesquiteTrunk.getJavaVersionAsDouble() >= 1.5)
+				textField.setCaretPosition(0);
+		}
+		catch (Exception e){
+		}
+		constraints.fill=GridBagConstraints.BOTH;
+		return textField;
+	}
+	/*.................................................................................................................*/
 	public SingleLineTextField addTextField (String message, String initialString, int fieldLength, boolean preserveBlanks) {
 		if (message!=null)
 			constraints.fill=GridBagConstraints.NONE;

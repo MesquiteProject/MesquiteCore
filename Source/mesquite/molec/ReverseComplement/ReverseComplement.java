@@ -28,6 +28,13 @@ public class ReverseComplement extends DNADataAltererCon {
 		((DNAData)data).reverseComplement(icStart, icEnd, it, false, true);
 		return true;
 	}
+	public boolean alterBlockOfCharacters(CharacterData data, int icStart, int icEnd) {
+		if (data==null || !(data instanceof DNAData))
+			return false;
+		
+		((DNAData)data).reverseComplement(icStart, icEnd, true);
+		return true;
+	}
 
 	public String getName() {
 		return "Reverse Complement";

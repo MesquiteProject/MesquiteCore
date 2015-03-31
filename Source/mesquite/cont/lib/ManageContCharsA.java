@@ -17,6 +17,7 @@ package mesquite.cont.lib;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -235,7 +236,7 @@ public abstract class ManageContCharsA extends CharMatrixManager {
 		//StringBuffer blocks = new StringBuffer(cData.getNumChars()*cData.getNumTaxa()*10*cData.getNumItems());
 		StringBuffer line = new StringBuffer(cData.getNumChars()*10*cData.getNumItems());
 		file.write("BEGIN CHARACTERS;" + StringUtil.lineEnding());
-		if (cData.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if (cData.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			file.write("\tTITLE  " + StringUtil.tokenize(cData.getName()) + ";" + StringUtil.lineEnding());
 		}
 
@@ -269,7 +270,7 @@ public abstract class ManageContCharsA extends CharMatrixManager {
 		}
 		file.write(" GAP = " + data.getInapplicableSymbol() + " MISSING = " + data.getUnassignedSymbol());
 		file.write(";" + StringUtil.lineEnding());
-		if (data.isLinked() && !file.useSimplifiedNexus){
+		if (data.isLinked() && !file.useSimplifiedNexus  && !file.useConservativeNexus){
 			file.write("\tOPTIONS ");
 			Vector ds = data.getDataLinkages();
 			for (int i = 0; i<ds.size(); i++) {
@@ -307,7 +308,7 @@ public abstract class ManageContCharsA extends CharMatrixManager {
 		}
 		file.write(StringUtil.lineEnding()+ ";");
 		file.write( StringUtil.lineEnding());
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				file.write("\t" + idsCommand + StringUtil.lineEnding());

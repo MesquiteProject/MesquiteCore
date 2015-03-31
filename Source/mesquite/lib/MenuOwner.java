@@ -121,10 +121,10 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			rightBracket = "▶"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
 		}
 		else {*/
-			leftBracket = "«";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
-			rightBracket = "»"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
+		leftBracket = "«";//byte[] b = {(byte) 226, (byte)150, (byte)160};  new String(b, "UTF-8");
+		rightBracket = "»"; //byte[] bb = {(byte) 226, (byte)150, (byte)161};  new String(bb, "UTF-8");
 		//}
-		
+
 	}
 	/** The constructor in general is to be avoided, because modules are instantiated momentarily on startup to gather
 	information.  The usual functions of a constructor are performed by startJob*/
@@ -434,11 +434,11 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		else
 			popUp.removeAll();
 		composeMenuDescendants(popUp);
-		cont.add(popUp);
 		try {
+			cont.add(popUp);
 			popUp.show(cont, x,y);
 		}
-		catch (RuntimeException e){
+		catch (Exception e){
 		}
 		//cont.remove(popUp); //todo: this is zapping the menu on linux immediately
 	}
@@ -698,7 +698,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			//else {
 			//	if (MesquiteTrunk.isMacOSX()){
 			Menu spot = new Menu(leftBracket);
-		//	spot.setFont(new Font ("SanSerif", Font.PLAIN, 12));
+			//	spot.setFont(new Font ("SanSerif", Font.PLAIN, 12));
 			spot.add(new MenuItem("Menus between " + leftBracket + " " + rightBracket));
 			spot.add(new MenuItem("  refer to current window"));
 			menuBar.add(spot);
@@ -783,9 +783,10 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			if (menuBar!=null) {
 				for (int i=menuBar.getMenuCount()-1; i>=1; i--){  //leave first (file menu) in place
 					try{
-						if (menuEmpty(menuBar.getMenu(i))) {
+						if (menuEmpty(menuBar.getMenu(i))) 
 							menuBar.remove(i);
-						}
+						else
+							removeEmptySubmenus(menuBar.getMenu(i));
 					}
 					catch (Exception e){
 					}
@@ -801,11 +802,27 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			e.printStackTrace();
 		}
 	}
+
+	public void removeEmptySubmenus(Menu parent){
+		for (int i=parent.getItemCount()-1; i>=0; i--){  
+			try{
+				MenuItem item = parent.getItem(i);
+				if (item instanceof Menu){
+					if (menuEmpty((Menu)item))
+						parent.remove(i);
+					else 
+						removeEmptySubmenus((Menu)item);
+				}
+			}
+			catch (Exception e){
+			}
+		}
+	}
 	/*-------------------------------------------------------------*/
 	public Vector getEmbeddedMenusVector(){
 		return embeddedMenusVector;
 	}
-	
+
 	public void resetEmbeddedMenus(MesquiteWindow whichWindow){
 		if ((window != null && window.getShowInfoBar()) && (MesquiteTrunk.isMacOSX() || (whichWindow == null || !whichWindow.isLoneWindow()))) // && MesquiteTrunk.isMacOSX())   //these menus belong in the window, as long as an info bar is shown
 			embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
@@ -1385,7 +1402,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						int countPrimary2 = 0;
 						int countOthers2 = 0;
 						if (EmployerEmployee.useOtherChoices)
-							while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule( mbi.getHireSubchoice(), smbi))!=null) {
+							while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot( mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi))!=null) {
 								if (!smbi.getUserChooseable())
 									;
 								else if (smbi.isPrimary(mbi.getHireSubchoice())) 
@@ -1400,7 +1417,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						smbi = null;
 						countOthers2 =0;
 						count2 = 0;
-						while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(mbi.getHireSubchoice(),smbi))!=null) {
+						while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot( mbi.getHireSubchoice(), mbi.getDontHireSubchoice(),smbi))!=null) {
 							int hiddenStatus2 = 0;
 							if (!smbi.getUserChooseable())
 								;
@@ -1650,7 +1667,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						zeroArray(secondaryItems2);
 						int countItems2 = 0;
 						//		if (EmployerEmployee.useOtherChoices)
-						while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule( mbi.getHireSubchoice(), smbi))!=null) {
+						while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot( mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi))!=null) {
 							if (!smbi.getUserChooseable())
 								;
 							else if (smbi.isPrimary(mbi.getHireSubchoice())) 
@@ -1665,7 +1682,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						smbi = null;
 						countOthers2 =0;
 						count2 = 0;
-						while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule( mbi.getHireSubchoice(), smbi))!=null) {
+						while (count2++<128 && (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot( mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi))!=null) {
 							boolean primary2 = smbi.isPrimary(mbi.getHireSubchoice());
 							int hiddenStatus2 = 0;
 							//TODO: this tokenization of the names for argument will not work if name of module includes '  -- must use full tokenization/detokenization

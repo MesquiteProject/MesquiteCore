@@ -46,7 +46,7 @@ public class UndoInstructions implements Undoer {
 	public static final int DATABLOCK = 10;
 
 
-//	ones below here are not yet supported
+	//	ones below here are not yet supported
 	public static final int TAXA_DELETED = 30;
 	public static final int CHARACTERS_DELETED = 31;
 
@@ -70,10 +70,10 @@ public class UndoInstructions implements Undoer {
 	Associable assoc;
 	String[] namesList;
 	int[] order = null;
-	
+
 	String[][] oldStateNames;
 	String[][] oldStateNotes;
-	
+
 	MesquiteCommand undoCommand;
 
 
@@ -149,19 +149,21 @@ public class UndoInstructions implements Undoer {
 			if (data != null && obj!=null)
 				if (obj instanceof CharacterData) {
 					this.oldData = ((CharacterData)obj).cloneData();
-					this.oldData.setName("Undo Matrix [old]");
-					this.oldData.disconnectListening();
-					if (obj instanceof CategoricalData) {
-						CategoricalData cd = (CategoricalData)obj;
-						for (int ic=0; ic<cd.getNumChars(); ic++){
-							if (cd.hasStateNames() && cd.hasStateNames(ic))
-								for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
-									if (cd.hasStateName(ic,i))
-										((CategoricalData)oldData).setStateName(ic,i,cd.getStateName(ic,i));
-							if (cd.hasStateNotes() && cd.hasStateNotes(ic))
-								for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
-									if (cd.hasStateNote(ic,i))
-										((CategoricalData)oldData).setStateNote(ic,i,cd.getStateNote(ic,i));
+					if (oldData !=  null){
+						this.oldData.setName("Undo Matrix [old]");
+						this.oldData.disconnectListening();
+						if (obj instanceof CategoricalData) {
+							CategoricalData cd = (CategoricalData)obj;
+							for (int ic=0; ic<cd.getNumChars(); ic++){
+								if (cd.hasStateNames() && cd.hasStateNames(ic))
+									for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+										if (cd.hasStateName(ic,i))
+											((CategoricalData)oldData).setStateName(ic,i,cd.getStateName(ic,i));
+								if (cd.hasStateNotes() && cd.hasStateNotes(ic))
+									for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+										if (cd.hasStateNote(ic,i))
+											((CategoricalData)oldData).setStateNote(ic,i,cd.getStateNote(ic,i));
+							}
 						}
 					}
 				}
@@ -263,9 +265,9 @@ public class UndoInstructions implements Undoer {
 		if (newState == null)
 			return;
 		if (this.newState.getClass().equals(newState.getClass()))
-				this.newState = newState;
+			this.newState = newState;
 	}
-	
+
 	public void setUndoCommand(MesquiteCommand command) {
 		undoCommand = command;
 	}
@@ -279,7 +281,7 @@ public class UndoInstructions implements Undoer {
 	public void setNewData(CharacterData data) {
 		if (data == null){
 			this.newData = null;
-		return;
+			return;
 		}
 		this.newData = data.cloneData();
 		if (newData == null)
@@ -297,7 +299,7 @@ public class UndoInstructions implements Undoer {
 		if (assoc!=null)
 			assoc.deleteJustAdded();
 	}
-	
+
 	public void dispose() {
 		if (oldData!=null)
 			oldData.dispose();
@@ -306,7 +308,7 @@ public class UndoInstructions implements Undoer {
 		oldData=null;
 		newData=null;
 	}
-	
+
 	public void finalize() {
 		dispose();
 	}
@@ -325,7 +327,7 @@ public class UndoInstructions implements Undoer {
 			}
 			CharacterState csBefore = data.getCharacterState(null, icStart, itStart);
 			if (oldState instanceof MesquiteString){
-				
+
 				CharacterState cs = data.makeCharacterState();
 				String st = ((MesquiteString) oldState).getValue();
 
@@ -383,7 +385,7 @@ public class UndoInstructions implements Undoer {
 				return null;
 			if (textField != null)
 				textField.setText(((MesquiteString) oldState).getValue());
-			
+
 			return new UndoInstructions(changeClass, newState, oldState, textField);
 
 		case ALLDATACELLS:
@@ -468,7 +470,7 @@ public class UndoInstructions implements Undoer {
 			assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 			return null;		
 		}
-		
+
 		return null;
 	}
 

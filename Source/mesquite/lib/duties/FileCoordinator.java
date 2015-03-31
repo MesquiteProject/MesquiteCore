@@ -14,6 +14,7 @@
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 
 /* ======================================================================== */
@@ -67,6 +68,7 @@ public abstract class FileCoordinator extends MesquiteModule {
 	/** make a MesquiteProject, using a module. */
 	public abstract MesquiteFile readProjectGeneral(String arguments);
 
+	public abstract void wrapUpAfterFileRead(MesquiteFile f);  //call after read() methods of file interpreters called outside context of the file Coordinator's project/file reading
 	public abstract MesquiteFile getNEXUSFileForReading(String arguments, String message);
 
 	public abstract FileInterpreter findImporter(MesquiteFile f, int fileType, String arguments);

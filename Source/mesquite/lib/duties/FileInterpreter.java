@@ -68,7 +68,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 
 	/*.................................................................................................................*/

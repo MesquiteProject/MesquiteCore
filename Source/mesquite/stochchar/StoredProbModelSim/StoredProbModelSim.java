@@ -140,6 +140,7 @@ public class StoredProbModelSim extends ProbModelSourceSim {
   	 	if (currentModel==null)
   	 		return null;
    	 	Snapshot temp = new Snapshot();
+   	 	if (currentModel != null)
   	 	temp.addLine("setModelInt " + getProject().getWhichCharacterModel(getCompatibilityInfo(currentStateClass), currentModel) + " " + ParseUtil.tokenize(currentModel.getName()));  //TODO:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!should say which model
   	 	return temp;
   	 }

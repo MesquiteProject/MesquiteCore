@@ -672,7 +672,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 	}
 	void warnMissing(String lastTried, Throwable e){
 		if (!warnedError)
-			mesquite.discreetAlert("Error while loading "  + lastTried + ".    It appears that a component of Mesquite or a required library is missing. \n\nDetails: " +  e);
+			mesquite.discreetAlert("Error while loading "  + lastTried + ".    It appears that a component of Mesquite or a required library is missing.  We recommend that you install Mesquite again. \n\nDetails: " +  e);
 		warnedError = true;
 	}
 }

@@ -83,7 +83,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 		/**/
 		setResizable(true);
 		setBackground(backgroundColor);
-
 		setLayout(null);
 		rBetweenPanel = new BetweenPanel(this);
 		add(rBetweenPanel);
@@ -346,8 +345,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public void showPage(MesquiteWindow w){
-		if (w == frontWindow)
-			return;
+		//	if (w == frontWindow)
+		//		return;
 		showPage(Integer.toString(w.getID()));
 		setAsFrontWindow(w);
 
@@ -364,8 +363,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (i <0 || i>=windows.size())
 			return;
 		MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
-		if (w == frontWindow)
-			return;
+		//	if (w == frontWindow)
+		//		return;
 		showPage(Integer.toString(w.getID()));
 	}
 
@@ -498,7 +497,13 @@ public class MesquiteFrame extends Frame implements Commandable {
 	public void popOut(int i, boolean makeVisible){
 		if (windows.size() == 1)
 			return;
-		MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
+		MesquiteWindow w = null;
+		try {
+			w = (MesquiteWindow)windows.elementAt(i);
+		}
+		catch (Exception e){
+			return;
+		}
 		if (w.popAsTile){
 			removePage(w); //setVisible(w, false);  //remove from resources
 			w.poppedOut = true;
@@ -707,7 +712,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 			System.out.println("      front -- " + frontWindow.getTitle());
 	}
 	 */
-	
+
 	private void reconnect(MesquiteWindow w){
 		if (w == null)
 			return;
@@ -722,13 +727,13 @@ public class MesquiteFrame extends Frame implements Commandable {
 		w.reconnectGraphics();
 		invalidate();
 		validate();
-		
+
 	}
-	
+
 	private void refreshGraphics(){
 		for (int i = 0; i<windows.size(); i++){  //This is a workaround for bug in OS X Java 1.7 and higher by which panels behind would leak to panels in front
 			MesquiteWindow ww = (MesquiteWindow)windows.elementAt(i);
-		//	ww.validate();
+			//	ww.validate();
 		}
 	}
 
@@ -745,9 +750,9 @@ public class MesquiteFrame extends Frame implements Commandable {
 				orderedWindows.remove(w);
 				orderedWindows.addElement(w);
 			}
-		
+
 			reconnect(w);
-			
+
 
 		}	
 		if (w != null)
@@ -780,8 +785,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 		fixFrontness();
 		if (frontWindow != null){
 			showInLayout(frontWindow.getTileLocation(), Integer.toString(frontWindow.getID()));	
-		resetSizes(true);
-	}
+			resetSizes(true);
+		}
 	}
 	/*.................................................................................................................*/
 	/** Shows the window */
@@ -948,7 +953,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		storeInsets(insets);
 		int effectiveResourcesWidth = resourcesWidth;
 		boolean effectiveResourcesFullWindow = resourcesFullWindow;
-	if (windows == null)
+		if (windows == null)
 			return;
 		if (windows.size()==1 && frontMostInLocation(RESOURCES)!= null)
 			effectiveResourcesFullWindow= true;
@@ -1936,9 +1941,8 @@ class FrameTabsPanel extends MousePanel {
 		g2.setColor(ColorTheme.getContentFrame());
 		Stroke st = g2.getStroke();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		try {
-			Class.forName("java.awt.geom.Path2D");
-			Path2D.Float path = new Path2D.Float();
+		MesquitePath2DFloat path = new MesquitePath2DFloat();
+		if (path.OK()) {
 			int adjust = 0;
 			int pathLeft = projectPanelWidth;
 			int pathRight = pathLeft+12;  //+14
@@ -1951,10 +1955,10 @@ class FrameTabsPanel extends MousePanel {
 			path.lineTo(adjust+pathLeft,adjust+pathBottom);
 			path.curveTo(adjust+pathLeft, adjust+pathTop+(pathBottom-pathTop)/3, adjust+pathLeft+(pathRight-pathLeft)/3, adjust+pathTop, adjust+pathRight, adjust+pathTop);
 			path.closePath();
-			g2.fill(path);
+			path.fill(g2);
 
 		}
-		catch (ClassNotFoundException exception) {
+		else {
 			int pathLeft = projectPanelWidth;
 			int pathRight = projectPanelWidth+4;  //+14
 			int pathTop = panelHeight;
@@ -1964,6 +1968,7 @@ class FrameTabsPanel extends MousePanel {
 			g2.fillRect(pathLeft+1, pathTop-1, pathRight-pathLeft, 1);
 			g2.drawLine(pathLeft+3, pathTop-1, pathRight, pathTop-1);
 		}
+
 		g2.setStroke(st);
 
 	}
@@ -2049,11 +2054,10 @@ class FrameTabsPanel extends MousePanel {
 					if (whichTab==1) {
 
 						//g2.fillRect(tabLeft-4, height-tabBottomLineHeight, 5, tabBottomLineHeight);
-						try {
-							Class.forName("java.awt.geom.Path2D");
+						MesquitePath2DFloat path = new MesquitePath2DFloat();
+						if (path.OK()) {
 							int rightPath = 7;
 							int topPath = 6;
-							Path2D.Float path = new Path2D.Float();
 							g2.fillRect(tabLeft+rightPath-1, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft+4, tabBottomLineHeight);
 							path.moveTo(tabLeft-1, height-topPath);
 							path.lineTo(tabLeft, height-topPath);
@@ -2061,22 +2065,22 @@ class FrameTabsPanel extends MousePanel {
 							path.lineTo(tabLeft+rightPath, height);
 							path.curveTo(tabLeft-1, height-2,tabLeft+2, height-4, tabLeft-1, height-topPath);
 							path.closePath();
-							g2.fill(path);
+							path.fill(g2);
 						}
-						catch (ClassNotFoundException exception) {
+						else {
 							g2.fillRect(tabLeft+1, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft-1+5, tabBottomLineHeight);
 							g2.fillRect(tabLeft, height-5, 3, 3);
 							g2.fillRect(tabLeft, height-7, 1, 4);
 						}
+
 					} else {
 						g2.fillRect(tabLeft-4, height-tabBottomLineHeight, projectPanelWidth+MesquiteFrame.cornerBuffer-tabLeft+4, tabBottomLineHeight);
 					}
 
 				}
 				if (tabRight> projectPanelWidth){
-					try {
-						Class.forName("java.awt.geom.Path2D");
-						Path2D.Float path = new Path2D.Float();
+					MesquitePath2DFloat path = new MesquitePath2DFloat();
+					if (path.OK()) {
 						int adjust = 0;
 						int pathLeft = 0;
 						int pathRight = 0+4;  //+14
@@ -2087,15 +2091,16 @@ class FrameTabsPanel extends MousePanel {
 						path.lineTo(adjust+pathLeft,adjust+pathBottom);
 						path.curveTo(adjust+pathLeft, adjust+pathTop+(pathBottom-pathTop)/3, adjust+pathLeft+(pathRight-pathLeft)/3, adjust+pathTop, adjust+pathRight, adjust+pathTop);
 						path.closePath();
-						g2.fill(path);
+						path.fill(g2);
 					}
-					catch (ClassNotFoundException exception) {
+					else {
 						g2.fillRect(projectPanelWidth+4, height-4, tabRight-projectPanelWidth, 4);
 						g2.fillRect(projectPanelWidth+3, height-3, tabRight-projectPanelWidth, 3);
 						g2.fillRect(projectPanelWidth+2, height-2, tabRight-projectPanelWidth, 2);
 						g2.fillRect(projectPanelWidth+1, height-1, tabRight-projectPanelWidth, 1);
 						g2.drawLine(projectPanelWidth+3, height-1, tabRight, height-1);
 					}
+
 				}
 
 			}
@@ -2128,10 +2133,9 @@ class BetweenPanel extends MousePanel{
 		Stroke st = g2.getStroke();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		try {
+		MesquitePath2DFloat path = new MesquitePath2DFloat();
+		if (path.OK()) {
 			g2.setColor(ColorTheme.getContentFrame());
-			Class.forName("java.awt.geom.Path2D");
-			Path2D.Float path = new Path2D.Float();
 			int adjust = 0;
 			int pathLeft = 0;
 			int pathRight = 12;  //+14
@@ -2142,9 +2146,9 @@ class BetweenPanel extends MousePanel{
 			path.lineTo(adjust+pathLeft,adjust+pathBottom);
 			path.curveTo(adjust+pathLeft, adjust+pathTop+(pathBottom-pathTop)/3, adjust+pathLeft+(pathRight-pathLeft)/3, adjust+pathTop, adjust+pathRight, adjust+pathTop);
 			path.closePath();
-			g2.fill(path);
+			path.fill(g2);
 		}
-		catch (ClassNotFoundException exception) {
+		else {
 			g2.setColor(ColorTheme.getContentFrame());
 			int pathLeft = 0;
 			int pathRight = 12;  //+14
@@ -2156,6 +2160,7 @@ class BetweenPanel extends MousePanel{
 			g2.fillRect(pathLeft+1, pathTop-1, pathRight-pathLeft, 1);
 			g2.drawLine(pathLeft+3, pathTop-1, pathRight, pathTop-1);
 		}
+
 		g2.setStroke(st);
 
 
