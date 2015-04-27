@@ -337,7 +337,8 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					s += "\tTAXAGROUPLABEL " + ParseUtil.tokenize(cg.getName());
 					if (cg.colorSet()){
 						Color c = cg.getColor();
-						s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
+						if (c!=null)
+							s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
 					}
 					if (cg.symbolSet()){
 						MesquiteSymbol symbol = cg.getSymbol();

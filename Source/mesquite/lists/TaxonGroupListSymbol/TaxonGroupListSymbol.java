@@ -116,8 +116,8 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 							TaxaGroup tg = getTaxonGroup(i);
 							if (tg!=null){
 								MesquiteSymbol symbol = tg.getSymbol();
-								String symbolName = symbol.getName();
 								if (symbol!=null){
+									String symbolName = symbol.getName();
 									if (oldSymbolName!=null && !oldSymbolName.equals(symbolName))
 										variable=true;
 									oldSymbolName=symbolName;
@@ -135,7 +135,8 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 								if (tg!=null){
 									MesquiteSymbol symbol = tg.getSymbol();
 									MesquiteSymbol groupSymbol = newSymbol.cloneMethod();
-									groupSymbol.setSize(symbol.getSize());
+									if (symbol!=null)
+										groupSymbol.setSize(symbol.getSize());
 									tg.setSymbol(groupSymbol);
 									tg.setColor(tg.getColor());
 								}
