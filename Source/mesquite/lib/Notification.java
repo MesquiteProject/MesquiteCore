@@ -97,6 +97,12 @@ public class Notification implements Identifiable {
 		return false;
 	}
 	
+	public static long getNotificationNumber(Notification n){
+		if (n==null)
+			return -1;
+		else
+			return n.getNotificationNumber();
+	}
 	public static int getCode(Notification n){
 		if (n==null)
 			return MesquiteListener.UNKNOWN;

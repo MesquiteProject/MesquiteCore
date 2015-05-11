@@ -1564,8 +1564,32 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		uncheckThread();
 		return true;
 	}
+	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
+	private boolean notificationFound(Notification notification){
+		if (notification ==null)
+			return false;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return false;
+		if (LongArray.indexOf(lastNotifications, id)>=0)
+			return true;
+		return false;
+	}
+	private void rememberNotification(Notification notification){
+		if (notification ==null)
+			return;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return;
+		for (int i = 0; i< lastNotifications.length-1; i++)
+			lastNotifications[i+1] = lastNotifications[i];
+		lastNotifications[0] = id;
+	}
 	/** For MesquiteListener interface; passes which object changed, along with optional integer (e.g. for character)*/
 	public void changed(Object caller, Object obj, Notification notification){
+		if (notificationFound(notification))
+			return;
+		rememberNotification(notification);
 		if (obj == taxa) {
 			if (Notification.appearsCosmetic(notification) || notification == null   || notification.getCode() == MesquiteListener.SELECTION_CHANGED)
 				return;

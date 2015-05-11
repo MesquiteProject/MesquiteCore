@@ -4220,7 +4220,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (taxa == null)
 				return null;
 			MesquiteTree t = new MesquiteTree(taxa);
-
 			if (!t.readTree(TreeDescription)) {
 				ownerModule.discreetAlert( "That tree description is invalid (" + TreeDescription + ")");
 				return null;
