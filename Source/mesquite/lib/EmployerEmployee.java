@@ -1790,7 +1790,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 	/* ................................................................................................................. */
 	/** Clones employee if possible */
-	public Object cloneEmployee(MesquiteModule employee) {
+	public  Object cloneEmployee(MesquiteModule employee) {
 		if (employee == null)
 			return null;
 		String cloneCommand = getClonableEmployeeCommand(employee);
@@ -1827,6 +1827,14 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			return cloned;
 		}
 		return null;
+	}
+	
+	/* ................................................................................................................. */
+	/** Clones employee if possible */
+	public synchronized Object synchronizedCloneEmployee(MesquiteModule employee) {
+		synchronized(this) {
+			return cloneEmployee(employee);
+		}
 	}
 	
 	private String whichModInfo(MesquiteModuleInfo mbi) {
