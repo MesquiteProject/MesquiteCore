@@ -185,7 +185,6 @@ public class PairwiseAligner  {
         int gEt = gapExtendTerminal;
         if (! this.allowNewInternalGaps)  // make internal gaps impossibly expensive .. but not high enough to cause wrap around of the capacity of an int
             gE = Integer.MAX_VALUE / 10 ;
-
         
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		

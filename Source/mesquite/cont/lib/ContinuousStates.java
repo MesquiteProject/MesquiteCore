@@ -129,6 +129,10 @@ public abstract class ContinuousStates  extends CharacterStates implements ItemC
 	/*..........................................ContinuousStates................*/
 	/** Is the first state greater than second?  This uses only the first item! */
 	public boolean firstIsGreater (int N, int M){ 
+		if (isUnassigned(N) || isInapplicable(N)) //2015: fixed to return true only if neither is inapplicable or missing
+			return false;
+		if (isUnassigned(M) || isInapplicable(M))
+			return false;
 		if (getState(N) > getState(M))
 			return true;
 		return false;

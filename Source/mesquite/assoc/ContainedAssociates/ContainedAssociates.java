@@ -968,6 +968,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*....................................................................................................*/
 	private void miniScaleInternalLocs (Tree tree, int node, int[] terminals, int top, int cladeTop, int containing, int root, double scaling) {
+		
 		if (IntegerArray.inArray(node, terminals)){ //internal
 			miniY[node]=top;
 		}
@@ -1171,14 +1172,16 @@ class WideTreeDrawing extends TreeDrawing  {
 					double scaling = 1.0;
 					int top = yC;
 					int cladeTop = minimumYOfContained(tree, containingNode); 
-					if (tree.tallestPathAboveNode(tree.getRoot(), 1.0) ==0) //tree.tallestPathAboveNode(tree.getRoot(), 1.0)
-						scaling = 0;
+					if (tree.tallestPathAboveNode(tree.getRoot(), 1.0) ==0){ //tree.tallestPathAboveNode(tree.getRoot(), 1.0)
+						scaling = 0.1;  //this is arbitrary; scale not shown anyway
+					}
 					else
 						scaling = (Math.abs(minimumYOfContained(tree, tree.getRoot())-y[tree.getRoot()])/(tree.tallestPathAboveNode(tree.getRoot(), 1.0)));
-
+					
 					//if this is the root and branch lengths are not being shown for the containing tree, don't scale
-					if (tree.hasBranchLengths() && (treeDisplay.showBranchLengths || containingNode!=tree.getRoot()))
+					if (tree.hasBranchLengths() && (treeDisplay.showBranchLengths || (true || containingNode!=tree.getRoot()))){
 						miniScaleInternalLocs (containedTree, aNodes[i], terminals,  top, cladeTop, containingNode, aNodes[i], scaling);
+					}
 
 				}
 				if (ySpan!=0)

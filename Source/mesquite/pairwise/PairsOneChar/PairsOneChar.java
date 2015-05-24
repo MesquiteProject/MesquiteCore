@@ -234,6 +234,11 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	boolean warnedPoly = false;
 	boolean warnedOne = false;
 	boolean warnedNumPairs = false;
+	boolean warnedMissing = false;
+	static boolean staticwarnedPoly = false;
+	static boolean staticwarnedOne = false;
+	static boolean staticwarnedNumPairs = false;
+	static boolean staticwarnedMissing = false;
 	/*.................................................................................................................*/
 	/*!!!*/
 	/* This traversal from tips to roots, does parsimony "downpass" and also accumulates allStates for each clade.  allStates records, for
@@ -242,13 +247,30 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node)); // get observed state for taxon
 			//note: this does not handle missing data, or uncertainties or polymorphisms.
-			if (!warnedPoly && CategoricalState.cardinality(observed)!=1){
-				MesquiteMessage.println("Warning: pairs (one char) doesn't handle polymorphisms, uncertainties or missing data");
-				warnedPoly = true;
+			if (CategoricalState.isUnassigned(observed)){
+				/*if (!staticwarnedMissing)
+					ownerModule.alert("Warning: pairs (one char) doesn't handle missing data.");
+				else if (!warnedMissing)
+					MesquiteMessage.println("Warning: pairs (one char) doesn't handle missing data.");
+				warnedMissing = true;
+				staticwarnedMissing = true;
+				*/
 			}
-			else if (!warnedOne && CategoricalState.maximum(observed)>1){
-				MesquiteMessage.println("Warning: pairs (one char) doesn't handle states higher than 1");
+			else if (CategoricalState.cardinality(observed)!=1){
+				if (!staticwarnedPoly)
+					ownerModule.alert("Warning: pairs (one char) doesn't handle polymorphisms, uncertainties");
+				else if (!warnedPoly)
+					MesquiteMessage.println("Warning: pairs (one char) doesn't handle polymorphisms, uncertainties");
+				warnedPoly = true;
+				staticwarnedPoly = true;
+			}
+			else if (CategoricalState.maximum(observed)>1){
+				if (!staticwarnedOne)
+					ownerModule.alert("Warning: pairs (one char) doesn't handle states higher than 1");
+				else	if (!warnedOne)
+					MesquiteMessage.println("Warning: pairs (one char) doesn't handle states higher than 1");
 				warnedOne = true;
+				staticwarnedOne = true;
 			}
 			downStates.setState(node, observed); //set downstate to observed
 			allStatesInClade.setState(node, observed);//set allStates to observed
@@ -261,8 +283,16 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 
 			long sRight=downStates.getState(right);  //get downpass states already calculated for right daughter
 			long sLeft=downStates.getState(left);//get downpass states already calculated for left daughter
+			if (CategoricalState.isUnassigned(sRight)){
+				downStates.setState(node, sLeft);
+				allStatesInClade.setState(node, sLeft); 
+			}
+			else if (CategoricalState.isUnassigned(sLeft)) {
+				downStates.setState(node, sRight);
+				allStatesInClade.setState(node, sRight); 
+			}
+			else {
 			long intersection = sLeft & sRight;  //intersection
-
 			if (intersection == 0) {
 				downStates.setState(node, sLeft | sRight); //use union if intersection empty
 				numPairs++; //count a step which must also be counting number of pairs
@@ -270,6 +300,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			else 
 				downStates.setState(node, intersection); //use intersection if not empty
 			allStatesInClade.setState(node, allStatesInClade.getState(left) | allStatesInClade.getState(right)); // take union for states in clade
+			}
 		}
 	}
 	/*.................................................................................................................*/
