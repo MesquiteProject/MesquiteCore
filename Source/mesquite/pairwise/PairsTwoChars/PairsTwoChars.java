@@ -448,6 +448,10 @@ class TwoCharTaxaPairer extends TaxaPairerChars {
 	}
 	boolean warnedPoly = false;
 	boolean warnedOne = false;
+	boolean warnedMissing = false;
+	static boolean staticwarnedPoly = false;
+	static boolean staticwarnedOne = false;
+	static boolean staticwarnedMissing = false;
 	/* ..................................................................................................................................... */
 	/* This tree traversal from tips to root ("down") calculates the maximum numbers of pairs given various conditions at each node. */
 	private void downPass(Tree tree, int node) {
@@ -462,13 +466,29 @@ class TwoCharTaxaPairer extends TaxaPairerChars {
 		else { //terminal node
 			long stateA =((CategoricalDistribution)observedStatesA).getState(tree.taxonNumberOfNode(node)); //get observed states
 			long stateB =((CategoricalDistribution)observedStatesB).getState(tree.taxonNumberOfNode(node));
-			if (!warnedPoly && (CategoricalState.cardinality(stateA)!=1 || CategoricalState.cardinality(stateB)!=1)){
-				MesquiteMessage.println("Warning: pairs (two chars) doesn't handle polymorphisms, uncertainties or missing data");
-				warnedPoly = true;
+			if ((CategoricalState.isUnassigned(stateA) || CategoricalState.isUnassigned(stateB))){
+				if (!staticwarnedMissing)
+					ownerModule.alert("Warning: pairs (two chars) doesn't handle missing data.");
+				else if (!warnedMissing)
+					MesquiteMessage.println("Warning: pairs (two chars) doesn't handle missing data");
+				warnedMissing = true;
+				staticwarnedMissing = true;
 			}
-			else if (!warnedOne && (CategoricalState.maximum(stateA)>1 || CategoricalState.maximum(stateB)>1)){
-				MesquiteMessage.println("Warning: pairs (two chars) doesn't handle states higher than 1");
+			else if ((CategoricalState.cardinality(stateA)!=1 || CategoricalState.cardinality(stateB)!=1)){
+				if (!staticwarnedPoly)
+					ownerModule.alert("Warning: pairs (two chars) doesn't handle polymorphisms, uncertainties");
+				else if (!warnedPoly)
+					MesquiteMessage.println("Warning: pairs (two chars) doesn't handle polymorphisms, uncertainties");
+				warnedPoly = true;
+				staticwarnedPoly = true;
+			}
+			else if ((CategoricalState.maximum(stateA)>1 || CategoricalState.maximum(stateB)>1)){
+				if (!staticwarnedOne)
+					ownerModule.alert("Warning: pairs (two chars) doesn't handle states higher than 1");
+				else if (!warnedOne)
+					MesquiteMessage.println("Warning: pairs (two chars) doesn't handle states higher than 1");
 				warnedOne = true;
+				staticwarnedOne = true;
 			}
 			max[noFree][node] = -1;
 			max[free00][node] = -1;

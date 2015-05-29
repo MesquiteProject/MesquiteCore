@@ -236,8 +236,6 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	public int getCurrentPairingNumber(){
 		return currentPairing;
 	}
-	boolean warnedPoly = false;
-	boolean warnedOne = false;
 	boolean warnedNumPairs = false;
 	int[] legality;
 	/*.................................................................................................................*/
@@ -274,6 +272,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 		Debugg.println("legality " + IntegerArray.toString(legality));
 	
 	}
+
 	/*.................................................................................................................*/
 	/*!!!*/
 	/* This traversal from tips to roots, does parsimony "downpass" and also accumulates allStates for each clade.  allStates records, for
@@ -284,6 +283,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			if (legality[node]!= 2)
 				Debugg.println("illegal terminal " + node);
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node)); // get observed state for taxon
+
 			downStates.setState(node, observed); //set downstate to observed
 			allStatesInClade.setState(node, observed);//set allStates to observed
 		}
@@ -295,8 +295,16 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 
 			long sRight=downStates.getState(right);  //get downpass states already calculated for right daughter
 			long sLeft=downStates.getState(left);//get downpass states already calculated for left daughter
+			if (CategoricalState.isUnassigned(sRight)){
+				downStates.setState(node, sLeft);
+				allStatesInClade.setState(node, sLeft); 
+			}
+			else if (CategoricalState.isUnassigned(sLeft)) {
+				downStates.setState(node, sRight);
+				allStatesInClade.setState(node, sRight); 
+			}
+			else {
 			long intersection = sLeft & sRight;  //intersection
-
 			if (intersection == 0) {
 				downStates.setState(node, sLeft | sRight); //use union if intersection empty
 				numPairs++; //count a step which must also be counting number of pairs
@@ -304,6 +312,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			else 
 				downStates.setState(node, intersection); //use intersection if not empty
 			allStatesInClade.setState(node, allStatesInClade.getState(left) | allStatesInClade.getState(right)); // take union for states in clade
+			}
 		}
 	}
 	/*.................................................................................................................*/

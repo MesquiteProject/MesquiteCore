@@ -50,6 +50,15 @@ public class TaxaPairing   {
 		paths[numPairs]= path;
 		numPairs++;
 	}
+	
+	public TaxaPath findPath(int node){
+		if (paths == null)
+			return null;
+		for (int i=0; i<paths.length; i++)
+			if (paths[i]!= null && paths[i].getBase() == node)
+				return paths[i];
+		return null;
+	}
  	/*  */
 }
 

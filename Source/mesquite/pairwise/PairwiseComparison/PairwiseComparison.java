@@ -16,6 +16,7 @@ package mesquite.pairwise.PairwiseComparison;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -26,6 +27,17 @@ public class PairwiseComparison extends TreeDisplayAssistantMA {
 	public String getName() {
 		return "Pairwise Comparison";
 	}
+	
+	/*  BUGS
+	 * cut taxa from tree; labels remain
+	 * 
+	 * 
+	 * 
+	 * 
+	 * *
+	 */
+	
+	
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Performs pairwise comparison character correlation tests. Phylogenetically independent pairs are chosen, and the states of two binary characters are compared to see if they are correlated among these pairs." ;
@@ -429,6 +441,18 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			return null;
 		return legend.getTextVersion();
 	}
+	
+	public String textAtNode(Tree tree, int node){
+		if (pairing == null)
+			return " pairing null ";
+		if (pairing.getNumPairs() == 0)
+			return " no pairs ";
+		TaxaPath path = pairing.findPath(node);
+		if (path == null)
+			return "";
+		return describePathContrast(path);
+	}
+
 	/*.................................................................................................................*/
 	void calculatePRange (TaxaPairerChars pairer) {
 		Tree tree = treeDisplay.getTree();
@@ -559,6 +583,46 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 
 		}
 	}
+	
+	private String describePath(TaxaPath path){
+		if (observedStatesA == null)
+			return "";
+		Taxa taxa = observedStatesA.getTaxa();
+		
+		return taxa.getTaxonName(path.gettaxon1()) + " vs. "  + taxa.getTaxonName(path.gettaxon2()) + "; MRCA " + path.getBase();
+	}
+	private String describeContrast(int tax1, int tax2){
+		return "X = "+ observedStatesA.toString(tax1, "") + " vs. " + observedStatesA.toString(tax2, "") + "; Y = "+ observedStatesB.toString(tax1, "") + " vs. " + observedStatesB.toString(tax2, "");
+	}
+	/*.................................................................................................................*/
+	private String describePathContrast(TaxaPath path) {
+		if (path == null)
+			return "Remainder " + describePath(path);
+		if (observedStatesA == null || observedStatesB== null)
+			return "";
+		int tax1 =path.gettaxon1();
+		int tax2 = path.gettaxon2();
+
+		if (observedStatesA.firstIsGreater(tax1, tax2)) {
+			if (observedStatesB.firstIsGreater(tax1, tax2))
+				return "Positive: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else if (observedStatesB.firstIsGreater(tax2, tax1))
+				return "Negative: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else 
+				return "Neutral: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+		}
+		else if (observedStatesA.firstIsGreater(tax2, tax1)) {
+			if (observedStatesB.firstIsGreater(tax1, tax2))
+				return "Negative: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else if (observedStatesB.firstIsGreater(tax2, tax1))
+				return "Positive: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else 
+				return "Neutral: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+		}
+		else {
+			return "Remainder: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+		}
+	}
 	/*.................................................................................................................*/
 	private int categoryOfPath(TaxaPath path) {
 		if (path == null)
@@ -601,7 +665,7 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			else if (category == NEGATIVE)
 				g.setColor(Color.red);
 			else if (category == NEUTRAL)
-				g.setColor(Color.gray);
+				g.setColor(ColorDistribution.lightBlue);
 			else
 				g.setColor(Color.blue);
 			//g.setColor(new Color(Color.HSBtoRGB((float)(i * 1.0 /numTaxa),(float)1.0,(float)1.0)));
