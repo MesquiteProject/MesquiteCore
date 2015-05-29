@@ -122,6 +122,11 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			downStates=(CategoricalHistory)observedStates.adjustHistorySize(tree,  (CharacterHistory)downStates);
 			allStatesInClade= (CategoricalHistory)observedStates.adjustHistorySize(tree, (CharacterHistory)allStatesInClade);
 			numPairs = 0;
+			legalityCheck(tree);
+			Debugg.println("========first legal of 3 " + tree.firstLegalDaughterOfNode(3, legality));
+			Debugg.println("========last legal of 7 " + tree.lastLegalDaughterOfNode(7, legality));
+			Debugg.println("========next legal of 8 " + tree.nextLegalSisterOfNode(8, legality));
+			Debugg.println("========next legal of 9 " + tree.nextLegalSisterOfNode(9, legality));
 			downPass(tree.getRoot(), tree);
 			firstPairingInClade(tree.getRoot(), tree);
 			harvestPaths(tree, tree.getRoot(), tp);
@@ -234,28 +239,57 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	boolean warnedPoly = false;
 	boolean warnedOne = false;
 	boolean warnedNumPairs = false;
+	int[] legality;
+	/*.................................................................................................................*/
+	private void setLegality(int node, Tree tree) {
+		if (tree.nodeIsTerminal(node)) {
+			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node)); // get observed state for taxon
+			//note: this does not handle missing data, or uncertainties or polymorphisms.
+			if (CategoricalState.isInapplicable(observed) || CategoricalState.isUncertain(observed) || CategoricalState.cardinality(observed)!=1)
+				legality[node] = 0;
+			else
+				legality[node] = 2;
+		}
+		else {
+			int left = tree.firstDaughterOfNode(node);  //assumes dichotomous tree, so get left and right daughter
+			int right = tree.lastDaughterOfNode(node);
+			setLegality(left, tree);
+			setLegality(right, tree);
+			if (legality[left] > 0 && legality[right] > 0 )
+				legality[node] = 2;
+			else if (legality[left] > 0 || legality[right] > 0)
+				legality[node] = 1;
+			else
+				legality[node] = 0;
+		}
+	}
+	/*.................................................................................................................*/
+	private void legalityCheck(Tree tree) {
+		if (legality == null || legality.length != tree.getNumNodeSpaces())
+			legality = new int[tree.getNumNodeSpaces()];
+		else
+			for (int i = 0; i< legality.length; i++)
+				legality[i] = 0;
+		setLegality(tree.getRoot(), tree);
+		Debugg.println("legality " + IntegerArray.toString(legality));
+	
+	}
 	/*.................................................................................................................*/
 	/*!!!*/
 	/* This traversal from tips to roots, does parsimony "downpass" and also accumulates allStates for each clade.  allStates records, for
 	each clade, whether 0 or 1 or both are observed among the terminal taxa of the clade*/
 	private void downPass(int node, Tree tree) {
+		Debugg.println("downPass " + node);
 		if (tree.nodeIsTerminal(node)) {
+			if (legality[node]!= 2)
+				Debugg.println("illegal terminal " + node);
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node)); // get observed state for taxon
-			//note: this does not handle missing data, or uncertainties or polymorphisms.
-			if (!warnedPoly && CategoricalState.cardinality(observed)!=1){
-				MesquiteMessage.println("Warning: pairs (one char) doesn't handle polymorphisms, uncertainties or missing data");
-				warnedPoly = true;
-			}
-			else if (!warnedOne && CategoricalState.maximum(observed)>1){
-				MesquiteMessage.println("Warning: pairs (one char) doesn't handle states higher than 1");
-				warnedOne = true;
-			}
 			downStates.setState(node, observed); //set downstate to observed
 			allStatesInClade.setState(node, observed);//set allStates to observed
 		}
 		else {
-			int left = tree.firstDaughterOfNode(node);  //assumes dichotomous tree, so get left and right daughter
-			int right = tree.lastDaughterOfNode(node);
+			int left = tree.firstLegalDaughterOfNode(node, legality);  //assumes dichotomous tree, so get left and right daughter
+			int right = tree.lastLegalDaughterOfNode(node, legality);
 			downPass(left, tree);
 			downPass(right, tree);
 
@@ -327,8 +361,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 				currentPath[node].setNode(tree, node);
 		}
 		else {  //internal node
-			int left = tree.firstDaughterOfNode(node); //tree assumed dichotomous; get left and right daughter nodes
-			int right = tree.lastDaughterOfNode(node);
+			int left = tree.firstLegalDaughterOfNode(node, legality); //tree assumed dichotomous; get left and right daughter nodes
+			int right = tree.lastLegalDaughterOfNode(node, legality);
 			if (currentPath[node]==null) {  //no path coming from below; thus must see if time to invent new one based at node
 				if (allStatesInClade.getState(node)==set01) {	//if clade uniform: don't need to continue since no need to create paths  (*)
 					if (downStates.getState(node)==set01) {  //downstates 01 thus 0/1 or 01/01 on left and right daughters
@@ -412,8 +446,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	private   void nextChoiceAtNode(int node, Tree tree) {  //this method needs to cover only those cases in which multiple choices could arise
 		usingFirstChoice[node] =false; //record that no longer using first choice
 		if (tree.nodeIsInternal(node)) {  //terminal nodes never have choice
-			int left = tree.firstDaughterOfNode(node);
-			int right = tree.lastDaughterOfNode(node);
+			int left = tree.firstLegalDaughterOfNode(node, legality);
+			int right = tree.lastLegalDaughterOfNode(node, legality);
 			if (currentPath[node]==null || currentPath[node].getBase()==node) {  //no path coming from below or path based at node
 				//in firstPairingInClade, every case where new path created had as second choice going up without paths; thus destroy path
 				if (currentPath[node]!=null) 
@@ -441,8 +475,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	private boolean nextPairingInClade(Tree tree, int node){
 		boolean moreChoices = true;
 		if (tree.nodeIsInternal(node)) {
-			int left = tree.firstDaughterOfNode(node);
-			int right = tree.lastDaughterOfNode(node);
+			int left = tree.firstLegalDaughterOfNode(node, legality);
+			int right = tree.lastLegalDaughterOfNode(node, legality);
 			if (!nextPairingInClade(tree, left)){  //try going to next pairing on left; if false then had already reached last choice on left clade
 				if (!nextPairingInClade(tree, right)){ //try going to next pairing on right; if false then had already reached last choice on right clade
 					// left and right choices exhausted, thus go to next choice at node if there is one
@@ -466,8 +500,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	/* harvest all the paths and put them in the pairing*/
 	private   void harvestPaths(Tree tree, int node, TaxaPairing tp) {
 		if (tree.nodeIsInternal(node)) {
-			int left = tree.firstDaughterOfNode(node);
-			int right = tree.lastDaughterOfNode(node);
+			int left = tree.firstLegalDaughterOfNode(node, legality);
+			int right = tree.lastLegalDaughterOfNode(node, legality);
 			harvestPaths(tree, left, tp);
 			harvestPaths(tree, right, tp);
 			if (currentPath[node]!=null && currentPath[node].getBase()==node) 
