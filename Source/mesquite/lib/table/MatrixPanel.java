@@ -553,7 +553,9 @@ timer6.end();
 		table.stopAutoScrollThread();
 		if (!(tool instanceof TableTool))
 			return;
-
+		/*MesquiteWindow window = MesquiteWindow.windowOfItem(this);
+		if (window != null)
+			window.toFront();*/
 		int column = findColumn(x,y);
 		int row = findRow(x, y);
 		firstRowTouched = row;

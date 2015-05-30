@@ -2337,6 +2337,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (checker.compare(MesquiteWindow.class, "Makes the window visible", null, commandName, "showWindow")) {
 			setVisible(true, MesquiteThread.isScripting());
 		}
+		else if (checker.compare(MesquiteWindow.class, "brings window to front", null, commandName, "setAsFront")) {
+			getParentFrame().showPage(this);
+		//	getParentFrame().showFrontWindow();
+		}
 		else if (checker.compare(MesquiteWindow.class, "Makes the window visible", null, commandName, "showWindowForce")) {
 			setVisible(true);
 			getParentFrame().showFrontWindow();
