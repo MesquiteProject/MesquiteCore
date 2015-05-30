@@ -24,5 +24,6 @@ import mesquite.lib.characters.*;
 public abstract class TaxaPairerChars extends TaxaPairer   {
  	public abstract void setCharacters(CharacterDistribution statesA, CharacterDistribution statesB);
  	/*  */
+
 }
 

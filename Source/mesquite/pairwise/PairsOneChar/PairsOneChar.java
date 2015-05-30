@@ -16,6 +16,7 @@ package mesquite.pairwise.PairsOneChar;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -72,6 +73,7 @@ parent node.
 /* ======================================================================== */
 class OneCharTaxaPairer extends TaxaPairerChars {
 	private CategoricalDistribution observedStates;
+	private CharacterDistribution observedStatesB;
 	private CategoricalHistory downStates;
 	private CategoricalHistory allStatesInClade;
 	private int[] stateSought;
@@ -99,20 +101,25 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			ownerModule.alert("Warning: Character X for this pair selector must be a categorical-valued character.  An error may result");
 			observedStates = null;
 		}
+		observedStatesB = statesB;
 		countNum=true;
 	}
- 	public void init(){
+	public void init(){
 		countNum=true;
 	}
 	/*.................................................................................................................*/
 	/* returns the first pairing*/
 	public TaxaPairing getFirstPairing(Tree tree) {
- 		if (tree == null)
- 			return null;
+		if (tree == null)
+			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
+
 		currentPairing = 0;
 		countNum = true;
-		if (observedStates != null) {
+		if (tree.hasPolytomies(tree.getRoot())){
+			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+		}
+		else if (observedStates != null) {
 			done=false;
 			int numNodeSpaces = tree.getNumNodeSpaces();
 			usingFirstChoice= new boolean[numNodeSpaces];
@@ -123,10 +130,6 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			allStatesInClade= (CategoricalHistory)observedStates.adjustHistorySize(tree, (CharacterHistory)allStatesInClade);
 			numPairs = 0;
 			legalityCheck(tree);
-			Debugg.println("========first legal of 3 " + tree.firstLegalDaughterOfNode(3, legality));
-			Debugg.println("========last legal of 7 " + tree.lastLegalDaughterOfNode(7, legality));
-			Debugg.println("========next legal of 8 " + tree.nextLegalSisterOfNode(8, legality));
-			Debugg.println("========next legal of 9 " + tree.nextLegalSisterOfNode(9, legality));
 			downPass(tree.getRoot(), tree);
 			firstPairingInClade(tree.getRoot(), tree);
 			harvestPaths(tree, tree.getRoot(), tp);
@@ -140,10 +143,13 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	/*.................................................................................................................*/
 	/* returns the next pairing*/
 	public TaxaPairing getNextPairing(Tree tree) {
- 		if (tree == null)
- 			return null;
+		if (tree == null)
+			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
-		if (observedStates != null) {
+		if (tree.hasPolytomies(tree.getRoot())){
+			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+		}
+		else 		if (observedStates != null) {
 			if (!done) {
 				if (!nextPairingInClade(tree, tree.getRoot())) 
 					done=true;
@@ -160,10 +166,13 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	/*.................................................................................................................*/
 	/* returns the index'th pairing*/
 	public TaxaPairing getPairing(Tree tree, int index) {
- 		if (tree == null)
- 			return null;
-	TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
-		if (observedStates != null) {
+		if (tree == null)
+			return null;
+		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
+		if (tree.hasPolytomies(tree.getRoot())){
+			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+		}
+		else 		if (observedStates != null) {
 			int numNodeSpaces = tree.getNumNodeSpaces();
 			usingFirstChoice= new boolean[numNodeSpaces];
 			oneChoiceOnly = new boolean[numNodeSpaces];
@@ -172,6 +181,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			downStates=(CategoricalHistory)observedStates.adjustHistorySize(tree,  (CharacterHistory)downStates);
 			allStatesInClade= (CategoricalHistory)observedStates.adjustHistorySize(tree, (CharacterHistory)allStatesInClade);
 			numPairs = 0;
+			legalityCheck(tree);
 			downPass(tree.getRoot(), tree);
 			firstPairingInClade(tree.getRoot(), tree);
 			int count=0;
@@ -194,8 +204,12 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	/* this is a rather sad method that cycles through all the pairings to find out how many there are.  Hopefully,
  	someone will invent a way to calculate this number so they don't have to be enumerated.*/
 	public int getNumPairings(Tree tree){
- 		if (tree == null)
- 			return 0;
+		if (tree == null)
+			return 0;
+		if (tree.hasPolytomies(tree.getRoot())){
+			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			return 0;
+		}
 		if (!countNum)
 			return numPairings;
 		else if (observedStates != null && countNum) {
@@ -210,6 +224,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			allStatesInClade= (CategoricalHistory)observedStates.adjustHistorySize(tree, (CharacterHistory)allStatesInClade);
 
 			numPairs = 0;
+			legalityCheck(tree);
 			downPass(tree.getRoot(), tree);
 			firstPairingInClade(tree.getRoot(), tree);
 
@@ -237,16 +252,29 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 		return currentPairing;
 	}
 	boolean warnedNumPairs = false;
+	CharacterState stateB = null;
 	int[] legality;
 	/*.................................................................................................................*/
 	private void setLegality(int node, Tree tree) {
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node)); // get observed state for taxon
-			//note: this does not handle missing data, or uncertainties or polymorphisms.
-			if (CategoricalState.isInapplicable(observed) || CategoricalState.isUncertain(observed) || CategoricalState.cardinality(observed)!=1)
+			if (stateB!= null)
+				stateB.setToUnassigned();
+			if (observedStatesB != null)
+				stateB =observedStatesB.getCharacterState(stateB, tree.taxonNumberOfNode(node));
+			boolean poly = false;
+			if (stateB != null && stateB instanceof CategoricalState && ((CategoricalState)stateB).cardinality()>1)
+				poly = true;
+			if (CategoricalState.isInapplicable(observed) || CategoricalState.isUnassigned(observed) ||   //indep variable missing/inapplicable
+					CategoricalState.isUncertain(observed) || CategoricalState.cardinality(observed)!=1 || //indep variable uncertain/polymorphic
+					CategoricalState.maximum(observed)>1 || //indep variable not binary
+					stateB == null || stateB.isInapplicable() || stateB.isUnassigned() || poly){  //dep variable is missing/inapplicable or (if categorical) polymorphic/uncertain.  
+				excludedMessage = "Some taxa excluded (had non-binary states in the independent variable, or missing data, or polymorphic states, or uncertain states).";
 				legality[node] = 0;
+			}
 			else
 				legality[node] = 2;
+
 		}
 		else {
 			int left = tree.firstDaughterOfNode(node);  //assumes dichotomous tree, so get left and right daughter
@@ -265,12 +293,10 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	private void legalityCheck(Tree tree) {
 		if (legality == null || legality.length != tree.getNumNodeSpaces())
 			legality = new int[tree.getNumNodeSpaces()];
-		else
-			for (int i = 0; i< legality.length; i++)
-				legality[i] = 0;
+		for (int i = 0; i< legality.length; i++)
+			legality[i] = 2;
+		excludedMessage = "";
 		setLegality(tree.getRoot(), tree);
-		Debugg.println("legality " + IntegerArray.toString(legality));
-	
 	}
 
 	/*.................................................................................................................*/
@@ -278,10 +304,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 	/* This traversal from tips to roots, does parsimony "downpass" and also accumulates allStates for each clade.  allStates records, for
 	each clade, whether 0 or 1 or both are observed among the terminal taxa of the clade*/
 	private void downPass(int node, Tree tree) {
-		Debugg.println("downPass " + node);
 		if (tree.nodeIsTerminal(node)) {
-			if (legality[node]!= 2)
-				Debugg.println("illegal terminal " + node);
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node)); // get observed state for taxon
 
 			downStates.setState(node, observed); //set downstate to observed
@@ -304,14 +327,14 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 				allStatesInClade.setState(node, sRight); 
 			}
 			else {
-			long intersection = sLeft & sRight;  //intersection
-			if (intersection == 0) {
-				downStates.setState(node, sLeft | sRight); //use union if intersection empty
-				numPairs++; //count a step which must also be counting number of pairs
-			}
-			else 
-				downStates.setState(node, intersection); //use intersection if not empty
-			allStatesInClade.setState(node, allStatesInClade.getState(left) | allStatesInClade.getState(right)); // take union for states in clade
+				long intersection = sLeft & sRight;  //intersection
+				if (intersection == 0) {
+					downStates.setState(node, sLeft | sRight); //use union if intersection empty
+					numPairs++; //count a step which must also be counting number of pairs
+				}
+				else 
+					downStates.setState(node, intersection); //use intersection if not empty
+				allStatesInClade.setState(node, allStatesInClade.getState(left) | allStatesInClade.getState(right)); // take union for states in clade
 			}
 		}
 	}

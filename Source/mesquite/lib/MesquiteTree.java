@@ -1337,7 +1337,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				return firstLegalDaughterOfNode(candidate, legality);
 		}
 		int mom = motherOfNode(node);  //if this is legal, then you've gone as far as you need to go; next sister not found
-		if (mom>=legality.length || legality[mom] == 2)
+		if (!nodeExists(mom) || mom>=legality.length || legality[mom] == 2)
 			return 0;
 		
 		//all sisters next are entirely illegal; go down to mother and the next aunt
@@ -1354,7 +1354,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			}
 			// have looked to ancestor's sisters, and not found.  The next ancestor deeper is legal, then you're done.
 			int ancAnc = motherOfNode(ancestor);  
-			if (ancAnc>=legality.length || legality[ancAnc] == 2)//if this is ancestor legal, then you've gone as far as you need to go; next sister not found
+			
+			if (!nodeExists(ancAnc) || ancAnc>=legality.length || legality[ancAnc] == 2)//if this is ancestor legal, then you've gone as far as you need to go; next sister not found
 				return 0;
 			
 		}

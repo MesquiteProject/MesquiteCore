@@ -391,7 +391,7 @@ rising from below.  At each internal node must be stored the current choice at t
  ======================================================================== */
 class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 	public TaxaPairing pairing;
-	private TaxaPairerChars pairer;
+	TaxaPairerChars pairer;
 	public ShowPairsLegend legend;
 	private double pMax = 0;
 	private double pMin = 1;
@@ -976,6 +976,8 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		String s = "Pairing " + (oldCurrentPairing+1) +" of " + oldNumPairings;
 		if (ownerModule.pairSelectorTask.limitReached(oldNumPairings))
 			s += " (There may be more pairings; the limit of number of pairings allowed was reached.)";
+		if (!StringUtil.blank(pD.pairer.getExcludedMessage()))
+			s += "\n" + pD.pairer.getExcludedMessage();
 		s +="\nSelector: " + ownerModule.pairSelectorTask.getName() + "\n" + numP + " pairs\n";
 		s += "   Positive " + results[1] + "\n   Negative " + results[0] + "\n   Neutral " + results[2] + "\n   Remainder " + results[3];
 		s += "\n best tail p=" + MesquiteDouble.toString(Binomial.bestTail(results[0] + results[1], results[1], 0.5));
@@ -987,7 +989,8 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		textVersion = "Pairing\t" + (oldCurrentPairing+1) +"\tof\t" + oldNumPairings + "\t";
 		if (ownerModule.pairSelectorTask.limitReached(oldNumPairings))
 			textVersion += " (There may be more pairings; the limit of number of pairings allowed was reached.) ";
-		textVersion +="Selector: " + ownerModule.pairSelectorTask.getName() + "\t" + numP + "\tpairs. ";
+		textVersion += " " + pD.pairer.getExcludedMessage();
+		textVersion +=" Selector: " + ownerModule.pairSelectorTask.getName() + "\t" + numP + "\tpairs. ";
 		textVersion += "   Positive\t" + results[1] + "\tNegative\t" + results[0] + "\tNeutral\t" + results[2] + "\tRemainder\t" + results[3];
 		textVersion += "\tbest tail p=\t" + MesquiteDouble.toString(Binomial.bestTail(results[0] + results[1], results[1], 0.5));
 		if (pMax>0 && pMin>0) {
