@@ -24,8 +24,15 @@ import mesquite.lib.characters.*;
 public class TaxaPairing   {
 	private TaxaPath[] paths;
 	private int numPairs = 0;
+	private boolean calculationNotDone = false;
 	public TaxaPairing (int numTaxa) {
 		paths = new TaxaPath[numTaxa];
+	}
+	public boolean getCalculationNotDone() {
+		return calculationNotDone;
+	}
+	public void setCalculationNotDone(boolean cnd) {
+		calculationNotDone = cnd;
 	}
 	public int getNumPairs() {
 		return numPairs;

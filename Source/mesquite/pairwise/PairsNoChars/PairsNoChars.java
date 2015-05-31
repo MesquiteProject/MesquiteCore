@@ -114,7 +114,7 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			else
 				legality[node] = 2;
 			if (legality[node] == 0)
-				excludedMessage = "Some taxa excluded (had character states that are missing or inapplicable).";
+				warningMessage = "Some taxa excluded (had character states that are missing or inapplicable).";
 
 		}
 		else {
@@ -136,7 +136,7 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			legality = new int[tree.getNumNodeSpaces()];
 		for (int i = 0; i< legality.length; i++)
 			legality[i] = 2;
-		excludedMessage = "";
+		warningMessage = "";
 		if (observedStatesA== null || observedStatesB == null)// not needed except to exclude taxa with missing/inapplicable
 			return;
 		setLegality(tree.getRoot(), tree);
@@ -196,7 +196,8 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
 		currentPairing = 0;
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			tp.setCalculationNotDone(true);
 			return tp;
 		}
 		done=false;
@@ -223,7 +224,8 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			tp.setCalculationNotDone(true);
 			return tp;
 		}
 
@@ -247,7 +249,8 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			tp.setCalculationNotDone(true);
 			return tp;
 		}
 
@@ -283,7 +286,7 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 		if (tree == null)
 			return 0;
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
 			return 0;
 		}
 

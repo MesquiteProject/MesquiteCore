@@ -117,7 +117,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 		currentPairing = 0;
 		countNum = true;
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			tp.setCalculationNotDone(true);
 		}
 		else if (observedStates != null) {
 			done=false;
@@ -147,7 +148,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			tp.setCalculationNotDone(true);
 		}
 		else 		if (observedStates != null) {
 			if (!done) {
@@ -170,7 +172,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			tp.setCalculationNotDone(true);
 		}
 		else 		if (observedStates != null) {
 			int numNodeSpaces = tree.getNumNodeSpaces();
@@ -207,7 +210,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 		if (tree == null)
 			return 0;
 		if (tree.hasPolytomies(tree.getRoot())){
-			excludedMessage = "The tree has polytomies; pairwise comparisons cannot be done";
+			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
 			return 0;
 		}
 		if (!countNum)
@@ -269,7 +272,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 					CategoricalState.isUncertain(observed) || CategoricalState.cardinality(observed)!=1 || //indep variable uncertain/polymorphic
 					CategoricalState.maximum(observed)>1 || //indep variable not binary
 					stateB == null || stateB.isInapplicable() || stateB.isUnassigned() || poly){  //dep variable is missing/inapplicable or (if categorical) polymorphic/uncertain.  
-				excludedMessage = "Some taxa excluded (had non-binary states in the independent variable, or missing data, or polymorphic states, or uncertain states).";
+				warningMessage = "Some taxa excluded (had non-binary states in the independent variable, or missing data, or polymorphic states, or uncertain states).";
 				legality[node] = 0;
 			}
 			else
@@ -295,7 +298,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			legality = new int[tree.getNumNodeSpaces()];
 		for (int i = 0; i< legality.length; i++)
 			legality[i] = 2;
-		excludedMessage = "";
+		warningMessage = "";
 		setLegality(tree.getRoot(), tree);
 	}
 
