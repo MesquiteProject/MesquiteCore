@@ -273,10 +273,10 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 					CategoricalState.maximum(observed)>1 || //indep variable not binary
 					stateB == null || stateB.isInapplicable() || stateB.isUnassigned() || poly){  //dep variable is missing/inapplicable or (if categorical) polymorphic/uncertain.  
 				warningMessage = "Some taxa excluded (had non-binary states in the independent variable, or missing data, or polymorphic states, or uncertain states).";
-				legality[node] = 0;
+				legality[node] = MesquiteTree.ILLEGAL;
 			}
 			else
-				legality[node] = 2;
+				legality[node] = MesquiteTree.LEGAL;
 
 		}
 		else {
@@ -284,12 +284,12 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 			int right = tree.lastDaughterOfNode(node);
 			setLegality(left, tree);
 			setLegality(right, tree);
-			if (legality[left] > 0 && legality[right] > 0 )
-				legality[node] = 2;
-			else if (legality[left] > 0 || legality[right] > 0)
-				legality[node] = 1;
+			if (legality[left] != MesquiteTree.ILLEGAL && legality[right] != MesquiteTree.ILLEGAL )
+				legality[node] = MesquiteTree.LEGAL;
+			else if (legality[left] != MesquiteTree.ILLEGAL || legality[right] != MesquiteTree.ILLEGAL)
+				legality[node] = MesquiteTree.SEMILEGAL;
 			else
-				legality[node] = 0;
+				legality[node] = MesquiteTree.ILLEGAL;
 		}
 	}
 	/*.................................................................................................................*/
@@ -297,7 +297,7 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 		if (legality == null || legality.length != tree.getNumNodeSpaces())
 			legality = new int[tree.getNumNodeSpaces()];
 		for (int i = 0; i< legality.length; i++)
-			legality[i] = 2;
+			legality[i] = MesquiteTree.LEGAL;
 		warningMessage = "";
 		setLegality(tree.getRoot(), tree);
 	}

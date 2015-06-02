@@ -2444,6 +2444,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					if (treeSourceLocked())
 						tree.setName("Untitled Tree");
 					treeEdited(false);
+					treeDisplay.pleaseUpdate(true);
 				}
 				ownerModule.fireEmployee(ble); 
 			}

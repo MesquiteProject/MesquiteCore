@@ -1297,9 +1297,18 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 
 	/*-----------------------------------------*/
-	/** Returns the first (left-most) legal daughter of node, where legality is implied by integer array with values 
-	 * 0 illegal and nothing in subclade is legal; 1 illegal but subclade includes legal one; 2 legal (i.e. either more than one descendant is legal, or this is a legal terminal
+	/** Traversal in which nodes are ignored as illegal.
+	 * Codes for nodes:
+	 * ILLEGAL if illegal and nothing in subclade is legal; 
+	 * SEMILEGAL: node itself is illegal but subclade includes legal one;
+     * LEGAL if legal (i.e. either more than one descendant is legal, or this is a legal terminal
 	 * The permits tree traversal where illegal lineages are ignored as if they aren't there
+	 * */
+	public static final int ILLEGAL = 2;
+	public static final int SEMILEGAL = 1;
+	public static final int LEGAL = 0;
+	/*-----------------------------------------*/
+	/** Returns the first (left-most) legal daughter of node, where legality is implied by integer array with values 
 	 * */
 	public  int firstLegalDaughterOfNode(int node, int[] legality) {
 		if (legality == null || node>=legality.length)
@@ -1309,17 +1318,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		for (int candidate = firstDaughterOfNode(node); nodeExists(candidate); candidate= nextSisterOfNode(candidate)){
 			if (candidate>=legality.length)
 				return candidate;
-			if (legality[candidate] == 2) //candidate itself is legal; return it
+			if (legality[candidate] == LEGAL) //candidate itself is legal; return it
 				return candidate;
-			if (legality[candidate] == 1) //candidate itself is illegal, but its subclade contains something legal
+			if (legality[candidate] == SEMILEGAL) //candidate itself is illegal, but its subclade contains something legal
 				return firstLegalDaughterOfNode(candidate, legality);
 		}
 		return 0;
 	}
 	/*-----------------------------------------*/
 	/** Returns the next legal sister of node, where legality is implied by integer array with values 
-	 * 0 illegal and nothing in subclade is legal; 1 illegal but subclade includes legal one; 2 legal (i.e. either more than one descendant is legal, or this is a legal terminal
-	 * The permits tree traversal where illegal lineages are ignored as if they aren't there
 	 * */
 	public  int nextLegalSisterOfNode(int node, int[] legality) {
 		if (legality == null || node>=legality.length)
@@ -1331,13 +1338,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		for (int candidate = nextSisterOfNode(node); nodeExists(candidate); candidate= nextSisterOfNode(candidate)){
 			if (candidate>=legality.length)
 				return candidate;
-			if (legality[candidate] == 2) //candidate itself is legal; return it
+			if (legality[candidate] == LEGAL) //candidate itself is legal; return it
 				return candidate;
-			if (legality[candidate] == 1) //candidate itself is illegal, but its subclade contains something legal
+			if (legality[candidate] == SEMILEGAL) //candidate itself is illegal, but its subclade contains something legal
 				return firstLegalDaughterOfNode(candidate, legality);
 		}
 		int mom = motherOfNode(node);  //if this is legal, then you've gone as far as you need to go; next sister not found
-		if (!nodeExists(mom) || mom>=legality.length || legality[mom] == 2)
+		if (!nodeExists(mom) || mom>=legality.length || legality[mom] == LEGAL)
 			return 0;
 		
 		//all sisters next are entirely illegal; go down to mother and the next aunt
@@ -1347,15 +1354,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			for (int candidate = nextSisterOfNode(ancestor); nodeExists(candidate); candidate= nextSisterOfNode(candidate)){
 				if (candidate>=legality.length)
 					return candidate;
-				if (legality[candidate] == 2) //candidate itself is legal; return it
+				if (legality[candidate] == LEGAL) //candidate itself is legal; return it
 					return candidate;
-				if (legality[candidate] == 1) //candidate itself is illegal, but its subclade contains something legal
+				if (legality[candidate] == SEMILEGAL) //candidate itself is illegal, but its subclade contains something legal
 					return firstLegalDaughterOfNode(candidate, legality);
 			}
 			// have looked to ancestor's sisters, and not found.  The next ancestor deeper is legal, then you're done.
 			int ancAnc = motherOfNode(ancestor);  
 			
-			if (!nodeExists(ancAnc) || ancAnc>=legality.length || legality[ancAnc] == 2)//if this is ancestor legal, then you've gone as far as you need to go; next sister not found
+			if (!nodeExists(ancAnc) || ancAnc>=legality.length || legality[ancAnc] == LEGAL)//if this is ancestor legal, then you've gone as far as you need to go; next sister not found
 				return 0;
 			
 		}
@@ -3618,6 +3625,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 
 	/*-----------------------------------------*/
+	//VIRTUAL DELETION. See also LEGAL system as an alternative
 	/** Marks taxon (and any nodes required by it) as deleted virtually in the boolean array.  Used in conjunction with subsequent
 	 * traversals that ignore the deleted area, e.g. for ignoring taxa with missing data.*/
 	public void virtualDeleteTaxon(int it, boolean[] deleted){
@@ -5682,6 +5690,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return false;
 	}
 	public void reconcileTaxa(int code, Notification notification){
+		reconcileTaxa(code, notification, true);
+	}
+	public void reconcileTaxa(int code, Notification notification, boolean notify){
 		//check id list of taxa to see that it matches; otherwise add or subtract taxa;  ASSUMES TAXA DELETED OR ADDED BUT NOT MOVED!!!!!!
 		int newNumTaxa = taxa.getNumTaxa();
 		if (newNumTaxa == oldNumTaxa) {
@@ -5692,7 +5703,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
 						int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
 						if (loc <0) {
-							MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in CharacterData: taxaID's cannot be reconciled with current Taxa");
+							MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in MesquiteTree: taxaID's cannot be reconciled with current Taxa");
 							return;
 						}
 						else {
@@ -5722,8 +5733,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						}
 					}
 				}
-				//MesquiteTrunk.mesquiteTrunk.discreetAlert( "ERROR in CharacterData: MesquiteListener.PARTS_MOVED not yet handled");
-				notifyListeners(this, notification);
+				//MesquiteTrunk.mesquiteTrunk.discreetAlert( "ERROR in MesquiteTree: MesquiteListener.PARTS_MOVED not yet handled");
+				if (notify)
+					notifyListeners(this, notification);
 			}
 			else
 				checkTaxaIDs();

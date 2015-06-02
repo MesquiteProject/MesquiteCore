@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 
 
@@ -24,12 +25,12 @@ These methods must be passed a Taxa object because which characters are appropri
 taxa*/
 
 public abstract class CharacterSource extends CharacterOneSource  {
-	public static int storedAsDefault = 0; //0  not set; 1 true; -1 false;
+	public static MesquiteBoolean storedAsDefault = new MesquiteBoolean(true);
    	 public Class getDutyClass() {
    	 	return CharacterSource.class;
    	 }
    	 public static boolean useStoredAsDefault(){
-   		 return storedAsDefault == 1 || (storedAsDefault == 0 && mesquite.lib.simplicity.InterfaceManager.isSimpleMode());
+   		 return storedAsDefault.getValue() || (mesquite.lib.simplicity.InterfaceManager.isSimpleMode());
    	 }
    	 public String[] getDefaultModule() {
    	 	return new String[] {"#StoredCharacters", "#SimulatedCharacters"};

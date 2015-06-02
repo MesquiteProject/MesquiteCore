@@ -478,10 +478,10 @@ class TwoCharTaxaPairer extends TaxaPairerChars {
 					CategoricalState.isInapplicable(stateA) || CategoricalState.isInapplicable(stateB) || //either of the two characters is inapplicable
 					CategoricalState.cardinality(stateA)!=1 || CategoricalState.cardinality(stateB)!=1 ||//either of the two characters is polymorphic/uncertain
 					(CategoricalState.maximum(stateA)>1))  //the independent variable is non-binary
-				legality[node] = 0;
+				legality[node] = MesquiteTree.ILLEGAL;
 			else
-				legality[node] = 2;
-			if (legality[node] == 0)
+				legality[node] = MesquiteTree.LEGAL;
+			if (legality[node] == MesquiteTree.ILLEGAL)
 				warningMessage = "Some taxa excluded (had non-binary states in the independent variable, or missing data, or polymorphic states, or uncertain states).";
 
 		}
@@ -490,12 +490,12 @@ class TwoCharTaxaPairer extends TaxaPairerChars {
 			int right = tree.lastDaughterOfNode(node);
 			setLegality(left, tree);
 			setLegality(right, tree);
-			if (legality[left] > 0 && legality[right] > 0 )
-				legality[node] = 2;
-			else if (legality[left] > 0 || legality[right] > 0)
-				legality[node] = 1;
+			if (legality[left] != MesquiteTree.ILLEGAL && legality[right] != MesquiteTree.ILLEGAL )
+				legality[node] = MesquiteTree.LEGAL;
+			else if (legality[left] != MesquiteTree.ILLEGAL || legality[right] != MesquiteTree.ILLEGAL)
+				legality[node] = MesquiteTree.SEMILEGAL;
 			else
-				legality[node] = 0;
+				legality[node] = MesquiteTree.ILLEGAL;
 		}
 	}
 	/*.................................................................................................................*/
@@ -503,7 +503,7 @@ class TwoCharTaxaPairer extends TaxaPairerChars {
 		if (legality == null || legality.length != tree.getNumNodeSpaces())
 			legality = new int[tree.getNumNodeSpaces()];
 		for (int i = 0; i< legality.length; i++)
-			legality[i] = 2;
+			legality[i] = MesquiteTree.LEGAL;
 		warningMessage = "";
 		setLegality(tree.getRoot(), tree);
 	}

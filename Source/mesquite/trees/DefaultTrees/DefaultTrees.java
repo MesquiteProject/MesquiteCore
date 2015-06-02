@@ -100,7 +100,7 @@ public class DefaultTrees extends TreeSource {
 			tree.setName("Default ladder");
 	   		return tree;
    		}
-   		else {
+   		else { //Symmetrical
    			int numTaxa = taxa.getNumTaxa();
 			MesquiteTree tree = new MesquiteTree(taxa);
 			if (numTaxa == 1){

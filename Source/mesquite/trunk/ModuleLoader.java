@@ -399,6 +399,12 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					if (level ==2) {
 						showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
 						mesquite.log(" " + fileName);
+						if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
+							StringBuffer buffer =new StringBuffer();
+							buffer.append("\n");
+							DirectInit.loadJars(filePathName + MesquiteFile.fileSeparator + "jars", buffer);
+							mesquite.logln(buffer.toString());
+						}
 					}
 					else
 						showMessage(true, ++directoryNumber);

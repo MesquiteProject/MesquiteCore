@@ -110,10 +110,10 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			csB =observedStatesB.getCharacterState(csB, tree.taxonNumberOfNode(node)); //get observed states
 			if ((csA == null || csA.isUnassigned() || csA.isInapplicable()) ||  //either of the two characters is missing data
 					(csB == null || csB.isUnassigned() || csB.isInapplicable())) //either of the two characters is inapplicable
-				legality[node] = 0;
+				legality[node] = MesquiteTree.ILLEGAL;
 			else
-				legality[node] = 2;
-			if (legality[node] == 0)
+				legality[node] = MesquiteTree.LEGAL;
+			if (legality[node] == MesquiteTree.ILLEGAL)
 				warningMessage = "Some taxa excluded (had character states that are missing or inapplicable).";
 
 		}
@@ -122,12 +122,12 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			int right = tree.lastDaughterOfNode(node);
 			setLegality(left, tree);
 			setLegality(right, tree);
-			if (legality[left] > 0 && legality[right] > 0 )
-				legality[node] = 2;
-			else if (legality[left] > 0 || legality[right] > 0)
-				legality[node] = 1;
+			if (legality[left] != MesquiteTree.ILLEGAL && legality[right] != MesquiteTree.ILLEGAL )
+				legality[node] = MesquiteTree.LEGAL;
+			else if (legality[left] != MesquiteTree.ILLEGAL || legality[right] != MesquiteTree.ILLEGAL)
+				legality[node] = MesquiteTree.SEMILEGAL;
 			else
-				legality[node] = 0;
+				legality[node] = MesquiteTree.ILLEGAL;
 		}
 	}
 	/*.................................................................................................................*/
@@ -135,7 +135,7 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 		if (legality == null || legality.length != tree.getNumNodeSpaces())
 			legality = new int[tree.getNumNodeSpaces()];
 		for (int i = 0; i< legality.length; i++)
-			legality[i] = 2;
+			legality[i] = MesquiteTree.LEGAL;
 		warningMessage = "";
 		if (observedStatesA== null || observedStatesB == null)// not needed except to exclude taxa with missing/inapplicable
 			return;
