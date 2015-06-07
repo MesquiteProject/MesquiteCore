@@ -95,7 +95,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	  			specsVectors.removeAllElements();
   		}
   		specsVectors = null;
-  		super.dispose();
+ 		super.dispose();
 	}
 	public void equalizeParts(AssociableWithSpecs other, int otherPart, int part){
   		if (otherPart>=other.getNumberOfParts() && part >= getNumberOfParts())

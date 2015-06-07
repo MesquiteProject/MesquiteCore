@@ -232,7 +232,7 @@ public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteL
 	private   void downPass(int node, Tree tree, ProbabilityCategCharModel model, CategoricalDistribution observedStates) {
 		if (tree.nodeIsTerminal(node)) {
 			long observed = ((CategoricalDistribution)observedStates).getState(tree.taxonNumberOfNode(node));
-/*Polymorphism starts here OliverZMarg*/
+/*Uncertain multistate starts here OliverZMarg*/
 			int[] states = CategoricalState.expand(observed);
 			DoubleArray.zeroArray(downProbs[node]);
 			if(states.length > 0 && !CategoricalState.isUnassigned(observed) && !CategoricalState.isInapplicable(observed)){
@@ -472,9 +472,9 @@ public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteL
 	boolean[] deleted;
 
 	boolean warn(CategoricalDistribution observedStates, ProbabilityCategCharModel model, Tree tree, MesquiteString resultString){
-/* Original Implementation OliverZMarg
-		if (observedStates.hasMultipleStatesInTaxon(tree, tree.getRoot())) {
-			String s = "Polymorphic or uncertain taxa are not currently supported by Categorical data likelihood calculations.  Calculations for one or more characters were not completed.";
+/*  OliverZMarg had commented this out; re-enforced for polymorphisms (but not uncertainties) in 3.04 */
+		if (observedStates.hasPolymorphicStatesInTaxon(tree, tree.getRoot())) {
+			String s = "Polymorphic taxa are not currently supported by Categorical data likelihood calculations.  Calculations for one or more characters were not completed.";
 			if (!warnedPolymorphic) {
 				discreetAlert( s);
 				warnedPolymorphic = true;
@@ -482,7 +482,7 @@ public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteL
 			if (resultString!=null)
 				resultString.setValue(s);
 			return true;
-		} End Original Implementation */
+		} 
 		if (tree.hasSoftPolytomies(tree.getRoot())) {
 			String message = "Trees with soft polytomies not allowed by Categorical data likelihood calculations.  Calculations for one or more trees were not completed.";
 			if (!warnedSoftPoly){

@@ -72,6 +72,20 @@ public abstract class CategoricalDistribution extends CategoricalStates implemen
 		return false;
 	}
 	/*.................................................................................................................*/
+	/**Returns whether or not the character has polymorphic data in the taxa of the tree*/
+	public boolean hasPolymorphicStatesInTaxon(Tree tree, int node){
+		if (tree.nodeIsTerminal(node)){
+			if (!isUncertain(tree.taxonNumberOfNode(node)) && CategoricalState.hasMultipleStates(getState(tree.taxonNumberOfNode(node))))
+				return true;
+		}
+		else {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				if (hasPolymorphicStatesInTaxon(tree, d))
+					return true;
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
 	/**Returns whether or not the character has polymorphic or multstate uncertain data in the taxa of the tree*/
 	public boolean hasMultipleStatesInTaxon(Tree tree, int node){
 		if (tree.nodeIsTerminal(node)){

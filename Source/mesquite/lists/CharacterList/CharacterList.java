@@ -416,16 +416,18 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 
 	public void setCurrentObject(Object obj){
 		if (obj instanceof CharacterData) {
-			if (data!=null) {
-				data.removeListener(this);
-				if (data.getTaxa()!=null)
-					data.getTaxa().removeListener(this);
+			if (data == null || data != obj){
+				if (data!=null) {
+					data.removeListener(this);
+					if (data.getTaxa()!=null)
+						data.getTaxa().removeListener(this);
+				}
+				data = (CharacterData)obj;
+				data.addListener(this); //TODO: this needs to be done for taxon lists, etc.
+				data.getTaxa().addListener(this);
 			}
-			data = (CharacterData)obj;
 			getTable().setRowAssociable(data);
 			getTable().setDropDown(-1, -1, true);
-			data.addListener(this); //TODO: this needs to be done for taxon lists, etc.
-			data.getTaxa().addListener(this);
 			resetTitle();
 			if (selectionCoordinator!=null)
 				selectionCoordinator.setTableAndObject(getTable(), data, true);
