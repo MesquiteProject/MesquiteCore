@@ -303,6 +303,7 @@ public interface Tree extends Listable {
 	To be used for output to user, not internally (as it may lose information).*/
 	public String writeTreeSimpleByNames();
 	public String writeTreeSimpleByNumbers();
+	public String writeTreeByT0Names(boolean includeBranchLengths);
 	public String writeTree(int byWhat);
 	public String writeTree(int byWhat, boolean associatedUseComments);
 	public String writeTreeSimple(int byWhat, boolean includeAssociated, boolean includeBranchLengths, boolean includeNodeLabels, boolean zeroBased, String delimiter);

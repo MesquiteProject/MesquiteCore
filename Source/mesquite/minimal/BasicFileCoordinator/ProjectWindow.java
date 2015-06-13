@@ -880,7 +880,7 @@ class ProjectLabelPanel extends ElementPanel {
 		addCommand(true, null, "Other Projects:", "Other Projects:", null);
 		for (int i = 0; i< numProjects; i++){
 			MesquiteProject proj = MesquiteTrunk.getProjectList().getProject(i);
-			if (proj != project) {
+			if (proj != project && proj != null) {
 				addCommand(true, null, proj.getHomeFileName(), proj.getHomeFileName(), new MesquiteCommand("allToFront", proj.getCoordinatorModule()));
 				names[k++] = proj.getHomeFileName();
 			}

@@ -105,8 +105,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			return data;
 		}
 		else if (checker.compare(this.getClass(), "Hides the data matrix window", null, commandName, "hideWindow")) {
-			if (bdw != null)
+			if (bdw != null){
 				bdw.hide();
+				parametersChanged();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Makes a data editor window (but doesn't display it)", "[number or reference string of data set to be shown]", commandName, "makeWindow")) {
 			if (bdw != null)
@@ -205,6 +207,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	/* ................................................................................................................. */
 	public void windowGoAway(MesquiteWindow whichWindow) {
 		whichWindow.hide();
+		parametersChanged();
 		if (isExtra) {
 			whichWindow.dispose();
 			iQuit();
