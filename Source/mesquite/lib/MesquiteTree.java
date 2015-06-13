@@ -3299,6 +3299,35 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 	}
 	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer using taxon names in simple style: t0, t1, t2, etc. */
+	private void writeTreeByT0Names(int node, StringBuffer treeDescription, boolean includeBranchLengths) {
+		if (nodeIsInternal(node)) {
+			treeDescription.append('(');
+			int thisSister = firstDaughterOfNode(node);
+			writeTreeByT0Names(thisSister, treeDescription, includeBranchLengths);
+			while (nodeExists(thisSister = nextSisterOfNode(thisSister))) {
+				treeDescription.append(',');
+				writeTreeByT0Names(thisSister, treeDescription,includeBranchLengths);
+			}
+			treeDescription.append(')');
+		}
+		else {
+			treeDescription.append("t" + taxonNumberOfNode(node));
+		}
+		if ( includeBranchLengths && !branchLengthUnassigned(node)) {
+			treeDescription.append(':');
+			treeDescription.append(MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1)); //add -1 to signal full accuracy 17 Dec 01
+		}
+	}
+	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer using taxon names in simple style: t0, t1, t2, etc. */
+	public String writeTreeByT0Names(boolean includeBranchLengths) {
+		StringBuffer tD = new StringBuffer(10);
+		writeTreeByT0Names(getRoot(), tD, includeBranchLengths);
+		return tD.toString();
+			
+	}
+	/*-----------------------------------------*/
 	/** Writes a tree description into the StringBuffer using taxon names */
 	private void writeTreeByNames(int node, StringBuffer treeDescription, boolean includeBranchLengths, boolean includeAssociated, boolean associatedUseComments) {
 		if (nodeIsInternal(node)) {
