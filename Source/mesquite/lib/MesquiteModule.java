@@ -1175,7 +1175,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (numPairs>=4)
 			pairs[3] = new NameValuePair("notes", StringUtil.tokenize(notes));
 
-		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/pyMesquiteBeans", null)){
+		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/pyMesquiteBeans", null, 0)){  // changed to not retry
 			if (notifyUser) 
 				MesquiteMessage.println("Bean sent to Mesquite server.");
 		}
