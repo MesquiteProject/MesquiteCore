@@ -122,6 +122,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return g;
 	}
 
+	public Font getTaxonNamesFont(){
+		return namesTask.getFont();
+	}
+
 	public Color getBranchColor(int N){
 		if (!showBranchColors)
 			return branchColor;

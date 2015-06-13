@@ -1611,11 +1611,18 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					else
 						numTaxa = taxa.getNumTaxa();
 					canFit =  numTaxa<50;
+					
+					int basicMinSpacing = 12;
+					Graphics g = treeDisplay.getGraphics();
+					FontMetrics fm = g.getFontMetrics(treeDisplay.getTaxonNamesFont());
+					if (fm!=null) {
+						basicMinSpacing = fm.getMaxAscent()+ fm.getMaxDescent();
+					}
 					if (!canFit){
 						if (treeDisplay.getOrientation()== TreeDisplay.UP || treeDisplay.getOrientation()== TreeDisplay.DOWN) 
-							canFit = numTaxa*12<w;
+							canFit = numTaxa*basicMinSpacing<w;
 						else if (treeDisplay.getOrientation()== TreeDisplay.RIGHT || treeDisplay.getOrientation()== TreeDisplay.LEFT) 
-							canFit =  numTaxa*12<w;
+							canFit =  numTaxa*basicMinSpacing<w;
 						else
 							canFit = numTaxa*6<(w+h)/2;
 					}
@@ -1630,12 +1637,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					else {
 						treeDisplay.autoStretchIfNeeded = true;
 						if (treeDisplay.getOrientation()== TreeDisplay.UP || treeDisplay.getOrientation()== TreeDisplay.DOWN) {
-							totalTreeFieldWidth = numTaxa*12;  
+							totalTreeFieldWidth = numTaxa*basicMinSpacing;  
 							totalTreeFieldHeight  = h-scrollWidth-4;
 						}
 						else if (treeDisplay.getOrientation()== TreeDisplay.RIGHT || treeDisplay.getOrientation()== TreeDisplay.LEFT) {
 							totalTreeFieldWidth = w-scrollWidth-4;  
-							totalTreeFieldHeight  = numTaxa*12;
+							totalTreeFieldHeight  = numTaxa*basicMinSpacing;
 						}
 						else  {
 							totalTreeFieldWidth = numTaxa*8;  
