@@ -1607,15 +1607,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					togglePane(false, false);
 				}
 				else {
-					boolean canFit = true;
-					Tree tree = treeDisplay.getTree();
-					int numTaxa = 0;
-					if (tree != null)
-						numTaxa = tree.numberOfTerminalsInClade(tree.getRoot());
-					else
-						numTaxa = taxa.getNumTaxa();
-					canFit =  numTaxa<50;
-
 					int basicMinSpacing = 12;
 					Graphics g = treeDisplay.getGraphics();
 					if (g != null){
@@ -1624,14 +1615,23 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 							basicMinSpacing = fm.getMaxAscent()+ fm.getMaxDescent();
 						}
 					}
-					if (!canFit){
-							if (treeDisplay.getOrientation()== TreeDisplay.UP || treeDisplay.getOrientation()== TreeDisplay.DOWN) 
-								canFit = numTaxa*basicMinSpacing<w;
-							else if (treeDisplay.getOrientation()== TreeDisplay.RIGHT || treeDisplay.getOrientation()== TreeDisplay.LEFT) 
-								canFit =  numTaxa*basicMinSpacing<w;
-							else
-								canFit = numTaxa*6<(w+h)/2;
-						}
+					boolean canFit = true;
+					Tree tree = treeDisplay.getTree();
+					int numTaxa = 0;
+					if (tree != null)
+						numTaxa = tree.numberOfTerminalsInClade(tree.getRoot());
+					else
+						numTaxa = taxa.getNumTaxa();
+				//	canFit =  numTaxa<50;
+
+				//	if (!canFit){
+					if (treeDisplay.getOrientation()== TreeDisplay.UP || treeDisplay.getOrientation()== TreeDisplay.DOWN) 
+						canFit = numTaxa*basicMinSpacing<w;
+					else if (treeDisplay.getOrientation()== TreeDisplay.RIGHT || treeDisplay.getOrientation()== TreeDisplay.LEFT) 
+						canFit =  numTaxa*basicMinSpacing<h;
+					else
+						canFit = numTaxa*6<(w+h)/2;
+				//		}
 
 
 					if (canFit && scale<=0){
