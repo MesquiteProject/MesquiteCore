@@ -417,6 +417,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (basicTreeWindow==null)
 			return;
 		if (employee instanceof DrawTreeCoordinator){ 
+			if (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED ){
+				basicTreeWindow.sizeDisplay();
+				basicTreeWindow.treeDisplay.pleaseUpdate(true);
+				return;
+			}
 			if (basicTreeWindow.drawSizeSubmenu != null){
 				if (basicTreeWindow.drawSizeSubmenu.isEnabled() != !treeDrawCoordTask.hasPreferredSize()){
 					basicTreeWindow.drawSizeSubmenu.setEnabled(!treeDrawCoordTask.hasPreferredSize());
@@ -1561,7 +1566,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/*.................................................................................................................*/
 	int countSizes = 0;
-
 	void sizeDisplay(){
 		if (palette==null|| treeDisplay==null  ||messagePanel==null)
 			return;
@@ -1611,21 +1615,24 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					else
 						numTaxa = taxa.getNumTaxa();
 					canFit =  numTaxa<50;
-					
+
 					int basicMinSpacing = 12;
 					Graphics g = treeDisplay.getGraphics();
-					FontMetrics fm = g.getFontMetrics(treeDisplay.getTaxonNamesFont());
-					if (fm!=null) {
-						basicMinSpacing = fm.getMaxAscent()+ fm.getMaxDescent();
+					if (g != null){
+						FontMetrics fm = g.getFontMetrics(treeDisplay.getTaxonNamesFont());
+						if (fm!=null) {
+							basicMinSpacing = fm.getMaxAscent()+ fm.getMaxDescent();
+						}
 					}
 					if (!canFit){
-						if (treeDisplay.getOrientation()== TreeDisplay.UP || treeDisplay.getOrientation()== TreeDisplay.DOWN) 
-							canFit = numTaxa*basicMinSpacing<w;
-						else if (treeDisplay.getOrientation()== TreeDisplay.RIGHT || treeDisplay.getOrientation()== TreeDisplay.LEFT) 
-							canFit =  numTaxa*basicMinSpacing<w;
-						else
-							canFit = numTaxa*6<(w+h)/2;
-					}
+							if (treeDisplay.getOrientation()== TreeDisplay.UP || treeDisplay.getOrientation()== TreeDisplay.DOWN) 
+								canFit = numTaxa*basicMinSpacing<w;
+							else if (treeDisplay.getOrientation()== TreeDisplay.RIGHT || treeDisplay.getOrientation()== TreeDisplay.LEFT) 
+								canFit =  numTaxa*basicMinSpacing<w;
+							else
+								canFit = numTaxa*6<(w+h)/2;
+						}
+
 
 					if (canFit && scale<=0){
 						treeDisplay.setSize(w,h);

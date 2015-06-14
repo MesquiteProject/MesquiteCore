@@ -542,6 +542,19 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (MesquiteThread.isScripting())
 			return;
+		if (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED ){
+			MesquiteWindow w = null;
+			if (treeDisplay != null) 
+				w =MesquiteWindow.windowOfItem(treeDisplay);
+
+			else if (treeDisplays != null && numDisplays>0) 
+				w =MesquiteWindow.windowOfItem(treeDisplays[0]);
+			if (w != null){
+				w.windowResized();  //this is a hack to force them to update sizes
+				return;
+		}
+		}
+		
 		if (treeDisplay != null) {
 			((BasicTreeDisplay)treeDisplay).pleaseUpdate(true);
 		}

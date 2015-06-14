@@ -54,6 +54,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	/** Tree orientation is not yet set; take from node locs module */
 	public static final int NOTYETSET = -1;
 	
+	public static final int FONTSIZECHANGED = 18275;  //for notification
 
 	/**  The margin from the tips to the edge of the drawing field*/
 	public int tipsMargin = -1;

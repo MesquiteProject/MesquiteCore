@@ -162,7 +162,6 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		if (originalWhichTaxa==null)
 			return false;
 		originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars(),originalWhichTaxa);
-
 		if (!canExpand.getValue())
 			undoReference = new UndoReference(data,this,0,data.getNumChars(), firstSequenceInBlock,lastSequenceInBlock);
 		else
