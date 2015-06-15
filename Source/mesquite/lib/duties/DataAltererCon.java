@@ -30,7 +30,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 	 /** Called to alter data in those cells selected in table*/
 	 public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		 if (data.getEditorInhibition()){
-			 discreetAlert("This matrix is protected against editing");
+				discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 			 return false;
 		 }
 		 boolean did=false;

@@ -79,7 +79,7 @@ public class SortChar extends DataWindowAssistantI {
 	   	 		if (data == null)
 	   	 			return null;
 	    	 	if (data.getEditorInhibition()){
-	    	 		discreetAlert( "This matrix is marked as locked against editing.");
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 	    	 		return null;
 	    	 	}
 //	   	 		if (data.isMolecularSequence())

@@ -1709,7 +1709,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected characters ", "[column to move after; -1 if at start]", commandName, "moveCharsTo")) {
 			if (data.getEditorInhibition()) {
-				ownerModule.discreetAlert("This matrix is marked as locked against editing.");
+				ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 				return null;
 			}
 			if (!table.anyColumnSelected()) {
@@ -1822,7 +1822,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		else if (checker.compare(this.getClass(), "Hires utility module to operate on the data", "[name of module]", commandName, "doUtility")) {
 			if (table != null && data != null) {
 				if (data.getEditorInhibition()) {
-					ownerModule.discreetAlert("This matrix is marked as locked against editing.");
+					ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				DataUtility tda = (DataUtility) ownerModule.hireNamedEmployee(DataUtility.class, arguments);

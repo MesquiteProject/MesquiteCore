@@ -66,6 +66,11 @@ public abstract class TreeSearcher extends MesquiteModule  {
  			 ((TreeInferer)getEmployer()).newResultsAvailable(outgroupTaxSet);
  		 }
  	 }
+	 //Override in subclasses
+		public String getHTMLDescriptionOfStatus(){
+			return getName();
+		}
+
  	 }
 
 
