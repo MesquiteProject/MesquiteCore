@@ -40,6 +40,7 @@ menu is the Font selection */
 public class MousePanel extends Panel implements Commandable, FileDirtier, MouseMotionListener, MouseListener, DropTargetListener {
 	MesquiteCommand downCommand, upCommand, dragCommand, movedCommand, clickedCommand, enteredCommand, exitedCommand;
 	MesquiteCommand filesDroppedCommand, fileStringDroppedCommand;
+	MesquiteCommand showWindowCommand;
 	MesquiteDropManager dropManager;
 	long moveFrequency, moveCount;
 	boolean suppressEvents = false; //WWW
@@ -510,6 +511,7 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 		downCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " + e.getClickCount() + " " + e.getWhen() + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}
+
 	/*...............................................................................................................*/
 	public void mouseReleased(MouseEvent e)  {
 		if (MesquiteDialog.currentWizard != null){
@@ -520,11 +522,13 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			return;
 		currentX = e.getX();
 		currentY = e.getY();
-
-		upCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " "  +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteWindow w = MesquiteWindow.windowOfItem(this);
-		if (w != null && w.setAsFrontOnClickAnyContent() && w.getParentFrame().frontWindow != w)
-			w.getParentFrame().setAsFrontWindow(w);
+		if (w != null && w.setAsFrontOnClickAnyContent() && w.getParentFrame().frontWindow != w){
+			if (showWindowCommand == null)
+				showWindowCommand = new MesquiteCommand("setAsFront", w);
+			showWindowCommand.doItMainThread("", null, false, false);
+		}
+		upCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " "  +  e.getX() + " " + e.getY(), null, false, false);
 		currentX = MesquiteInteger.unassigned;
 		currentY = MesquiteInteger.unassigned;
 	}

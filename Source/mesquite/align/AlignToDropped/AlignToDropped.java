@@ -159,7 +159,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 			if (table!=null && data !=null){
 				alignJustTouchedRow = true;
 				if (data.getEditorInhibition()){
-					discreetAlert( "This matrix is marked as locked against editing.");
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				MesquiteInteger io = new MesquiteInteger(0);
@@ -185,7 +185,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		else if (checker.compare(this.getClass(), "AlignToDropped tool dragged.", "[column dragged] [row dragged]", commandName, "alignDropDragged")) {
 			if (table!=null && data !=null && (firstRowTouched>=0)){
 				if (data.getEditorInhibition()){
-					discreetAlert( "This matrix is marked as locked against editing.");
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				MesquiteInteger io = new MesquiteInteger(0);
@@ -201,7 +201,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 			if (table!=null && data !=null && (firstRowTouched>=0)){
 				//	table.deEmphasizeRow(previousRowDragged);
 				if (data.getEditorInhibition()){
-					discreetAlert( "This matrix is marked as locked against editing.");
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				MesquiteInteger io = new MesquiteInteger(0);

@@ -33,6 +33,11 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 	public String[] getDefaultModule() {
 		return null;
 	}
+	
+	// override to give more information
+	public String getHTMLDescriptionOfStatus(){
+		return getName();
+	}
 	public boolean canGiveIntermediateResults(){
 		return false;
 	}
@@ -80,6 +85,7 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 	protected void newResultsAvailable(TaxaSelectionSet outgroupSet){
 		MesquiteString title = new MesquiteString();
 		Tree tree = getLatestTree(null, null, title);
+		parametersChanged();
 		
 		if (tree instanceof AdjustableTree) {
 			((AdjustableTree)tree).standardize(outgroupSet, false);

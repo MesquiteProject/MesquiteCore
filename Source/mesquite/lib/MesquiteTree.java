@@ -1297,6 +1297,91 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 
 	/*-----------------------------------------*/
+	/** Traversal in which nodes are ignored as illegal.
+	 * Codes for nodes:
+	 * ILLEGAL if illegal and nothing in subclade is legal; 
+	 * SEMILEGAL: node itself is illegal but subclade includes legal one;
+     * LEGAL if legal (i.e. either more than one descendant is legal, or this is a legal terminal
+	 * The permits tree traversal where illegal lineages are ignored as if they aren't there
+	 * */
+	public static final int ILLEGAL = 2;
+	public static final int SEMILEGAL = 1;
+	public static final int LEGAL = 0;
+	/*-----------------------------------------*/
+	/** Returns the first (left-most) legal daughter of node, where legality is implied by integer array with values 
+	 * */
+	public  int firstLegalDaughterOfNode(int node, int[] legality) {
+		if (legality == null || node>=legality.length)
+			return firstDaughterOfNode(node);
+		if (!inBounds(node))
+			return 0;
+		for (int candidate = firstDaughterOfNode(node); nodeExists(candidate); candidate= nextSisterOfNode(candidate)){
+			if (candidate>=legality.length)
+				return candidate;
+			if (legality[candidate] == LEGAL) //candidate itself is legal; return it
+				return candidate;
+			if (legality[candidate] == SEMILEGAL) //candidate itself is illegal, but its subclade contains something legal
+				return firstLegalDaughterOfNode(candidate, legality);
+		}
+		return 0;
+	}
+	/*-----------------------------------------*/
+	/** Returns the next legal sister of node, where legality is implied by integer array with values 
+	 * */
+	public  int nextLegalSisterOfNode(int node, int[] legality) {
+		if (legality == null || node>=legality.length)
+			return nextSisterOfNode(node);
+		if (!inBounds(node))
+			return 0;
+
+		//check through sisters until find one legal
+		for (int candidate = nextSisterOfNode(node); nodeExists(candidate); candidate= nextSisterOfNode(candidate)){
+			if (candidate>=legality.length)
+				return candidate;
+			if (legality[candidate] == LEGAL) //candidate itself is legal; return it
+				return candidate;
+			if (legality[candidate] == SEMILEGAL) //candidate itself is illegal, but its subclade contains something legal
+				return firstLegalDaughterOfNode(candidate, legality);
+		}
+		int mom = motherOfNode(node);  //if this is legal, then you've gone as far as you need to go; next sister not found
+		if (!nodeExists(mom) || mom>=legality.length || legality[mom] == LEGAL)
+			return 0;
+		
+		//all sisters next are entirely illegal; go down to mother and the next aunt
+		for (int ancestor = motherOfNode(node); nodeExists(ancestor); ancestor= motherOfNode(ancestor)){
+			
+			//look to all this ancestor's sisters
+			for (int candidate = nextSisterOfNode(ancestor); nodeExists(candidate); candidate= nextSisterOfNode(candidate)){
+				if (candidate>=legality.length)
+					return candidate;
+				if (legality[candidate] == LEGAL) //candidate itself is legal; return it
+					return candidate;
+				if (legality[candidate] == SEMILEGAL) //candidate itself is illegal, but its subclade contains something legal
+					return firstLegalDaughterOfNode(candidate, legality);
+			}
+			// have looked to ancestor's sisters, and not found.  The next ancestor deeper is legal, then you're done.
+			int ancAnc = motherOfNode(ancestor);  
+			
+			if (!nodeExists(ancAnc) || ancAnc>=legality.length || legality[ancAnc] == LEGAL)//if this is ancestor legal, then you've gone as far as you need to go; next sister not found
+				return 0;
+			
+		}
+		
+		//nothing found!!!	
+		return 0;
+	}
+	/*-----------------------------------------*/
+	/** Returns the right-most daughter of node.*/
+	public int lastLegalDaughterOfNode(int node, int[] legality) {
+		if (!inBounds(node))
+			return 0;
+
+		int thisSister = firstLegalDaughterOfNode(node, legality);
+		while (nodeExists(nextLegalSisterOfNode(thisSister, legality)))
+			thisSister = nextLegalSisterOfNode(thisSister, legality);
+		return thisSister;
+	}
+	/*-----------------------------------------*/
 	/** Returns the first (left-most) daughter of node.*/
 	public  int firstDaughterOfNode(int node) {
 		if (!inBounds(node))
@@ -1900,7 +1985,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		MesquiteInteger boundary = new MesquiteInteger(0);
 		return isConvex(terminals, boundary);
 	}
-	
+
 	public  void convertBranchLengthToNodeValue(int node, NameReference nameRef){
 		if (nodeIsInternal(node)) {
 			double bl = getBranchLength(node); 
@@ -1911,13 +1996,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				convertBranchLengthToNodeValue(d, nameRef);
 		}
 	}
-	
+
 	public  void convertBranchLengthsToNodeValue(String nameRefString){
 		NameReference nameRef = NameReference.getNameReference("consensusFrequency");
 		convertBranchLengthToNodeValue(getRoot(), nameRef);
 	}
 
-	
+
 	/*-----------------------------------------*/
 	/** Returns the nth terminal node in the clade (0 based), from left to right.  If is too low or high,
 	 returns 0.*/
@@ -2630,8 +2715,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						MesquiteMessage.println("Another tree with apparent reticulations found.");
 					else if (numReticWarnings == 100)
 						MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
-						
-						
+
+
 					setParentOfNode(labNode, motherOfNode(labNode), false);
 					setParentOfNode(labNode, motherOfNode(sN), false);
 					return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
@@ -2923,7 +3008,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean readTree(String TreeDescription, TaxonNamer namer) {
 		return readTree(TreeDescription, null, null, null);
 	}
-	
+
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, TaxonNamer namer, String whitespaceString, String punctuationString) {
 		deassignAssociated();
@@ -3212,6 +3297,35 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			String a = writeAssociated(node, associatedUseComments);
 			treeDescription.append(a);
 		}
+	}
+	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer using taxon names in simple style: t0, t1, t2, etc. */
+	private void writeTreeByT0Names(int node, StringBuffer treeDescription, boolean includeBranchLengths) {
+		if (nodeIsInternal(node)) {
+			treeDescription.append('(');
+			int thisSister = firstDaughterOfNode(node);
+			writeTreeByT0Names(thisSister, treeDescription, includeBranchLengths);
+			while (nodeExists(thisSister = nextSisterOfNode(thisSister))) {
+				treeDescription.append(',');
+				writeTreeByT0Names(thisSister, treeDescription,includeBranchLengths);
+			}
+			treeDescription.append(')');
+		}
+		else {
+			treeDescription.append("t" + taxonNumberOfNode(node));
+		}
+		if ( includeBranchLengths && !branchLengthUnassigned(node)) {
+			treeDescription.append(':');
+			treeDescription.append(MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1)); //add -1 to signal full accuracy 17 Dec 01
+		}
+	}
+	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer using taxon names in simple style: t0, t1, t2, etc. */
+	public String writeTreeByT0Names(boolean includeBranchLengths) {
+		StringBuffer tD = new StringBuffer(10);
+		writeTreeByT0Names(getRoot(), tD, includeBranchLengths);
+		return tD.toString();
+			
 	}
 	/*-----------------------------------------*/
 	/** Writes a tree description into the StringBuffer using taxon names */
@@ -3540,6 +3654,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 
 	/*-----------------------------------------*/
+	//VIRTUAL DELETION. See also LEGAL system as an alternative
 	/** Marks taxon (and any nodes required by it) as deleted virtually in the boolean array.  Used in conjunction with subsequent
 	 * traversals that ignore the deleted area, e.g. for ignoring taxa with missing data.*/
 	public void virtualDeleteTaxon(int it, boolean[] deleted){
@@ -5604,6 +5719,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return false;
 	}
 	public void reconcileTaxa(int code, Notification notification){
+		reconcileTaxa(code, notification, true);
+	}
+	public void reconcileTaxa(int code, Notification notification, boolean notify){
 		//check id list of taxa to see that it matches; otherwise add or subtract taxa;  ASSUMES TAXA DELETED OR ADDED BUT NOT MOVED!!!!!!
 		int newNumTaxa = taxa.getNumTaxa();
 		if (newNumTaxa == oldNumTaxa) {
@@ -5614,7 +5732,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
 						int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
 						if (loc <0) {
-							MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in CharacterData: taxaID's cannot be reconciled with current Taxa");
+							MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in MesquiteTree: taxaID's cannot be reconciled with current Taxa");
 							return;
 						}
 						else {
@@ -5644,8 +5762,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						}
 					}
 				}
-				//MesquiteTrunk.mesquiteTrunk.discreetAlert( "ERROR in CharacterData: MesquiteListener.PARTS_MOVED not yet handled");
-				notifyListeners(this, notification);
+				//MesquiteTrunk.mesquiteTrunk.discreetAlert( "ERROR in MesquiteTree: MesquiteListener.PARTS_MOVED not yet handled");
+				if (notify)
+					notifyListeners(this, notification);
 			}
 			else
 				checkTaxaIDs();

@@ -276,6 +276,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return inventUniqueIDs;
 	}
 	public void dispose(){
+		
 		checkThread(true);
 		if (taxa!=null)
 			taxa.removeListener(this);

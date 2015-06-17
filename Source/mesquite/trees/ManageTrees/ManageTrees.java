@@ -45,11 +45,11 @@ public class ManageTrees extends TreesManager {
 	}
 	ListableVector treesVector;
 	ListableVector taxas;
-	TreeBlockFiller treeFillerTask;  //For make new trees block from  //Should have vector of these so that there isn't only one, for reentrancy etc.; also treesReady command needs to specify an id of a treeFillerTask
-	String treeFillerTaxaAssignedID = null;
+	TreeBlockFiller treeFillerTask;  //For make new trees block from  //David: can leave these but have new versions for inference  //Should have vector of these so that there isn't only one, for reentrancy etc.; also treesReady command needs to specify an id of a treeFillerTask
+	String treeFillerTaxaAssignedID = null;  //David: can leave these but have new versions for inference
 	Vector blockListeners = null;
 	boolean fillingTreesNow = false;
-	MesquiteBoolean separateThreadFill;
+	MesquiteBoolean separateThreadFill; //David: this is just for preferences I think; ok to have just one version
 	MesquiteBoolean autoSaveInference ;
 	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on separate threads.
 	//The searches themselves should work fine, but there is a possibility of user-interface confuses.
@@ -254,11 +254,11 @@ public class ManageTrees extends TreesManager {
 			}
 		}
 
-		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){
+		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){  //David: this would only be fore inference would have to cycle through list of inference tasks and hire each one
 			temp.addLine("restartTreeSource ", treeFillerTask);
 			temp.addLine("reconnectTreeSource " + StringUtil.tokenize(treeFillerTaxaAssignedID));
 		}
-		else if (showTreeFiller && treeFillerTask !=null)
+		else if (showTreeFiller && treeFillerTask !=null)  //David: but this should stay in case tehre is another use of the single active tree filler
 			temp.addLine("setTreeSource ", treeFillerTask);
 
 		return temp;
@@ -718,7 +718,7 @@ public class ManageTrees extends TreesManager {
 				discreetAlert("A taxa block must be created first before making a tree block");
 				return null;
 			}
-			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference", true);
+			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference", true);  //David: here call the new inference method
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -788,12 +788,13 @@ public class ManageTrees extends TreesManager {
 	}
 	
 	void fireTreeFiller(){
-		fireEmployee(treeFillerTask);
+		fireEmployee(treeFillerTask);  //David: May need to have special version for firing the ones for the separate tree ifnerences
 		treeFillerTask = null;
 		treeFillerTaxaAssignedID = null;
 		fillingTreesNow = false;
 }
 	/*-----------------------------------------------------------------*/
+	//David: make copy of this method; leave this one as is except can get rid of isInference; call copy something like callTreeInference and call from Tree Inference commadn handler
 	Object newTreeBlockFilledInt(String commandName, String arguments, CommandChecker checker, boolean suppressAsk, String taskName, boolean isInference){
 		//arguments that should be accepted: (1) tree source, (2) which taxa, (3)  file id, (4) name of tree block, (5) how many trees  [number of taxa block] [identification number of file in which the tree block should be stored] [name of tree block] [how many trees to make]
 		if (fillingTreesNow){
@@ -810,14 +811,19 @@ public class ManageTrees extends TreesManager {
 			taxa = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select taxa (for new trees block)",MesquiteString.helpString, taxas, 0);
 		}
 
-		doCommand("setTreeSource", arguments, checker);
-		if (treeFillerTask==null)
+		doCommand("setTreeSource", arguments, checker);  
+		//David: don't call the command here.  Call 			
+		//TreeBlockFiller inferenceTask=  (TreeBlockFiller)hireEmployee(TreeBlockFiller.class, arguments, "Source of trees");
+		//and add inferenceTask to vector of current inference employees
+		// OR make a new type of record: and InferenceRecord taht holds the treeFillerTask reference and the treeFillerTaxaAssignedID
+ 
+		if (treeFillerTask==null)  //David all references to treeFillerTask here need to be replaced by inferenceTask
 			return null;
 		file = chooseFile( taxa);
 		if (taxa==null || file == null)
 			return null;
 
-		treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);
+		treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);   //don't use the treeFillerTaxaAssignedID of themodule
 		TreeVector trees = new TreeVector(taxa);
 		if (trees == null)
 			return null;
@@ -838,7 +844,7 @@ public class ManageTrees extends TreesManager {
 		if (separateThread==1) {   // separate
 			fillingTreesNow = true;
 			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
-			fillerThreads.addElement(tLT);
+			fillerThreads.addElement(tLT); //David: note!  already multiple threads remembered!
 			tLT.suppressAsk = suppressAsk;
 			tLT.start();
 		}
@@ -987,7 +993,7 @@ public class ManageTrees extends TreesManager {
 			id.completeAndShowDialog("OK", null, null, "OK");
 			id.dispose();
 		}
-		separateThreadFill.setValue(radio.getValue() == 1);
+		separateThreadFill.setValue(radio.getValue() == 1);   
 		storePreferences();
 		return radio.getValue();
 	}

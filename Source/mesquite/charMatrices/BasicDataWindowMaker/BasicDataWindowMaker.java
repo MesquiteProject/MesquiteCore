@@ -105,8 +105,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			return data;
 		}
 		else if (checker.compare(this.getClass(), "Hides the data matrix window", null, commandName, "hideWindow")) {
-			if (bdw != null)
+			if (bdw != null){
 				bdw.hide();
+				parametersChanged();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Makes a data editor window (but doesn't display it)", "[number or reference string of data set to be shown]", commandName, "makeWindow")) {
 			if (bdw != null)
@@ -205,6 +207,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	/* ................................................................................................................. */
 	public void windowGoAway(MesquiteWindow whichWindow) {
 		whichWindow.hide();
+		parametersChanged();
 		if (isExtra) {
 			whichWindow.dispose();
 			iQuit();
@@ -1706,7 +1709,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected characters ", "[column to move after; -1 if at start]", commandName, "moveCharsTo")) {
 			if (data.getEditorInhibition()) {
-				ownerModule.discreetAlert("This matrix is marked as locked against editing.");
+				ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 				return null;
 			}
 			if (!table.anyColumnSelected()) {
@@ -1819,7 +1822,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		else if (checker.compare(this.getClass(), "Hires utility module to operate on the data", "[name of module]", commandName, "doUtility")) {
 			if (table != null && data != null) {
 				if (data.getEditorInhibition()) {
-					ownerModule.discreetAlert("This matrix is marked as locked against editing.");
+					ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				DataUtility tda = (DataUtility) ownerModule.hireNamedEmployee(DataUtility.class, arguments);
@@ -4396,6 +4399,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+
 		if ((window.getCurrentTool() == window.arrowTool) && (clickCount > 1) && window.ibeamTool != null) {
 			window.setCurrentTool(window.ibeamTool);
 			window.getPalette().setCurrentTool(window.ibeamTool);

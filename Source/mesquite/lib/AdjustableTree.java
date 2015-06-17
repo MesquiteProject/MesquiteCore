@@ -43,6 +43,11 @@ public interface AdjustableTree extends Tree {
 	public  void setAllBranchLengths(double length, boolean notify) ; 
 	/** Sets the branch length of node (stored as a double internally).*/
 	public  void setBranchLength(int node, int length, boolean notify) ; 
+	/** Sets the taxon number for the node.  If the node is internal, the number should
+	be set to -1.  Otherwise it should be set to the taxon corresponding to the node.
+	NOTE: this should be used with caution, since it doesn't check for tree integrity.  Intended primarily
+	for internal use (with MesquiteTree).*/
+	public void setTaxonNumber(int node, int num, boolean notify);
 	/** Sets the branch length of node.*/
 	public  void setBranchLength(int node, double length, boolean notify) ; 
 	/** Sets the tree to be a default bush.*/

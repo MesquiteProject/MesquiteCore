@@ -47,6 +47,7 @@ public class ManageCharacters extends CharactersManager {
 			NexusBlock.equalizeOrdering(v, getProject().getNexusBlocks());
 		}
 	}
+	MesquiteMenuItemSpec calw = null;
 	/*.................................................................................................................*/
 	ListableVector taxas; //local reference to Project's vector of taxa blocks
 	MesquiteSubmenuSpec  listsSubMenu; //submenu to show list windows for character specssets
@@ -67,6 +68,23 @@ public class ManageCharacters extends CharactersManager {
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice(){
 		return true;
+	}
+	/* ................................................................................................................. */
+	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
+		if (employee instanceof DataWindowMaker){
+			if (calw != null) calw.setEnabled(getNumListWindows()>0);
+			resetAllMenuBars();
+		}
+	}
+	int getNumListWindows(){
+		int count = 0;
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant)
+				if (((ManagerAssistant)e).getName().equals("Character List"))
+				count++;
+		}
+		return count;
 	}
 	/*.................................................................................................................*/
 	public MesquiteModule showElement(FileElement e){
@@ -135,6 +153,8 @@ public class ManageCharacters extends CharactersManager {
 			if (e instanceof ManagerAssistant)
 				if (((ManagerAssistant)e).showing(data)&& ((ManagerAssistant)e).getName().equals("Character List")) {
 					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					if (calw != null) calw.setEnabled(getNumListWindows()>0);
+					resetAllMenuBars();
 					return ((ManagerAssistant)e);
 				}
 		}
@@ -143,6 +163,8 @@ public class ManageCharacters extends CharactersManager {
 		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Character List"));
 		if (lister!=null) {
 			lister.showListWindow(data);
+			if (calw != null) calw.setEnabled(true);
+			resetAllMenuBars();
 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
 				lister.getModuleWindow().setVisible(true);
 		}
@@ -158,14 +180,19 @@ public class ManageCharacters extends CharactersManager {
 			if (e instanceof ManagerAssistant)
 				if (((ManagerAssistant)e).showing(data)&& ((ManagerAssistant)e).getName().equals("Character List")) {
 					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					if (calw != null) calw.setEnabled(getNumListWindows()>0);
+					resetAllMenuBars();
 					return ((ManagerAssistant)e);
 				}
 		}
 		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Character List"));
 		if (lister!=null) {
 			lister.showListWindow(data);
-			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null){
 				lister.getModuleWindow().setVisible(true);
+			}
+				if (calw != null) calw.setEnabled(getNumListWindows()>0);
+				resetAllMenuBars();
 		}
 		return lister;
 	}
@@ -174,6 +201,8 @@ public class ManageCharacters extends CharactersManager {
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "-", null);
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "List of Characters", makeCommand("showCharacters",  this),  (ListableVector)getProject().datas);
+		calw = getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Close All Lists of Characters", makeCommand("closeAllListWindows",  this));
+		calw.setEnabled(false);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "-", null);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "List of Character Matrices", makeCommand("showDatasList",  this));
@@ -1009,6 +1038,17 @@ public class ManageCharacters extends CharactersManager {
 					return showCharactersList(data);
 				}
 			}
+		}
+		else if (checker.compare(this.getClass(), "Closes all list of characters windows", null, commandName, "closeAllListWindows")) {
+			for (int i = getNumberOfEmployees()-1; i>=0; i--) {
+				Object e=getEmployeeVector().elementAt(i);
+				if (e instanceof ManagerAssistant &&  ((ManagerAssistant)e).getName().equals("Character List")){
+					((ManagerAssistant)e).windowGoAway(((ManagerAssistant)e).getModuleWindow());
+				}
+			}
+			if (calw != null) calw.setEnabled(false);
+			resetAllMenuBars();
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Shows the data editor window for a specified data matrix; if a data window already exists, show it", "[number of matrix to show]", commandName, "showDataWindow")) {
 			//Check to see if already has lister for this

@@ -340,7 +340,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (treeDisplay==null) {ownerModule.logln("treeDisplay null"); return;}
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 
-		treeDisplay.setTaxonSpacing(16);
+//		treeDisplay.setTaxonSpacing(16);
 
 		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField()); //Graphics g removed as parameter May 02
 		calculateLines(tree, drawnRoot);
