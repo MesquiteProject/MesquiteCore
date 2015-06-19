@@ -320,7 +320,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			
 			
 			if (numFilledChars<data.getNumChars())
-				if (data.hasDataForCharacters(numFilledChars+1, data.getNumChars()-1))
+				if (data.hasDataForCharacters(numFilledChars, data.getNumChars()-1))
 					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra characters, but these contained data, and so were not deleted");
 				else
 					data.deleteCharacters(numFilledChars, data.getNumChars()-numFilledChars, true);   // delete a character if needed
