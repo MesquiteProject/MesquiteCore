@@ -94,8 +94,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("suggestedDirectory".equalsIgnoreCase(tag))
+		if ("suggestedDirectory".equalsIgnoreCase(tag)){
 			MesquiteTrunk.suggestedDirectory = StringUtil.cleanXMLEscapeCharacters(content);
+		}
 	}
 
 	/*.................................................................................................................*/

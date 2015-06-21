@@ -305,7 +305,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 //		shellScript.append(ShellScriptUtil.getRemoveCommand(runningFilePath));
 
 		String scriptPath = rootDir + "alignerScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
-		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
+		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
 		
 		logln("Requesting the operating system to run " + getProgramName());
 		logln("Location of  " + getProgramName()+ ": " + getProgramPath());

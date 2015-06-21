@@ -265,8 +265,9 @@ public class Defaults extends MesquiteInit  {
 			if (MesquiteInteger.isCombinable(defFontSize)) 
 				MesquiteFrame.resourcesFontSize = defFontSize;
 		}
-		else if ("suggestedDirectory".equalsIgnoreCase(tag))
+		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
 			MesquiteTrunk.suggestedDirectory = StringUtil.cleanXMLEscapeCharacters(content);
+		}
 	}
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
