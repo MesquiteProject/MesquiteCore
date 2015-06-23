@@ -206,6 +206,8 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 
 	/* ................................................................................................................. */
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		parametersChanged();
 		if (isExtra) {

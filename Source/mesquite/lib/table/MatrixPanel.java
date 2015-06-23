@@ -453,8 +453,9 @@ timer6.end();
 		catch (ArrayIndexOutOfBoundsException e){
 		}
 		catch (Throwable e){
-			MesquiteMessage.warnProgrammer("Exception or Error in drawing table (Matrix Panel); details in Mesquite log file");
+			//MesquiteMessage.warnProgrammer("Exception or Error in drawing table (Matrix Panel); details in Mesquite log file");
 			MesquiteFile.throwableToLog(this, e);
+			repaint();
 		}
 
 		MesquiteWindow.uncheckDoomed(this);

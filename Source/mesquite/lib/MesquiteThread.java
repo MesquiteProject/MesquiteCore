@@ -317,7 +317,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread c = Thread.currentThread();
 		if (c instanceof MesquiteThread){
 			MesquiteThread mt = (MesquiteThread)c;
-			mt.spontaneousIndicator = !suppress;
+			mt.setSpontaneousIndicator(!suppress);
 		}
 	}
 	//not yet used
@@ -325,7 +325,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread c = Thread.currentThread();
 		if (c instanceof MesquiteThread){
 			MesquiteThread mt = (MesquiteThread)c;
-			return !mt.spontaneousIndicator;
+			return !mt.getSpontaneousIndicator();
 		}
 		return false;
 	}
@@ -502,6 +502,10 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	}
 	public boolean getSpontaneousIndicator(){
 		return spontaneousIndicator;
+	}
+	public void setSpontaneousIndicator(boolean sp){
+		spontaneousIndicator = sp;
+		Debugg.println("SSI ********* " + sp + " " + getID() + " " + getClass());
 	}
 	public static boolean setProgressIndicatorCurrentThread(ProgressIndicator progressIndicator){
 		Thread thread = Thread.currentThread();

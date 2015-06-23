@@ -1616,6 +1616,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Closes file", "[number of file]", commandName, "closeFile")) {
 			closeFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));
 		}
+		else if (checker.compare(this.getClass(), "Closes all tabs", null, commandName, "closeAllWindows")) {
+			int safetyNet = 0;
+			while (safetyNet < 50 && closeEmployeeWindows(this))
+				safetyNet++;
+		}
 		else if (checker.compare(this.getClass(), "Show file on disk", "[number of file]", commandName, "showFileOnDisk")) {
 			if (getProject() == null)
 				return null;
@@ -1882,6 +1887,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		//Debug.println("disposing of window");
 		whichWindow.hide();
 		//whichWindow.dispose();

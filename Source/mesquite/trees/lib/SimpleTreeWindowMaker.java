@@ -143,6 +143,8 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		//whichWindow.dispose();
 		//iQuit();

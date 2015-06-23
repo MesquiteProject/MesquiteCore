@@ -305,6 +305,8 @@ public class CharacterList extends ListModule {
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 

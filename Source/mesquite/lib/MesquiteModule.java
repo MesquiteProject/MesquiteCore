@@ -1759,7 +1759,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
-		whichWindow.hide();
+		if (whichWindow != null)
+			whichWindow.hide();
 		//whichWindow.dispose();
 	}
 	/*.................................................................................................................*/

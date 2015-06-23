@@ -535,6 +535,25 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	}
 
 	/* ................................................................................................................. */
+	/** Closes all windows. */
+	public boolean closeEmployeeWindows(MesquiteModule butNotThis) {
+		boolean closed = false;
+		Enumeration enumeration = employees.elements();
+		while (enumeration.hasMoreElements()) {
+			MesquiteModule mb = (MesquiteModule) enumeration.nextElement();
+			closed = mb.closeEmployeeWindows(butNotThis) || closed;
+		}
+		if (this != butNotThis){
+			MesquiteWindow win = getModuleWindow();
+			if (win != null && win.isVisible()){
+				module.windowGoAway(win);
+				return true;
+			}
+		}
+		return closed;
+	}
+
+	/* ................................................................................................................. */
 	/** Finds the first more senior employer in the heirarchy that belongs to a particular subclass. */
 	public MesquiteModule findEmployerWithDuty(Class dutyClass) {
 		if (employer == null)
