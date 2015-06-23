@@ -68,7 +68,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "20 June 2015";   
+		return "23 June 2015";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -90,7 +90,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	712;  
+		return 	713;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -132,7 +132,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.01  = 658 released 19 Sep 2014
 	//3.02  = 681 released 6 January 2015
 	//3.03  = 702 released 31 March 2015
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
 	public final static String getSpecialVersion() {
 		return "";
@@ -175,7 +175,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	protected  Object lastResult;
 	/** this is for modules to store their last result string for later use; intended for NumberForItem subclasses */
 	protected  String lastResultString; 
-	
+
 
 	/** The default author for this machine and user account */
 	public static Author author = new Author();
@@ -803,11 +803,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				if (xml!=null)
 					xml.setValue(prefsStringXML);
 				if (!parseFullXMLDocument(prefsStringXML)) {
-					
+
 					XMLUtil.readXMLPreferencesFromFile(this,this, prefsPathXML());
-					
-//					XMLUtil.readXMLPreferences(this,this, prefsStringXML);
-					
+
+					//					XMLUtil.readXMLPreferences(this,this, prefsStringXML);
+
 				}
 			}
 			// the xml pref exists; check to see if the old one exists; if so, delete it
@@ -1032,7 +1032,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void alert(String s) {
 		alert(s,"Alert", "ALERT");
 	}
-	
+
 	/*.................................................................................................................*/
 	private boolean isNonReportable(Throwable e){  //here keep a list of exceptions that are not Mesquite's problem...
 		if (e == null)
@@ -1053,8 +1053,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			((MesquiteThread)t).doCleanUp();
 		logln(s);
 		Exception e = new Exception();
-		
-			
+
+
 		if (!PhoneHomeUtil.phoneHomeSuccessful || !MesquiteTrunk.reportErrors || MesquiteTrunk.suppressErrorReporting || MesquiteThread.isScripting()){
 			return;
 		}
@@ -1115,7 +1115,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 		}
 	}
-	
+
 	/*.................................................................................................................*/
 	/** Reports crash or error to Mesquite server*/
 	public void reportCrashToHome(Throwable e, String s) {
@@ -1579,7 +1579,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			String prefix = "";
 			if (otherModule) {
 				prefix = "\t" + getMacroSnapshotModuleCommand()+";" + StringUtil.lineEnding();
-		 		prefix+="\t\ttell It;" + StringUtil.lineEnding();
+				prefix+="\t\ttell It;" + StringUtil.lineEnding();
 			}
 			String recipe = Snapshot.getSnapshotCommands(getMacroSnapshotModule(), null, "");
 			if (otherModule) {
@@ -1900,12 +1900,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	so that on file save, a Mesquite block can be saved that will return the user more or less to previous state. */
 	public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with
 		Snapshot temp = new Snapshot();
-		
-/* examples
+
+		/* examples
  		temp.addLine("toggleMesquiteBoolean " + mesquiteBoolean.toOffOnString());
 		temp.addLine("setPrimerInfoSource " +  StringUtil.tokenize(primerInfoTask.getClassName()));  
 
-*/
+		 */
 
 		return temp;
 	}
@@ -2132,7 +2132,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return null;
 		}
 	}
-	
+
 	public static final String mesquiteWebSite = "http://mesquiteproject.wikispaces.com";
 	/*.................................................................................................................*/
 	/** returns path to manual.  Null if manual doesn't exist*/
@@ -2142,7 +2142,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String manualPath;
 		//String manP;
 		if (this instanceof MesquiteTrunk)
-			 return mesquiteWebSite;
+			return mesquiteWebSite;
 		else
 			manualPath= getPath() + "manual.html";
 		File testing = new File(manualPath);
@@ -2235,7 +2235,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				path = pathToCheck;  //Todo: this is temporary, as the launching methods don't seem to handle within-page anchors
 				String[] browserCommand = null;
 				boolean remote = path.indexOf(":/")>=0;
-				
+
 				boolean useDesktop = false;
 				if (MesquiteTrunk.getJavaVersionAsDouble()>= 1.6){  // let's check to see if this will work first
 					try {
@@ -2320,7 +2320,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 					}
 				}
 				else {
-					
+
 					try {
 						BrowserLauncher.openURL(path);
 						return;
