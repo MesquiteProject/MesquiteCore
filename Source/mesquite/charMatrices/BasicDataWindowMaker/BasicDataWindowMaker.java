@@ -1692,13 +1692,18 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Adds taxa", "[taxon number after which new taxa to be inserted] [number of new taxa]", commandName, "addTaxa")) {
-			MesquiteInteger io = new MesquiteInteger(0);
+			if (data.getTaxa().isEditInhibited())
+				ownerModule.discreetAlert("You cannot add taxa; the taxa block is locked.");
+		MesquiteInteger io = new MesquiteInteger(0);
 			int starting = Taxon.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
 			if (data.getTaxa().addTaxa(starting, number, true))
 				table.setNumRows(data.getNumTaxa());
 		}
 		else if (checker.compare(this.getClass(), "Deletes taxa", "[first taxon to be deleted] [number of taxa]", commandName, "deleteTaxa")) {
+			if (data.getTaxa().isEditInhibited())
+				ownerModule.discreetAlert("You cannot delete taxa; the taxa block is locked.");
+
 			MesquiteInteger io = new MesquiteInteger(0);
 			int starting = Taxon.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
@@ -4848,6 +4853,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				Bits rows = getRowsSelected();
 				if (rows.numBitsOn() == data.getTaxa().getNumTaxa()) {
 					window.ownerModule.discreetAlert("You cannot delete all of the taxa; the data will be cleared but the taxa will remain.");
+					return;
+				}
+				if (data.getTaxa().isEditInhibited()){
+					window.ownerModule.discreetAlert("You cannot delete taxa; the taxa block is locked.");
 					return;
 				}
 				if (!MesquiteThread.isScripting() && !AlertDialog.query(window, "Delete taxa?", "The data for the selected taxa have been cleared.  Do you also want to delete the selected taxa?", "Yes", "No"))

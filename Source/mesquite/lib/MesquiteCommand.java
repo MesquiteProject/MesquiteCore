@@ -48,6 +48,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public static int totalDisposed =0;
 	public static Vector classesLinked, classesUnlinked, countsOfClasses; //to detect memory leaks
 	private Logger logger = null;
+	private Logger supplementalLogger = null;
 	
 	static {
 		currentThreads = new ListableVector(10);
@@ -82,7 +83,13 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public int getID() {
 		return ID;
 	}
-	
+	public void setSupplementalLogger(Logger logger){
+		this.supplementalLogger = logger;
+	}
+	public Logger getSupplementalLogger(){
+		return supplementalLogger;
+	}
+
 	public void setLogger(Logger logger){
 		this.logger = logger;
 	}

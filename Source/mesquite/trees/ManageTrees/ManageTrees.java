@@ -201,7 +201,7 @@ public class ManageTrees extends TreesManager {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Empty Block of Trees...", makeCommand("newTreeBlock",  this));
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make New Trees Block from", makeCommand("newFilledTreeBlockInt",  this), TreeBlockFiller.class);
-		if (numModulesAvailable(TreeInferer.class)>0)  //ExternalTreeSearcher
+		if (numModulesAvailable(TreeInferer.class)>0 && MesquiteTrunk.mesquiteModulesInfoVector.findModule(null, "#TreeInferenceCoordinator")==null)  //ExternalTreeSearcher
 			getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Tree Inference", makeCommand("newFilledTreeBlockInferenceInt",  this), TreeInferer.class);
 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Import File with Trees");
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Link Contents...", makeCommand("linkTreeFile",  this));

@@ -69,6 +69,78 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		return getClass().getName() + " = " + super.toString();
 	}
 
+	//=====================
+	/*logger for current thread */
+	Logger logger = null;
+	public void setLogger(Logger logger){
+		this.logger = logger;
+	}
+	public Logger getLogger(){
+		return logger;
+	}
+	public static void setLoggerCurrentThread(Logger logger){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.setLogger(logger);
+		}
+	}
+	public static void loglnToThreadLogger(String s){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.loglnToLogger(s);
+		}
+	}
+	public void loglnToLogger(String s){
+		if (logger != null && !loggingSuspended)
+			logger.logln(s);
+	}
+	public static void logToThreadLogger(String s){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.logToLogger(s);
+		}
+	}
+	public void logToLogger(String s){
+		if (logger != null && !loggingSuspended)
+			logger.log(s);
+	}
+	boolean loggingSuspended;
+	public static void suspendThreadLogging(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.loggingSuspended = true;
+		}
+	}
+	public static void resumeThreadLogging(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.loggingSuspended = false;
+		}
+	}
+	
+	boolean indicatorSuppressed = false;
+	public static boolean pleaseSuppressProgressIndicatorsCurrentThread(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			return mt.indicatorSuppressed;
+		}
+		return false;
+	}
+	//request that explictly made progress indicators be suppressed
+	public static void setHintToSuppressProgressIndicatorCurrentThread(boolean s){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.indicatorSuppressed = s;
+		}
+	}
+	//=====================
 	//suppression level 0: no suppression; 1: lower level notifications suppressed; 2: 
 	public static boolean setListenerSuppressionLevel(int s){
 		Thread t = Thread.currentThread();
@@ -505,7 +577,6 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	}
 	public void setSpontaneousIndicator(boolean sp){
 		spontaneousIndicator = sp;
-		Debugg.println("SSI ********* " + sp + " " + getID() + " " + getClass());
 	}
 	public static boolean setProgressIndicatorCurrentThread(ProgressIndicator progressIndicator){
 		Thread thread = Thread.currentThread();
