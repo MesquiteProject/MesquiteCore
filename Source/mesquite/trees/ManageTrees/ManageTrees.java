@@ -45,11 +45,11 @@ public class ManageTrees extends TreesManager {
 	}
 	ListableVector treesVector;
 	ListableVector taxas;
-	TreeBlockFiller treeFillerTask;  //For make new trees block from  //David: can leave these but have new versions for inference  //Should have vector of these so that there isn't only one, for reentrancy etc.; also treesReady command needs to specify an id of a treeFillerTask
-	String treeFillerTaxaAssignedID = null;  //David: can leave these but have new versions for inference
+	TreeBlockFiller treeFillerTask;  //For make new trees block from  
+	String treeFillerTaxaAssignedID = null;  
 	Vector blockListeners = null;
 	boolean fillingTreesNow = false;
-	MesquiteBoolean separateThreadFill; //David: this is just for preferences I think; ok to have just one version
+	MesquiteBoolean separateThreadFill; 
 	MesquiteBoolean autoSaveInference ;
 	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on separate threads.
 	//The searches themselves should work fine, but there is a possibility of user-interface confuses.
@@ -202,7 +202,7 @@ public class ManageTrees extends TreesManager {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Empty Block of Trees...", makeCommand("newTreeBlock",  this));
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make New Trees Block from", makeCommand("newFilledTreeBlockInt",  this), TreeBlockFiller.class);
 		if (numModulesAvailable(TreeInferer.class)>0 && MesquiteTrunk.mesquiteModulesInfoVector.findModule(null, "#TreeInferenceCoordinator")==null)  //ExternalTreeSearcher
-			getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Tree Inference", makeCommand("newFilledTreeBlockInferenceInt",  this), TreeInferer.class);
+			getFileCoordinator().addSubmenu(MesquiteTrunk.analysisMenu, "Tree Inference", makeCommand("newFilledTreeBlockInferenceInt",  this), TreeInferer.class);
 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Import File with Trees");
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Link Contents...", makeCommand("linkTreeFile",  this));
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Contents...", makeCommand("includeTreeFile",  this));
@@ -254,11 +254,11 @@ public class ManageTrees extends TreesManager {
 			}
 		}
 
-		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){  //David: this would only be fore inference would have to cycle through list of inference tasks and hire each one
+		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){  //Defunct when new system in place
 			temp.addLine("restartTreeSource ", treeFillerTask);
 			temp.addLine("reconnectTreeSource " + StringUtil.tokenize(treeFillerTaxaAssignedID));
 		}
-		else if (showTreeFiller && treeFillerTask !=null)  //David: but this should stay in case tehre is another use of the single active tree filler
+		else if (showTreeFiller && treeFillerTask !=null)  
 			temp.addLine("setTreeSource ", treeFillerTask);
 
 		return temp;
@@ -718,7 +718,7 @@ public class ManageTrees extends TreesManager {
 				discreetAlert("A taxa block must be created first before making a tree block");
 				return null;
 			}
-			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference", true);  //David: here call the new inference method
+			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference", true);  //This handler will be Defunct when new system in place
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -788,13 +788,13 @@ public class ManageTrees extends TreesManager {
 	}
 	
 	void fireTreeFiller(){
-		fireEmployee(treeFillerTask);  //David: May need to have special version for firing the ones for the separate tree ifnerences
+		fireEmployee(treeFillerTask);  
 		treeFillerTask = null;
 		treeFillerTaxaAssignedID = null;
 		fillingTreesNow = false;
 }
 	/*-----------------------------------------------------------------*/
-	//David: make copy of this method; leave this one as is except can get rid of isInference; call copy something like callTreeInference and call from Tree Inference commadn handler
+	//isInference argument will presumably be defunct when inference switches to new module
 	Object newTreeBlockFilledInt(String commandName, String arguments, CommandChecker checker, boolean suppressAsk, String taskName, boolean isInference){
 		//arguments that should be accepted: (1) tree source, (2) which taxa, (3)  file id, (4) name of tree block, (5) how many trees  [number of taxa block] [identification number of file in which the tree block should be stored] [name of tree block] [how many trees to make]
 		if (fillingTreesNow){
@@ -812,12 +812,8 @@ public class ManageTrees extends TreesManager {
 		}
 
 		doCommand("setTreeSource", arguments, checker);  
-		//David: don't call the command here.  Call 			
-		//TreeBlockFiller inferenceTask=  (TreeBlockFiller)hireEmployee(TreeBlockFiller.class, arguments, "Source of trees");
-		//and add inferenceTask to vector of current inference employees
-		// OR make a new type of record: and InferenceRecord taht holds the treeFillerTask reference and the treeFillerTaxaAssignedID
  
-		if (treeFillerTask==null)  //David all references to treeFillerTask here need to be replaced by inferenceTask
+		if (treeFillerTask==null)  
 			return null;
 		file = chooseFile( taxa);
 		if (taxa==null || file == null)
@@ -844,7 +840,7 @@ public class ManageTrees extends TreesManager {
 		if (separateThread==1) {   // separate
 			fillingTreesNow = true;
 			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
-			fillerThreads.addElement(tLT); //David: note!  already multiple threads remembered!
+			fillerThreads.addElement(tLT); //Defunct: note!  already multiple threads remembered!
 			tLT.suppressAsk = suppressAsk;
 			tLT.start();
 		}

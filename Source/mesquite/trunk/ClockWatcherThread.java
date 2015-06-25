@@ -94,7 +94,6 @@ public class ClockWatcherThread extends Thread {
 							try {
 								if (thread.getProgressIndicator() == null && thread.getSpontaneousIndicator()) {
 									ProgressIndicator pi;
-									Debugg.println(" thread type " + thread.getClass() + "   " + thread.getSpontaneousIndicator() + " id " + thread.getID());
 							
 									thread.setProgressIndicator(pi = new ProgressIndicator(null, "Command is executing", "A command is executing.", 0, "Emergency Cancel")); //"Cancel Command");
 									pi.setSecondaryMessage("Thread " + thread.getClass().getName() + " id " + thread.getID());

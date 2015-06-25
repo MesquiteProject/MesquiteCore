@@ -364,9 +364,12 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 					MesquiteMessage.println("At start, y is " + DoubleArray.toString(yStart));
 				}
 				place = 13;
-				integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());        
-				double[] yEnd = (double[])integrationResults.lastElement();
-				if (yEnd.length == 2*numStates){
+				integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());    
+				
+				double[] yEnd = null;
+				if (integrationResults != null)
+					yEnd = (double[])integrationResults.lastElement();
+				if (yEnd != null && yEnd.length == 2*numStates){
 					place = 14;
 					for(int i=0;i<numStates;i++){
 						probsExt[node][i] = yEnd[i];

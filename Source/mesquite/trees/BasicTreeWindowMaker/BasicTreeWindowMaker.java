@@ -1557,7 +1557,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	public void setVisible(boolean v){
 		super.setVisible(v);
-		if (v){
+		if (v && treeDisplay != null){
 			treeDisplay.redoCalculations(89);
 			treeDisplay.repaint(true);
 		}

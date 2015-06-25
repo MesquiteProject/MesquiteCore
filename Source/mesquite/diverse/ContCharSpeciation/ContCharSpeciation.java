@@ -175,6 +175,7 @@ public class ContCharSpeciation extends TreeCharSimulate {
 			addLengthToAllTerminals(tree, tree.getRoot(), 0.01);
 		}
 		tree.reshuffleTerminals(rng);
+		tree.resetTaxaInfo();
 
 		treeContainer.setObject(tree);
 		characterHistoryContainer.setObject(charHistory);

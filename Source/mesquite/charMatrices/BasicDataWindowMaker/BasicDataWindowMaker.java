@@ -190,10 +190,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		setModuleWindow(bdw = new BasicDataWindow(this, data));
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
-		if (!MesquiteThread.isScripting()) {
-			getModuleWindow().setVisible(true);
-			getModuleWindow().contentsChanged();
-			getModuleWindow().toFront();
+		if (!MesquiteThread.isScripting() && bdw != null) {
+			bdw.setVisible(true);
+			bdw.contentsChanged();
+			bdw.toFront();
 		}
 	}
 
@@ -4920,7 +4920,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				taxNC = true; // for pasting, to discover if taxon names were changed (see pasteIt)
 				window.setUndoer(window.setUndoInstructions(UndoInstructions.SINGLETAXONNAME, -1, row, new MesquiteString(oldTaxonName), new MesquiteString(s)));
 			}
-			else {
+			else if (window.ownerModule != null){
 				window.ownerModule.discreetAlert(warning);
 			}
 		}

@@ -354,6 +354,8 @@ public class ManageCharacters extends CharactersManager {
 	}
 	/*.................................................................................................................*/
 	public CharMatrixManager findCharacterTypeManager(String dataType) {
+		if (dataType == null)
+			return null;
 		for (int i = 0; i<getNumberOfEmployees() ; i++) {
 			Object e=getEmployeeVector().elementAt(i);
 			if (e instanceof CharMatrixManager) {
@@ -366,6 +368,8 @@ public class ManageCharacters extends CharactersManager {
 	}
 	/*.................................................................................................................*/
 	public CharMatrixManager findCharacterTypeManager(Class dataClass) {
+		if (dataClass == null)
+			return null;
 		for (int i = 0; i<getNumberOfEmployees() ; i++) {
 			Object e=getEmployeeVector().elementAt(i);
 			if (e instanceof CharMatrixManager) {

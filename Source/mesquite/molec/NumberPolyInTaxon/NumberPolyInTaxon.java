@@ -16,6 +16,7 @@ package mesquite.molec.NumberPolyInTaxon;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -33,7 +34,7 @@ public class NumberPolyInTaxon extends NumberForTaxon {
 	MCharactersDistribution observedStates =null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
- 		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for proportion missing)"); 
+ 		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, CategoricalState.class, "Source of character matrix (for proportion missing)"); 
  		if (matrixSourceTask==null)
  			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
  		return true;
