@@ -74,7 +74,7 @@ public class CharMatrixCoordIndep extends MatrixSourceCoord  implements NameHold
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		charSourceName = new MesquiteString(characterSourceTask.getName());
 		cstC = makeCommand("setCharacterSource",  this);
-		//characterSourceTask.setHiringCommand(cstC);  //Debugg.println(? disable?  or allow employer to indicate NOT to set a hiring command -- e.g. TaxaListHasData
+		//characterSourceTask.setHiringCommand(cstC);  
 		if (numModulesAvailable(CharMatrixOneSource.class)>1){
 			 mss = addSubmenu(null, mexp, cstC, CharMatrixOneSource.class);
 				mss.setNameHolder(this);
