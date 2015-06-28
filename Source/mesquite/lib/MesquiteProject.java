@@ -229,6 +229,17 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 
 	/*.................................................................................................................*/
+	/** returns the Tree Vectors */
+	public ListableVector getTreeVectors() {
+		ListableVector v = new ListableVector();		
+		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
+			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
+			v.addElement(trees, false);
+		}
+		return v;
+	}
+
+	/*.................................................................................................................*/
 	public String searchData(String s, MesquiteString commandResult) {
 		if (StringUtil.blank(s))
 			return "<h2>Nothing to search for (searched: \"" + s + "\")</h2>";

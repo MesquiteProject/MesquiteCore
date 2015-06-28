@@ -206,6 +206,7 @@ public class ManageCharacters extends CharactersManager {
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "-", null);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "List of Character Matrices", makeCommand("showDatasList",  this));
+		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Delete Character Matrices...", makeCommand("deleteMatrices",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "New Empty Matrix...", makeCommand("newMatrix",  this));
 		getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Make New Matrix from", makeCommand("newFilledMatrix",  this), CharMatrixFiller.class);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "New Linked Matrix...", makeCommand("newLinkedMatrix",  this));
@@ -965,8 +966,16 @@ public class ManageCharacters extends CharactersManager {
 				lister.getModuleWindow().setVisible(true);
 			return lister;
 		}
+		else if (checker.compare(this.getClass(), "Deletes matrices from the project", null, commandName, "deleteMatrices")) {
+			Listable[] chosen = ListDialog.queryListMultiple(containerOfModule(), "Select Matrices to Delete", "Select one or more character matrices to be deleted", (String)null, "Delete", false, getProject().getCharacterMatrices(), (boolean[])null);
+			if (chosen != null)
+				for (int i = chosen.length-1; i>=0; i--) {  
+					logln("Deleting " + chosen[i].getName());
+					deleteElement((FileElement)chosen[i]);
+				}
+		}
 		else if (checker.compare(this.getClass(), "Deletes all matrices from the project", null, commandName, "deleteAllMatrices")) {
-			for (int i = getProject().getNumberCharMatrices(); i>=1; i--) {  
+			for (int i = getProject().getNumberCharMatrices(); i>=0; i--) {  
 				CharacterData data = getProject().getCharacterMatrix(i);
 				deleteElement(data);
 			}

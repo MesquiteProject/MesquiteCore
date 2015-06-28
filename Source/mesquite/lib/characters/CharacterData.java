@@ -201,7 +201,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public UndoInstructions getUndoInstructionsAllData(){
 		//undoInstructions = new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);
 		if (allowFullUndo())
-			return new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);
+			return new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);  //David: Debugg.println: this had been ALLDATACELLS, but this meant that if matrix had changed size, it wouldn't rever that.
 		else 
 			return null;
 	}

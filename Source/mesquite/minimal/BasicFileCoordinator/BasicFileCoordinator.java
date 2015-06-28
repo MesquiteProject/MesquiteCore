@@ -226,7 +226,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		Enumeration e = MesquiteTrunk.windowVector.elements();
 		mss.setList(MesquiteTrunk.windowVector);
 		mss.setListableFilter(ChartWindow.class);
-		MesquiteSubmenuSpec mss2 = addSubmenu(MesquiteTrunk.analysisMenu, "Other", makeCommand("newAssistant",  this), FileAssistantA.class);
+	//	MesquiteSubmenuSpec mss2 = addSubmenu(MesquiteTrunk.analysisMenu, "Other", makeCommand("newAssistant",  this), FileAssistantA.class);
+		addMenuItem(MesquiteTrunk.analysisMenu, "-", null);
+		addModuleMenuItems(MesquiteTrunk.analysisMenu, makeCommand("newAssistant",  this), FileAssistantA.class);
 
 		broadcastProjectEstablished(this);
 		p.refreshProjectWindow();

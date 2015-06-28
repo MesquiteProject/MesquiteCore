@@ -207,7 +207,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return cs;
 	}
 	public void employeeQuit(MesquiteModule m){
-		Debugg.println("employee quit " + m);
 		if (m instanceof TreeSource)
 			iQuit();
 		else if (basicTreeWindow!=null)
@@ -449,9 +448,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			if (suppressEPCResponse)
 				return;
 			int code = Notification.getCode(notification);
-			Debugg.println("EPC " + notification + " source " + source.getName() + "  employee " + employee.getName());
 			if (code == MesquiteListener.BLOCK_DELETED && (employee.nameMatches("StoredTrees") || (employee.nameMatches("ConsensusTree")))){
-				Debugg.println("stored trees");
 				if (!basicTreeWindow.treeEdited)
 					iQuit();
 			}
@@ -4090,7 +4087,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (obj instanceof Taxa &&  (Taxa)obj ==taxa) {
 			ownerModule.iQuit();
 		}
-		Debugg.println("DISPOSING");
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/

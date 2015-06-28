@@ -18,6 +18,7 @@ import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
@@ -189,6 +190,7 @@ public class TreesList extends ListLVModule {
 		}
 		return false;
 	}
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		if (getModuleWindow()==null || !getModuleWindow().isVisible())
@@ -288,7 +290,7 @@ class TreesListWindow extends ListableVectorWindow implements MesquiteListener {
 		treesListModule = ownerModule;
 		currentTreeBlock = ownerModule.currentTreeBlock; //SHOULDN'T BE CURRENT FOR TWIG SINCE SHOULD ALLOW MORE THAN ONE WINDOW
 		if (currentTreeBlock!=null)
-			currentTreeBlock.addListener(this);
+			currentTreeBlock.addListener(this); 
 		getTable().setRowAssociable(currentTreeBlock);
 		resetTitle();
 	}
@@ -311,6 +313,19 @@ class TreesListWindow extends ListableVectorWindow implements MesquiteListener {
 	}
 	public Object getCurrentObject(){
 		return currentTreeBlock;
+	}
+	
+	public void setObject(Object o){
+		super.setObject(o);
+		TreeListInit assistant;
+		Enumeration enumeration=ownerModule.getEmployeeVector().elements();
+		while (enumeration.hasMoreElements()){
+			Object obj = enumeration.nextElement();
+			if (obj instanceof TreeListInit) {
+				assistant =  (TreeListInit)obj;
+				assistant.setTableAndTreeBlock(table, (TreeVector)o);
+			}
+		}	
 	}
 	/*.................................................................................................................*/
 	public void processPostSwap(Associable assoc){

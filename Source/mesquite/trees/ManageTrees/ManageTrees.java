@@ -199,6 +199,7 @@ public class ManageTrees extends TreesManager {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "List of Trees", makeCommand("showTrees",  this), treesVector);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
+		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "Delete Tree Blocks...", makeCommand("deleteTreeBlocks",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Empty Block of Trees...", makeCommand("newTreeBlock",  this));
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make New Trees Block from", makeCommand("newFilledTreeBlockInt",  this), TreeBlockFiller.class);
 		if (numModulesAvailable(TreeInferer.class)>0 && MesquiteTrunk.mesquiteModulesInfoVector.findModule(null, "#TreeInferenceCoordinator")==null)  //ExternalTreeSearcher
@@ -470,6 +471,14 @@ public class ManageTrees extends TreesManager {
 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
 				lister.getModuleWindow().setVisible(true);
 			return lister;
+		}
+		else if (checker.compare(this.getClass(), "Deletes tree blocks from the project", null, commandName, "deleteTreeBlocks")) {
+			Listable[] chosen = ListDialog.queryListMultiple(containerOfModule(), "Select Tree Blocks to Delete", "Select one or more tree blocks to be deleted", (String)null, "Delete", false, getProject().getTreeVectors(), (boolean[])null);
+			if (chosen != null)
+				for (int i = chosen.length-1; i>=0; i--) {  
+					logln("Deleting " + chosen[i].getName());
+					deleteElement((FileElement)chosen[i]);
+				}
 		}
 		else if (checker.compare(this.getClass(), "Restarts to unfinished tree block filling", "[name of tree block filler module]", commandName, "restartTreeSource")) { 
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);

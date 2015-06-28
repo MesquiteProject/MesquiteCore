@@ -389,11 +389,15 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, newState, oldState, textField);
 
 		case ALLDATACELLS:
-			newData = data.cloneData();
+			newData = data.cloneData();   //David: Debugg.println: note that this clones the current (live) matrix, which means if it has lost columns, they aren't recovered.  
 			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();
-			data.copyData(oldData, true);
-			if (oldData instanceof CategoricalData) {
+			if (data.getNumChars()>oldData.getNumChars())  //I added this to help   //we need a setToClone system in CharacterData, which we don't have yet.
+				data.deleteCharacters(oldData.getNumChars(), data.getNumChars()-oldData.getNumChars(), false);
+			else if (data.getNumChars()<oldData.getNumChars())//I added this to help
+				data.addCharacters(data.getNumChars()-1, oldData.getNumChars()-data.getNumChars(), false);
+			data.copyData(oldData, true);  //THIS DOES NOT expand data to be the same size as oldData
+			if (oldData instanceof CategoricalData) {  ////David: This does NOT recover specssets, so codon positions etc. are all out of whack
 				CategoricalData cd = (CategoricalData)oldData;
 				for (int ic=0; ic<cd.getNumChars(); ic++){
 					if (cd.hasStateNames() && cd.hasStateNames(ic))
