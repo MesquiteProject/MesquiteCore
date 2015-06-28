@@ -43,7 +43,7 @@ public class ConsensusTree extends TreeSource {
 		cC = makeCommand("setConsenser", this);
 		if (treeSource==null)
 			return sorry(getName() + " couldn't start because no source of trees obtained");
-		treeSource.setHiringCommand(tlsC);
+		//treeSource.setHiringCommand(tlsC);
 		treeSourceName = new MesquiteString();
 		if (numModulesAvailable(TreeSource.class)>1) {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Tree Source for Consensus", tlsC, TreeSource.class);
@@ -60,6 +60,10 @@ public class ConsensusTree extends TreeSource {
 			mss.setSelected(consenserName);
 		}
 		return true;
+	}
+	public void employeeQuit(MesquiteModule m){
+		if (m instanceof TreeSource)
+			iQuit();
 	}
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
@@ -78,7 +82,7 @@ public class ConsensusTree extends TreeSource {
 			if (temp!=null) {
 				treeSource = temp;
 				startTree = 0;
-				treeSource.setHiringCommand(tlsC);
+			//	treeSource.setHiringCommand(tlsC);
 				treeSourceName.setValue(treeSource.getName());
 				parametersChanged();
 			}

@@ -50,6 +50,10 @@ public class Notification implements Identifiable {
 		this.undoReference = undoReference;
 		this.parameters = parameters;
 	}
+	
+	public String toString(){
+		return "Notification: " + getID() + " code = " + code + " parameters " + IntegerArray.toString(parameters);
+	}
 	public Notification(){
 		id = numCreated++;
 	}

@@ -114,7 +114,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	BasicTreeWindow basicTreeWindow;
 	MesquiteString treeSourceName;
 	MagnifyExtra magnifyExtra;
-	MesquiteCommand tsC;
+	//MesquiteCommand tsC;
 	MesquiteString xmlPrefs= new MesquiteString();
 	String xmlPrefsString = null;
 	static {
@@ -140,8 +140,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (treeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees was obtained.");
 		treeSourceName = new MesquiteString(treeSourceTask.getName());
-		tsC = makeCommand("setTreeSource",  this);
-		treeSourceTask.setHiringCommand(tsC);
+	//	tsC = makeCommand("setTreeSource",  this);
+		//treeSourceTask.setHiringCommand(tsC);
 		defineMenus(false);
 		if (MesquiteThread.isScripting() && getProject().developing)
 			respondToWindowResize = false;  //this prevents a lot of tree/window resizing when file being re-read
@@ -192,7 +192,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	/*Menus defined in this method are visible to Mesquite's automatic documentation system  <b>(overrides method of MesquiteModule)</b>*/
 	public void defineMenus(boolean accumulating){
 		if (accumulating || numModulesAvailable(TreeSource.class)>1) {
-			MesquiteSubmenuSpec mss = addSubmenu(null, "Tree Source", tsC);
+			MesquiteSubmenuSpec mss = addSubmenu(null, "Tree Source", makeCommand("setTreeSource",  this));
 			if (!accumulating){
 				mss.setSelected(treeSourceName);
 				mss.setList(TreeSource.class);
@@ -207,7 +207,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return cs;
 	}
 	public void employeeQuit(MesquiteModule m){
-		if (basicTreeWindow!=null)
+		Debugg.println("employee quit " + m);
+		if (m instanceof TreeSource)
+			iQuit();
+		else if (basicTreeWindow!=null)
 			basicTreeWindow.contentsChanged();
 	}
 	public void processPreferencesFromFile (String[] prefs) {
@@ -350,7 +353,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, arguments, "Source of trees", treeSourceTask);
 			if (temp !=null){
 				treeSourceTask = temp;
-				treeSourceTask.setHiringCommand(tsC);
+			//	treeSourceTask.setHiringCommand(tsC);
 				treeSourceName.setValue(treeSourceTask.getName());
 				if (basicTreeWindow!=null) {
 					basicTreeWindow.setTreeSource(treeSourceTask);
@@ -446,8 +449,13 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			if (suppressEPCResponse)
 				return;
 			int code = Notification.getCode(notification);
-
-			if (code == MesquiteListener.ITEMS_ADDED){
+			Debugg.println("EPC " + notification + " source " + source.getName() + "  employee " + employee.getName());
+			if (code == MesquiteListener.BLOCK_DELETED && (employee.nameMatches("StoredTrees") || (employee.nameMatches("ConsensusTree")))){
+				Debugg.println("stored trees");
+				if (!basicTreeWindow.treeEdited)
+					iQuit();
+			}
+			else if (code == MesquiteListener.ITEMS_ADDED){
 				if (basicTreeWindow.usingDefaultBush){
 					basicTreeWindow.resetForTreeSource(false, false, false, Notification.getCode(notification)); 
 					basicTreeWindow.contentsChanged();
@@ -4082,6 +4090,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (obj instanceof Taxa &&  (Taxa)obj ==taxa) {
 			ownerModule.iQuit();
 		}
+		Debugg.println("DISPOSING");
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
@@ -4124,6 +4133,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	/*.................................................................................................................*/
 
 	void resetBaseExplanation(){
+		if (ownerModule == null || ownerModule.isDoomed())
+			return;
 		String td = "";
 		String td2 = "";
 		if (tree!=null) {
@@ -4159,6 +4170,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 	/*.................................................................................................................*/
 	void setExplanation(MesquiteString exp, boolean setEvenIfAlreadyBase){
+		if (ownerModule == null || ownerModule.isDoomed())
+			return;
 		if (exp == null)
 			return;
 		if (exp != baseExplanation || !(baseExplanationUsed && !setEvenIfAlreadyBase)) {
@@ -4195,6 +4208,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	/*.................................................................................................................*/
 	public void setTreeName(Tree t){
 		String treename;
+		if (ownerModule == null || ownerModule.isDoomed())
+			return;
 		if (treeEdited && treeSourceLocked()) {
 			if (t!=null) {
 				treename= tree.getName();
@@ -4218,6 +4233,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 	/*.................................................................................................................*/
 	public Tree setTree(String TreeDescription){
+		if (ownerModule == null || ownerModule.isDoomed())
+			return null;
 		if (taxa !=null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
@@ -4309,7 +4326,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			treeChanged( true);
 			return tree;
 		}
-		else ownerModule.alert("Tree display null in setCloneOfTree");
+		else if (ownerModule != null)
+			ownerModule.alert("Tree display null in setCloneOfTree");
 		return null;
 	}
 	/*.................................................................................................................*/

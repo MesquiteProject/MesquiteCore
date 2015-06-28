@@ -226,7 +226,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 						if (index>0)
 							currentListNumber = index;
 						else if (MesquiteLong.isCombinable(currentTreeBlockID)){
-							discreetAlert( "The current tree block used by Stored Trees (for " + getEmployer().getName() + ") has apparently been deleted.  You might be asked to select another tree block, or this might force use of default trees, and also may yield error messages when rereading the file.");
+							
+						//	discreetAlert( "The current tree block used by Stored Trees (for " + getEmployer().getName() + ") has apparently been deleted.  You might be asked to select another tree block, or this might force use of default trees, and also may yield error messages when rereading the file.");
 							if (currentTreeBlock != null)
 								currentTreeBlock.removeListener(this);
 							currentTreeBlock = null;
@@ -234,7 +235,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 							currentListNumber = MesquiteInteger.unassigned;
 							currentTreeBlockID = MesquiteLong.unassigned;
 							MesquiteTrunk.resetChecks(listSubmenu);
-							parametersChanged(notification);
+							parametersChanged(new Notification(MesquiteListener.BLOCK_DELETED));
 						}
 					}
 				}
@@ -430,8 +431,15 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		lastUsedTreeBlock = currentTreeBlock;
 		if (currentTreeBlock == null) {
-			if (getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode)
+			currentTreeBlock = manager.getTreeBlock(taxa, 0);
+			lastUsedTreeBlock = currentTreeBlock;
+		}
+		if (currentTreeBlock == null) {
+			
+			
+			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode)
 				logln("Current tree block null in checkTreeBlock in Stored Trees, for taxa " + taxa.getName());
+			iQuit();
 			return -1;
 		}
 		currentSourceFile = currentTreeBlock.getFile();

@@ -355,6 +355,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		observedStates = null;
+		Debugg.println("employee " + employee.getName() + " source " + source.getName());
 		super.employeeParametersChanged(employee, source, notification);
 	}
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
