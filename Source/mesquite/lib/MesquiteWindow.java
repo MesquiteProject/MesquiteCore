@@ -1988,6 +1988,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void toFront(){
 		if (doingShow)
 			return;
+		if (parentFrame == null)
+			return;
 		setVisible(true);
 		parentFrame.setAsFrontWindow(this);
 		if (isVisible() && rank!=highestRank) { //window of intermediate rank brought to front; must readjust ranks of all
@@ -2479,8 +2481,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			}
 			else {
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Transferable t = clip.getContents(this);
 				try {
+				Transferable t = clip.getContents(this);
 					String s = (String)t.getTransferData(DataFlavor.stringFlavor);
 					if (s!=null) {
 						TextArea ta = annotationArea.getTextArea();

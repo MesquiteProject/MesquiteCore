@@ -15,9 +15,11 @@ package mesquite.stochchar.StochCharMapper;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.meristic.lib.MeristicState;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 import mesquite.stochchar.lib.*;
@@ -200,7 +202,7 @@ handle models needing estimation
 
 		//a barrier (temporary) while likelihood calculations support only simple categorical
 		Class stateClass = observedStates.getStateClass();
-		if (DNAState.class.isAssignableFrom(stateClass) || ProteinState.class.isAssignableFrom(stateClass) || ContinuousState.class.isAssignableFrom(stateClass)) {
+		if (MeristicState.class.isAssignableFrom(stateClass) || DNAState.class.isAssignableFrom(stateClass) || ProteinState.class.isAssignableFrom(stateClass) || ContinuousState.class.isAssignableFrom(stateClass)) {
 			String s = "Likelihood calculations cannot be performed ";
 			if (DNAState.class.isAssignableFrom(stateClass))
 				s += "currently with DNA or RNA data.  The calculations were not done for some characters.";
@@ -208,6 +210,8 @@ handle models needing estimation
 				s += "currently with protein data.  The calculations were not done for some characters.";
 			else if (ContinuousState.class.isAssignableFrom(stateClass))
 				s += "currently with continuous valued data.  The calculations were not done for some characters.";
+			else if (MeristicState.class.isAssignableFrom(stateClass))
+				s += "currently with meristic data.  The calculations were not done for some characters.";
 			if (!warnedNoCalc) {
 				discreetAlert( s);
 				warnedNoCalc = true;

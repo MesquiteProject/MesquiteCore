@@ -5966,6 +5966,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			taxaVersion = taxa.getVersionNumber();
 		}
 	}
+	
+	public void resetTaxaInfo(){
+		taxaIDs = taxa.getTaxaIDs();
+		oldNumTaxa = taxa.getNumTaxa();
+	}
 	/*-----------------------------------------*/
 	/** For MesquiteListener interface.  Passes which object was disposed*/
 	public void disposing(Object obj){

@@ -67,8 +67,12 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 /*.................................................................................................................*/
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 /*.................................................................................................................*/
+	boolean previousInterleaved = false;
 	public boolean getInterleaved(){
-		return AlertDialog.query(module.containerOfModule(), "Interleaved or sequential?", "Is the matrix interleaved or sequential?", "Interleaved", "Sequential");
+		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking about interleave")){
+			previousInterleaved = AlertDialog.query(module.containerOfModule(), "Interleaved or sequential?", "Is the matrix interleaved or sequential?", "Interleaved", "Sequential");
+		}
+		return previousInterleaved;
 	}	
 /*.................................................................................................................*/
 	public abstract void setPhylipState(CharacterData data, int ic, int it, char c);

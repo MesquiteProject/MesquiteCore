@@ -597,7 +597,7 @@ public class DrawTreeUtil {
 			float ynMVert;
 			float halfLine = lineWidth/2;
 			Shape line;
-			if (g instanceof Graphics2D) {
+			if (g instanceof Graphics2D && lineWidth >=0) {
 				BasicStroke wideStroke = new BasicStroke(lineWidth);
 				Graphics2D g2 = (Graphics2D)g;
 				Stroke stroke = g2.getStroke();

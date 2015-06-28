@@ -416,7 +416,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export FASTA Options", buttonPressed);
-		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file prepared for GenBank submission.");
+		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file.");
 		exportDialog.appendToHelpString(" The Taxon Name Suffix, if present, will be appended to each taxon name.");
 		exportDialog.appendToHelpString(" Some systems (e.g., GenBank) require simple taxon names, and these will be used if you check 'simplify taxon names'");
 		SingleLineTextField uniqueSuffixField = exportDialog.addTextField("Taxon Name Suffix", "", 20);

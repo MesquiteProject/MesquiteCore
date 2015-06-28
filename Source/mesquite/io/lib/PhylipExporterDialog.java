@@ -26,7 +26,7 @@ public class PhylipExporterDialog extends ExporterDialog {
 	}
 	/*.................................................................................................................*/
 	public void completeAndShowDialog (boolean dataSelected, boolean taxaSelected) {
-		 f = addIntegerField ("Maximum length of taxon names", tnl, 4, 1, 40);
+		 f = addIntegerField ("Maximum length of taxon names", tnl, 4, 1, 1000);
 		super.completeAndShowDialog(dataSelected, taxaSelected);
 	}
 	public int getTaxonNamesLength(){

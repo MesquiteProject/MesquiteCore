@@ -229,6 +229,8 @@ public class DataPainter extends DataWindowAssistantI {
 					return null;
 				neverFilled = false;
 				fillState = data.getCharacterState(fillState,column, row);
+				if (fillState == null)
+					return null;
 				fillTool.setDescription("Fill with \"" + fillState.toString()+ " \"");
 				dropperTool.setDescription("Copy state (current: " + fillState.toString() + ")");
 				if (((MesquiteWindow)containerOfModule()) != null)
