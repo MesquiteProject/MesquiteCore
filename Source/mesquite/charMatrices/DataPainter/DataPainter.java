@@ -68,7 +68,7 @@ public class DataPainter extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public void paintSelectedCells(MesquiteTable table, CharacterData data) {
 		
-		UndoReference undoReference = new UndoReference(data,this);
+		UndoReference undoReference = new UndoReference(data,this, new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 
 		if (fillState != null && !neverFilled) {
 			boolean success = false;

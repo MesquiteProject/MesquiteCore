@@ -18,6 +18,7 @@ import java.util.*;
 import java.lang.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -63,7 +64,7 @@ public class RecodeCateg extends CategDataAlterer {
 				return false;
 			}
 			else {
-		  		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+		  		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 				// first find maximum state among character selected
 				maxState = 0;
 				for (int ic = 0; ic < data.getNumChars(); ic++){

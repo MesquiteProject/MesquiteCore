@@ -52,7 +52,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer {
 		DNAData dnaData = (DNAData)data;
 		if (!dnaData.someCoding()) 
 			return false;
-		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_ADDED_TO_END});
 
 		MesquiteBoolean dataChanged = new MesquiteBoolean();
 		MesquiteInteger charAdded = new MesquiteInteger(0);

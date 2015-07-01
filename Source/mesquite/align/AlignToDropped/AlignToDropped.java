@@ -219,7 +219,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 							progIndicator.setOfferContinueMessageString("Are you sure you want to stop the alignment?");
 							progIndicator.start();
 						}
-						UndoReference undoReference = new UndoReference(data,this);
+						UndoReference undoReference = new UndoReference(data,this, new int[] {UndoInstructions.CHAR_ADDED});
 						int count = 0;
 						boolean changed = false;
 						int oldNumChars = data.getNumChars();
@@ -255,7 +255,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 				}			 
 				else if (firstRowTouched!=rowDropped) {
 					UndoReference undoReference = new UndoReference();
-					UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+					UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_ADDED});
 					boolean changed=false;
 					int oldNumChars = data.getNumChars();
 					if (alignTouchedToDropped(firstRowTouched,rowDropped))

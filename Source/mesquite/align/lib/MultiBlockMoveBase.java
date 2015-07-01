@@ -165,7 +165,7 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 		if (!canExpand.getValue())
 			undoReference = new UndoReference(data,this,0,data.getNumChars(), firstSequenceInBlock,lastSequenceInBlock);
 		else
-			undoReference = new UndoReference(data,this);
+			undoReference = new UndoReference(data,this, new int[] {UndoInstructions.CHAR_ADDED_TO_END, UndoInstructions.CHAR_ADDED_TO_START});
 		resetBlocks();
 		previousPercentHorizontal = firstTouchPercentHorizontal;
 

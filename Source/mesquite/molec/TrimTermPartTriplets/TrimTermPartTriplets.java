@@ -39,7 +39,7 @@ public class TrimTermPartTriplets extends DNADataAlterer {
 		if (!data.someCoding()) 
 			return false;
 
-		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+   		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean changed = false;
 		
 		for (int it = 0; it<data.getNumTaxa(); it++)

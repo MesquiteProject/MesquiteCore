@@ -3088,7 +3088,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					if (clipboardDimensionsFit(s)) {
 						editorModule.getProject().incrementProjectWindowSuppression();
 						data.incrementNotifySuppress();
-						UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule);
+						UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule, new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});  //TODO: check to see if there can ever be changes
 						pasteIt(s);
 						// deselectAll();
 						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, pasteUndoReference));
@@ -3110,7 +3110,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 							editorModule.getProject().decrementProjectWindowSuppression();
 							if (success) {
 								data.incrementNotifySuppress();
-								UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule);
+								UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule, new int[] {UndoInstructions.CHAR_ADDED_TO_END});
 								pasteIt(s);
 								// deselectAll();
 								data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, pasteUndoReference));
@@ -4780,7 +4780,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		CharacterState cs = data.makeCharacterState(); // so as to get the default state
 		UndoInstructions undoInstructions;
 		if (anyCellSelected())
-			undoInstructions = data.getUndoInstructionsAllData();
+			undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		else
 			undoInstructions = new UndoInstructions(UndoInstructions.ALLCHARACTERNAMES, data, data);
 
