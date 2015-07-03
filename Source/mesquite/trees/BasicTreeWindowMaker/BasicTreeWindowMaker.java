@@ -114,7 +114,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	BasicTreeWindow basicTreeWindow;
 	MesquiteString treeSourceName;
 	MagnifyExtra magnifyExtra;
-	//MesquiteCommand tsC;
+	//MesquiteCommand tsC;  //
 	MesquiteString xmlPrefs= new MesquiteString();
 	String xmlPrefsString = null;
 	static {
@@ -140,8 +140,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (treeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees was obtained.");
 		treeSourceName = new MesquiteString(treeSourceTask.getName());
-	//	tsC = makeCommand("setTreeSource",  this);
-		//treeSourceTask.setHiringCommand(tsC);
+	//	tsC = makeCommand("setTreeSource",  this);  //Debugg.println
+	//	treeSourceTask.setHiringCommand(tsC);
 		defineMenus(false);
 		if (MesquiteThread.isScripting() && getProject().developing)
 			respondToWindowResize = false;  //this prevents a lot of tree/window resizing when file being re-read
@@ -207,8 +207,18 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return cs;
 	}
 	public void employeeQuit(MesquiteModule m){
-		if (m instanceof TreeSource)
-			iQuit();
+		if (m instanceof TreeSource){
+			if (basicTreeWindow.treeEdited){
+		
+				String d = basicTreeWindow.getTreeDescription();
+				doCommand("setTreeSource", "#DefaultTrees", CommandChecker.defaultChecker);
+				basicTreeWindow.resetForTreeSource(true, false, true, 0);
+				//basicTreeWindow.goToTreeNumber(0, false);
+				basicTreeWindow.setTreeDescription(d);
+			}
+			else
+				iQuit();
+		}
 		else if (basicTreeWindow!=null)
 			basicTreeWindow.contentsChanged();
 	}
@@ -352,7 +362,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, arguments, "Source of trees", treeSourceTask);
 			if (temp !=null){
 				treeSourceTask = temp;
-			//	treeSourceTask.setHiringCommand(tsC);
+				//treeSourceTask.setHiringCommand(tsC);
 				treeSourceName.setValue(treeSourceTask.getName());
 				if (basicTreeWindow!=null) {
 					basicTreeWindow.setTreeSource(treeSourceTask);
@@ -918,6 +928,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		addToWindow(messagePanel);
 		messagePanel.setVisible(true);
 		treeDisplay =treeDrawCoordTask.createOneTreeDisplay(taxa, this);
+
 		treeDisplay.textVersionDrawOnTree = textVersionDrawOnTree.getValue();
 
 		treeDisplay.setLocation(0, 0);
@@ -1741,6 +1752,19 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		treeDisplay.setVisible(true);
 	}
 	/*.................................................................................................................*/
+	public String getTreeDescription() {
+		if (tree == null)
+			return null;
+		return tree.writeTree(Tree.BY_NAMES, false);
+	}
+	public void setTreeDescription(String s) {
+		Tree tr = setTree(s);
+
+		if (tr!=null) {
+			treeEdited(true);
+		}
+	}
+	/*.................................................................................................................*/
 	public void setTreeSource(TreeSource tsTask) {
 		boolean setToZero = tsTask != treeSourceTask;
 		treeSourceTask = tsTask;
@@ -1846,6 +1870,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 
 	void resetForTreeSource(boolean setToZero, boolean firstTimeTreeSource, boolean retainEditedRegardless, int notificationCode) {
+		if (disposing)
+			return;
 		resetTitle();
 		if (firstTimeTreeSource)
 			warningGivenForTreeSource = false;
@@ -3105,6 +3131,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 	/*.................................................................................................................*/
 	public Tree goToTreeNumber(int index, boolean rememberEdited){
+		if (disposing)
+			return null;
 		currentTreeNumber = index;
 		if (MesquiteThread.isScripting() && ((BasicTreeWindowMaker)ownerModule).suppressEPCResponse)
 			return null;
@@ -3126,6 +3154,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 
 		Tree treeT = treeSourceTask.getTree(taxa, index);
+		if (disposing)
+			return null;
 		if (treeT == null){  //source may have not known how many trees; ask if it would revise its current number of trees
 			int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 			if (currentTreeNumber>= numTrees && MesquiteInteger.isCombinable(numTrees)) {
@@ -3135,6 +3165,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 			}
 		}
+		if (disposing)
+			return null;
 		MesquiteBoolean editStatusToSet = new MesquiteBoolean();
 		Tree t = setCloneOfTree(treeT, true, editStatusToSet);
 		treeEdited=editStatusToSet.getValue();

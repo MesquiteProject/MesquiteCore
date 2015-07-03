@@ -235,6 +235,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 							currentListNumber = MesquiteInteger.unassigned;
 							currentTreeBlockID = MesquiteLong.unassigned;
 							MesquiteTrunk.resetChecks(listSubmenu);
+							checkTreeBlock(preferredTaxa);
 							parametersChanged(new Notification(MesquiteListener.BLOCK_DELETED));
 						}
 					}
@@ -288,10 +289,13 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			lastUsedTreeBlock = null;
 			currentListNumber = MesquiteInteger.unassigned;
 			MesquiteTrunk.resetChecks(listSubmenu);
-			if (preferredTaxa != null && preferredTaxa.isDoomed())
+			if (preferredTaxa != null && preferredTaxa.isDoomed()){
 				preferredTaxa = null; //don't say parameters changed since employer asked for those taxa
-			else
+			}
+			else{
+				checkTreeBlock(preferredTaxa);
 				parametersChanged(); 
+			}
 		}
 	}
 	/*.................................................................................................................*/
@@ -432,14 +436,17 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		lastUsedTreeBlock = currentTreeBlock;
 		if (currentTreeBlock == null) {
 			currentTreeBlock = manager.getTreeBlock(taxa, 0);
+			if (currentTreeBlock!=null)
+				currentTreeBlock.addListener(this);
 			lastUsedTreeBlock = currentTreeBlock;
 		}
 		if (currentTreeBlock == null) {
 			
 			
 			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode)
-				logln("Current tree block null in checkTreeBlock in Stored Trees, for taxa " + taxa.getName());
-			iQuit();
+				logln("No current tree block for taxa " + taxa.getName() + "(Module: Stored Trees)");
+			if (!MesquiteThread.isScripting())
+				iQuit();
 			return -1;
 		}
 		currentSourceFile = currentTreeBlock.getFile();
