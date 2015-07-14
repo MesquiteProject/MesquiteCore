@@ -360,10 +360,18 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	public void popOut(boolean setVisible){
 		if (!isLoneWindow() && parentFrame!=null){
+			if (!parentFrame.anythingPoppedOtherThanMe(this) && MesquiteInteger.isCombinable(preferredPopoutWidth) && preferredPopoutWidth>0)
+				parentFrame.setPopoutWidth(preferredPopoutWidth);
 			parentFrame.popOut(this, setVisible);
 			ownerModule.resetEmbeddedMenus(this);
 		}
 	}
+	
+	int preferredPopoutWidth = MesquiteInteger.unassigned;
+	public void setPreferredPopoutWidth(int preferredWidth){
+		preferredPopoutWidth = preferredWidth;
+	}
+	
 	public void popIn(){
 		if (isLoneWindow()){
 			try {

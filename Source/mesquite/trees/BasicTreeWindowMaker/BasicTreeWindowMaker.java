@@ -114,7 +114,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	BasicTreeWindow basicTreeWindow;
 	MesquiteString treeSourceName;
 	MagnifyExtra magnifyExtra;
-	//MesquiteCommand tsC;  //
 	MesquiteString xmlPrefs= new MesquiteString();
 	String xmlPrefsString = null;
 	static {
@@ -140,8 +139,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (treeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees was obtained.");
 		treeSourceName = new MesquiteString(treeSourceTask.getName());
-	//	tsC = makeCommand("setTreeSource",  this);  //Debugg.println
-	//	treeSourceTask.setHiringCommand(tsC);
+		if (!TreeSource.closeIfTreeBlockDeleted.getValue())
+			treeSourceTask.setHiringCommand(makeCommand("setTreeSource",  this));
 		defineMenus(false);
 		if (MesquiteThread.isScripting() && getProject().developing)
 			respondToWindowResize = false;  //this prevents a lot of tree/window resizing when file being re-read
@@ -206,18 +205,36 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		cs[0]= new BasicTreeWindow();
 		return cs;
 	}
+	boolean handlingQuitTreeSource = false;
 	public void employeeQuit(MesquiteModule m){
-		if (m instanceof TreeSource){
+		if (m instanceof TreeSource && !handlingQuitTreeSource){
+			handlingQuitTreeSource = true;
 			if (basicTreeWindow.treeEdited){
 		
 				String d = basicTreeWindow.getTreeDescription();
-				doCommand("setTreeSource", "#DefaultTrees", CommandChecker.defaultChecker);
+
+				TreeSource temp = (TreeSource)hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false);
+				if (temp !=null){
+					treeSourceTask = temp;
+					if (!TreeSource.closeIfTreeBlockDeleted.getValue())
+						treeSourceTask.setHiringCommand(makeCommand("setTreeSource",  this));
+					treeSourceName.setValue(treeSourceTask.getName());
+					if (basicTreeWindow!=null) {
+						basicTreeWindow.setTreeSource(treeSourceTask);
+						basicTreeWindow.showTree();
+					}
+					treeSourceTask.setPreferredTaxa(taxa);
+
+					resetContainingMenuBar();
+					resetAllWindowsMenus();
+				}
 				basicTreeWindow.resetForTreeSource(true, false, true, 0);
 				//basicTreeWindow.goToTreeNumber(0, false);
 				basicTreeWindow.setTreeDescription(d);
 			}
 			else
 				iQuit();
+			handlingQuitTreeSource = false;
 		}
 		else if (basicTreeWindow!=null)
 			basicTreeWindow.contentsChanged();
@@ -362,7 +379,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, arguments, "Source of trees", treeSourceTask);
 			if (temp !=null){
 				treeSourceTask = temp;
-				//treeSourceTask.setHiringCommand(tsC);
+				if (!TreeSource.closeIfTreeBlockDeleted.getValue())
+					treeSourceTask.setHiringCommand(makeCommand("setTreeSource",  this));
 				treeSourceName.setValue(treeSourceTask.getName());
 				if (basicTreeWindow!=null) {
 					basicTreeWindow.setTreeSource(treeSourceTask);
@@ -1208,6 +1226,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			t = "Tree Window " + windowNum + " for taxa \"" +taxa.getName() + "\"";
 		else
 			t = treeSourceTask.getTreesDescriptiveString(taxa);
+		if (StringUtil.blank(t)){
+			if (treeEdited || editedByHand)
+				t = "Edited Tree";
+			else
+				t = "Tree";
+		}
 		setTitle(t);
 	}
 
@@ -1922,13 +1946,25 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		//	tree=null; //done to catch spurious redraws
 		treeVersion = 0;
 		treeDisplay.setTree(null); //done to catch spurious redraws
-		palette.paletteScroll.setMinimumValue(MesquiteTree.toExternal(0)); 
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
-		palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees-1)); 
-		if (setToZero || currentTreeNumber>= numTrees)
-			goToTreeNumber(0, false);
-		else
-			goToTreeNumber(currentTreeNumber, false);
+		if (numTrees == 0){
+			currentTreeNumber = 0;
+			palette.paletteScroll.setCurrentValue(0); 
+			palette.paletteScroll.setMinimumValue(0); 
+			palette.paletteScroll.setMaximumValue(0); 
+			palette.paletteScroll.setEnableEnter(false); 
+			palette.paletteScroll.setEnterLock(true); 
+		}
+		else{
+			palette.paletteScroll.setEnterLock(false); 
+			palette.paletteScroll.setEnableEnter(true); 
+			palette.paletteScroll.setMinimumValue(MesquiteTree.toExternal(0)); 
+			palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees-1)); 
+			if (setToZero || currentTreeNumber>= numTrees)
+				goToTreeNumber(0, false);
+			else
+				goToTreeNumber(currentTreeNumber, false);
+		}
 
 
 

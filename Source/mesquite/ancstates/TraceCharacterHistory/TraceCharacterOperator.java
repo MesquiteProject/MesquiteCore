@@ -14,7 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ancstates.TraceCharacterHistory;
 
 import java.awt.*;
+import java.util.Vector;
 
+import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 
@@ -150,6 +152,7 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 				traceLegend.repaint();
 			}
 		}
+		traceModule.calculationsDone();
 	}
 	void revertColors(){
 		for (int i = 0; i<64; i++)
@@ -260,6 +263,72 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 			return history.toString(node, ", ");
 		else
 			return null;
+	}
+	
+	CharacterState htmlNodeState, htmlAncestorState;
+	void getChangesHTML(Tree tree, int node, CharacterHistory history, StringBuffer sb){
+		if (tree.getRoot() != node){
+			htmlNodeState = history.getCharacterState(htmlNodeState, node); 
+			if (tree.nodeIsInternal(node))
+				adjustConservatism(htmlNodeState);
+			htmlAncestorState = history.getCharacterState(htmlAncestorState, tree.motherOfNode(node)); 
+			adjustConservatism(htmlAncestorState);
+			if (htmlNodeState != null && htmlAncestorState != null && !htmlNodeState.equals(htmlAncestorState)){
+				sb.append("<tr><td>" + node +"</td><td>" + htmlAncestorState.toDisplayString() +"</td><td>" + htmlNodeState.toDisplayString() + "</td></tr>" );
+			}
+		}
+		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))
+			getChangesHTML(tree, daughter, history, sb);
+	}
+
+	/**return a text version of information at node*/
+	public void getSummaryHTML(StringBuffer sb){
+		if (history!=null && myTree != null && sb!= null){
+			htmlNodeState = history.getCharacterState(htmlNodeState, myTree.getRoot()); 
+			sb.append("State at root: " + htmlNodeState.toDisplayString());
+			sb.append("<p>Table of nodes whose reconstructed state or state sets differ from those of their immediate ancestors:");
+			sb.append("<table border=\"1\">");
+			sb.append("<tr><td>node</td><td>state at ancestor</td><td>state at node</td></tr>" );
+			getChangesHTML(myTree, myTree.getRoot(),  history, sb);
+			sb.append("</table>");
+		}
+
+	}
+	void adjustConservatism(CharacterState state){ //this is a KLUDGE!  Required because reconstruction doesn't set uncertainty bit to represent equivocal, and thus doesn't distinguish true polymorphic ancestors from uncertainty.  Here forced to be uncertain for display sake
+		if (state != null && state instanceof CategoricalState){
+			CategoricalState c = (CategoricalState)state;
+			if (CategoricalState.hasMultipleStates(c.getValue()))
+					c.setUncertainty(true);
+				
+		}
+	}
+	void getChangesAtNodes(Tree tree, int node, CharacterHistory history, StringBuffer sb){
+		if (tree.getRoot() != node){
+			htmlNodeState = history.getCharacterState(htmlNodeState, node); 
+			if (tree.nodeIsInternal(node))
+				adjustConservatism(htmlNodeState);
+			htmlAncestorState = history.getCharacterState(htmlAncestorState, tree.motherOfNode(node)); 
+			adjustConservatism(htmlAncestorState);
+			if (htmlNodeState != null && htmlAncestorState != null && !htmlNodeState.equals(htmlAncestorState)){
+				sb.append("" + node + "\t" + htmlAncestorState.toDisplayString() + "\t" + htmlNodeState.toDisplayString()+ "\n");
+			}
+		}
+		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter))
+			getChangesAtNodes(tree, daughter, history, sb);
+	}
+
+	/**return a text version of information at node*/
+	public void getSummaryTable(StringBuffer sb){
+		if (history!=null && myTree != null && sb!= null){
+			htmlNodeState = history.getCharacterState(htmlNodeState, myTree.getRoot()); 
+			sb.append("Tree: " + myTree.getName() + "\n\n");
+			sb.append(resultString.getValue() + "\n\n");
+			sb.append("State at root: " + htmlNodeState.toDisplayString() + "\n");
+			sb.append("Table of nodes whose reconstructed state or state sets differ from those of their immediate ancestor:\n\n");
+			sb.append("node\tstate at ancestor\tstate at node\n" );
+			getChangesAtNodes(myTree, myTree.getRoot(),  history, sb);
+		}
+
 	}
 	/**return a text version of any legends or other explanatory information*/
 	public String textForLegend(){

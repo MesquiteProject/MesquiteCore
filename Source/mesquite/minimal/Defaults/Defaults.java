@@ -92,6 +92,8 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Secondary Choices Shown By Default in Dialog Boxes", makeCommand("toggleSecondaryChoicesOnInDialogs",  this), secondaryChoicesOnInDialogs);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Show Subchoices in Module Dialogs", makeCommand("toggleSubChoicesOnInDialogs",  this), subChoicesOnInDialogs);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Stored Characters/Matrices by Default", makeCommand("toggleStoredAsDefault",  this), CharacterSource.storedAsDefault);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Calculations if Matrix Used is Deleted", makeCommand("toggleCloseIfMatrixDeleted",  this), CharacterSource.closeIfMatrixDeleted);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Tree Window if Tree Block Used is Deleted", makeCommand("toggleCloseIfTreeBlockDeleted",  this), TreeSource.closeIfTreeBlockDeleted);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
 		if (!MesquiteTrunk.isMacOSX())
 			MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Forget Default Web Browser", makeCommand("forgetBrowser",  this));
@@ -248,6 +250,12 @@ public class Defaults extends MesquiteInit  {
 		else if ("storedAsDefault".equalsIgnoreCase(tag)){
 			CharacterSource.storedAsDefault.setValue(content);
 		}
+		else if ("closeIfMatrixDeleted".equalsIgnoreCase(tag)){
+			CharacterSource.closeIfMatrixDeleted.setValue(content);
+		}
+		else if ("closeIfTreeBlockDeleted".equalsIgnoreCase(tag)){
+			TreeSource.closeIfTreeBlockDeleted.setValue(content);
+		}
 		else if ("defaultFont".equalsIgnoreCase(tag)){
 			String defFont = StringUtil.cleanXMLEscapeCharacters(content);
 			Font fontToSet = new Font (defFont, MesquiteWindow.defaultFont.getStyle(), MesquiteWindow.defaultFont.getSize());
@@ -292,6 +300,8 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "subChoicesOnInDialogs", subChoicesOnInDialogs);   
 		StringUtil.appendXMLTag(buffer, 2, "consoleMode", console);   
 			StringUtil.appendXMLTag(buffer, 2, "storedAsDefault", CharacterSource.storedAsDefault);   
+			StringUtil.appendXMLTag(buffer, 2, "closeIfMatrixDeleted", CharacterSource.closeIfMatrixDeleted);   
+			StringUtil.appendXMLTag(buffer, 2, "closeIfTreeBlockDeleted", TreeSource.closeIfTreeBlockDeleted);   
 		return buffer.toString();
 	}
 	/*.................................................................................................................*
@@ -538,6 +548,16 @@ public class Defaults extends MesquiteInit  {
 			CharacterSource.storedAsDefault.toggleValue(null);
 			storePreferences();
 			return CharacterSource.storedAsDefault;
+		}
+		else if (checker.compare(getClass(), "Sets whether to close a calculation if the matrix it uses is deleted", null, commandName, "toggleCloseIfMatrixDeleted")) {
+			CharacterSource.closeIfMatrixDeleted.toggleValue(null);
+			storePreferences();
+			return CharacterSource.closeIfMatrixDeleted;
+		}
+		else if (checker.compare(getClass(), "Sets whether to close a tree window automatically if the tree block it uses is deleted", null, commandName, "toggleCloseIfTreeBlockDeleted")) {
+			TreeSource.closeIfTreeBlockDeleted.toggleValue(null);
+			storePreferences();
+			return TreeSource.closeIfTreeBlockDeleted;
 		}
 		else if (checker.compare(getClass(), "Sets whether to place ask for random number seeds when calculations requested", null, commandName, "toggleAskSeed")) {
 			askSeed.toggleValue(null);

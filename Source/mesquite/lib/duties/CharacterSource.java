@@ -26,6 +26,7 @@ taxa*/
 
 public abstract class CharacterSource extends CharacterOneSource  {
 	public static MesquiteBoolean storedAsDefault = new MesquiteBoolean(true);
+	public static MesquiteBoolean closeIfMatrixDeleted = new MesquiteBoolean(false);
    	 public Class getDutyClass() {
    	 	return CharacterSource.class;
    	 }

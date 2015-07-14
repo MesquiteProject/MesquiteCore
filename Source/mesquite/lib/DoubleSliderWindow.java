@@ -32,6 +32,7 @@ public class DoubleSliderWindow extends MesquiteWindow {
 	public DoubleSliderWindow(MesquiteModule module, String title, String name1, MesquiteCommand command1, double initialValue1, double min1, double max1,  double minSweet1, double maxSweet1, String name2, MesquiteCommand command2, double initialValue2, double min2, double max2, double minSweet2, double maxSweet2) {
 		super(module, false);
 		setVisible(false);
+		setPreferredPopoutWidth(300);
 		setWindowSize(minWindowWidth, 240);
 
 		this.title = title;

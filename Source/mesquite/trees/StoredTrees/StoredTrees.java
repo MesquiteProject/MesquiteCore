@@ -644,6 +644,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		catch (NullPointerException e) {
 		}
+		if (laxMode && currentTreeBlock == null)
+			return "";
 		return getNameForMenuItem();
  	}
 	/*.................................................................................................................*/

@@ -74,7 +74,8 @@ public class CharMatrixCoordIndep extends MatrixSourceCoord  implements NameHold
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		charSourceName = new MesquiteString(characterSourceTask.getName());
 		cstC = makeCommand("setCharacterSource",  this);
-		//characterSourceTask.setHiringCommand(cstC);  
+		if (!CharacterSource.closeIfMatrixDeleted.getValue())
+			characterSourceTask.setHiringCommand(cstC);  
 		if (numModulesAvailable(CharMatrixOneSource.class)>1){
 			 mss = addSubmenu(null, mexp, cstC, CharMatrixOneSource.class);
 				mss.setNameHolder(this);
@@ -179,7 +180,8 @@ public class CharMatrixCoordIndep extends MatrixSourceCoord  implements NameHold
 				newCharacterSourceTask =  (CharMatrixOneSource)replaceEmployee(CharMatrixOneSource.class, arguments, "Source of character matrices", characterSourceTask);
 			if (newCharacterSourceTask!=null) {
 				characterSourceTask = newCharacterSourceTask;
-			//	characterSourceTask.setHiringCommand(cstC);
+				if (!CharacterSource.closeIfMatrixDeleted.getValue())
+					characterSourceTask.setHiringCommand(cstC);  
 				charSourceName.setValue(characterSourceTask.getName());
 				parametersChanged(); 
 				return characterSourceTask;
