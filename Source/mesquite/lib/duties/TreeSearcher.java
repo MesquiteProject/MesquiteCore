@@ -22,6 +22,8 @@ import mesquite.lib.*;
 /**Searchers to find trees that optimize something.*/
 
 public abstract class TreeSearcher extends MesquiteModule  {
+	TreeInferer treeInferer = null;
+
    	 public Class getDutyClass() {
    	 	return TreeSearcher.class;
    	 }
@@ -35,6 +37,14 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract boolean initialize(Taxa taxa);
+
+	 public TreeInferer getTreeInferer() {
+		 return treeInferer;
+	 }
+	 public void setTreeInferer(TreeInferer treeInferer) {
+		 this.treeInferer = treeInferer;
+	 }
+
 
 	 public String getExtraTreeWindowCommands (){
    		 return "";

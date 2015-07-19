@@ -35,6 +35,7 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
 		if (arguments !=null) {
 			searchTask = (TreeSearcher)hireNamedEmployee(TreeSearcher.class,arguments);
 			if (searchTask==null) {
@@ -153,11 +154,13 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Taxa taxa){
 		searchTask.initialize(taxa);
+		searchTask.setTreeInferer(this);
 
 	}
 	/*.................................................................................................................*/
 	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
 		//DISCONNECTABLE
+		searchTask.setTreeInferer(this);
 		searchTask.fillTreeBlock(treeList);
 	}
 	/*.................................................................................................................*/

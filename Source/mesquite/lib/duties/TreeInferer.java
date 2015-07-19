@@ -13,6 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.duties;
 
+import java.awt.Button;
+import java.awt.Checkbox;
+
 import mesquite.lib.*;
 import mesquite.trees.lib.*;
 
@@ -21,9 +24,12 @@ import mesquite.trees.lib.*;
 /**Supplies trees (compare to OneTreeSource), for instance from a file or simulated.  Most modules
 are subclasses of the subclass TreeSource*/
 
-public abstract class TreeInferer extends TreeBlockFiller  {
+public abstract class TreeInferer extends TreeBlockFiller {
 	Listened listened;
 	TWindowMaker tWindowMaker;
+	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
+
+	 
 	public Class getDutyClass() {
 		return TreeInferer.class;
 	}
@@ -34,6 +40,22 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 		return null;
 	}
 	
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("autoSaveFile".equalsIgnoreCase(tag))
+			autoSaveFile.setFromTrueFalseString(content);
+		super.processSingleXMLPreference(tag, content);
+	}
+	
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "autoSaveFile", autoSaveFile);  
+	
+		buffer.append(super.preparePreferencesForXML());
+		return buffer.toString();
+	}
+
 	// override to give more information
 	public String getHTMLDescriptionOfStatus(){
 		return getName();
@@ -145,6 +167,24 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 		
 	}
 	
+	Checkbox autoSaveFileCheckbox =  null;
+
+	public boolean getAutoSave() {
+		if (autoSaveFile!=null && autoSaveFile.getValue())
+			return true;
+		return false;
+	}
+	
+	// given the opportunity to fill in options for user
+	public  void addItemsToDialogPanel(ExtensibleDialog dialog){
+		autoSaveFileCheckbox = dialog.addCheckBox("auto-save file after inference", autoSaveFile.getValue());
+	}
+	public boolean optionsChosen(){
+		if (autoSaveFileCheckbox!=null)
+			autoSaveFile.setValue(autoSaveFileCheckbox.getState());
+		return true;
+	}
+
 
 }
 
