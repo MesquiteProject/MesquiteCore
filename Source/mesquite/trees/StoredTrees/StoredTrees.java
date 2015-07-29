@@ -164,6 +164,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		else if (checker.compare(this.getClass(),  "Sets to lax mode", null, commandName, "laxMode")) {
 			laxMode = true;
 		}
+		else if (checker.compare(this.getClass(),  "Turns off lax mode", null, commandName, "laxOff")) {
+			laxMode = false;
+		}
 		else if (checker.compare(this.getClass(), "Sets which block of taxa to use", "[block reference, number, or name]", commandName, "setTaxa")) { 
 			Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
 			if (t!=null){
@@ -636,6 +639,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
  	 /**Returns name to show in windows etc. for tree block or source of trees.*/
  	public String getTreesDescriptiveString(Taxa taxa){
 		setPreferredTaxa(taxa);
+		if (getNumberOfTrees(taxa)==0)
+			return "";
+		String description = "";
 		try {
 			Tree tree;
 			int code = checkTreeBlock(taxa);

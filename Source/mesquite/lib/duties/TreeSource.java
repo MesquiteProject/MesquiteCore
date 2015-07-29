@@ -22,7 +22,7 @@ import mesquite.lib.*;
 /**Supplies trees (compare to OneTreeSource), for instance from a file or simulated.*/
 
 public abstract class TreeSource extends TreeBlockFiller implements ItemsSource  {
-	public static MesquiteBoolean closeIfTreeBlockDeleted = new MesquiteBoolean(false);
+//	public static MesquiteBoolean closeIfTreeBlockDeleted = new MesquiteBoolean(false);
    	 public Class getDutyClass() {
    	 	return TreeSource.class;
    	 }
