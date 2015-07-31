@@ -51,8 +51,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
-	//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
-	//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
+		//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
+		//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
@@ -103,8 +103,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			if (observedStates == null || taxa == null)
 				return null;
 			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
+
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if ((!anySelected || taxa.getSelected(it))){
+				if ((!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					while (!StringUtil.blank(note) && note.indexOf("(")>=0){
 						int start = note.indexOf("(");
@@ -126,8 +134,15 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			if (observedStates == null || taxa == null)
 				return null;
 			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if ((!anySelected || taxa.getSelected(it))){
+				if ((!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					while (!StringUtil.blank(note) && note.indexOf("*")>=0){
 						int start = note.indexOf("*");
@@ -147,9 +162,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Prepends to the note the sequence length (including N\'s and ?\'s) for the selected taxa", null, commandName, "prependLength")) {
 			if (observedStates == null || taxa == null)
 				return null;
-			boolean anySelected = taxa.anySelected() || table.anyCellSelected();
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					if (StringUtil.blank(note))
 						note = "(" + sequenceLength(it) + ")";
@@ -165,8 +187,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Prepends to the note the number of non-missing sites (not including N\'s and ?\'s) for the selected taxa", null, commandName, "prependNumSites")) {
 			if (observedStates == null || taxa == null)
 				return null;
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					if (StringUtil.blank(note))
 						note = "(" + numSites(it) + ")";
@@ -182,8 +212,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Deletes the notes for the selected taxa", null, commandName, "deleteAnnotation")) {
 			if (observedStates == null || taxa == null)
 				return null;
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
 					setNote(it, null);
 				}
 			}
@@ -333,13 +371,27 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		return null;
 	}
 	/*...............................................................................................................*/
-
+	boolean selected(Taxa taxa, int it, int myColumn){
+		if (taxa.getSelected(it)){
+			return true;
+		}
+		if (table != null && myColumn >=0){
+			if (table.isCellSelectedAnyWay(myColumn, it))
+				return true;
+		}
+		return false;
+	}
 
 	void zapData(CharacterData data){
 		Taxa taxa = data.getTaxa();
 		Associable tInfo = data.getTaxaInfo(false);
+		int myColumn = -1;
+		if (getEmployer() instanceof ListModule){
+
+			myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+		}
 		for (int it = 0; it<taxa.getNumTaxa(); it++){
-			if (taxa.getSelected(it)){
+			if (selected(taxa, it, myColumn)){
 				if (tInfo != null)
 					tInfo.deassignAssociated(it);
 				for (int ic=0; ic<data.getNumChars(); ic++)
