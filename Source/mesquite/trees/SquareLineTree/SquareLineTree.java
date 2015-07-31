@@ -270,6 +270,46 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		else 
 			return (bY-y[node])/3 + y[node];
 	}
+
+	// TODO: Check new code (getMiddleOfBranch copied [then modified] from SquareTreeDrawing).  Oliver.July.31.2015
+	/**
+	 * Set values for x and y coordinates of middle of branch; sets {@code angle} value 
+	 * too, but unclear if this is ever used.
+	 * 
+	 *  @param	tree	the tree to extract coordinates from
+	 *  @param	N	the node corresponding to branch of interest
+	 *  @param	xValue	MesquiteNumber to store position on x-axis
+	 *  @param	yValue	MesquiteNumber to store position on y-axis
+	 *  @param	angle	MesquiteDouble...?
+	 */
+	public void getMiddleOfBranch(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue, MesquiteDouble angle){
+		if(tree==null || xValue==null || yValue==null)
+			return;
+		if(!tree.nodeExists(N))
+			return;
+		int mother = tree.motherOfNode(N);
+		if(treeDisplay.getOrientation()==TreeDisplay.UP){
+			xValue.setValue(x[N] + getEdgeWidth()/2);
+			yValue.setValue(y[mother]+(y[N]-y[mother])/2 + getEdgeWidth()/2);
+			angle.setValue(-Math.PI/2.0);
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){
+			xValue.setValue(x[N] + getEdgeWidth()/2);
+			yValue.setValue(y[N]+(y[mother]-y[N])/2 - getEdgeWidth()/2);
+			angle.setValue(Math.PI/2.0);
+		}
+		else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+			xValue.setValue(x[mother]+(x[N]-x[mother])/2 - getEdgeWidth()/2);
+			yValue.setValue(y[N] + getEdgeWidth()/2);
+			angle.setValue(0.0);
+		}
+		else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){
+			xValue.setValue(x[N]+(x[mother]-x[N])/2 + getEdgeWidth()/2);
+			yValue.setValue(y[N] + getEdgeWidth()/2);
+			angle.setValue(Math.PI);
+		}
+	}
+
 	/*_________________________________________________*/
 	public int getNodeValueTextBaseX(int node, int edgewidth, int stringwidth, int fontHeight, boolean horizontalText){
 		int bX =x[node];
