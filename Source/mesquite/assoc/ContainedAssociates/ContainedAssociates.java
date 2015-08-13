@@ -171,6 +171,10 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (MesquiteThread.isScripting())
@@ -538,6 +542,8 @@ class WideTreeDrawing extends TreeDrawing  {
 		edgeWidth = treeDisplay.getEdgeWidth();
 		boxHeight = ownerModule.minimalEdgeWidth/4;
 		treeDisplay.setMinimumTaxonNameDistance(boxHeight,  4); 
+		treeDisplay.setOrientation(TreeDisplay.UP);
+
 		triangleNameRef = NameReference.getNameReference("triangled");
 		widthNameReference = NameReference.getNameReference("width");
 		this.ownerModule = ownerModule;
@@ -1575,8 +1581,8 @@ class WideTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public void reorient(int orientation) {
-		treeDisplay.setOrientation(orientation);
-		treeDisplay.pleaseUpdate(true);
+	//	treeDisplay.setOrientation(orientation);
+	//	treeDisplay.pleaseUpdate(true);
 	}
 	/*_________________________________________________*/
 	public void setEdgeWidth(int edw) {

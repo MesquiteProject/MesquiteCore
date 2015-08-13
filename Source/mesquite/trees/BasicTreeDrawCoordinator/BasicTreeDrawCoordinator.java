@@ -320,7 +320,10 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDrawTask.setHiringCommand(tdC);
 					treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, treeDisplay.getTaxa().getNumTaxa()));
 					treeDisplay.suppressDrawing(suppression);
-					treeDisplay.setOrientation(currentOrientation);
+					if (temp.allowsReorientation())
+						treeDisplay.setOrientation(currentOrientation);
+					else
+						currentOrientation = treeDisplay.getOrientation();
 					if (!suppression)
 						treeDisplay.pleaseUpdate(true);
 					treeDisplay.setVisible(vis);
@@ -356,7 +359,10 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
-					treeDisplays[i].setOrientation(currentOrientations[i]);
+					if (temp.allowsReorientation())
+						treeDisplays[i].setOrientation(currentOrientations[i]);
+					else
+						currentOrientations[i] = treeDisplays[i].getOrientation();
 					treeDisplays[i].suppressDrawing(suppression);
 					if (!suppression)
 						treeDisplays[i].repaint();

@@ -87,13 +87,20 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 		addMenuItem( "Fixed Distance Between Taxa...", makeCommand("setFixedTaxonDistance",  this));
 		addCheckMenuItem(null, "Centered Branches", makeCommand("toggleCenter", this), center);
-		addMenuItem("Set Current Orientation as Default", makeCommand("setDefaultOrientation",  this));
+		if (employerAllowsReorientation())
+			addMenuItem("Set Current Orientation as Default", makeCommand("setDefaultOrientation",  this));
 
 		//	addMenuItem("Taxon Name Angle...", makeCommand("namesAngle", this));
 		return true;
 	}
 	/*.................................................................................................................*/
+	private boolean employerAllowsReorientation(){
+		if (getEmployer()== null || !(getEmployer() instanceof DrawTree))
+			return true;
+		DrawTree dt = (DrawTree)getEmployer();
+		return dt.allowsReorientation();
 
+	}
 	public void endJob(){
 		storePreferences();
 		if (extras!=null) {
@@ -281,10 +288,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 		return "Calculates the node locations in a tree drawing, for use with vertical or horizontal tree drawers (e.g., the standard diagnonal or square trees)." ;
 	}
 	public boolean compatibleWithOrientation(int orientation) {
+		
 		return (orientation==TreeDisplay.UP || orientation==TreeDisplay.DOWN || orientation==TreeDisplay.RIGHT ||orientation==TreeDisplay.LEFT);
 	}
 	public void setDefaultOrientation(TreeDisplay treeDisplay) {
-		treeDisplay.setOrientation(defaultOrientation);
+		if (employerAllowsReorientation())
+			treeDisplay.setOrientation(defaultOrientation);
 	}
 	public int getDefaultOrientation() {
 		return defaultOrientation;

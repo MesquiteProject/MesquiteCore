@@ -134,6 +134,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			programPath = programPathField.getText();
+			File pp = new File(programPath);
+			if (!pp.canExecute()){
+				alert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  Please make sure that you have specified correctly the location of " + getProgramName());
+			}
 			programOptions = programOptionsField.getText();
 			includeGaps = includeGapsCheckBox.getState();
 			processQueryProgramOptions(dialog);
@@ -231,13 +235,19 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		boolean isProtein = data instanceof ProteinData;
 		boolean pleaseStorePref = false;
 		if (!preferencesSet) {
-			programPath = MesquiteFile.chooseDirectory("Choose directory containing" + getProgramName() + ": ");
+			programPath = MesquiteFile.chooseDirectory("Choose directory containing" + getProgramName() + ": "); //Debugg.println why is this "directory"?  is this for os x application bundle only???
 			if (StringUtil.blank(programPath))
 				return null;
 			if (!programPath.endsWith(MesquiteFile.fileSeparator))
 				programPath+=MesquiteFile.fileSeparator;
 			pleaseStorePref = true;
 		}
+		File pp = new File(programPath);
+		if (!pp.canExecute()){
+			discreetAlert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  Please make sure that you have specified correctly the location of " + getProgramName());
+			return null;
+		}
+		Debugg.println("programPath " + programPath + " can execute " + pp.canExecute());  //Debugg.println: here refuse if can't execute
 		getProject().incrementProjectWindowSuppression();
 		if (pleaseStorePref)
 			storePreferences();

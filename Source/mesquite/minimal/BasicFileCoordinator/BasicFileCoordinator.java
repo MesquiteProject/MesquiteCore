@@ -1946,6 +1946,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 		return null;
 	}
 	private void warnLinkedNotFound(String pathName){
+		Debugg.printStackTrace();
 		ownerModule.alert("A script refers to a linked file \"" + pathName + "\" that cannot be found.  Because this linked file cannot be found, the remainder of the script might not " +
 				"execute properly, and various warning messages might be given.  The probably cause of this is that someone saved a file with a second file linked, and then separated the two files." + 
 		" To avoid this problem in the future, either unlink files before saving, or maintain the linked file in the same relative position (e.g., in the same directory).");
