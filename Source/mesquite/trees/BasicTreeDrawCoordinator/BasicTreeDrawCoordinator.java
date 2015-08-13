@@ -830,6 +830,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 			MesquiteMessage.warnProgrammer("tree NULL in tree draw coord");
 		else if ((!suppress) && (!tree.isLocked())) {
 			repaintsPending = 0;
+
 			/* NEEDS TO DRAW BACKGROUND EXTRAS */
 			int dRoot = getTreeDrawing().getDrawnRoot();
 			if (!tree.nodeExists(dRoot))

@@ -113,6 +113,13 @@ public class DatasetList extends ListLVModule {
 	public boolean rowsDeletable(){
 		return true;
 	}
+	public void aboutToDeleteRow(int row){  //called just before superclass deletes rows, in case specific module needs to prepare for deletion
+		if (true || row<0 || row>= getNumberOfRows())
+			return;
+		CharacterData data = getProject().getCharacterMatrix(row);
+		if (data != null)
+			data.doom();
+	}
 	public boolean deleteRow(int row, boolean notify){
 		if (row<0 || row>= getNumberOfRows())
 			return false;

@@ -409,7 +409,6 @@ public void setTreeDrawing(TreeDrawing td) {
 				   	if (ownerModule==null || ownerModule.isDoomed()) 
 				   		return;
 		 			ex.printOnTree(tree, drawnRoot, g);
-
 	 			}
 	 		}
 		}

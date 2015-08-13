@@ -92,7 +92,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Secondary Choices Shown By Default in Dialog Boxes", makeCommand("toggleSecondaryChoicesOnInDialogs",  this), secondaryChoicesOnInDialogs);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Show Subchoices in Module Dialogs", makeCommand("toggleSubChoicesOnInDialogs",  this), subChoicesOnInDialogs);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Stored Characters/Matrices by Default", makeCommand("toggleStoredAsDefault",  this), CharacterSource.storedAsDefault);
-		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Calculations if Matrices Used are Deleted", makeCommand("toggleCloseIfMatrixDeleted",  this), CharacterSource.closeIfMatrixDeleted);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Calculations if Matrices Used are Deleted (req. restart)", makeCommand("toggleCloseIfMatrixDeleted",  this), CharacterSource.closeIfMatrixDeleted);
 //		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Tree Window if Tree Block Used is Deleted", makeCommand("toggleCloseIfTreeBlockDeleted",  this), TreeSource.closeIfTreeBlockDeleted);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
 		if (!MesquiteTrunk.isMacOSX())

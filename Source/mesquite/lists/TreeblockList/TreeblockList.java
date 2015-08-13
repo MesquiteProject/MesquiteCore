@@ -56,6 +56,13 @@ public class TreeblockList extends ListLVModule {
 	public boolean resetMenusOnNameChange(){
 		return true;
 	}
+	public void aboutToDeleteRow(int row){  //called just before superclass deletes rows, in case specific module needs to prepare for deletion
+		if (row<0 || row>= getNumberOfRows())
+			return;
+		TreeVector trees = (TreeVector)treeBlocks.elementAt(row);
+		if (trees != null)
+			trees.doom();
+	}
 	public boolean deleteRow(int row, boolean notify){
 		if (row<0 || row>= getNumberOfRows())
 			return false;

@@ -118,11 +118,14 @@ public abstract class ListModule extends ManagerAssistant  {
 		return false;
 	}
 	*/
+	public void aboutToDeleteRow(int row){  //called just before superclass deletes rows, in case specific module needs to prepare for deletion
+	}
 	public boolean deleteRows(int first, int last, boolean notify){
 		boolean touched = false;
 		for (int i=last; i>=first; i--){
-
-		//for (int i=first; i< last; i++){
+			aboutToDeleteRow(i);
+		}
+		for (int i=last; i>=first; i--){
 			if (deleteRow(i, notify))
 				touched = true;
 		}

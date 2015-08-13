@@ -968,13 +968,21 @@ public class ManageCharacters extends CharactersManager {
 		}
 		else if (checker.compare(this.getClass(), "Deletes matrices from the project", null, commandName, "deleteMatrices")) {
 			Listable[] chosen = ListDialog.queryListMultiple(containerOfModule(), "Select Matrices to Delete", "Select one or more character matrices to be deleted", (String)null, "Delete", false, getProject().getCharacterMatrices(), (boolean[])null);
-			if (chosen != null)
+			if (chosen != null){
+				for (int i = chosen.length-1; i>=0; i--) {  
+					((FileElement)chosen[i]).doom();
+				}
 				for (int i = chosen.length-1; i>=0; i--) {  
 					logln("Deleting " + chosen[i].getName());
 					deleteElement((FileElement)chosen[i]);
 				}
+			}
 		}
 		else if (checker.compare(this.getClass(), "Deletes all matrices from the project", null, commandName, "deleteAllMatrices")) {
+			for (int i = getProject().getNumberCharMatrices(); i>=0; i--) {  
+				CharacterData data = getProject().getCharacterMatrix(i);
+				data.doom();
+			}
 			for (int i = getProject().getNumberCharMatrices(); i>=0; i--) {  
 				CharacterData data = getProject().getCharacterMatrix(i);
 				deleteElement(data);
