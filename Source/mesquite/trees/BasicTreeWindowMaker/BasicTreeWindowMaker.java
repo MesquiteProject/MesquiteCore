@@ -780,6 +780,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	TreeScrollPane treePane;
 	Adjustable hScroll, vScroll;
+	
+	int scanLineThickness = 3;
 
 	boolean usingPane = false;
 	TreeSource treeSourceTask;
@@ -3605,10 +3607,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				yTo= y;
 				if (GraphicsUtil.useXORMode(g, true)){
 					if (windowModule.getUseXORForBranchMoves()){
-						//drawBranchTouchSpot(g,xFrom,yFrom);
-						g.setXORMode(Color.white);
-						g.setColor(Color.black); 
-						g.drawLine(xFrom,yFrom,xTo,yTo);
+						GraphicsUtil.drawXORLine(g, xFrom,yFrom,xTo,yTo, scanLineThickness, Color.lightGray);
 					} else
 						drawBranchTouchSpot(g,xFrom,yFrom);
 				}
@@ -3710,8 +3709,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				RevertTaxon(g, highlightedTaxon);
 			g.setColor(Color.black); 
 			if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()){
-				g.setXORMode(Color.white);
-				g.drawLine(xFrom,yFrom,xTo,yTo); //only if drawn
+				GraphicsUtil.drawXORLine(g, xFrom,yFrom,xTo,yTo, scanLineThickness, Color.lightGray);
 			}
 
 			if (currentTreeTool.informTransfer()) {
@@ -3783,13 +3781,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (currentTreeTool.informTransfer()) {
 				g.setColor(Color.black);
 				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()){
-					g.setXORMode(Color.white); //for some reason color doesn't matter in MacOS, but does in Win95
-					g.drawLine(xFrom,yFrom,xTo,yTo);
+					GraphicsUtil.drawXORLine(g, xFrom,yFrom,xTo,yTo, scanLineThickness, Color.lightGray);
 				}
 				xTo=x;
 				yTo= y;
 				if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves())
-					g.drawLine(xFrom,yFrom,xTo,yTo);
+					GraphicsUtil.drawXORLine(g, xFrom,yFrom,xTo,yTo, scanLineThickness, Color.lightGray);
 			}
 			else if (currentTreeTool.informDrag()) {
 				currentTreeTool.branchDragged(branchFrom, x, y, tree, modifiers);

@@ -240,6 +240,20 @@ public class GraphicsUtil {
 		return true;
 	}
 	/* -------------------------------------------------*/
+	public static void drawXORLine (Graphics g, int xFrom, int yFrom, int xTo, int yTo, int thickness, Color color) {
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setXORMode(Color.white);
+		g2.setColor(color); 
+		
+		Stroke st = g2.getStroke();
+		g2.setStroke(new BasicStroke(thickness));
+		
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.drawLine(xFrom,yFrom,xTo,yTo);
+		g2.setStroke(st);
+
+	}
+	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics(g,0.3f);		
