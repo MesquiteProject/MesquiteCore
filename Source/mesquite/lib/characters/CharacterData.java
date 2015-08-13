@@ -205,8 +205,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return null;
 	}
 	/*.................................................................................................................*/
-	/** this is deprecated and will be removed as soon as all modules no longer call this **/
-	public UndoInstructions getUndoInstructionsAllData(){
+	/** this is deprecated and will be removed as soon as all modules no longer call this **/  
+	public UndoInstructions getUndoInstructionsAllData(){   //WAYNECHECK:  needs to be removed from gataga and, ideally, pdap, and above method called instead.
 		return getUndoInstructionsAllMatrixCells(null);
 	}
 
