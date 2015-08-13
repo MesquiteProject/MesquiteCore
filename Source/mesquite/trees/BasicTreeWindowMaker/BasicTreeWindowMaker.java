@@ -110,6 +110,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	Taxa taxa;
 	static boolean warnUnsaved;
 	boolean 	editMode = false;
+	MesquiteBoolean printNameOnTree;
 
 	BasicTreeWindow basicTreeWindow;
 	MesquiteString treeSourceName;
@@ -882,6 +883,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		infoPanelOn = new MesquiteBoolean(false);
 		//sizeToFit = new MesquiteBoolean(true);
 		floatLegends = new MesquiteBoolean(true);
+		ownerModule.printNameOnTree = new MesquiteBoolean(true);
 		textVersionDrawOnTree = new MesquiteBoolean(false);
 		controlStrip = new ControlStrip((BasicTreeWindowMaker)ownerModule);
 		MesquiteButton listButton = new MesquiteButton(ownerModule, MesquiteModule.makeCommand("showTaxaList",  this), null, true, MesquiteModule.getRootImageDirectoryPath() + "listT.gif", 12, 16);
@@ -897,6 +899,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		controlStrip.addButton(infoButton);
 		addToWindow(controlStrip);
 		ownerModule.addCheckMenuItem(null, "Show Tree Info Panel", ownerModule.makeCommand("toggleInfoPanel",  this), infoPanelOn);
+		treeDrawCoordTask.addCheckMenuItem(null, "Add Name to Printed Tree", ownerModule.makeCommand("togglePrintName",  this), ownerModule.printNameOnTree);
 		tree = null;
 		Tree tempTree = null;
 		if (!editMode){
@@ -2066,6 +2069,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			temp.addLine("toggleInfoPanel " + infoPanelOn.toOffOnString());
 		}
+			temp.addLine("togglePrintName " + windowModule.printNameOnTree.toOffOnString());
 		temp.addLine("showWindow");
 		return temp;
 	}
@@ -2114,6 +2118,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		return "Save Tree as PDF...";
 	}
 
+	protected void pdfWindow(int fitToPage) {
+		super.pdfWindow(fitToPage);
+	}
 	/*.................................................................................................................*/
 	public void printWindow(MesquitePrintJob pjob) {
 		if (pjob != null) {
@@ -2506,6 +2513,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (checker.compare(this.getClass(), "Toggles whether the info panel is on", null, commandName, "toggleInfoPanel")) {
 			infoPanelOn.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			setTreeInfoPanel(infoPanelOn.getValue());
+		}
+		else if (checker.compare(this.getClass(), "Toggles whether to add the name of the tree when printing", null, commandName, "togglePrintName")) {
+			windowModule.printNameOnTree.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 		}
 		else if (checker.compare(this.getClass(), "(For old scripts only) Requests that the tree is drawn to a default (suggested) size", null, commandName, "useSuggestedSize")) {
 			MesquiteBoolean useSuggestedSize = new MesquiteBoolean(drawingSizeMode == AUTOSIZE);
@@ -5412,9 +5422,11 @@ class BirdsEyeExtra extends TreeDisplayExtra {
 /* ======================================================================== */
 class MagnifyExtra extends TreeDisplayExtra {
 	Image image;
+	BasicTreeWindowMaker om;
 	String name = "";
-	public MagnifyExtra (MesquiteModule ownerModule, TreeDisplay treeDisplay, TreeTool tool) {
+	public MagnifyExtra (BasicTreeWindowMaker ownerModule, TreeDisplay treeDisplay, TreeTool tool) {
 		super(ownerModule, treeDisplay);
+		om = ownerModule;
 		image = MesquiteImage.getImage(tool.getImagePath());
 	}
 	/*.................................................................................................................*/
@@ -5437,7 +5449,7 @@ class MagnifyExtra extends TreeDisplayExtra {
 	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 
-		if (name!=null)
+		if (name!=null && om.printNameOnTree.getValue())
 			g.drawString(name, 50, treeDisplay.getBounds().height - 20);
 	}
 }
