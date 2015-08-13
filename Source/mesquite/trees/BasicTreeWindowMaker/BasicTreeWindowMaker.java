@@ -3685,7 +3685,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			MesquiteDouble fraction = new MesquiteDouble();
 			if (currentTreeTool.informTransfer()) {
 				int branchTo=findBranch(x, y, fraction);
-				if (branchTo != 0) {
+				if (branchTo != 0 && !windowModule.getUseXORForBranchMoves()) {
 					GraphicsUtil.drawArrow((Graphics2D)g,xFrom,yFrom,xTo,yTo,2); //only if drawn
 					drawBranchTouchSpot(g,xFrom,yFrom);
 					MesquiteThread.pauseForSeconds(0.5);
