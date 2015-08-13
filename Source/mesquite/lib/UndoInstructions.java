@@ -428,7 +428,7 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, newState, oldState, textField);
 
 		case ALLDATACELLS:
-			newData = data.cloneData();   //David: Debugg.println: note that this clones the current (live) matrix, which means if it has lost columns, they aren't recovered.  
+			newData = data.cloneData();   // note that this clones the current (live) matrix, which means if it has lost columns, they aren't recovered.  
 			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();
 			if (data.getNumChars()>oldData.getNumChars())  //I added this to help   //we need a setToClone system in CharacterData, which we don't have yet.
