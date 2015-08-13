@@ -3463,7 +3463,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 	/*_________________________________________________*/
 	public   void UnhighlightBranch(Graphics g, MesquiteInteger highlight) {
-	if (windowModule.getUseXORForBranchMoves())
+		if (windowModule.getUseXORForBranchMoves())
 			RevertBranchOld(g, highlight);
 		else
 			UnhighlightBranchNew(g,highlight);
@@ -3745,14 +3745,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (treeDisplay.getInvalid())
 			return;
 		if (currentTreeTool.isArrowTool() && fieldTouchX >= 0 && fieldTouchY >=0){
-			dragHighlight(g,modifiers, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
+			g.setColor(Color.blue);
 			if (GraphicsUtil.useXORMode(g, false) && windowModule.getUseXORForBranchMoves()){
-				g.setXORMode(Color.black); //for some reason color doesn't matter in MacOS, but does in Win95
+				g.setXORMode(Color.white); //for some reason color doesn't matter in MacOS, but does in Win95
 				GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
 				GraphicsUtil.drawRect(g, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
-				g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
-				g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
-			}
+	//			g.drawRect(fieldTouchX,fieldTouchY,lastFieldDragX-fieldTouchX,lastFieldDragY-fieldTouchY);
+	//			g.drawRect(fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
+			} else
+				dragHighlight(g,modifiers, fieldTouchX,fieldTouchY,x-fieldTouchX,y-fieldTouchY);
 			lastFieldDragX = x;
 			lastFieldDragY = y;
 			return;
