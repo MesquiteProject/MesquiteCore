@@ -4561,6 +4561,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void mouseInCell(int modifiers, int column, int subColumn, int row, int subRow, MesquiteTool tool) {
+				
 		if (column >= 0 && column <= data.getNumChars(false)) {
 			if (subRow >= 0) {
 				DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(subRow);

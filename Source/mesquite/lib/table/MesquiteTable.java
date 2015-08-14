@@ -3730,10 +3730,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** Called if row is touched. Can be overridden in subclasses to change response to touch. */
 	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
-		if (!rowsSelectable)
+		if (!rowsSelectable) {
 			return;
-		if (!rowLegal(row))
+		}
+		if (!rowLegal(row)) {
 			return;
+		}
 		if ((MesquiteEvent.shiftKeyDown(modifiers) || MesquiteEvent.commandOrControlKeyDown(modifiers)) && anyRowSelected()) {
 			if (MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 				if (isRowSelected(row)) {
@@ -5288,6 +5290,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void deselectRow(int row) {
 		if (rowLegal(row))
 			rowsSelected[0].clearBit(row);
+
 	}
 
 	/* ............................................................................................................... */

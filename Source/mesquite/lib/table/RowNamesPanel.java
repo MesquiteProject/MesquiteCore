@@ -431,7 +431,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 						table.shimmerHorizontalOff(lastY);
 						int dropRow = findRowBeforeBetween(x, y);
 						if (dropRow == -2)
-							dropRow = table.getNumRows();
+							dropRow = table.getNumRows()-1;
 						if (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow)) { //don't move dropped on row included in selection {
 							table.selectedRowsDropped(dropRow);
 						}
