@@ -814,7 +814,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	/* ................................................................................................................. */
 	public void copyIt(StringBuffer s, boolean literal) {
 		copyIt(s, literal, true, true);
 	}

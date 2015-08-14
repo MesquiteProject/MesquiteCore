@@ -21,6 +21,9 @@ import mesquite.lists.lib.*;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.*;
 
 import mesquite.lib.*;
@@ -98,7 +101,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem("Paste Data", this, mcPaste, null, null);
 			popup.add(mPasteItem);
 
-			MesquiteCommand mcDelete = makeCommand("deleteData", this);
+			MesquiteCommand mcDelete = makeCommand("deleteDataTouched", this);
 			mcDelete.setDefaultArguments(""+ic);
 			MesquiteCheckMenuItem mDeleteItem = new MesquiteCheckMenuItem("Delete Data", this, mcDelete, null, null);
 			popup.add(mDeleteItem);
@@ -124,6 +127,10 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			CharacterData data = observedStates.getParentData();
 			if (data == null)
 				return null;
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(it)) {
+				data.copyDataFromRow(it);
+			}
 			//copy
 			return null;
 		}
@@ -133,7 +140,25 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			CharacterData data = observedStates.getParentData();
 			if (data == null)
 				return null;
-			//copy
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(it)) {
+				Debugg.println("paste row: "+it);
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Pastes the data for selected taxon", null, commandName, "deleteDataTouched")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			Debugg.println("prepare to delete row: "+it);
+			if (MesquiteInteger.isCombinable(it)) {
+				if (!AlertDialog.query(containerOfModule(), "Delete Data?", "Are you sure you want to delete the data for taxon " +data.getTaxa().getTaxonName(it) + " in the matrix \"" + data.getName() + "\"", "No", "Yes")) {
+					zapData(data,it);
+				}
+			}
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Deletes the data for selected taxa", null, commandName, "deleteData")) {
@@ -450,6 +475,28 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		outputInvalid();
 		parametersChanged();
 	}
+	/*.................................................................................................................*/
+	void zapData(CharacterData data, int it){
+		Taxa taxa = data.getTaxa();
+		if (it<0 || it>=taxa.getNumTaxa())
+			return;
+		Associable tInfo = data.getTaxaInfo(false);
+		int myColumn = -1;
+		if (getEmployer() instanceof ListModule){
+
+			myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+		}
+		if (tInfo != null)
+			tInfo.deassignAssociated(it);
+		for (int ic=0; ic<data.getNumChars(); ic++)
+			data.deassign(ic, it);
+
+		data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+		outputInvalid();
+		parametersChanged();
+	}
+	
+	
 
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {

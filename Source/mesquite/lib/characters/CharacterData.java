@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.characters; 
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.*;
 import java.util.zip.*;
 
@@ -2743,6 +2745,27 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 	}
+	
+	/* ................................................................................................................. */
+	
+	public void copyDataFromRow(int row) {
+		StringBuffer sb = new StringBuffer();
+		String t = null;
+		t = taxa.getTaxonName(row);
+		if (t != null)
+			sb.append(t);
+		sb.append('\t');
+
+		for (int i = 0; i < numChars; i++) {
+			statesIntoStringBuffer(i, row, sb, true);
+		}
+		sb.append(StringUtil.lineEnding());
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		StringSelection ss = new StringSelection(sb.toString());
+		clip.setContents(ss, ss);
+	}
+
 	/*.................................................................................................................*/
 	NameReference historyRef = NameReference.getNameReference("ChangeHistory");
 	/** Marks the data for character ic, taxon it as having changed*/
