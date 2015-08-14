@@ -82,6 +82,30 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		return temp;
 	}
 
+	/*.................................................................................................................*/
+	public boolean arrowTouchInRow(int ic, int x, int y, boolean doubleClick, int modifiers){
+		if (MesquiteEvent.rightClick(modifiers)) {
+
+			MesquitePopup popup = new MesquitePopup(containerOfModule().getParentFrame());
+
+			MesquiteCommand mcCopy = makeCommand("CopyData", this);
+			mcCopy.setDefaultArguments(""+ic);
+			MesquiteCheckMenuItem mCopyItem = new MesquiteCheckMenuItem("Copy Data", this, mcCopy, null, null);
+			popup.add(mCopyItem);
+
+			MesquiteCommand mcPaste = makeCommand("PasteData", this);
+			mcPaste.setDefaultArguments(""+ic);
+			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem("Paste Data", this, mcPaste, null, null);
+			popup.add(mPasteItem);
+
+			popup.showPopup(x,y+6);
+
+
+		}
+		return false;
+	}
+
+
 
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/

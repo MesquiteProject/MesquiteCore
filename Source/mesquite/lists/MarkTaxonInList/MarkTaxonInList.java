@@ -109,7 +109,7 @@ public class MarkTaxonInList extends TaxonListAssistant {
 			return super.getBackgroundColorOfCell(it, selected);
 	}
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(int ic, int x, int y, boolean doubleClick, int modifiers){
 		mark (ic, !isMarked(ic));
 		if (table != null)
 			table.repaintAll();
