@@ -2803,6 +2803,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				String[] lines = StringUtil.getLines(s);
 				if (lines.length==1) {
 					pasteData(it, s);
+					notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 				}
 			}
 		} catch (Exception e) {
