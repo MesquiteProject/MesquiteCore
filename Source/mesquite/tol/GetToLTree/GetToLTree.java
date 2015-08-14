@@ -59,7 +59,7 @@ public class GetToLTree extends GeneralFileMaker  {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Obtain Tree from ToL",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Obtain Tree from ToLWeb",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel(getDialogLabel());
 		String helpString = "Enter the name of the clade in the Tree of Life Web Project you wish to examine. Enter into \"Number of descendent pages\" the size of the tree to be acquired, "
 			+ "measured in terms of extent of descendent pages. If this number is 1, then only the single page's tree will be acquired; if the number is 2, then the single pages's tree plus all nodes on the "
