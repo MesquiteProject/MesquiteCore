@@ -131,7 +131,6 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			if (MesquiteInteger.isCombinable(it)) {
 				data.copyDataFromRow(it);
 			}
-			//copy
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Pastes the data for selected taxon", null, commandName, "pasteData")) {
@@ -142,7 +141,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(it)) {
-				Debugg.println("paste row: "+it);
+				data.pasteDataIntoTaxon(it);
 			}
 			return null;
 		}

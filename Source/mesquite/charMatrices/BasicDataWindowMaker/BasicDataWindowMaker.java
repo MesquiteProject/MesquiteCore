@@ -3279,26 +3279,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ................................................................................................................. */
 	public String[] getLines(String s) {
-		s = StringUtil.replace(s, "\r\n", "\r");
-		s = StringUtil.replace(s, "\n", "\r");
-
-		StringTokenizer t = new StringTokenizer(s, "\r");
-		String tok = null;
-		int count = t.countTokens();
-		String[] result = new String[count];
-		tok = null;
-		count = 0;
-		try {
-			while (t.hasMoreTokens()) {
-				tok = t.nextToken();
-				if (tok == null)
-					tok = "";
-				result[count] = tok;
-				count++;
-			}
-		} catch (NoSuchElementException e) {
-		}
-		return result;
+		return StringUtil.getLines(s);
 	}
 
 	/* ................................................................................................................. */

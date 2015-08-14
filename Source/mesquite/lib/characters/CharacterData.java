@@ -14,9 +14,13 @@ package mesquite.lib.characters;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.util.*;
 import java.util.zip.*;
+
+import javax.swing.text.JTextComponent;
 
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.duties.*;
@@ -2747,7 +2751,67 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	
 	/* ................................................................................................................. */
-	
+	String nextPasteString(StringBuffer sb) {
+		if (sb.length() == 0)
+			return null;
+		String result = sb.substring(0, 1);
+		sb.delete(0, 1);
+		return result;
+	}
+	/* ............................................................................................................... */
+	public void pasteCell(Parser parser, int column, int row, String s) { 
+		if (StringUtil.blank(s))
+			return;
+		CharacterState csBefore = getCharacterState(null, column, row);
+		parser.setString(s);
+		MesquiteString result = new MesquiteString("");
+		int response = setState(column, row, parser, true, result); // receive errors?
+		if (response == CharacterData.OK) {
+			CharacterState csAfter = getCharacterState(null, column, row);
+			if (csBefore != null && !csBefore.equals(csAfter)) {
+				int[] subcodes = new int[] { MesquiteListener.SINGLE_CELL };
+				if (csBefore.isInapplicable() == csAfter.isInapplicable())
+					subcodes = new int[] { MesquiteListener.SINGLE_CELL, MesquiteListener.CELL_SUBSTITUTION };
+			}
+		}
+	}	
+	/* ................................................................................................................. */
+	boolean pasteData(int it, String s) {
+		String[] lines = StringUtil.getLines(s);
+		StringBuffer sb = new StringBuffer(lines[0]);
+		Parser parser = new Parser();
+		if (sb.indexOf("\t") >= 0) {
+			String result = sb.substring(0, sb.indexOf("\t"));
+			sb.delete(0, sb.indexOf("\t") + 1);
+		}
+		for (int i = 0; i < numChars && sb.length()>0; i++) {
+			pasteCell(parser, i, it, nextPasteString(sb));
+			
+		}
+		return true;
+	}
+
+	/* ................................................................................................................. */
+
+	public void pasteDataIntoTaxon(int it) {
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = clip.getContents(this);
+		try {
+			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+			if (s != null) {
+				String[] lines = StringUtil.getLines(s);
+				if (lines.length==1) {
+					pasteData(it, s);
+				}
+			}
+		} catch (Exception e) {
+			MesquiteMessage.printStackTrace(e);
+		}
+	}
+
+	/*.................................................................................................................*/
+
 	public void copyDataFromRow(int row) {
 		StringBuffer sb = new StringBuffer();
 		String t = null;
