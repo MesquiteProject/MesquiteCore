@@ -1237,9 +1237,7 @@ public class Taxa extends FileElement {
 		}
 		try {
 			int i = Integer.parseInt(s);
-			return "The taxon name \""
-			+ s
-			+ "\" is illegal because it consists only of numbers.  This may cause various problems and should be fixed.";
+			return "The taxon name \""	+ s + "\" is illegal because it consists only of numbers.  This may cause various problems and should be fixed.";
 		} catch (NumberFormatException e) {
 		}
 		crc.reset();
@@ -1253,13 +1251,7 @@ public class Taxa extends FileElement {
 					&&  !otherTaxon.isNameNull() //(i < it || !otherTaxon.isNameDefault()) &&
 					&&  s.equals(otherTaxon.getName())
 				) { 
-				return "The taxon name \""
-				+ s
-				+ "\" for taxon "
-				+ (it + 1)
-				+ " is illegal because another taxon (#"
-				+ (i + 1)
-				+ ") already has it.  This may cause various problems and should be fixed.";
+				return "The taxon name \"" + s + "\" for taxon " + (it + 1) + " is illegal because another taxon (#" + (i + 1) + ") already has it.  This may cause various problems and should be fixed.";
 			}
 		}
 		return null;

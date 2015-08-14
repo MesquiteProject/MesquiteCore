@@ -5099,6 +5099,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
+	/** is any row selected. */
+	public boolean isAnyRowSelected() {
+		return rowsSelected[0].anyBitsOn();
+	}
+
+	/* ............................................................................................................... */
 	/** returns a Bits saying what rows are selected. */
 	public Bits getRowsSelected() {
 		return rowsSelected[0].cloneBits();
