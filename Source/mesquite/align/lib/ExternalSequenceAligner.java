@@ -136,7 +136,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			programPath = programPathField.getText();
 			File pp = new File(programPath);
 			if (!pp.canExecute()){
-				alert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  Please make sure that you have specified correctly the location of " + getProgramName());
+				alert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  The attempt to align may fail.  Please make sure that you have specified correctly the location of " + getProgramName());
 			}
 			programOptions = programOptionsField.getText();
 			includeGaps = includeGapsCheckBox.getState();
@@ -235,7 +235,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		boolean isProtein = data instanceof ProteinData;
 		boolean pleaseStorePref = false;
 		if (!preferencesSet) {
-			programPath = MesquiteFile.chooseDirectory("Choose directory containing" + getProgramName() + ": "); //Debugg.println why is this "directory"?  is this for os x application bundle only???
+			programPath = MesquiteFile.chooseDirectory("Choose directory containing" + getProgramName() + ": "); //DAVIDCHECK: Debugg.println why is this "directory"?  is this for os x application bundle only???
 			if (StringUtil.blank(programPath))
 				return null;
 			if (!programPath.endsWith(MesquiteFile.fileSeparator))
@@ -244,10 +244,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		File pp = new File(programPath);
 		if (!pp.canExecute()){
-			discreetAlert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  Please make sure that you have specified correctly the location of " + getProgramName());
-			return null;
+			discreetAlert( "Sorry, the file or location specified for " + getProgramName() + " appears to be incorrect, as it appears not to be an executable program.  The attempt to align may fail.  Please make sure that you have specified correctly the location of " + getProgramName());
 		}
-		Debugg.println("programPath " + programPath + " can execute " + pp.canExecute());  //Debugg.println: here refuse if can't execute
 		getProject().incrementProjectWindowSuppression();
 		if (pleaseStorePref)
 			storePreferences();
@@ -333,10 +331,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord scr = new CommandRecord(true);
 			MesquiteThread.setCurrentCommandRecord(scr);
+			String failureText = StringUtil.tokenize("Output file containing aligned sequences");
 			if (data instanceof DNAData)
-				tempDataFile = (MesquiteFile)coord.doCommand("linkFile", StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getDNAImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
+				tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getDNAImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			else
-				tempDataFile = (MesquiteFile)coord.doCommand("linkFile", StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getProteinImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
+				tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getProteinImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			MesquiteThread.setCurrentCommandRecord(oldCR);
 			CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
 			alignedData.removeTaxaThatAreEntirelyGaps();
@@ -421,10 +420,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		//reading aligned file
 		FileCoordinator coord = getFileCoordinator();
 		MesquiteFile tempDataFile = null;
+		String failureText = StringUtil.tokenize("Output file containing aligned sequences");
 		if (data instanceof DNAData)
-			tempDataFile = (MesquiteFile)coord.doCommand("linkFile", StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getDNAImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
+			tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getDNAImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 		else
-			tempDataFile = (MesquiteFile)coord.doCommand("linkFile", StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getProteinImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
+			tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getProteinImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 		CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
 		return true;
 	}	

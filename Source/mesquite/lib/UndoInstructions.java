@@ -33,6 +33,7 @@ import mesquite.lib.table.*;
  * */
 
 public class UndoInstructions implements Undoer {
+	// Undo mode: what branch of the undo system is being used; what will be remembered
 	public static final int CANTUNDO = -1;
 	public static final int SINGLEDATACELL = 1;
 	public static final int SINGLETAXONNAME = 2;
@@ -45,23 +46,28 @@ public class UndoInstructions implements Undoer {
 	public static final int PARTS_ADDED = 9;
 	public static final int DATABLOCK = 10;
 
-
-	//	ones below here are not yet supported
+	//	Modes below here are not yet supported
 	public static final int TAXA_DELETED = 30;
 	public static final int CHARACTERS_DELETED = 31;
-	
-	
-	public static final int NO_CHAR_TAXA_CHANGES = 0;
-	public static final int CHAR_ADDED_TO_END = 1;
-	public static final int CHAR_ADDED_TO_START = 9;
-	public static final int CHAR_ADDED = 2;
-	public static final int CHAR_REORDERED = 3;
-	public static final int CHAR_DELETED = 4;
-	public static final int TAX_ADDED_TO_END = 5;
-	public static final int TAX_ADDED_TO_START = 10;
-	public static final int TAX_ADDED = 6;
-	public static final int TAX_REORDERED = 7;
-	public static final int TAX_DELETED = 8;
+
+
+	// Clues for the ALLDATACELLS mode as to what might or might not change
+	public static final int NO_CHAR_TAXA_CHANGES = 100;  //currently allowed
+	public static final int CHAR_ADDED_TO_END = 101;  //currently allowed
+	public static final int CHAR_ADDED_TO_START = 109;  //currently allowed
+	public static final int CHAR_ADDED = 102;  //currently allowed
+	public static final int CHAR_REORDERED = 103;
+	public static final int CHAR_DELETED = 104;
+	public static final int TAX_ADDED_TO_END = 105;  //currently allowed
+	public static final int TAX_ADDED = 106; //currently allowed
+	public static final int TAX_REORDERED = 107;
+	public static final int TAX_DELETED = 108;
+	public static final int TAX_ADDED_TO_START = 110;//currently allowed
+	public static final int CHAR_SPECSETS_CHANGED = 111;
+	public static final int TAX_SPECSETS_CHANGED = 112;
+	public static final int[] allowedChanges = new int[]{NO_CHAR_TAXA_CHANGES, CHAR_ADDED_TO_END, CHAR_ADDED_TO_START, CHAR_ADDED, TAX_ADDED_TO_END, TAX_ADDED, TAX_ADDED_TO_START};
+
+
 
 	int changeClass;
 
@@ -173,7 +179,7 @@ public class UndoInstructions implements Undoer {
 			}
 		}
 	}
-	
+
 	/** This is the constructor for whole-matrix changes or changes to lists of character names. */
 	public UndoInstructions(int changeClass, Object obj, CharacterData data, int[] changesThatMightHappen) {
 		if (obj == null)
@@ -184,24 +190,12 @@ public class UndoInstructions implements Undoer {
 		if (changeClass==ALLDATACELLS) {
 			if (data != null && obj!=null)
 				if (obj instanceof CharacterData) {
-					boolean allowableChange = true;
-					if (changesThatMightHappen==null)
-						allowableChange = false;
-					else {
-						for (int i=0; i<changesThatMightHappen.length; i++) {
-							if (changesThatMightHappen[i] == CHAR_REORDERED || changesThatMightHappen[i] == CHAR_DELETED){  //WAYNECHECK:  do we need to add CHAR_ADDED to this list?  What about CHAR_ADDED_TO_START? 
-								allowableChange = false;
-								break;
-							}
-							if (changesThatMightHappen[i] == TAX_ADDED_TO_END || changesThatMightHappen[i] == TAX_ADDED_TO_START || changesThatMightHappen[i] == TAX_ADDED || changesThatMightHappen[i] == TAX_REORDERED || changesThatMightHappen[i] == TAX_DELETED){
-								allowableChange = false;
-								break;
-							}
-						}
-					}
-					if (!allowableChange)
+					if (changesThatMightHappen==null)  // no specification as to what might happen; currently, disallow that
 						return;
-					
+					for (int i=0; i<changesThatMightHappen.length; i++) 
+						if (IntegerArray.indexOf(allowedChanges, changesThatMightHappen[i])<0)// one of the possible changes is not allowed; bail
+							return;
+
 					this.oldData = ((CharacterData)obj).cloneData();
 					if (oldData !=  null){
 						this.oldData.setName("Undo Matrix [old]");

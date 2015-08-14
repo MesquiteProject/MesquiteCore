@@ -55,6 +55,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	BasicDataWindow bdw;
 	boolean isExtra = false;
 	MesquiteMenuSpec matrixMenu, displayMenu;
+	static boolean warnAgainAboutTaxonNameDuplication = true;
 	
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -263,13 +264,20 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		}
 		super.employeeParametersChanged(employee, source, notification);
 	}
+
+	public static boolean getWarnAgainAboutTaxonNameDuplication() {
+		return warnAgainAboutTaxonNameDuplication;
+	}
+
+	public static void setWarnAgainAboutTaxonNameDuplication(boolean warnAgainAboutTaxonNameDuplication) {
+		BasicDataWindowMaker.warnAgainAboutTaxonNameDuplication = warnAgainAboutTaxonNameDuplication;
+	}
 }
 
 /* ======================================================================== */
 class BasicDataWindow extends TableWindow implements MesquiteListener {
 	CharacterData data;
 
-	// BasicDataWindowMaker ownerModule;
 	protected TableTool scrollTool;
 	MatrixTable table;
 	int windowWidth = 420;
@@ -3271,26 +3279,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ................................................................................................................. */
 	public String[] getLines(String s) {
-		s = StringUtil.replace(s, "\r\n", "\r");
-		s = StringUtil.replace(s, "\n", "\r");
-
-		StringTokenizer t = new StringTokenizer(s, "\r");
-		String tok = null;
-		int count = t.countTokens();
-		String[] result = new String[count];
-		tok = null;
-		count = 0;
-		try {
-			while (t.hasMoreTokens()) {
-				tok = t.nextToken();
-				if (tok == null)
-					tok = "";
-				result[count] = tok;
-				count++;
-			}
-		} catch (NoSuchElementException e) {
-		}
-		return result;
+		return StringUtil.getLines(s);
 	}
 
 	/* ................................................................................................................. */
@@ -3317,6 +3306,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		return result;
 
 	}
+	/* ................................................................................................................. */
+	void removeTaxonNameIfPresent(StringBuffer sb) {
+		if (sb.indexOf("\t") >= 0) {
+			String result = sb.substring(0, sb.indexOf("\t"));
+			sb.delete(0, sb.indexOf("\t") + 1);
+		}
+	}
 
 	/* ................................................................................................................. */
 	boolean pasteMolecular(String s) {
@@ -3338,15 +3334,18 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (sbUsed)
 			lineCount++;
 		boolean taxNamesChanged = false;
+		boolean atLeastOneFullRowSelected = isAnyRowSelected();
 		for (int j = 0; j < numRowsTotal && lineCount < lines.length; j++) {
 			if (sbUsed)
 				sb = new StringBuffer(lines[lineCount]);
 			sbUsed = false;
-			if (rowNamesCopyPaste && (isRowNameSelected(j) || isRowSelected(j))) { // for name of taxon
+			if (atLeastOneFullRowSelected) {  // need to remove part before tab if a tab is there
+				removeTaxonNameIfPresent(sb);
+			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon
 				returnedRowNameText(j, molecToken(sb, true));
 				taxNamesChanged = true;
 				sbUsed = true;
-			}
+			}  
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
 					returnedMatrixText(i, j, molecToken(sb, false));
@@ -4922,7 +4921,14 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				window.setUndoer(window.setUndoInstructions(UndoInstructions.SINGLETAXONNAME, -1, row, new MesquiteString(oldTaxonName), new MesquiteString(s)));
 			}
 			else if (window.ownerModule != null){
-				window.ownerModule.discreetAlert(warning);
+				boolean giveWarning = BasicDataWindowMaker.getWarnAgainAboutTaxonNameDuplication();
+				if (giveWarning)
+					if (MesquiteThread.isScripting())
+						window.ownerModule.logln(warning);
+					else {
+						giveWarning = AlertDialog.query(window, "Duplicate taxon name", warning, "OK", "Don't warn again");
+						BasicDataWindowMaker.setWarnAgainAboutTaxonNameDuplication(giveWarning);
+					}
 			}
 		}
 	}

@@ -814,7 +814,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ................................................................................................................. */
-	/* ................................................................................................................. */
 	public void copyIt(StringBuffer s, boolean literal) {
 		copyIt(s, literal, true, true);
 	}
@@ -5096,6 +5095,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		if (rowLegal(row))
 			return rowsSelected[0].isBitOn(row);
 		return false;
+	}
+
+	/* ............................................................................................................... */
+	/** is any row selected. */
+	public boolean isAnyRowSelected() {
+		return rowsSelected[0].anyBitsOn();
 	}
 
 	/* ............................................................................................................... */

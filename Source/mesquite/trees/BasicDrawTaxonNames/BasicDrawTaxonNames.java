@@ -297,7 +297,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						currentFont = fontToSet;
 						fontSizeName.setValue(Integer.toString(fontSize));
 						parametersChanged(new Notification(TreeDisplay.FONTSIZECHANGED));
-						//WAYNECHECK: here somehow force BasicTreeWindow to call basicTreeWindow.sizeDisplay()
 					}
 				}
 			}

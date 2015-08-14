@@ -64,6 +64,16 @@ public abstract class ListModule extends ManagerAssistant  {
 	public boolean resetMenusOnNameChange(){
 		return false;
 	}
+	public Vector getAssistants() {
+		Vector v = new Vector();
+		for (int i=0; i< getNumberOfEmployees(); i++) {
+			Object obj =  getEmployeeVector().elementAt(i);
+			if (obj instanceof ListAssistant) {
+				v.addElement(obj);
+			}
+		}	
+  	 	return v;
+	}
 
 	public void forceRecalculations() {
 		if (getModuleWindow()== null)
