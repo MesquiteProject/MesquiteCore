@@ -20,6 +20,7 @@ import mesquite.categ.lib.MolecularState;
 import mesquite.lists.lib.*;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.util.*;
 
 import mesquite.lib.*;
@@ -85,20 +86,24 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	/*.................................................................................................................*/
 	public boolean arrowTouchInRow(int ic, int x, int y, boolean doubleClick, int modifiers){
 		if (MesquiteEvent.rightClick(modifiers)) {
+			MesquitePopup popup = new MesquitePopup(table.getMatrixPanel());
 
-			MesquitePopup popup = new MesquitePopup(containerOfModule().getParentFrame());
-
-			MesquiteCommand mcCopy = makeCommand("CopyData", this);
+			MesquiteCommand mcCopy = makeCommand("copyData", this);
 			mcCopy.setDefaultArguments(""+ic);
 			MesquiteCheckMenuItem mCopyItem = new MesquiteCheckMenuItem("Copy Data", this, mcCopy, null, null);
 			popup.add(mCopyItem);
 
-			MesquiteCommand mcPaste = makeCommand("PasteData", this);
+			MesquiteCommand mcPaste = makeCommand("pasteData", this);  //only if something in clipboard
 			mcPaste.setDefaultArguments(""+ic);
 			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem("Paste Data", this, mcPaste, null, null);
 			popup.add(mPasteItem);
 
-			popup.showPopup(x,y+6);
+			MesquiteCommand mcDelete = makeCommand("deleteData", this);
+			mcDelete.setDefaultArguments(""+ic);
+			MesquiteCheckMenuItem mDeleteItem = new MesquiteCheckMenuItem("Delete Data", this, mcDelete, null, null);
+			popup.add(mDeleteItem);
+
+			popup.showPopup(x,y+18);
 
 
 		}
@@ -112,6 +117,24 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
 			return matrixSourceTask;
+		}
+		else if (checker.compare(this.getClass(), "Copies the data for selected taxon", null, commandName, "copyData")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			//copy
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Pastes the data for selected taxon", null, commandName, "pasteData")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			//copy
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Deletes the data for selected taxa", null, commandName, "deleteData")) {
 			if (observedStates == null)

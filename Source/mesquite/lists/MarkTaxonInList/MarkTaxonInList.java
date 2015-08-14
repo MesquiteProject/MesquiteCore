@@ -18,9 +18,9 @@ package mesquite.lists.MarkTaxonInList;
 /*~~  */
 
 import java.awt.Color;
+import java.awt.Container;
 
 import mesquite.lists.lib.*;
-
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.ManagerAssistant;
 import mesquite.lib.*;
@@ -109,7 +109,7 @@ public class MarkTaxonInList extends TaxonListAssistant {
 			return super.getBackgroundColorOfCell(it, selected);
 	}
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic, int x, int y, boolean doubleClick, int modifiers){
+	public boolean arrowTouchInRow( int ic, int x, int y, boolean doubleClick, int modifiers){
 		mark (ic, !isMarked(ic));
 		if (table != null)
 			table.repaintAll();
