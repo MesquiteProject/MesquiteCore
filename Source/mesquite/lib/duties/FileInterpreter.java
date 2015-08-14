@@ -41,9 +41,14 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	protected String filePath=null;
 
 	
-	protected static int REPLACEDATA = 0;
-	protected static int REPLACEIFEMPTY = 1;
-	protected static int ADDASNEW = 2;
+	protected static int STOPIMPORT = -1;
+	protected static int DONTADD = 0;
+	protected static int REPLACEDATA = 1;
+	protected static int REPLACEIFEMPTYOTHERWISEADD = 2;
+	protected static int REPLACEIFEMPTYOTHERWISEIGNORE = 3;
+	protected static int ADDASNEW = 4;
+	
+	protected static int treatmentOfIncomingDuplicates = DONTADD;
 
 //	protected static boolean defaultReplaceDataOfTaxonWithSameName = false;
 	protected static int defaultReplaceDataOfTaxonWithSameNameInt = ADDASNEW;
