@@ -23,7 +23,9 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.util.*;
 
 import mesquite.lib.*;
@@ -114,6 +116,24 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	public CharacterData getCharacterData(){
 		return data;
 	}
+	
+	/* ................................................................................................................. */
+
+	public boolean clipBoardHasString() {
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = clip.getContents(this);
+		try {
+			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+			if (s != null) {
+				return true;
+			}
+		} catch (Exception e) {
+			MesquiteMessage.printStackTrace(e);
+		}
+		return false;
+	}
+
 
 	/*.................................................................................................................*/
 	public boolean arrowTouchInRow(int ic, int x, int y, boolean doubleClick, int modifiers){
@@ -128,6 +148,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			MesquiteCommand mcPaste = makeCommand("pasteData", this);  //only if something in clipboard
 			mcPaste.setDefaultArguments(""+ic);
 			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem("Paste Data", this, mcPaste, null, null);
+			mPasteItem.setEnabled(clipBoardHasString());
 			popup.add(mPasteItem);
 
 			MesquiteCommand mcDelete = makeCommand("deleteDataTouched", this);
@@ -137,7 +158,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 			popup.showPopup(x,y+18);
 
-
+			return true;
 		}
 		return false;
 	}
