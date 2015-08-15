@@ -142,6 +142,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			includeGaps = includeGapsCheckBox.getState();
 			processQueryProgramOptions(dialog);
 			storePreferences();
+			//preferencesSet = true;
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
@@ -235,7 +236,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		boolean isProtein = data instanceof ProteinData;
 		boolean pleaseStorePref = false;
 		if (!preferencesSet) {
-			programPath = MesquiteFile.chooseDirectory("Choose directory containing" + getProgramName() + ": "); //Debugg.println why is this "directory"?  is this for os x application bundle only???
+			programPath = MesquiteFile.openFileDialog("Choose " + getProgramName()+ ": ", null, null);
 			if (StringUtil.blank(programPath))
 				return null;
 			if (!programPath.endsWith(MesquiteFile.fileSeparator))
