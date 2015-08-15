@@ -68,7 +68,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "14 August 2015";
+		return "15 August 2015";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -90,7 +90,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	721;  
+		return 	722;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -372,6 +372,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	public final void iQuit(boolean giveMessage){
 		incrementMenuResetSuppression();
+		MesquiteCommand command = getHiringCommand();
 		doomAll();
 		MesquiteModule employerMod = employer;
 		MesquiteModule localRefEmployer = employer;
@@ -382,7 +383,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 		endJob();
 		dispose();
-		MesquiteCommand command = getHiringCommand();
 		resetAllWindowsMenus();
 		/* if hiringCommand isn't null, then look among the module info's for possible replacements
 		and use the hiringCommand to attempt to hire them.

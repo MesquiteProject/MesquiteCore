@@ -234,7 +234,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		ListableVector v = new ListableVector();		
 		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
 			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
-			v.addElement(trees, false);
+			if (!trees.isDoomed())
+				v.addElement(trees, false);
 		}
 		return v;
 	}
@@ -1649,6 +1650,20 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(int j) {  //core, chromaseq, collab; can use RAW
 		return getCharacterMatrix(j, false);
 	}
+	public mesquite.lib.characters.CharacterData getCharacterMatrixDoomedOrNot(int j) {  
+		int count=0;
+		mesquite.lib.characters.CharacterData data;
+		for (int i=0; i<datas.size(); i++) {
+			data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+				if (count==j)
+					return data;
+				count++;
+	
+		}
+		MesquiteTrunk.mesquiteTrunk.logln("Error: attempt to get data set beyond number (0) [" + j + "] {" + datas.size() + " }"  + getName());
+		MesquiteMessage.printStackTrace("Error: attempt to get data set beyond number (0) [" + j + "] {" + datas.size() + " }"  + getName());
+		return null;
+	}
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(int j, boolean onlyVisible) {  //core, chromaseq, collab; can use RAW
 		int count=0;
 		mesquite.lib.characters.CharacterData data;
@@ -1745,6 +1760,20 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** returns the jth of data sets belonging to a given file*/
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, int j) {  //�����
 		return getCharacterMatrix(f, null, null, j, false);
+	}
+	/*---------===---------===---------===---------===---------===---------===-------------------*/
+	/** returns number of data sets of a given data class (CharacterState subclass is passed) belonging to given taxa.  If permitTaxaMatching is true, 
+	 * considers taxa equal if names coincide*/
+	public int  getNumberCharMatricesDoomedOrNot(MesquiteFile file, Taxa taxa, Object dataClass) {  //MesquiteProject
+		int count=0;
+		if (datas == null)
+			return 0;
+		for (int i=0; i<datas.size(); i++) { 
+			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+			if ((file == null || data.getFile()==file) && (taxa == null || taxa == data.getTaxa()) && (dataClass==null || compatibleMatrix(dataClass, data)))
+				count++;
+		}
+		return count;
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets of a given data class (CharacterState subclass is passed) belonging to given taxa.  If permitTaxaMatching is true, 

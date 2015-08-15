@@ -1781,9 +1781,30 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	/* ................................................................................................................. */
 	/** Returns the command for hiring a replacement to this module */
 	public final MesquiteCommand getHiringCommand() {
+		if (doesAnEmployerSuppressAutoRehiring())
+			return null;
 		return hiringCommand;
 	}
 
+	/* ................................................................................................................. */
+	/**
+	 * Before rehiring done, look into employer chain to seed if any request no rehiring
+	 */
+	boolean suppressAutoRehireInEmployeeTree = false;
+	public final void setSuppressEmployeeAutoRehiring(boolean s) {
+		suppressAutoRehireInEmployeeTree = s;
+	}
+	public final boolean getSuppressEmployeeAutoRehiring() {
+		return suppressAutoRehireInEmployeeTree;
+	}
+	public final boolean doesAnEmployerSuppressAutoRehiring() {
+		if (employer != null){
+			if (employer.suppressAutoRehireInEmployeeTree)
+				return true;
+			return employer.doesAnEmployerSuppressAutoRehiring();
+		}
+		return false;
+	}
 	/* ................................................................................................................. */
 	/**
 	 * returns whether this module has an employee hired for the given dutyClass and having the given MesquiteModuleInfo. For use by hireAllOtherEmployees

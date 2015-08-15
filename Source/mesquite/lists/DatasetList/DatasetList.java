@@ -114,16 +114,16 @@ public class DatasetList extends ListLVModule {
 		return true;
 	}
 	public void aboutToDeleteRow(int row){  //called just before superclass deletes rows, in case specific module needs to prepare for deletion
-		if (true || row<0 || row>= getNumberOfRows())
+		if (row<0 || row>= getNumberOfRows())
 			return;
-		CharacterData data = getProject().getCharacterMatrix(row);
-		if (data != null)
-			data.doom();
+		CharacterData rdata = getProject().getCharacterMatrixDoomedOrNot(row);
+		if (rdata != null)
+			rdata.doom();
 	}
 	public boolean deleteRow(int row, boolean notify){
 		if (row<0 || row>= getNumberOfRows())
 			return false;
-		CharacterData data = getProject().getCharacterMatrix(row);
+		CharacterData data = getProject().getCharacterMatrixDoomedOrNot(row);
 		getProject().removeFileElement(data);//must remove first, before disposing
 		data.dispose();
 		return true;

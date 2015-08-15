@@ -972,19 +972,21 @@ public class ManageCharacters extends CharactersManager {
 				for (int i = chosen.length-1; i>=0; i--) {  
 					((FileElement)chosen[i]).doom();
 				}
+				getProject().incrementProjectWindowSuppression();
 				for (int i = chosen.length-1; i>=0; i--) {  
 					logln("Deleting " + chosen[i].getName());
 					deleteElement((FileElement)chosen[i]);
 				}
+				getProject().decrementProjectWindowSuppression();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Deletes all matrices from the project", null, commandName, "deleteAllMatrices")) {
 			for (int i = getProject().getNumberCharMatrices(); i>=0; i--) {  
-				CharacterData data = getProject().getCharacterMatrix(i);
+				CharacterData data = getProject().getCharacterMatrixDoomedOrNot(i);
 				data.doom();
 			}
 			for (int i = getProject().getNumberCharMatrices(); i>=0; i--) {  
-				CharacterData data = getProject().getCharacterMatrix(i);
+				CharacterData data = getProject().getCharacterMatrixDoomedOrNot(i);
 				deleteElement(data);
 			}
 		}

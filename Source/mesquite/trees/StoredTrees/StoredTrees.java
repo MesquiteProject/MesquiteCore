@@ -406,8 +406,10 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			}
 			else {
 				String[] list = new String[nt];
-				for (int i=0; i< nt; i++)
-					list[i]=manager.getTreeBlock(taxa, i).getName();
+				for (int i=0; i< nt; i++){
+					TreeVector tv =manager.getTreeBlock(taxa, i);
+					list[i]=tv.getName();
+				}
 				currentListNumber = ListDialog.queryList(containerOfModule(), "Use which tree block?", "Use which tree block? \n(" + whatIsMyPurpose() + ")",MesquiteString.helpString, list, 0);
 				if (!MesquiteInteger.isCombinable(currentListNumber))
 					currentListNumber = 0;

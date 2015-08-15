@@ -478,10 +478,12 @@ public class ManageTrees extends TreesManager {
 				for (int i = chosen.length-1; i>=0; i--) {  
 					((FileElement)chosen[i]).doom();
 				}
+				getProject().incrementProjectWindowSuppression();
 				for (int i = chosen.length-1; i>=0; i--) {  
 					logln("Deleting " + chosen[i].getName());
 					deleteElement((FileElement)chosen[i]);
 				}
+				getProject().decrementProjectWindowSuppression();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Restarts to unfinished tree block filling", "[name of tree block filler module]", commandName, "restartTreeSource")) { 
@@ -1175,7 +1177,7 @@ public class ManageTrees extends TreesManager {
 		}
 	}
 	/*.................................................................................................................*/
-	public TreeVector getTreeVectorByID(int id){
+	public TreeVector getTreeVectorByID(int id){  //OK for doomed
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(j);
 			if (trees!= null && trees.getID() ==id)
@@ -1188,12 +1190,9 @@ public class ManageTrees extends TreesManager {
 		return treesVector;
 	}
 	/*.................................................................................................................*/
-	public TreeVector getTreeBlock(Taxa taxa, int i){
+	public TreeVector getTreeBlock(Taxa taxa, int i){  //OK for doomed
 		if (treesVector==null)
 			return null;
-		if (taxa == null) {
-			return (TreeVector)treesVector.elementAt(i);
-		}
 		int count = 0;
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(j);
@@ -1217,7 +1216,7 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){
+	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){  //OK for doomed
 		if (treesVector==null)
 			return null;
 		int count = 0;
@@ -1232,14 +1231,11 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){
-		if (taxa == null) {
-			return getTreeBlockNumber(trees);
-		}
+	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){ //OK for doomed
 		int count = 0;
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector t = (TreeVector)treesVector.elementAt(j);
-			if (taxa == null || taxa.equals(t.getTaxa(), false)) {
+			if ((taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
 				if (t == trees)
 					return count;
 				count++;
@@ -1248,14 +1244,11 @@ public class ManageTrees extends TreesManager {
 		return -1;
 	}
 	/*.................................................................................................................*/
-	public int getTreeBlockNumber(TreeVector trees){
-		if (treesVector==null)
-			return -1;
-		else 
-			return treesVector.indexOf(trees);
+	public int getTreeBlockNumber(TreeVector trees){//OK for doomed
+			return getTreeBlockNumber(null);
 	}
 	/*.................................................................................................................*/
-	public int getNumberTreeBlocks(Taxa taxa){
+	public int getNumberTreeBlocks(Taxa taxa){ //OK for doomed
 		if (treesVector == null)
 			return 0;
 		int count = 0;
@@ -1267,7 +1260,7 @@ public class ManageTrees extends TreesManager {
 		return count;
 	}
 	/*.................................................................................................................*/
-	public int getNumberTreeBlocks(Taxa taxa, MesquiteFile file){
+	public int getNumberTreeBlocks(Taxa taxa, MesquiteFile file){ //OK for doomed
 		if (treesVector == null)
 			return 0;
 		int count = 0;
@@ -1279,7 +1272,7 @@ public class ManageTrees extends TreesManager {
 		return count;
 	}
 	/*.................................................................................................................*/
-	public int getNumberTreeBlocks(){
+	public int getNumberTreeBlocks(){ //OK for doomed
 		if (treesVector == null)
 			return 0;
 		int count = 0;
