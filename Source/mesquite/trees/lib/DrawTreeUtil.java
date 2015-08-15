@@ -716,8 +716,9 @@ public class DrawTreeUtil {
 			int ynM = y[nM];
 			int halfEdgewidth = edgewidth/2;
 			int nearby = 4;
-			int halfTaxonSpacing = taxonSpacing/2 -3;
-			if (nearby< halfTaxonSpacing) nearby = halfTaxonSpacing;
+			int halfTaxonSpacing = taxonSpacing/2 -4;
+			if (nearby> halfTaxonSpacing) nearby = halfTaxonSpacing;
+			if (nearby< 1) nearby = 1;
 
 			if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 				if ((h>=xN-nearby) && (h<=xN+edgewidth+nearby) && (v>=yN) && (v<=ynM))  //with vertical part of branch
