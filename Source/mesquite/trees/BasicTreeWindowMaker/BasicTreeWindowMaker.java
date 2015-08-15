@@ -211,11 +211,13 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	/*.................................................................................................................*/
 	boolean handlingQuitTreeSource = false;
 
-	void disconnectFromTreeBlock(){
+	void disconnectFromTreeBlock(boolean fireCurrentTask){
 		handlingQuitTreeSource = true;
-
+		
 		String d = basicTreeWindow.getTreeDescription();
-		String n = basicTreeWindow.getTreeNameAndDetails();
+		String n = "Tree recovered from: " + basicTreeWindow.getTreeNameAndDetails();
+		if (fireCurrentTask)
+			fireEmployee(treeSourceTask);
 		TreeSource temp = (TreeSource)hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false);
 		if (temp !=null){
 			treeSourceTask = temp;
@@ -231,12 +233,14 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		}
 		basicTreeWindow.resetForTreeSource(true, false, true, 0);
 		basicTreeWindow.setTreeDescription(d, n);
+		basicTreeWindow.treeEdited = false;
+		basicTreeWindow.setHighlighted(false);
 		handlingQuitTreeSource = false;
 	}
 	/*.................................................................................................................*/
 	public void employeeQuit(MesquiteModule m){
 		if (m instanceof TreeSource && !handlingQuitTreeSource){
-			disconnectFromTreeBlock();
+			disconnectFromTreeBlock(false);
 		}
 		else if (basicTreeWindow!=null)
 			basicTreeWindow.contentsChanged();
@@ -298,11 +302,13 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		temp.addLine("suppressEPCResponse");
 
 		if (MesquiteTrunk.snapshotMode!=Snapshot.SNAPDISPLAYONLY){
-			temp.addLine("setTreeSource " , treeSourceTask);
+			if (!editMode)
+				temp.addLine("setTreeSource " , treeSourceTask);
+			else
+				temp.addLine("setTreeSourceEditMode",  treeSourceTask);
 
 			temp.addLine("setAssignedID " + getPermanentIDString());  //for tree context
 		}
-
 		temp.addLine("getTreeWindow");
 		temp.addLine("tell It");
 		temp.incorporate(fromWindow, true);
@@ -329,7 +335,12 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 		}
 		temp.addLine("endTell");
-		temp.addLine("desuppressEPCResponse");
+		if (MesquiteTrunk.snapshotMode!=Snapshot.SNAPDISPLAYONLY && editMode){
+				temp.addLine("setEditMode " + StringUtil.tokenize(basicTreeWindow.getTreeNameAndDetails()));
+				temp.addLine("desuppressEPCResponseNORESET");
+		}
+		else
+			temp.addLine("desuppressEPCResponse");
 
 		return temp;
 	}
@@ -371,10 +382,42 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			if (basicTreeWindow != null)
 				basicTreeWindow.resetForTreeSource(false, false, false, MesquiteInteger.inapplicable);
 		}
+		else if (checker.compare(this.getClass(), "Suppresses responding to parameters changed.", null, commandName, "desuppressEPCResponseNORESET")) {
+			suppressEPCResponse = false;
+		}
 		else if (checker.compare(this.getClass(), "Sets the tree in the window to the description passed", "[standard tree description]", commandName, "setTree")) { //added 10 Jan 02 for use in Send Script dialog
 			if (basicTreeWindow!=null){
 				basicTreeWindow.doCommand(commandName, arguments, checker);
 			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the mode to that of With Trees To Edit By Hand", null, commandName, "setEditMode")) {
+			String mssage = parser.getFirstToken(arguments);
+			editMode = true;
+			basicTreeWindow.treeEdited = false;
+			basicTreeWindow.forceRenameTree(mssage);
+			basicTreeWindow.originalTree = null;
+			basicTreeWindow.setHighlighted(false);
+		}
+		else if (checker.compare(this.getClass(), "Sets the source of trees for edit mode", null, commandName, "setTreeSourceEditMode")) {
+			if (basicTreeWindow!=null)
+				basicTreeWindow.hideTree();
+			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, "$ #StoredTrees laxMode", "Source of trees", treeSourceTask);
+			if (temp !=null){
+				treeSourceTask = temp;
+				treeSourceName.setValue(treeSourceTask.getName());
+				if (basicTreeWindow!=null) {
+					basicTreeWindow.setTreeSource(treeSourceTask);
+					basicTreeWindow.showTree();
+					basicTreeWindow.resetForTreeSource(true, false, true, 0);
+				}
+				treeSourceTask.setPreferredTaxa(taxa);
+
+				resetContainingMenuBar();
+				resetAllWindowsMenus();
+				return treeSourceTask;
+			}
+			else if (basicTreeWindow!=null)
+				basicTreeWindow.showTree();
 		}
 		else if (checker.compare(this.getClass(), "Sets the source of trees", "[name of tree source module]", commandName, "setTreeSource")) {
 			if (basicTreeWindow!=null)
@@ -489,7 +532,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				return;
 			int code = Notification.getCode(notification);
 			if (code == MesquiteListener.BLOCK_DELETED && (employee.nameMatches("StoredTrees") || (employee.nameMatches("ConsensusTree")))){
-				disconnectFromTreeBlock();
+				disconnectFromTreeBlock(true);
 			}
 			else 
 				if (code == MesquiteListener.ITEMS_ADDED){
@@ -782,7 +825,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	TreeDisplay treeDisplay;
 	Taxa taxa;
 	DrawTreeCoordinator treeDrawCoordTask;
-	boolean treeEdited=false;
+	boolean treeEdited = false;
 	boolean  editedByHand = false;
 	//private Rectangle treeRect;
 	//MesquiteScrollbar hScroll, vScroll;
@@ -921,6 +964,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		ownerModule.addCheckMenuItem(null, "Show Tree Info Panel", ownerModule.makeCommand("toggleInfoPanel",  this), infoPanelOn);
 		treeDrawCoordTask.addCheckMenuItem(null, "Add Name to Printed Tree", ownerModule.makeCommand("togglePrintName",  this), ownerModule.printNameOnTree);
 		tree = null;
+		if (originalTree != null && originalTree instanceof MesquiteTree)
+			taxa.removeListener((MesquiteTree)originalTree);
 		Tree tempTree = null;
 		if (!editMode){
 			tempTree = treeSourceTask.getTree(taxa, 0);
@@ -929,15 +974,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				treeSourceTask = ownerModule.treeSourceTask;
 				tempTree = treeSourceTask.getTree(taxa, 0);
 			}
+		originalTree = tempTree;  //otree
 		}
 		else{
 			tempTree = taxa.getDefaultDichotomousTree(null);
 			usingDefaultTree = true;
 		}
 
-		if (originalTree != null && originalTree instanceof MesquiteTree)
-			taxa.removeListener((MesquiteTree)originalTree);
-		originalTree = tempTree;  //otree
 		if (originalTree != null && originalTree instanceof MesquiteTree)
 			taxa.addListener((MesquiteTree)originalTree);
 		if (tempTree == null) {
@@ -1810,6 +1853,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		setTreeDescription(s, null);
 	}
 	public void setTreeDescription(String s, String name) {
+		originalTree = null;
 		Tree tr = setTree(s, name);
 
 		if (tr!=null) {
@@ -2055,7 +2099,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (MesquiteTrunk.snapshotMode!=Snapshot.SNAPDISPLAYONLY) {
 			temp.addLine("getTreeDrawCoordinator", treeDrawCoordTask);
 			temp.addLine("setTreeNumber " +(MesquiteTree.toExternal(currentTreeNumber)));  
-			if (treeEdited && tree!=null) {
+			if ((treeEdited || windowModule.editMode) && tree!=null) {
 				temp.addLine("setTree " + StringUtil.tokenize(tree.writeTree(Tree.BY_NUMBERS, false))); 
 				if (!StringUtil.blank(tree.getAnnotation()))
 					temp.addLine("setTreeAnnotation " + StringUtil.tokenize(tree.getAnnotation())); 
@@ -2448,10 +2492,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					((MesquiteTree)originalTree).notifyListeners(this, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 				if (originalTree!=null && ((MesquiteTree)originalTree).getTreeVector() !=null)
 					((MesquiteTree)originalTree).getTreeVector().notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
-				treeEdited=false;
+				treeEdited = false;
 				zapPreviousEdited(true);
 				editedByHand = false;
-				messagePanel.setHighlighted(false, !treeSourceLocked()); 
+				messagePanel.setHighlighted(false); 
 				if (treeInfoPanel != null)
 					treeInfoPanel.setHighlighted(!treeSourceLocked());
 				resetBaseExplanation();
@@ -3100,12 +3144,16 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		sizeDisplay();
 
 	}
+
+	void setHighlighted(boolean edited){
+		messagePanel.setHighlighted(edited);
+	}
 	/*.................................................................................................................*/
 	public void treeEdited(boolean rememberEditedTree){
 		boolean wasEdited = treeEdited;
 		if (!MesquiteThread.isScripting())
 			editedByHand = true;
-		treeEdited=true;
+		treeEdited = true;
 		zapPreviousEdited(true);
 		if (wasEdited && treeSourceLocked()) {
 			showTreeAnnotation();
@@ -3120,7 +3168,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (!treeSourceLocked() && originalTree !=null) {
 			tree.setName(originalTree.getName());
 		}
-		messagePanel.setHighlighted(true, !treeSourceLocked());
+		messagePanel.setHighlighted(true);
 		if (treeInfoPanel != null)
 			treeInfoPanel.setHighlighted(!treeSourceLocked());
 		palette.paletteScroll.setEnableEnter(true);
@@ -3212,10 +3260,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return null;
 		MesquiteBoolean editStatusToSet = new MesquiteBoolean();
 		Tree t = setCloneOfTree(treeT, true, editStatusToSet);
-		treeEdited=editStatusToSet.getValue();
+		treeEdited = editStatusToSet.getValue();
 		editedByHand = false;
 		setTreeName(t);
-		messagePanel.setHighlighted(treeEdited, !treeSourceLocked()); 
+		messagePanel.setHighlighted(treeEdited); 
 		if (treeInfoPanel != null)
 			treeInfoPanel.setHighlighted(!treeSourceLocked());
 
@@ -4398,6 +4446,16 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		return null;
 	}
+	void forceRenameTree(String n){
+		if (ownerModule == null || ownerModule.isDoomed())
+			return;
+		if (taxa !=null && taxa.isDoomed()) {
+			ownerModule.iQuit();
+			return;
+		}
+		tree.setName(n);
+		setTreeName(tree);
+		}
 	/*.................................................................................................................*/
 	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet){  // displays copy for editing
 		if (taxa !=null && taxa.isDoomed()) {
@@ -4840,7 +4898,7 @@ class MessagePanel extends Panel {
 		return modifiedString + treeMessage + treeSourceAddendum;
 	}
 
-	void setHighlighted(boolean edited, boolean storedTrees) {
+	void setHighlighted(boolean edited) {
 		this.showDiamond = edited;
 		if (edited){
 			if (!MesquiteThread.isScripting())
@@ -4863,7 +4921,6 @@ class MessagePanel extends Panel {
 		}
 		else
 			treeSourceAddendum = "";
-
 		repaint();
 	}
 }
@@ -5693,6 +5750,7 @@ class BirdsEyePanel extends MesquitePanel {
 		treeWindow.setOrigin(oX,oY, true);
 
 		treeWindow.treeDisplay.pleaseUpdate(true);
+		treeWindow.sizeDisplay();
 		origTouchX=-1;
 		origTouchY=-1;
 
