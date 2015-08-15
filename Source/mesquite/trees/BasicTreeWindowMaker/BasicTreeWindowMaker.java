@@ -5693,6 +5693,7 @@ class BirdsEyePanel extends MesquitePanel {
 		treeWindow.setOrigin(oX,oY, true);
 
 		treeWindow.treeDisplay.pleaseUpdate(true);
+		treeWindow.sizeDisplay();
 		origTouchX=-1;
 		origTouchY=-1;
 
