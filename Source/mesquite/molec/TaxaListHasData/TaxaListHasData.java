@@ -35,7 +35,7 @@ import mesquite.lib.table.*;
 public class TaxaListHasData extends TaxonListAssistant  {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Taxon Has Data";
+		return "Has Data in Matrix";
 	}
 	public String getExplanation() {
 		return "Indicates whether taxon has non-missing non-gap data in a given matrix." ;
@@ -49,6 +49,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	MatrixSourceCoord matrixSourceTask;
 	//Taxa currentTaxa = null;
 	MCharactersDistribution observedStates =null;
+	CharacterData data = null;
 	Associable tInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -80,10 +81,37 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			iQuit();
 	}
 	/*.................................................................................................................*/
+	/** endJob is called as a module is quitting; modules should put their clean up code here.*/
+	public void endJob() {
+		if (data != null)
+			data.removeListener(this);
+	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("getMatrixSource", matrixSourceTask);
 		return temp;
+	}
+
+	void captureCharacterDataFromObservedStates(){
+		if (observedStates ==null){
+			if (data != null)
+				data.removeListener(this);
+			data = null;
+		}
+		else {
+			CharacterData temp = observedStates.getParentData();
+			if (temp != data){
+				if (data != null)
+					data.removeListener(this);
+				if (temp != null)
+					temp.addListenerHighPriority(this);
+				data = temp;
+			}
+		}
+	}
+	public CharacterData getCharacterData(){
+		return data;
 	}
 
 	/*.................................................................................................................*/
@@ -116,6 +144,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 
 	MesquiteInteger pos = new MesquiteInteger();
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
@@ -163,7 +192,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Deletes the data for selected taxa", null, commandName, "deleteData")) {
 			if (observedStates == null)
 				return null;
-			CharacterData data = observedStates.getParentData();
+			captureCharacterDataFromObservedStates();
 			if (data == null)
 				return null;
 			if (!AlertDialog.query(containerOfModule(), "Delete Data?", "Are you sure you want to delete the data for these taxa in the matrix \"" + data.getName() + "\"", "No", "Yes"))
@@ -361,7 +390,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			tInfo = null;
 			observedStates = matrixSourceTask.getCurrentMatrix(taxa);
 			if (observedStates != null) {
-				CharacterData data = observedStates.getParentData();
+				captureCharacterDataFromObservedStates();
+
 				if (data != null)
 					tInfo = data.getTaxaInfo(true);
 			}
@@ -433,7 +463,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 	public String getExplanationForRow(int ic){
 		if (observedStates != null && observedStates.getParentData() != null){
-			CharacterData data = observedStates.getParentData();
+			captureCharacterDataFromObservedStates();
+
 			Associable tInfo = data.getTaxaInfo(false);
 			if (tInfo == null)
 				return null;
@@ -502,6 +533,15 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		observedStates = null;
 		super.employeeParametersChanged(employee, source, notification);
 	}
+
+	/*.................................................................................................................*/
+	/** passes which object was disposed*/
+	public void disposing(Object obj){
+		if (obj != null && obj  == data)
+			iQuit();
+	}
+	/*.................................................................................................................*/
+	
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int it, boolean selected){
 		if (observedStates == null){
@@ -510,7 +550,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 		}
 		if (observedStates.getParentData() != null){
-			CharacterData data = observedStates.getParentData();
+			captureCharacterDataFromObservedStates();
+
 			Associable tInfo = data.getTaxaInfo(false);
 			NameReference genBankColor = NameReference.getNameReference("genbankcolor");
 			Object obj = tInfo.getAssociatedObject(genBankColor,  it);  //not saved to file
