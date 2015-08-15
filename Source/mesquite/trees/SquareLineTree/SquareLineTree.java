@@ -613,7 +613,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	private void ScanBranches(Tree tree, int node, int x, int y, MesquiteDouble fraction)
 	{
 		if (foundBranch==0) {
-			if (DrawTreeUtil.inSquareLineBranch(treeDisplay, this.x, this.y, getEdgeWidth(), tree, node, x,y) || inNode(node,x,y)){
+			if (DrawTreeUtil.inSquareLineBranch(treeDisplay, this.x, this.y, getEdgeWidth(), treeDisplay.getTaxonSpacing(), tree, node, x,y) || inNode(node,x,y)){
 				foundBranch = node;
 				if (fraction!=null)
 					if (inNode(node,x,y))
@@ -645,6 +645,10 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (MesquiteTree.OK(tree) && ready) {
 			foundBranch=0;
 			ScanBranches(tree, drawnRoot, x, y, fraction);
+			if (foundBranch==0)
+				Debugg.println("   *");
+			else 
+				Debugg.println("foundBranch: "+foundBranch);
 			if (foundBranch == tree.getRoot() && !tree.getRooted())
 				return 0;
 			else
