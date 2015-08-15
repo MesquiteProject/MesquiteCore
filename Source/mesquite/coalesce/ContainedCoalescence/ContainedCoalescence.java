@@ -148,17 +148,18 @@ public class ContainedCoalescence extends TreeSimulate {
 	public Tree getSimulatedTree(Taxa taxa, Tree geneTree, int treeNumber, ObjectContainer extra, MesquiteLong seed) {
 		if (!check(taxa))   			return null;
 		if (association==null) {
-			if (first)
+			if (first && !MesquiteThread.isScripting()){
 				discreetAlert("No association found for use by Contained Coalescence; no tree could be made");
-			first = false;
+				first = false;
+			}
 			return null;
 		}
 		speciesTree = oneTreeSourceTask.getTree(association.getOtherTaxa(taxa));
 		if (speciesTree==null) {
-			if (first)
+			if (first && !MesquiteThread.isScripting()){
 				discreetAlert("No species tree found for use by Contained Coalescence.  Taxa blocks: " + taxa + " AND " + association.getOtherTaxa(taxa));
-
-			first = false;
+				first = false;
+			}
 			return null;
 		}
 

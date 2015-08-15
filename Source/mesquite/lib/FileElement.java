@@ -480,6 +480,10 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	  			sv.doom();
 	  		}
   		}
+		if (file != null) 
+			file.removeFileElement(this);
+		if (project !=null)
+			project.removeFileElement(this);
 	}
 	/*-------------------------------------------------------*/
 	/** Deletes the file element. Should typically be called via close()  to make sure that the file element is not in use etc. */
