@@ -645,10 +645,6 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (MesquiteTree.OK(tree) && ready) {
 			foundBranch=0;
 			ScanBranches(tree, drawnRoot, x, y, fraction);
-			if (foundBranch==0)
-				Debugg.println("   *");
-			else 
-				Debugg.println("foundBranch: "+foundBranch);
 			if (foundBranch == tree.getRoot() && !tree.getRooted())
 				return 0;
 			else
