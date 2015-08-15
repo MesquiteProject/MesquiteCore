@@ -16,6 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 /* ======================================================================== */
 /**A tree block.  Trees are added to it when trees are read from file or stored.  Many methods could be built here, for 
@@ -254,6 +255,24 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 				((Commandable)manager).doCommand("exportTreesBlock", Integer.toString(getFile().getProject().getFileElementNumber(this, getClass())), CommandChecker.defaultChecker);
 			}
 			return null;
+		}
+		else if (checker.compare(this.getClass(), "Duplicates the tree block", null, commandName, "duplicateMe")) {
+			if (getProject() != null)
+				getProject().incrementProjectWindowSuppression();
+
+			TreeVector trees = new TreeVector(getTaxa());
+			trees.setName(getName() + " (duplicate)");
+			trees.setWriteWeights(getWriteWeights());
+			for (int i=0; i<size(); i++){
+				Tree t = (Tree)elementAt(i);
+				trees.addElement(t.cloneTree(), false);
+				
+			}
+			trees.addToFile(getFile(), getProject(), getManager()); 
+			getManager().elementAdded(trees);
+			if (getProject() != null)
+				getProject().decrementProjectWindowSuppression();
+			return trees;
 		}
 		else if (checker.compare(this.getClass(), "Prepends to all tree names the given string", "[string to prepend]", commandName, "prefixNames")) {
 			String prefix = ParseUtil.getFirstToken(arguments, new MesquiteInteger(0));

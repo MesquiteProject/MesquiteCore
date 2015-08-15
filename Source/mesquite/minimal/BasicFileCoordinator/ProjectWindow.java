@@ -1025,7 +1025,7 @@ class MElementPanel extends ElementPanel {
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Rename Matrix", "Rename Matrix", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Matrix", "Delete Matrix", new MesquiteCommand("deleteMe", element));
-		addCommand(true, null, "Delete Matrix", "Duplicate Matrix", new MesquiteCommand("duplicateMe", element));
+		addCommand(true, null, "Duplicate Matrix", "Duplicate Matrix", new MesquiteCommand("duplicateMe", element));
 		addCommand(true, null, "Export Matrix", "Export Matrix", new MesquiteCommand("exportMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));
@@ -1184,6 +1184,7 @@ class TreesRPanel extends ElementPanel {
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Rename Trees Block", "Rename Trees Block", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Trees Block", "Delete Trees Block", new MesquiteCommand("deleteMe", element));
+		addCommand(true, null, "Duplicate Trees Block", "Duplicate Trees Block", new MesquiteCommand("duplicateMe", element));
 		addCommand(true, null, "Export Trees Block", "Export Trees Block", new MesquiteCommand("exportMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));

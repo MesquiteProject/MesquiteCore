@@ -158,7 +158,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		else if (checker.compare(this.getClass(),  "Returns current tree block", null, commandName, "getTreeBlock")) {
 			if (currentTreeBlock == null)
-				checkTreeBlock(preferredTaxa);
+				checkTreeBlock(preferredTaxa, false);
 			return currentTreeBlock;
 		}
 		else if (checker.compare(this.getClass(),  "Sets to lax mode", null, commandName, "laxMode")) {
@@ -238,7 +238,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 							currentListNumber = MesquiteInteger.unassigned;
 							currentTreeBlockID = MesquiteLong.unassigned;
 							MesquiteTrunk.resetChecks(listSubmenu);
-							checkTreeBlock(preferredTaxa);
+							checkTreeBlock(preferredTaxa, true);
 							parametersChanged(new Notification(MesquiteListener.BLOCK_DELETED));
 						}
 					}
@@ -296,7 +296,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				preferredTaxa = null; //don't say parameters changed since employer asked for those taxa
 			}
 			else{
-				checkTreeBlock(preferredTaxa);
+				checkTreeBlock(preferredTaxa, true);
 				parametersChanged(); 
 			}
 		}
@@ -332,7 +332,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	boolean firstInit = true;
 	/*.................................................................................................................*/
 	public void initialize(Taxa taxa) {
-		checkTreeBlock(taxa);
+		checkTreeBlock(taxa, false);
 	}
 	/*.................................................................................................................*/
 	public void resetMenu(Taxa taxa){
@@ -380,7 +380,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		return -1;
 	}
 	/*.................................................................................................................*/
-	private int checkTreeBlock(Taxa taxa){
+	private int checkTreeBlock(Taxa taxa, boolean becauseOfDeletion){
 		if (taxa == null) {
 			if (!MesquiteThread.isScripting())
 				logln("Taxa null in checkTreeBlock in Stored Trees");
@@ -405,6 +405,14 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				}
 			}
 			else {
+				if (becauseOfDeletion){
+					if (!dearEmployerShouldIHandleThis(new Notification(MesquiteListener.BLOCK_DELETED))){
+						currentListNumber = 0;
+						MesquiteTrunk.resetChecks(listSubmenu);
+						return -1;
+				}
+							
+				}
 				String[] list = new String[nt];
 				for (int i=0; i< nt; i++){
 					TreeVector tv =manager.getTreeBlock(taxa, i);
@@ -465,7 +473,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	/*.................................................................................................................*/
 	public Tree getCurrentTree(Taxa taxa) {
 		try {
-			int code = checkTreeBlock(taxa);
+			int code = checkTreeBlock(taxa, false);
 			if (code <0) {
 				if (laxMode)
 					return getDefaultTree(taxa);
@@ -555,7 +563,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public boolean itemsHaveWeights(Taxa taxa){
 		if (!useWeights.getValue())
 			return false;
-		int code = checkTreeBlock(taxa);
+		int code = checkTreeBlock(taxa, false);
 		if (currentTreeBlock != null) {
 			for (int itree =0; itree < currentTreeBlock.size(); itree++){
 				Tree tree = currentTreeBlock.getTree(itree);
@@ -601,7 +609,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		setPreferredTaxa(taxa);
 		if (currentTreeBlock == null && laxMode)
 			return 0;
-		int code = checkTreeBlock(taxa);
+		int code = checkTreeBlock(taxa, false);
 		if (currentTreeBlock != null)
 			return currentTreeBlock.size();
 		else
@@ -613,7 +621,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		setPreferredTaxa(taxa);
 		try {
 			Tree tree;
-			int code = checkTreeBlock(taxa);
+			int code = checkTreeBlock(taxa, false);
 			if (currentTreeBlock == null || itree>=currentTreeBlock.size())
 				return "";
 			if (currentTree<currentTreeBlock.size())
@@ -646,7 +654,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		String description = "";
 		try {
 			Tree tree;
-			int code = checkTreeBlock(taxa);
+			int code = checkTreeBlock(taxa, false);
 			if (currentTreeBlock != null)
 				return currentTreeBlock.getName();
 		}
