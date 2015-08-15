@@ -1245,7 +1245,7 @@ public class ManageTrees extends TreesManager {
 	}
 	/*.................................................................................................................*/
 	public int getTreeBlockNumber(TreeVector trees){//OK for doomed
-			return getTreeBlockNumber(null);
+			return getTreeBlockNumber(null, trees);
 	}
 	/*.................................................................................................................*/
 	public int getNumberTreeBlocks(Taxa taxa){ //OK for doomed
