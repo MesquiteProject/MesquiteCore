@@ -1405,6 +1405,7 @@ public class ManageTrees extends TreesManager {
 
 		MesquiteInteger cPos = new MesquiteInteger(0);
 		MesquiteString comment = new MesquiteString();
+		Debugg.println("blockComments " + blockComments);
 		String s;
 		int treeNum=-1;
 		boolean treeRead = false;
@@ -1646,6 +1647,8 @@ public class ManageTrees extends TreesManager {
 		StringBuffer block = new StringBuffer(5000);
 		Taxa taxa = trees.getTaxa();
 		block.append("BEGIN TREES");
+		if (trees.getAnnotation()!=null) 
+			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
 		block.append(endLine);
 		if (!NexusBlock.suppressTITLE){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
@@ -1654,10 +1657,6 @@ public class ManageTrees extends TreesManager {
 		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressLINK)) {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
-		}
-		if (trees.getAnnotation()!=null) {
-			block.append("[!" + trees.getAnnotation() + "]");
-			block.append(StringUtil.lineEnding());
 		}
 		block.append("\tTRANSLATE" + StringUtil.lineEnding());
 		String tt =trees.getTranslationTable();
@@ -1699,7 +1698,9 @@ public class ManageTrees extends TreesManager {
 
 		}
 		if (tB != null) block.append(tB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		block.append("END;" + StringUtil.lineEnding()+ StringUtil.lineEnding());
+		block.append("END");
+
+		block.append(";" + StringUtil.lineEnding()+ StringUtil.lineEnding());
 		return block.toString();
 	}
 	/*.................................................................................................................*/

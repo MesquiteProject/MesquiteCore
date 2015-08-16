@@ -1236,14 +1236,15 @@ public class ManageTaxa extends TaxaManager {
 		String end = StringUtil.lineEnding();
 		block.append(end);
 		CommandRecord.tick("Composing taxa block");
-		block.append("BEGIN TAXA;");
+		block.append("BEGIN TAXA");
+		if (taxa.getAnnotation()!=null) 
+			block.append("[!" + StringUtil.tokenize(taxa.getAnnotation()) + "]");
+		block.append(';');
 		block.append(end);
 
 		if (!file.useSimplifiedNexus){
 			if (getProject().getNumberTaxas()>1 || ( !file.useConservativeNexus && !NexusBlock.suppressTITLE))
 				block.append("\tTITLE " + StringUtil.tokenize(taxa.getName()) + ";" + end);
-			if (taxa.getAnnotation()!=null) 
-				block.append("[!" + taxa.getAnnotation() + "]" + StringUtil.lineEnding());
 		}
 		int numTaxaWrite = taxa.getNumTaxa();
 		if (file.writeOnlySelectedTaxa)

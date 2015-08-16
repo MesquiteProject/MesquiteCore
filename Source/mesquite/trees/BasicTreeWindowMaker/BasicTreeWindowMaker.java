@@ -2487,6 +2487,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 							TreeVector v = (TreeVector)treeSourceTask.doCommand("setTreeBlockByID", "" + trees.getID(), CommandChecker.defaultChecker);
 							((BasicTreeWindowMaker)ownerModule).suppressEPCResponse = oldSuppress;
 							if (v == trees) {
+								resetForTreeSource(false, false, false, MesquiteInteger.inapplicable);
 								goToTreeNumber(trees.size()-1, true);
 							}
 							if (windowModule.editMode){
@@ -3294,6 +3295,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			treeInfoPanel.setHighlighted(!treeSourceLocked());
 
 		palette.paletteScroll.setCurrentValue(MesquiteTree.toExternal(currentTreeNumber));
+
 		//resetLockImage();
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
 		MesquiteTrunk.resetMenuItemEnabling();

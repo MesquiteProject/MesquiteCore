@@ -249,17 +249,17 @@ public class ManageMeristicChars extends CharMatrixManager {
 		MeristicData cData = (MeristicData)data;
 		//StringBuffer blocks = new StringBuffer(cData.getNumChars()*cData.getNumTaxa()*10*cData.getNumItems());
 		StringBuffer line = new StringBuffer(cData.getNumChars()*10*cData.getNumItems());
-		file.write("BEGIN CHARACTERS;" + StringUtil.lineEnding());
+		file.write("BEGIN CHARACTERS");
+		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
+			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
+		
+		file.write(";" + StringUtil.lineEnding());
 		if (cData.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			file.write("\tTITLE  " + StringUtil.tokenize(cData.getName()) + ";" + StringUtil.lineEnding());
 		}
 
 		if (cData.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //should have an isUntitled method??
 			file.write("\tLINK TAXA = " +  StringUtil.tokenize(cData.getTaxa().getName()) + ";" + StringUtil.lineEnding());
-		}
-		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
-			file.write("[!" + data.getAnnotation() + "]");
-			file.write(StringUtil.lineEnding());
 		}
 		file.write("\tDIMENSIONS ");
 		int numCharsToWrite;
@@ -328,7 +328,8 @@ public class ManageMeristicChars extends CharMatrixManager {
 				file.write("\t" + idsCommand + StringUtil.lineEnding());
 		}
 		if (cB != null) file.write(cB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		file.write("END;" + StringUtil.lineEnding());
+		file.write("END");
+		file.write(";" + StringUtil.lineEnding());
 
 		//file.write( blocks.toString());
 	}

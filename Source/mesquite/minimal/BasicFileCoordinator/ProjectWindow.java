@@ -221,6 +221,9 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 			projPanel.refresh();
 
 	}
+	public void setFootnote(String text){
+		projPanel.setFootnote(text);
+	}
 	public void refresh(FileElement element){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
@@ -261,6 +264,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	ProjectWindow w;
 	Image fileIm;
 	ScrollPanel scroll;
+	NotesPanel notesPanel = null;
 	public ProjectPanel(ProjectWindow w, MesquiteProject proj, BasicFileCoordinator bfc){ 
 		super();
 		this.w = w;
@@ -271,6 +275,10 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		fileIm = 	MesquiteImage.getImage(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileSmall.gif");
 		setSize(94, 500);
 
+	}
+	public void setFootnote(String text){
+		if (notesPanel != null)
+			notesPanel.setText(text);
 	}
 	public void requestHeightChange(ClosablePanel panel){
 		resetSizes(getBounds().width, getBounds().height);
@@ -643,6 +651,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}
 
 		}
+		addExtraPanel(notesPanel = new NotesPanel(bfc, this, w));
 		resetSizes();
 	}
 	int scrollOffset = 0;
@@ -888,6 +897,37 @@ class ProjectLabelPanel extends ElementPanel {
 	}
 
 
+}
+/*======================================================================== */
+class NotesPanel extends ProjPanelPanel {
+	StringInABox notes;
+	String text = null;
+	public NotesPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w){
+		super(bfc, container, w, null, bfc);
+		notes =  new StringInABox("", new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), getWidth());
+		setText(null);
+	}
+	public int getRequestedHeight(int width){
+		return 200;
+	}
+	void setText(String t){
+		text = t;
+		notes.setString(t);
+		repaint();
+	}
+	protected void resetSizes(int w, int h){
+		if (notes != null)
+			notes.setWidth(w-24);
+	}
+	
+	public void paint(Graphics g){
+		if (text != null){
+			g.setColor(Color.lightGray);
+			g.fillRect(8, 12, getWidth()-16, 2);
+			g.setColor(ColorTheme.getExtInterfaceTextMedium());
+			notes.draw(g, 16,16);
+		}
+	}
 }
 
 /*======================================================================== */
@@ -1593,6 +1633,11 @@ class ElementPanel extends ProjPanelPanel {
 		}*/
 		refreshIcon();
 		refresh();
+	}
+	public String getFootnote(){
+		if (element instanceof FileElement)
+			return ((FileElement)element).getAnnotation();
+		return null;
 	}
 	public String getTitle(){
 		String t = super.getTitle() + getTitleAddition();
