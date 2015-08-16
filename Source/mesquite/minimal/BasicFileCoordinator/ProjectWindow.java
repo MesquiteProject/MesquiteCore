@@ -221,8 +221,8 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 			projPanel.refresh();
 
 	}
-	public void setFootnote(String text){
-		projPanel.setFootnote(text);
+	public void setFootnote(String heading, String text){
+		projPanel.setFootnote(heading, text);
 	}
 	public void refresh(FileElement element){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
@@ -276,9 +276,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		setSize(94, 500);
 
 	}
-	public void setFootnote(String text){
+	public void setFootnote(String heading, String text){
 		if (notesPanel != null)
-			notesPanel.setText(text);
+			notesPanel.setText(heading, text);
 	}
 	public void requestHeightChange(ClosablePanel panel){
 		resetSizes(getBounds().width, getBounds().height);
@@ -871,6 +871,30 @@ class ProjectLabelPanel extends ElementPanel {
 	public boolean getBold(){
 		return true;
 	}
+	public String getFootnote(){
+		if (project == null)
+			return null;
+		String text = "Project with home file " + project.getHomeFileName();
+		int numTaxaBlocks = project.getNumberOfFileElements(Taxa.class);
+		int numMatrices = project.getNumberCharMatrices();
+		int numTreeBlocks = project.getNumberOfFileElements(TreeVector.class);
+		if (numTaxaBlocks>0){
+			text += ", with";
+			if (numTaxaBlocks == 1)
+				text += "\n  " + numTaxaBlocks + " taxa block";
+			else if (numTaxaBlocks > 1)
+				text += "\n  " + numTaxaBlocks + " taxa blocks";
+			if (numMatrices==1)
+				text += ";\n  " + numMatrices + " character matrix";
+			else if (numMatrices>1)
+				text += ";\n  " + numMatrices + " character matrices";
+			if (numTreeBlocks==1)
+				text += ";\n  "  + numTreeBlocks + " tree block";
+			else if (numTreeBlocks>1)
+				text += ";\n  "  + numTreeBlocks + " tree blocks";
+		}
+		return text;
+	}
 	protected String getMenuHeading(){
 		if (project.hasName())
 			return "Project: " + project.getName();
@@ -900,24 +924,30 @@ class ProjectLabelPanel extends ElementPanel {
 }
 /*======================================================================== */
 class NotesPanel extends ProjPanelPanel {
-	StringInABox notes;
+	StringInABox textBox, headingBox;
 	String text = null;
+	String heading = null;
 	public NotesPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w){
 		super(bfc, container, w, null, bfc);
-		notes =  new StringInABox("", new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), getWidth());
-		setText(null);
+		headingBox =  new StringInABox("", new Font("SansSerif", Font.BOLD, MesquiteFrame.resourcesFontSize), getWidth());
+		textBox =  new StringInABox("", new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), getWidth());
+		setText(null, null);
 	}
 	public int getRequestedHeight(int width){
 		return 200;
 	}
-	void setText(String t){
+	void setText(String h, String t){
 		text = t;
-		notes.setString(t);
+		heading = h;
+		headingBox.setString(h);
+		textBox.setString(t);
 		repaint();
 	}
 	protected void resetSizes(int w, int h){
-		if (notes != null)
-			notes.setWidth(w-24);
+		if (textBox != null){
+			headingBox.setWidth(w-24);
+			textBox.setWidth(w-24);
+		}
 	}
 	
 	public void paint(Graphics g){
@@ -925,7 +955,13 @@ class NotesPanel extends ProjPanelPanel {
 			g.setColor(Color.lightGray);
 			g.fillRect(8, 12, getWidth()-16, 2);
 			g.setColor(ColorTheme.getExtInterfaceTextMedium());
-			notes.draw(g, 16,16);
+			if (heading != null){
+				headingBox.draw(g, 16,16);
+				textBox.draw(g, 16,32);
+			}
+			else
+				textBox.draw(g, 16,16);
+				
 		}
 	}
 }
@@ -959,6 +995,11 @@ class FilePanel extends ElementPanel {
 	public void resetTitle(){
 		setTitle(mf.getFileName());
 		repaint();
+	}
+	public String getFootnote(){
+		if (mf == null || mf.getDirectoryName() == null)
+			return null;
+		return "Location of file: " + mf.getDirectoryName();
 	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
@@ -1634,9 +1675,23 @@ class ElementPanel extends ProjPanelPanel {
 		refreshIcon();
 		refresh();
 	}
+	public String getFootnoteHeading(){
+		if (element instanceof FileElement){
+			String an = ((FileElement)element).getAnnotation();
+			if (StringUtil.blank(an))
+				return null;
+			String text = ((FileElement)element).getTypeName();
+			if (element.getName() != null)
+				text += ":  " + element.getName();
+			return text;
+		}
+		return null;
+	}
 	public String getFootnote(){
-		if (element instanceof FileElement)
-			return ((FileElement)element).getAnnotation();
+		if (element instanceof FileElement){
+			String an = ((FileElement)element).getAnnotation();
+			return an;
+		}
 		return null;
 	}
 	public String getTitle(){

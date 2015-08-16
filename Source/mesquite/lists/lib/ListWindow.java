@@ -1012,6 +1012,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*.................................................................................................................*/
+	public String getTextContents() {
+		String text = owner.getTextContentsPreface();
+		text += "\n\n" + super.getTextContents();
+		return text;
+	}
+	/*.................................................................................................................*/
 	public MesquiteTable getTable() {
 		return table; 
 	}

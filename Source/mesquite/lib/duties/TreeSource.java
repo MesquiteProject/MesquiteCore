@@ -58,7 +58,11 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
   	public String getTreesDescriptiveString(Taxa taxa){
   		return getNameForMenuItem();
   	}
-  	
+ 	 /**Returns notes to show about these trees, e.g. in a footnote or text version.  For stored trees, this will include name and annotation of tree block.*/
+ 	public String getNotesAboutTrees(Taxa taxa){
+ 		return getNameAndParameters();
+ 	}
+
    	/** queryies the user to choose a tree and returns an integer of the tree chosen*/
    	public int queryUserChoose(Taxa taxa, String forMessage){
  		int ic=MesquiteInteger.unassigned;

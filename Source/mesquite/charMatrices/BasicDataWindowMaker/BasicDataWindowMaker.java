@@ -2640,6 +2640,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		s += "Number of characters excluded: " + countExcluded + "\n";
 		s += "Proportion of missing data: " + MesquiteDouble.toString(1.0 * countUnassigned / (data.getNumChars() * data.getNumTaxa())) + "\n";
 		s += "Proportion of inapplicable codings: " + MesquiteDouble.toString(1.0 * countInapplicable / (data.getNumChars() * data.getNumTaxa())) + "\n\n";
+		String an = data.getAnnotation();
+		if (!StringUtil.blank(an)){
+			s += "----------------\nNote about matrix:\n" + an + "\n----------------\n\n";
+		}
 		s += table.getTextVersion();
 		return s;
 	}

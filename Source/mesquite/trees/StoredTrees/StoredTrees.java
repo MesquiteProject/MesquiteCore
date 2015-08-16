@@ -470,6 +470,20 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		return v == currentTreeBlock;
 	}
 	boolean warned = false;
+ 	public String getNotesAboutTrees(Taxa taxa){
+		int code = checkTreeBlock(taxa, false);
+		if (code <0 || currentTreeBlock == null) {
+			if (laxMode)
+				return "Tree being edited by hand.";
+			else
+				return null;
+		}
+		String s = "Tree block: " + currentTreeBlock.getName();
+		String an = currentTreeBlock.getAnnotation();
+		if (!StringUtil.blank(an))
+			s += "\nNotes:\n" + an;
+		return s;
+	}
 	/*.................................................................................................................*/
 	public Tree getCurrentTree(Taxa taxa) {
 		try {

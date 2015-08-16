@@ -131,15 +131,23 @@ public void resetTitle(){
 	public String getFootnote(){
 		return null;
 	}
-	
-	public void showFootnote(){
-		String text = getFootnote();
+	public String getFootnoteHeading(){
+		return null;
+	}
 		
-		projectWindow.setFootnote(text);
+	public void cursorEnter(){
+		String text = getFootnote();
+		String heading = getFootnoteHeading();
+		
+		hover = true;
+		repaint();
+		projectWindow.setFootnote(heading, text);
 	}
 
-	public void hideFootnote(){
-		projectWindow.setFootnote(null);
+	public void cursorExit(){
+		hover = false;
+		repaint();
+		projectWindow.setFootnote(null,null);
 	}
 	public boolean upToDate(){
 		return true;
@@ -396,15 +404,15 @@ public void resetTitle(){
 	}
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseEntered(modifiers, x, y, tool);
-		showFootnote();
+		cursorEnter();
 	}
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseMoved(modifiers, x, y, tool);
-		showFootnote();
+		cursorEnter();
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseExited(modifiers, x, y, tool);
-		hideFootnote();
+		cursorExit();
 	}
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		if (!MesquiteEvent.rightClick(modifiers) && y<= MINHEIGHT) {

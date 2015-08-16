@@ -52,6 +52,27 @@ public abstract class ListModule extends ManagerAssistant  {
 	public abstract Object getMainObject();
 	public abstract String getItemTypeName();
 	public abstract String getItemTypeNamePlural();
+	
+	public String getTextContentsPreface(){
+		String text = "";
+		text += "Window showing " + getItemTypeNamePlural();
+		Object obj = getMainObject();
+		if (obj != null && obj instanceof Listable){
+			text += " of ";
+			if (obj instanceof FileElement)
+				text += ((FileElement)obj).getTypeName() + " \'";
+			text += ((Listable)obj).getName();
+			if (obj instanceof FileElement)
+				text += "\'";
+		}
+		if (obj instanceof Annotatable){
+			Annotatable an = (Annotatable)obj;
+			String s = an.getAnnotation();
+			if (!StringUtil.blank(s))
+				text += "\n\n----------------\nNotes:\n" + s + "\n---------------\n\n";
+		}
+		return text;
+	}
 	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return false;
