@@ -169,7 +169,7 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow( int ic,  int x, int y, boolean doubleClick, int modifiers){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(Graphics g,  int ic,  int x, int y, boolean doubleClick, int modifiers){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
 		if (ic>=0 && doubleClick) {
 			specifyColor(ic);
 			return true;

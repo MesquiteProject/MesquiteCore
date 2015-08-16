@@ -161,7 +161,7 @@ public class CharGroupListColor extends CharGroupListAssistant  {
 		}
 	}
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow( int ic, int x, int y, boolean doubleClick, int modifiers){
+	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){
 		if (ic>=0 && doubleClick) {
 			specifyColor(ic);
 			return true;

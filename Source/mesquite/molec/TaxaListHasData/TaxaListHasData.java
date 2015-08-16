@@ -21,6 +21,7 @@ import mesquite.lists.lib.*;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -35,6 +36,18 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class TaxaListHasData extends TaxonListAssistant  {
+	
+	Taxa taxa=null;
+	MesquiteTable table = null;
+	MatrixSourceCoord matrixSourceTask;
+	//Taxa currentTaxa = null;
+	MCharactersDistribution observedStates =null;
+	CharacterData data = null;
+	Associable tInfo = null;
+	static String localCopyDataClipboard = "";
+	static String localCopyDataTaxon = "";
+	static CharacterData localCopyData = null;
+
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Has Data in Matrix";
@@ -42,17 +55,10 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	public String getExplanation() {
 		return "Indicates whether taxon has non-missing non-gap data in a given matrix." ;
 	}
-	Taxa taxa=null;
-	MesquiteTable table = null;
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(MatrixSourceCoord.class, getName() + "  needs a source of characters.",
 				"The source of characters is arranged initially");
 	}
-	MatrixSourceCoord matrixSourceTask;
-	//Taxa currentTaxa = null;
-	MCharactersDistribution observedStates =null;
-	CharacterData data = null;
-	Associable tInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		setSuppressEmployeeAutoRehiring(true);
@@ -137,19 +143,35 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic, int x, int y, boolean doubleClick, int modifiers){
+	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){
 		if (MesquiteEvent.rightClick(modifiers)) {
 			MesquitePopup popup = new MesquitePopup(table.getMatrixPanel());
 
+			String copyMenuText = "Copy ";
+			if (observedStates != null) {
+				CharacterData data = observedStates.getParentData();
+				if (data != null) {
+					copyMenuText += data.getName() + " Data";
+					copyMenuText += " [from " + data.getTaxa().getTaxonName(ic) + "]" ;
+					
+				}
+			}
 			MesquiteCommand mcCopy = makeCommand("copyData", this);
 			mcCopy.setDefaultArguments(""+ic);
-			MesquiteCheckMenuItem mCopyItem = new MesquiteCheckMenuItem("Copy Data", this, mcCopy, null, null);
+			MesquiteCheckMenuItem mCopyItem = new MesquiteCheckMenuItem(copyMenuText, this, mcCopy, null, null);
 			popup.add(mCopyItem);
 
+			String pasteMenuText = "Paste ";
+			if (StringUtil.notEmpty(localCopyDataClipboard) && localCopyData != null) {
+					pasteMenuText += localCopyData.getName() + " Data";
+					if (StringUtil.notEmpty(localCopyDataTaxon)) {
+						pasteMenuText += " [from " + localCopyDataTaxon + "] " ;
+					}
+			}
 			MesquiteCommand mcPaste = makeCommand("pasteData", this);  //only if something in clipboard
 			mcPaste.setDefaultArguments(""+ic);
-			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem("Paste Data", this, mcPaste, null, null);
-			mPasteItem.setEnabled(clipBoardHasString());
+			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem(pasteMenuText, this, mcPaste, null, null);
+			mPasteItem.setEnabled(StringUtil.notEmpty(localCopyDataClipboard));
 			popup.add(mPasteItem);
 
 			MesquiteCommand mcDelete = makeCommand("deleteDataTouched", this);
@@ -181,7 +203,18 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(it)) {
-				data.copyDataFromRow(it);
+				StringBuffer sb = new StringBuffer();
+				data.copyDataFromRowIntoBuffer(it, sb);
+				if (StringUtil.notEmpty(sb.toString())) {
+					localCopyDataClipboard = sb.toString();
+					localCopyData = data;
+					localCopyDataTaxon= data.getTaxa().getTaxonName(it);
+				}
+				else {
+					localCopyDataClipboard = null;
+					localCopyData = null;
+					localCopyDataTaxon = null;
+				}
 			}
 			return null;
 		}
@@ -192,8 +225,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			if (data == null)
 				return null;
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (MesquiteInteger.isCombinable(it)) {
-				data.pasteDataIntoTaxon(it);
+			if (MesquiteInteger.isCombinable(it) && StringUtil.notEmpty(localCopyDataClipboard)) {
+				data.pasteDataFromStringIntoTaxon(it, localCopyDataClipboard);
 			}
 			return null;
 		}

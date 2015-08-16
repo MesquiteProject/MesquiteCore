@@ -2793,19 +2793,24 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	/* ................................................................................................................. */
 
-	public void pasteDataIntoTaxon(int it) {
-
-		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable t = clip.getContents(this);
-		try {
-			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-			if (s != null) {
+	public void pasteDataFromStringIntoTaxon(int it, String s) {
+			if (StringUtil.notEmpty(s)) {
 				String[] lines = StringUtil.getLines(s);
 				if (lines.length==1) {
 					pasteData(it, s);
 					notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 				}
 			}
+	}
+	/* ................................................................................................................. */
+
+	public void pasteDataIntoTaxon(int it) {
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = clip.getContents(this);
+		try {
+			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+			pasteDataFromStringIntoTaxon(it, s);
 		} catch (Exception e) {
 			MesquiteMessage.printStackTrace(e);
 		}
@@ -2813,8 +2818,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	/*.................................................................................................................*/
 
-	public void copyDataFromRow(int row) {
-		StringBuffer sb = new StringBuffer();
+	public void copyDataFromRowIntoBuffer(int row, StringBuffer sb) {
+		if (sb ==null)
+			return;
 		String t = null;
 		t = taxa.getTaxonName(row);
 		if (t != null)
@@ -2825,6 +2831,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			statesIntoStringBuffer(i, row, sb, true);
 		}
 		sb.append(StringUtil.lineEnding());
+	}
+	/*.................................................................................................................*/
+
+	public void copyDataFromRow(int row) {
+		StringBuffer sb = new StringBuffer();
+		copyDataFromRowIntoBuffer(row, sb);
 
 		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 		StringSelection ss = new StringSelection(sb.toString());
