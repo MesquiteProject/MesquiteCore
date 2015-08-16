@@ -395,7 +395,7 @@ public class DNAData extends MolecularData {
 	/* .......................................... .................................................. */
 	/** Returns the character number of the start of the codon following the one in which character ic participates. */
 	public int getStartOfNextCodon(int ic) {
-		while (ic<getNumChars()){  //this was broken in 3.03.  I added this outer while loop.  This would only look at the first candidate; if there were two 1's in a row, it would find no more codons
+		while (ic<getNumChars()){  //this was broken in 3 .03.  I added this outer while loop.  This would only look at the first candidate; if there were two 1's in a row, it would find no more codons
 			int icPos = getCodonPosition(ic);
 			int candidate = -1;
 			if (icPos==1)

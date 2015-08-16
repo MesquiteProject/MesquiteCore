@@ -481,7 +481,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		String s = "Tree block: " + currentTreeBlock.getName();
 		String an = currentTreeBlock.getAnnotation();
 		if (!StringUtil.blank(an))
-			s += "\nNotes:\n" + an;
+			s += "\n\nNotes:\n" + an;
 		return s;
 	}
 	/*.................................................................................................................*/

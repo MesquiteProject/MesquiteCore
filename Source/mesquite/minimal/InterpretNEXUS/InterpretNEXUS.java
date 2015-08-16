@@ -162,7 +162,7 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 			while (bubbleBlock(blocks, (NexusBlock)bs[i]))
 				;
 		}
-		//This is a kludge because of problems with mustBeAfter (as of 3.03)
+		//This is a kludge because of problems with mustBeAfter (as of 3. 03)
 		for (int i=count-1; i>=0; i--) {
 			if (bs[i] instanceof CharactersBlock){
 				blocks.removeElement((NexusBlock)bs[i], false);

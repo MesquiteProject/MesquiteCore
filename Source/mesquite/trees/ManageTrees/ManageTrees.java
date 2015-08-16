@@ -1405,7 +1405,6 @@ public class ManageTrees extends TreesManager {
 
 		MesquiteInteger cPos = new MesquiteInteger(0);
 		MesquiteString comment = new MesquiteString();
-		Debugg.println("blockComments " + blockComments);
 		String s;
 		int treeNum=-1;
 		boolean treeRead = false;
