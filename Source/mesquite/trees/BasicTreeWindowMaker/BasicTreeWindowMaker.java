@@ -231,6 +231,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			resetContainingMenuBar();
 			resetAllWindowsMenus();
 		}
+		basicTreeWindow.setStoreTreeAsMenuItems(true);
 		basicTreeWindow.resetForTreeSource(true, false, true, 0);
 		basicTreeWindow.setTreeDescription(d, n);
 		basicTreeWindow.treeEdited = false;
@@ -904,7 +905,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	//MesquiteString currentTreeFootnote;
 	boolean baseExplanationUsed=false;
 	boolean treeAnnotationShown = false;
-	MesquiteMenuItemSpec storeTreeMenuItem, storeTreeAsMenuItem, recoverEditedMenuItem;
+	MesquiteMenuItemSpec storeTreeMenuItem, storeTreeAsMenuItem, storeTreeAsOtherMenuItem, recoverEditedMenuItem;
 	MesquiteMenuItemSpec floatLegendsItem;
 	int oldH = 0;
 	int oldV = 0;
@@ -1036,11 +1037,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		//	setSuggestedSize(false, false);
 
 		storeTreeMenuItem = ownerModule.addMenuItem( "Store Tree", ownerModule.makeCommand("storeTree",  this));
-		if (treeSourceTask.nameMatches("StoredTrees"))
-			storeTreeAsMenuItem = ownerModule.addMenuItem( "Store Tree As...", ownerModule.makeCommand("storeTreeAs",  this));
-		else
-			storeTreeAsMenuItem = ownerModule.addMenuItem( "Store Copy of Tree As...", ownerModule.makeCommand("storeTreeAs",  this));
-		storeTreeMenuItem.setEnabled(!treeSourceLocked());
+		storeTreeAsMenuItem = ownerModule.addMenuItem( "Store Tree As...", ownerModule.makeCommand("storeTreeAs",  this));
+		storeTreeAsOtherMenuItem = ownerModule.addMenuItem( "Store Tree In Tree Block As...", ownerModule.makeCommand("storeTreeAsOther",  this));
+		setStoreTreeAsMenuItems(editMode);
 
 		ownerModule.addMenuItem( "-", null);
 		recoverEditedMenuItem = ownerModule.addMenuItem( "Recover Last Edited Tree", ownerModule.makeCommand("recoverLastEditedTree",  this));
@@ -1207,6 +1206,30 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		resetTitle();
 		//initiating = false;
 
+	}
+	
+	void setStoreTreeAsMenuItems(boolean editMode){
+		if (treeSourceTask.nameMatches("StoredTrees")){
+			if (editMode){
+				storeTreeAsMenuItem.setName( "Store Tree As...");
+				storeTreeAsMenuItem.setEnabled(false);
+				storeTreeAsOtherMenuItem.setName( "Store Tree In Tree Block As...");
+				storeTreeAsOtherMenuItem.setEnabled(true);
+			}
+			else {
+				storeTreeAsMenuItem.setName( "Store Tree In Current Block As...");
+				storeTreeAsMenuItem.setEnabled(true);
+				storeTreeAsOtherMenuItem.setName( "Store Tree In Other Block As...");
+				storeTreeAsOtherMenuItem.setEnabled(true);
+			}
+		}
+		else {
+			storeTreeAsMenuItem.setName( "Store Tree As...");
+			storeTreeAsMenuItem.setEnabled(false);
+			storeTreeAsOtherMenuItem.setName( "Store Copy of Tree As...");
+			storeTreeAsOtherMenuItem.setEnabled(true);
+		}
+		storeTreeMenuItem.setEnabled(!treeSourceLocked());
 	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
@@ -1864,10 +1887,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	public void setTreeSource(TreeSource tsTask) {
 		boolean setToZero = tsTask != treeSourceTask;
 		treeSourceTask = tsTask;
-		if (treeSourceTask.nameMatches("StoredTrees"))
-			storeTreeAsMenuItem.setName("Store Tree As...");
-		else
-			storeTreeAsMenuItem.setName("Store Copy of Tree As...");
+		setStoreTreeAsMenuItems(windowModule.editMode);
+
 		resetTitle();
 		if (!MesquiteThread.isScripting()){
 			resetForTreeSource(setToZero, true, false, MesquiteInteger.inapplicable);
@@ -2434,8 +2455,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Stores the current tree as a new stored tree in a tree block", null, commandName, "storeTreeAs")) {
-
+		else if (checker.compare(this.getClass(), "Stores the current tree as a new stored tree in a tree block", null, commandName, "storeTreeAs") || checker.compare(this.getClass(), "Stores the current tree as a new stored tree in another tree block", null, commandName, "storeTreeAsOther")) {
+			boolean inOther = commandName.equalsIgnoreCase("storeTreeAsOther");
 			MesquiteTree tree = treeDisplay.getTree().cloneTree();
 
 			//if treeSourceTask is Stored Trees, and tree is saved into same block as being shown, then should change current tree to that one and jump to there???
@@ -2446,8 +2467,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				s = MesquiteString.queryString(this, "Store Tree As" , "Name of tree: ", tree.getName() );
 			if (s!=null) {
 				tree.setName(s);
-				TreeVector trees =  ownerModule.getProject().storeTree(this, tree, !treeSourceTask.nameMatches("StoredTrees"));
-
+				TreeVector trees =  null;
+				if (!inOther && originalTree!=null && ((MesquiteTree)originalTree).getTreeVector() !=null){
+					trees = ownerModule.getProject().storeTree(this, ((MesquiteTree)originalTree).getTreeVector(), tree,true);
+				}
+				else
+					trees = ownerModule.getProject().storeTree(this, null, tree,true);
 				if (trees!=null) {
 					TreesManager manager = (TreesManager)ownerModule.findElementManager(TreeVector.class);
 					if (manager !=null){
@@ -2468,10 +2493,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 								treeSourceTask.doCommand("laxOff", null, checker);
 								windowModule.editMode = false;
 								editedByHand = false;
+							}
 								resetBaseExplanation();
 								resetTitle();
-							}
 						}
+						setStoreTreeAsMenuItems(windowModule.editMode);
 						numTreesChanged();
 						return trees;
 					}
@@ -4910,6 +4936,9 @@ class MessagePanel extends Panel {
 			modifiedString = "";
 		if (edited)
 			setBackground(ColorDistribution.lightGreen);
+		else
+			setBackground(ColorTheme.getInterfaceElement());
+			
 		if (treeMessage != null)
 			ownerModule.magnifyExtra.name = modifiedString + treeMessage;
 		else

@@ -138,7 +138,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** Increments suppression level of menus; if 0 then menus can be reset. */
 	public void incrementProjectWindowSuppression(){
 		refreshSuppression++;
-		
+
 		if (refreshSuppression ==0)
 			refreshSuppression = 1;
 	}
@@ -803,36 +803,36 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}	
 	/*.................................................................................................................*/
 	public void removeAllFileElements(boolean notify) {
-			if (taxas != null){
-				for (int i = 0; i< taxas.size(); i++){
-					FileElement element = (FileElement)taxas.elementAt(i);
-					element.deleteMe(false);
-				}
-				taxas.removeAllElements(notify);
+		if (taxas != null){
+			for (int i = 0; i< taxas.size(); i++){
+				FileElement element = (FileElement)taxas.elementAt(i);
+				element.deleteMe(false);
 			}
-		
-			if (datas != null){
-				for (int i = 0; i< datas.size(); i++){
-					FileElement element = (FileElement)datas.elementAt(i);
-					element.deleteMe(false);
-				}
-				datas.removeAllElements(notify);
-			}
-		
-			if (charModels != null){
-				for (int i = 0; i< charModels.size(); i++){
-					FileElement element = (FileElement)charModels.elementAt(i);
-					element.deleteMe(false);
-				}
-				charModels.removeAllElements(notify);
-			}
+			taxas.removeAllElements(notify);
+		}
 
-			if (otherElements != null){
-				for (int i = 0; i< otherElements.size(); i++){
-					FileElement element = (FileElement)otherElements.elementAt(i);
-					element.deleteMe(false);
-				}
+		if (datas != null){
+			for (int i = 0; i< datas.size(); i++){
+				FileElement element = (FileElement)datas.elementAt(i);
+				element.deleteMe(false);
 			}
+			datas.removeAllElements(notify);
+		}
+
+		if (charModels != null){
+			for (int i = 0; i< charModels.size(); i++){
+				FileElement element = (FileElement)charModels.elementAt(i);
+				element.deleteMe(false);
+			}
+			charModels.removeAllElements(notify);
+		}
+
+		if (otherElements != null){
+			for (int i = 0; i< otherElements.size(); i++){
+				FileElement element = (FileElement)otherElements.elementAt(i);
+				element.deleteMe(false);
+			}
+		}
 	}	
 
 	/*.................................................................................................................*/
@@ -1577,41 +1577,42 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return taxas.size();
 	}
 
-	public TreeVector storeTree(MesquiteWindow parent, Tree tree, boolean askIfSingleBlock){
+	public TreeVector storeTree(MesquiteWindow parent, TreeVector trees, Tree tree, boolean askIfSingleBlock){
 		if (ownerModule == null || tree == null)
 			return null;
-		TreeVector trees=null;
-		TreesManager manager = (TreesManager)ownerModule.findElementManager(TreeVector.class);
-		if (manager !=null){
-			int numLists = manager.getNumberTreeBlocks(tree.getTaxa());
-			if (numLists==0) {
-				String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", "Trees");
-				MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
-				trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
-			}
-			else if (numLists == 1 && !askIfSingleBlock){
-				trees = manager.getTreeBlock(tree.getTaxa(), 0);
-			}
-			else {
-				Listable[] lists = new Listable[numLists+1];
-				for (int i=0; i<numLists; i++)
-					lists[i] = manager.getTreeBlock(tree.getTaxa(), i);
-				lists[numLists] = new MesquiteString("New Trees Block...", "New Trees Block...");
-				Object obj = ListDialog.queryList(parent, "Where to store tree?", "Choose tree block in which to store tree:",MesquiteString.helpString, lists, 0);
-				if (obj instanceof MesquiteString){
-					ListableVector v = manager.getTreeBlockVector();
-					String suggestedName = v.getUniqueName("Trees");
-					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", suggestedName);
+		if (trees == null){
+			TreesManager manager = (TreesManager)ownerModule.findElementManager(TreeVector.class);
+			if (manager !=null){
+				int numLists = manager.getNumberTreeBlocks(tree.getTaxa());
+				if (numLists==0) {
+					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", "Trees");
 					MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
 					trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
 				}
-				else
-					trees = (TreeVector)obj;
+				else if (numLists == 1 && !askIfSingleBlock){
+					trees = manager.getTreeBlock(tree.getTaxa(), 0);
+				}
+				else {
+					Listable[] lists = new Listable[numLists+1];
+					for (int i=0; i<numLists; i++)
+						lists[i] = manager.getTreeBlock(tree.getTaxa(), i);
+					lists[numLists] = new MesquiteString("New Trees Block...", "New Trees Block...");
+					Object obj = ListDialog.queryList(parent, "Where to store tree?", "Choose tree block in which to store tree:",MesquiteString.helpString, lists, 0);
+					if (obj instanceof MesquiteString){
+						ListableVector v = manager.getTreeBlockVector();
+						String suggestedName = v.getUniqueName("Trees");
+						String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", suggestedName);
+						MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
+						trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
+					}
+					else
+						trees = (TreeVector)obj;
+				}
 			}
-			if (trees!=null) {
-				trees.addElement(tree, true);
-				return trees;
-			}
+		}
+		if (trees!=null) {
+			trees.addElement(tree, true);
+			return trees;
 		}
 		return null;
 	}
@@ -1655,10 +1656,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		mesquite.lib.characters.CharacterData data;
 		for (int i=0; i<datas.size(); i++) {
 			data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
-				if (count==j)
-					return data;
-				count++;
-	
+			if (count==j)
+				return data;
+			count++;
+
 		}
 		MesquiteTrunk.mesquiteTrunk.logln("Error: attempt to get data set beyond number (0) [" + j + "] {" + datas.size() + " }"  + getName());
 		MesquiteMessage.printStackTrace("Error: attempt to get data set beyond number (0) [" + j + "] {" + datas.size() + " }"  + getName());
