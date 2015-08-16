@@ -957,7 +957,8 @@ class NotesPanel extends ProjPanelPanel {
 			g.setColor(ColorTheme.getExtInterfaceTextMedium());
 			if (heading != null){
 				headingBox.draw(g, 16,16);
-				textBox.draw(g, 16,32);
+				
+				textBox.draw(g, 16,headingBox.getHeight() + 16);
 			}
 			else
 				textBox.draw(g, 16,16);
