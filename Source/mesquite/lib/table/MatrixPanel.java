@@ -145,7 +145,7 @@ timer6.end();
 		}
 		if ((offsetColumn!=0 || offsetRow !=0)){
 			if (!table.columnLegal(column+offsetColumn) || !table.rowLegal(row+offsetRow))
-				prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, false, true, true);
+				prepareCell(g, column, row, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, false, true, true);
 			else {
 				boolean selected = table.isCellSelected(column+offsetColumn, row+offsetRow) || table.isRowSelected(row+offsetRow)|| table.isColumnSelected(column+offsetColumn);
 
@@ -154,7 +154,7 @@ timer6.end();
 				}
 				else  {
 					String supplied = table.getMatrixTextForDisplay(column+offsetColumn,row+offsetRow);
-					prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column+offsetColumn, row+offsetRow), table.isCellEditable(column+offsetColumn, row+offsetRow));
+					prepareCell(g,column, row, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column+offsetColumn, row+offsetRow), table.isCellEditable(column+offsetColumn, row+offsetRow));
 					table.drawMatrixCellString(g, null, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow, supplied);
 				}
 //				table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column+offsetColumn, row+offsetRow);
@@ -168,7 +168,7 @@ timer6.end();
 			}
 			else  {
 				String supplied = table.getMatrixTextForDisplay(column,row);
-				prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column, row), table.isCellEditable(column, row));
+				prepareCell(g,column, row,  leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, selected, table.getCellDimmed(column, row), table.isCellEditable(column, row));
 				table.drawMatrixCellString(g, null, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row, supplied);
 			}
 //			table.drawMatrixCellExtras(g, leftSide,topSide,table.columnWidths[column], table.rowHeights[row], column, row);
@@ -211,7 +211,7 @@ timer6.end();
 		Shape clip = g.getClip();
 		g.setClip(leftSide,topSide,table.columnWidths[column], table.rowHeights[row]);
 
-		prepareCell(g, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, table.isCellSelected(column, row) || table.isRowSelected(row)|| table.isColumnSelected(column), false, table.isCellEditable(column, row));
+		prepareCell(g, column, row, leftSide+1,topSide+1,table.columnWidths[column]-1, table.rowHeights[row]-1, false, table.isCellSelected(column, row) || table.isRowSelected(row)|| table.isColumnSelected(column), false, table.isCellEditable(column, row));
 
 		g.setClip(clip);
 	}

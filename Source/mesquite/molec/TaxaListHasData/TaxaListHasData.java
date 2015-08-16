@@ -116,7 +116,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	public CharacterData getCharacterData(){
 		return data;
 	}
-	
+
+
 	/* ................................................................................................................. */
 
 	public boolean clipBoardHasString() {

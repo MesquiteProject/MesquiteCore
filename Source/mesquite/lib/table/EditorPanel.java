@@ -15,6 +15,7 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 
 /* ======================================================================== */
@@ -398,21 +399,23 @@ public abstract class EditorPanel extends MesquitePanel {
 			return  super.doCommand(commandName, arguments, checker);
 	}
 	/*...............................................................................................................*/
-	protected void prepareCell(Graphics g, int x, int y, int w, int h, boolean focused, boolean selected, boolean dimmed, boolean editable){
-		Color color;
-		if (selected) {
-			color = Color.white;
+	protected void prepareCell(Graphics g, int column, int row, int x, int y, int w, int h, boolean focused, boolean selected, boolean dimmed, boolean editable){
+		Color color = tb.getBackgroundColor(column, row, selected);
+		if (color==null) {
+			if (selected) {
+				color = Color.white;
+			}
+			else if (focused)
+				color = Color.lightGray;
+			else if (fillColor!=null)
+				color = fillColor;
+			else if (dimmed)
+				color = Color.lightGray;
+			else if (editable)
+				color = Color.white;
+			else
+				color = ColorDistribution.uneditable;
 		}
-		else if (focused)
-			color = Color.lightGray;
-		else if (fillColor!=null)
-			color = fillColor;
-		else if (dimmed)
-			color = Color.lightGray;
-		else if (editable)
-			color = Color.white;
-		else
-			color = ColorDistribution.uneditable;
 		//		color = Color.lightGray;  //
 		g.setColor(color);
 		g.fillRect(x,y,w,h);

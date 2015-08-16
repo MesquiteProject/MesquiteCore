@@ -135,7 +135,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		Shape clip = g.getClip();
 		g.setClip(0,topSide,columnWidth(-1), rowHeight(row));
 
-		prepareCell(g, 1,topSide+1,columnWidth(-1), rowHeight(row)-2, table.focusRow == row,  table.isRowNameSelected(row) || table.isRowSelected(row), table.getCellDimmed(-1, row), table.isRowNameEditable(row));
+		prepareCell(g, -1, row, 1,topSide+1,columnWidth(-1), rowHeight(row)-2, table.focusRow == row,  table.isRowNameSelected(row) || table.isRowSelected(row), table.getCellDimmed(-1, row), table.isRowNameEditable(row));
 
 		g.setClip(0,0, getBounds().width, getBounds().height);
 
