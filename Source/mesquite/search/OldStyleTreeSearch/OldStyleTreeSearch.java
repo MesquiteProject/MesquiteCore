@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.search.OtherTreeSearch;
+package mesquite.search.OldStyleTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
@@ -20,15 +20,15 @@ import mesquite.lib.duties.TreeSearcher;
 import mesquite.search.lib.*;
 
 /* ======================================================================== */
-public class OtherTreeSearch extends TreeSearch  {
+public class OldStyleTreeSearch extends TreeSearch  {
 	public String getName() {
-		return "Other Tree Inference";
+		return "Tree Searchers (old arrangement)";
 	}
 	public String getNameForMenuItem() {
-			return "Other Tree Inference";
+			return "Tree Search";
 	}
 	public String getExplanation() {
-		return "Supplies trees resulting from other criteria.";
+		return "Supplies trees resulting from tree searches.";
 	}
 	/*.................................................................................................................*/
 	public Class getHireSubchoice(){
@@ -41,16 +41,16 @@ public class OtherTreeSearch extends TreeSearch  {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-			return false;
+			return true;
 	}
 	public CompatibilityTest getCompatibilityTest(){
-		return new OTSCompatibilityTest();
+		return new OStyleCompatibilityTest();
 		}
 		
-	//This is treated as compatible only with installations in which there ARE Zephyr 2 style modules, in which case this menu behaves in the new style
-	 class OTSCompatibilityTest extends CompatibilityTest {
+	//This is treated as compatible only with installations in which there are no Zephyr 2 style modules, in which case this menu behaves in the old style
+	 class OStyleCompatibilityTest extends CompatibilityTest {  
 		public  boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
-			return (numModulesAvailable(LikelihoodAnalysis.class) + numModulesAvailable(DistanceAnalysis.class) + numModulesAvailable(ParsimonyAnalysis.class) + numModulesAvailable(BayesianAnalysis.class)>1);
+			return (numModulesAvailable(LikelihoodAnalysis.class) + numModulesAvailable(DistanceAnalysis.class) + numModulesAvailable(ParsimonyAnalysis.class) + numModulesAvailable(BayesianAnalysis.class)==0);
 		}
 	}
 
