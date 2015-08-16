@@ -84,7 +84,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public static final int infoBarHeightAllowance = 22;
 	protected int infoBarHeight = infoBarHeightAllowance;
 	boolean queryMode = false;
-	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
+	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem, closeAllMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
 
 	private MesquiteMenuItemSpec ptfMMIS;
 	private MesquiteMenuItemSpec pPDFMMIS;
@@ -262,9 +262,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		snapshotMenuItem.disconnectable = false;
 		sendScriptMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null,"Send Script", getOwnerModule(), sendScriptCommand));
 		sendScriptMenuItem.disconnectable = false;
-		closeWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close Window", getOwnerModule(), closeWindowCommand));
+		if (getOwnerModule() instanceof FileCoordinator)
+			closeWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close Window", getOwnerModule(), closeWindowCommand));
+		else
+			closeWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close Tab", getOwnerModule(), closeWindowCommand));
 		closeWindowMenuItem.disconnectable = false;
 		closeWindowMenuItem.setShortcut(closeWindowShortcut);	
+		MesquiteProject proj = ownerModule.getProject();
+		if (proj != null)
+			closeAllMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close All Tabs Of Project", getOwnerModule(), new MesquiteCommand("closeAllWindows", getOwnerModule().getFileCoordinator())));
 
 		
 		
@@ -284,10 +290,16 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (isPoppedOut()) {
 			if (getPopAsTile()) {
 				tileOutWindowMenuItem.setLabel("Return Tile to Main Window");
+				closeWindowMenuItem.setLabel("Close Tab");
 			}
-			else
+			else {
 				popOutWindowMenuItem.setLabel("Reset within Main Window");
+				closeWindowMenuItem.setLabel("Close Window");
+			}
 		} 
+		else
+			closeWindowMenuItem.setLabel("Close Tab");
+
 
 	}
 	
@@ -348,10 +360,18 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	public void popOut(boolean setVisible){
 		if (!isLoneWindow() && parentFrame!=null){
+			if (!parentFrame.anythingPoppedOtherThanMe(this) && MesquiteInteger.isCombinable(preferredPopoutWidth) && preferredPopoutWidth>0)
+				parentFrame.setPopoutWidth(preferredPopoutWidth);
 			parentFrame.popOut(this, setVisible);
 			ownerModule.resetEmbeddedMenus(this);
 		}
 	}
+	
+	int preferredPopoutWidth = MesquiteInteger.unassigned;
+	public void setPreferredPopoutWidth(int preferredWidth){
+		preferredPopoutWidth = preferredWidth;
+	}
+	
 	public void popIn(){
 		if (isLoneWindow()){
 			try {
@@ -1976,6 +1996,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void toFront(){
 		if (doingShow)
 			return;
+		if (parentFrame == null)
+			return;
 		setVisible(true);
 		parentFrame.setAsFrontWindow(this);
 		if (isVisible() && rank!=highestRank) { //window of intermediate rank brought to front; must readjust ranks of all
@@ -2337,6 +2359,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (checker.compare(MesquiteWindow.class, "Makes the window visible", null, commandName, "showWindow")) {
 			setVisible(true, MesquiteThread.isScripting());
 		}
+		else if (checker.compare(MesquiteWindow.class, "brings window to front", null, commandName, "setAsFront")) {
+			getParentFrame().showPage(this);
+		//	getParentFrame().showFrontWindow();
+		}
 		else if (checker.compare(MesquiteWindow.class, "Makes the window visible", null, commandName, "showWindowForce")) {
 			setVisible(true);
 			getParentFrame().showFrontWindow();
@@ -2463,8 +2489,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			}
 			else {
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Transferable t = clip.getContents(this);
 				try {
+				Transferable t = clip.getContents(this);
 					String s = (String)t.getTransferData(DataFlavor.stringFlavor);
 					if (s!=null) {
 						TextArea ta = annotationArea.getTextArea();

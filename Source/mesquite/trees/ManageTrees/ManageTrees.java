@@ -45,11 +45,11 @@ public class ManageTrees extends TreesManager {
 	}
 	ListableVector treesVector;
 	ListableVector taxas;
-	TreeBlockFiller treeFillerTask;  //For make new trees block from  //Should have vector of these so that there isn't only one, for reentrancy etc.; also treesReady command needs to specify an id of a treeFillerTask
-	String treeFillerTaxaAssignedID = null;
+	TreeBlockFiller treeFillerTask;  //For make new trees block from  
+	String treeFillerTaxaAssignedID = null;  
 	Vector blockListeners = null;
 	boolean fillingTreesNow = false;
-	MesquiteBoolean separateThreadFill;
+	MesquiteBoolean separateThreadFill; 
 	MesquiteBoolean autoSaveInference ;
 	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on separate threads.
 	//The searches themselves should work fine, but there is a possibility of user-interface confuses.
@@ -199,10 +199,11 @@ public class ManageTrees extends TreesManager {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "List of Trees", makeCommand("showTrees",  this), treesVector);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
+		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "Delete Tree Blocks...", makeCommand("deleteTreeBlocks",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Empty Block of Trees...", makeCommand("newTreeBlock",  this));
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make New Trees Block from", makeCommand("newFilledTreeBlockInt",  this), TreeBlockFiller.class);
-		if (numModulesAvailable(TreeInferer.class)>0)  //ExternalTreeSearcher
-			getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Tree Inference", makeCommand("newFilledTreeBlockInferenceInt",  this), TreeInferer.class);
+		if (numModulesAvailable(TreeInferer.class)>0 && MesquiteTrunk.mesquiteModulesInfoVector.findModule(null, "#TreeInferenceCoordinator")==null)  //ExternalTreeSearcher
+			getFileCoordinator().addSubmenu(MesquiteTrunk.analysisMenu, "Tree Inference", makeCommand("newFilledTreeBlockInferenceInt",  this), TreeInferer.class);
 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Import File with Trees");
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Link Contents...", makeCommand("linkTreeFile",  this));
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Contents...", makeCommand("includeTreeFile",  this));
@@ -254,11 +255,11 @@ public class ManageTrees extends TreesManager {
 			}
 		}
 
-		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){
+		if (fillingTreesNow && treeFillerTask !=null && treeFillerTask.getReconnectable()!=null){  //Defunct when new system in place
 			temp.addLine("restartTreeSource ", treeFillerTask);
 			temp.addLine("reconnectTreeSource " + StringUtil.tokenize(treeFillerTaxaAssignedID));
 		}
-		else if (showTreeFiller && treeFillerTask !=null)
+		else if (showTreeFiller && treeFillerTask !=null)  
 			temp.addLine("setTreeSource ", treeFillerTask);
 
 		return temp;
@@ -470,6 +471,20 @@ public class ManageTrees extends TreesManager {
 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
 				lister.getModuleWindow().setVisible(true);
 			return lister;
+		}
+		else if (checker.compare(this.getClass(), "Deletes tree blocks from the project", null, commandName, "deleteTreeBlocks")) {
+			Listable[] chosen = ListDialog.queryListMultiple(containerOfModule(), "Select Tree Blocks to Delete", "Select one or more tree blocks to be deleted", (String)null, "Delete", false, getProject().getTreeVectors(), (boolean[])null);
+			if (chosen != null){
+				for (int i = chosen.length-1; i>=0; i--) {  
+					((FileElement)chosen[i]).doom();
+				}
+				getProject().incrementProjectWindowSuppression();
+				for (int i = chosen.length-1; i>=0; i--) {  
+					logln("Deleting " + chosen[i].getName());
+					deleteElement((FileElement)chosen[i]);
+				}
+				getProject().decrementProjectWindowSuppression();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Restarts to unfinished tree block filling", "[name of tree block filler module]", commandName, "restartTreeSource")) { 
 			TreeBlockFiller temp=  (TreeBlockFiller)replaceEmployee(TreeBlockFiller.class, arguments, "Source of trees", treeFillerTask);
@@ -718,7 +733,7 @@ public class ManageTrees extends TreesManager {
 				discreetAlert("A taxa block must be created first before making a tree block");
 				return null;
 			}
-			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference", true);
+			newTreeBlockFilledInt(commandName, arguments, checker, true, "Do tree inference", true);  //This handler will be Defunct when new system in place
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -786,14 +801,15 @@ public class ManageTrees extends TreesManager {
 		}
 
 	}
-	
+
 	void fireTreeFiller(){
-		fireEmployee(treeFillerTask);
+		fireEmployee(treeFillerTask);  
 		treeFillerTask = null;
 		treeFillerTaxaAssignedID = null;
 		fillingTreesNow = false;
-}
+	}
 	/*-----------------------------------------------------------------*/
+	//isInference argument will presumably be defunct when inference switches to new module
 	Object newTreeBlockFilledInt(String commandName, String arguments, CommandChecker checker, boolean suppressAsk, String taskName, boolean isInference){
 		//arguments that should be accepted: (1) tree source, (2) which taxa, (3)  file id, (4) name of tree block, (5) how many trees  [number of taxa block] [identification number of file in which the tree block should be stored] [name of tree block] [how many trees to make]
 		if (fillingTreesNow){
@@ -810,14 +826,15 @@ public class ManageTrees extends TreesManager {
 			taxa = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select taxa (for new trees block)",MesquiteString.helpString, taxas, 0);
 		}
 
-		doCommand("setTreeSource", arguments, checker);
-		if (treeFillerTask==null)
+		doCommand("setTreeSource", arguments, checker);  
+
+		if (treeFillerTask==null)  
 			return null;
 		file = chooseFile( taxa);
 		if (taxa==null || file == null)
 			return null;
 
-		treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);
+		treeFillerTaxaAssignedID = getProject().getTaxaReferenceExternal(taxa);   //don't use the treeFillerTaxaAssignedID of themodule
 		TreeVector trees = new TreeVector(taxa);
 		if (trees == null)
 			return null;
@@ -838,7 +855,7 @@ public class ManageTrees extends TreesManager {
 		if (separateThread==1) {   // separate
 			fillingTreesNow = true;
 			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
-			fillerThreads.addElement(tLT);
+			fillerThreads.addElement(tLT); //Defunct: note!  already multiple threads remembered!
 			tLT.suppressAsk = suppressAsk;
 			tLT.start();
 		}
@@ -987,7 +1004,7 @@ public class ManageTrees extends TreesManager {
 			id.completeAndShowDialog("OK", null, null, "OK");
 			id.dispose();
 		}
-		separateThreadFill.setValue(radio.getValue() == 1);
+		separateThreadFill.setValue(radio.getValue() == 1);   
 		storePreferences();
 		return radio.getValue();
 	}
@@ -1160,7 +1177,7 @@ public class ManageTrees extends TreesManager {
 		}
 	}
 	/*.................................................................................................................*/
-	public TreeVector getTreeVectorByID(int id){
+	public TreeVector getTreeVectorByID(int id){  //OK for doomed
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(j);
 			if (trees!= null && trees.getID() ==id)
@@ -1173,16 +1190,13 @@ public class ManageTrees extends TreesManager {
 		return treesVector;
 	}
 	/*.................................................................................................................*/
-	public TreeVector getTreeBlock(Taxa taxa, int i){
+	public TreeVector getTreeBlock(Taxa taxa, int i){  //OK for doomed
 		if (treesVector==null)
 			return null;
-		if (taxa == null) {
-			return (TreeVector)treesVector.elementAt(i);
-		}
 		int count = 0;
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(j);
-			if (taxa == null || taxa.equals(trees.getTaxa(), false)) { 
+			if ((taxa == null || taxa.equals(trees.getTaxa(), false)) && !trees.isDoomed()) { 
 				if (count==i)
 					return trees;
 				count++;
@@ -1202,13 +1216,13 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){
+	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){  //OK for doomed
 		if (treesVector==null)
 			return null;
 		int count = 0;
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(j);
-			if ((file==null || trees.getFile()==file) && (taxa == null || taxa.equals(trees.getTaxa(), false))){
+			if ((file==null || trees.getFile()==file) && !trees.isDoomed()  && (taxa == null || taxa.equals(trees.getTaxa(), false))){
 				if (count==i)
 					return trees;
 				count++;
@@ -1217,14 +1231,11 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){
-		if (taxa == null) {
-			return getTreeBlockNumber(trees);
-		}
+	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){ //OK for doomed
 		int count = 0;
 		for (int j = 0; j< treesVector.size(); j++) {
 			TreeVector t = (TreeVector)treesVector.elementAt(j);
-			if (taxa == null || taxa.equals(t.getTaxa(), false)) {
+			if ((taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
 				if (t == trees)
 					return count;
 				count++;
@@ -1233,41 +1244,44 @@ public class ManageTrees extends TreesManager {
 		return -1;
 	}
 	/*.................................................................................................................*/
-	public int getTreeBlockNumber(TreeVector trees){
-		if (treesVector==null)
-			return -1;
-		else 
-			return treesVector.indexOf(trees);
+	public int getTreeBlockNumber(TreeVector trees){//OK for doomed
+			return getTreeBlockNumber(null, trees);
 	}
 	/*.................................................................................................................*/
-	public int getNumberTreeBlocks(Taxa taxa){
+	public int getNumberTreeBlocks(Taxa taxa){ //OK for doomed
 		if (treesVector == null)
 			return 0;
 		int count = 0;
 		for (int i = 0; i< treesVector.size(); i++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(i);
-			if (taxa == null || taxa.equals(trees.getTaxa(), false))
+			if (!trees.isDoomed() && (taxa == null || taxa.equals(trees.getTaxa(), false)))
 				count++;
 		}
 		return count;
 	}
 	/*.................................................................................................................*/
-	public int getNumberTreeBlocks(Taxa taxa, MesquiteFile file){
+	public int getNumberTreeBlocks(Taxa taxa, MesquiteFile file){ //OK for doomed
 		if (treesVector == null)
 			return 0;
 		int count = 0;
 		for (int i = 0; i< treesVector.size(); i++) {
 			TreeVector trees = (TreeVector)treesVector.elementAt(i);
-			if ((file==null || trees.getFile()==file) && (taxa == null || taxa.equals(trees.getTaxa(), false)))
+			if ((file==null || trees.getFile()==file) && !trees.isDoomed() && (taxa == null || taxa.equals(trees.getTaxa(), false)))
 				count++;
 		}
 		return count;
 	}
 	/*.................................................................................................................*/
-	public int getNumberTreeBlocks(){
+	public int getNumberTreeBlocks(){ //OK for doomed
 		if (treesVector == null)
 			return 0;
-		return treesVector.size();
+		int count = 0;
+		for (int i = 0; i< treesVector.size(); i++) {
+			TreeVector trees = (TreeVector)treesVector.elementAt(i);
+			if (!trees.isDoomed())
+				count++;
+		}
+	return count;
 	}
 	/*.................................................................................................................*/
 	public TreeVector makeNewTreeBlock(Taxa taxa, String name, MesquiteFile f){
@@ -1632,6 +1646,8 @@ public class ManageTrees extends TreesManager {
 		StringBuffer block = new StringBuffer(5000);
 		Taxa taxa = trees.getTaxa();
 		block.append("BEGIN TREES");
+		if (trees.getAnnotation()!=null) 
+			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
 		block.append(endLine);
 		if (!NexusBlock.suppressTITLE){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
@@ -1640,10 +1656,6 @@ public class ManageTrees extends TreesManager {
 		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressLINK)) {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
-		}
-		if (trees.getAnnotation()!=null) {
-			block.append("[!" + trees.getAnnotation() + "]");
-			block.append(StringUtil.lineEnding());
 		}
 		block.append("\tTRANSLATE" + StringUtil.lineEnding());
 		String tt =trees.getTranslationTable();
@@ -1685,7 +1697,9 @@ public class ManageTrees extends TreesManager {
 
 		}
 		if (tB != null) block.append(tB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		block.append("END;" + StringUtil.lineEnding()+ StringUtil.lineEnding());
+		block.append("END");
+
+		block.append(";" + StringUtil.lineEnding()+ StringUtil.lineEnding());
 		return block.toString();
 	}
 	/*.................................................................................................................*/
@@ -1876,7 +1890,7 @@ class TreeBlockMonitorThread extends FillerThread {
 	CommandRecord comRec = null;
 	boolean aborted = true;
 	String taxaIDString = null;
-	
+
 	public TreeBlockMonitorThread (ManageTrees ownerModule, String taxaID, TreeBlockFiller fillTask) {
 		super(ownerModule);
 		this.fillTask = fillTask;

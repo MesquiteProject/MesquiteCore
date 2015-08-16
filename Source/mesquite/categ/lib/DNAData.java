@@ -395,26 +395,28 @@ public class DNAData extends MolecularData {
 	/* .......................................... .................................................. */
 	/** Returns the character number of the start of the codon following the one in which character ic participates. */
 	public int getStartOfNextCodon(int ic) {
-		int icPos = getCodonPosition(ic);
-		int candidate = -1;
-		if (icPos==1)
-			ic++;
-		icPos = getCodonPosition(ic);
-
-		
-		while (icPos!=1 && ic<getNumChars()){
+		while (ic<getNumChars()){  //this was broken in 3 .03.  I added this outer while loop.  This would only look at the first candidate; if there were two 1's in a row, it would find no more codons
+			int icPos = getCodonPosition(ic);
+			int candidate = -1;
+			if (icPos==1)
+				ic++;
 			icPos = getCodonPosition(ic);
-			if (icPos==1) {
-				candidate = ic;
-				break;
-			}
-			ic++;
-		}
 
-		int[] triplet = getCodonTriplet(candidate);
-		if (triplet==null)
-			return -1;
-		return candidate;
+
+			while (icPos!=1 && ic<getNumChars()){
+				icPos = getCodonPosition(ic);
+				if (icPos==1) {
+					candidate = ic;
+					break;
+				}
+				ic++;
+			}
+
+			int[] triplet = getCodonTriplet(candidate);   
+			if (triplet!=null)
+				return candidate;
+		}
+		return -1;
 	}
 	/* ................................................................................................................. */
 	/** Returns the codon in which character ic in taxon it participates. Returned is a long[3] containing the three DNAStates */
@@ -755,7 +757,6 @@ public class DNAData extends MolecularData {
 				}
 			}
 		}
-
 		return count;
 	}
 	/* ................................................................................................................. */

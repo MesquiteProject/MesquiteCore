@@ -100,7 +100,8 @@ public class LikelihoodInCharacter extends NumberForTree implements Incrementabl
 	/*.................................................................................................................*/
    	 public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
    	 	if (employee==characterSourceTask) {
-   			currentChar = 0;
+			if (currentChar<0 || currentChar>=characterSourceTask.getNumberOfCharacters(oldTaxa))
+				currentChar = 0;
    			charStates = null;
 			parametersChanged(notification);
    	 	}

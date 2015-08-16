@@ -67,7 +67,9 @@ public interface MesquiteListener {
 	public final static int NEW_RESULTS = -16; 
 	/** Entries in a data matrix have been changed*/
 	public final static int DATA_CHANGED = -18; 
-	
+	/** The main object (e.g. tree block) has been deleted*/
+	public final static int BLOCK_DELETED=-19;
+
 	/** Param of the tree drawing have been changed in such a way that its size may have changed.*/
 	public final static int TREE_DRAWING_SIZING_CHANGED = 800; 
 

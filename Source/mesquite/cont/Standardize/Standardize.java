@@ -16,6 +16,7 @@ package mesquite.cont.Standardize;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.table.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -41,7 +42,7 @@ public class Standardize extends ContDataAlterer {
    			return false;
    		ContinuousData cData = (ContinuousData)data;
    		if (data !=null){
-   			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+   			UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
    			boolean sample = (AlertDialog.query(containerOfModule(), "Standardize", "Do you want to treat the taxa as a sample (i.e. use standard deviation calculated with /(n-1)) or a population (i.e., use /n)?", "Sample (n-1)", "Population (n)"));
    			double sum;
    			for (int i=0; i<cData.getNumChars(); i++) {

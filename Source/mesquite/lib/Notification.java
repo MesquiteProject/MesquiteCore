@@ -50,6 +50,10 @@ public class Notification implements Identifiable {
 		this.undoReference = undoReference;
 		this.parameters = parameters;
 	}
+	
+	public String toString(){
+		return "Notification: " + getID() + " code = " + code + " parameters " + IntegerArray.toString(parameters);
+	}
 	public Notification(){
 		id = numCreated++;
 	}
@@ -97,6 +101,12 @@ public class Notification implements Identifiable {
 		return false;
 	}
 	
+	public static long getNotificationNumber(Notification n){
+		if (n==null)
+			return -1;
+		else
+			return n.getNotificationNumber();
+	}
 	public static int getCode(Notification n){
 		if (n==null)
 			return MesquiteListener.UNKNOWN;

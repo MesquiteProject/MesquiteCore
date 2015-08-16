@@ -15,6 +15,7 @@ package mesquite.search.OtherTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
+import mesquite.lib.duties.CharStatesForNodes;
 import mesquite.lib.duties.TreeSearcher;
 import mesquite.search.lib.*;
 
@@ -22,6 +23,9 @@ import mesquite.search.lib.*;
 public class OtherTreeSearch extends TreeSearch  {
 	public String getName() {
 		return "Other Tree Inference";
+	}
+	public String getNameForMenuItem() {
+			return "Other Tree Inference";
 	}
 	public String getExplanation() {
 		return "Supplies trees resulting from other criteria.";
@@ -37,7 +41,17 @@ public class OtherTreeSearch extends TreeSearch  {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return false;  
+			return false;
+	}
+	public CompatibilityTest getCompatibilityTest(){
+		return new OTSCompatibilityTest();
+		}
+		
+	//This is treated as compatible only with installations in which there ARE Zephyr 2 style modules, in which case this menu behaves in the new style
+	 class OTSCompatibilityTest extends CompatibilityTest {
+		public  boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
+			return (numModulesAvailable(LikelihoodAnalysis.class) + numModulesAvailable(DistanceAnalysis.class) + numModulesAvailable(ParsimonyAnalysis.class) + numModulesAvailable(BayesianAnalysis.class)>1);
+		}
 	}
 
 }

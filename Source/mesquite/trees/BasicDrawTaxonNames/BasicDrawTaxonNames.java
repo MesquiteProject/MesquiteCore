@@ -296,7 +296,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (fontToSet!= null) {
 						currentFont = fontToSet;
 						fontSizeName.setValue(Integer.toString(fontSize));
-						parametersChanged();
+						parametersChanged(new Notification(TreeDisplay.FONTSIZECHANGED));
 					}
 				}
 			}

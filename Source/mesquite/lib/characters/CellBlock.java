@@ -73,6 +73,10 @@ public class CellBlock {
 	public void reset(){    
 		currentLeftMovement = 0;
 		currentRightMovement = 0;
+		whichTaxa = new Bits(data.getNumTaxa());
+		whichTaxa.clearAllBits();
+		originalWhichTaxa = new Bits(data.getNumTaxa());
+		originalWhichTaxa.clearAllBits();
 		setAllBlocks(originalFirstCharInBlock, originalLastCharInBlock,originalFirstTaxonInBlock,originalLastTaxonInBlock);
 		locked = false;
 	}

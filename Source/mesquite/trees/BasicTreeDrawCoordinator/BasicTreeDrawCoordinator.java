@@ -309,6 +309,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 				vis = treeDisplay.isVisible();
 				treeDisplay.setVisible(false);
 				treeDisplay.suppressDrawing(true);
+				int currentOrientation = treeDisplay.getOrientation();
 				temp = (DrawTree)replaceEmployee(DrawTree.class, arguments, "Form of tree?", treeDrawTask);
 				if (temp!=null) {
 					treeDrawTask = temp;
@@ -319,6 +320,10 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDrawTask.setHiringCommand(tdC);
 					treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, treeDisplay.getTaxa().getNumTaxa()));
 					treeDisplay.suppressDrawing(suppression);
+					if (temp.allowsReorientation())
+						treeDisplay.setOrientation(currentOrientation);
+					else
+						currentOrientation = treeDisplay.getOrientation();
 					if (!suppression)
 						treeDisplay.pleaseUpdate(true);
 					treeDisplay.setVisible(vis);
@@ -332,6 +337,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 			}
 			else if (treeDisplays != null) { //many tree displays
 				boolean[] vis = new boolean[numDisplays];
+				int[] currentOrientations = new int[numDisplays];
 				for (int i=0; i<numDisplays; i++) {
 					while (treeDisplays[i].getDrawingInProcess())
 						;		
@@ -341,6 +347,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					if (treeDisplays[i].getTreeDrawing() != null)
 						treeDisplays[i].getTreeDrawing().dispose();
 					treeDisplays[i].setTreeDrawing(null);
+					currentOrientations[i] = treeDisplays[i].getOrientation();
 				}
 				temp = (DrawTree)replaceEmployee(DrawTree.class, arguments, "Form of tree?", treeDrawTask);
 				if (temp!=null) {
@@ -352,6 +359,10 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
+					if (temp.allowsReorientation())
+						treeDisplays[i].setOrientation(currentOrientations[i]);
+					else
+						currentOrientations[i] = treeDisplays[i].getOrientation();
 					treeDisplays[i].suppressDrawing(suppression);
 					if (!suppression)
 						treeDisplays[i].repaint();
@@ -537,6 +548,19 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (MesquiteThread.isScripting())
 			return;
+		if (source instanceof DrawNamesTreeDisplay && Notification.getCode(notification) == TreeDisplay.FONTSIZECHANGED ){
+			MesquiteWindow w = null;
+			if (treeDisplay != null) 
+				w =MesquiteWindow.windowOfItem(treeDisplay);
+
+			else if (treeDisplays != null && numDisplays>0) 
+				w =MesquiteWindow.windowOfItem(treeDisplays[0]);
+			if (w != null){
+				w.windowResized();  //this is a hack to force them to update sizes
+				return;
+		}
+		}
+		
 		if (treeDisplay != null) {
 			((BasicTreeDisplay)treeDisplay).pleaseUpdate(true);
 		}
@@ -806,6 +830,7 @@ class BasicTreeDisplay extends TreeDisplay  {
 			MesquiteMessage.warnProgrammer("tree NULL in tree draw coord");
 		else if ((!suppress) && (!tree.isLocked())) {
 			repaintsPending = 0;
+
 			/* NEEDS TO DRAW BACKGROUND EXTRAS */
 			int dRoot = getTreeDrawing().getDrawnRoot();
 			if (!tree.nodeExists(dRoot))

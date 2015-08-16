@@ -56,7 +56,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	boolean resourcesFullWindow = false; //0 for closed; 1 for open partly; 2 for full window;
 	boolean resourcesClosedWhenMinimized = false; //0 for closed; 1 for open partly; 2 for full window;
 	int resourcesWidth = 0;
-	int poptileWidth = 400;
+	int poptileWidth = 300;
 	public static int defaultResourcesWidth = 100; 
 	public static boolean respectFileSpecificResourceWidth = true; 
 	public static int resourcesFontSize = 10;
@@ -229,6 +229,18 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	public int getPopoutWidth(){
 		return poptileWidth; 
+	}
+	public boolean anythingPopped(){
+		MesquiteWindow w = frontMostInLocation(MesquiteFrame.POPTILE);
+		return w != null;
+	}
+	public boolean anythingPoppedOtherThanMe(MesquiteWindow me){
+		for (int i=orderedWindows.size()-1; i>=0; i--){
+			MesquiteWindow w = (MesquiteWindow)orderedWindows.elementAt(i);
+			if (w.getTileLocation() == POPTILE && w != me)
+				return true;
+		}
+		return false;
 	}
 	public void removePage(MesquiteWindow w){
 		if (w.getTileLocation()==MAIN)

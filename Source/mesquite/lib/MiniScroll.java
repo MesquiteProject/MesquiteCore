@@ -309,7 +309,19 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	public void setColor(Color c) {
 		tf.setForeground(c);
 	}
+	boolean enterLock = false;
+	public void setEnterLock(boolean lock){
+		enterLock = lock;
+		if (!lock){
+			boolean b = (currentValue<=maxValue && currentValue>=minValue);
+			enterButton.setEnabled(b);
+		}
+		else
+			enterButton.setEnabled(false);
+	}
 	public void setEnableEnter(boolean en){
+		if (enterLock)
+			return;
 		enterButton.setEnabled(en);
 	}
 	public void setMaximumValue (int i) { 
@@ -393,7 +405,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			b = (value<=maxValue && value>=minValue && value!=currentValue);
 		}
 		catch (NumberFormatException ex){}
-	 	enterButton.setEnabled(b);
+	 	enterButton.setEnabled(b && !enterLock);
 	}
 
 

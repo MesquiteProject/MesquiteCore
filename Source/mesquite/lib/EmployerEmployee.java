@@ -535,6 +535,25 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	}
 
 	/* ................................................................................................................. */
+	/** Closes all windows. */
+	public boolean closeEmployeeWindows(MesquiteModule butNotThis) {
+		boolean closed = false;
+		Enumeration enumeration = employees.elements();
+		while (enumeration.hasMoreElements()) {
+			MesquiteModule mb = (MesquiteModule) enumeration.nextElement();
+			closed = mb.closeEmployeeWindows(butNotThis) || closed;
+		}
+		if (this != butNotThis){
+			MesquiteWindow win = getModuleWindow();
+			if (win != null && win.isVisible()){
+				module.windowGoAway(win);
+				return true;
+			}
+		}
+		return closed;
+	}
+
+	/* ................................................................................................................. */
 	/** Finds the first more senior employer in the heirarchy that belongs to a particular subclass. */
 	public MesquiteModule findEmployerWithDuty(Class dutyClass) {
 		if (employer == null)
@@ -1762,9 +1781,30 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	/* ................................................................................................................. */
 	/** Returns the command for hiring a replacement to this module */
 	public final MesquiteCommand getHiringCommand() {
+		if (doesAnEmployerSuppressAutoRehiring())
+			return null;
 		return hiringCommand;
 	}
 
+	/* ................................................................................................................. */
+	/**
+	 * Before rehiring done, look into employer chain to seed if any request no rehiring
+	 */
+	boolean suppressAutoRehireInEmployeeTree = false;
+	public final void setSuppressEmployeeAutoRehiring(boolean s) {
+		suppressAutoRehireInEmployeeTree = s;
+	}
+	public final boolean getSuppressEmployeeAutoRehiring() {
+		return suppressAutoRehireInEmployeeTree;
+	}
+	public final boolean doesAnEmployerSuppressAutoRehiring() {
+		if (employer != null){
+			if (employer.suppressAutoRehireInEmployeeTree)
+				return true;
+			return employer.doesAnEmployerSuppressAutoRehiring();
+		}
+		return false;
+	}
 	/* ................................................................................................................. */
 	/**
 	 * returns whether this module has an employee hired for the given dutyClass and having the given MesquiteModuleInfo. For use by hireAllOtherEmployees
@@ -1790,7 +1830,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 	/* ................................................................................................................. */
 	/** Clones employee if possible */
-	public Object cloneEmployee(MesquiteModule employee) {
+	public  Object cloneEmployee(MesquiteModule employee) {
 		if (employee == null)
 			return null;
 		String cloneCommand = getClonableEmployeeCommand(employee);
@@ -1827,6 +1867,14 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			return cloned;
 		}
 		return null;
+	}
+	
+	/* ................................................................................................................. */
+	/** Clones employee if possible */
+	public synchronized Object synchronizedCloneEmployee(MesquiteModule employee) {
+		synchronized(this) {
+			return cloneEmployee(employee);
+		}
 	}
 	
 	private String whichModInfo(MesquiteModuleInfo mbi) {

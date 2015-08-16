@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -23,7 +23,6 @@ import java.util.*;
 public class Listened implements Listenable {
 	protected Vector listeners;
 	public static int listenersRemaining=0;
-	int listenerRemoved = -1;
 	private int notifySuppress = 0;
 	private Notification lastNotification = null;
 	private boolean notifyPending = false;
@@ -37,11 +36,11 @@ public class Listened implements Listenable {
 	}
 	public Listened (){
 	}
-	
+
 	public boolean isUserVisible(){ //here as a courtesy so that as many classes as possible can support this
 		return true;
 	}
- 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** lists listeners of element*/
 	public void listListeners() {
 		if (listeners!=null) {
@@ -56,7 +55,25 @@ public class Listened implements Listenable {
 			MesquiteTrunk.mesquiteTrunk.logln("- - - - - - -  " +this);
 		}
 	}
- 	/*.................................................................................................................*/
+	public String listenersToString() {
+		if (listeners == null)
+			return "";
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i< listeners.size(); i++){
+			Object obj = listeners.elementAt(i);
+			sb.append(MesquiteModule.getShortClassName(obj.getClass()) + " ");
+			if (obj instanceof Listable)
+				sb.append(((Listable)obj).getName());
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+	public int getNumListeners() {
+		if (listeners == null)
+			return 0;
+		return listeners.size();
+	}
+	/*.................................................................................................................*/
 	/** adds a listener to notify if the element changes*/
 	public void addListener(MesquiteListener listener) {
 		if (listener==this)
@@ -70,7 +87,7 @@ public class Listened implements Listenable {
 				allListeners.addElement(new ObjectR(listener, this));
 		}
 	}
- 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** adds a listener to notify if the element changes*/
 	public void addListenerHighPriority(MesquiteListener listener) {
 		if (listeners==null) 
@@ -82,19 +99,18 @@ public class Listened implements Listenable {
 				allListeners.addElement(new ObjectR(listener, this));
 		}
 	}
- 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** removes all listeners*/
 	public void removeAllListeners() {
 		if (listeners!=null) {
 			while( listeners.size()>0)
-					removeListener((MesquiteListener)listeners.elementAt(0));
+				removeListener((MesquiteListener)listeners.elementAt(0));
 		}
 	}
 	/*.................................................................................................................*/
 	/** removes a listener*/
 	public void removeListener(MesquiteListener listener) {
 		if (listeners!=null && listener !=null) {
-			listenerRemoved = listeners.indexOf(listener);
 			listeners.removeElement(listener);
 			listenersRemaining--;
 			if (checkMemory)
@@ -123,11 +139,11 @@ public class Listened implements Listenable {
 		if (notifySuppress<=0){
 			notifySuppress = 0;
 			if (notifyPending){
-					notifyListeners(this, lastNotification);
+				notifyListeners(this, lastNotification);
 			}
 		}
 	}
- 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** Returns whether the listener is in the list of listeners*/
 	public boolean amIListening(MesquiteListener me) {
 		if (listeners!=null) {
@@ -135,27 +151,27 @@ public class Listened implements Listenable {
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				MesquiteListener listener = (MesquiteListener)obj;
-	 			if (me==listener)
-	 				return true;
+				if (me==listener)
+					return true;
 			}
 		}
 		return false;
 	}
- 	/*.................................................................................................................*/
- 	/** When true, causes list of notifications made to be echoed to the console*/
+	/*.................................................................................................................*/
+	/** When true, causes list of notifications made to be echoed to the console*/
 	public void setDumpNotified(boolean dn){
 		dumpNotified = dn;
 	}
 	MesquiteTimer[] timers = {new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
-										new MesquiteTimer(),new MesquiteTimer()};
-	
+			new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+			new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+			new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+			new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+			new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),new MesquiteTimer(),
+			new MesquiteTimer(),new MesquiteTimer()};
+
 	/*.................................................................................................................*/
- 	/** notifies listeners that the element, and in particular part i, has changed.  The ith part may
+	/** notifies listeners that the element, and in particular part i, has changed.  The ith part may
  	be the ith character (if element is a CharacterData), or the ith tree (if a TreeVector), etc..
  	Notifies only those elements of class clss if boolean is true; notifies only those elements not of class
  	clss if boolean is false*/
@@ -168,11 +184,11 @@ public class Listened implements Listenable {
 				boolean timeListeners = true;
 				MesquiteTimer timer = new MesquiteTimer();
 				timer.start();
-				
+
 				notifications++;
-	 			if (classes !=null)
-	 				classes.record(getClass());
-	 			notifyPending = false;
+				if (classes !=null)
+					classes.record(getClass());
+				notifyPending = false;
 				lastNotification = null;
 				/*Listeners notified by first building array, so as to avoid notifying 
 				listeners newly added to this list during this notification process */
@@ -180,39 +196,39 @@ public class Listened implements Listenable {
 				for (int m=0; m<ls.length; m++)
 					ls[m]= (MesquiteListener)listeners.elementAt(m);
 				for (int m=0; m<ls.length; m++) {
-		 			if (clss == null || (classOnly && clss.isAssignableFrom(ls[m].getClass())) || (!classOnly && !clss.isAssignableFrom(ls[m].getClass())))
-			 			if (!(ls[m] instanceof Doomable) || !((Doomable)ls[m]).isDoomed()) {
-			 				if (dumpNotified)
-			 					MesquiteTrunk.mesquiteTrunk.logln("(" + m + ") notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
-			 				if (classesNotified !=null)
-			 					classesNotified.record(ls[m].getClass());
-			 				if (dumpNotified && m<timers.length)
-			 					timers[m].start();
-			 				if (MesquiteTrunk.debugMode) {
-			 					timer.timeSinceLast();
-			 					ls[m].changed(caller, this, notification);
-			 					long time = timer.timeSinceLast();
-			 					if (time>20)
-			 						MesquiteMessage.println("@Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
-			 				} else {
-			 					try {
-			 						ls[m].changed(caller, this, notification);
-			 					}
-			 					catch (Throwable e){  //added 2. 72 to avoid crash in changed from stopping all other listeners from hearing
-			 						try {
-			 							String warning = "Crash when notifying " + ls[m] + " of change in " + this + " {Notification code " + Notification.getCode(notification) + " params " + IntegerArray.toString(Notification.getParameters(notification)) + "} ";
-			 							MesquiteMessage.println("Crash when notifying " + ls[m] + " of change in " + this);
-			 							MesquiteFile.throwableToLog(this, e);
-			 							MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, warning);
-			 						}
-			 						catch (Throwable f){
-			 						}
-			 					}
-			 				}
-			 				if (dumpNotified && m<timers.length){
-			 					timers[m].end();
-			 				}
-			 			}
+					if (clss == null || (classOnly && clss.isAssignableFrom(ls[m].getClass())) || (!classOnly && !clss.isAssignableFrom(ls[m].getClass())))
+						if (!(ls[m] instanceof Doomable) || !((Doomable)ls[m]).isDoomed()) {
+							if (dumpNotified)
+								MesquiteTrunk.mesquiteTrunk.logln("(" + m + ") notifying " + ls[m] + " of change in " + this + ": " + notification.getCode() + " (caller: " + caller + ")");
+							if (classesNotified !=null)
+								classesNotified.record(ls[m].getClass());
+							if (dumpNotified && m<timers.length)
+								timers[m].start();
+							if (MesquiteTrunk.debugMode) {
+								timer.timeSinceLast();
+								ls[m].changed(caller, this, notification);
+								long time = timer.timeSinceLast();
+								if (time>20)
+									MesquiteMessage.println("@Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
+							} else {
+								try {
+									ls[m].changed(caller, this, notification);
+								}
+								catch (Throwable e){  //added 2. 72 to avoid crash in changed from stopping all other listeners from hearing
+									try {
+										String warning = "Crash when notifying " + ls[m] + " of change in " + this + " {Notification code " + Notification.getCode(notification) + " params " + IntegerArray.toString(Notification.getParameters(notification)) + "} ";
+										MesquiteMessage.println("Crash when notifying " + ls[m] + " of change in " + this);
+										MesquiteFile.throwableToLog(this, e);
+										MesquiteTrunk.mesquiteTrunk.exceptionAlert(e, warning);
+									}
+									catch (Throwable f){
+									}
+								}
+							}
+							if (dumpNotified && m<timers.length){
+								timers[m].end();
+							}
+						}
 				}
 				if (dumpNotified){
 					System.out.print("timers " );
@@ -221,64 +237,71 @@ public class Listened implements Listenable {
 					System.out.println();
 				}
 				MesquiteThread.decrementDuringNotification();
-	 		}
-	 		else {
-	 			notifyPending = true;
+			}
+			else {
+				notifyPending = true;
 				lastNotification =notification;
-	 		}
+			}
 		}
 		doAfterNotify(notification);
 	}
- 	/*.................................................................................................................*/
- 	//can be overrided as needed (see CharacterData for example)
+	/*.................................................................................................................*/
+	//can be overrided as needed (see CharacterData for example)
 	public void doAfterNotify(Notification notification){
-		
+
 	}
 
- 	/*.................................................................................................................*/
- 	/** notifies listeners that the element, and in particular part i, has changed.  The ith part may
+	/*.................................................................................................................*/
+	/** notifies listeners that the element, and in particular part i, has changed.  The ith part may
  	be the ith character (if element is a CharacterData), or the ith tree (if a TreeVector), etc. */
 	public void notifyListeners(Object caller, Notification notification) { 
 		notifyListeners(caller, notification, null, true);
 	}
 	/*.................................................................................................................*/
- 	/** Returns the number of listeners remaining that are still registered with this element.
+	/** Returns the number of listeners remaining that are still registered with this element.
  	Useful to see that listeners are removing themselves as needed. */
 	public static int getRemainingListeners(){
 		return listenersRemaining;
 	}
-	
+
 	/*-------------------------------------------------------*/
 	/** Deletes the object. Should typically be called via close()  to make sure that the file element is not in use etc. */
 	public void dispose() {
+	
 		/*  tell all listeners that this is being dleeted*/
 		if (listeners!=null) {
 			if (notifySuppress==0){
-				listenerRemoved = -1;
+				boolean sizeChanged = false;
+				Vector notified = new Vector();
+				
 				boolean stillGoing = true;
 				while (stillGoing) {
 					stillGoing = false;
+					sizeChanged = false;
 					for (int i=0; i<listeners.size(); i++) {
 						Object obj = listeners.elementAt(i);
 						MesquiteListener listener = (MesquiteListener)obj;
-			 			listenerRemoved=-1;
-			 			if (!(listener instanceof Doomable) || !((Doomable)listener).isDoomed()){
-			 				if (dumpNotified)
-			 					MesquiteTrunk.mesquiteTrunk.logln("notifying " + listener + " of disposal of " + this);
-			 				 listener.disposing(this); //in this the listeners could be changed, thus
-			 			}
-			 			listenersRemaining--;
+						if ((notified.indexOf(listener)<0) && (!(listener instanceof Doomable) || !((Doomable)listener).isDoomed())){
+							if (dumpNotified)
+								MesquiteTrunk.mesquiteTrunk.logln("notifying " + listener + " of disposal of " + this);
+							int oldSize = listeners.size();
+							notified.addElement(listener);
+							listener.disposing(this); //in this the listeners could be changed, thus
+							if (!sizeChanged)
+								sizeChanged = listeners.size() != oldSize;
+						}
+						listenersRemaining--;
 						if (checkMemory)
 							ObjectR.removeMe(allListeners, listener, this);
-						if (listenerRemoved>=0)
-							stillGoing = true;
 					}
+					if (sizeChanged)
+						stillGoing = true;
 				}
 			}
 			listeners.removeAllElements();
 		}
 	}
-	
+
 	/*-------------------------------------------------------*/
 	/** Notifies all the listeners that the passed object is being disposed.  Added June 02*/
 	public void notifyDisposing(Object doomedObject) {
@@ -288,10 +311,10 @@ public class Listened implements Listenable {
 				for (int i=0; i<listeners.size(); i++) {
 					Object obj = listeners.elementAt(i);
 					MesquiteListener listener = (MesquiteListener)obj;
-			 		if (!(listener instanceof Doomable) || !((Doomable)listener).isDoomed())
-		 				listener.disposing(doomedObject); 
+					if (!(listener instanceof Doomable) || !((Doomable)listener).isDoomed())
+						listener.disposing(doomedObject); 
 				}
-				
+
 			}
 		}
 	}

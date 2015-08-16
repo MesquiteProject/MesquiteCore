@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharGroupListColor;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Shape;
 
@@ -160,7 +161,7 @@ public class CharGroupListColor extends CharGroupListAssistant  {
 		}
 	}
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){
 		if (ic>=0 && doubleClick) {
 			specifyColor(ic);
 			return true;

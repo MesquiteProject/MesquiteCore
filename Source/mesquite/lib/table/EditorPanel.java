@@ -15,6 +15,7 @@ package mesquite.lib.table;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 
 /* ======================================================================== */
@@ -398,21 +399,23 @@ public abstract class EditorPanel extends MesquitePanel {
 			return  super.doCommand(commandName, arguments, checker);
 	}
 	/*...............................................................................................................*/
-	protected void prepareCell(Graphics g, int x, int y, int w, int h, boolean focused, boolean selected, boolean dimmed, boolean editable){
-		Color color;
-		if (selected) {
-			color = Color.white;
+	protected void prepareCell(Graphics g, int column, int row, int x, int y, int w, int h, boolean focused, boolean selected, boolean dimmed, boolean editable){
+		Color color = tb.getBackgroundColor(column, row, selected);
+		if (color==null) {
+			if (selected) {
+				color = Color.white;
+			}
+			else if (focused)
+				color = Color.lightGray;
+			else if (fillColor!=null)
+				color = fillColor;
+			else if (dimmed)
+				color = Color.lightGray;
+			else if (editable)
+				color = Color.white;
+			else
+				color = ColorDistribution.uneditable;
 		}
-		else if (focused)
-			color = Color.lightGray;
-		else if (fillColor!=null)
-			color = fillColor;
-		else if (dimmed)
-			color = Color.lightGray;
-		else if (editable)
-			color = Color.white;
-		else
-			color = ColorDistribution.uneditable;
 		//		color = Color.lightGray;  //
 		g.setColor(color);
 		g.fillRect(x,y,w,h);
@@ -527,6 +530,9 @@ public abstract class EditorPanel extends MesquitePanel {
 			top = tb.getColumnGrabberWidth();
 		Rectangle current = editField.getBounds();
 
+		int buffer = 3;
+		left = left-buffer;
+		w = w+buffer*2;
 		if (current.width != w || (current.height < rowHeight(editRow)+1 || current.height > rowHeight(editRow)+2)){ //1. 06 permit to be one off (strange behaviour in java 1.4)
 			editField.setBounds(left, top, w, rowHeight(editRow)+1);
 			return false;

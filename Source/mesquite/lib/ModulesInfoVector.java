@@ -375,7 +375,7 @@ public class ModulesInfoVector extends ListableVector {
 
 		for (int i=0; i<num; i++){
 			mbi = (MesquiteModuleInfo)elementAt(i);
-			if (mbi.doesDuty(dutyClass) && mbi.nameMatches(useName)) {
+			if ((dutyClass == null || mbi.doesDuty(dutyClass)) && mbi.nameMatches(useName)) {
 				return mbi;
 			}
 		}

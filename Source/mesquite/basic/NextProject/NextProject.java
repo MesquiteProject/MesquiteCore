@@ -144,6 +144,8 @@ public class NextProject extends FileAssistant  {
    	 }
 	/*.................................................................................................................*/
  	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 			whichWindow.hide();
 			whichWindow.dispose();
 			iQuit();

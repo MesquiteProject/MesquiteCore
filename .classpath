@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="jars/AppleJavaExtensions.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/iText.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/Jama-1.0.1.zip"/>
@@ -12,5 +11,7 @@
 	<classpathentry exported="true" kind="lib" path="jars/commons-lang-2.3.jar"/>
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry kind="src" path="Source"/>
+	<classpathentry kind="lib" path="jars/commons-codec-1.6.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>

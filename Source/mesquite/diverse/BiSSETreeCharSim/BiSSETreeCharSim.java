@@ -700,6 +700,8 @@ public class BiSSETreeCharSim extends TreeCharSimulate {
 					taxa.deleteTaxa(taxSize, taxa.getNumTaxa()-taxSize, false);
 			}
 		}
+		tree.resetTaxaInfo();
+
 		treeContainer.setObject(tree);
 		characterHistoryContainer.setObject(charHistory);
 		seed.setValue(rng.nextLong());  //see for next time

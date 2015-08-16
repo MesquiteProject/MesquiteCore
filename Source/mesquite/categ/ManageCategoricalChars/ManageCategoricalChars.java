@@ -361,6 +361,9 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write("BEGIN DATA");
 		else
 			file.write("BEGIN CHARACTERS");
+		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
+			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
+		}
 		file.write(endLine);
 		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			file.write("\tTITLE  ");
@@ -372,10 +375,6 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write("\tLINK TAXA = ");
 			file.write(StringUtil.tokenize(data.getTaxa().getName()));
 			file.write(endLine);
-		}
-		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
-			file.write("[!" + data.getAnnotation() + "]");
-			file.write(StringUtil.lineEnding());
 		}
 		file.write("\tDIMENSIONS ");
 		if (file.useSimplifiedNexus && file.useDataBlocks) {

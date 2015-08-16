@@ -597,7 +597,7 @@ public class DrawTreeUtil {
 			float ynMVert;
 			float halfLine = lineWidth/2;
 			Shape line;
-			if (g instanceof Graphics2D) {
+			if (g instanceof Graphics2D && lineWidth >=0) {
 				BasicStroke wideStroke = new BasicStroke(lineWidth);
 				Graphics2D g2 = (Graphics2D)g;
 				Stroke stroke = g2.getStroke();
@@ -707,7 +707,7 @@ public class DrawTreeUtil {
 
 
 	/*_________________________________________________*/
-	public static boolean inSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, int node, int h, int v) {
+	public static boolean inSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, int taxonSpacing, Tree tree, int node, int h, int v) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
 			int xN=x[node];
@@ -715,53 +715,57 @@ public class DrawTreeUtil {
 			int yN =y[node];
 			int ynM = y[nM];
 			int halfEdgewidth = edgewidth/2;
+			int nearby = 4;
+			int halfTaxonSpacing = taxonSpacing/2 -4;
+			if (nearby> halfTaxonSpacing) nearby = halfTaxonSpacing;
+			if (nearby< 1) nearby = 1;
 
 			if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-				if ((h>=xN) && (h<=xN+edgewidth) && (v>=yN) && (v<=ynM))  //with vertical part of branch
+				if ((h>=xN-nearby) && (h<=xN+edgewidth+nearby) && (v>=yN) && (v<=ynM))  //with vertical part of branch
 					return true;
 				if (xnM>xN) {  // mother is to the right of node
-					if ((h>=xN) && (h<=xnM) && (v>=ynM-halfEdgewidth) && (v<=ynM+halfEdgewidth))  //with horizontal part of branch
+					if ((h>=xN) && (h<=xnM) && (v>=ynM-halfEdgewidth-nearby) && (v<=ynM+halfEdgewidth+nearby))  //with horizontal part of branch
 						return true;
 				}
 				else {
-					if ((h>=xnM) && (h<=xN) && (v>=ynM-halfEdgewidth) && (v<=ynM+halfEdgewidth))  //with horizontal part of branch
+					if ((h>=xnM) && (h<=xN) && (v>=ynM-halfEdgewidth-nearby) && (v<=ynM+halfEdgewidth+nearby))  //with horizontal part of branch
 						return true;
 				}
 			}
 
 			else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){
-				if ((h>=xN) && (h<=xN+edgewidth) && (v>=ynM) && (v<=yN))  //with vertical part of branch
+				if ((h>=xN-nearby) && (h<=xN+edgewidth+nearby) && (v>=ynM) && (v<=yN))  //with vertical part of branch
 					return true;
 				if (xnM>xN) {  // mother is to the right of node
-					if ((h>=xN) && (h<=xnM) && (v>=ynM-halfEdgewidth) && (v<=ynM+halfEdgewidth))  //with horizontal part of branch
+					if ((h>=xN) && (h<=xnM) && (v>=ynM-halfEdgewidth-nearby) && (v<=ynM+halfEdgewidth+nearby))  //with horizontal part of branch
 						return true;
 				}
 				else {
-					if ((h>=xnM) && (h<=xN) && (v>=ynM-halfEdgewidth) && (v<=ynM+halfEdgewidth))  //with horizontal part of branch
+					if ((h>=xnM) && (h<=xN) && (v>=ynM-halfEdgewidth-nearby) && (v<=ynM+halfEdgewidth+nearby))  //with horizontal part of branch
 						return true;
 				}
 			}
 			else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-				if ((v>=yN) && (v<=yN+edgewidth) && (h>=xnM) && (h<=xN))  //with horizontal part of branch
+				if ((v>=yN-nearby) && (v<=yN+edgewidth+nearby) && (h>=xnM) && (h<=xN))  //with horizontal part of branch
 					return true;
 				if (ynM>yN) {  // mother is below node
-					if ((v>=yN) && (v<=ynM) && (h>=xnM-halfEdgewidth) && (h<=xnM+halfEdgewidth))  //with vertical part of branch
+					if ((v>=yN) && (v<=ynM) && (h>=xnM-halfEdgewidth-nearby) && (h<=xnM+halfEdgewidth+nearby))  //with vertical part of branch
 						return true;
 				}
 				else {
-					if ((v>=ynM) && (v<=yN) && (h>=xnM-halfEdgewidth) && (h<=xnM+halfEdgewidth))  //with vertical part of branch
+					if ((v>=ynM) && (v<=yN) && (h>=xnM-halfEdgewidth-nearby) && (h<=xnM+halfEdgewidth+nearby))  //with vertical part of branch
 						return true;
 				}
 			}
 			else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ 
-				if ((v>=yN) && (v<=yN+edgewidth) && (h>=xN) && (h<=xnM))  //with horizontal part of branch
+				if ((v>=yN-nearby) && (v<=yN+edgewidth+nearby) && (h>=xN) && (h<=xnM))  //with horizontal part of branch
 					return true;
 				if (ynM>yN) { // mother is below node
-					if ((v>=yN) && (v<=ynM) && (h>=xnM-halfEdgewidth) && (h<=xnM+halfEdgewidth))  //with vertical part of branch
+					if ((v>=yN) && (v<=ynM) && (h>=xnM-halfEdgewidth-nearby) && (h<=xnM+halfEdgewidth+nearby))  //with vertical part of branch
 						return true;
 				}
 				else {
-					if ((v>=ynM) && (v<=yN) && (h>=xnM-halfEdgewidth) && (h<=xnM+halfEdgewidth))  //with vertical part of branch
+					if ((v>=ynM) && (v<=yN) && (h>=xnM-halfEdgewidth-nearby) && (h<=xnM+halfEdgewidth+nearby))  //with vertical part of branch
 						return true;
 				}
 			}

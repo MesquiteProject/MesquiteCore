@@ -83,6 +83,8 @@ public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeD
 	}
 	/*.................................................................................................................*/
  	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		iQuit();

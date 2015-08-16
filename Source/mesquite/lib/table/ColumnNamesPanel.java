@@ -320,7 +320,7 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		else {
 			g.setClip(leftSide,0,columnWidth(column), botSide);
 
-			prepareCell(g, leftSide+1, 1,columnWidth(column), botSide, table.focusColumn == column, table.isColumnNameSelected(column) || table.isColumnSelected(column), table.getCellDimmed(column, -1), table.isColumnNameEditable(column));
+			prepareCell(g,column, -1, leftSide+1, 1,columnWidth(column), botSide, table.focusColumn == column, table.isColumnNameSelected(column) || table.isColumnSelected(column), table.getCellDimmed(column, -1), table.isColumnNameEditable(column));
 
 			g.setClip(0,0, getBounds().width, botSide);
 //			g.setClip(0,0, getBounds().width, getBounds().height);

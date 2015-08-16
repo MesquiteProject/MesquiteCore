@@ -81,7 +81,7 @@ public class AlterData extends DataWindowAssistantI {
     	 	if (checker.compare(this.getClass(), "Hires module to alter the data matrix", "[name of module]", commandName, "doAlter")) {
    	 		if (table!=null && data !=null){
 	    	 	if (data.getEditorInhibition()){
-	    	 		discreetAlert( "This matrix is marked as locked against editing.");
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 	    	 		return null;
 	    	 	}
 	    	 	DataAlterer tda= (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);

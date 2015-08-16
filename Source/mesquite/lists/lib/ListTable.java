@@ -312,7 +312,8 @@ public class ListTable extends MesquiteTable {
 				
 					ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-						if (!assistant.arrowTouchInRow(row, clickCount>1)){
+						Graphics g = getGraphics();
+						if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
 							if (assistant.isCellEditable(row))
 								super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
 							else

@@ -77,7 +77,12 @@ public abstract class ListAssistant extends MesquiteModule  {
 	}
 	
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+		return false;
+	}
+	
+	/** following method is DEPRECATED */
+	public boolean arrowTouchInRow(int ic, boolean doubleClick){ 
 		return false;
 	}
 	

@@ -171,6 +171,10 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (MesquiteThread.isScripting())
@@ -538,6 +542,8 @@ class WideTreeDrawing extends TreeDrawing  {
 		edgeWidth = treeDisplay.getEdgeWidth();
 		boxHeight = ownerModule.minimalEdgeWidth/4;
 		treeDisplay.setMinimumTaxonNameDistance(boxHeight,  4); 
+		treeDisplay.setOrientation(TreeDisplay.UP);
+
 		triangleNameRef = NameReference.getNameReference("triangled");
 		widthNameReference = NameReference.getNameReference("width");
 		this.ownerModule = ownerModule;
@@ -968,6 +974,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*....................................................................................................*/
 	private void miniScaleInternalLocs (Tree tree, int node, int[] terminals, int top, int cladeTop, int containing, int root, double scaling) {
+		
 		if (IntegerArray.inArray(node, terminals)){ //internal
 			miniY[node]=top;
 		}
@@ -1171,14 +1178,16 @@ class WideTreeDrawing extends TreeDrawing  {
 					double scaling = 1.0;
 					int top = yC;
 					int cladeTop = minimumYOfContained(tree, containingNode); 
-					if (tree.tallestPathAboveNode(tree.getRoot(), 1.0) ==0) //tree.tallestPathAboveNode(tree.getRoot(), 1.0)
-						scaling = 0;
+					if (tree.tallestPathAboveNode(tree.getRoot(), 1.0) ==0){ //tree.tallestPathAboveNode(tree.getRoot(), 1.0)
+						scaling = 0.1;  //this is arbitrary; scale not shown anyway
+					}
 					else
 						scaling = (Math.abs(minimumYOfContained(tree, tree.getRoot())-y[tree.getRoot()])/(tree.tallestPathAboveNode(tree.getRoot(), 1.0)));
-
+					
 					//if this is the root and branch lengths are not being shown for the containing tree, don't scale
-					if (tree.hasBranchLengths() && (treeDisplay.showBranchLengths || containingNode!=tree.getRoot()))
+					if (tree.hasBranchLengths() && (treeDisplay.showBranchLengths || (true || containingNode!=tree.getRoot()))){
 						miniScaleInternalLocs (containedTree, aNodes[i], terminals,  top, cladeTop, containingNode, aNodes[i], scaling);
+					}
 
 				}
 				if (ySpan!=0)
@@ -1572,8 +1581,8 @@ class WideTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public void reorient(int orientation) {
-		treeDisplay.setOrientation(orientation);
-		treeDisplay.pleaseUpdate(true);
+	//	treeDisplay.setOrientation(orientation);
+	//	treeDisplay.pleaseUpdate(true);
 	}
 	/*_________________________________________________*/
 	public void setEdgeWidth(int edw) {

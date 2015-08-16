@@ -172,6 +172,8 @@ public class CharGroupList extends ListModule {
 	/** Requests a getModuleWindow() to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
 		//Debug.println("disposing of getModuleWindow()");
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 

@@ -94,8 +94,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("suggestedDirectory".equalsIgnoreCase(tag))
+		if ("suggestedDirectory".equalsIgnoreCase(tag)){
 			MesquiteTrunk.suggestedDirectory = StringUtil.cleanXMLEscapeCharacters(content);
+		}
 	}
 
 	/*.................................................................................................................*/
@@ -225,7 +226,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		Enumeration e = MesquiteTrunk.windowVector.elements();
 		mss.setList(MesquiteTrunk.windowVector);
 		mss.setListableFilter(ChartWindow.class);
-		MesquiteSubmenuSpec mss2 = addSubmenu(MesquiteTrunk.analysisMenu, "Other", makeCommand("newAssistant",  this), FileAssistantA.class);
+	//	MesquiteSubmenuSpec mss2 = addSubmenu(MesquiteTrunk.analysisMenu, "Other", makeCommand("newAssistant",  this), FileAssistantA.class);
+		addMenuItem(MesquiteTrunk.analysisMenu, "-", null);
+		addModuleMenuItems(MesquiteTrunk.analysisMenu, makeCommand("newAssistant",  this), FileAssistantA.class);
 
 		broadcastProjectEstablished(this);
 		p.refreshProjectWindow();
@@ -704,18 +707,18 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return true;
 	}
 	/*.................................................................................................................*/
-	public MesquiteFile readLinkedFile(String pathName, String importer, String arguments, int fileType){ //make new/read new linked file
+	public MesquiteFile readLinkedFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
 		if (MesquiteThread.isScripting()) {
 			ObjectContainer f = new ObjectContainer();
-			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 0, f);
-
+			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 0, f, fileDescriptionText);
+			
 			pt.run();
 			MesquiteFile mf = (MesquiteFile)f.getObject();
 			f.setObject(null);
 			return mf;
 		}
 		else {
-			FileRead fr = new FileRead(pathName, importer, arguments, fileType,   this, 0, null);
+			FileRead fr = new FileRead(pathName, importer, arguments, fileType,   this, 0, null, fileDescriptionText);
 
 			MesquiteThread pt = new MesquiteThread(fr);
 
@@ -725,8 +728,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 	}
 	/*.................................................................................................................*/
-	public void includeFile(String pathName, String importer, String arguments, int fileType){ //make new/read new linked file
-		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null);
+	public void includeFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
+		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
 		if (MesquiteThread.isScripting()) {
 			pt.run();
 		}
@@ -736,9 +739,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 	}
 	/*.................................................................................................................*/
-	public void includeFileFuse(String pathName, String importer, String arguments, int fileType){ //make new/read new linked file  DONE special to put on same thread
+	public void includeFileFuse(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file  DONE special to put on same thread
 		getProject().incrementProjectWindowSuppression();
-		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null);
+		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
 			pt.run();
 			cleanFusedReadingSuppressions();
 			getProject().decrementProjectWindowSuppression();
@@ -1431,10 +1434,16 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				getProject().timePreviouslySavedAsRecorded = time;
 			double diff = Math.abs(getProject().timePreviouslySavedAsRecorded - getProject().timePreviouslySavedByFile)/1000.0;
 		}
-		else if (checker.compare(this.getClass(), "Reads a file as linked to a current file, so that they can share information", "[path to file]", commandName, "linkFile")) {
+		else if (checker.compare(this.getClass(), "Reads a file as linked to a current file, so that they can share information, with an explanation as to what link is for, for error reporting", "[fileDescriptionText][path to file][importer]", commandName, "linkFileExp")) {
+			String fileDescriptionText = parser.getFirstToken(arguments);
+			String path = filterIfMarkedArgument(parser.getNextToken());
+			String importer = filterIfMarkedArgument(parser.getNextToken());
+			return readLinkedFile(path, importer, arguments, 0, fileDescriptionText);
+		}
+		else if (checker.compare(this.getClass(), "Reads a file as linked to a current file, so that they can share information", "[path to file][importer][failureText]", commandName, "linkFile")) {
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
-			return (readLinkedFile(path, importer, arguments, 0));
+			return readLinkedFile(path, importer, arguments, 0, null);
 		}
 		else if (checker.compare(this.getClass(), "Reads a file at a URL as linked to a current file, so that they can share information", "[URL]", commandName, "linkURL")) {
 			MesquiteMessage.notifyUser("Sorry, can't yet read a linked URL");
@@ -1443,12 +1452,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Reads a file and incorporates all of its information into the home file of the current project", "[path to file]", commandName, "includeFile")) {
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
-			includeFile(path, importer, arguments, 0);
+			includeFile(path, importer, arguments, 0, null);
 		}
 		else if (checker.compare(this.getClass(), "Reads a file and incorporates all of its information into the home file of the current project", "[path to file]", commandName, "includeFileFuse")) {
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
-			includeFileFuse(path, importer, arguments, 0);
+			includeFileFuse(path, importer, arguments, 0, null);
 		}
 		else if (checker.compare(this.getClass(), "Reverts to saved by closing ALL files without saving then opening the home file of project", null, commandName, "revert")) {
 			revertToSaved(true);
@@ -1469,12 +1478,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Reads a tree file as linked to a current file, so that they can share information", "[path to file]", commandName, "linkTreeFile")) {
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
-			return (readLinkedFile(path, importer, arguments, 1));
+			String failureText = parser.getNextToken();
+			return (readLinkedFile(path, importer, arguments, 1, failureText));
 		}
 		else if (checker.compare(this.getClass(), "Reads a tree file and incorporates all of its information into the home file of the current project", "[path to file]", commandName, "includeTreeFile")) {
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
-			includeFile(path, importer, arguments, 1);
+			String failureText = parser.getNextToken();
+			includeFile(path, importer, arguments, 1, failureText);
 		}
 		else if (checker.compare(this.getClass(), "Create a new linked file", "[path to file]", commandName, "newLinkedFile")) {
 			MesquiteFile file = (newLinkedFile(parser.getFirstToken(arguments)));
@@ -1614,6 +1625,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		else if (checker.compare(this.getClass(), "Closes file", "[number of file]", commandName, "closeFile")) {
 			closeFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));
+		}
+		else if (checker.compare(this.getClass(), "Closes all tabs", null, commandName, "closeAllWindows")) {
+			int safetyNet = 0;
+			while (safetyNet < 50 && closeEmployeeWindows(this))
+				safetyNet++;
 		}
 		else if (checker.compare(this.getClass(), "Show file on disk", "[number of file]", commandName, "showFileOnDisk")) {
 			if (getProject() == null)
@@ -1881,6 +1897,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		//Debug.println("disposing of window");
 		whichWindow.hide();
 		//whichWindow.dispose();
@@ -1903,12 +1921,13 @@ class FileRead implements CommandRecordHolder, Runnable {
 	String importer;
 	int category;
 	int fileType;
-	public FileRead (String path, String importer, String arguments, int fileType,  BasicFileCoordinator ownerModule, int category, ObjectContainer f) {
+		String fileDescriptionText = null;
+		public FileRead (String path, String importer, String arguments, int fileType,  BasicFileCoordinator ownerModule, int category, ObjectContainer f, String filePurposeText) {
 		this.f = f;
 		this.arguments = arguments;
 		this.path = path;
 		this.comRec =  MesquiteThread.getCurrentCommandRecord();
-
+		this.fileDescriptionText = filePurposeText;
 
 		this.ownerModule = ownerModule;
 		this.category = category;
@@ -1935,10 +1954,19 @@ class FileRead implements CommandRecordHolder, Runnable {
 	public String getCurrentCommandExplanation(){
 		return null;
 	}
+	
 	private void warnLinkedNotFound(String pathName){
-		ownerModule.alert("A script refers to a linked file \"" + pathName + "\" that cannot be found.  Because this linked file cannot be found, the remainder of the script might not " +
-				"execute properly, and various warning messages might be given.  The probably cause of this is that someone saved a file with a second file linked, and then separated the two files." + 
-		" To avoid this problem in the future, either unlink files before saving, or maintain the linked file in the same relative position (e.g., in the same directory).");
+		String warning = "";
+		if (fileDescriptionText != null){
+			warning = fileDescriptionText + " cannot be found. The file was expected by a script to be at the location \"" + pathName + "\". " +
+						"Because this file cannot be found, the remainder of the script might not execute properly, and various warning messages might be given.";
+		}
+		else
+			warning = "A script refers to a linked file \"" + pathName + "\" that cannot be found. Because this linked file cannot be found, the remainder of the script might not " +
+				"execute properly, and various warning messages might be given.  A possible cause of this is that someone saved a file with a second file linked, and then separated the two files." + 
+		" To avoid this problem in the future, either unlink files before saving, or maintain the linked file in the same relative position (e.g., in the same directory).";
+		
+		ownerModule.alert(warning);
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile readLinkedFile(String pathName){ //make new/read new linked file//TODO: should say if scripting

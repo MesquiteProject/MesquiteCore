@@ -223,6 +223,8 @@ public class ManageProteinChars extends CategMatrixManager {
 			blocks.append("BEGIN DATA");
 		else
 			blocks.append("BEGIN CHARACTERS");
+		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
+			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		blocks.append(endLine);
 		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
@@ -233,10 +235,6 @@ public class ManageProteinChars extends CategMatrixManager {
 			blocks.append("\tLINK TAXA = ");
 			blocks.append(StringUtil.tokenize(data.getTaxa().getName()));
 			blocks.append(endLine);
-		}
-		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
-			blocks.append("[!" + data.getAnnotation() + "]");
-			blocks.append(StringUtil.lineEnding());
 		}
 		blocks.append("\tDIMENSIONS ");
 		if (file!=null && file.useSimplifiedNexus && file.useDataBlocks){
@@ -284,7 +282,9 @@ public class ManageProteinChars extends CategMatrixManager {
 		}
 		if (cB != null)
 			blocks.append(cB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		blocks.append("END;" + StringUtil.lineEnding());
+		blocks.append("END");
+		
+		blocks.append(";" + StringUtil.lineEnding());
 
 		file.writeLine( blocks.toString());
 	}

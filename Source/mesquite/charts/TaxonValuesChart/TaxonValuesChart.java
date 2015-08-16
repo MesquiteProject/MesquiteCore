@@ -145,6 +145,8 @@ public class TaxonValuesChart extends FileAssistantCH  {
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		iQuit();

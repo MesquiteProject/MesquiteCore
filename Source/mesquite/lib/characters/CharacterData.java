@@ -13,8 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.characters; 
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.util.*;
 import java.util.zip.*;
+
+import javax.swing.text.JTextComponent;
 
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.duties.*;
@@ -198,13 +204,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 
 	/*.................................................................................................................*/
-	public UndoInstructions getUndoInstructionsAllData(){
-		//undoInstructions = new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);
+	public UndoInstructions getUndoInstructionsAllMatrixCells(int[] changesThatMightHappen){
 		if (allowFullUndo())
-			return new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);
+			return new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this, changesThatMightHappen);
 		else 
 			return null;
 	}
+	/*.................................................................................................................*/
+	/** this is deprecated and will be removed as soon as all modules no longer call this **/  
+	public UndoInstructions getUndoInstructionsAllData(){   //WAYNECHECK:  needs to be removed from gataga and, ideally, pdap, and above method called instead.
+		return getUndoInstructionsAllMatrixCells(null);
+	}
+
 
 	/** true if the matrix is a valid one */
 	public boolean isValid(){
@@ -276,6 +287,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return inventUniqueIDs;
 	}
 	public void dispose(){
+		
 		checkThread(true);
 		if (taxa!=null)
 			taxa.removeListener(this);
@@ -1564,8 +1576,32 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		uncheckThread();
 		return true;
 	}
+	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
+	private boolean notificationFound(Notification notification){
+		if (notification ==null)
+			return false;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return false;
+		if (LongArray.indexOf(lastNotifications, id)>=0)
+			return true;
+		return false;
+	}
+	private void rememberNotification(Notification notification){
+		if (notification ==null)
+			return;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return;
+		for (int i = 0; i< lastNotifications.length-1; i++)
+			lastNotifications[i+1] = lastNotifications[i];
+		lastNotifications[0] = id;
+	}
 	/** For MesquiteListener interface; passes which object changed, along with optional integer (e.g. for character)*/
 	public void changed(Object caller, Object obj, Notification notification){
+		if (notificationFound(notification))
+			return;
+		rememberNotification(notification);
 		if (obj == taxa) {
 			if (Notification.appearsCosmetic(notification) || notification == null   || notification.getCode() == MesquiteListener.SELECTION_CHANGED)
 				return;
@@ -2713,6 +2749,100 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 	}
+	
+	/* ................................................................................................................. */
+	String nextPasteString(StringBuffer sb) {
+		if (sb.length() == 0)
+			return null;
+		String result = sb.substring(0, 1);
+		sb.delete(0, 1);
+		return result;
+	}
+	/* ............................................................................................................... */
+	public void pasteCell(Parser parser, int column, int row, String s) { 
+		if (StringUtil.blank(s))
+			return;
+		CharacterState csBefore = getCharacterState(null, column, row);
+		parser.setString(s);
+		MesquiteString result = new MesquiteString("");
+		int response = setState(column, row, parser, true, result); // receive errors?
+		if (response == CharacterData.OK) {
+			CharacterState csAfter = getCharacterState(null, column, row);
+			if (csBefore != null && !csBefore.equals(csAfter)) {
+				int[] subcodes = new int[] { MesquiteListener.SINGLE_CELL };
+				if (csBefore.isInapplicable() == csAfter.isInapplicable())
+					subcodes = new int[] { MesquiteListener.SINGLE_CELL, MesquiteListener.CELL_SUBSTITUTION };
+			}
+		}
+	}	
+	/* ................................................................................................................. */
+	boolean pasteData(int it, String s) {
+		String[] lines = StringUtil.getLines(s);
+		StringBuffer sb = new StringBuffer(lines[0]);
+		Parser parser = new Parser();
+		if (sb.indexOf("\t") >= 0) {
+			String result = sb.substring(0, sb.indexOf("\t"));
+			sb.delete(0, sb.indexOf("\t") + 1);
+		}
+		for (int i = 0; i < numChars && sb.length()>0; i++) {
+			pasteCell(parser, i, it, nextPasteString(sb));
+			
+		}
+		return true;
+	}
+
+	/* ................................................................................................................. */
+
+	public void pasteDataFromStringIntoTaxon(int it, String s) {
+			if (StringUtil.notEmpty(s)) {
+				String[] lines = StringUtil.getLines(s);
+				if (lines.length==1) {
+					pasteData(it, s);
+					notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+				}
+			}
+	}
+	/* ................................................................................................................. */
+
+	public void pasteDataIntoTaxon(int it) {
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = clip.getContents(this);
+		try {
+			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+			pasteDataFromStringIntoTaxon(it, s);
+		} catch (Exception e) {
+			MesquiteMessage.printStackTrace(e);
+		}
+	}
+
+	/*.................................................................................................................*/
+
+	public void copyDataFromRowIntoBuffer(int row, StringBuffer sb) {
+		if (sb ==null)
+			return;
+		String t = null;
+		t = taxa.getTaxonName(row);
+		if (t != null)
+			sb.append(t);
+		sb.append('\t');
+
+		for (int i = 0; i < numChars; i++) {
+			statesIntoStringBuffer(i, row, sb, true);
+		}
+		sb.append(StringUtil.lineEnding());
+	}
+	/*.................................................................................................................*/
+
+	public void copyDataFromRow(int row) {
+		StringBuffer sb = new StringBuffer();
+		copyDataFromRowIntoBuffer(row, sb);
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		StringSelection ss = new StringSelection(sb.toString());
+		clip.setContents(ss, ss);
+	}
+
 	/*.................................................................................................................*/
 	NameReference historyRef = NameReference.getNameReference("ChangeHistory");
 	/** Marks the data for character ic, taxon it as having changed*/

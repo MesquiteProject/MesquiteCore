@@ -14,8 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 
  import mesquite.lib.*;
- import mesquite.lib.characters.*;
- import mesquite.lib.table.*;
+import mesquite.lib.characters.*;
+import mesquite.lib.table.*;
 
  public abstract class DataAltererCon extends DataAlterer {
 
@@ -30,11 +30,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 	 /** Called to alter data in those cells selected in table*/
 	 public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		 if (data.getEditorInhibition()){
-			 discreetAlert("This matrix is protected against editing");
+				discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 			 return false;
 		 }
 		 boolean did=false;
-		 UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+	   		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		 if ((table==null || !table.anyCellSelectedAnyWay()) && data!=null){
 
 			 alterBlockOfCharacters(data, 0, data.getNumChars()-1);

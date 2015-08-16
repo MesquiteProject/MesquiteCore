@@ -16,6 +16,7 @@ package mesquite.align.lib;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -387,7 +388,7 @@ public abstract class BlockMover extends DataWindowAssistantI {
 				if (!canExpand.getValue())
 					undoReference = new UndoReference(data,this,0,data.getNumChars(), firstRowTouched,firstRowTouched);
 				else
-					undoReference = new UndoReference(data,this);
+					undoReference = new UndoReference(data,this, new int[] {UndoInstructions.CHAR_ADDED_TO_END, UndoInstructions.CHAR_ADDED_TO_START});
 				MesquiteBoolean isTerminalBlock = new MesquiteBoolean(false);
 				MesquiteInteger boundaryOfAvailableSpace = new MesquiteInteger(0);
 				gapsAvailableToRight = data.checkCellMoveDistanceAvailable(data.getNumChars()-cellBlock.getCurrentLastCharInBlock(), cellBlock.getCurrentFirstCharInBlock(), cellBlock.getCurrentLastCharInBlock(), firstRowTouched,firstRowTouched, isTerminalBlock, boundaryOfAvailableSpace, canExpand.getValue());

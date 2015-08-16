@@ -73,7 +73,7 @@ public class AlignSequences extends MolecDataEditorInit {
 		if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAlign")) {
 			if (table!=null && data !=null){
 				if (data.getEditorInhibition()){
-					discreetAlert( "This matrix is marked as locked against editing.");
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);

@@ -43,8 +43,11 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	String buttonLabel0;
 	String buttonLabel1;
 	String buttonLabel2;
+	String[] buttonLabels= new String[10];
+
 	MesquiteModule helpURLOwnerModule=null;
 	Button button0, button1, button2;
+	Button[] buttons = new Button[10];
 	Image helpImage;
 	boolean useManualPage = false;
 	public String defaultOKLabel = "OK";
@@ -535,6 +538,37 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			}
 			else if (!noButtons)
 				singleButton = null;
+		}
+		if (!MesquiteModule.textEdgeRemembered || checkTextEdge)
+			buttons.add("West", textEdgeCompensationDetector = new TextField(" "));
+		addToDialog(buttons);	
+		setPrimaryButtonConstraints(buttons);	
+		if (singleButton!=null)
+			setDefaultButton(singleButton);	
+	}	/*.................................................................................................................*/
+	public void addPrimaryButtonRow (String[] buttonLabels) {
+		if (buttonLabels==null)
+			return;
+		Panel buttons = new Panel();
+		//		buttons.setSize(dialogWidth, buttonHeight);
+		String singleButton = null;
+		boolean noButtons=true;
+		if (hasHelpURL())
+			noButtons=false;
+		if (!isInWizard() && !StringUtil.blank(getHelpString()))
+			noButtons=false;
+		addHelpButtons(buttons);
+		if (addExtraButtons(buttons))
+			noButtons=false;
+		for (int i=buttonLabels.length-1; i>=0; i--) {
+			if (buttonLabels[i]!=null) {
+				button2=addAButton(buttonLabels[i],buttons);
+				this.buttonLabels[i] = buttonLabels[i];
+				if (noButtons) {
+					singleButton = buttonLabels[i];
+					noButtons = false;
+				}
+			}
 		}
 		if (!MesquiteModule.textEdgeRemembered || checkTextEdge)
 			buttons.add("West", textEdgeCompensationDetector = new TextField(" "));

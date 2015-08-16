@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.align.MultiBlockSplitter;
 
 
@@ -193,7 +193,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		if (optionDown) 
 			whichTaxa.invertAllBits();
 		return whichTaxa;
-		
+
 	}
 
 	/*.................................................................................................................*/
@@ -341,14 +341,16 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 						table.redrawBlock(firstColumnTouched, bottomRow.getValue()+1, firstColumnTouched+1, previousDrawBottom);
 				}
 				Graphics g = table.getMatrixPanel().getGraphics();
-				int x = table.getColumnX(firstColumnTouched)-MesquiteTable.BETWEENLINEWIDTH/2;
-				int y = table.getRowY(topRow.getValue()-1)+1;
-				int width = MesquiteTable.BETWEENLINEWIDTH;
-				int height =  table.getRowY(bottomRow.getValue()) - y;
-				g.setColor(Color.black);
-				g.fillRect(x, y, width, height);
-				previousDrawTop = topRow.getValue();
-				previousDrawBottom = bottomRow.getValue();
+				if (g != null){
+					int x = table.getColumnX(firstColumnTouched)-MesquiteTable.BETWEENLINEWIDTH/2;
+					int y = table.getRowY(topRow.getValue()-1)+1;
+					int width = MesquiteTable.BETWEENLINEWIDTH;
+					int height =  table.getRowY(bottomRow.getValue()) - y;
+					g.setColor(Color.black);
+					g.fillRect(x, y, width, height);
+					previousDrawTop = topRow.getValue();
+					previousDrawBottom = bottomRow.getValue();
+				}
 
 			}
 			previousRowDragged = rowDragged;

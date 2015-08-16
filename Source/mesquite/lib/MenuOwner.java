@@ -2081,6 +2081,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				}
 			}
 			newMenu.add(whichWindow.closeWindowMenuItem);
+			if (whichWindow.closeAllMenuItem != null)
+				newMenu.add(whichWindow.closeAllMenuItem);
 			/*-------------- Save & Save As menu or submenu */
 			newMenu.add("-");		
 			if (proj!=null && !MesquiteTrunk.isApplet()) {

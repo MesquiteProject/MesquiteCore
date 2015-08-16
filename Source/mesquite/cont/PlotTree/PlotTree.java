@@ -81,7 +81,11 @@ public class PlotTree extends AnalyticalDrawTree {
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
-  
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return false;
+	}
+
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) {
    	 	Snapshot temp = new Snapshot();

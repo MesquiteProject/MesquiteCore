@@ -98,12 +98,14 @@ public TreeCharSimulate simulator;
 	        Object c = charHistoryContainer.getObject();
 	        if (c == null || !(c instanceof CharacterHistory))
 	            return; //TODO: insert more informative response
-	        Tree tree = (Tree)t;
+	        MesquiteTree tree = (MesquiteTree)t;
+	       tree.resetTaxaInfo();
 	        CharacterHistory ch = (CharacterHistory)c;
 	        harvestStates(tree, tree.getRoot(), i, ch, data, cs);
 	        if (tree instanceof Renamable && !tree.hasName())
 	            ((Renamable)tree).setName("Simulated Tree (with character) " + (i+1));
 	        MesquiteTree clone = tree.cloneTree();
+		       clone.resetTaxaInfo();
 	        trees.addElement(clone, false);
 	        clone.setName("Simulated Tree (with character) " + (i+1));
 	        data.setCharacterName(i, "Sim. with tree " + (i+1));

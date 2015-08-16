@@ -135,6 +135,8 @@ public class CharacterValuesChart extends FileAssistantCH  {
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) { //obed should only supply window!
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		iQuit();

@@ -71,6 +71,8 @@ public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDis
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		iQuit();

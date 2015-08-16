@@ -172,6 +172,8 @@ public class NodesScattergram extends TreeWindowAssistantC implements ChartListe
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		if (nsLabeller != null)

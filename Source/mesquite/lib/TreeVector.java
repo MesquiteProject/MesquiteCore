@@ -15,6 +15,8 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.util.*;
+
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 /* ======================================================================== */
 /**A tree block.  Trees are added to it when trees are read from file or stored.  Many methods could be built here, for 
@@ -254,6 +256,24 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 			}
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Duplicates the tree block", null, commandName, "duplicateMe")) {
+			if (getProject() != null)
+				getProject().incrementProjectWindowSuppression();
+
+			TreeVector trees = new TreeVector(getTaxa());
+			trees.setName(getName() + " (duplicate)");
+			trees.setWriteWeights(getWriteWeights());
+			for (int i=0; i<size(); i++){
+				Tree t = (Tree)elementAt(i);
+				trees.addElement(t.cloneTree(), false);
+				
+			}
+			trees.addToFile(getFile(), getProject(), getManager()); 
+			getManager().elementAdded(trees);
+			if (getProject() != null)
+				getProject().decrementProjectWindowSuppression();
+			return trees;
+		}
 		else if (checker.compare(this.getClass(), "Prepends to all tree names the given string", "[string to prepend]", commandName, "prefixNames")) {
 			String prefix = ParseUtil.getFirstToken(arguments, new MesquiteInteger(0));
 			if (StringUtil.blank(prefix))
@@ -472,16 +492,35 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		return s;
 	}
 	/*-----------------------------------------*/
-	long previous = -1;
 	boolean suppressNotifyL = false;
 	Thread threadOfTreeChange;
 	
+	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
+	private boolean notificationFound(Notification notification){
+		if (notification ==null)
+			return false;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return false;
+		if (LongArray.indexOf(lastNotifications, id)>=0)
+			return true;
+		return false;
+	}
+	private void rememberNotification(Notification notification){
+		if (notification ==null)
+			return;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return;
+		for (int i = 0; i< lastNotifications.length-1; i++)
+			lastNotifications[i+1] = lastNotifications[i];
+		lastNotifications[0] = id;
+	}
 	/** For MesquiteListener interface.  Passes which object changed, along with optional integer (e.g. for character)*/
 	public void changed(Object caller, Object obj, Notification notification){
-		if (notification != null && notification.getNotificationNumber() == previous)
+		if (notificationFound(notification))
 			return;
-		if (notification != null)
-			previous = notification.getNotificationNumber();
+		rememberNotification(notification);
 		if (obj == taxa){
 			if (Notification.appearsCosmeticOrSelection(notification))
 				return;

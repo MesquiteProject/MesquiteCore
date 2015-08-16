@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.table.*;
 import mesquite.lib.characters.*;
@@ -64,10 +65,10 @@ public abstract class DataAlterer extends MesquiteModule  {
    	then a different method must be built.  */
    	public boolean alterContentOfCells(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference){
    		if (data.getEditorInhibition()){
-   			discreetAlert("This matrix is protected against editing");
+			discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
    			return false;
    		}
-   		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+   		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
    		numCellsAltered =MesquiteLong.unassigned;
 		boolean did=false;
  		if (table==null && data!=null){    // alter entire matrix

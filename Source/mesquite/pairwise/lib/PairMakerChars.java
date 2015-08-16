@@ -31,6 +31,8 @@ public abstract class PairMakerChars extends PairMaker  {
  		return "Taxa Pair Maker using Characters";
    	 }
  	public abstract void setCharacters(CharacterDistribution statesA, CharacterDistribution statesB);
+ 	
+
 }
 
 

@@ -25,8 +25,8 @@ public class UndoReference {
 	public UndoReference() {
 	}
 
-	public UndoReference(CharacterData data, MesquiteModule responsibleModule) {
-		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+	public UndoReference(CharacterData data, MesquiteModule responsibleModule, int[] changesThatMightHappen) {
+		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(changesThatMightHappen);
 		if (undoInstructions!=null) 
 			undoInstructions.setNewData(data);
 		setUndoer(new Undoer[] {undoInstructions});
@@ -49,7 +49,7 @@ public class UndoReference {
 		for (int i=0; i<undoableObjects.length; i++) {
 			switch(undoableObjects[i]) {
 			case UndoInstructions.ALLDATACELLS:
-				undoInstructions[i]= data.getUndoInstructionsAllData();
+				undoInstructions[i] = data.getUndoInstructionsAllMatrixCells(null);  // TODO:  pass into this something more refined!
 				if (undoInstructions!=null)
 					undoInstructions[i].setNewData(data);
 				break;
@@ -114,7 +114,7 @@ public class UndoReference {
 	}
 
 
-	public static UndoReference getUndoReferenceForMatrixSelection(CharacterData data, MesquiteTable table, MesquiteModule responsibleModule){
+	public static UndoReference getUndoReferenceForMatrixSelection(CharacterData data, MesquiteTable table, MesquiteModule responsibleModule, int[] changesThatMightHappen){
 		if (data!=null) 
 			if (table!=null) {
 				MesquiteInteger firstRow= new MesquiteInteger();
@@ -129,7 +129,7 @@ public class UndoReference {
 				}
 			}
 			else
-				return new UndoReference(data,responsibleModule);
+				return new UndoReference(data,responsibleModule,changesThatMightHappen);
 		return null;
 	}
 

@@ -224,6 +224,8 @@ public class ManageFileComments extends FileInit {
   	}
   	*/
   	 public void windowGoAway(MesquiteWindow whichWindow) {
+  		 if (whichWindow == null)
+  			 return;
 		Object obj = whichWindow.getCurrentObject();
 		if (obj instanceof MesquiteFile){
 			MesquiteFile f = (MesquiteFile)obj;

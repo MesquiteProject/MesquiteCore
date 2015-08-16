@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 
 
@@ -21,6 +22,7 @@ import mesquite.lib.*;
 /**Supplies trees (compare to OneTreeSource), for instance from a file or simulated.*/
 
 public abstract class TreeSource extends TreeBlockFiller implements ItemsSource  {
+//	public static MesquiteBoolean closeIfTreeBlockDeleted = new MesquiteBoolean(false);
    	 public Class getDutyClass() {
    	 	return TreeSource.class;
    	 }
@@ -56,7 +58,11 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
   	public String getTreesDescriptiveString(Taxa taxa){
   		return getNameForMenuItem();
   	}
-  	
+ 	 /**Returns notes to show about these trees, e.g. in a footnote or text version.  For stored trees, this will include name and annotation of tree block.*/
+ 	public String getNotesAboutTrees(Taxa taxa){
+ 		return getNameAndParameters();
+ 	}
+
    	/** queryies the user to choose a tree and returns an integer of the tree chosen*/
    	public int queryUserChoose(Taxa taxa, String forMessage){
  		int ic=MesquiteInteger.unassigned;

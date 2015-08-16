@@ -16,6 +16,7 @@ package mesquite.lists.lib;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -894,6 +895,22 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						else break;
 						row--;
 					}
+					owner.aboutToDeleteRows(firstInBlockDeleted, lastInBlockDeleted, false);  // now prepare contiguous block for deletion
+				}
+				row--;
+			}
+			row = currentNumRows-1;
+			firstInBlockDeleted = -1;
+			lastInBlockDeleted = -1;
+			while(row>=0) {
+				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
+					lastInBlockDeleted = row;
+					while(row>=0) {  // now let's look for the first non-selected one
+						if (table.isRowSelected(row) && owner.rowDeletable(row))
+							firstInBlockDeleted = row;
+						else break;
+						row--;
+					}
 					owner.deleteRows(firstInBlockDeleted, lastInBlockDeleted, false);  // now delete contiguous block
 					count += lastInBlockDeleted-firstInBlockDeleted+1;
 				}
@@ -993,6 +1010,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				table.setSize(windowWidth, windowHeight);
 	//	}
 		MesquiteWindow.uncheckDoomed(this);
+	}
+	/*.................................................................................................................*/
+	public String getTextContents() {
+		String text = owner.getTextContentsPreface();
+		text += "\n\n" + super.getTextContents();
+		return text;
 	}
 	/*.................................................................................................................*/
 	public MesquiteTable getTable() {

@@ -32,6 +32,7 @@ public class SliderWindow extends MesquiteWindow {
 	Panel contents;
 	public SliderWindow(MesquiteModule module, String title, String name, MesquiteCommand command, double initialValue, double min, double max, double minSweet, double maxSweet) {
 		super(module, true);
+		setPreferredPopoutWidth(300);
 		setWindowSize(minWindowWidth, 100);
 		minItem = module.addMenuItem("Slider Core Minimum...", module.makeCommand("setSweetMin", this));
 		maxItem = module.addMenuItem("Slider Core Maximum...", module.makeCommand("setSweetMax", this));

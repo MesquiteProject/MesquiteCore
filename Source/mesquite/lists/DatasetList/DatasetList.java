@@ -113,10 +113,17 @@ public class DatasetList extends ListLVModule {
 	public boolean rowsDeletable(){
 		return true;
 	}
+	public void aboutToDeleteRow(int row){  //called just before superclass deletes rows, in case specific module needs to prepare for deletion
+		if (row<0 || row>= getNumberOfRows())
+			return;
+		CharacterData rdata = getProject().getCharacterMatrixDoomedOrNot(row);
+		if (rdata != null)
+			rdata.doom();
+	}
 	public boolean deleteRow(int row, boolean notify){
 		if (row<0 || row>= getNumberOfRows())
 			return false;
-		CharacterData data = getProject().getCharacterMatrix(row);
+		CharacterData data = getProject().getCharacterMatrixDoomedOrNot(row);
 		getProject().removeFileElement(data);//must remove first, before disposing
 		data.dispose();
 		return true;
@@ -176,6 +183,8 @@ public class DatasetList extends ListLVModule {
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 

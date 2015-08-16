@@ -38,24 +38,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.03.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.04.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.03";
+		return "3.04";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 303;
+		return 304;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.03;
+		return 3.04;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "March 2015"; //"April 2007";
+		return "August 2015"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -1351,6 +1351,8 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 	boolean closeAllProjects(){

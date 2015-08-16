@@ -150,6 +150,11 @@ public class TaxonList extends ListModule {
 	}
 	public boolean deleteRow(int row, boolean notify){
 		if (taxa!=null && taxa.getNumTaxa() > 1) {
+			if (taxa.isEditInhibited()){
+				discreetAlert("You cannot delete taxa; the taxa block is locked.");
+				return false;
+			}
+
 			taxa.deleteTaxa(row,1, notify);
 			return true;
 		}
@@ -157,6 +162,10 @@ public class TaxonList extends ListModule {
 	}
 	public boolean deleteRows(int first, int last, boolean notify){
 		if (taxa!=null) {
+			if (taxa.isEditInhibited()){
+				discreetAlert("You cannot delete taxa; the taxa block is locked.");
+				return false;
+			}
 			taxa.deleteTaxa(first, last-first+1, notify);
 			return true;
 		}
@@ -168,6 +177,10 @@ public class TaxonList extends ListModule {
 	}
 	public boolean addRow(){
 		if (taxa!=null) {
+			if (taxa.isEditInhibited()){
+				discreetAlert("You cannot add taxa; the taxa block is locked.");
+				return false;
+			}
 			taxa.addTaxa(taxa.getNumTaxa(), 1, false);
 			return true;
 		}
@@ -274,6 +287,8 @@ public class TaxonList extends ListModule {
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 

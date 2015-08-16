@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ancstates.TraceCharacterHistory;
 
 import java.util.*;
-
 import java.awt.*;
 import java.awt.event.*;
 
@@ -43,7 +42,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	private String currentCharacterName;
 	MesquiteString historyTaskName;
 	MesquiteString displayTaskName;
-	public MesquiteBoolean showLegend;
+	public MesquiteBoolean showLegend, showWindow;
 	int initialOffsetX=MesquiteInteger.unassigned;
 	int initialOffsetY= MesquiteInteger.unassigned;
 	int initialLegendWidth=MesquiteInteger.unassigned;
@@ -66,9 +65,14 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	String startingColors = null;
 	MesquiteString colorModeName;
 	String[] colorModeNames;
+	MesquiteModule windowBabySitter;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showLegend = new MesquiteBoolean(true);
+		showWindow = new MesquiteBoolean(false);
+		// todo: if hit goaway, then set showWindow to false and adjust menu checkmark;
+		// correct size to begin with
+		// snapshot
 		suspend = MesquiteThread.isScripting();
 
 		historyTask = (CharHistorySource)hireNamedEmployee(CharHistorySource.class, "#RecAncestralStates");
@@ -135,6 +139,8 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		showStateWeights = new MesquiteBoolean(true);
 		propWeight = addCheckMenuItem(null, "Display Proportional to Weight", makeCommand("toggleWeights", this), showStateWeights);
 		propWeight.setEnabled(historyTask.allowsStateWeightChoice());
+		addCheckMenuItem(null, "Show Differences Window", makeCommand("toggleShowWindow",  this), showWindow);
+		addMenuItem(null, "Export Table of Node Differences...", makeCommand("exportDifferences",  this));
 		MesquiteTrunk.resetMenuItemEnabling();
 		addMenuItem( "Close Trace", makeCommand("closeTrace",  this));
 		addMenuItem( "-", null);
@@ -151,6 +157,60 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		}
 		loadPreferences();
 		return true;
+	}
+	MesquiteHTMLWindow window;
+	void initiateWindow(){
+		if (window == null) {
+			windowBabySitter = hireNamedEmployee (WindowHolder.class, "#WindowBabysitter");
+			if (windowBabySitter == null)
+				return;
+			window = new MesquiteHTMLWindow(windowBabySitter, null, "Trace Character", false);
+			window.setBackEnabled(false);
+			windowBabySitter.setModuleWindow(window);
+		}
+		window.setText(getTracesText());
+		window.setPopAsTile(true);
+		window.setPreferredPopoutWidth(300);
+		window.popOut(true);
+		lastWindowStatePopped = true;
+		window.setVisible(true);
+		window.show();
+		window.setWindowSize(300, MesquiteInteger.unassigned);
+		resetAllMenuBars();
+
+	}
+	boolean lastWindowStatePopped = true;
+	int resetCount = 0;
+	/*.................................................................................................................*/
+	void resetWindow(){
+		if (window != null) {
+			if (showWindow.getValue()){
+				if (!window.isVisible()){
+					window.setVisible(true);
+				}
+
+				if (lastWindowStatePopped && !window.isPoppedOut()){
+					window.setPopAsTile(true);
+					window.setPreferredPopoutWidth(300);
+					window.popOut(true);
+				}
+				
+				window.setText(getTracesText());
+			}
+			else {
+				lastWindowStatePopped = window.isPoppedOut();
+				window.setVisible(false);
+			}
+		}
+	}
+	String getTracesText(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("<h2>Trace Character</h2>");
+		sb.append(getTraceHTMLAllOperators());
+		sb.append("<p>You can see the node numbers by going to the Tree Window and selecting the menu item Display&gt;Show Node Numbers, " 
+		+ "or by looking at the text view of the Tree Window (menu item Window&gt;View Mode&gt;Text.");
+		return sb.toString();
+		
 	}
 	public boolean suppliesWritableResults(){
 		return traces.size()<2;
@@ -181,6 +241,12 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	public void employeeQuit(MesquiteModule employee) {
 		if (employee == displayTask || employee == historyTask)  
 			iQuit();
+		else if (employee == windowBabySitter){
+			windowBabySitter = null;
+			showWindow.setValue(false);
+			window = null;
+			lastWindowStatePopped = true;
+		}
 	}
 
 	/*.................................................................................................................*/
@@ -240,6 +306,9 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 
 		temp.addLine("setMapping " + CharacterStates.toExternalLong(currentMapping));
 		temp.addLine("toggleShowLegend " + showLegend.toOffOnString());
+		if (showWindow.getValue())
+			temp.addLine("toggleShowWindow " + showWindow.toOffOnString(), windowBabySitter);
+			
 		temp.addLine("setColorMode " + colorMode.getValue());
 		temp.addLine("toggleWeights " + showStateWeights.toOffOnString());
 		TraceCharacterOperator tco = (TraceCharacterOperator)traces.elementAt(0);
@@ -321,6 +390,24 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 				recalculateAllTraceOperators(true);  
 				parametersChanged();
 			}
+		}
+		else if (checker.compare(this.getClass(), "Exports a text file summarizing differences from one node to the next", null, commandName, "exportDifferences")) {
+			String s = getTraceTableAllOperators();
+			if (StringUtil.blank(s))
+				discreetAlert("Sorry, there are no traced histories with states");
+			else {
+				String where = MesquiteFile.saveFileAsDialog("Save table of nodes whose reconstructed state(s) differ from those of their ancestors");
+				if (!StringUtil.blank(where))
+					MesquiteFile.putFileContents(where, s, false);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not the trace window is shown", "[on = show; off]", commandName, "toggleShowWindow")) {
+			showWindow.toggleValue(parser.getFirstToken(arguments));
+			if (showWindow.getValue() && window == null)
+				initiateWindow();
+			else
+				resetWindow();
+			return windowBabySitter;
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not the weights on states are shown (e.g. relative frequencies or likelihoods)", "[on; off]", commandName, "toggleWeights")) {
 			showStateWeights.toggleValue(parser.getFirstToken(arguments));
@@ -706,6 +793,35 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			}
 		}
 	}
+	public String getTraceTableAllOperators() {
+		if (traces==null)
+			return null;
+		Enumeration e = traces.elements();
+		StringBuffer sb = new StringBuffer();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			if (obj instanceof TraceCharacterOperator) {
+				sb.append("\n");
+				TraceCharacterOperator tCO = (TraceCharacterOperator)obj;
+				tCO.getSummaryTable(sb);
+			}
+		}
+		return sb.toString();
+	}
+	public String getTraceHTMLAllOperators() {
+		if (traces==null)
+			return null;
+		Enumeration e = traces.elements();
+		StringBuffer sb = new StringBuffer();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			if (obj instanceof TraceCharacterOperator) {
+				TraceCharacterOperator tCO = (TraceCharacterOperator)obj;
+				tCO.getSummaryHTML(sb);
+			}
+		}
+		return sb.toString();
+	}
 	public void resetAllTraceOperators() {
 		if (traces==null)
 			return;
@@ -756,6 +872,9 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 				}
 			}
 		}
+	}
+	public void calculationsDone(){
+		resetWindow();
 	}
 	/*.................................................................................................................*/
 	public void recalculateAllTraceOperators(boolean doPreps) {

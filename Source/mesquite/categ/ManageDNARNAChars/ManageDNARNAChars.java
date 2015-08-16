@@ -16,6 +16,7 @@ package mesquite.categ.ManageDNARNAChars;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -252,6 +253,9 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append("BEGIN DATA");
 		else
 			blocks.append("BEGIN CHARACTERS");
+		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
+			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
+		}
 		blocks.append(endLine);
 		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
@@ -263,10 +267,6 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append("\tLINK TAXA = ");
 			blocks.append(StringUtil.tokenize(data.getTaxa().getName()));
 			blocks.append(endLine);
-		}
-		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
-			blocks.append("[!" + data.getAnnotation() + "]");
-			blocks.append(StringUtil.lineEnding());
 		}
 		blocks.append("\tDIMENSIONS ");
 		if (file!=null && file.useSimplifiedNexus && file.useDataBlocks){
@@ -320,7 +320,8 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		}
 		if (cB !=null)
 			blocks.append(cB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		blocks.append("END;" + StringUtil.lineEnding());
+		blocks.append("END");
+		blocks.append(";" + StringUtil.lineEnding());
 		//	MesquiteModule.mesquiteTrunk.mesquiteMessage("DNA matrix composed", 1, 0);
 
 		file.writeLine( blocks.toString());

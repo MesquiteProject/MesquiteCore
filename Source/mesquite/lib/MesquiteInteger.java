@@ -620,6 +620,7 @@ public class MesquiteInteger implements Listable{
 	/** Returns integer parsed from given string; warns about NumberFormatException if boolean is true using the
 	message "NumberFormatException in parsing string "<s>". Assumes entire string is what should be parsed. */
 	public static int fromString(String s, boolean warn) {
+		
 		return fromString(s,"NumberFormatException in parsing string \"" + s + "\"",warn, false);
 	}
 	/** Returns integer parsed from given string, starting at string position given.

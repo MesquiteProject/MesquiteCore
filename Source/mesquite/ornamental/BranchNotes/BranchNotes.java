@@ -33,7 +33,7 @@ public class BranchNotes extends TreeDisplayAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
-		asterisk = MesquiteImage.getImage(getPath() + "asterisk.gif", getProject());
+		asterisk = MesquiteImage.getImage(getPath() + "asterisk.gif", false);   //TODO:  add asterisk.gif!
 		alwaysOn = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Show Notes On Tree", makeCommand("setAlwaysOn",  this), alwaysOn);
 		setUseMenubar(false); //menu available by touching button
