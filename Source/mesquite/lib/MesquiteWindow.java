@@ -2513,6 +2513,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		else if  (checker.compare(MesquiteWindow.class, "Selects all", null, commandName, "selectAll")) {
 			selectAll();
 		}
+		else if  (checker.compare(MesquiteWindow.class, "Sets the title", "[title]", commandName, "setTitle")) {
+				Parser parser = new Parser(arguments);
+				String name =parser.getFirstToken();
+				if (StringUtil.notEmpty(name))
+					setTitle(name);
+		}
+		
 
 		else if (checker.compare(MesquiteWindow.class, "Presents dialog through which user can send commands to the module in charge of the window", null, commandName, "sendScript")) {
 			MesquiteModule module = getOwnerModule();

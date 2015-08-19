@@ -68,7 +68,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "16 August 2015";
+		return "18 August 2015";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
