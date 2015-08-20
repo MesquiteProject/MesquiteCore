@@ -48,9 +48,10 @@
 <key>JVMOptions</key>
 <array>
 <string>-Djri.ignore.ule="yes"</string>
+<string>-Dapple.awt.graphics.UseQuartz=true</string>
 <string>-Djava.library.path=lib</string>
-<string>-Xss8m</string>
-<string>-Xmx2000m</string>
+<string>-Xss4m</string>
+<string>-Xmx1000m</string>
 </array>
 <key>JVMArguments</key>
 <array>

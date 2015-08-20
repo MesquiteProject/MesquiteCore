@@ -1230,7 +1230,7 @@ public class CategoricalData extends CharacterData {
 		return (CategoricalState.isUncertain(s) && CategoricalState.hasMultipleStates(s));
 	}
 	/*..........................................    ..................................................*/
-	/** returns whether the state of character ic is missing in taxon it*/
+	/** returns whether the state of character ic is a multistate uncertainty or polymorphism in taxon it*/
 	public  boolean isMultistateOrUncertainty(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return (CategoricalState.hasMultipleStates(s));
