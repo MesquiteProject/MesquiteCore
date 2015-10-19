@@ -1263,11 +1263,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				}
 			}
 			//now move from end
-			for (int it=0; it<getNumTaxa(); it++) {
-				if (whichTaxa.isBitOn(it))
-					for (int i = gResultingEndBlock-distance; i>=startBlock; i--){
-						cs = moveOne(i, distance, it, cs, dataChanged);
-					}
+			if (distance!=0)
+				for (int it=0; it<getNumTaxa(); it++) {
+					if (whichTaxa.isBitOn(it))
+						for (int i = gResultingEndBlock-distance; i>=startBlock; i--){
+							cs = moveOne(i, distance, it, cs, dataChanged);
+						}
 			}
 		} 
 		else if (distance<0){ //moving left
@@ -1300,11 +1301,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 
 			//now move from front end
-			for (int it=0; it<getNumTaxa(); it++)
-				if (whichTaxa.isBitOn(it))
-					for (int i = startBlock; i<=endBlock; i++){
-						cs = moveOne(i, distance, it, cs, dataChanged);
-					}
+			if (distance!=0)
+				for (int it=0; it<getNumTaxa(); it++)
+					if (whichTaxa.isBitOn(it))
+						for (int i = startBlock; i<=endBlock; i++){
+							cs = moveOne(i, distance, it, cs, dataChanged);
+						}
 
 		}
 		if (includingLinked){
