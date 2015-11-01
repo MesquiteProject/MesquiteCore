@@ -146,7 +146,7 @@ public String preparePreferencesForXML () {
 					match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);
 					if (reverseComplementIfNecessary && !match && data instanceof DNAData) {
 						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(), it, it, row.getValue(), false, false, false);
-
+						match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);  // added 31 October 2015
 					}
 					if (match) {
 						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);

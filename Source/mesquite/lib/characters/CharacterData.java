@@ -2387,15 +2387,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		int allowedMismatches = (int)((masterEnd-masterStart+1) * (1.0-matchFraction));
 		for (int ic= 0; ic < masterEnd-masterStart+1; ic++){
 			cs1 = getCharacterState(cs1, checkChar + ic, it);  
-			cs2 = getCharacterState(cs2,masterStart+ic, masterTaxon);  //
+			cs2 = getCharacterState(cs2,masterStart+ic, masterTaxon);  // 
 			if (!cs2.equals(cs1,allowMissing, allowNearExact)) {
 				mismatches++;
-				if (matchFraction==1.0 || mismatches>allowedMismatches)
+				if (matchFraction==1.0 || mismatches>allowedMismatches) {
 					return false;
+				}
 			} 
 			matchEnd.setValue(ic);
 		}
-
 		return true;
 
 	}
