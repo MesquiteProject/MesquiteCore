@@ -152,6 +152,16 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 				return tda;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Root current tree along branch", "[branch number]", commandName, "rootAlongBranch")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int atBranch= MesquiteInteger.fromString(arguments, io);
+			if (tree instanceof MesquiteTree) {
+				if (atBranch >0 &&  ((MesquiteTree)tree).reroot(atBranch, tree.getRoot(), true)) {
+					((MesquiteTree)tree).standardize(tree.getRoot(), true, true);
+				}
+			}
+
+		}
 		else if (checker.compare(this.getClass(), "Hires new assistant module (TreeDisplayAssistantA)", "[name of module]", commandName, "newAssistantD")) {
 			TreeDisplayAssistantD tda= (TreeDisplayAssistantD)ownerModule.hireNamedEmployee(TreeDisplayAssistantD.class, arguments);
 			if (tda!=null){
