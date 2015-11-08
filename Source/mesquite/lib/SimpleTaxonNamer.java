@@ -14,6 +14,7 @@ package mesquite.lib;
 
 public class SimpleTaxonNamer extends TaxonNamer {
 	String[] translationTable= null;
+	int[] numberTranslationTable= null;
 	
 	public SimpleTaxonNamer() {
 	}
@@ -58,7 +59,8 @@ public class SimpleTaxonNamer extends TaxonNamer {
 	}
 	
 	/** Given a taxon name "name", this method returns the taxon number this name represents. 
-	This one is based upon the contents of the translation table created from the translation file only. */
+	This one is based upon the contents of the translation table created from the translation file only. The translation table 
+	is an array of the names, and the taxon number is then the index into that array for a particular name. */
 	public int whichTaxonNumberFromTranslationTable(Taxa taxa, String name){
 		if (StringUtil.blank(name) || translationTable==null || translationTable.length!=taxa.getNumTaxa())
 			return -1;
@@ -70,6 +72,18 @@ public class SimpleTaxonNamer extends TaxonNamer {
 		return -1;
 	}
 
+	/** Given a taxon number in another numbering system system, this method returns the taxon number in the main taxon numbering system. 
+	This one is based upon the contents of the number translation table. This is a reverse of the standard translation table; 
+	it is an array of taxon numbers, and the index into that array is the taxon number in the other system. */
+	public int whichTaxonNumberFromNumberTranslationTable(Taxa taxa, int otherNumber){
+		if (!MesquiteInteger.isCombinable(otherNumber) || numberTranslationTable==null)
+			return -1;
+		if (otherNumber>=0 && otherNumber<numberTranslationTable.length)
+			return numberTranslationTable[otherNumber];
+		return -1;
+	}
+
+	
 	public String getTranslationTable(Taxa taxa){
 		StringBuffer sb = new StringBuffer();
 		if (translationTable==null || translationTable.length!=taxa.getNumTaxa())
@@ -80,6 +94,18 @@ public class SimpleTaxonNamer extends TaxonNamer {
 		}
 		return sb.toString();
 	}
+	
+	public void setNumberTranslationTable(int[] translation){
+		if (translation==null)
+			return;
+		if (numberTranslationTable==null || numberTranslationTable.length!=translation.length)
+			numberTranslationTable = new int[translation.length];
+		for (int it=0; it<numberTranslationTable.length; it++){
+			numberTranslationTable[it] = translation[it];
+		}
+	}
+
+	
 	public int whichTaxonNumberDefault(Taxa taxa, String name){
 		if (StringUtil.notEmpty(name) && name.length()>=2) {
 			if (name.charAt(0)=='t' || name.charAt(0)=='T') {
@@ -92,10 +118,15 @@ public class SimpleTaxonNamer extends TaxonNamer {
 	public int whichTaxonNumber(Taxa taxa, String name){
 		if (StringUtil.blank(name))
 			return -1;
-		if (translationTable==null || translationTable.length!=taxa.getNumTaxa())
-			return whichTaxonNumberDefault(taxa, name);
-		
-		return whichTaxonNumberFromTranslationTable(taxa, name);
+		int number=-1;
+		if (translationTable!=null && translationTable.length==taxa.getNumTaxa())
+			number = whichTaxonNumberFromTranslationTable(taxa, name);
+		if (numberTranslationTable!=null)
+			number = whichTaxonNumberFromNumberTranslationTable(taxa, MesquiteInteger.fromString(name));
+		if (number<0 || !MesquiteInteger.isCombinable(number))
+			number = whichTaxonNumberDefault(taxa, name);
+		return number;
+
 	}
 
 }

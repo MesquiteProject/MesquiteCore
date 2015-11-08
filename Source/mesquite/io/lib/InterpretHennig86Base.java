@@ -191,13 +191,16 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			return false;
 		}
 		else {
-			int taxonNumber = MesquiteInteger.fromString(c);
-			if (taxonNumber <0 || !MesquiteInteger.isCombinable(taxonNumber)) 
-				taxonNumber = tree.getTaxa().whichTaxonNumber(c); 
-			if (taxonNumber<0 && namer != null){
+			int taxonNumber=-1;
+			if (namer != null){  //first try to use the namer if it exists
 				int newNumber = namer.whichTaxonNumber(tree.getTaxa(), c);
 				if (newNumber >=0 && MesquiteInteger.isCombinable(newNumber))
 					taxonNumber = newNumber;
+			}
+			if (taxonNumber<0) {  // if that didn't work, try normal ways
+				taxonNumber = MesquiteInteger.fromString(c);  // try to convert it to a simple integer
+				if (taxonNumber <0 || !MesquiteInteger.isCombinable(taxonNumber))    // check to see if it is an integer
+					taxonNumber = tree.getTaxa().whichTaxonNumber(c); 
 			}
 			if (taxonNumber >=0 && MesquiteInteger.isCombinable(taxonNumber)){ //taxon specifier is a number
 				if (tree.nodeOfTaxonNumber(taxonNumber)<=0){  // first time taxon encountered
