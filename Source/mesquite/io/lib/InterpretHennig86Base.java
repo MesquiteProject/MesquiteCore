@@ -43,6 +43,7 @@ import mesquite.parsimony.lib.*;
 /*==================================================*/
 /* ============  a file interpreter for NONA files ============*/
 
+
 public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	ProgressIndicator progIndicator;
 	Class[] acceptedClasses;
@@ -51,6 +52,9 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	boolean convertGapsToMissing = false;
 	boolean includeQuotes = true;
 	Class futureDataClass = null;
+	
+	protected TaxonNamer taxonNamer = null;
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		availableCommands = new HennigNonaCommand[numCommands];
@@ -62,6 +66,10 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	public String preferredDataFileExtension() {
 		return "ss";
 	}
+	public void setTaxonNamer(TaxonNamer namer) {
+		this.taxonNamer = namer;
+	}
+
 	/*.................................................................................................................*/
 	public void resetTreeNumber() {
 		treeNumber=0;
@@ -147,14 +155,14 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 
 	/*...............................................  read tree ....................................................*/
 	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
-	public boolean readClade(MesquiteTree tree, int node, Parser treeParser, NameReference valuesAtNodes, int[] taxonNumberTranslation) {
+	public boolean readClade(MesquiteTree tree, int node, Parser treeParser, NameReference valuesAtNodes, TaxonNamer namer) {
 
 		// from BasicTreeWindowMaker in Minimal
 
 		String c = treeParser.getNextToken();
 		if ("(".equals(c)){  //internal node
 			int sprouted = tree.sproutDaughter(node, false);
-			readClade(tree, sprouted, treeParser, valuesAtNodes, taxonNumberTranslation);
+			readClade(tree, sprouted, treeParser, valuesAtNodes, namer);
 			boolean keepGoing = true;
 			while (keepGoing) {
 				int loc = treeParser.getPosition();
@@ -174,7 +182,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 				else {
 					treeParser.setPosition(loc);
 					sprouted = tree.sproutDaughter(node, false);
-					keepGoing = readClade(tree, sprouted, treeParser, valuesAtNodes, taxonNumberTranslation);
+					keepGoing = readClade(tree, sprouted, treeParser, valuesAtNodes, namer);
 				}
 			}
 			return true;
@@ -186,12 +194,12 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			int taxonNumber = MesquiteInteger.fromString(c);
 			if (taxonNumber <0 || !MesquiteInteger.isCombinable(taxonNumber)) 
 				taxonNumber = tree.getTaxa().whichTaxonNumber(c); 
+			if (taxonNumber<0 && namer != null){
+				int newNumber = namer.whichTaxonNumber(tree.getTaxa(), c);
+				if (newNumber >=0 && MesquiteInteger.isCombinable(newNumber))
+					taxonNumber = newNumber;
+			}
 			if (taxonNumber >=0 && MesquiteInteger.isCombinable(taxonNumber)){ //taxon specifier is a number
-				if (taxonNumberTranslation!=null && taxonNumber<taxonNumberTranslation.length) {  // better push it through the translation array
-					int newNumber = taxonNumberTranslation[taxonNumber];
-					if (newNumber >=0 && MesquiteInteger.isCombinable(newNumber))
-						taxonNumber = newNumber;
-				}
 				if (tree.nodeOfTaxonNumber(taxonNumber)<=0){  // first time taxon encountered
 					tree.setTaxonNumber(node, taxonNumber, false);
 					return true;
@@ -206,7 +214,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		return  readTREAD( progIndicator,  taxa,  line,  firstTree,  quoteString,  valuesAtNodes, null);
 	}
 	/*.................................................................................................................*/
-	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString, NameReference valuesAtNodes, int[] taxonNumberTranslation){
+	public MesquiteTree readTREAD(ProgressIndicator progIndicator, Taxa taxa, String line, boolean firstTree, MesquiteString quoteString, NameReference valuesAtNodes, TaxonNamer namer){
 		if (StringUtil.blank(line))
 			return null;
 		Parser treeParser;
@@ -276,7 +284,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 					MesquiteTree t = new MesquiteTree(taxa);
 					MesquiteInteger pos = new MesquiteInteger(0);
 					treeParser.setString(treeDescription);
-					readClade(t, t.getRoot(), treeParser, valuesAtNodes, taxonNumberTranslation);
+					readClade(t, t.getRoot(), treeParser, valuesAtNodes, namer);
 					t.setAsDefined(true);
 					t.setName("Imported tree " + treeNumber);
 					return t;
@@ -1436,7 +1444,12 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		for (int it = 0; it<numTaxa; it++){
 			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || data.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters))){
 				incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
-				outputBuffer.append(StringUtil.tokenize(taxa.getTaxonName(it),";") + "\t");
+				String name = null;
+				if (ownerModule.taxonNamer!=null)
+					name = ownerModule.taxonNamer.getNameToUse(taxa,it);
+				else
+					name = (taxa.getTaxonName(it));
+				outputBuffer.append(StringUtil.tokenize(name,";") + "\t");
 				for (int ic = 0; ic<numChars; ic++) {
 					if (ownerModule.characterShouldBeIncluded(data, ic)){
 						if (ownerModule.getConvertGapsToMissing() && data.isInapplicable(ic, it))
