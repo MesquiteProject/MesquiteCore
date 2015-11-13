@@ -81,6 +81,7 @@ public interface Tree extends Listable {
 	public  int firstLegalDaughterOfNode(int node, int[] legality);
 	public  int nextLegalSisterOfNode(int node, int[] legality);
 	public  int lastLegalDaughterOfNode(int node, int[] legality);
+	public  int getLegalRoot(int[] legality);
 	/** Returns the number of parents of node.*/
 	public int numberOfParentsOfNode(int node);
 	/** Returns the indexTH parent of node.*/

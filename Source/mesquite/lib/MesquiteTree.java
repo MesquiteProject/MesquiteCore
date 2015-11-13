@@ -1382,6 +1382,21 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return thisSister;
 	}
 	/*-----------------------------------------*/
+	/** Returns the legal root 
+	 * */
+	public  int getLegalRoot(int[] legality) {
+		int r = getRoot();
+		if (legality == null)
+			return r;
+		// if first and last the same, there is only one path, so follow it until there are two, or you hit the tips
+		while ((firstLegalDaughterOfNode(r, legality) == lastLegalDaughterOfNode(r, legality)) && (inBounds(firstLegalDaughterOfNode(r, legality))))
+			r = firstLegalDaughterOfNode(r, legality);
+
+		if (firstLegalDaughterOfNode(r, legality) == lastLegalDaughterOfNode(r, legality))
+			return 0;
+		return r;
+	}
+	/*-----------------------------------------*/
 	/** Returns the first (left-most) daughter of node.*/
 	public  int firstDaughterOfNode(int node) {
 		if (!inBounds(node))
