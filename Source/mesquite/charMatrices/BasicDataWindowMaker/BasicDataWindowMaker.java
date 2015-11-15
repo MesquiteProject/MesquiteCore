@@ -3534,7 +3534,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				if (adjustNewSequences) {
 					Bits newTaxa = fileInterpreter.getNewlyAddedTaxa(taxa);
 					if (data instanceof DNAData){
-						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, 0, false, false);
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, referenceSequence, false, false); 
 					}
 					MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, newTaxa,0, false);
 					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));

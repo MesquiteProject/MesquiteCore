@@ -45,6 +45,7 @@ public class MolecularDataUtil {
 	}
 	/*.................................................................................................................*/
 	public static void pairwiseAlignMatrix(MesquiteModule module, MolecularData data, int referenceTaxon, Bits taxaToAdjust, int comparisonTaxon, boolean allowNewInternalGaps, boolean verbose) {
+		if (comparisonTaxon<0) comparisonTaxon=0;
 		MesquiteNumber score = new MesquiteNumber();
 		AlignUtil alignUtil = new AlignUtil();
 		PairwiseAligner aligner = PairwiseAligner.getDefaultAligner(true,data);
@@ -257,7 +258,7 @@ public class MolecularDataUtil {
 	
 	/*.................................................................................................................*/
 	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, Bits taxaToAdjust, int comparisonTaxon, boolean baseOnStopCodons, boolean verbose) {
-
+		if (comparisonTaxon<0) comparisonTaxon=0;
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
 			if (modelSet == null) {
