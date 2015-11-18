@@ -246,6 +246,25 @@ public class QueryDialogs  {
 	}
 	
 	/*.................................................................................................................*/
+	public static int queryTwoRadioButtons(MesquiteWindow parent, String title, String message, String help, String button1, String button2) {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(parent, title,buttonPressed);
+		queryDialog.addLargeOrSmallTextLabel(message);
+		queryDialog.appendToHelpString(help);
+
+		RadioButtons radios = new RadioButtons(queryDialog, new String[] {button1, button2}, 0);
+
+		queryDialog.completeAndShowDialog(true);
+
+		int returnValue=-1;
+
+		if (buttonPressed.getValue()==0) 
+			returnValue = radios.getValue();
+		queryDialog.dispose();
+		return returnValue;
+	}
+
+	/*.................................................................................................................*/
 	public static boolean queryChar(MesquiteWindow parent, String title, String message, MesquiteString value) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(parent, title,buttonPressed);
