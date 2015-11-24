@@ -52,7 +52,7 @@ public class FetchGenBank extends DataUtility {
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryFilesDialog = new ExtensibleDialog(containerOfModule(), "Fetch & Add GenBank",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		queryFilesDialog.addLabel("Accession Numbers (separated by commas):");
+		queryFilesDialog.addLabel("Accession Numbers (separated by commas); /nranges with commas allowed:");
 
 		genBankNumbers = "";
 		TextArea numbersArea = queryFilesDialog.addTextArea("",  5);

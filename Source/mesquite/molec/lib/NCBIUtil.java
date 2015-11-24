@@ -433,12 +433,12 @@ public class NCBIUtil {
 
 
 	/*.................................................................................................................*/
-	public static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+	public static String[] getGenBankIDs20(String[] accessionNumbers, int startIndex, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
 		try {
 			String searchString="";
-			for (int i=0; i<accessionNumbers.length;i++) {
-				searchString+=accessionNumbers[i];
-				if (i<accessionNumbers.length-1)
+			for (int i=0; i<maxGenBankRequest && i+startIndex<accessionNumbers.length;i++) {
+				searchString+=accessionNumbers[i+startIndex];
+				if (i==maxGenBankRequest-1 || i<accessionNumbers.length-1)
 					searchString+="+OR+";
 			}
 			if (writeLog && mod!=null)
@@ -471,6 +471,22 @@ public class NCBIUtil {
 			return null;
 		}
 
+	}
+	static int maxGenBankRequest = 20;
+	/*.................................................................................................................*/
+	public static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+		if (accessionNumbers==null)
+			return null;
+		if (accessionNumbers.length<=maxGenBankRequest)
+			return getGenBankIDs20(accessionNumbers, 0,nucleotides, mod, writeLog);
+		String[] idList = new String[accessionNumbers.length];
+		for (int i=0;i<idList.length; i+=20) {
+			String[] nextList = getGenBankIDs20(accessionNumbers, i, nucleotides, mod, writeLog);
+			for (int j=0; j<20 && j<nextList.length && i+j<idList.length; j++) {
+				idList[i+j]=nextList[j];
+			}
+		}
+		return idList;
 	}
 	/*.................................................................................................................*/
 	public static String[] getGenBankAccessionFromID(String[] ID, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
