@@ -73,7 +73,7 @@ public class FetchGenBank extends DataUtility {
 			logln("\nFetching GenBank entries: "  + genBankNumbers);
 
 			try {
-				String[] accessionNumbers = StringUtil.delimitedTokensToStrings(genBankNumbers,',');
+				String[] accessionNumbers = StringUtil.delimitedTokensToStrings(genBankNumbers,',',true);
 				for (int i=0; i<accessionNumbers.length; i++) 
 					if (!StringUtil.blank(accessionNumbers[i])) 				
 						logln ("Accession numbers " + accessionNumbers[i]);
