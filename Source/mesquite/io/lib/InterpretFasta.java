@@ -516,6 +516,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		return false;
 	}
+	protected boolean taxonHasMissing(CharacterData data, int it){
+		for (int ic = 0; ic<data.getNumChars(); ic++) {
+			if (!writeOnlySelectedData || (data.getSelected(ic))){
+				if (data.isUnassigned(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
+					return true;
+			}
+		}
+		return false;
+	}
 	protected boolean includeOnlyTaxaWithData = true;// TO DO: also have the option of only writing taxa with data in them
 	
  	public  StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {

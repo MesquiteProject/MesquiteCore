@@ -1981,6 +1981,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}		
 		return false;
 	}
+	public boolean hasMissingForTaxon(int it){
+		int numChars = getNumChars();
+		for (int ic=0; ic<numChars; ic++) {
+			if (isUnassigned(ic, it))
+				return true;
+		}		
+		return false;
+	}
 	public boolean hasDataForTaxon(int it, boolean considerExcluded){
 		int numChars = getNumChars();
 		for (int ic=0; ic<numChars; ic++) {
