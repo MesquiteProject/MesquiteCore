@@ -2035,7 +2035,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				tree.dispose();
 
 		}
-		treeAnnotationShown = false;
+		treeAnnotationShown = false;  
 		//	tree=null; //done to catch spurious redraws
 		treeVersion = 0;
 		treeDisplay.setTree(null); //done to catch spurious redraws
@@ -3299,6 +3299,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		//resetLockImage();
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
 		MesquiteTrunk.resetMenuItemEnabling();
+		treeAnnotationShown = true;
 		resetBaseExplanation();
 		checkPanelPositionsLegal();
 

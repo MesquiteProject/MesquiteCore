@@ -553,7 +553,10 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	//boolean fipOpen = false;
 	//FileIncorporatePanel fip = null;
 	public void refresh(){
+		
 		int sutd = sequenceUpToDate();  //integer passed to diagnose why not up to date, for debugging
+		
+		Debugg.println("refresh SUTD " + sutd);
 		if (sutd==0){
 			resetSizes();
 			return;
@@ -566,10 +569,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			panel.dispose();
 		}
 		elements.removeAllElements();
+		Debugg.println("    refresh project " + 0);
 		ElementPanel panel = null;
 		MesquiteProject proj = bfc.getProject();
 
 		addExtraPanel(panel = new ProjectLabelPanel(bfc, this, w,proj));
+		Debugg.println("    refresh project " + 1);
 		Enumeration efi = bfc.getEmployeeVector().elements();
 		while (efi.hasMoreElements()) {
 			Object obj = efi.nextElement();
@@ -583,6 +588,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}
 		}
 
+		Debugg.println("    refresh project " + 2);
 		panel.setLocation(0,0);
 		for (int i=0; i<proj.getNumberLinkedFiles(); i++){
 			MesquiteFile mf = proj.getFile(i);
@@ -596,6 +602,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		addExtraPanel(panel = new AddElementPanel(bfc, this,w));
 		panel.setOpen(false);
 		panel.setLocation(0,0);
+		Debugg.println("    refresh project " + 3);
 		if (proj.taxas.size()>0){
 			for (int i = 0; i< proj.taxas.size(); i++){
 				Taxa t = (Taxa)proj.taxas.elementAt(i);
