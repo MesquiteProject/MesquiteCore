@@ -21,10 +21,6 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class TermGapsToMissing extends CategDataAlterer {
-	static final int ALLREGIONS=0;
-	static final int TERMINALREGION=1;
-	static final int INTERNALREGION=2;
-	int mode = ALLREGIONS;
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/
@@ -46,57 +42,30 @@ public class TermGapsToMissing extends CategDataAlterer {
 		boolean noRowsSelected =  table == null || !table.anyRowSelected() ;
 		for (int it = 0; it<data.getNumTaxa(); it++){
 			if (table==null || noRowsSelected || table.isRowSelected(it)) {
-				int cellsAltered = 0;
 				boolean done = false;
-				int startOfFirstDataRegion = -1;
-				int endOfLastDataRegion = -1;
-				for (int ic = 0; ic<data.getNumChars() && !done; ic++){  //the first terminal region
+				for (int ic = 0; ic<data.getNumChars() && !done; ic++){
 					if (data.isInapplicable(ic, it)) {
-						if (mode==ALLREGIONS || mode==TERMINALREGION) {
-							data.setState(ic, it, CategoricalState.unassigned);
-							if (!MesquiteLong.isCombinable(numCellsAltered))
-								numCellsAltered = 0;
-							numCellsAltered++;
-						}
+						data.setState(ic, it, CategoricalState.unassigned);
+						if (!MesquiteLong.isCombinable(numCellsAltered))
+							numCellsAltered = 0;
+						numCellsAltered++;
 					}
-					else if (!data.isUnassigned(ic, it)){  // we are out of the first terminal region
+					else if (!data.isUnassigned(ic, it))
 						done = true;
-						startOfFirstDataRegion=ic;
-					}
 				}
-				if (done){  
+				if (done){
 					done = false;
-					for (int ic = data.getNumChars()-1; ic>=0 && !done; ic--){  // the end terminal region
-						if (data.isInapplicable(ic, it)) {
-							if (mode==ALLREGIONS || mode==TERMINALREGION) {
-								data.setState(ic, it, CategoricalState.unassigned);
-								if (!MesquiteLong.isCombinable(numCellsAltered))
-									numCellsAltered = 0;
-								numCellsAltered++;
-							}
-						}
-						else if (!data.isUnassigned(ic, it)) {  // we are out of the end terminal region
-							endOfLastDataRegion=ic;
-							done = true;
-						}
-					}
-				}
-				if (done && (mode==ALLREGIONS || mode==INTERNALREGION)) {
-					done = false;
-					for (int ic = startOfFirstDataRegion; ic<endOfLastDataRegion; ic++){  // now let's scan the internal regions
+					for (int ic = data.getNumChars()-1; ic>=0 && !done; ic--){
 						if (data.isInapplicable(ic, it)) {
 							data.setState(ic, it, CategoricalState.unassigned);
 							if (!MesquiteLong.isCombinable(numCellsAltered))
 								numCellsAltered = 0;
 							numCellsAltered++;
 						}
-						else if (!data.isUnassigned(ic, it)) {
+						else if (!data.isUnassigned(ic, it))
 							done = true;
-						}
 					}
 				}
-		//	if (cellsAltered>0)
-		//		Debugg.println(data.getTaxa().getTaxonName(it) + " cells altered: " + cellsAltered);
 			}
 		}
 		if (undoInstructions!=null){
@@ -122,6 +91,10 @@ public class TermGapsToMissing extends CategDataAlterer {
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){
+		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean loadModule(){
 		return false;
 	}
 	/*.................................................................................................................*/
