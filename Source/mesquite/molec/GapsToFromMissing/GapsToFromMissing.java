@@ -187,6 +187,10 @@ public String preparePreferencesForXML () {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice() {
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean showCitation(){
 		return false;
 	}

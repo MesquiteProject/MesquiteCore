@@ -81,11 +81,11 @@ public class ZapGapsRight extends MolecularDataAlterer {
      	}
  	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Collapse Gaps to Right";
+    			return "Collapse Sequences to Right (Remove all Gaps)";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Collapse Gaps to Right";
+    			return "Collapse Sequences to Right (Remove all Gaps)";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

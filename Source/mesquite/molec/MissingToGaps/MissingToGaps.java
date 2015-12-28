@@ -55,6 +55,11 @@ public class MissingToGaps extends CategDataAlterer {
 		return false;
 	}
 	/*.................................................................................................................*/
+	public boolean loadModule(){
+		return false;
+	}
+
+	/*.................................................................................................................*/
 	public String getName() {
 		return "Missing to Gaps";
 	}

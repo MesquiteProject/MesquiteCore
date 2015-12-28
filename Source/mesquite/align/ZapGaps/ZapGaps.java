@@ -32,8 +32,7 @@ public class ZapGaps extends MolecularDataAlterer {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
+	/*.................................................................................................................*
    	public boolean requestPrimaryChoice(){
    		return true;  
    	}
