@@ -2566,7 +2566,7 @@ public class CategoricalData extends CharacterData {
 
 	/*..........................................CategoricalData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object */
-	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+	public boolean mergeSecondTaxonIntoFirst(int it1, int it2, boolean mergeMultistateAsUncertainty) {
 		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
 			return false;
 
@@ -2578,9 +2578,20 @@ public class CategoricalData extends CharacterData {
 				mergedAssigned = true;
 
 			long sMerged = CategoricalState.mergeStates(s1,s2);
+			if (mergeMultistateAsUncertainty && CategoricalState.hasMultipleStates(sMerged)) {   // set to uncertainty if it makes sense
+				if ((CategoricalState.hasMultipleStates(s1) && !CategoricalState.isUncertain(s1)) || (CategoricalState.hasMultipleStates(s2) && !CategoricalState.isUncertain(s2))) {  // has polymorphism, don't do anything
+				} else {
+					sMerged = CategoricalState.setUncertainty(sMerged, true);		
+				}
+			}
 			setState(ic,it1,sMerged);
 		}
 		return mergedAssigned;
+	}
+	/*..........................................CategoricalData.....................................*/
+	/**merges the states for taxon it2 into it1  within this Data object */
+	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+		return mergeSecondTaxonIntoFirst(it1, it2, false);
 	}
 
 

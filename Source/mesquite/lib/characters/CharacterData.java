@@ -3228,6 +3228,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	public void setLocked(boolean locked) {
 		this.locked = locked;
+		if (locked)
+			Debugg.printStackTrace("|||||||||| data matrix LOCKED "+ getName());
+		else
+			Debugg.println("|||||||||| data matrix UNLOCKED "+ getName());
+
 	}
 	/*.................................................................................................................*/
 	public boolean getEditorInhibition(){
@@ -3236,6 +3241,10 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*.................................................................................................................*/
 	public void setEditorInhibition(boolean i){
 		inhibitEditor = i;
+		if (inhibitEditor)
+			Debugg.printStackTrace("|||||||||| data matrix INHIBITED " + getName());
+		else
+			Debugg.println("|||||||||| data matrix UNINHIBITED "+ getName());
 	}
 	/*.................................................................................................................*/
 	protected void setDirty(boolean d, int ic, int it){
@@ -3732,7 +3741,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object */
-	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2, boolean mergeMultistateAsUncertainty) {
 		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
 			return false;
 
@@ -3757,10 +3766,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return mergedAssigned;
 	}
 	/*..........................................CharacterData.....................................*/
+	/**merges the states for taxon it2 into it1  within this Data object */
+	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+		return mergeSecondTaxonIntoFirst(it1,it2,false);
+	}
+	/*..........................................CharacterData.....................................*/
 	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
 	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
 	 * unassigned + assigned or inapplicable + assigned */
-	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
+	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge, boolean mergeMultistateAsUncertainty) {
 		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
 			return null;
 		boolean[] mA = new boolean[taxaToMerge.length];
@@ -3769,7 +3783,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
 			if (it!=sinkTaxon && taxaToMerge[it]){
 				boolean mergingHadData = hasDataForTaxon(it);
-				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it);
+				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it, mergeMultistateAsUncertainty);
 				if (mergingHadData && ! firstHasData){
 					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
 					Associable a = getTaxaInfo(false);
@@ -3785,6 +3799,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return mA;
 		else
 			return null;
+	}
+
+	/*..........................................CharacterData.....................................*/
+	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
+	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
+	 * unassigned + assigned or inapplicable + assigned */
+	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
+		return mergeTaxa(sinkTaxon, taxaToMerge, false);
 	}
 
 }
