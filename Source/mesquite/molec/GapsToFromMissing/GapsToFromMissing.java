@@ -71,7 +71,7 @@ public String preparePreferencesForXML () {
  	}
 
 	/*.................................................................................................................*/
-	public boolean queryOptions() {
+	public boolean queryOptions(CategoricalData data) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Gaps <-> Missing",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryDialog.addLabel("Converting Gaps to Missing or Missing to Gaps");
@@ -83,6 +83,11 @@ public String preparePreferencesForXML () {
 		
 		queryDialog.addHorizontalLine(1);
 		
+		if (data.getTaxa().anySelected())
+			queryDialog.addLabel("Within selected sequences, ");
+		else
+			queryDialog.addLabel("For all sequences, ");
+
 		RadioButtons whereChoice = queryDialog.addRadioButtons (new String[]{"Convert in all regions of sequence", "Convert only within internal regions of sequence", "Convert only in terminal regions beyond sequence"}, mode);
 
 		queryDialog.completeAndShowDialog(true);
@@ -103,11 +108,11 @@ public String preparePreferencesForXML () {
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on categorical data");
 			return false;
 		}
+		CategoricalData data = (CategoricalData)dData;
 		if (!MesquiteThread.isScripting()){
-			if (!queryOptions())
+			if (!queryOptions(data))
 				return false;
 		}
-		CategoricalData data = (CategoricalData)dData;
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean noRowsSelected =  table == null || !table.anyRowSelected() ;
 		for (int it = 0; it<data.getNumTaxa(); it++){
