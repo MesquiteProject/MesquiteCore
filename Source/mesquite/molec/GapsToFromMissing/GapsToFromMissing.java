@@ -81,6 +81,8 @@ public String preparePreferencesForXML () {
 			defaultValue=1;
 		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Convert Gaps to Missing", "Convert Missing to Gaps"}, defaultValue);
 		
+		queryDialog.addHorizontalLine(1);
+		
 		RadioButtons whereChoice = queryDialog.addRadioButtons (new String[]{"Convert in all regions of sequence", "Convert only within internal regions of sequence", "Convert only in terminal regions beyond sequence"}, mode);
 
 		queryDialog.completeAndShowDialog(true);
