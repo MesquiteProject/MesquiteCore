@@ -15,6 +15,7 @@ package mesquite.basic.MergeTaxa;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
@@ -26,9 +27,14 @@ import mesquite.lib.table.*;
 public class MergeTaxa extends TaxonUtility {
 //	int maxNameLength=30;
 	boolean keepEntireName=true;
+	static int USEFIRSTNAME = 0;
+	static int KEEPENTIRE = 1;
+	static int KEEPPARTIAL = 2;
+	int keepMode=USEFIRSTNAME;
 	int startLengthToKeep = 10;
 	int endLengthToKeep = 4;
 	boolean preferencesSet = false;
+	boolean setMultiplestatesToUncertainty = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
@@ -40,18 +46,27 @@ public class MergeTaxa extends TaxonUtility {
 			startLengthToKeep = MesquiteInteger.fromString(content);
 		} else  if ("endLengthToKeep".equalsIgnoreCase(tag)) {
 			endLengthToKeep = MesquiteInteger.fromString(content);
-		} else  if ("keepEntireName".equalsIgnoreCase(tag)) {
+		} else  if ("keepEntireName".equalsIgnoreCase(tag)) {   // retain this for older installations before keepMode was added
 			keepEntireName = MesquiteBoolean.fromOffOnString(content);
+			if (keepEntireName)
+				keepMode=KEEPENTIRE;
+			else
+				keepMode = KEEPPARTIAL;
+		} else  if ("keepMode".equalsIgnoreCase(tag)) {
+			keepMode = MesquiteInteger.fromString(content);
+		} else  if ("setMultiplestatesToUncertainty".equalsIgnoreCase(tag)) {
+			setMultiplestatesToUncertainty = MesquiteBoolean.fromOffOnString(content);
 		}  
 
 		preferencesSet = true;
-}
+	}
 /*.................................................................................................................*/
 public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "startLengthToKeep", startLengthToKeep);  
 		StringUtil.appendXMLTag(buffer, 2, "endLengthToKeep", endLengthToKeep);  
-		StringUtil.appendXMLTag(buffer, 2, "keepEntireName", keepEntireName);  
+		StringUtil.appendXMLTag(buffer, 2, "keepMode", keepMode);  
+		StringUtil.appendXMLTag(buffer, 2, "setMultiplestatesToUncertainty", setMultiplestatesToUncertainty);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -62,16 +77,20 @@ public String preparePreferencesForXML () {
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Merge Taxa",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryDialog.addLabel("Merge Taxa");
 		
-		Checkbox keepEntireNameBox = queryDialog.addCheckBox("Retain full length of all names", keepEntireName);
-		queryDialog.addLabel("OR");
+		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, 0);
+		//Checkbox keepEntireNameBox = queryDialog.addCheckBox("Retain full length of all names", keepEntireName);
+		//queryDialog.addLabel("OR");
 		IntegerField startLengthToKeepField = queryDialog.addIntegerField("Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
 		IntegerField endLengthToKeepField = queryDialog.addIntegerField("Number of characters from end of each name to retain:", endLengthToKeep, 6, 0, 200);
 		
+		Checkbox setMultipleStatesUncertaintyBox = queryDialog.addCheckBox("Set merged cells with multiple states to uncertainty rather than polymorphism", setMultiplestatesToUncertainty);
+
 		queryDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
-			keepEntireName = keepEntireNameBox.getState();
+			keepMode = choices.getValue();
 			startLengthToKeep = startLengthToKeepField.getValue();
 			endLengthToKeep = endLengthToKeepField.getValue();
+			setMultiplestatesToUncertainty = setMultipleStatesUncertaintyBox.getState();
 			storePreferences();
 		}
 		queryDialog.dispose();
@@ -121,20 +140,24 @@ public String preparePreferencesForXML () {
 	//now let's merge the taxon names
 		StringBuffer sb = new StringBuffer();
 		int count=0;
-		for (int it = 0; it<taxa.getNumTaxa(); it++) {
-			if (selected[it]) {
-				String s = taxa.getTaxonName(it);
-				if (!keepEntireName && startLengthToKeep>0 && endLengthToKeep>0) {
-					if (s.length()>startLengthToKeep+endLengthToKeep) {
-						sb.append(s.substring(0,startLengthToKeep)+s.substring(s.length()-endLengthToKeep));
+			for (int it = 0; it<taxa.getNumTaxa(); it++) {
+				if (selected[it]) {
+					String s = taxa.getTaxonName(it);
+					if (keepMode==KEEPPARTIAL && startLengthToKeep>0 && endLengthToKeep>0) {
+						if (s.length()>startLengthToKeep+endLengthToKeep) {
+							sb.append(s.substring(0,startLengthToKeep)+s.substring(s.length()-endLengthToKeep));
+						}
+					} else {
+						sb.append(s);
+						if (keepMode==USEFIRSTNAME) {
+							break;
+						}
 					}
-				} else
-					sb.append(s);
-				count++;
-				if (count<numSelected)
-					sb.append("+");
+					count++;
+					if (count<numSelected)
+						sb.append("+");
+				}
 			}
-		}
 	
 /*
  * 		if (sb.length()> maxNameLength && !keepEntireName) {
@@ -175,7 +198,7 @@ public String preparePreferencesForXML () {
 		String report = "";
 		for (int iM = 0; iM < numMatrices; iM++){
 			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
-			boolean[] ma = data.mergeTaxa(firstSelected, selected);
+			boolean[] ma = data.mergeTaxa(firstSelected, selected, setMultiplestatesToUncertainty);
 			if (ma!= null){
 				if (data instanceof CategoricalData)
 					report += "For matrix " + data.getName() + ", the following taxa when merged to taxon \"" + originalTaxonName + "\" required merging of character states:\n";
