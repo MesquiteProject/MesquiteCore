@@ -358,8 +358,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (getOriginalNumTaxa()>0 && getMaximumTaxonFilled()>=getOriginalNumTaxa() && getMaximumTaxonFilled()<taxa.getNumTaxa()-1)    
 					if (!taxa.taxaHaveAnyData(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
 						taxa.deleteTaxa(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-getMaximumTaxonFilled(), true);   // delete a character if needed
-
-			Debugg.println("numChars: " + data.getNumChars() + ", numFilledChars: " + numFilledChars);
 			
 			
 			if (numFilledChars<data.getNumChars())
