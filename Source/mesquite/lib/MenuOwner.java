@@ -587,6 +587,18 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 	/*.................................................................................................................*/
 	/** Delete indicated menu item. */
+	public final void deleteItemsOfMenu(MesquiteMenuSpec whichMenu){
+		if (menuItemsSpecs!=null) {
+			for (int i = 0; i< menuItemsSpecs.size(); i++){
+				MesquiteMenuItemSpec mmis = (MesquiteMenuItemSpec)menuItemsSpecs.elementAt(i);
+				if (mmis.getMenu() == whichMenu)
+					deleteMenuItem(mmis);
+			}
+		}
+
+	}
+	/*.................................................................................................................*/
+	/** Delete indicated menu item. */
 	public final void deleteAllMenuItems(){
 		if (menuItemsSpecs!=null) {
 			for (int i = 0; i< menuItemsSpecs.size(); i++)
@@ -1381,7 +1393,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			int count = 0;
 			while (count++<128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(mmi.getDutyClass(), mbi))!=null) {
 				int hiddenStatus = 0;
-				if (moduleIsCompatible(mmi, mbi) && mbi.getUserChooseable() && (!InterfaceManager.isFilterable(menu) || (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi, mbi.getNameForMenuItem(),  StringUtil.tokenize(mbi.getName()), mmi.command, mbi.getModuleClass(), mmi.getDutyClass())) != InterfaceManager.HIDDEN)) {
+				if (moduleIsCompatible(mmi, mbi)  && mbi.getUserChooseable() && (!InterfaceManager.isFilterable(menu) || (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi, mbi.getNameForMenuItem(),  StringUtil.tokenize(mbi.getName()), mmi.command, mbi.getModuleClass(), mmi.getDutyClass())) != InterfaceManager.HIDDEN)) {
 					if (mbi.getHireSubchoice()==null) {
 						MesquiteMenuItem m = new MesquiteMenuItem(mbi.getNameForMenuItem(), null /*mmi.ownerModule*/, mmi.command, StringUtil.tokenize(mbi.getName()));
 						m.setHiddenStatus(hiddenStatus, mmi.getDutyClass());
@@ -1508,7 +1520,11 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		return submenu;
 	}
 	boolean moduleIsCompatible(MesquiteMenuItemSpec mmi, MesquiteModuleInfo mbi){
-		return (mmi.getCompatibilityCheck()==null || mbi.isCompatible(mmi.getCompatibilityCheck(), module.getProject(), null)) && (mmi.getListableFilter()==null || mmi.getListableFilter().isAssignableFrom(mbi.getModuleClass()) || ((CompatibilityChecker)mbi).isCompatible(mmi.getListableFilter(), null, null));
+		Object cc = null;
+		cc = mmi.getCompatibilityCheck();
+		if (cc == null && mmi.getMenu()!= null)
+			cc = mmi.getMenu().getCompatibilityCheck();
+		return (cc==null || mbi.isCompatible(cc, module.getProject(), null)) && (mmi.getListableFilter()==null || mmi.getListableFilter().isAssignableFrom(mbi.getModuleClass()) || ((CompatibilityChecker)mbi).isCompatible(mmi.getListableFilter(), null, null));
 	}
 	/*.................................................................................................................*/
 	int fillSubmenuWithListable (int currentCount, Menu menu, MesquiteSubmenu submenu, MesquiteSubmenuSpec msms, Object o, MesquiteInteger j, int priorityLevel) {

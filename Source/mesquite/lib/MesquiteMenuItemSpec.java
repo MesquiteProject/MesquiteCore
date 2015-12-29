@@ -141,6 +141,9 @@ public class MesquiteMenuItemSpec implements Listable {
 	public void setInMenu(MesquiteMenuSpec menu){
 		this.whichMenu = menu;
 	}
+	public MesquiteMenuSpec getMenu(){
+		return whichMenu;
+	}
 	public void setArgument(String argument){
 		this.argument = argument;
 	}

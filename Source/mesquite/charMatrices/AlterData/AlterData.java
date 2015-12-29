@@ -17,6 +17,7 @@ package mesquite.charMatrices.AlterData;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -32,9 +33,28 @@ public class AlterData extends DataWindowAssistantI {
 	MesquiteTable table;
 	CharacterData data;
 	MesquiteSubmenuSpec mss= null;
+	MesquiteMenuSpec alterMenu; 
+	MesquiteSubmenuSpec mssSimpleCell= null;
+	MesquiteSubmenuSpec mssRandomizations= null;
+	MesquiteSubmenuSpec mssConvertGapMissPolyUncert= null;
+	MesquiteMenuSpec alter2Menu; 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mss = addSubmenu(null, "Alter/Transform", makeCommand("doAlter",  this));
+
+		//SUBMENUS
+		alterMenu = addAuxiliaryMenu("AlterBySubmenus");
+		mssSimpleCell = addSubmenu(alterMenu, "Basic Cell Modifiers", makeCommand("doAlter",  this), AltererSimpleCell.class);
+		mssRandomizations = addSubmenu(alterMenu, "Randomizations", makeCommand("doAlter",  this), AltererRandomizations.class);
+		mssConvertGapMissPolyUncert = addSubmenu(alterMenu, "Convert Gap/Missing/Polymorph/Uncertain", makeCommand("doAlter",  this), AltererConvertGapMissPolyUncert.class);
+
+		//GROUPS
+		alter2Menu = addAuxiliaryMenu("AlterByGroups");
+		addItemsOfInterface(alter2Menu, data.getStateClass(), AltererSimpleCell.class, "Basic Cell Modifiers");
+		addItemsOfInterface(alter2Menu, data.getStateClass(), AltererRandomizations.class, "Randomizations");
+		addItemsOfInterface(alter2Menu, data.getStateClass(), AltererConvertGapMissPolyUncert.class, "Convert Gap/Missing/Polymorph/Uncertain");
+		
+		//OLD
+		mss = addSubmenu(null, "OLD Alter/Transform", makeCommand("doAlter",  this));
 		mss.setList(DataAlterer.class);
 		return true;
 	}
@@ -47,11 +67,27 @@ public class AlterData extends DataWindowAssistantI {
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
+   	 
+   	 private void addItemsOfInterface(MesquiteMenuSpec menu, Class stateClass, Class alterInterface, String title){
+   		addMenuItem(menu, "-", null);
+   		addMenuItem(menu, title, null);
+  		addModuleMenuItems(menu, makeCommand("doAlter",  this), alterInterface);
+   	 }
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = table;
 		this.data = data;
+		//OLD
 		mss.setCompatibilityCheck(data.getStateClass());
+		
+		//SUBMENUS
+		mssSimpleCell.setCompatibilityCheck(data.getStateClass());
+		mssRandomizations.setCompatibilityCheck(data.getStateClass());
+		mssConvertGapMissPolyUncert.setCompatibilityCheck(data.getStateClass());
+		
+		//GROUPS
+		alter2Menu.setCompatibilityCheck(data.getStateClass());
+		
 		resetContainingMenuBar();
 		
 	}
