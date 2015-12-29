@@ -104,6 +104,12 @@ public class RadioButtons implements ItemListener {
 		}
     }
 	/*.................................................................................................................*/
+    public void removeItemListener(ItemListener itemListener) {
+		for (int i=0; i< numCheckBoxes; i++) {
+			checkboxArray[i].removeItemListener(itemListener);
+		}
+    }
+	/*.................................................................................................................*/
 	public Checkbox getSelectedCheckbox () {
 		return cbg.getSelectedCheckbox();
 	}

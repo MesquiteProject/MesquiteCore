@@ -125,7 +125,7 @@ public class GBLOCKSCalculator implements  XMLPreferencesProcessor, ActionListen
 	/**This queryOptions is provided in case the module that uses this GBLOCKSCalculator doesn't want to add extra options, and just wants to use
 	 * a simple dialog box to query for options. If the ownermodule wishes, it can make its own dialog box; use this one as a template. */
 	public boolean queryOptions(MesquiteModule mb, String action) {
-		if (!mb.okToInteractWithUser(mb.CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
+		if (!mb.okToInteractWithUser(mb.CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		String actionToUse = getActionToUse(action);
 

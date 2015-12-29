@@ -69,7 +69,10 @@ public class ManageTrees extends TreesManager {
 	}
 
 	public void elementsReordered(ListableVector v){
+		Debugg.println("elementsReordered ");
 		if (v == treesVector){
+			Debugg.println("elementsReordered xxx");
+		//	NexusBlock.equalizeOrdering(v, getProject().getOtherElements());
 			NexusBlock.equalizeOrdering(v, getProject().getNexusBlocks());
 		}
 	}

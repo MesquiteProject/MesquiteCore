@@ -139,7 +139,6 @@ public class ListTable extends MesquiteTable {
 				if (window.owner.resetMenusOnNameChange()){
 					//MesquiteWindow.resetAllTitles();
 					window.owner.getProject().refreshProjectWindow();
-					Debugg.println("REFRESHING " + window.owner.getProject().refreshSuppression);
 					window.owner.resetAllMenuBars();
 				}
 				// redo project panel if these are vectors of tree blocks or of character matrices  Debugg.println
