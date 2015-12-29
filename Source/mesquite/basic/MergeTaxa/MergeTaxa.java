@@ -78,8 +78,7 @@ public String preparePreferencesForXML () {
 		queryDialog.addLabel("Merge Taxa");
 		
 		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, 0);
-		//Checkbox keepEntireNameBox = queryDialog.addCheckBox("Retain full length of all names", keepEntireName);
-		//queryDialog.addLabel("OR");
+
 		IntegerField startLengthToKeepField = queryDialog.addIntegerField("Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
 		IntegerField endLengthToKeepField = queryDialog.addIntegerField("Number of characters from end of each name to retain:", endLengthToKeep, 6, 0, 200);
 		
