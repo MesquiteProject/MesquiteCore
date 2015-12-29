@@ -72,6 +72,8 @@ public String preparePreferencesForXML () {
 
 	/*.................................................................................................................*/
 	public boolean queryOptions(CategoricalData data) {
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  
+			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Gaps <-> Missing",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryDialog.addLabel("Converting Gaps to Missing or Missing to Gaps");
