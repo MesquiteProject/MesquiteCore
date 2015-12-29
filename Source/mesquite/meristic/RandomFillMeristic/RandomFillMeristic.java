@@ -23,7 +23,7 @@ import mesquite.meristic.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class RandomFillMeristic extends MeristicDataAlterer {
+public class RandomFillMeristic extends MeristicDataAlterer implements AltererRandomizations{
 	CharacterState fillState;
 	RandomBetween rng;
 	MesquiteInteger max;

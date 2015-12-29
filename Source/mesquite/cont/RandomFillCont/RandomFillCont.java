@@ -23,7 +23,7 @@ import mesquite.lib.characters.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class RandomFillCont extends ContDataAlterer {
+public class RandomFillCont extends ContDataAlterer implements AltererRandomizations {
 	CharacterState fillState;
 	Random rng;
 	MesquiteDouble mean;
