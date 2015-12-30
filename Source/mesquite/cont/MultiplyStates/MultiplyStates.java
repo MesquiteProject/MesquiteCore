@@ -16,6 +16,7 @@ package mesquite.cont.MultiplyStates;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.table.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -23,7 +24,7 @@ import mesquite.lib.duties.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class MultiplyStates extends ContDataAlterer {
+public class MultiplyStates extends ContDataAlterer  implements AltererContinuousTransformations {
 	double scalingFactor = 1.0;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

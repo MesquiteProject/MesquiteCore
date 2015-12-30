@@ -36,11 +36,12 @@ public class AlterData extends DataWindowAssistantI {
 	MesquiteSubmenuSpec mss= null;
 	MesquiteMenuSpec alterMenu; 
 	MesquiteMenuSpec alterMenu2; 
-	MesquiteCMenuItemSpec bySMmi; 
+//	MesquiteCMenuItemSpec bySMmi; 
 
 	//Specify various interfaces here
-	String[] labels = new String[]{"Basic Cell Alterers", "DNA/RNA Cell Alterers", "Align/Shift Data", "Convert Gap/Missing/Polymorph/Uncertain", "Whole Character Add/Remove", "Randomizations"};
-	Class[] interfaces = new Class[]{AltererSimpleCell.class, AltererDNACell.class, AltererAlignShift.class, AltererConvertGapMissPolyUncert.class, AltererWholeCharacterAddRemove.class, AltererRandomizations.class};
+	String[] labels = new String[]{ "Whole Character Add/Remove", "Align/Shift/Reverse Data", "Transformations","Basic Cell Manipulation", "DNA/RNA Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
+	Class[] interfaces = new Class[]{AltererWholeCharacterAddRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
+	boolean[] asSubmenu = new boolean[]{false,false,false,true, true, true, true};
 
 
 	MesquiteSubmenuSpec[] submenu = new MesquiteSubmenuSpec[interfaces.length+1];
@@ -56,19 +57,39 @@ public class AlterData extends DataWindowAssistantI {
 		buildMenu();
 
 		//OLD
-		mss = addSubmenu(null, "OLD Alter/Transform", makeCommand("doAlter",  this));
-		mss.setList(DataAlterer.class);
+		//mss = addSubmenu(null, "OLD Alter/Transform", makeCommand("doAlter",  this));
+		//mss.setList(DataAlterer.class);
 		return true;
 	}
 
 	/*.................................................................................................................*/
 	void buildMenu(){
-		if (bySMmi != null)
-			bySMmi.releaseBoolean();
+//		if (bySMmi != null)
+//			bySMmi.releaseBoolean();
 		deleteAllMenuItems();
-		bySMmi = addCheckMenuItem(alterMenu, "Show As Submenus", makeCommand("toggleBySubmenus",  this), bySubmenus);
+//		bySMmi = addCheckMenuItem(alterMenu, "Show As Submenus", makeCommand("toggleBySubmenus",  this), bySubmenus);
+//		addMenuItem(alterMenu, "-", null);
+		
+		
+		for (int i=0; i< interfaces.length; i++) {
+			if (!asSubmenu[i])
+				addItemsOfInterface(alterMenu, interfaces[i], labels[i], null);
+		}
+		
 		addMenuItem(alterMenu, "-", null);
-		if (bySubmenus.getValue()){
+
+		for (int i=0; i< interfaces.length; i++) {
+			if (asSubmenu[i])
+				addSubmenu(alterMenu, labels[i], makeCommand("doAlter",  this), interfaces[i]);
+		}
+		
+
+		submenu[interfaces.length] = addSubmenu(alterMenu, "Other Alterations", makeCommand("doAlter",  this), DataAlterer.class);
+		submenu[interfaces.length].setQualificationsTest(qualificationsTest);
+
+/*
+ * 
+ *		if (bySubmenus.getValue()){
 			//SUBMENUS
 			for (int i=0; i< interfaces.length; i++)
 				submenu[i] = addSubmenu(alterMenu, labels[i], makeCommand("doAlter",  this), interfaces[i]);
@@ -82,13 +103,15 @@ public class AlterData extends DataWindowAssistantI {
 				addItemsOfInterface(alterMenu, interfaces[i], labels[i], null);
 			addItemsOfInterface(alterMenu, DataAlterer.class, "Other Alterations", qualificationsTest);
 		}
+		
+		*/
 	}
 	/*.................................................................................................................*/
 	void setCompatibilityForMatrix(){
 		if (data == null)
 			return;
 		//OLD
-		mss.setCompatibilityCheck(data.getStateClass());
+		//mss.setCompatibilityCheck(data.getStateClass());
 
 	if (bySubmenus.getValue()){
 			//SUBMENUS

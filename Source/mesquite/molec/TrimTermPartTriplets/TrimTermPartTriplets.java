@@ -18,7 +18,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
 
-public class TrimTermPartTriplets extends DNADataAlterer   implements AltererDNACell {
+public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNACell {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -96,6 +96,11 @@ public class TrimTermPartTriplets extends DNADataAlterer   implements AltererDNA
 	public boolean showCitation(){
 		return false;
 	}
+	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+   	public boolean requestPrimaryChoice(){
+   		return true;  
+   	}
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Remove Terminal Incomplete Codons";
