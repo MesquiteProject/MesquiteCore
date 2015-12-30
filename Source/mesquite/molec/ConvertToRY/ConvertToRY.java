@@ -20,7 +20,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ConvertToRY extends DNADataAlterer {
+public class ConvertToRY extends DNADataAlterer implements AltererDNACell {
 	MesquiteTable table;
 	DNAState charState = new DNAState();
 

@@ -24,7 +24,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ShuffleStates extends DataAlterer {
+public class ShuffleStates extends DataAlterer implements AltererRandomizations{
 	RandomBetween randomTaxon;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

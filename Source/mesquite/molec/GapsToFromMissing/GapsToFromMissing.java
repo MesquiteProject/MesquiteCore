@@ -22,7 +22,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class GapsToFromMissing extends CategDataAlterer {
+public class GapsToFromMissing extends CategDataAlterer implements AltererConvertGapMissPolyUncert {
 	static final int ALLREGIONS=0;
 	static final int INTERNALREGION=1;
 	static final int TERMINALREGION=2;

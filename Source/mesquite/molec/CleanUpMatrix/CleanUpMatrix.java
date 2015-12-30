@@ -20,7 +20,7 @@ import mesquite.align.lib.*;
  *  
  */
 /* ======================================================================== */
-public class CleanUpMatrix extends CategDataAlterer {
+public class CleanUpMatrix extends CategDataAlterer implements AltererAlignShift {
 	boolean reverseComplementIfNecessary = true;
 	boolean multipleSequenceAlignment = true;
 	int referenceSequence = 1;

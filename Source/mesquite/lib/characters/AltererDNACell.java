@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib.characters;
 
+public interface AltererDNACell {
 
-public interface AltererConvertGapMissPolyUncert   {
-  	 
 }

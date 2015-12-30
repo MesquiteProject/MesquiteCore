@@ -27,7 +27,7 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class ZapGaps extends MolecularDataAlterer {
+public class ZapGaps extends MolecularDataAlterer implements AltererAlignShift {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
