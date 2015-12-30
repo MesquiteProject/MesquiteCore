@@ -602,7 +602,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		while (m != null && m.getMenu() != whichMenu)
 			m = m.getMenu();
 		return m != null;
-		
+
 	}
 	/*.................................................................................................................*/
 	/** Delete indicated menu item. */
@@ -1386,11 +1386,11 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 						boolean compatible = true;
 						if (qualificationsTest != null)
 							compatible = compatible && qualificationsTest.isQualified(mw);
-						
+
 						if (ccc != null) 
 							compatible = compatible && ((CompatibilityChecker)mw).isCompatible(ccc, null, null);
-						
-						
+
+
 						if (compatible) {
 							MesquiteMenuItem m =new MesquiteMenuItem(name, null /*mmi.ownerModule*/, mmi.command, j.toString());
 							m.setHiddenStatus(hiddenStatus);
@@ -1593,9 +1593,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 							OK = qualificationsTest.isQualified(mw);
 						if (ccc != null)
 							OK = OK && ((CompatibilityChecker)mw).isCompatible(ccc, null, null);
-						
+
 						OK = OK &&  ((CompatibilityChecker)mw).isCompatible(msms.getListableFilter(), null, null);
-				}
+					}
 					if (OK){
 						int hiddenStatus = 0;
 						Class moduleClass = null;
@@ -1830,7 +1830,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 
 			Object o = msms.getCompatibilityCheck();
 			QualificationsTest qualificationsTest = msms.getQualificationsTest();
-			
+
 			int count = 0;
 			if (considerPriorities)
 				for (int i=1; i<MAXPRIORITY; i++)
@@ -1937,8 +1937,19 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			if (menuItemsSpecs!=null) {
 				for (int i=0; i<menuItemsSpecs.size(); i++) {
 					MesquiteMenuItemSpec mmi = (MesquiteMenuItemSpec)menuItemsSpecs.elementAt(i);
-
-					if (mmi != null && mmi.whichMenu==null && assignedMenuSpec==null) {
+					boolean useThisMenu = false;
+					if (mmi != null){
+						if (mmi.whichMenu==null)
+							useThisMenu = true;
+						else if (menu instanceof MesquiteMenu){
+							useThisMenu = mmi.whichMenu == ((MesquiteMenu)menu).getSpecification();
+						}
+						else if (menu instanceof MesquitePopup){
+							useThisMenu = mmi.whichMenu == ((MesquitePopup)menu).getSpecification();
+						}
+						useThisMenu = useThisMenu && assignedMenuSpec==null;
+					}
+					if (useThisMenu) {
 						int hiddenStatus = 0;
 						String arg = null;
 						if (mmi.getArgument() != null)

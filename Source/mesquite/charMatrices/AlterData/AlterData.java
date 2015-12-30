@@ -35,6 +35,7 @@ public class AlterData extends DataWindowAssistantI {
 	CharacterData data;
 	MesquiteSubmenuSpec mss= null;
 	MesquiteMenuSpec alterMenu; 
+	MesquiteMenuSpec alterMenu2; 
 	MesquiteCMenuItemSpec bySMmi; 
 
 	//Specify various interfaces here
@@ -50,7 +51,8 @@ public class AlterData extends DataWindowAssistantI {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		qualificationsTest = new OtherAltererQualificationsTest(interfaces);
 		bySubmenus = new MesquiteBoolean(false);
-		alterMenu = addAuxiliaryMenu("Alter");
+		alterMenu = makeMenu("Alter");
+		//alterMenu = addAuxiliaryMenu("Alter");
 		buildMenu();
 
 		//OLD
