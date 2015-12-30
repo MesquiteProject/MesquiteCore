@@ -17,7 +17,6 @@ package mesquite.categ.ResolveStateAmbiguity;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
-
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -25,7 +24,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ResolveStateAmbiguity extends CategDataAlterer implements AltererConvertGapMissPolyUncert {
+public class ResolveStateAmbiguity extends CategDataAlterer {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

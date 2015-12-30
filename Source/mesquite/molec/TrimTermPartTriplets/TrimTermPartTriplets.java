@@ -98,12 +98,12 @@ public class TrimTermPartTriplets extends DNADataAlterer   implements AltererDNA
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim Terminal Incomplete Codons";
+		return "Remove Terminal Incomplete Codons";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Trims any incomplete codons from the start and end of each sequence." ;
+		return "Removes any incomplete codons from the start and end of each sequence." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
