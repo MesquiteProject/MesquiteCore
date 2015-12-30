@@ -15,12 +15,14 @@ public class AlignMultipleSequencesMachine {
 	MultipleSequenceAligner aligner;
 	MolecularData data;
 	MesquiteTable table;
+	CalculationMonitor calculationMonitor;
 	SeparateThreadStorage separateThreadStorage;
 
-	public AlignMultipleSequencesMachine (MesquiteModule ownerModule,SeparateThreadStorage separateThreadStorage, 	MultipleSequenceAligner aligner) {
+	public AlignMultipleSequencesMachine (MesquiteModule ownerModule,SeparateThreadStorage separateThreadStorage, CalculationMonitor calculationMonitor, 	MultipleSequenceAligner aligner) {
 		this.ownerModule = ownerModule;
 	//	this.separateThread = separateThread;
 		this.aligner = aligner;
+		this.calculationMonitor = calculationMonitor;
 		this.separateThreadStorage = separateThreadStorage;
 
 	}
@@ -34,7 +36,7 @@ public class AlignMultipleSequencesMachine {
 		boolean success = AlignUtil.integrateAlignment(alignedMatrix, data,  icStart,  icEnd,  itStart,  itEnd);
 		ownerModule.getProject().decrementProjectWindowSuppression();
 		if (separateThread)
-			ownerModule.fireEmployee(aligner);
+			calculationMonitor.calculationCompleted(this);  // TODO:  this should ideally be in the full control of the module
 		return success;
 	}	
 

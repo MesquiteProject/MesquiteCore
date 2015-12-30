@@ -27,7 +27,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class AlterData extends DataWindowAssistantI implements SeparateThreadStorage {
+public class AlterData extends DataWindowAssistantI implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DataAlterer.class, getName() + " needs a particular method to alter data in the Character Matrix Editor.",
 				"These options are available in the Alter/Transform submenu of the Matrix menu of the Character Matrix Editor");
@@ -41,8 +41,7 @@ public class AlterData extends DataWindowAssistantI implements SeparateThreadSto
 	
 	MultipleSequenceAligner aligner;
 	AlignMultipleSequencesMachine alignmentMachine;
-	static boolean separateThreadDefault = false;
-	boolean separateThread = separateThreadDefault;
+	boolean separateThread = false;
 
 //	MesquiteCMenuItemSpec bySMmi; 
 
@@ -56,6 +55,8 @@ public class AlterData extends DataWindowAssistantI implements SeparateThreadSto
 	MesquiteSubmenuSpec otherInterfaces= null;
 	OtherAltererQualificationsTest qualificationsTest;
 	MesquiteBoolean bySubmenus;
+	boolean jobDone=false;
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		qualificationsTest = new OtherAltererQualificationsTest(interfaces);
@@ -121,8 +122,12 @@ public class AlterData extends DataWindowAssistantI implements SeparateThreadSto
 	public boolean isPrerelease(){
 		return false;
 	}
-	public void setSeparateThread(boolean separateThread){
-		this.separateThread=separateThread;
+	public void calculationCompleted (Object obj) {
+		if (obj.equals(alignmentMachine))
+			fireEmployee(aligner);
+	}
+	public void setSeparateThread(boolean separateThread) {
+		this.separateThread = separateThread;
 	}
 
 	private void addItemsOfInterface(MesquiteMenuSpec menu, Class alterInterface, String title, QualificationsTest qualificationsTest){
@@ -239,7 +244,7 @@ public class AlterData extends DataWindowAssistantI implements SeparateThreadSto
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alignData(CharacterData data, MesquiteTable table){
-		alignmentMachine = new AlignMultipleSequencesMachine(this, this, aligner);
+		alignmentMachine = new AlignMultipleSequencesMachine(this, this, this, aligner);
 		return alignmentMachine.alignData(data,table);
 	}
 

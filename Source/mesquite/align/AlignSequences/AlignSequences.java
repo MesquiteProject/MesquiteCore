@@ -28,14 +28,16 @@ import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public class AlignSequences extends MolecDataEditorInit implements SeparateThreadStorage {
+public class AlignSequences extends MolecDataEditorInit implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
 		"The sequence aligner is chosen in the Align Multiple Sequences submenu of the Matrix menu");
 	}
-	boolean separateThread = AlignMultipleSequencesMachine.separateThread;
+//	boolean separateThread = AlignMultipleSequencesMachine.separateThread;
 	MolecularData data ;
 	MultipleSequenceAligner aligner;
+	boolean jobDone = false;
+	boolean separateThread = false;
 	
 	AlignMultipleSequencesMachine alignmentMachine;
 
@@ -98,14 +100,24 @@ public class AlignSequences extends MolecDataEditorInit implements SeparateThrea
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	public void calculationCompleted (Object obj) {
+		if (obj.equals(alignmentMachine))
+			fireEmployee(aligner);
+	}
+	public void setSeparateThread(boolean separateThread) {
+		this.separateThread = separateThread;
+	}
+
+/*
 	public void setSeparateThread(boolean separateThread){
 		this.separateThread=separateThread;
 	}
-
+*/
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alterData(CharacterData data, MesquiteTable table){
-		alignmentMachine = new AlignMultipleSequencesMachine(this,this, aligner);
+		alignmentMachine = new AlignMultipleSequencesMachine(this,this, this,aligner);
 		return alignmentMachine.alignData(data,table);
 	}
 	/*.................................................................................................................*/
