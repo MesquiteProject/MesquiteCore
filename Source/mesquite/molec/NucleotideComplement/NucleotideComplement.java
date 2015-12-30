@@ -17,6 +17,7 @@ package mesquite.molec.NucleotideComplement;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -24,7 +25,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class NucleotideComplement extends DNADataAlterer {
+public class NucleotideComplement extends DNADataAlterer  implements AltererDNACell {
 	MesquiteTable table;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

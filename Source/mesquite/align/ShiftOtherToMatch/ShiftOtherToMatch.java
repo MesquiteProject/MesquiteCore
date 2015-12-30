@@ -29,7 +29,7 @@ import mesquite.align.lib.*;
 
 
 /* ======================================================================== */
-public class ShiftOtherToMatch extends CategDataAlterer {
+public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlignShift{
 	CharacterState cs1;
 	CharacterState cs2 ;
 	double matchFraction=0.75;

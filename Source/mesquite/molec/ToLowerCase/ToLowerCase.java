@@ -24,7 +24,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ToLowerCase extends DNADataAlterer {
+public class ToLowerCase extends DNADataAlterer implements AltererDNACell {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

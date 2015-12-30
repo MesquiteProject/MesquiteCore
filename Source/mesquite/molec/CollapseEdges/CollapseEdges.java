@@ -18,6 +18,7 @@ import java.util.*;
 import java.lang.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -25,7 +26,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class CollapseEdges extends MolecularDataAlterer {
+public class CollapseEdges extends MolecularDataAlterer implements AltererWholeCharacterAddRemove{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
