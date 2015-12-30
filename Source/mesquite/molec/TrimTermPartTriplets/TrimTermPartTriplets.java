@@ -18,7 +18,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
 
-public class TrimTermPartTriplets extends DNADataAlterer {
+public class TrimTermPartTriplets extends DNADataAlterer   implements AltererDNACell {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

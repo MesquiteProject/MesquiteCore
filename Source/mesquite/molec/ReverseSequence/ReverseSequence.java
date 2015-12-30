@@ -25,7 +25,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ReverseSequence extends DataAltererCon {
+public class ReverseSequence extends DataAltererCon   implements AltererAlignShift {
 
 	public boolean alterBlockInTaxon(CharacterData data, int icStart, int icEnd, int it) {
 		if (data==null)

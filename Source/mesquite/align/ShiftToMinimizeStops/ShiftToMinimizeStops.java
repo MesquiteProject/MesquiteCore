@@ -24,7 +24,7 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class ShiftToMinimizeStops extends DNADataAlterer {
+public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlignShift {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
