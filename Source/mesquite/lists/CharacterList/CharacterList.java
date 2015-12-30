@@ -157,6 +157,10 @@ public class CharacterList extends ListModule {
 			return new UndoInstructions(UndoInstructions.SINGLECHARACTERNAME, row, new MesquiteString(oldName), new MesquiteString(s),data,null);
 	}
 	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return true;
 	}

@@ -74,6 +74,10 @@ public abstract class ListModule extends ManagerAssistant  {
 		return text;
 	}
 	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return false;
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return false;
 	}

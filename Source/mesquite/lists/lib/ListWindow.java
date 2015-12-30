@@ -755,7 +755,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			ownerModule.alert("Columns must be selected before \"Move\" command is given");
 	}
 	void selectedColumnsDropped(int whereToMove, boolean mouseDrop){
-		if (!owner.rowsMovable())   //debugg.println  Why is this rowsMovable and not columnsMovable
+		if (!owner.columnsMovable())  
 			return;
 		if (mouseDrop){
 			for (int ic = 0; ic<table.getNumColumns(); ic++){

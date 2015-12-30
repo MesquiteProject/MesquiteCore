@@ -35,6 +35,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** A vector of the sets of taxa within the project.*/
 	public ListableVector taxas;  
 	/** Vector of data sets (including matrix) within the project. */
+	public ListableVector treeVectors;  
+	/** Vector of tree vectors within the project. */
 	public ListableVector datas;  
 	/** Character models belonging to the project.*/
 	protected ModelVector charModels; 
@@ -85,6 +87,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		taxas.addListener(this);
 		charModels.addListener(this);
 		modelListener = new CentralModelListener();
+		treeVectors = new ListableVector();
 		otherElements = new ListableVector();
 		otherElements.setName("other file elements in project");
 		files = new ListableVector();
@@ -231,13 +234,14 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/*.................................................................................................................*/
 	/** returns the Tree Vectors */
 	public ListableVector getTreeVectors() {
-		ListableVector v = new ListableVector();		
+		return treeVectors;
+		/*ListableVector v = new ListableVector();		
 		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
 			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
 			if (!trees.isDoomed())
 				v.addElement(trees, false);
 		}
-		return v;
+		return v;*/
 	}
 
 	/*.................................................................................................................*/
@@ -284,6 +288,14 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 					list += cR;
 			}
 		}
+		if (treeVectors.size()>0){
+			for (int k = 0; k<treeVectors.size(); k++){
+				FileElement fe = (FileElement)treeVectors.elementAt(k);
+				cR = fe.searchData(s, null);
+				if (!StringUtil.blank(cR))
+					list += cR;
+			}
+		}
 		if (otherElements.size()>0){
 			for (int k = 0; k<otherElements.size(); k++){
 				FileElement fe = (FileElement)otherElements.elementAt(k);
@@ -325,6 +337,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		taxas.dispose();
 		datas.dispose();
 		charModels.dispose();
+		treeVectors.dispose();
 		otherElements.dispose();
 		nexusBlocks.dispose();
 		files = null;
@@ -332,6 +345,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		datas = null;
 		charModels = null;
 		otherElements = null;
+		treeVectors = null;
 		nexusBlocks = null;
 
 		ownerModule = null; // to minimize chance of memory leaks
@@ -527,6 +541,14 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				homeFile.addFileElement(obj);
 			}
 		}
+		enumeration = treeVectors.elements();
+		while (enumeration.hasMoreElements()){
+			FileElement obj = (FileElement)enumeration.nextElement();
+			if (obj.getFile() == file) {
+				obj.setFile(homeFile, false);
+				homeFile.addFileElement(obj);
+			}
+		}
 		enumeration = charModels.elements();
 		while (enumeration.hasMoreElements()){
 			FileElement obj = (FileElement)enumeration.nextElement();
@@ -711,6 +733,11 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				element.addListener(datas);
 			}
 		}
+		else if (element instanceof TreeVector) {
+			if (treeVectors.indexOf(element)<0){
+				treeVectors.addElement(element, true);
+			}
+		}
 		else if (element instanceof CharacterModel) {
 			if (charModels.indexOf(element)<0){
 				charModels.addElement(element, true);
@@ -742,6 +769,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (datas != null) {
 				datas.removeElement(element, true);
 				element.removeListener(datas);
+			}
+			//datas.notifyListenersOfDisposed(element);
+		}
+		else if (element instanceof TreeVector) {
+			if (treeVectors != null) {
+				treeVectors.removeElement(element, true);
+				element.removeListener(treeVectors);
 			}
 			//datas.notifyListenersOfDisposed(element);
 		}
@@ -782,6 +816,16 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				datas.removeAllElements(notify);
 			}
 		}
+		else if (TreeVector.class.isAssignableFrom(c)){
+
+			if (treeVectors != null){
+				for (int i = 0; i< treeVectors.size(); i++){
+					FileElement element = (FileElement)treeVectors.elementAt(i);
+					element.deleteMe(false);
+				}
+				treeVectors.removeAllElements(notify);
+			}
+		}
 		else if (CharacterModel.class.isAssignableFrom(c)) {
 			if (charModels != null){
 				for (int i = 0; i< charModels.size(); i++){
@@ -819,6 +863,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			datas.removeAllElements(notify);
 		}
 
+		if (treeVectors != null){
+			for (int i = 0; i< treeVectors.size(); i++){
+				FileElement element = (FileElement)treeVectors.elementAt(i);
+				element.deleteMe(false);
+			}
+			treeVectors.removeAllElements(notify);
+		}
 		if (charModels != null){
 			for (int i = 0; i< charModels.size(); i++){
 				FileElement element = (FileElement)charModels.elementAt(i);
@@ -849,6 +900,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		else if (CharacterModel.class.isAssignableFrom(c)) {
 			return charModels.size();
 		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			return treeVectors.size();
+		}
 		else {
 			return otherElements.size(c);
 		}
@@ -867,6 +921,11 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			}
 			for (int i=0; i<datas.size(); i++) {
 				FileElement fe = (FileElement)datas.elementAt(i);
+				if (fe.getFile() == f)
+					fe.setDirty(false);
+			}
+			for (int i=0; i<treeVectors.size(); i++) {
+				FileElement fe = (FileElement)treeVectors.elementAt(i);
 				if (fe.getFile() == f)
 					fe.setDirty(false);
 			}
@@ -896,6 +955,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		else if (mesquite.lib.characters.CharacterData.class == c)
 			return datas.getElementArray();
+		else if (TreeVector.class == c)
+			return treeVectors.getElementArray();
 		else if (mesquite.lib.characters.CharacterData.class.isAssignableFrom(c)) {
 			int count =0;
 			for (int i=0; i<datas.size(); i++)
@@ -995,6 +1056,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (i< datas.size())
 				return (FileElement)datas.elementAt(i);
 		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			if (i< treeVectors.size())
+				return (FileElement)treeVectors.elementAt(i);
+		}
 		else if (CharacterModel.class.isAssignableFrom(c)) {
 			if (i< charModels.size())
 				return (FileElement)charModels.elementAt(i);
@@ -1013,6 +1078,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		return null;
 	}
+	
 	/*.................................................................................................................*/
 	/** Returns the index position of the  FileElement among others of its the subclass c.  */
 	public int getFileElementNumber(FileElement f, Class c) {
@@ -1021,6 +1087,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 
 		if (Taxa.class.isAssignableFrom(c)) {
 			return getTaxaNumber((Taxa)f);
+		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			return getTreeVectorNumber((TreeVector)f);
 		}
 		else if (mesquite.lib.characters.CharacterData.class.isAssignableFrom(c)) {
 			return getMatrixNumber((mesquite.lib.characters.CharacterData)f);
@@ -1224,6 +1293,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		if (Taxa.class.isAssignableFrom(c)) {
 			for (int i = 0; i<taxas.size(); i++){
 				FileElement element = (FileElement)taxas.elementAt(i);
+				if (element.getID() == id)
+					return element;
+			}
+		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			for (int i = 0; i<treeVectors.size(); i++){
+				FileElement element = (FileElement)treeVectors.elementAt(i);
 				if (element.getID() == id)
 					return element;
 			}
@@ -1577,6 +1653,18 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return taxas.size();
 	}
 
+	/*.................................................................................................................*/
+	public int getTreeVectorNumber(FileElement f){
+		if (f == null)
+			return -1;
+		for (int i=0; i<treeVectors.size(); i++) {
+			if (((FileElement)treeVectors.elementAt(i)) == f) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	/*.................................................................................................................*/
 	public TreeVector storeTree(MesquiteWindow parent, TreeVector trees, Tree tree, boolean askIfSingleBlock){
 		if (ownerModule == null || tree == null)
 			return null;

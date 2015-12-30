@@ -613,18 +613,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		}
 
 	}
-	public int numMenuItemSpecs(){
-		if (menuItemsSpecs!=null) {
-			return menuItemsSpecs.size();
-		}
-		return 0;
-	}
-	public void dumpMenuItemSpecs(){
-		if (menuItemsSpecs!=null) {
-			for (int i = 0; i< menuItemsSpecs.size(); i++)
-				Debugg.println("   " + ((MesquiteMenuItemSpec)menuItemsSpecs.elementAt(i)).getName());
-		}
-	}
 	/*.................................................................................................................*/
 	/** Delete indicated menu item. */
 	public final void deleteMenuItem(MesquiteMenuItemSpec whichMenuItem){

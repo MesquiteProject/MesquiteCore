@@ -121,6 +121,10 @@ public class TaxonGroupList extends ListModule {
 		super.changed(caller, obj, notification);
 	}
 	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return true;
 	}

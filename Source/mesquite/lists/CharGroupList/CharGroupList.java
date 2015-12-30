@@ -78,6 +78,10 @@ public class CharGroupList extends ListModule {
 		//getModuleWindow().setVisible(true);
 	}
 	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return true;
 	}

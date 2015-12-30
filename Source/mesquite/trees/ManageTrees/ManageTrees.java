@@ -58,7 +58,6 @@ public class ManageTrees extends TreesManager {
 	Vector fillerThreads;  // for the TreeBlockThread and TreeMonitorThreads, to be able to shut them off as needed
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		treesVector = new ListableVector();
 		fillerThreads = new Vector();
 		blockListeners = new Vector();
 		setMenuToUse(MesquiteTrunk.treesMenu);
@@ -69,10 +68,8 @@ public class ManageTrees extends TreesManager {
 	}
 
 	public void elementsReordered(ListableVector v){
-		Debugg.println("elementsReordered ");
 		if (v == treesVector){
-			Debugg.println("elementsReordered xxx");
-		//	NexusBlock.equalizeOrdering(v, getProject().getOtherElements());
+			//NexusBlock.equalizeOrdering(v, getProject().getTreeVectors());
 			NexusBlock.equalizeOrdering(v, getProject().getNexusBlocks());
 		}
 	}
@@ -152,13 +149,14 @@ public class ManageTrees extends TreesManager {
 			Taxa taxa = (Taxa)obj;
 			taxa.removeListener(this);
 			int numSets = treesVector.size();
-			for (int i=0; i<numSets ; i++) {
+			for (int i=numSets-1; i>=0 ; i--) {
 				TreeVector treeBlock = (TreeVector)treesVector.elementAt( i);
 				if (treeBlock!=null && treeBlock.getTaxa()==taxa) {
 					getProject().removeFileElement(treeBlock);//must remove first, before disposing
+					treeBlock.dispose();
 				}
 			}
-
+/*
 			boolean someDeleted = true;
 			while (someDeleted){
 				someDeleted = false;
@@ -171,6 +169,7 @@ public class ManageTrees extends TreesManager {
 					}
 				}
 			}
+			*/
 			resetAllMenuBars();
 
 		}
@@ -222,6 +221,8 @@ public class ManageTrees extends TreesManager {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 
 		taxas = getProject().getTaxas();
+		treesVector = getProject().getTreeVectors(); //new ListableVector();
+
 		taxas.addListener(this);
 		reviseListeners();
 		super.projectEstablished();
