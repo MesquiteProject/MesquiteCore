@@ -587,6 +587,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 	/*.................................................................................................................*/
 	public int getNumMenuItemSpecs(){
+		if (menuItemsSpecs==null)
+			return 0;
 		return menuItemsSpecs.size();
 	}
 	/*.................................................................................................................*/

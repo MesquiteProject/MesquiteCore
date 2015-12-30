@@ -18,6 +18,8 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 
+import mesquite.align.lib.AlignMultipleSequencesMachine;
+import mesquite.align.lib.MultipleSequenceAligner;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
@@ -25,7 +27,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class AlterData extends DataWindowAssistantI {
+public class AlterData extends DataWindowAssistantI implements SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DataAlterer.class, getName() + " needs a particular method to alter data in the Character Matrix Editor.",
 				"These options are available in the Alter/Transform submenu of the Matrix menu of the Character Matrix Editor");
@@ -36,6 +38,12 @@ public class AlterData extends DataWindowAssistantI {
 	MesquiteSubmenuSpec mss= null;
 	MesquiteMenuSpec alterMenu; 
 	MesquiteMenuSpec alterMenu2; 
+	
+	MultipleSequenceAligner aligner;
+	AlignMultipleSequencesMachine alignmentMachine;
+	static boolean separateThreadDefault = false;
+	boolean separateThread = separateThreadDefault;
+
 //	MesquiteCMenuItemSpec bySMmi; 
 
 	//Specify various interfaces here
@@ -82,29 +90,10 @@ public class AlterData extends DataWindowAssistantI {
 			if (asSubmenu[i])
 				addSubmenu(alterMenu, labels[i], makeCommand("doAlter",  this), interfaces[i]);
 		}
-		
 
 		submenu[interfaces.length] = addSubmenu(alterMenu, "Other Alterations", makeCommand("doAlter",  this), DataAlterer.class);
 		submenu[interfaces.length].setQualificationsTest(qualificationsTest);
 
-/*
- * 
- *		if (bySubmenus.getValue()){
-			//SUBMENUS
-			for (int i=0; i< interfaces.length; i++)
-				submenu[i] = addSubmenu(alterMenu, labels[i], makeCommand("doAlter",  this), interfaces[i]);
-			submenu[interfaces.length] = addSubmenu(alterMenu, "Other Alterations", makeCommand("doAlter",  this), DataAlterer.class);
-			submenu[interfaces.length].setQualificationsTest(qualificationsTest);
-		}
-		else {
-		
-			//GROUPS
-			for (int i=0; i< interfaces.length; i++)
-				addItemsOfInterface(alterMenu, interfaces[i], labels[i], null);
-			addItemsOfInterface(alterMenu, DataAlterer.class, "Other Alterations", qualificationsTest);
-		}
-		
-		*/
 	}
 	/*.................................................................................................................*/
 	void setCompatibilityForMatrix(){
@@ -132,12 +121,20 @@ public class AlterData extends DataWindowAssistantI {
 	public boolean isPrerelease(){
 		return false;
 	}
+	public void setSeparateThread(boolean separateThread){
+		this.separateThread=separateThread;
+	}
 
 	private void addItemsOfInterface(MesquiteMenuSpec menu, Class alterInterface, String title, QualificationsTest qualificationsTest){
-		addMenuItem(menu, "-", null);
+		if (getNumMenuItemSpecs()>0)
+			addMenuItem(menu, "-", null);
 		addMenuItem(menu, title, null);
 		MesquiteMenuItemSpec mmis = addModuleMenuItems(menu, makeCommand("doAlter",  this), alterInterface);
 		mmis.setQualificationsTest(qualificationsTest);
+		if (alterInterface==AltererAlignShift.class) {
+			mss = addSubmenu(menu, "Align Multiple Sequences", makeCommand("doAlign",  this));
+			mss.setList(MultipleSequenceAligner.class);
+		}
 	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
@@ -206,6 +203,26 @@ public class AlterData extends DataWindowAssistantI {
 				}
 			}
 		}
+		else 	if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAlign")) {
+			if (table!=null && data !=null){
+				if (data.getEditorInhibition()){
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
+					return null;
+				}
+				aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);
+				if (aligner!=null) {
+					boolean a = alignData(data, table);
+					if (a) {
+						table.repaintAll();
+						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+						data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
+					}
+					if (!separateThread) {
+						fireEmployee(aligner);
+					}
+				}
+			}
+		}
 	 	else if (checker.compare(this.getClass(), "Toggles whether shows by submenus", "[on or off]", commandName, "toggleBySubmenus")) {
 	 		boolean current = bySubmenus.getValue();
 	 		bySubmenus.toggleValue(parser.getFirstToken(arguments));
@@ -219,6 +236,13 @@ public class AlterData extends DataWindowAssistantI {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	/*.................................................................................................................*/
+	/** Called to alter data in those cells selected in table*/
+	public boolean alignData(CharacterData data, MesquiteTable table){
+		alignmentMachine = new AlignMultipleSequencesMachine(this, this, aligner);
+		return alignmentMachine.alignData(data,table);
+	}
+
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Alter Data";
