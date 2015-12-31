@@ -3228,10 +3228,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	public void setLocked(boolean locked) {
 		this.locked = locked;
-		if (locked)
-			Debugg.printStackTrace("|||||||||| data matrix LOCKED "+ getName());
-		else
-			Debugg.println("|||||||||| data matrix UNLOCKED "+ getName());
+		if (MesquiteTrunk.debugMode)
+			if (locked)
+				Debugg.printStackTrace("|||||||||| data matrix LOCKED "+ getName());
+			else
+				Debugg.println("|||||||||| data matrix UNLOCKED "+ getName());
 
 	}
 	/*.................................................................................................................*/
@@ -3241,10 +3242,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*.................................................................................................................*/
 	public void setEditorInhibition(boolean i){
 		inhibitEditor = i;
-		if (inhibitEditor)
-			Debugg.printStackTrace("|||||||||| data matrix INHIBITED " + getName());
-		else
-			Debugg.println("|||||||||| data matrix UNINHIBITED "+ getName());
+		if (MesquiteTrunk.debugMode)
+			if (inhibitEditor)
+				Debugg.printStackTrace("|||||||||| data matrix INHIBITED " + getName());
+			else
+				Debugg.println("|||||||||| data matrix UNINHIBITED "+ getName());
 	}
 	/*.................................................................................................................*/
 	protected void setDirty(boolean d, int ic, int it){
