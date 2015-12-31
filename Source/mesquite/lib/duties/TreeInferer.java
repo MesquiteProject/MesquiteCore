@@ -68,14 +68,13 @@ public abstract class TreeInferer extends TreeBlockFiller {
 			score.setToUnassigned();
 		return null;
 	}
-	public boolean storeLatestTree(){
-		Tree latestTree = getLatestTree(null, null, null);
-		// Wayne: STORE TREE HERE
-		return false;
-	}
 	public boolean canStoreLatestTree(){
 		Tree latestTree = getLatestTree(null, null, null);
 		return latestTree!=null;
+	}
+	
+	public String getTreeBlockName(boolean completedRun){
+		return null;
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {

@@ -76,6 +76,10 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 			 return "";
    	 }
 
+		public String getTreeBlockName(boolean completedRun){
+			return searchTask.getTreeBlockName(completedRun);
+		}
+
   
    	 public boolean canGiveIntermediateResults(){
    		 return searchTask.canGiveIntermediateResults();

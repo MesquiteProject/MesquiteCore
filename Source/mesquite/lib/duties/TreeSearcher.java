@@ -45,6 +45,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
 		 this.treeInferer = treeInferer;
 	 }
 
+	public String getTreeBlockName(boolean completedRun){
+		return null;
+	}
+
 
 	 public String getExtraTreeWindowCommands (){
    		 return "";
