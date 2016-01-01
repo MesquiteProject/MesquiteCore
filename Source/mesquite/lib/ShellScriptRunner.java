@@ -100,6 +100,14 @@ public class ShellScriptRunner implements Commandable  {
 			lastModified[i]=0;
 	}
 	/*.................................................................................................................*/
+	public void stopExecution(){
+		if (proc!=null)
+			if (MesquiteTrunk.isJavaVersionLessThan(1.8))
+				proc.destroy();
+			else
+				proc.destroyForcibly();
+	}
+	/*.................................................................................................................*/
 	public void processOutputFiles(){
 		if (outputFileProcessor!=null && outputFilePaths!=null && lastModified !=null) {
 			String[] paths = outputFileProcessor.modifyOutputPaths(outputFilePaths);

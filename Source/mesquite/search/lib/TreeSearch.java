@@ -56,6 +56,16 @@ public abstract class TreeSearch extends TreeInferer implements Incrementable {
 		}
 		return getName();
 	}
+	public boolean stopInference(){
+		searchTask.stopInference();
+		return true;
+	}
+
+	public void abortFilling(){
+		stopInference();
+		abort = true;
+	}
+
    	public Reconnectable getReconnectable(){
    		if (searchTask instanceof Reconnectable)
    			return (Reconnectable)searchTask;
