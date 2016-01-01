@@ -5217,6 +5217,50 @@ class BasicTreeStatisticsPanel extends TreeInfoExtraPanel {
 		statsBox.setString(treeStats);
 		statsBox.draw(g,4, MINHEIGHT);
 	}
+}/*===========================================*/
+
+class TreeSourceInfoPanel extends TreeInfoExtraPanel {
+	StringInABox statsBox;
+	String treeSourceInfo = null;
+	int neededHeight = 20;
+	BasicTreeWindow w;
+	public TreeSourceInfoPanel(ClosablePanelContainer container, BasicTreeWindow w){
+		super(container, "Tree Source");
+		this.w=w;
+		statsBox =  new StringInABox("", null, 50);
+		setOpen(true);
+	}
+	public void setTree(Tree tree){
+		super.setTree(tree);
+		adjustMessage();
+		container.requestHeightChange(this);
+		repaint();
+	}
+	void adjustMessage(){
+		if (tree == null)
+			treeSourceInfo = "";
+		else {
+			TreeSource treeSourceTask = w.treeSourceTask;
+			treeSourceInfo=treeSourceTask.getTreeSourceInfo(tree.getTaxa());
+		}
+	}
+	public int getRequestedHeight(int width){
+		if (!isOpen())
+			return MINHEIGHT;
+		statsBox.setFont(getFont());
+		statsBox.setString(treeSourceInfo);
+		statsBox.setWidth(width-4);
+		neededHeight = statsBox.getHeight();
+		return neededHeight + MINHEIGHT;
+	}
+	public void paint(Graphics g){
+		super.paint(g);
+		//g.drawString("hello", 8, MINHEIGHT+20);
+		statsBox.setWidth(getBounds().width-4);
+		statsBox.setFont(g.getFont());
+		statsBox.setString(treeSourceInfo);
+		statsBox.draw(g,4, MINHEIGHT);
+	}
 }
 /*===========================================*/
 class BranchInfoPanel extends TreeInfoExtraPanel {
@@ -5330,6 +5374,7 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 	Image add = null;
 	BasicTreeStatisticsPanel btsp;
 	BranchInfoPanel ap;
+	TreeSourceInfoPanel tsp;
 
 	public TreeInfoPanel (BasicTreeWindow w){
 		super();
@@ -5338,6 +5383,7 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 		setLayout(null);
 		addExtraPanel(btsp = new BasicTreeStatisticsPanel(this));
 		addExtraPanel(ap = new BranchInfoPanel(this));
+		addExtraPanel(tsp = new TreeSourceInfoPanel(this, w));
 		setBackground(ColorDistribution.veryLightGray);
 		setFont(new Font("SansSerif", Font.PLAIN, 12));
 		titleFont = new Font("SansSerif", Font.BOLD, 12);

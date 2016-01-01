@@ -77,7 +77,14 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public boolean isPrerelease(){
 		return false;
 	}
-	
+	/*.................................................................................................................*/
+	 /**Returns info to show in info panel etc. for tree block or source of trees.*/
+	public String getTreeSourceInfo(Taxa taxa){
+		String s = getName();
+		s+="\n" + currentTreeBlock.getAnnotation();
+		return s;
+	}
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
