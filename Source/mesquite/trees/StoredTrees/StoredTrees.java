@@ -80,6 +80,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	/*.................................................................................................................*/
 	 /**Returns info to show in info panel etc. for tree block or source of trees.*/
 	public String getTreeSourceInfo(Taxa taxa){
+		if (currentTreeBlock == null)
+			return null;
 		String s = getName();
 		s+="\n" + currentTreeBlock.getAnnotation();
 		return s;
