@@ -3250,10 +3250,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*.................................................................................................................*/
 	public void setEditorInhibition(boolean i){
-		if (i)
-			inhibitEdit=1;
-		else
+		if (!isEditInhibited() && i) // wasn't inhibited, so need to make it so.
+			incrementEditInhibition();
+		else if (isEditInhibited() && !i){  // was inhibited, so need to turn it off
 			inhibitEdit=0;
+			notifyListeners(this, new Notification(MesquiteListener.LOCK_CHANGED, null,null));
+		}
 	}
 	/*.................................................................................................................*/
 	protected void setDirty(boolean d, int ic, int it){

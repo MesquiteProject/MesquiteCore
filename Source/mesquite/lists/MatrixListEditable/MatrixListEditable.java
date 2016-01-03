@@ -44,7 +44,7 @@ public class MatrixListEditable extends DataSetsListAssistant implements Mesquit
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Allow Editing", makeCommand("unlockMatrix", this));
-		addMenuItem("Disallow Editing", makeCommand("lockMatrix", this));
+		addMenuItem("Inhibit Editing", makeCommand("lockMatrix", this));
 		return true;
 	}
 	MesquiteTable table;
