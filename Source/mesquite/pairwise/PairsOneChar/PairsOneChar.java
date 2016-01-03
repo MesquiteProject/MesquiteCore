@@ -299,7 +299,8 @@ class OneCharTaxaPairer extends TaxaPairerChars {
 		for (int i = 0; i< legality.length; i++)
 			legality[i] = MesquiteTree.LEGAL;
 		warningMessage = "";
-		setLegality(tree.getRoot(), tree);
+		if (observedStates != null)
+			setLegality(tree.getRoot(), tree);
 	}
 
 	/*.................................................................................................................*/
