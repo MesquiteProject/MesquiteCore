@@ -78,7 +78,7 @@ public class SortChar extends DataWindowAssistantI {
     	 	if (checker.compare(this.getClass(),  "Touches on a cell with the sort characters tool", "[column touched][row touched]", commandName, "charSortTouch")) {
 	   	 		if (data == null)
 	   	 			return null;
-	    	 	if (data.getEditorInhibition()){
+	    	 	if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 	    	 		return null;
 	    	 	}

@@ -117,7 +117,7 @@ public class DataPainter extends DataWindowAssistantI {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Fill touched cell or selected cells with current paint states", "[column touched] [row touched]", commandName, "fillTouchCell")) {
 			if (table!=null && data !=null){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -151,7 +151,7 @@ public class DataPainter extends DataWindowAssistantI {
 		}
 		else if (checker.compare(this.getClass(), "Tracking paint bucket as it is dragged.", "[column dragged] [row dragged]", commandName, "fillDragCell")) {
 			if (table!=null && data !=null && (firstColumnTouched>=0)&& (firstRowTouched>=0)){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -167,7 +167,7 @@ public class DataPainter extends DataWindowAssistantI {
 		}
 		else if (checker.compare(this.getClass(), "Filling cells with paint after the paint bucket is no longer dragged.", "[column dropped] [row dropped]", commandName, "fillDropCell")) {
 			if (table!=null && data !=null && (firstColumnTouched>=0)&& (firstRowTouched>=0)){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -181,7 +181,7 @@ public class DataPainter extends DataWindowAssistantI {
 		}
 		else if (checker.compare(this.getClass(), "Queries the user for the paint states", null, commandName, "touchTool")) {
 			if (table!=null && data !=null){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -201,7 +201,7 @@ public class DataPainter extends DataWindowAssistantI {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Queries the user what paint to use", null, commandName, "fillOptions")) {
-			if (data.getEditorInhibition()){
+			if (data.isEditInhibited()){
 				discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 				return null;
 			}
@@ -218,7 +218,7 @@ public class DataPainter extends DataWindowAssistantI {
 		}
 		else if (checker.compare(this.getClass(), "Sets the paint states to those in the cell touched", "[column touched] [row touched]", commandName, "dropperTouchCell")) {
 			if (table!=null && data !=null && fillTool != null && dropperTool != null){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}

@@ -64,7 +64,7 @@ public abstract class DataAlterer extends MesquiteModule  {
    	at a time, independent of all other cells.  If the altering procedure involves dependencies between cells,
    	then a different method must be built.  */
    	public boolean alterContentOfCells(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference){
-   		if (data.getEditorInhibition()){
+   		if (data.isEditInhibited()){
 			discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
    			return false;
    		}

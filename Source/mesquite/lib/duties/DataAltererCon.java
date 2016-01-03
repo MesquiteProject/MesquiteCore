@@ -29,7 +29,7 @@ import mesquite.lib.table.*;
 
 	 /** Called to alter data in those cells selected in table*/
 	 public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
-		 if (data.getEditorInhibition()){
+		 if (data.isEditInhibited()){
 				discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 			 return false;
 		 }

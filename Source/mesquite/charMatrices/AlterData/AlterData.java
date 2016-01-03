@@ -180,7 +180,7 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hires module to alter the data matrix", "[name of module]", commandName, "doAlter")) {
 			if (table!=null && data !=null){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -210,7 +210,7 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 		}
 		else 	if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAlign")) {
 			if (table!=null && data !=null){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}

@@ -158,7 +158,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		if (checker.compare(this.getClass(), "AlignToDropped tool touched on row.", "[column touched] [row touched]", commandName, "alignDropTouched")) {
 			if (table!=null && data !=null){
 				alignJustTouchedRow = true;
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -184,7 +184,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		}
 		else if (checker.compare(this.getClass(), "AlignToDropped tool dragged.", "[column dragged] [row dragged]", commandName, "alignDropDragged")) {
 			if (table!=null && data !=null && (firstRowTouched>=0)){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -200,7 +200,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 
 			if (table!=null && data !=null && (firstRowTouched>=0)){
 				//	table.deEmphasizeRow(previousRowDragged);
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}

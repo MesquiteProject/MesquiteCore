@@ -118,7 +118,7 @@ public class Taxa extends FileElement {
 	/*.................................................................................................................*/
 	public void decrementEditInhibition(){
 		inhibitEdit--;
-		if (inhibitEdit == 0)
+		if (inhibitEdit < 0)
 			inhibitEdit = 0;
 	}
 	public boolean isEditInhibited(){

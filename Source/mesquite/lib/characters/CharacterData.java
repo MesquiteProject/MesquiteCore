@@ -92,7 +92,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	private boolean userVisible = true;
 	private boolean inhibitEditor = false;
-	private boolean locked = false;
+//	private boolean locked = false;
 
 	public String problemReading = null;
 	private boolean checksumValid = false;
@@ -3222,31 +3222,38 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void setUserVisible(boolean userVisible) {
 		this.userVisible = userVisible;
 	}
-	/*.................................................................................................................*/
-	public boolean isLocked() {
-		return locked;
-	}
-	public void setLocked(boolean locked) {
-		this.locked = locked;
-		if (MesquiteTrunk.debugMode)
-			if (locked)
-				Debugg.printStackTrace("|||||||||| data matrix LOCKED "+ getName());
-			else
-				Debugg.println("|||||||||| data matrix UNLOCKED "+ getName());
 
+	private int inhibitEdit = 0;
+	/*.................................................................................................................*/
+	public void incrementEditInhibition(){
+		boolean sendNotification = inhibitEdit==0;
+		inhibitEdit++;
+		if (sendNotification)
+			notifyListeners(this, new Notification(MesquiteListener.LOCK_CHANGED, null,null));
 	}
 	/*.................................................................................................................*/
+	public void decrementEditInhibition(){
+		boolean sendNotification = inhibitEdit>0;
+		inhibitEdit--;
+		if (inhibitEdit < 0)
+			inhibitEdit = 0;
+		if (sendNotification && inhibitEdit==0)
+			notifyListeners(this, new Notification(MesquiteListener.LOCK_CHANGED, null,null));
+	}
+	public boolean isEditInhibited(){
+		return inhibitEdit>0;
+	}
+
+	/*.................................................................................................................*
 	public boolean getEditorInhibition(){
-		return inhibitEditor || locked;
+		return inhibitEditor;
 	}
 	/*.................................................................................................................*/
 	public void setEditorInhibition(boolean i){
-		inhibitEditor = i;
-		if (MesquiteTrunk.debugMode)
-			if (inhibitEditor)
-				Debugg.printStackTrace("|||||||||| data matrix INHIBITED " + getName());
-			else
-				Debugg.println("|||||||||| data matrix UNINHIBITED "+ getName());
+		if (i)
+			inhibitEdit=1;
+		else
+			inhibitEdit=0;
 	}
 	/*.................................................................................................................*/
 	protected void setDirty(boolean d, int ic, int it){
@@ -3599,7 +3606,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		Snapshot temp = super.getSnapshot(file);
 		if (temp == null)
 			temp = new Snapshot();
-		if (getEditorInhibition()){
+		if (isEditInhibited()){
 			temp.addLine("inhibitEditing");
 		}
 		if (!isUserVisible())
@@ -3611,10 +3618,10 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets editor inhibition", null, commandName, "inhibitEditing")) {
-			setEditorInhibition(true);
+			incrementEditInhibition();
 		}
 		else if (checker.compare(this.getClass(), "Sets editor inhibition to false", null, commandName, "uninhibitEditing")) {
-			setEditorInhibition(false);
+			decrementEditInhibition();
 		}
 		else if (checker.compare(this.getClass(), "Sets user visibility to false", null, commandName, "setHidden")) {
 			setUserVisible(false);
