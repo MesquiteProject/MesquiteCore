@@ -76,6 +76,12 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 	/*.................................................................................................................*/
 	public void setOptionTools(){
 	}
+	/* ................................................................................................................. */
+	public void inhibitionChanged(){
+		if (moveTool!=null && data!=null)
+			moveTool.setEnabled(!data.isEditInhibited());
+	}
+
 	/*.................................................................................................................*/
 	public boolean canMoveLeft(){
 		if (leftCellBlock==null || rightCellBlock==null)
@@ -117,6 +123,8 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 		rightCellBlock = new CellBlock((CategoricalData)data, table);
 		rightCellBlock.setRight(true);
 		rightCellBlock.setLeft(false);
+		data.addListener(this);
+		inhibitionChanged();
 
 	}
 	/*.................................................................................................................*/

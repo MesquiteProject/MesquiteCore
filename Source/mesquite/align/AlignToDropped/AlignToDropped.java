@@ -20,6 +20,7 @@ import mesquite.align.lib.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.*;
 import mesquite.lib.duties.*;
 
@@ -115,6 +116,25 @@ public class AlignToDropped extends DataWindowAssistantI {
 		alphabetLength = ((CategoricalState)data.makeCharacterState()).getMaxPossibleState()+1;	 
 		if (subs==null)
 			subs = AlignUtil.getDefaultSubstitutionCosts(alphabetLength); 
+		data.addListener(this);
+		inhibitionChanged();
+	}
+	/* ................................................................................................................. */
+	void inhibitionChanged(){
+		if (alignDropTool!=null && data!=null)
+			alignDropTool.setEnabled(!data.isEditInhibited() && data.canMoveChars());
+	}
+	/* ................................................................................................................. */
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
+	public void changed(Object caller, Object obj, Notification notification) {
+		int code = Notification.getCode(notification);
+		if (obj instanceof CharacterData && (CharacterData) obj == data) {
+			if (code == MesquiteListener.LOCK_CHANGED) {
+				inhibitionChanged();
+			}
+		}
+		table.setMessage(data.getCellContentsDescription());
+		super.changed(caller, obj, notification);
 	}
 
 	/*.................................................................................................................*/

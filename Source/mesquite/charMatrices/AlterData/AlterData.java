@@ -147,6 +147,8 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 		this.data = data;
 		setCompatibilityForMatrix();
 		resetContainingMenuBar();
+		if (data!=null)
+			data.addListener(this);
 
 	}
 

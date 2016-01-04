@@ -3243,6 +3243,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean isEditInhibited(){
 		return inhibitEdit>0;
 	}
+	public int inhibitionLevels(){
+		return inhibitEdit;
+	}
 
 	/*.................................................................................................................*
 	public boolean getEditorInhibition(){
@@ -3609,7 +3612,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (temp == null)
 			temp = new Snapshot();
 		if (isEditInhibited()){
-			temp.addLine("inhibitEditing");
+			temp.addLine("inhibitEditing "+inhibitionLevels());
 		}
 		if (!isUserVisible())
 			temp.addLine("setHidden");
@@ -3619,8 +3622,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets editor inhibition", null, commandName, "inhibitEditing")) {
-			incrementEditInhibition();
+		if (checker.compare(this.getClass(), "Sets editor inhibition",  "[inhibition levels]", commandName, "inhibitEditing")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int levels= MesquiteInteger.fromString(arguments, io);
+			if (MesquiteInteger.isCombinable(levels) && levels>0) {
+				for (int i = 0; i<levels; i++)
+					incrementEditInhibition();
+			} else
+				incrementEditInhibition();
 		}
 		else if (checker.compare(this.getClass(), "Sets editor inhibition to false", null, commandName, "uninhibitEditing")) {
 			decrementEditInhibition();

@@ -21,6 +21,7 @@ import java.awt.Graphics;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
@@ -108,6 +109,23 @@ public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {
 
 	public void initialize(MesquiteTable table, CharacterData data) {
 		currentBlock = new CellBlock((CategoricalData)data, table);
+		data.addListener(this);
+		inhibitionChanged();
+	}
+	/* ................................................................................................................. */
+	public void inhibitionChanged(){
+	}
+	/* ................................................................................................................. */
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
+	public void changed(Object caller, Object obj, Notification notification) {
+		int code = Notification.getCode(notification);
+		if (obj instanceof CharacterData && (CharacterData) obj == data) {
+			if (code == MesquiteListener.LOCK_CHANGED) {
+				inhibitionChanged();
+			}
+		}
+		table.setMessage(data.getCellContentsDescription());
+		super.changed(caller, obj, notification);
 	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){

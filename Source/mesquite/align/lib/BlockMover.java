@@ -197,9 +197,7 @@ public abstract class BlockMover extends DataWindowAssistantI {
 	/* ................................................................................................................. */
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
 	public void changed(Object caller, Object obj, Notification notification) {
-		UndoReference undoReference = Notification.getUndoReference(notification);
 		int code = Notification.getCode(notification);
-		int[] parameters = Notification.getParameters(notification);
 		if (obj instanceof CharacterData && (CharacterData) obj == data) {
 			if (code == MesquiteListener.LOCK_CHANGED) {
 				inhibitionChanged();
