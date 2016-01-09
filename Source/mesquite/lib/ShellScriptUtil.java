@@ -141,18 +141,18 @@ public class ShellScriptUtil  {
 			String[] pathArray = null;
 			if (MesquiteTrunk.isMacOSX()){
 				if (visibleTerminal) {
-                    pathArray = new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath};
+					pathArray = new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath};
 				}
 				else {
 					scriptPath = scriptPath.replaceAll("//", "/");
-                   	pathArray = new String[] {scriptPath};
+					pathArray = new String[] {scriptPath};
 				}
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
-               	pathArray = new String[] {scriptPath};
-				proc = Runtime.getRuntime().exec(pathArray);
+				pathArray = new String[] {scriptPath};
+				//proc = Runtime.getRuntime().exec(pathArray);
 			} else {
 				scriptPath = "\"" + scriptPath + "\"";
 				pathArray = new String[] {"cmd", "/c", scriptPath};
@@ -162,11 +162,12 @@ public class ShellScriptUtil  {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;
 		}
-		if (proc != null) {
+		if (proc != null) { /*
 			StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
 			StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), "OUTPUT");
 			errorGobbler.start();
 			outputGobbler.start();
+		 */
 		}
 		return proc;
 	}
@@ -296,30 +297,5 @@ public class ShellScriptUtil  {
 
 
 
-}
-
-class StreamGobbler extends Thread {
-	InputStream is;
-
-	String type;
-
-	StreamGobbler(InputStream is, String type) {
-		this.is = is;
-		this.type = type;
-	}
-
-	public void run() {
-		try {
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				System.out.println(type + ": " + line);
-
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-	}
 }
 
