@@ -254,6 +254,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 		}
 	}
+	
 	/*.................................................................................................................*/
 
 	public String preparePreferencesForXML () {
@@ -277,7 +278,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			return false;
 		return basicTreeWindow.treeEdited;
 	}
-
 	/*....................................................THIS SHOULD not normally be called within Mesquite.  It is here for use of Mesquite as library, e.g. for R-java.............................................................*/
 	public void showTree(Tree tree){
 		if (basicTreeWindow==null)
@@ -425,6 +425,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				basicTreeWindow.hideTree();
 			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, arguments, "Source of trees", treeSourceTask);
 			if (temp !=null){
+				if (treeSourceTask != null)
+					treeSourceTask.doCommand("laxOff", null, checker);
+				editMode = false;
+				if (basicTreeWindow != null)
+					basicTreeWindow.editedByHand = false;
 				treeSourceTask = temp;
 				//					treeSourceTask.setHiringCommand(makeCommand("setTreeSource",  this));
 				treeSourceName.setValue(treeSourceTask.getName());
