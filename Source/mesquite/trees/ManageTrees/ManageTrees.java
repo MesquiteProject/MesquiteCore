@@ -69,7 +69,6 @@ public class ManageTrees extends TreesManager {
 
 	public void elementsReordered(ListableVector v){
 		if (v == treesVector){
-			//NexusBlock.equalizeOrdering(v, getProject().getTreeVectors());
 			NexusBlock.equalizeOrdering(v, getProject().getNexusBlocks());
 		}
 	}
@@ -198,6 +197,7 @@ public class ManageTrees extends TreesManager {
 	/** A method called immediately after the file has been read in.*/
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
+		treesVector = getProject().getTreeVectors(); //new ListableVector();
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "List of Trees", makeCommand("showTrees",  this), treesVector);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
@@ -221,7 +221,6 @@ public class ManageTrees extends TreesManager {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 
 		taxas = getProject().getTaxas();
-		treesVector = getProject().getTreeVectors(); //new ListableVector();
 
 		taxas.addListener(this);
 		reviseListeners();
