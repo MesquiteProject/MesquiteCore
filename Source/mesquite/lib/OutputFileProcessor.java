@@ -17,7 +17,7 @@ public interface OutputFileProcessor extends OutputFilePathModifier {
 	
 	public void processOutputFile(String[] outputFilePaths, int fileNum);
 	
+/** This method processes completed output files */
 	public void processCompletedOutputFiles(String[] outputFilePaths);
 	
-
 }
