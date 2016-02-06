@@ -80,7 +80,7 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
    	/** Called to operate on the tree blocks.  Returns true if tree blocks altered*/
    	public boolean operateOnTreeBlocks(TreeVector[] blocks){
    		if (blocks == null || blocks.length <=1 || blocks[0]==null) {
-   			alert("Sorry, no tree blocks are were chosen or available for concatenation.");
+   			alert("Sorry, no tree blocks were chosen or available for concatenation.");
    			return false;
    		}
 		if (!queryOptions())
