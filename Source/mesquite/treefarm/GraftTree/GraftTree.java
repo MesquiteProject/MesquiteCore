@@ -138,7 +138,11 @@ public class GraftTree extends TreeAltererMult {
 			return false;
 		}
  		int node;
-		if (taxa.numberSelected() ==1 && tree.taxonInTree(taxa.firstSelected())){  
+ 		if (tree.anySelected()) {
+			node = tree.insertNode(tree.getFirstSelected(tree.getRoot()), false);
+			node = tree.sproutDaughter(node, false);
+ 		}
+ 		else if (taxa.numberSelected() ==1 && tree.taxonInTree(taxa.firstSelected())){  
 			//node = tree.nodeOfTaxonNumber(taxa.firstSelected());
 			node = tree.insertNode(tree.nodeOfTaxonNumber(taxa.firstSelected()), false);
 			node = tree.sproutDaughter(node, false);
@@ -151,7 +155,10 @@ public class GraftTree extends TreeAltererMult {
 			return false;
 
 		if (removeSelectedNode) {
-			if (taxa.numberSelected() ==1 && tree.taxonInTree(taxa.firstSelected())){  
+			if (tree.anySelected()){
+				tree.deleteClade(tree.getFirstSelected(tree.getRoot()),false);
+			}
+			else if (taxa.numberSelected() ==1 && tree.taxonInTree(taxa.firstSelected())){  
 				tree.deleteClade(tree.nodeOfTaxonNumber(taxa.firstSelected()), false);
 			} else {
 				tree.deleteClade(tree.mrcaSelected(),false);
