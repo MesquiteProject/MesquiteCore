@@ -2179,6 +2179,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return mrca(nodes, false);
 	}
 	/*-----------------------------------------*/
+	/** Returns most recent common ancestor for the selected taxa.*/
+	public int mrcaSelected(){
+		return mrca(taxa.getSelectedBits());
+	}
+	/*-----------------------------------------*/
 	/** Returns most recent common ancestor for an array of nodes; if boolean ignoreMissing = false, it 
 	 * will only return a non-zero (existing) node if all the nodes in the array are present in the 
 	 * tree.  If ignoreMissing = true, it will return the mrca of those nodes passed in the node array

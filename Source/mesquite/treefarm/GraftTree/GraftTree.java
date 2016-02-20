@@ -24,12 +24,16 @@ public class GraftTree extends TreeAltererMult {
 	public String getName() {
 		return "Graft Other Tree";
 	}
+	public String getNameForMenuItem() {
+		return "Graft Other Tree...";
+	}
 	public String getExplanation() {
 		return "Grafts a tree in a tree window onto given tree; requires that the other tree includes none of the same terminal taxa.  If a taxon in receiving tree is selected, graft occurs there; otherwise, graft occurs at root." ;
 	}
 	OneTreeSource currentTreeSource;
 	int[] termsG = null;
 	String graftTreeDescription = null;
+	boolean removeSelectedNode = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		currentTreeSource = (OneTreeSource)hireCompatibleEmployee(OneTreeSource.class, new MesquiteBoolean(false), "Source of tree to be modified");
@@ -87,8 +91,37 @@ public class GraftTree extends TreeAltererMult {
 		return false;
 	}
 	/*.................................................................................................................*/
+	public boolean queryOptions(boolean singleTerminalSelected) {
+//		if (!singleTerminalSelected)
+//			return true;
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
+			return true;
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Graft Tree Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Graft Tree Options");
+
+		Checkbox deleteSelectedNode = null;
+		
+		if (singleTerminalSelected)
+			deleteSelectedNode = dialog.addCheckBox("delete selected terminal taxon in original tree", removeSelectedNode);
+		else
+			deleteSelectedNode= dialog.addCheckBox("delete selected clade in original tree", removeSelectedNode);
+		
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			removeSelectedNode = deleteSelectedNode.getState();
+		}
+		dialog.dispose();
+		parser.setPosition(0);
+		return (buttonPressed.getValue()==0) ;
+	}	
+	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
+
 		Taxa taxa = tree.getTaxa();
+		if (!queryOptions(taxa.numberSelected()==1))
+				return false;
+		
 		if (getHiredAs() != TreeAltererMult.class || graftTreeDescription == null){  // if mult, use last one saved
 			Tree t =  currentTreeSource.getTree(taxa);
 			if (t == null)
@@ -111,11 +144,19 @@ public class GraftTree extends TreeAltererMult {
 			node = tree.sproutDaughter(node, false);
 		}
 		else {
-			node = tree.insertNode(tree.getRoot(), false);
+			node = tree.insertNode(tree.mrcaSelected(), false);
 			node = tree.sproutDaughter(node, false);
 		}
 		if (!tree.graftCladeFromDescription(graftTreeDescription, node, new MesquiteInteger(0), null))
 			return false;
+
+		if (removeSelectedNode) {
+			if (taxa.numberSelected() ==1 && tree.taxonInTree(taxa.firstSelected())){  
+				tree.deleteClade(tree.nodeOfTaxonNumber(taxa.firstSelected()), false);
+			} else {
+				tree.deleteClade(tree.mrcaSelected(),false);
+			}
+		}
 
 		if (notify && tree instanceof Listened) ((Listened)tree).notifyListeners(this, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 		return true;
