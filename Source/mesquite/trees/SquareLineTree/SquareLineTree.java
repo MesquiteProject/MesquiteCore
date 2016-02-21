@@ -310,6 +310,32 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		}
 	}
 
+	public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
+		if(tree==null || xValue==null || yValue==null)
+			return;
+		if(!tree.nodeExists(N))
+			return;
+		int mother = tree.motherOfNode(N);
+		int daughter = tree.firstDaughterOfNode(N);
+		if(treeDisplay.getOrientation()==TreeDisplay.UP){
+			xValue.setValue(x[daughter]);
+			yValue.setValue(y[mother]+(y[daughter]-y[mother])/2);
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){
+			xValue.setValue(x[daughter]);
+			yValue.setValue(y[mother]+(y[mother]-y[daughter])/2);
+		}
+		else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
+		//	int offset = (x[N]-x[mother])/2;
+			xValue.setValue(x[mother]+(x[daughter]-x[mother])/2);
+			yValue.setValue(y[daughter]);
+		}
+		else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){
+			xValue.setValue(x[daughter]+(x[mother]-x[daughter])/2);
+			yValue.setValue(y[daughter]);
+		}
+	}
+
 	/*_________________________________________________*/
 	public int getNodeValueTextBaseX(int node, int edgewidth, int stringwidth, int fontHeight, boolean horizontalText){
 		int bX =x[node];

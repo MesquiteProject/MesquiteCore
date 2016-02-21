@@ -703,8 +703,17 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 			int nA = tree.depthToAncestor(N, bA);
 			int nD = tree.depthToAncestor(bD, N);
-			treeDrawing.x[N]=propAverage(treeDrawing.x[bD], treeDrawing.x[bA], nD, nA+nD);
-			treeDrawing.y[N]=propAverage(treeDrawing.y[bD], treeDrawing.y[bA], nD, nA+nD);
+			
+			MesquiteNumber xValue=new MesquiteNumber();
+			MesquiteNumber yValue=new MesquiteNumber();
+			MesquiteDouble angle = new MesquiteDouble();
+			treeDrawing.getSingletonLocation(tree, N,  xValue,  yValue);
+			treeDrawing.x[N]=xValue.getIntValue();
+			treeDrawing.y[N]=yValue.getIntValue();
+
+				
+		//	treeDrawing.x[N]=propAverage(treeDrawing.x[bD], treeDrawing.x[bA], nD, nA+nD);
+		//	treeDrawing.y[N]=propAverage(treeDrawing.y[bD], treeDrawing.y[bA], nD, nA+nD);
 		}
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			placeSingletons(treeDrawing, tree, d);
