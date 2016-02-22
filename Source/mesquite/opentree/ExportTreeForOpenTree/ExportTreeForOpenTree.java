@@ -85,7 +85,10 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 
 	public boolean getExportOptions(TreeVector trees){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export NEXUS Trees file", buttonPressed);
+		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export tree file for Open Tree", buttonPressed);
+		String helpString = "This will save a tree file ready to be uploaded into Open Tree (opentreeoflife.org).  It will optionally convert node values "+
+		"such as consensus frequences as branch lengths (as that is how Open Tree imports support values for branches).";
+		exportDialog.appendToHelpString(helpString);
 		exportDialog.setSuppressLineEndQuery(true);
 		exportDialog.setDefaultButton(null);
 		Checkbox convertToBranchLengthsBox = exportDialog.addCheckBox("convert node values to branch lengths", convertToBranchLengths);
@@ -159,6 +162,8 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 			tree.setBranchLength(node, value, false);
 		else
 			tree.setBranchLength(node, MesquiteDouble.unassigned, false);
+		if (tree instanceof MesquiteTree)
+			((MesquiteTree)tree).setAssociatedDouble(nr, node, MesquiteDouble.unassigned);
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
 			visitNodes(d, tree, nr);
 	}
@@ -168,25 +173,29 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 			return false;
 		ListableVector v = new ListableVector();
 		int num = tree.getNumberAssociatedDoubles();
-		boolean[] shown = new boolean[num]; //bigger than needed probably
-		for (int i = 0; i< num; i++){
-			DoubleArray da = tree.getAssociatedDoubles(i);
-			if (da != null)
-				v.addElement(new MesquiteString(da.getName(), ""), false);
-		}
-		Listable result = ListDialog.queryList(containerOfModule(), "Choose attached value", "Choose attached value to transfer to branch lengths", null, v, 0);
-		if (result != null){
-			MesquiteString name = (MesquiteString)result;
-			String sName = name.getName();
-			NameReference nr = NameReference.getNameReference(sName);
-
+		if (num==1) {
+			DoubleArray da = tree.getAssociatedDoubles(0);
+			NameReference nr = NameReference.getNameReference(da.getName());
 			visitNodes(tree.getRoot(), tree, nr);
-
 			return true;
+		} else if (num>1){
+			boolean[] shown = new boolean[num]; //bigger than needed probably
+			for (int i = 0; i< num; i++){
+				DoubleArray da = tree.getAssociatedDoubles(i);
+				if (da != null)
+					v.addElement(new MesquiteString(da.getName(), ""), false);
+			}
+			Listable result = ListDialog.queryList(containerOfModule(), "Choose attached value", "Choose attached value to transfer to branch lengths", null, v, 0);
+			if (result != null){
+				MesquiteString name = (MesquiteString)result;
+				String sName = name.getName();
+				NameReference nr = NameReference.getNameReference(sName);
+
+				visitNodes(tree.getRoot(), tree, nr);
+
+				return true;
+			}
 		}
-
-
-
 		return false;
 
 	}
@@ -262,6 +271,7 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 				boolean done = false;
 				for (int i=0; i<numOriginalTrees && !done; i++) {
 					Tree tree =  treeSourceTask.getTree(taxa, i);
+					tree = tree.cloneTree();  // copy it so that we can modify it as we want.
 					if (convertToBranchLengths && tree instanceof AdjustableTree) {
 						transformTree((AdjustableTree)tree);
 					}
@@ -309,13 +319,13 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Export Tree File for OpenTree";
+		return "Export for OpenTree";
 	}
 	/*.................................................................................................................*/
 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		String s =  "Exports NEXUS file with a taxa and tree block based upon a source of trees.  ";
+		String s =  "Exports NEXUS file with a taxa and tree block for OpenTree based upon a source of trees.  ";
 		return s;
 	}
 	/*.................................................................................................................*/
