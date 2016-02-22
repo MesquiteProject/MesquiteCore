@@ -17,6 +17,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 import mesquite.lists.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.opentree.lib.*;
 
 
 
@@ -24,7 +25,6 @@ import mesquite.lib.table.*;
 	public class ExemplarTaxonAssistant extends TaxonListAssistant {
 		Taxa taxa;
 		MesquiteTable table=null;
-		NameReference anr = NameReference.getNameReference("Non-exemplarTaxon");
 		MesquiteMenuItemSpec exemplarMenuID, nonExemplarMenuID;
 		/*.................................................................................................................*/
 		public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -56,7 +56,7 @@ import mesquite.lib.table.*;
 		public String getStringForTaxon(int ic){
 
 			if (taxa!=null) {
-				boolean isNonExemplar = taxa.getAssociatedBit(anr, ic);
+				boolean isNonExemplar = taxa.getAssociatedBit(OpenTreeUtil.nonExemplarRef, ic);
 					if (isNonExemplar)
 						return "non-exemplar";
 					else
@@ -69,7 +69,7 @@ import mesquite.lib.table.*;
 		/** for those permitting editing, indicates user has edited to incoming value.*/
 		public void setValue(int row, boolean exemplar){
 			if (taxa!=null) {
-				taxa.setAssociatedBit(anr, row, !exemplar);
+				taxa.setAssociatedBit(OpenTreeUtil.nonExemplarRef, row, !exemplar);
 			}
 		}
 
@@ -81,7 +81,7 @@ import mesquite.lib.table.*;
 					int c = ((ListModule)employer).getMyColumn(this);
 					for (int i=0; i<taxa.getNumTaxa(); i++) {
 						if (table.isCellSelectedAnyWay(c, i)) {
-							boolean currentStatus = taxa.getAssociatedBit(anr, i);
+							boolean currentStatus = taxa.getAssociatedBit(OpenTreeUtil.nonExemplarRef, i);
 							if (currentStatus!=!exemplar) {
 								setValue(i,exemplar);
 								if (!changed)
@@ -120,7 +120,7 @@ import mesquite.lib.table.*;
 		/** for those permitting editing, indicates user has edited to incoming string.*/
 		public void setString(int row, String s){
 			if (taxa!=null) {
-				taxa.setAssociatedObject(anr, row, s);
+				taxa.setAssociatedObject(OpenTreeUtil.nonExemplarRef, row, s);
 			}
 			
 		}

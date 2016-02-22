@@ -37,7 +37,7 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 	}
 
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	public boolean isSubstantive(){
 		return true;
