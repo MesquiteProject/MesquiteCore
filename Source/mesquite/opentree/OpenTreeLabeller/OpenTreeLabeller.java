@@ -87,6 +87,10 @@ class OpenTreeToolExtra extends TreeDisplayExtra implements Commandable  {
 		else
 			this.tree = null;
 	}
+	/*.................................................................................................................*/
+   	public boolean isPrerelease(){
+   		return true;  
+   	}
 
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
