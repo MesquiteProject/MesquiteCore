@@ -29,6 +29,7 @@ public abstract class CharSelectCoordinator extends MesquiteModule  {
 	public boolean getSearchableAsModule(){
 		return false;
 	}
+
 }
 
 

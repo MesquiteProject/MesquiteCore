@@ -92,7 +92,7 @@ public class CharacterList extends ListModule {
 		setModuleWindow(window);
 		makeMenu("List");
 
-		addMenuItem( "Save selected as set...", makeCommand("saveSelectedRows", this));
+		addMenuItem( "Save Selected as Set...", makeCommand("saveSelectedRows", this));
 		addMenuItem( "-", null);
 		if (!MesquiteThread.isScripting()){
 			CharListAssistant assistant= null;
