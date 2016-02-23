@@ -148,7 +148,8 @@ public class CharSelCoordinator extends CharSelectCoordinator {
 		int[] parameters = Notification.getParameters(notification);
 		if (obj instanceof CharacterData && (CharacterData) obj == data) {
 			if (code == AssociableWithSpecs.SPECSSET_CHANGED) {
-				resetMenus();
+				resetMenus();   
+				parametersChanged();
 			}
 		}
 		super.changed(caller, obj, notification);
