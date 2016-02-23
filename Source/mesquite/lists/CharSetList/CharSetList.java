@@ -84,7 +84,7 @@ public class CharSetList extends DataSpecssetList {
 			if (!(obj instanceof CharacterData))
 				return null;
 			CharacterData data = (CharacterData)obj;
-			if (data !=null &&AlertDialog.query(containerOfModule(), "New Character Set", "To make a new character set (CHARSET), go to the List of Characters window, select the characters you want to be part of the set, and choose Save Selected As Set.  Would you like to go to the List of Characters window now?", "OK", "Cancel")) {
+			if (data !=null &&AlertDialog.query(containerOfModule(), "New Character Set", "To make a new character set (CHARSET), go to the List of Characters window, select the characters you want to be part of the set, and choose Save Selected as Set.  Would you like to go to the List of Characters window now?", "OK", "Cancel")) {
 				Object obj2 = data.doCommand("showMe", null, checker);
 			}
 		}
