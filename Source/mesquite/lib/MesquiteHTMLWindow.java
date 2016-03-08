@@ -99,7 +99,8 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 				if (backEnabled && pastTexts!=null){
 					pastTexts.addElement(tA.getText());
 				}
-				tA.setText(s);  // null point exception in here because Document is null
+				if (tA.getDocument()!=null)
+					tA.setText(s);  // null point exception in here because Document is null
 			}
 		}
 		catch (Exception e){
