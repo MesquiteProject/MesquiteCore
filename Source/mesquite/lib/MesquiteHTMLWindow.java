@@ -23,7 +23,7 @@ import java.util.*;
 /* ======================================================================== */
 /** A window that displays text.  Yet to do: make it editable or not, have getText, etc.. */
 public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListener {
-	JEditorPane tA;
+	MesqJEditorPane tA;
 	String assignedTitle;
 	MesquiteCommand linkTouchedCommand;
 	Vector pastTexts = new Vector();
@@ -99,12 +99,12 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 				if (backEnabled && pastTexts!=null){
 					pastTexts.addElement(tA.getText());
 				}
-				if (tA.getDocument()!=null)
-					tA.setText(s);  // null point exception in here because Document is null
+				tA.setText(s);  
 			}
 		}
 		catch (Exception e){
-			MesquiteMessage.println("HTMLWindow: setText caused exception, " + e.toString());
+			if (MesquiteTrunk.debugMode)
+				MesquiteMessage.println("HTMLWindow: setText caused exception, " + e.toString());
 		}
 		//tA.repaint();
 		if (showBack)
