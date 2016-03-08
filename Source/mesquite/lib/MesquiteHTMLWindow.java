@@ -100,7 +100,7 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 			tA.setText(s);
 		}
 		catch (Exception e){
-			MesquiteMessage.println("HTMLWindow: setText caused exception");
+			MesquiteMessage.println("HTMLWindow: setText caused exception, " + e.toString());
 		}
 		//tA.repaint();
 		if (showBack)
