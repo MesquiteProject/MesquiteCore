@@ -95,9 +95,12 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 	}
 	public void setText(String s) {
 		try {
-			if (backEnabled)
-				pastTexts.addElement(tA.getText());
-			tA.setText(s);
+			if (s!=null && tA!=null) {
+				if (backEnabled && pastTexts!=null){
+					pastTexts.addElement(tA.getText());
+				}
+				tA.setText(s);  // null point exception in here because Document is null
+			}
 		}
 		catch (Exception e){
 			MesquiteMessage.println("HTMLWindow: setText caused exception, " + e.toString());
