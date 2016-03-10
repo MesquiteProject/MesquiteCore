@@ -43,7 +43,10 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		//setBackground(Color.white);
 		//setWindowSize(600, 400);
 		this.linkTouchedCommand = linkTouchedCommand;
-		tA= new MesqJEditorPane("text/html","<html></html>");
+		if (StringUtil.notEmpty(assignedTitle))
+			tA= new MesqJEditorPane("text/html","<html><body>" + assignedTitle + "</body></html>");
+		else
+			tA= new MesqJEditorPane("text/html","<html>" + assignedTitle + "</html>");
 		tA.setEditable(false);
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);
@@ -93,7 +96,7 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 	public int getMinimumContentHeight(){
 		return 100;
 	}
-	public void setText(String s) {
+	public synchronized void setText(String s) {
 		try {
 			if (s!=null && tA!=null) {
 				if (backEnabled && pastTexts!=null){
@@ -103,7 +106,7 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 			}
 		}
 		catch (Exception e){
-			if (MesquiteTrunk.debugMode)
+			//if (MesquiteTrunk.debugMode)
 				MesquiteMessage.println("HTMLWindow: setText caused exception, " + e.toString());
 		}
 		//tA.repaint();
