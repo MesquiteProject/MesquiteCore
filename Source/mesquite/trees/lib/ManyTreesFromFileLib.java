@@ -315,7 +315,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Specifies the tree file to use", "[path to file]", commandName, "setFilePath")) {
 			String path = parser.getFirstToken(arguments);
-			String nextToken =parser.getNextToken() ;  // have to store this as obtainFile uses the parser
+			String secondToken =parser.getNextToken() ;  // have to store this as obtainFile uses the parser
 			if (obtainFile(arguments)){
 				if (processFile()){
 					if (!MesquiteThread.isScripting())
@@ -327,8 +327,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			}
 			else 
 				discreetAlert( "File was not obtained for " + getName() + " (path " + path + ")");
-			Debugg.println("   *********** " + nextToken + ", and " + parser.getNextToken());
-			if (!("remain".equalsIgnoreCase(nextToken)))
+			if (!("remain".equalsIgnoreCase(secondToken)))
 				iQuit();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to reread the whole file if the file enlarges", "[on or off]", commandName, "toggleReread")) {
