@@ -43,7 +43,7 @@ public class GapsToFromMissing extends CategDataAlterer implements AltererConver
 		if ("mode".equalsIgnoreCase(tag)) {
 			mode = MesquiteInteger.fromString(content);
 		} else  if ("gapsToMissing".equalsIgnoreCase(tag)) {   
-			gapsToMissing = MesquiteBoolean.fromOffOnString(content);
+			gapsToMissing = MesquiteBoolean.fromTrueFalseString(content);
 		}
 		preferencesSet = true;
 	}
