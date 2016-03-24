@@ -4647,11 +4647,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 }
 
 /* ======================================================================== */
-class REALTreeScrollPane extends ScrollPane implements AdjustmentListener { //REALTreeScrollPane
+class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, MouseWheelListener { //REALTreeScrollPane
 	BasicTreeWindow window;
 	Component treeDisplay;
 	public REALTreeScrollPane (BasicTreeWindow window) {
 		super();
+		addMouseWheelListener(this);
+
 		this.window = window;
 	}
 	public void addTreeDisplay(Component c){
@@ -4694,12 +4696,47 @@ class REALTreeScrollPane extends ScrollPane implements AdjustmentListener { //RE
 		window.checkPanelPositionsLegal();
 
 	}
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int amount = e.getScrollAmount()*2;  
+		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;
+		boolean vert = !e.isShiftDown();
+		boolean upleft=e.getWheelRotation()<0;
+		Adjustable hScroll = getHAdjustable();
+		Adjustable vScroll = getHAdjustable();
+		if (vert) {
+			if (blockScroll) 
+				amount=vScroll.getBlockIncrement();
+			else
+				amount = vScroll.getUnitIncrement()*amount;
+			if (upleft){
+				amount = -amount;
+				if (vScroll.getValue()==0)
+					amount=0;
+			}
+			if (amount!=0){
+				vScroll.setValue(vScroll.getValue()+amount);
+				window.sizeDisplay();
+			}
+		} else {
+			if (blockScroll) 
+				amount=hScroll.getBlockIncrement();
+			if (upleft){
+				amount = -amount;
+				if (hScroll.getValue()==0)
+					amount=0;
+			}
+			hScroll.setValue(hScroll.getValue()+amount);
+			window.sizeDisplay();
+		}
+
+	}
+
 }
 /* ======================================================================== */
 /* this is an attempt to get around the bug in OS X java 1.4+ in which ScrollPane scrollbars don't return their position and don't notify of adjustments. 
  * This faux-ScrollPane works reasonably well but is slower and has some graphical artifacts */
 
-class TreeScrollPane extends Panel{ //HANDMADETreeScrollPane
+class TreeScrollPane extends Panel implements MouseWheelListener{ //HANDMADETreeScrollPane
 	BasicTreeWindow window;
 	TWScroll hScroll, vScroll;
 	Panel port;
@@ -4712,6 +4749,7 @@ class TreeScrollPane extends Panel{ //HANDMADETreeScrollPane
 		add(hScroll, BorderLayout.SOUTH);
 		add(vScroll, BorderLayout.EAST);
 		add(port = new Panel(), BorderLayout.CENTER);
+		addMouseWheelListener(this);
 		port.setLayout(null);
 		doLayout();
 
@@ -4804,6 +4842,38 @@ class TreeScrollPane extends Panel{ //HANDMADETreeScrollPane
 		doLayout();
 		constrainTreeDisplay();
 		window.checkPanelPositionsLegal();
+
+	}
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int amount = e.getScrollAmount()*2;  
+		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;
+		boolean vert = !e.isShiftDown();
+		boolean upleft=e.getWheelRotation()<0;
+		if (vert) {
+			if (blockScroll) 
+				amount=vScroll.getBlockIncrement();
+			else
+				amount = vScroll.getUnitIncrement()*amount;
+			if (upleft){
+				amount = -amount;
+				if (vScroll.getValue()==0)
+					amount=0;
+			}
+			if (amount!=0){
+				vScroll.setValue(vScroll.getValue()+amount);
+				window.sizeDisplay();
+			}
+		} else {
+			if (blockScroll) 
+				amount=hScroll.getBlockIncrement();
+			if (upleft){
+				amount = -amount;
+				if (hScroll.getValue()==0)
+					amount=0;
+			}
+			hScroll.setValue(hScroll.getValue()+amount);
+			window.sizeDisplay();
+		}
 
 	}
 }
