@@ -238,20 +238,32 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		 */
 	}
 	/*.................................................................................................................*/
-	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
+	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
 		if (outputBuffer == null)
 			return;
 		String output = outputBuffer.toString();
 
-		String name = getProject().getHomeFileName();
-		if (name==null)
-			name = "untitled." + suggestedFileEnding;
-		else if (suggestedFileEnding.equalsIgnoreCase("NEX"))
-			name = stripNex(name)+"2." + suggestedFileEnding;
-		else 
-			name = stripNex(name) + "." + suggestedFileEnding;
-		saveExportedFile(output, arguments, name);
-
+		if (StringUtil.blank(filePath)) {
+			String name = getProject().getHomeFileName();
+			if (suffix==null)
+				suffix="";
+			if (name==null)
+				name = "untitled.";
+			else if (suggestedFileEnding.equalsIgnoreCase("NEX"))
+				name = stripNex(name)+"2.";
+			else 
+				name = stripNex(name) + ".";
+			if (StringUtil.notEmpty(suffix))
+				name+=suffix+".";
+			name += suggestedFileEnding;
+			saveExportedFile(output, arguments, name);
+		}
+		else
+			saveExportedFileToFilePath(output, arguments, filePath);
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
+		saveExportedFileWithExtension(outputBuffer,arguments, null, suggestedFileEnding, null);
 	}
 	/*.................................................................................................................*/
 	public String getPathForExport(String arguments, String suggestedFileName, MesquiteString dir, MesquiteString fn) {
@@ -314,6 +326,15 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			return MesquiteFile.getFileNameFromFilePath(filePath);
 		}
 		return null;
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFileToFilePath(String output, String arguments, String filePath) {
+
+		if (filePath!=null) {
+			logln("Exporting file to " + filePath);
+			MesquiteFile.putFileContents(filePath, output, true);
+			logln("Export complete.");
+		}
 	}
 	/*.................................................................................................................*/
 	public void saveExportedFile(String output, String arguments, String suggestedFileName) {
