@@ -4632,11 +4632,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			return;
 		if (column >= 0) {
 			DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(subRow);
-			if (assistant != null)
+			if (assistant != null){
+				assistant.setColumnTouched(column);
 				if (((TableTool) window.getCurrentTool()).getSpecialToolForColumnNamesInfoStrips())
 					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, regionInCellH, regionInCellV, modifiers);
 				else
 					assistant.showPopUp(columnNames, x + 5, y + 5);
+			}
 		}
 	}
 

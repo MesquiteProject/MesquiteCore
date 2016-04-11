@@ -22,6 +22,7 @@ import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMenuItemSpec;
 import mesquite.lib.MesquiteModule;
@@ -30,7 +31,6 @@ import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.Taxa;
 import mesquite.lib.duties.*;
-
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataColumnNamesAssistant;
 import mesquite.lib.table.ColumnNamesPanel;
@@ -40,7 +40,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	MesquiteTable table;
 	CharacterData data;
 	BooleanForCharacter booleanTask;
-	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem, selectMatchesItem;
+	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem, selectMatchesItem, moveToMatchItem;
 	MesquiteBoolean standardDirection = new MesquiteBoolean(true);
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -105,11 +105,16 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		deleteMenuItem(closeMenuItem);
 		deleteMenuItem(toggleDirectionItem);
 		deleteMenuItem(selectMatchesItem);
+		deleteMenuItem(moveToMatchItem);
 	}
 	public void addRemoveMenuItem() {
-		closeMenuItem= addMenuItem(null,"Remove Info Strip", makeCommand("remove", this));
+		if (booleanTask!=null)
+			closeMenuItem= addMenuItem(null,"Remove " + booleanTask.getName() +  " Info Strip", makeCommand("remove", this));
+		else 
+			closeMenuItem= addMenuItem(null,"Remove Info Strip", makeCommand("remove", this));
 		toggleDirectionItem= addMenuItem(null,"Flip Dark/Light", makeCommand("toggleDirection", this));
 		selectMatchesItem= addMenuItem(null,"Select Characters Satisfying Criterion", makeCommand("selectMatches", this));
+		moveToMatchItem= addMenuItem(null,"Move to Next Character Satisfying Criterion", makeCommand("moveToMatch", this));
 	}
 
 
@@ -154,6 +159,27 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	}
 
 	/*.................................................................................................................*/
+	public void moveToNext(boolean next) { 
+		if (data == null || booleanTask==null || table ==null)
+			return;
+		boolean selectionChange = false;
+		int icCurrent = getColumnTouched();
+		if (!MesquiteInteger.isCombinable(icCurrent))
+			icCurrent = -1;
+		for (int ic=icCurrent+1; ic<data.getNumChars(); ic++) {
+			MesquiteBoolean result = new MesquiteBoolean();
+			MesquiteString resultString = new MesquiteString();
+			booleanTask.calculateBoolean( data,  ic,  result,  resultString);
+			
+			if (result.getValue()){
+				table.scrollToColumn(ic);
+				break;
+			}
+		}
+		clearColumnTouched();
+	}
+
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a boolean for a character", "[name of module]", commandName, "setValueTask")) {
 			BooleanForCharacter temp= (BooleanForCharacter)replaceEmployee(BooleanForCharacter.class, arguments, "Boolean for a character", booleanTask);
@@ -168,6 +194,9 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Selects characters with a value of true for this boolean", null, commandName, "selectMatches")) {
 			selectSame(true);
+		}
+		else if (checker.compare(this.getClass(), "Moves to next character with value of true for this boolean", null, commandName, "moveToMatch")) {
+			moveToNext(true);
 		}
 		else if (checker.compare(this.getClass(), "Toggles the dark/light display", "[on, off]", commandName, "toggleDirection")) {
 			standardDirection.toggleValue(parser.getFirstToken(arguments));
