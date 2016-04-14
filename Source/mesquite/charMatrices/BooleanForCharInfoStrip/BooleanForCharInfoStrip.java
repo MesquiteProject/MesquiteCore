@@ -40,7 +40,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	MesquiteTable table;
 	CharacterData data;
 	BooleanForCharacter booleanTask;
-	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem, selectMatchesItem, moveToMatchItem;
+	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem, selectMatchesItem, moveToNextMatchItem,moveToPrevMatchItem;
 	MesquiteBoolean standardDirection = new MesquiteBoolean(true);
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -105,7 +105,8 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		deleteMenuItem(closeMenuItem);
 		deleteMenuItem(toggleDirectionItem);
 		deleteMenuItem(selectMatchesItem);
-		deleteMenuItem(moveToMatchItem);
+		deleteMenuItem(moveToNextMatchItem);
+		deleteMenuItem(moveToPrevMatchItem);
 	}
 	public void addRemoveMenuItem() {
 		if (booleanTask!=null)
@@ -114,7 +115,8 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 			closeMenuItem= addMenuItem(null,"Remove Info Strip", makeCommand("remove", this));
 		toggleDirectionItem= addMenuItem(null,"Flip Dark/Light", makeCommand("toggleDirection", this));
 		selectMatchesItem= addMenuItem(null,"Select Characters Satisfying Criterion", makeCommand("selectMatches", this));
-		moveToMatchItem= addMenuItem(null,"Move to Next Character Satisfying Criterion", makeCommand("moveToMatch", this));
+		moveToNextMatchItem= addMenuItem(null,"Move to Next Character Satisfying Criterion", makeCommand("moveToNextMatch", this));
+		moveToPrevMatchItem= addMenuItem(null,"Move to Previous Character Satisfying Criterion", makeCommand("moveToPrevMatch", this));
 	}
 
 
@@ -164,16 +166,31 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 			return;
 		boolean selectionChange = false;
 		int icCurrent = getColumnTouched();
-		if (!MesquiteInteger.isCombinable(icCurrent))
-			icCurrent = -1;
-		for (int ic=icCurrent+1; ic<data.getNumChars(); ic++) {
-			MesquiteBoolean result = new MesquiteBoolean();
-			MesquiteString resultString = new MesquiteString();
-			booleanTask.calculateBoolean( data,  ic,  result,  resultString);
-			
-			if (result.getValue()){
-				table.scrollToColumn(ic);
-				break;
+		if (next) {
+			if (!MesquiteInteger.isCombinable(icCurrent))
+				icCurrent = -1;
+			for (int ic=icCurrent+1; ic<data.getNumChars(); ic++) {
+				MesquiteBoolean result = new MesquiteBoolean();
+				MesquiteString resultString = new MesquiteString();
+				booleanTask.calculateBoolean( data,  ic,  result,  resultString);
+
+				if (result.getValue()){
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		} else {
+			if (!MesquiteInteger.isCombinable(icCurrent))
+				icCurrent = data.getNumChars();
+			for (int ic=icCurrent-1; ic>=0; ic--) {
+				MesquiteBoolean result = new MesquiteBoolean();
+				MesquiteString resultString = new MesquiteString();
+				booleanTask.calculateBoolean( data,  ic,  result,  resultString);
+
+				if (result.getValue()){
+					table.scrollToColumn(ic);
+					break;
+				}
 			}
 		}
 		clearColumnTouched();
@@ -195,8 +212,11 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		else if (checker.compare(this.getClass(), "Selects characters with a value of true for this boolean", null, commandName, "selectMatches")) {
 			selectSame(true);
 		}
-		else if (checker.compare(this.getClass(), "Moves to next character with value of true for this boolean", null, commandName, "moveToMatch")) {
+		else if (checker.compare(this.getClass(), "Moves to next character with value of true for this boolean", null, commandName, "moveToNextMatch")) {
 			moveToNext(true);
+		}
+		else if (checker.compare(this.getClass(), "Moves to previous character with value of true for this boolean", null, commandName, "moveToPrevMatch")) {
+			moveToNext(false);
 		}
 		else if (checker.compare(this.getClass(), "Toggles the dark/light display", "[on, off]", commandName, "toggleDirection")) {
 			standardDirection.toggleValue(parser.getFirstToken(arguments));
