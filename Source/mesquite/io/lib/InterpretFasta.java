@@ -328,9 +328,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 								if (!skipThisSequence)
 									setFastaState(data,ic, taxonNumber, c);    // setting state to that specified by character c
 							}
+							ic += 1;
 							if (numFilledChars<ic) 
 								numFilledChars=ic;
-							ic += 1;
 							if (ic % 100==0)//== 0 && timer.timeSinceVeryStartInSeconds() % 1.0 <0.001)
 								progIndicator.setSecondaryMessage("Reading character " + ic);
 
@@ -361,8 +361,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			
 			
 			if (numFilledChars<data.getNumChars())
-				if (data.hasDataForCharacters(numFilledChars, data.getNumChars()-1))
-					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra characters, but these contained data, and so were not deleted");
+				if (data.hasDataForCharacters(numFilledChars, data.getNumChars()-1)) {
+					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra characters, but these contained data, and so were not deleted.");
+					//if (MesquiteTrunk.debugMode) {
+						for (int ic=numFilledChars; ic<data.getNumChars(); ic++)
+							if (data.hasDataForCharacter(ic))
+								logln("has data in character: " + ic);
+
+					//}
+				}
 				else
 					data.deleteCharacters(numFilledChars, data.getNumChars()-numFilledChars, true);   // delete a character if needed
 
