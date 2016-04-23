@@ -243,6 +243,29 @@ public class CategoricalData extends CharacterData {
 		resetCellMetadata();
 
 	}
+	public void moveDataBlock(int icSourceStart,  int icSourceEnd, int icStart, int itStart,int  itEnd, boolean allowOverwrite, boolean warn){
+		int numCharsToMove = icSourceEnd-icSourceStart+1;
+		for (int it=itStart; it<=itEnd; it++) {
+			for (int ic=icSourceStart; ic<=icSourceEnd; ic++){
+				int icMove = icStart+ (ic-icSourceStart);
+				if (it<getNumTaxa() && ic<getNumChars()){
+					if (!isInapplicable(icMove,it) && !allowOverwrite) {
+						if (warn) {
+							if (MesquiteTrunk.debugMode) {
+								MesquiteMessage.discreetNotifyUser("Attempt to overwrite data in data.moveDataBlock");
+							}
+						}
+					} else {
+						setState(icMove, it, getStateRaw(ic, it)); 
+						setToInapplicable(ic, it); 
+					}
+				}
+
+			}
+		}
+		resetCellMetadata();
+
+	}
 	/** Copies the block of data from the source to this data object */
 	public void copyDataBlock(CharacterData sourceData, int icSourceStart,  int itSourceStart, int icStart, int icEnd, int itStart, int itEnd){
 		if (sourceData == null)
