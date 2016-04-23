@@ -2056,10 +2056,6 @@ public class CategoricalData extends CharacterData {
 		IntegerArray.zeroArray(frequencies);
 		for (int ic=0; ic<numChars; ic++) {
 			state =(CategoricalState)getCharacterState(state, ic, it);
-			if (state==null) {
-				Debugg.println(" numtaxa: " + numTaxa + ", it: " + it);
-				Debugg.println(" numChars: " + numChars + ", ic: " + ic);
-			}
 			if (state.isUnassigned())
 				frequencies[CategoricalState.unassignedBit]++;
 			else if (state.isInapplicable())
