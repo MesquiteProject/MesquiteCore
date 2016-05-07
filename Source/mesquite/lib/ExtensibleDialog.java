@@ -2027,8 +2027,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				}
 				else 
 					buttonHit(label, (Button)e.getComponent());  //this added 1. 12 because buttons other than primary ones were being ignored
-			}
-
+			} 
 		}
 	}
 	/*.................................................................................................................*/
@@ -2039,7 +2038,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public void mousePressed(MouseEvent e){
-		if (MesquiteTrunk.isMacOSXYosemite() && MesquiteTrunk.isJavaVersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
+		if (MesquiteTrunk.isMacOSXYosemiteOrLater() && MesquiteTrunk.isJavaVersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
 			checkForButtonHit(e);
 	}
 
