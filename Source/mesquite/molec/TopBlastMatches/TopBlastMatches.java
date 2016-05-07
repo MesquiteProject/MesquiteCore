@@ -57,14 +57,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(Blaster.class, getName() + "  needs a Blast module.","");
+		EmployeeNeed e = registerEmployeeNeed(Blaster.class, getName() + "  needs a BLAST module.","");
 	}
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		blasterTask = (Blaster)hireEmployee(Blaster.class, "Blaster (for " + getName() + ")"); 
+		blasterTask = (Blaster)hireEmployee(Blaster.class, "BLASTer (for " + getName() + ")"); 
 		if (blasterTask==null)
-			return sorry(getName() + " couldn't start because no Blast module could be obtained.");
+			return sorry(getName() + " couldn't start because no BLAST module could be obtained.");
 		else if (!blasterTask.initialize())
 			return false;
 		results = new StringBuffer();
@@ -140,8 +140,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Top Blast Matches",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLabel("Options for Top Blast Matches");
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Top BLAST Matches",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Options for Top BLAST Matches");
 		int oldBlastType = blastType;
 
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
@@ -310,7 +310,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		if (data==null || blasterTask==null)
 			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
-		results.append("\n   BLASTing "+ sequenceName+ "\n");
+		results.append("\n   BLASTing "+ sequenceName+ " (matrix: "+ data.getName() + ")\n");
 		StringBuffer sequence = new StringBuffer(data.getNumChars());
 		for (int ic = icStart; ic<=icEnd; ic++) {
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);

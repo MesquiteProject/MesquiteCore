@@ -90,7 +90,7 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){
@@ -99,7 +99,7 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
 	public String getName() {
