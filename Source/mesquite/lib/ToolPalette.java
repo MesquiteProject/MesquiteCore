@@ -229,7 +229,7 @@ public class ToolPalette extends MesquitePanel implements Commandable, KeyListen
 			}
 			MesquiteTool tool =button.getTool();//getToolWithName(toolName);
 			if (tool!=null){
-				if (tool!=currentTool) {
+				if (tool!=currentTool || tool!=container.getCurrentTool()) {
 					setCurrentTool(tool);
 					container.setCurrentTool(tool);
 				}
@@ -381,6 +381,7 @@ public class ToolPalette extends MesquitePanel implements Commandable, KeyListen
 		if (tool==null || !tool.getEnabled())
 			return;
 		Parser parser = new Parser();
+		container.setCurrentTool(tool);
 		for (int i=0; i<numTools ; i++) {
 			if (tool.getName().equalsIgnoreCase(parser.getFirstToken(toolButtons[i].arguments))) {  //SHOULDN't RELY ON NAME HERE!!!!!
 				toolButtons[i].setOn();

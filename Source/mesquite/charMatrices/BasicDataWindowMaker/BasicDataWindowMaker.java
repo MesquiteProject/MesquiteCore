@@ -1490,7 +1490,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			ToolPalette palette = getPalette();
 			if (palette == null)
 				return null;
-			setCurrentTool((TableTool) palette.getToolWithName(arguments));
+			TableTool newTool = (TableTool) palette.getToolWithName(arguments);
+			if (newTool!=null) {
+				setCurrentTool(newTool);
+				palette.setCurrentTool(newTool);  //need to do this as otherwise the button is not set
+			}
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether scroll is of linked tables or not.", "[on = linked; off]", commandName, "toggleLinkedScrolling")) {
 			boolean current = linkedScrolling.getValue();

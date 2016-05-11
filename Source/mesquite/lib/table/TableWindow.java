@@ -269,7 +269,7 @@ public abstract class TableWindow extends MesquiteWindow {
 		if (tool!=null && !tool.getEnabled())
 			return;
 		if (!(tool instanceof TableTool)) {
-			MesquiteMessage.warnProgrammer("attempt to set non-table tool as curren tool");
+			MesquiteMessage.warnProgrammer("attempt to set non-table tool as current tool");
 			return;
 		}
 		super.setCurrentTool(tool);
