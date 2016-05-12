@@ -241,7 +241,7 @@ public class MolecularDataUtil {
 				}
 				else {
 				*/
-					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, true);
+					score = alignmentScoreRatioToRCScore((DNAData)data, module, comparisonTaxon, it, verbose);
 		//		}
 				
 				if (score>1.0){

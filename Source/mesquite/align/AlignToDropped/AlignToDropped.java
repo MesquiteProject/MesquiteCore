@@ -39,6 +39,8 @@ public class AlignToDropped extends DataWindowAssistantI {
 	MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
 	boolean defaultAllowNewGaps  =true;
 	MesquiteBoolean allowNewGaps = new MesquiteBoolean(defaultAllowNewGaps);
+	boolean defaultReverseComplementIfNecessary  =false;
+	MesquiteBoolean reverseComplementIfNecessary = new MesquiteBoolean(defaultReverseComplementIfNecessary);
 	long originalCheckSum;
 	MesquiteInteger gapOpen = new MesquiteInteger();
 	MesquiteInteger gapExtend = new MesquiteInteger();
@@ -73,6 +75,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		addMenuItem("Substitution Costs...", MesquiteModule.makeCommand("subCosts", this));
 		addCheckMenuItem(null, "Check Data Integrity", makeCommand("toggleWarnCheckSum",  this), warnCheckSum);
 		addCheckMenuItem(null, "Allow New Internal Gaps", makeCommand("toggleAllowNewGaps",  this), allowNewGaps);
+		addCheckMenuItem(null, "Reverse Complement if Necessary", makeCommand("toggleReverseComplementIfNecessary",  this), reverseComplementIfNecessary);
 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal); 
 
 		return true;
@@ -97,8 +100,12 @@ public class AlignToDropped extends DataWindowAssistantI {
 			temp.addLine("toggleWarnCheckSum " + warnCheckSum.toOffOnString());
 		if (allowNewGaps.getValue()!=defaultAllowNewGaps)
 			temp.addLine("toggleAllowNewGaps " + allowNewGaps.toOffOnString());
+		if (reverseComplementIfNecessary.getValue()!=defaultReverseComplementIfNecessary)
+			temp.addLine("toggleReverseComplementIfNecessary " + reverseComplementIfNecessary.toOffOnString());
 		temp.addLine("gapCosts " + gapOpen + " " + gapExtend + " " + gapOpenTerminal + " "+ gapExtendTerminal);
 
+
+		
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i<alphabetLength; i++)
 			for (int j = 0; j<alphabetLength; j++) 
@@ -145,6 +152,9 @@ public class AlignToDropped extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow){
 		MesquiteNumber score = new MesquiteNumber();
+		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
+			MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
+		}
 		if (aligner==null) {
 			aligner = new PairwiseAligner(true,allowNewGaps.getValue(), subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 			//aligner.setUseLowMem(true);
@@ -312,6 +322,11 @@ public class AlignToDropped extends DataWindowAssistantI {
 			boolean current = allowNewGaps.getValue();
 			allowNewGaps.toggleValue(parser.getFirstToken(arguments));
 		}
+		else  if (checker.compare(this.getClass(), "Toggles whether each sequence to be aligned should check to see if it needs to be reverse complemented before aligning.", "[on; off]", commandName, "toggleReverseComplementIfNecessary")) {
+			boolean current = reverseComplementIfNecessary.getValue();
+			reverseComplementIfNecessary.toggleValue(parser.getFirstToken(arguments));
+		}
+
 		else  if (checker.compare(this.getClass(), "Allows one to specify gap opening and extension costs.", "[open; extend]", commandName, "gapCosts")) {
 			MesquiteInteger io = new MesquiteInteger(0);
 			int newGapOpen = MesquiteInteger.fromString(arguments, io);
