@@ -28,7 +28,6 @@ import mesquite.categ.lib.*;
 public class NumDataCellsStrip extends DataColumnNamesAssistant {
 	int[] calculatedValues = null;
 	MesquiteMenuItemSpec menuItem1, menuItem2, closeMenuItem, lineMenuItem;
-	MesquiteBoolean emphasizeLessDegenerateAAs = new MesquiteBoolean(true);
 
 	boolean suspend = false;
 
@@ -83,7 +82,6 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 
 		temp.addLine("suspend");
 		temp.addLine("toggleSelectedOnly " + selectedOnly.toOffOnString());
-		temp.addLine("toggleEmphasizeLessDegenerateAAs " + emphasizeLessDegenerateAAs.toOffOnString());
 		temp.addLine("resume");
 
 		return temp;
