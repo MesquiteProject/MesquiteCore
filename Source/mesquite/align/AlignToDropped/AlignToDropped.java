@@ -41,6 +41,10 @@ public class AlignToDropped extends DataWindowAssistantI {
 	MesquiteBoolean allowNewGaps = new MesquiteBoolean(defaultAllowNewGaps);
 	boolean defaultReverseComplementIfNecessary  =false;
 	MesquiteBoolean reverseComplementIfNecessary = new MesquiteBoolean(defaultReverseComplementIfNecessary);
+	boolean defaultIgnoreFileSettings  =false;
+	MesquiteBoolean ignoreFileSettings = new MesquiteBoolean(defaultIgnoreFileSettings);
+	boolean defaultShiftOnly  =false;
+	MesquiteBoolean shiftOnly = new MesquiteBoolean(defaultShiftOnly);
 	long originalCheckSum;
 	MesquiteInteger gapOpen = new MesquiteInteger();
 	MesquiteInteger gapExtend = new MesquiteInteger();
@@ -50,7 +54,9 @@ public class AlignToDropped extends DataWindowAssistantI {
 	int alphabetLength;	 
 	PairwiseAligner aligner;
 	AlignUtil alignUtil = new AlignUtil();
+	static boolean preferencesProcessed=false;
 
+	
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -76,8 +82,17 @@ public class AlignToDropped extends DataWindowAssistantI {
 		addCheckMenuItem(null, "Check Data Integrity", makeCommand("toggleWarnCheckSum",  this), warnCheckSum);
 		addCheckMenuItem(null, "Allow New Internal Gaps", makeCommand("toggleAllowNewGaps",  this), allowNewGaps);
 		addCheckMenuItem(null, "Reverse Complement if Necessary", makeCommand("toggleReverseComplementIfNecessary",  this), reverseComplementIfNecessary);
+		addMenuItem(null, "-", null);
+		addCheckMenuItem(null, "Shift Sequence Without Full Alignment", makeCommand("toggleShiftOnly",  this), shiftOnly);
+		addMenuItem(null, "-", null);
+		addMenuItem("Save Current Settings as Defaults", MesquiteModule.makeCommand("saveDefaults", this));
+		addCheckMenuItem(null, "Ignore File Settings; Use Defaults", MesquiteModule.makeCommand("toggleIgnoreFileSettings", this), ignoreFileSettings);
 		AlignUtil.getDefaultGapCosts(gapOpen, gapExtend, gapOpenTerminal, gapExtendTerminal); 
 
+		loadPreferences();
+		preferencesProcessed = true;
+
+		
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -100,6 +115,8 @@ public class AlignToDropped extends DataWindowAssistantI {
 			temp.addLine("toggleWarnCheckSum " + warnCheckSum.toOffOnString());
 		if (allowNewGaps.getValue()!=defaultAllowNewGaps)
 			temp.addLine("toggleAllowNewGaps " + allowNewGaps.toOffOnString());
+		if (shiftOnly.getValue()!=defaultShiftOnly)
+			temp.addLine("toggleShiftOnly " + shiftOnly.toOffOnString());
 		if (reverseComplementIfNecessary.getValue()!=defaultReverseComplementIfNecessary)
 			temp.addLine("toggleReverseComplementIfNecessary " + reverseComplementIfNecessary.toOffOnString());
 		temp.addLine("gapCosts " + gapOpen + " " + gapExtend + " " + gapOpenTerminal + " "+ gapExtendTerminal);
@@ -116,6 +133,34 @@ public class AlignToDropped extends DataWindowAssistantI {
 		//			subs = AlignUtil.getDefaultSubstitutionCosts(alphabetLength); 
 		return temp;
 	}
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("ignoreFileSettings".equalsIgnoreCase(tag))
+			ignoreFileSettings.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		else if (!preferencesProcessed) {   //only process these ones first time through
+			if ("warnCheckSum".equalsIgnoreCase(tag))
+				warnCheckSum.setValue(MesquiteBoolean.fromTrueFalseString(content));
+			if ("allowNewGaps".equalsIgnoreCase(tag))
+				allowNewGaps.setValue(MesquiteBoolean.fromTrueFalseString(content));
+			if ("shiftOnly".equalsIgnoreCase(tag))
+				shiftOnly.setValue(MesquiteBoolean.fromTrueFalseString(content));
+			if ("reverseComplementIfNecessary".equalsIgnoreCase(tag))
+				reverseComplementIfNecessary.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		}
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(60);	
+		StringUtil.appendXMLTag(buffer, 2, "warnCheckSum", warnCheckSum);  
+		StringUtil.appendXMLTag(buffer, 2, "allowNewGaps", allowNewGaps);  
+		StringUtil.appendXMLTag(buffer, 2, "shiftOnly", shiftOnly);  
+		StringUtil.appendXMLTag(buffer, 2, "reverseComplementIfNecessary", reverseComplementIfNecessary);  
+		StringUtil.appendXMLTag(buffer, 2, "ignoreFileSettings",ignoreFileSettings);
+		
+		return buffer.toString();
+	}
+
+
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = table;
@@ -149,12 +194,24 @@ public class AlignToDropped extends DataWindowAssistantI {
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
 	}
+
+
 	/*.................................................................................................................*/
-	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow){
+	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow, int draggedColumn){
 		MesquiteNumber score = new MesquiteNumber();
-		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
-			MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
+		boolean revComplemented = false;
+		int draggedCellCount=0;
+		if (shiftOnly.getValue()) {
+			for (int icDragged=0; icDragged<=draggedColumn && icDragged<data.getNumChars(); icDragged++) {  // let's add up how many data-filled cells are up to the sequence dragged
+				if (!data.isInapplicable(icDragged, rowToAlign))
+					draggedCellCount++;
+			}
 		}
+
+		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
+			revComplemented=MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
+		}
+
 		if (aligner==null) {
 			aligner = new PairwiseAligner(true,allowNewGaps.getValue(), subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 			//aligner.setUseLowMem(true);
@@ -171,18 +228,67 @@ public class AlignToDropped extends DataWindowAssistantI {
 			logln("Align " + (rowToAlign+1) + " onto " + (recipientRow+1));
 			long[] newAlignment = Long2DArray.extractRow(aligned,1);
 
-			int[] newGaps = aligner.getGapInsertionArray();
-			if (newGaps!=null) 
-				alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
-			Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
+			if (shiftOnly.getValue()) {
+				int draggedAlignmentCount=0;
+				int draggedAlignmentPosition = 0;
+				for (int ic=0; ic<newAlignment.length; ic++) {  // let's see the position of this in the alignment of this sequence
+					if (!CategoricalState.isInapplicable(newAlignment[ic])) {
+						draggedAlignmentCount++;
+						if (draggedAlignmentCount>=draggedCellCount) { // we have found the position in the alignment
+							draggedAlignmentPosition = ic;
+							break;
+						}
+					}
+				}
+				int droppedAlignmentCount=0;
+				for (int ic=0; ic<newAlignment.length && ic<=draggedAlignmentPosition; ic++) {  // let's see the position of this in the alignment of this sequence
+					if (!CategoricalState.isInapplicable(aligned[ic][0])) {
+						droppedAlignmentCount++;
+					}
+				}
+				// now that we know the cell count in the dropped, let's find out where that is in the original data
+				int droppedCellCount=0;
+				int droppedCellPosition = 0;
+				for (int ic=0; ic<=data.getNumChars(); ic++) {  // let's add up how many data-filled cells are up to the sequence dragged
+					if (!data.isInapplicable(ic, recipientRow)){
+						droppedCellCount++;
+						if (droppedCellCount>=droppedAlignmentCount) {
+							droppedCellPosition = ic;
+							break;
+						}
+					}
+				}
+				// now we know the align up draggedColumn with droppedCellPosition!  Let's do the shift
+				MesquiteBoolean dataChanged = new MesquiteBoolean (false);
+				MesquiteInteger charAdded = new MesquiteInteger(0);
+				int added = data.shiftAllCells(droppedCellPosition-draggedColumn, rowToAlign, true, true, true, dataChanged,charAdded, null);
+				if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
+					((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
+					//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+				}
+				//MAY NEED TO NOTIFY!!!!!!
+
+
+			} else {  // standard alignment
+				int[] newGaps = aligner.getGapInsertionArray();
+				if (newGaps!=null) 
+					alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
+				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
+			}
 
 			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			return true;
 		}
+
 		return false;
+	}
+	private boolean ignoreCommand(){
+		return (ignoreFileSettings.getValue() && MesquiteThread.isScripting());
 	}
 	/*.................................................................................................................*/
 	boolean alignJustTouchedRow = true;
+	int columnDragged = MesquiteInteger.unassigned;
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "AlignToDropped tool touched on row.", "[column touched] [row touched]", commandName, "alignDropTouched")) {
@@ -219,7 +325,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 					return null;
 				}
 				MesquiteInteger io = new MesquiteInteger(0);
-				int columnDragged = MesquiteInteger.fromString(arguments, io);
+				columnDragged = MesquiteInteger.fromString(arguments, io);
 				int rowDragged= MesquiteInteger.fromString(arguments, io);
 				if (!table.rowLegal(rowDragged)) {
 					return null;
@@ -255,7 +361,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 						int oldNumChars = data.getNumChars();
 						for (int it = 0; it<table.getNumRows(); it++) 
 							if (table.isRowSelected(it) && (it!=rowDropped)) {
-								if (alignTouchedToDropped(it,rowDropped))
+								if (alignTouchedToDropped(it,rowDropped, columnDragged))
 									changed = true;
 								if (progIndicator != null) {
 									if (progIndicator.isAborted()) {
@@ -288,7 +394,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 					UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_ADDED});
 					boolean changed=false;
 					int oldNumChars = data.getNumChars();
-					if (alignTouchedToDropped(firstRowTouched,rowDropped))
+					if (alignTouchedToDropped(firstRowTouched,rowDropped, columnDragged))
 						changed = true;
 					UndoReference uR=null;
 					if (undoInstructions!=null) {
@@ -315,16 +421,31 @@ public class AlignToDropped extends DataWindowAssistantI {
 		}
 
 		else  if (checker.compare(this.getClass(), "Toggles whether the data integrity is checked or not after each use.", "[on; off]", commandName, "toggleWarnCheckSum")) {
+			if (ignoreCommand()) return null;
 			boolean current = warnCheckSum.getValue();
 			warnCheckSum.toggleValue(parser.getFirstToken(arguments));
 		}
 		else  if (checker.compare(this.getClass(), "Toggles whether the new gaps can be introduced into one or the other sequence.", "[on; off]", commandName, "toggleAllowNewGaps")) {
+			if (ignoreCommand()) return null;
 			boolean current = allowNewGaps.getValue();
 			allowNewGaps.toggleValue(parser.getFirstToken(arguments));
 		}
+		else  if (checker.compare(this.getClass(), "Toggles whether the sequences is simply shifted, as opposed do a full pairwise alignment.", "[on; off]", commandName, "toggleShiftOnly")) {
+			if (ignoreCommand()) return null;
+			boolean current = shiftOnly.getValue();
+			shiftOnly.toggleValue(parser.getFirstToken(arguments));
+		}
 		else  if (checker.compare(this.getClass(), "Toggles whether each sequence to be aligned should check to see if it needs to be reverse complemented before aligning.", "[on; off]", commandName, "toggleReverseComplementIfNecessary")) {
+			if (ignoreCommand()) return null;
 			boolean current = reverseComplementIfNecessary.getValue();
 			reverseComplementIfNecessary.toggleValue(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Saves current settings as defaults", "[none]", commandName, "saveDefaults")) {
+			storePreferences();
+		}
+		else if (checker.compare(this.getClass(), "Specifies whether or not file settings are to be ignored", "[on; off]", commandName, "toggleIgnoreFileSettings")) {
+			ignoreFileSettings.toggleValue(new Parser().getFirstToken(arguments));
+			storePreferences();
 		}
 
 		else  if (checker.compare(this.getClass(), "Allows one to specify gap opening and extension costs.", "[open; extend]", commandName, "gapCosts")) {

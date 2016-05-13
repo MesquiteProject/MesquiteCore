@@ -126,8 +126,8 @@ public String preparePreferencesForXML () {
 		if (data==null || table==null)
 			return false;
 		MesquiteInteger row = new MesquiteInteger();
-		MesquiteInteger firstColumn = new MesquiteInteger();
-		MesquiteInteger lastColumn = new MesquiteInteger();
+		MesquiteInteger firstColumn = new MesquiteInteger();  // this is the first column selected in the block
+		MesquiteInteger lastColumn = new MesquiteInteger();  // this is the last column selected
 		if (table.onlySingleRowBlockSelected(row,firstColumn, lastColumn)) {
 			if (!queryOptions(row.getValue(), data.getNumTaxa()))
 					return false;
@@ -136,8 +136,8 @@ public String preparePreferencesForXML () {
 
 			cs1 = data.getCharacterState(null, 0, 0); //to serve as persistent container
 			cs2  = data.getCharacterState(null, 0, 0);
-			MesquiteInteger matchStart = new MesquiteInteger();
-			MesquiteInteger matchEnd = new MesquiteInteger();
+			MesquiteInteger matchStart = new MesquiteInteger();  // this will receive from the matcher the start of the match in the candidate sequence
+			MesquiteInteger matchEnd = new MesquiteInteger();   // this will receive the end of the match
 			boolean match=false;
 			int totalAddedToStart = 0;
 			boolean someAdded = false;

@@ -200,17 +200,17 @@ public class MolecularDataUtil {
 
    	 }
 	/*.................................................................................................................*/
-	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean verbose) {
-		reverseComplementSequencesIfNecessary(data,  module,  taxa,  itStart,  itEnd,  baseOnStopCodons, false, verbose);
+	public static boolean reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean verbose) {
+		return reverseComplementSequencesIfNecessary(data,  module,  taxa,  itStart,  itEnd,  baseOnStopCodons, false, verbose);
 	}
 
 	/*.................................................................................................................*/
-	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
-		reverseComplementSequencesIfNecessary( data,  module,  taxa,  itStart,  itEnd,  0,  baseOnStopCodons,  againstAllOthers,  verbose);
+	public static boolean reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
+		return reverseComplementSequencesIfNecessary( data,  module,  taxa,  itStart,  itEnd,  0,  baseOnStopCodons,  againstAllOthers,  verbose);
 		}
 	/*.................................................................................................................*/
-	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, int comparisonTaxon, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
-
+	public static boolean reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, int itStart, int itEnd, int comparisonTaxon, boolean baseOnStopCodons, boolean againstAllOthers, boolean verbose) {
+		boolean RC = false;
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
 			if (modelSet == null) {
@@ -246,6 +246,7 @@ public class MolecularDataUtil {
 				
 				if (score>1.0){
 					data.reverseComplement(0, data.getNumChars(), it, false, true);  
+					RC=true;
 					module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
 				}
 			//	else
@@ -254,10 +255,12 @@ public class MolecularDataUtil {
 			}
 		
 		}
+		return RC;
 	}
 	
 	/*.................................................................................................................*/
-	public static void reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, Bits taxaToAdjust, int comparisonTaxon, boolean baseOnStopCodons, boolean verbose) {
+	public static boolean reverseComplementSequencesIfNecessary(DNAData data, MesquiteModule module, Taxa taxa, Bits taxaToAdjust, int comparisonTaxon, boolean baseOnStopCodons, boolean verbose) {
+		boolean RC = false;
 		if (comparisonTaxon<0) comparisonTaxon=0;
 		if (baseOnStopCodons) {
 			CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
@@ -287,6 +290,7 @@ public class MolecularDataUtil {
 					if (score>1.0){
 						data.reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
 						module.logln("   *** Reverse complemented " + taxa.getTaxonName(it));
+						RC=true;
 					}
 					//	else
 					//		module.logln("Sequence not reverse complemented " + (it+1));
@@ -295,6 +299,7 @@ public class MolecularDataUtil {
 			}
 
 		}
+		return RC;
 	}
 	/*.................................................................................................................*/
 	public static int numApplicable(long[] sequence) {
