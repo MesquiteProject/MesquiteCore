@@ -194,17 +194,15 @@ public class AlignToDropped extends DataWindowAssistantI {
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
 	}
-
-
-	/*.................................................................................................................*/
-	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow, int draggedColumn){
+	/*.................................................................................................................*
+	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow, int columnDropped){
 		MesquiteNumber score = new MesquiteNumber();
 		boolean revComplemented = false;
-		int draggedCellCount=0;
-		if (shiftOnly.getValue()) {
-			for (int icDragged=0; icDragged<=draggedColumn && icDragged<data.getNumChars(); icDragged++) {  // let's add up how many data-filled cells are up to the sequence dragged
-				if (!data.isInapplicable(icDragged, rowToAlign))
-					draggedCellCount++;
+		int droppedCellCount=0;
+		if (shiftOnly.getValue()) { 
+			for (int icDropped=0; icDropped<=columnDropped && icDropped<data.getNumChars(); icDropped++) {  // let's add up how many data-filled cells are up to the sequence dropped
+				if (!data.isInapplicable(icDropped, rowToAlign))
+					droppedCellCount++;
 			}
 		}
 
@@ -269,6 +267,136 @@ public class AlignToDropped extends DataWindowAssistantI {
 				//MAY NEED TO NOTIFY!!!!!!
 
 
+			} else {  // standard alignment
+				int[] newGaps = aligner.getGapInsertionArray();
+				if (newGaps!=null) 
+					alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
+				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
+			}
+
+			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
+			return true;
+		}
+
+		return false;
+	}
+
+	/*.................................................................................................................*/
+	private void shiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, int columnDragged,int droppedCellCount, int shiftOffset){
+
+		int droppedAlignmentCount=0;
+		int droppedAlignmentPosition = 0;
+		for (int ic=0; ic<newAlignment.length; ic++) {  // let's see the position of droppedCellCount in the alignment of this sequence
+			if (!CategoricalState.isInapplicable(aligned[ic][0])) {
+				droppedAlignmentCount++;
+				if (droppedAlignmentCount>=droppedCellCount) { // we have found the position in the alignment
+					droppedAlignmentPosition = ic;
+					break;
+				}
+			}
+		}
+		int draggedAlignmentCount=0;
+		for (int ic=0; ic<newAlignment.length && ic<=droppedAlignmentPosition; ic++) {  // let's see how many cells are in the dragged sequence up to that point
+			if (!CategoricalState.isInapplicable(newAlignment[ic])) {
+				draggedAlignmentCount++;
+			}
+		}
+		
+		
+		if (draggedAlignmentCount==0) {
+		/*if we didn't find any data up to that point, then we need to readjust, and find the first alignment position in the dragged sequence, 
+		 and then map that back to the relevant position in the dropped sequence */
+			int draggedAlignmentPosition = 0;
+			for (int ic=0; ic<newAlignment.length; ic++) {  // let's see how many cells are in the dragged sequence up to that point
+				if (!CategoricalState.isInapplicable(newAlignment[ic])) {
+					draggedAlignmentPosition = ic;
+					break;
+				}
+			}
+			draggedAlignmentCount=1;
+			for (int ic=0; ic<=data.getNumChars(); ic++) {  
+				if (!data.isInapplicable(ic, rowToAlign)){
+					columnDragged = ic;
+					break;
+				}
+			}
+			
+		} else {
+		}
+		
+		
+		// now that we know the cell count in the dragged, let's find out where that is in the original data
+		int draggedCellCount=0;
+		int draggedCellPosition = 0;
+		for (int ic=0; ic<=data.getNumChars(); ic++) {  // let's add up how many data-filled cells are up to the sequence dragged
+			if (!data.isInapplicable(ic, rowToAlign)){
+				draggedCellCount++;
+				if (draggedCellCount>=draggedAlignmentCount) {
+					draggedCellPosition = ic;
+					break;
+				}
+			}
+		}
+		// now we know the align up draggedColumn with droppedCellPosition!  Let's do the shift
+		MesquiteBoolean dataChanged = new MesquiteBoolean (false);
+		MesquiteInteger charAdded = new MesquiteInteger(0);
+		int added = data.shiftAllCells(columnDragged-shiftOffset-draggedCellPosition, rowToAlign, true, true, true, dataChanged,charAdded, null);
+		if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
+			((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
+			//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+		}
+		//MAY NEED TO NOTIFY!!!!!!
+
+
+		}
+
+
+	/*.................................................................................................................*/
+	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
+		MesquiteNumber score = new MesquiteNumber();
+		boolean revComplemented = false;
+		int droppedCellCount=0;
+		int shiftOffset =0;
+		if (shiftOnly.getValue()) { // let's find out how much data is in front of the dropped cell
+			for (int icDropped=0; icDropped<=columnDropped && icDropped<data.getNumChars(); icDropped++) {  // let's add up how many data-filled cells are up to the sequence dropped
+				if (!data.isInapplicable(icDropped, recipientRow))
+					droppedCellCount++;
+			}
+			if (droppedCellCount<=0){  //we need to then adjust 
+				droppedCellCount=1;
+				shiftOffset=columnDropped;
+				for (int icDropped=0; icDropped<data.getNumChars(); icDropped++) {  // let's add up how many data-filled cells are up to the sequence dropped
+					if (!data.isInapplicable(icDropped, recipientRow)){
+						columnDropped=icDropped;
+						break;
+					}
+				}
+				shiftOffset-=columnDropped;
+			}
+	}
+
+		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
+			revComplemented=MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
+		}
+
+		if (aligner==null) {
+			aligner = new PairwiseAligner(true,allowNewGaps.getValue(), subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
+			//aligner.setUseLowMem(true);
+		}
+		if (aligner!=null){
+			//aligner.setUseLowMem(data.getNumChars()>aligner.getCharThresholdForLowMemory());
+			originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign);
+			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
+			long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
+			if (aligned==null) {
+				logln("Alignment failed!");
+				return false;
+			}
+			logln("Align " + (rowToAlign+1) + " onto " + (recipientRow+1));
+			long[] newAlignment = Long2DArray.extractRow(aligned,1);
+
+			if (shiftOnly.getValue()) {
+				shiftTouchedToDropped(aligned,newAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedCellCount,  shiftOffset);
 			} else {  // standard alignment
 				int[] newGaps = aligner.getGapInsertionArray();
 				if (newGaps!=null) 
@@ -361,7 +489,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 						int oldNumChars = data.getNumChars();
 						for (int it = 0; it<table.getNumRows(); it++) 
 							if (table.isRowSelected(it) && (it!=rowDropped)) {
-								if (alignTouchedToDropped(it,rowDropped, columnDragged))
+								if (alignTouchedToDropped(it,rowDropped, columnDropped, columnDragged))
 									changed = true;
 								if (progIndicator != null) {
 									if (progIndicator.isAborted()) {
@@ -394,7 +522,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 					UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_ADDED});
 					boolean changed=false;
 					int oldNumChars = data.getNumChars();
-					if (alignTouchedToDropped(firstRowTouched,rowDropped, columnDragged))
+					if (alignTouchedToDropped(firstRowTouched,rowDropped, columnDropped, columnDragged))
 						changed = true;
 					UndoReference uR=null;
 					if (undoInstructions!=null) {
