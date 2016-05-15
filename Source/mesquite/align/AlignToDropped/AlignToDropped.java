@@ -37,8 +37,8 @@ public class AlignToDropped extends DataWindowAssistantI {
 	int firstRowTouched = -2;
 	boolean defaultWarnCheckSum  =true;
 	MesquiteBoolean warnCheckSum = new MesquiteBoolean(defaultWarnCheckSum);
-	boolean defaultAllowNewGaps  =true;
-	MesquiteBoolean allowNewGaps = new MesquiteBoolean(defaultAllowNewGaps);
+//	boolean defaultAllowNewGaps  =true;
+//	MesquiteBoolean allowNewGaps = new MesquiteBoolean(defaultAllowNewGaps);
 	boolean defaultReverseComplementIfNecessary  =false;
 	MesquiteBoolean reverseComplementIfNecessary = new MesquiteBoolean(defaultReverseComplementIfNecessary);
 	boolean defaultIgnoreFileSettings  =false;
@@ -80,7 +80,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		addMenuItem("Gap Costs...", MesquiteModule.makeCommand("gapCosts", this));
 		addMenuItem("Substitution Costs...", MesquiteModule.makeCommand("subCosts", this));
 		addCheckMenuItem(null, "Check Data Integrity", makeCommand("toggleWarnCheckSum",  this), warnCheckSum);
-		addCheckMenuItem(null, "Allow New Internal Gaps", makeCommand("toggleAllowNewGaps",  this), allowNewGaps);
+//		addCheckMenuItem(null, "Allow New Internal Gaps", makeCommand("toggleAllowNewGaps",  this), allowNewGaps);
 		addCheckMenuItem(null, "Reverse Complement if Necessary", makeCommand("toggleReverseComplementIfNecessary",  this), reverseComplementIfNecessary);
 		addMenuItem(null, "-", null);
 		addCheckMenuItem(null, "Shift Sequence Without Full Alignment", makeCommand("toggleShiftOnly",  this), shiftOnly);
@@ -113,8 +113,8 @@ public class AlignToDropped extends DataWindowAssistantI {
 		Snapshot temp = new Snapshot();
 		if (warnCheckSum.getValue()!=defaultWarnCheckSum)
 			temp.addLine("toggleWarnCheckSum " + warnCheckSum.toOffOnString());
-		if (allowNewGaps.getValue()!=defaultAllowNewGaps)
-			temp.addLine("toggleAllowNewGaps " + allowNewGaps.toOffOnString());
+//		if (allowNewGaps.getValue()!=defaultAllowNewGaps)
+//			temp.addLine("toggleAllowNewGaps " + allowNewGaps.toOffOnString());
 		if (shiftOnly.getValue()!=defaultShiftOnly)
 			temp.addLine("toggleShiftOnly " + shiftOnly.toOffOnString());
 		if (reverseComplementIfNecessary.getValue()!=defaultReverseComplementIfNecessary)
@@ -140,8 +140,8 @@ public class AlignToDropped extends DataWindowAssistantI {
 		 if (!preferencesProcessed || ignoreFileSettings.getValue()) {   
 			if ("warnCheckSum".equalsIgnoreCase(tag))
 				warnCheckSum.setValue(MesquiteBoolean.fromTrueFalseString(content));
-			if ("allowNewGaps".equalsIgnoreCase(tag))
-				allowNewGaps.setValue(MesquiteBoolean.fromTrueFalseString(content));
+//			if ("allowNewGaps".equalsIgnoreCase(tag))
+//				allowNewGaps.setValue(MesquiteBoolean.fromTrueFalseString(content));
 			if ("shiftOnly".equalsIgnoreCase(tag))
 				shiftOnly.setValue(MesquiteBoolean.fromTrueFalseString(content));
 			if ("reverseComplementIfNecessary".equalsIgnoreCase(tag))
@@ -153,7 +153,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		StringBuffer buffer = new StringBuffer(60);	
 		StringUtil.appendXMLTag(buffer, 2, "ignoreFileSettings",ignoreFileSettings);
 		StringUtil.appendXMLTag(buffer, 2, "warnCheckSum", warnCheckSum);  
-		StringUtil.appendXMLTag(buffer, 2, "allowNewGaps", allowNewGaps);  
+//		StringUtil.appendXMLTag(buffer, 2, "allowNewGaps", allowNewGaps);  
 		StringUtil.appendXMLTag(buffer, 2, "shiftOnly", shiftOnly);  
 		StringUtil.appendXMLTag(buffer, 2, "reverseComplementIfNecessary", reverseComplementIfNecessary);  
 		
@@ -295,13 +295,13 @@ public class AlignToDropped extends DataWindowAssistantI {
 		}
 
 		if (aligner==null) {
-			aligner = new PairwiseAligner(true,allowNewGaps.getValue(), subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
+			aligner = new PairwiseAligner(true,true, subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
 			//aligner.setUseLowMem(true);
 		}
 		if (aligner!=null){
 			//aligner.setUseLowMem(data.getNumChars()>aligner.getCharThresholdForLowMemory());
 			originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign);
-			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
+			aligner.setAllowNewInternalGaps(true);
 			long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 			if (aligned==null) {
 				logln("Alignment failed!");
@@ -475,9 +475,6 @@ public class AlignToDropped extends DataWindowAssistantI {
 			warnCheckSum.toggleValue(parser.getFirstToken(arguments));
 		}
 		else  if (checker.compare(this.getClass(), "Toggles whether the new gaps can be introduced into one or the other sequence.", "[on; off]", commandName, "toggleAllowNewGaps")) {
-			if (ignoreCommand()) return null;
-			boolean current = allowNewGaps.getValue();
-			allowNewGaps.toggleValue(parser.getFirstToken(arguments));
 		}
 		else  if (checker.compare(this.getClass(), "Toggles whether the sequences is simply shifted, as opposed do a full pairwise alignment.", "[on; off]", commandName, "toggleShiftOnly")) {
 			if (ignoreCommand()) return null;
@@ -549,7 +546,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 		if (aligner!=null) {
 			aligner.setGapCosts(gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue());
 			aligner.setSubsCostMatrix(subs);
-			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
+			aligner.setAllowNewInternalGaps(true);
 		}
 	}
 	/*.................................................................................................................*/
