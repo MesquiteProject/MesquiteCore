@@ -170,8 +170,7 @@ public class AlignToDropped extends DataWindowAssistantI {
 			subs = AlignUtil.getDefaultSubstitutionCosts(alphabetLength); 
 		data.addListener(this);
 		inhibitionChanged();
-Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.getValue());
-	if (ignoreFileSettings.getValue()){
+		if (ignoreFileSettings.getValue()){
 			loadPreferences();
 		}
 	}
@@ -198,92 +197,7 @@ Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.g
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
 	}
-	/*.................................................................................................................*
-	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow, int columnDropped){
-		MesquiteNumber score = new MesquiteNumber();
-		boolean revComplemented = false;
-		int droppedCellCount=0;
-		if (shiftOnly.getValue()) { 
-			for (int icDropped=0; icDropped<=columnDropped && icDropped<data.getNumChars(); icDropped++) {  // let's add up how many data-filled cells are up to the sequence dropped
-				if (!data.isInapplicable(icDropped, rowToAlign))
-					droppedCellCount++;
-			}
-		}
 
-		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
-			revComplemented=MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
-		}
-
-		if (aligner==null) {
-			aligner = new PairwiseAligner(true,allowNewGaps.getValue(), subs,gapOpen.getValue(), gapExtend.getValue(), gapOpenTerminal.getValue(), gapExtendTerminal.getValue(), alphabetLength);
-			//aligner.setUseLowMem(true);
-		}
-		if (aligner!=null){
-			//aligner.setUseLowMem(data.getNumChars()>aligner.getCharThresholdForLowMemory());
-			originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign);
-			aligner.setAllowNewInternalGaps(allowNewGaps.getValue());
-			long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
-			if (aligned==null) {
-				logln("Alignment failed!");
-				return false;
-			}
-			logln("Align " + (rowToAlign+1) + " onto " + (recipientRow+1));
-			long[] newAlignment = Long2DArray.extractRow(aligned,1);
-
-			if (shiftOnly.getValue()) {
-				int draggedAlignmentCount=0;
-				int draggedAlignmentPosition = 0;
-				for (int ic=0; ic<newAlignment.length; ic++) {  // let's see the position of this in the alignment of this sequence
-					if (!CategoricalState.isInapplicable(newAlignment[ic])) {
-						draggedAlignmentCount++;
-						if (draggedAlignmentCount>=draggedCellCount) { // we have found the position in the alignment
-							draggedAlignmentPosition = ic;
-							break;
-						}
-					}
-				}
-				int droppedAlignmentCount=0;
-				for (int ic=0; ic<newAlignment.length && ic<=draggedAlignmentPosition; ic++) {  // let's see the position of this in the alignment of this sequence
-					if (!CategoricalState.isInapplicable(aligned[ic][0])) {
-						droppedAlignmentCount++;
-					}
-				}
-				// now that we know the cell count in the dropped, let's find out where that is in the original data
-				int droppedCellCount=0;
-				int droppedCellPosition = 0;
-				for (int ic=0; ic<=data.getNumChars(); ic++) {  // let's add up how many data-filled cells are up to the sequence dragged
-					if (!data.isInapplicable(ic, recipientRow)){
-						droppedCellCount++;
-						if (droppedCellCount>=droppedAlignmentCount) {
-							droppedCellPosition = ic;
-							break;
-						}
-					}
-				}
-				// now we know the align up draggedColumn with droppedCellPosition!  Let's do the shift
-				MesquiteBoolean dataChanged = new MesquiteBoolean (false);
-				MesquiteInteger charAdded = new MesquiteInteger(0);
-				int added = data.shiftAllCells(droppedCellPosition-draggedColumn, rowToAlign, true, true, true, dataChanged,charAdded, null);
-				if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
-					((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
-					//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
-				}
-				//MAY NEED TO NOTIFY!!!!!!
-
-
-			} else {  // standard alignment
-				int[] newGaps = aligner.getGapInsertionArray();
-				if (newGaps!=null) 
-					alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
-				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
-			}
-
-			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
-			return true;
-		}
-
-		return false;
-	}
 
 	/*.................................................................................................................*/
 	private void shiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped,int droppedCellCount, boolean droppedOnData){
@@ -366,23 +280,14 @@ Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.g
 	/*.................................................................................................................*/
 	private boolean alignTouchedToDropped(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
 		MesquiteNumber score = new MesquiteNumber();
-		boolean revComplemented = false;
 		int droppedCellCount=0;
-		int draggedCellCount=0;
+		boolean revComplemented=false;
 		boolean droppedOnData = !data.isInapplicable(columnDropped, recipientRow);
-		boolean draggedOnData = !data.isInapplicable(columnDragged, rowToAlign);
-		int shiftOffset =0;
-		if (shiftOnly.getValue()) { // let's find out how much data is in front of the dropped cell
+		if (shiftOnly.getValue()!=optionDown) { // let's find out how much data is in front of the dropped cell
 			for (int icDropped=0; icDropped<=columnDropped && icDropped<data.getNumChars(); icDropped++) {  // let's add up how many data-filled cells are up to the sequence dropped
 				if (!data.isInapplicable(icDropped, recipientRow))
 					droppedCellCount++;
 			}
-			for (int icDragged=0; icDragged<=columnDragged && icDragged<data.getNumChars(); icDragged++) {  // let's add up how many data-filled cells are up to the sequence dragged
-				if (!data.isInapplicable(icDragged, rowToAlign))
-					draggedCellCount++;
-			}
-
-			
 		}
 
 		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
@@ -405,7 +310,7 @@ Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.g
 			logln("Align " + (rowToAlign+1) + " onto " + (recipientRow+1));
 			long[] newAlignment = Long2DArray.extractRow(aligned,1);
 
-			if (shiftOnly.getValue()) {
+			if (shiftOnly.getValue()!=optionDown) {
 				shiftTouchedToDropped(aligned,newAlignment,  rowToAlign,  recipientRow,  columnDropped, droppedCellCount,  droppedOnData);
 			} else {  // standard alignment
 				int[] newGaps = aligner.getGapInsertionArray();
@@ -427,6 +332,7 @@ Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.g
 	boolean alignJustTouchedRow = true;
 //	int columnDragged = MesquiteInteger.unassigned;
 
+	boolean optionDown=false;
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "AlignToDropped tool touched on row.", "[column touched] [row touched]", commandName, "alignDropTouched")) {
@@ -436,6 +342,8 @@ Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.g
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
+				if (arguments.indexOf("option")>=0)
+					optionDown = true;
 				MesquiteInteger io = new MesquiteInteger(0);
 				firstColumnTouched= MesquiteInteger.fromString(arguments, io);
 				firstRowTouched= MesquiteInteger.fromString(arguments, io);
@@ -484,6 +392,9 @@ Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.g
 
 				if (!table.rowLegal(rowDropped))
 					return null;
+
+				if (arguments.indexOf("option")>=0)
+					optionDown = true;
 
 				if  (!alignJustTouchedRow){  // we are going to align all selected rows 
 					if (!table.isRowSelected(rowDropped)){     // we didn't drop it on a selected row
@@ -575,7 +486,6 @@ Debugg.println("ignoreFileSettings in setTableAndData: " + 	ignoreFileSettings.g
 		}
 		else  if (checker.compare(this.getClass(), "Toggles whether each sequence to be aligned should check to see if it needs to be reverse complemented before aligning.", "[on; off]", commandName, "toggleReverseComplementIfNecessary")) {
 			if (ignoreCommand()) return null;
-			Debugg.println(" toggle reverseComplementIfNecessary!!!!!!!!!!!");
 			boolean current = reverseComplementIfNecessary.getValue();
 			reverseComplementIfNecessary.toggleValue(parser.getFirstToken(arguments));
 		}
