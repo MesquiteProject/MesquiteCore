@@ -26,7 +26,7 @@ import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */
-public class AlignToDropped extends AlignShiftToDropped {
+public class AlignToDropped extends AlignShiftToDroppedBase {
 	public String getFunctionIconPath(){  //path to icon explaining function, e.g. a tool
 		return getPath() + "alignToDropped.gif";
 	}

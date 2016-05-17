@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.align.ShiftToDropped; 
+package mesquite.align.AlignToDroppedShift; 
 
 
 import java.awt.*;
@@ -26,7 +26,7 @@ import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */
-public  class ShiftToDropped extends AlignShiftToDropped {
+public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	public String getFunctionIconPath(){  //path to icon explaining function, e.g. a tool
 		return getPath() + "shiftToDropped.gif";
 	}

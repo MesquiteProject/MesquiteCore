@@ -26,7 +26,7 @@ import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */
-public abstract class AlignShiftToDropped extends DataWindowAssistantI {
+public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	public abstract String getFunctionIconPath();
 	
 	protected MesquiteTable table;
