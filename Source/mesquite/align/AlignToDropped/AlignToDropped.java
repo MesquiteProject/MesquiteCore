@@ -58,9 +58,29 @@ public class AlignToDropped extends AlignShiftToDroppedBase {
 		temp.addLine("subCosts " + sb.toString());
 	}
 
+	/*.................................................................................................................*/
+	public void processExtraSingleXMLPreference (String tag, String content) {
+		if ("gapOpen".equalsIgnoreCase(tag))
+			gapOpen.setValue(MesquiteInteger.fromString(content));
+		if ("gapExtend".equalsIgnoreCase(tag))
+			gapExtend.setValue(MesquiteInteger.fromString(content));
+		if ("gapOpenTerminal".equalsIgnoreCase(tag))
+			gapOpenTerminal.setValue(MesquiteInteger.fromString(content));
+		if ("gapExtendTerminal".equalsIgnoreCase(tag))
+			gapExtendTerminal.setValue(MesquiteInteger.fromString(content));
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(60);	
+		StringUtil.appendXMLTag(buffer, 2, "gapOpen",gapOpen);
+		StringUtil.appendXMLTag(buffer, 2, "gapExtend",gapExtend);
+		StringUtil.appendXMLTag(buffer, 2, "gapOpenTerminal",gapOpenTerminal);
+		StringUtil.appendXMLTag(buffer, 2, "gapExtendTerminal",gapExtendTerminal);
+		return super.preparePreferencesForXML()+buffer.toString();
+	}
 
 	/*.................................................................................................................*/
-	protected void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, boolean droppedOnData) {
+	protected void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped,  int columnDragged, boolean droppedOnData, boolean draggedOnData) {
 		int[] newGaps = aligner.getGapInsertionArray();
 		if (newGaps!=null) 
 			alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
@@ -71,6 +91,8 @@ public class AlignToDropped extends AlignShiftToDroppedBase {
 		if (checker.compare(this.getClass(), "Toggles whether the new gaps can be introduced into one or the other sequence.", "[on; off]", commandName, "toggleAllowNewGaps")) {
 		}
 		else  if (checker.compare(this.getClass(), "Allows one to specify gap opening and extension costs.", "[open; extend]", commandName, "gapCosts")) {
+			if (ignoreCommand())
+				return null;
 			MesquiteInteger io = new MesquiteInteger(0);
 			int newGapOpen = MesquiteInteger.fromString(arguments, io);
 			int newGapExtend= MesquiteInteger.fromString(arguments, io);

@@ -108,6 +108,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	public boolean isPrerelease(){
 		return true;
 	}
+	/*.................................................................................................................*/
 	public void addToSnapshot(Snapshot temp) {
 	}
 	/*.................................................................................................................*/
@@ -121,14 +122,19 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 		return temp;
 	}
 	/*.................................................................................................................*/
+	public void processExtraSingleXMLPreference (String tag, String content) {
+	}
+
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("ignoreFileSettings".equalsIgnoreCase(tag))
 			ignoreFileSettings.setValue(MesquiteBoolean.fromTrueFalseString(content));
-		 if (!preferencesProcessed || ignoreFileSettings.getValue()) {   
+		 if (!preferencesProcessed || ignoreFileSettings.getValue()) {
 			if ("warnCheckSum".equalsIgnoreCase(tag))
 				warnCheckSum.setValue(MesquiteBoolean.fromTrueFalseString(content));
 			if ("reverseComplementIfNecessary".equalsIgnoreCase(tag))
 				reverseComplementIfNecessary.setValue(MesquiteBoolean.fromTrueFalseString(content));
+			processExtraSingleXMLPreference(tag,content);
 		}
 	}
 	/*.................................................................................................................*/
@@ -181,28 +187,19 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 
 
 	/*.................................................................................................................*/
-	protected abstract void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, boolean droppedOnData);
-	/*.................................................................................................................*
-	private void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped,int droppedCellCount, boolean droppedOnData){
-
-		int[] newGaps = aligner.getGapInsertionArray();
-		if (newGaps!=null) 
-			alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
-		Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
-
-
-		}
+	protected abstract void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, int columnDragged, boolean droppedOnData, boolean draggedOnData);
 	/*.................................................................................................................*/
 	public void preRevCompSetup(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
 	}
 
 
 	/*.................................................................................................................*/
-	protected boolean shiftAlignTouchedToDropped(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
+	protected boolean alignTouchedToDroppedBase(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
 		MesquiteNumber score = new MesquiteNumber();
 		boolean revComplemented=false;
 		boolean droppedOnData = !data.isInapplicable(columnDropped, recipientRow);
-		preRevCompSetup( rowToAlign,  recipientRow,  columnDropped,  columnDragged);
+		boolean draggedOnData = !data.isInapplicable(columnDragged, rowToAlign);
+		preRevCompSetup(rowToAlign,  recipientRow,  columnDropped,  columnDragged);
 
 		if (reverseComplementIfNecessary.getValue() && data instanceof DNAData) {
 			revComplemented=MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(),rowToAlign, rowToAlign,recipientRow, false, false, false);
@@ -224,7 +221,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 			logln("Align " + (rowToAlign+1) + " onto " + (recipientRow+1));
 			long[] newAlignment = Long2DArray.extractRow(aligned,1);
 
-			alignShiftTouchedToDropped(aligned,newAlignment,  rowToAlign,  recipientRow,  columnDropped,  droppedOnData);
+			alignShiftTouchedToDropped(aligned,newAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedOnData, draggedOnData);
 
 			((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
 			return true;
@@ -316,7 +313,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 						int oldNumChars = data.getNumChars();
 						for (int it = 0; it<table.getNumRows(); it++) 
 							if (table.isRowSelected(it) && (it!=rowDropped)) {
-								if (shiftAlignTouchedToDropped(it,rowDropped, columnDropped, firstColumnTouched))
+								if (alignTouchedToDroppedBase(it,rowDropped, columnDropped, firstColumnTouched))
 									changed = true;
 								if (progIndicator != null) {
 									if (progIndicator.isAborted()) {
@@ -349,7 +346,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 					UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_ADDED});
 					boolean changed=false;
 					int oldNumChars = data.getNumChars();
-					if (shiftAlignTouchedToDropped(firstRowTouched,rowDropped, columnDropped, firstColumnTouched))
+					if (alignTouchedToDroppedBase(firstRowTouched,rowDropped, columnDropped, firstColumnTouched))
 						changed = true;
 					UndoReference uR=null;
 					if (undoInstructions!=null) {
