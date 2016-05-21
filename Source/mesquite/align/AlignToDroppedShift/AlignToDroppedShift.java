@@ -70,6 +70,10 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	public void addExtraMenus(){
 		addCheckMenuItem(null, "Shift to Dragged Sequence", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
 	}
+	/*.................................................................................................................*/
+	protected boolean alwaysAlignEntireSequences() {
+		return false;
+	}
 
 	/*.................................................................................................................*/
 	protected void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, int columnDragged, boolean droppedOnData, boolean draggedOnData){
@@ -198,7 +202,15 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 		MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 		MesquiteInteger charAdded = new MesquiteInteger(0);
-		int added = data.shiftAllCells(amountToMove, rowToAlign, true, true, true, dataChanged,charAdded, null);
+		int added = 0;
+		if (shiftOnlySelectedPiece){
+			added = data.moveCells(firstColumnSelected.getValue(), lastColumnSelected.getValue(), amountToMove, rowToAlign, rowToAlign, true, false, true, true, dataChanged,charAdded, null);
+			table.deSelectBlock(0, rowToAlign, data.getNumChars()-1, rowToAlign);
+			//data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED, null, null));
+			table.redrawFullRow(rowToAlign);
+		}
+		else
+			added = data.shiftAllCells(amountToMove, rowToAlign, true, true, true, dataChanged,charAdded, null);
 		if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
 			((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
 			//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
@@ -210,7 +222,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 	int droppedCellCount=0;
 	int draggedCellCount=0;
-
 	/*.................................................................................................................*/
 	public void preRevCompSetup(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
 		droppedCellCount=0;

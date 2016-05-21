@@ -50,6 +50,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	protected PairwiseAligner aligner;
 	protected AlignUtil alignUtil = new AlignUtil();
 	protected static boolean preferencesProcessed=false;
+	protected boolean shiftOnlySelectedPiece = false;
 
 	
 
@@ -189,9 +190,17 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	protected abstract void alignShiftTouchedToDropped(long[][] aligned, long[] newAlignment, int rowToAlign, int recipientRow, int columnDropped, int columnDragged, boolean droppedOnData, boolean draggedOnData);
 	/*.................................................................................................................*/
+	protected boolean alwaysAlignEntireSequences() {
+		return true;
+	}
+	/*.................................................................................................................*/
 	public void preRevCompSetup(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
 	}
 
+
+	/*.................................................................................................................*/
+	protected MesquiteInteger firstColumnSelected= new MesquiteInteger();
+	protected MesquiteInteger lastColumnSelected= new MesquiteInteger();
 
 	/*.................................................................................................................*/
 	protected boolean alignTouchedToDroppedBase(int rowToAlign, int recipientRow, int columnDropped, int columnDragged){
@@ -213,7 +222,19 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 			//aligner.setUseLowMem(data.getNumChars()>aligner.getCharThresholdForLowMemory());
 			originalCheckSum = ((CategoricalData)data).storeCheckSum(0, data.getNumChars()-1,rowToAlign, rowToAlign);
 			aligner.setAllowNewInternalGaps(true);
-			long[][] aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
+			long[][] aligned = null;
+			if (alwaysAlignEntireSequences())
+				aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
+			else{
+				firstColumnSelected.setToUnassigned();
+				lastColumnSelected.setToUnassigned();
+				if (!alwaysAlignEntireSequences() && table.singleContiguousBlockSelected(rowToAlign, firstColumnSelected, lastColumnSelected)) { // there is a single block selected in the row
+					shiftOnlySelectedPiece=true;
+					aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, 0, data.getNumChars(), rowToAlign,firstColumnSelected.getValue(),lastColumnSelected.getValue(),true,score);
+				} else
+					aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
+			}
+				
 			if (aligned==null) {
 				logln("Alignment failed!");
 				return false;
@@ -250,6 +271,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				MesquiteInteger io = new MesquiteInteger(0);
 				firstColumnTouched= MesquiteInteger.fromString(arguments, io);
 				firstRowTouched= MesquiteInteger.fromString(arguments, io);
+				shiftOnlySelectedPiece = false;
 
 				if (!table.rowLegal(firstRowTouched))
 					return null;
@@ -258,10 +280,11 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				}
 				else{  // it's not select, so deselect everyone else
 					table.offAllEdits();
-					table.deselectAndRedrawAllSelectedRows();
-
-					table.selectRow(firstRowTouched);
-					table.redrawFullRow(firstRowTouched);
+					if (alwaysAlignEntireSequences()){
+						table.deselectAndRedrawAllSelectedRows();
+						table.selectRow(firstRowTouched);
+						table.redrawFullRow(firstRowTouched);
+					}
 				}
 				//shimmerVerticalOn();
 				// table.shimmerHorizontalOn(_);
@@ -298,6 +321,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 
 				if (arguments.indexOf("option")>=0)
 					optionDown = true;
+				
 
 				if  (!alignJustTouchedRow){  // we are going to align all selected rows 
 					if (!table.isRowSelected(rowDropped)){     // we didn't drop it on a selected row
