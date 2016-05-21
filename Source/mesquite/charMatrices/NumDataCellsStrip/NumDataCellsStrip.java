@@ -153,6 +153,16 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 		calculatedValues = values;
 	}
 	/*.................................................................................................................*/
+	public void calculateValue(int ic) {
+		boolean noRowsSelected =  !table.anyRowSelected();
+		calculatedValues[ic] = 0;
+		for (int it=0; it<data.getNumTaxa(); it++)
+			if (!selectedOnly.getValue() || table.isRowSelected(it) || noRowsSelected)
+				if (!data.isInapplicable(ic, it))
+					calculatedValues[ic]++;
+
+	}
+	/*.................................................................................................................*/
 	public void drawInCell(int ic, Graphics g, int x, int y, int w, int h, boolean selected) {
 		if (data == null || calculatedValues==null) 
 			return;
@@ -162,6 +172,7 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 			Color cellColor = null;
 			String cellString = "";
 			Color stringColor = null;
+			calculateValue(ic);
 			if (!MesquiteInteger.isCombinable(calculatedValues[ic])) {
 				cellColor=Color.white;
 			} else if (calculatedValues[ic]==0) {
