@@ -455,10 +455,14 @@ public class NCBIUtil {
 		try {
 			String searchString="";
 			for (int i=0; i<maxGenBankRequest && i+startIndex<accessionNumbers.length;i++) {
-				searchString+=accessionNumbers[i+startIndex];
-				if (i==maxGenBankRequest-1 || i<accessionNumbers.length-1)
-					searchString+="+OR+";
+				if (StringUtil.notEmpty(accessionNumbers[i+startIndex])) {
+					searchString+=accessionNumbers[i+startIndex];
+					if (i==maxGenBankRequest-1 || i<accessionNumbers.length-1)
+						searchString+="+OR+";
+				}
 			}
+			if (StringUtil.blank(searchString))
+				return null;
 			if (writeLog && mod!=null)
 				mod.log(".");
 
@@ -493,7 +497,7 @@ public class NCBIUtil {
 	static int maxGenBankRequest = 20;
 	/*.................................................................................................................*/
 	public static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
-		if (accessionNumbers==null)
+		if (accessionNumbers==null || accessionNumbers.length==0)
 			return null;
 		if (accessionNumbers.length<=maxGenBankRequest)
 			return getGenBankIDs20(accessionNumbers, 0,nucleotides, mod, writeLog);

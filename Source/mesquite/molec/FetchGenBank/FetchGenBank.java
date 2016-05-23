@@ -178,6 +178,8 @@ public class FetchGenBank extends UtilitiesAssistant {
 			/*for (int i=0; i<idList.length; i++) 
 						if (!StringUtil.blank(idList[i])) 				
 							logln ("To Fetch " + idList[i]);*/
+			
+			boolean saveAsFasta = true;
 
 			MesquiteString taxonName= new MesquiteString();
 			MesquiteString voucherCode= new MesquiteString();
@@ -203,9 +205,30 @@ public class FetchGenBank extends UtilitiesAssistant {
 							filePath += "&f"+fragmentName.getValue()+"_";
 						filePath += "&a"+accessionNumbers[i];
 						if (!taxonName.isBlank())
-							filePath += taxonName.getValue()+"_";
-						filePath += ".xml";
-						MesquiteFile.putFileContents(filePath, sequences[i], true);
+							filePath += "_&n"+taxonName.getValue();
+						StringBuffer fileContents = new StringBuffer();
+						if (saveAsFasta) {
+							filePath += ".fas";
+							fileContents.append(">");
+							if (!taxonName.isBlank())
+								fileContents.append(taxonName.getValue()+" ");
+							if (!geneName.isBlank())
+								fileContents.append(geneName.getValue()+ " ");
+							if (!fragmentName.isBlank())
+								fileContents.append(fragmentName.getValue()+ " ");
+							if (!voucherCode.isBlank())
+								fileContents.append(voucherCode.getValue()+ " ");
+							fileContents.append(StringUtil.lineEnding());
+							if (!sequence.isBlank())
+								fileContents.append(sequence.getValue());
+							fileContents.append(StringUtil.lineEnding());
+
+						}
+						else {
+							filePath += ".xml";
+							fileContents.append(sequences[i]);
+						}
+						MesquiteFile.putFileContents(filePath, fileContents.toString(), true);
 
 						sequencesFetched=true;
 					}
