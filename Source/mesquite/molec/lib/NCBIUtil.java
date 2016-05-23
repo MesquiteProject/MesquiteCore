@@ -268,16 +268,34 @@ public class NCBIUtil {
 		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?" + query);
 	}
 	/*.................................................................................................................*/
-	public static URL getFetchSequenceAddress(String uid, boolean isNucleotides)
+	public static URL getFetchSequenceAddress(String uid, String fileFormat, String retMode, boolean isNucleotides)
 	throws MalformedURLException {
+		String format = "fasta";
+		if (!StringUtil.blank(fileFormat))
+			format = fileFormat;
+		String retM = "";
+		if (!StringUtil.blank(retMode))
+			retM = "&retMode="+retMode;
+
 		String query = getMesquiteGenBankURLMarker() + "&db=" ;
 		if (isNucleotides)
 			query += "nucleotide";
 		else
 			query += "protein";
-		query += "&id="+uid+"&rettype=fasta&retmax=1";
+		
+		query += "&id="+uid+"&rettype="+format+retM+"&retmax=1";
 
 		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + query);
+	}
+	/*.................................................................................................................*/
+	public static URL getFetchSequenceAddress(String uid, String fileFormat, boolean isNucleotides)
+	throws MalformedURLException {
+		return getFetchSequenceAddress(uid,fileFormat,null,isNucleotides);
+	}
+	/*.................................................................................................................*/
+	public static URL getFetchSequenceAddress(String uid, boolean isNucleotides)
+	throws MalformedURLException {
+		return getFetchSequenceAddress(uid,"fasta", isNucleotides);
 	}
 	/*.................................................................................................................*/
 	public static URL getESearchAddress(String accessionNumber, boolean nucleotides)
@@ -673,9 +691,9 @@ public class NCBIUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, StringBuffer report){ 
+	public static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
 		try {
-			URL queryURL = getFetchSequenceAddress(id, isNucleotides);
+			URL queryURL = getFetchSequenceAddress(id, fileFormat, retMode, isNucleotides);
 			URLConnection connection = queryURL.openConnection();
 			InputStream in = connection.getInputStream();
 
@@ -695,6 +713,10 @@ public class NCBIUtil {
 			return null;
 		}
 
+	}
+	/*.................................................................................................................*/
+	public static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, StringBuffer report){ 
+		return fetchGenBankSequence(id,isNucleotides, mod, writeLog,"fasta", null, report);
 	}
 	/*.................................................................................................................*/
 	public static String fetchGenBankSequenceAsFASTA(String id,  boolean isNucleotides, MesquiteModule mod, boolean writeLog, StringBuffer results, StringBuffer report){ 
@@ -721,6 +743,27 @@ public class NCBIUtil {
 			// give warning
 			return null;
 		}
+
+	}
+	/*.................................................................................................................*/
+	public static String[] fetchGenBankSequenceStrings(String[] idList, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
+		String[] sequences = new String[idList.length];
+		for (int i=0; i<idList.length; i++) {
+			if (!StringUtil.blank(idList[i])) {
+
+				if (writeLog && mod!=null){
+					mod.log("Fetching " + idList[i]);
+					mod.log(".");
+				}
+				String seq = fetchGenBankSequence(idList[i], isNucleotides,  mod, writeLog, fileFormat, retMode, report);
+				if (StringUtil.notEmpty(seq))
+					sequences[i]=seq;
+				else if (i==0)
+					return null;
+				mod.logln("");
+			}
+		}
+		return sequences;
 
 	}
 	/*.................................................................................................................*/
