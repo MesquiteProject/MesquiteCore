@@ -190,9 +190,9 @@ public class FetchGenBank extends UtilitiesAssistant {
 				return false;
 			if (!directory.endsWith(MesquiteFile.fileSeparator))
 				directory+=MesquiteFile.fileSeparator;
-			originalGeneNames = new String[]{"28S", "large subunit", "18S", "small subunit", "cytochrome oxidase", "COI", "Arginine", "carbomyl", "CAD", "wingless", "topoisomerase", "muscle", "MSP"};
-			standardizedGeneNames = new String[]{"28S", "28S", "18S", "18S", "COI", "COI", "ArgK", "CAD", "CAD", "wg", "Topo", "MSP", "MSP"};
-			fragmentNames = new String[]{"", "", "", "", "COIBC", "COIBC", "", "CAD4","CAD4", "", "", "", ""};
+			originalGeneNames = new String[]{"28S", "large subunit", "18S", "small subunit", "cytochrome oxidase", "COI", "Arginine", "carbomyl", "CAD", "wingless", "topoisomerase", "muscle", "MSP", "polymerase", "spectrin"};
+			standardizedGeneNames = new String[]{"28S", "28S", "18S", "18S", "COI", "COI", "ArgK", "CAD", "CAD", "wg", "Topo", "MSP", "MSP", "Pol2", "AS"};
+			fragmentNames = new String[]{"", "", "", "", "COIBC", "COIBC", "", "CAD4","CAD4", "", "", "", "","", ""};
 
 
 			String[] accessionNumbers = StringUtil.delimitedTokensToStrings(genBankNumbers,',',true);

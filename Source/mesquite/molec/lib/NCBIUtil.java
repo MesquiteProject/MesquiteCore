@@ -449,7 +449,7 @@ public class NCBIUtil {
 		return accessions;
 	}
 
-
+/** returns up to 20 GenBank IDs given a list of accession numbers.  Note that the IDs may not be listed in the same order as the accession numbers!!!*/
 	/*.................................................................................................................*/
 	public synchronized static String[] getGenBankIDs20(String[] accessionNumbers, int startIndex, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
 		try {
