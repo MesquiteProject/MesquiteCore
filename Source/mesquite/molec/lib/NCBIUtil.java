@@ -305,7 +305,7 @@ public class NCBIUtil {
 			query += "nucleotide";
 		else
 			query += "protein";
-		query+= "&term="+accessionNumber;
+		query+= "&retmode=xml&term="+accessionNumber;
 
 		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?" + query);
 	}
@@ -451,7 +451,7 @@ public class NCBIUtil {
 
 
 	/*.................................................................................................................*/
-	public static String[] getGenBankIDs20(String[] accessionNumbers, int startIndex, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+	public synchronized static String[] getGenBankIDs20(String[] accessionNumbers, int startIndex, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
 		try {
 			String searchString="";
 			for (int i=0; i<maxGenBankRequest && i+startIndex<accessionNumbers.length;i++) {
@@ -496,7 +496,7 @@ public class NCBIUtil {
 	}
 	static int maxGenBankRequest = 20;
 	/*.................................................................................................................*/
-	public static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+	public synchronized static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
 		if (accessionNumbers==null || accessionNumbers.length==0)
 			return null;
 		if (accessionNumbers.length<=maxGenBankRequest)
@@ -695,7 +695,7 @@ public class NCBIUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
+	public synchronized static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
 		try {
 			URL queryURL = getFetchSequenceAddress(id, fileFormat, retMode, isNucleotides);
 			URLConnection connection = queryURL.openConnection();
@@ -707,7 +707,7 @@ public class NCBIUtil {
 			while ((c = in.read()) != -1) {
 				fetchBuffer.append((char) c);
 				count++;
-				if (count % 200==0 && writeLog && mod!=null)
+				if (count % 500==0 && writeLog && mod!=null)
 					mod.log(".");
 			}
 			in.close();
@@ -750,13 +750,13 @@ public class NCBIUtil {
 
 	}
 	/*.................................................................................................................*/
-	public static String[] fetchGenBankSequenceStrings(String[] idList, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
+	public synchronized static String[] fetchGenBankSequenceStrings(String[] idList, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
 		String[] sequences = new String[idList.length];
 		for (int i=0; i<idList.length; i++) {
 			if (!StringUtil.blank(idList[i])) {
 
 				if (writeLog && mod!=null){
-					mod.log("Fetching " + idList[i]);
+					mod.log("Fetching " + idList[i] + " (" + (i+1) + " of " + idList.length+")");
 					mod.log(".");
 				}
 				String seq = fetchGenBankSequence(idList[i], isNucleotides,  mod, writeLog, fileFormat, retMode, report);

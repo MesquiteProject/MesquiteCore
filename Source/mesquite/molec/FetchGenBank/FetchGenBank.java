@@ -29,13 +29,16 @@ public class FetchGenBank extends UtilitiesAssistant {
 	String genBankNumbers;
 	String[] originalGeneNames = null;
 	String[] standardizedGeneNames = null;
+	String[] fragmentNames = null;
+	String currentFragmentName = "";
 	boolean isDNA = true;
+	boolean saveAsFasta = true;
+	String publicationCode ="PUB001";
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
 		addMenuItem(null, "Fetch GenBank Sequences...", makeCommand("fetchGenBank", this));
-		originalGeneNames = new String[]{"28S", "large subunit", "18S", "small subunit", "cytochrome oxidase", "Arginine", "carbomyl", "wingless", "topoisomerase", "muscle", "MSP"};
-		standardizedGeneNames = new String[]{"28S", "28S", "18S", "18S", "COI", "ArgK", "CAD", "wg", "Topo", "MSP", "MSP"};
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -61,17 +64,22 @@ public class FetchGenBank extends UtilitiesAssistant {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog queryFilesDialog = new ExtensibleDialog(containerOfModule(), "Fetch GenBank Sequences",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		queryFilesDialog.addLabel("Accession Numbers (separated by commas); \nranges with commas allowed:");
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Fetch GenBank Sequences",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Accession Numbers (separated by commas); \nranges with commas allowed:");
 
 		genBankNumbers = "";
-		TextArea numbersArea = queryFilesDialog.addTextArea("",  5);
+		TextArea numbersArea = dialog.addTextArea("",  5);
+		Checkbox fastaCheckbox = dialog.addCheckBox("save as fasta files (as opposed to xml)",saveAsFasta);
+		SingleLineTextField publicationCodeField = dialog.addTextField("Publication code",publicationCode, 40);
 
-		queryFilesDialog.completeAndShowDialog(true);
+
+		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			genBankNumbers = numbersArea.getText();
+			saveAsFasta = fastaCheckbox.getState();
+			publicationCode= publicationCodeField.getText();
 		}
-		queryFilesDialog.dispose();
+		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
@@ -101,6 +109,7 @@ public class FetchGenBank extends UtilitiesAssistant {
 	/*.................................................................................................................*/
 	String getGeneInfo(Element featureTableElement, boolean useTranslationTable) {
 		String geneName = "";
+		currentFragmentName="";
 		List featureElements = featureTableElement.elements();
 		for (Iterator iter = featureElements.iterator(); iter.hasNext();) {   // this is going through all of the notices
 			Element featureElement = (Element) iter.next();
@@ -114,9 +123,10 @@ public class FetchGenBank extends UtilitiesAssistant {
 					geneName = gbQualifierValue.getText();
 					if (useTranslationTable && StringUtil.notEmpty(geneName)) {
 						for (int i=0;i<originalGeneNames.length; i++) {
-							if (geneName.toLowerCase().indexOf(originalGeneNames[i].toLowerCase())>=0)
+							if (geneName.toLowerCase().indexOf(originalGeneNames[i].toLowerCase())>=0){
+								currentFragmentName= fragmentNames[i];
 								return standardizedGeneNames[i];
-								
+							}
 						}
 					}
 				}
@@ -124,25 +134,42 @@ public class FetchGenBank extends UtilitiesAssistant {
 		}
 		return geneName;
 	}
+	
+	// GIVE USERS OPTIONS FOR THE FOLLOWING
+	String voucherCodePrefix="DRM";
+	boolean lastTokenForVoucherCode = true;
+
+
 	/*.................................................................................................................*/
-	void processGenBankXML (String gbxml, MesquiteString taxonName, MesquiteString voucherCode, MesquiteString sequence, MesquiteString geneName){
+	synchronized void processGenBankXML (String gbxml, MesquiteString accessionNumber, MesquiteString taxonName, MesquiteString voucherCode, MesquiteString sequence, MesquiteString geneName){
 		Document doc = XMLUtil.getDocumentFromString("GBSet", gbxml);
 		Element root = doc.getRootElement();
 		Element gbSeqElement = root.element("GBSeq");
+		Element accessionElement = gbSeqElement.element("GBSeq_primary-accession");
+		String accession = accessionElement.getText();
 		Element taxonNameElement = gbSeqElement.element("GBSeq_organism");
 		String taxName = taxonNameElement.getText();
 		Element sequenceElement = gbSeqElement.element("GBSeq_sequence");
 		String seq = sequenceElement.getText();
 		Element featureTableElement = gbSeqElement.element("GBSeq_feature-table");
 
+		
+		
+		
+		
 		String voucherInfo = getVoucherInfo(featureTableElement);
 		String voucherC = null;
 		if (StringUtil.notEmpty(voucherInfo)) {
-			voucherC=StringUtil.getLastItem(voucherInfo, ":");
+			if (lastTokenForVoucherCode)
+				voucherC=StringUtil.getLastItem(voucherInfo, ":", " ");
+			else
+				voucherC = voucherInfo;
 		}
 
 		String geneN = getGeneInfo(featureTableElement, true);
 
+		if (accessionNumber!=null)
+			accessionNumber.setValue(accession);
 		if (taxonName!=null)
 			taxonName.setValue(taxName);
 		if (voucherCode!=null && voucherC!=null)
@@ -155,7 +182,7 @@ public class FetchGenBank extends UtilitiesAssistant {
 
 	/*.................................................................................................................*/
 	/** Called to operate on the data in all cells.  Returns true if data altered*/
-	public boolean fetchGenBank(){ 
+	public synchronized boolean fetchGenBank(){ 
 		logln("\nFetching GenBank entries: "  + genBankNumbers);
 		try {
 			String directory = MesquiteFile.chooseDirectory("Choose directory into which files will be saved:");
@@ -163,6 +190,9 @@ public class FetchGenBank extends UtilitiesAssistant {
 				return false;
 			if (!directory.endsWith(MesquiteFile.fileSeparator))
 				directory+=MesquiteFile.fileSeparator;
+			originalGeneNames = new String[]{"28S", "large subunit", "18S", "small subunit", "cytochrome oxidase", "COI", "Arginine", "carbomyl", "CAD", "wingless", "topoisomerase", "muscle", "MSP"};
+			standardizedGeneNames = new String[]{"28S", "28S", "18S", "18S", "COI", "COI", "ArgK", "CAD", "CAD", "wg", "Topo", "MSP", "MSP"};
+			fragmentNames = new String[]{"", "", "", "", "COIBC", "COIBC", "", "CAD4","CAD4", "", "", "", ""};
 
 
 			String[] accessionNumbers = StringUtil.delimitedTokensToStrings(genBankNumbers,',',true);
@@ -174,18 +204,16 @@ public class FetchGenBank extends UtilitiesAssistant {
 			String[] idList = NCBIUtil.getGenBankIDs(accessionNumbers, isDNA,  this, true);
 			if (idList==null)
 				return false;
-			logln("IDs acquired.");
+			logln("\nIDs acquired.");
 			/*for (int i=0; i<idList.length; i++) 
 						if (!StringUtil.blank(idList[i])) 				
 							logln ("To Fetch " + idList[i]);*/
 			
-			boolean saveAsFasta = true;
-
 			MesquiteString taxonName= new MesquiteString();
 			MesquiteString voucherCode= new MesquiteString();
 			MesquiteString sequence= new MesquiteString();
 			MesquiteString geneName= new MesquiteString();
-			MesquiteString fragmentName= new MesquiteString();
+			MesquiteString accessionNumber= new MesquiteString();
 			boolean sequencesFetched = false;
 			logln("\nRequesting sequences.\n");
 			StringBuffer report = new StringBuffer();
@@ -195,17 +223,29 @@ public class FetchGenBank extends UtilitiesAssistant {
 					if (StringUtil.notEmpty(sequences[i])) {
 						String fileName = sequences[i] ;
 						String fileContent = "";
-						processGenBankXML(sequences[i], taxonName, voucherCode, sequence, geneName);
+						taxonName.setValue("");
+						voucherCode.setValue("");
+						sequence.setValue("");
+						geneName.setValue("");
+						accessionNumber.setValue("");
+						processGenBankXML(sequences[i],accessionNumber, taxonName, voucherCode, sequence, geneName);
 						String filePath = directory;
-						if (!voucherCode.isBlank())
-							filePath += "&v"+voucherCode.getValue()+"_";
+						if (!voucherCode.isBlank()){
+							filePath += "&v";
+							filePath += voucherCodePrefix;
+							filePath += voucherCode.getValue()+"_";
+						}
 						if (!geneName.isBlank())
 							filePath += "&g"+geneName.getValue()+"_";
-						if (!fragmentName.isBlank())
-							filePath += "&f"+fragmentName.getValue()+"_";
-						filePath += "&a"+accessionNumbers[i];
+						if (StringUtil.notEmpty(currentFragmentName))
+							filePath += "&f"+currentFragmentName+"_";
+						if (StringUtil.notEmpty(publicationCode))
+							filePath += "&p"+publicationCode+"_";
+						if (!accessionNumber.isBlank())
+							filePath += "&a"+accessionNumber.getValue();
 						if (!taxonName.isBlank())
 							filePath += "_&n"+taxonName.getValue();
+
 						StringBuffer fileContents = new StringBuffer();
 						if (saveAsFasta) {
 							filePath += ".fas";
@@ -214,8 +254,8 @@ public class FetchGenBank extends UtilitiesAssistant {
 								fileContents.append(taxonName.getValue()+" ");
 							if (!geneName.isBlank())
 								fileContents.append(geneName.getValue()+ " ");
-							if (!fragmentName.isBlank())
-								fileContents.append(fragmentName.getValue()+ " ");
+							if (StringUtil.notEmpty(currentFragmentName))
+								fileContents.append(currentFragmentName+ " ");
 							if (!voucherCode.isBlank())
 								fileContents.append(voucherCode.getValue()+ " ");
 							fileContents.append(StringUtil.lineEnding());
@@ -237,6 +277,7 @@ public class FetchGenBank extends UtilitiesAssistant {
 
 
 			log(report.toString());
+			log("Fetching completed");
 			return sequencesFetched;
 
 
