@@ -232,6 +232,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		return "Character Matrix Editor";
 	}
 
+	public void fileReadIn(MesquiteFile file){
+		if (bdw != null)
+			bdw.requestFocus();
+	}
 	/* ................................................................................................................. */
 	// public BasicDataWindow getBasicDataWindow() {
 	// return bdw;
@@ -606,7 +610,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		resetTitle();
 	}
-
+public void requestFocus(){
+	table.requestFocus();
+}
 	/* ................................................................................................................. */
 	/**
 	 * When called the window will determine its own title. MesquiteWindows need to be self-titling so that when things change (names of files, tree blocks, etc.) they can reset their titles properly
@@ -2561,6 +2567,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	public void setWindowSize(int width, int height) {
 		super.setWindowSize(width, height);
 		checkSizes();
+	}
+	
+	public void setVisible(boolean vis){
+		super.setVisible(vis);
+		if (table != null)
+			table.requestFocus();
 	}
 
 	void checkSizes() {

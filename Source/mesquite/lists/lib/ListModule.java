@@ -16,6 +16,7 @@ package mesquite.lists.lib;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
@@ -72,6 +73,11 @@ public abstract class ListModule extends ManagerAssistant  {
 				text += "\n\n----------------\nNotes:\n" + s + "\n---------------\n\n";
 		}
 		return text;
+	}
+	public void fileReadIn(MesquiteFile file){
+		ListWindow window = ((ListWindow)getModuleWindow());
+		if (window != null)
+			window.requestFocus();
 	}
 	/*.................................................................................................................*/
 	public boolean columnsMovable(){

@@ -128,7 +128,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		MesquiteWindow.addKeyListener(this, table);
 		resetTitle();
 	}
-
+	public void requestFocus(){
+		table.requestFocus();
+	}
 	public String getFindLabel(){
 		return "Find String in Table...";
 	}

@@ -389,6 +389,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		}
 		showInLayout(w.getTileLocation(), s);
 		setAsFrontWindow(w);
+		w.requestFocus();
 		resetSizes(true);
 		validate();
 		if (tabs !=null)
@@ -798,6 +799,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (frontWindow != null){
 			showInLayout(frontWindow.getTileLocation(), Integer.toString(frontWindow.getID()));	
 			resetSizes(true);
+			frontWindow.requestFocus();
 		}
 	}
 	/*.................................................................................................................*/

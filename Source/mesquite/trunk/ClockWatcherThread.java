@@ -63,7 +63,11 @@ public class ClockWatcherThread extends Thread {
 			}
 			catch (Exception e){
 			}
-
+/*if (KeyboardFocusManager.getCurrentKeyboardFocusManager() != null && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null){
+	System.out.println("" + KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getClass());
+System.out.println("xxx " + MesquiteWindow.windowOfItem(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()));
+}
+*/
 			sleepTime = sleep;
 			sleepCount++;
 			for (int i=0; i<mThreads.length && mThreads[i]!=null; i++){  //go through current threads
