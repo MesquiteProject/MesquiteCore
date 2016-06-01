@@ -128,7 +128,6 @@ public abstract class TreeInferer extends TreeBlockFiller {
 				SimpleTreeWindow stw = (SimpleTreeWindow)w;
 				if (title.isBlank())
 					stw.setWindowTitle(title.getValue());
-				
 				int taxonSpacing = 14;
 				int numTaxaInTree = tree.numberOfTerminalsInClade(tree.getRoot());
 				int orientation = stw.getOrientation();
@@ -140,7 +139,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 				}
 				else 
 					stw.setMinimumFieldSize(-1, -1); 
-				stw.sizeDisplays();
+				stw.sizeDisplays(false);
 				
 			}
 			String commands = getExtraIntermediateTreeWindowCommands();

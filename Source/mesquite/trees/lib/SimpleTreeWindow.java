@@ -220,14 +220,30 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		return treeDisplay.getOrientation();
 	}
 	/*.................................................................................................................*/
-	public void sizeDisplays(){
+	public void sizeDisplays(boolean resetScrollLocation){
 		if (treeDisplay == null || messagePanel == null)
 			return;
 		totalWidth = getWidth();
 		totalHeight = getHeight() - 16;
-		treeDisplay.setLocation(0,0);
+		if (resetScrollLocation) 
+			treeDisplay.setLocation(0,0); 
+		else {
+			Point loc = treeDisplay.getLocation();
+			if (loc.x>treeDisplay.getWidth())
+				loc.x=treeDisplay.getWidth();
+			treeDisplay.setLocation(loc);
+		}
 		scrollPane.setSize(totalWidth,totalHeight);
-		scrollPane.setLocation(0,0);
+		if (resetScrollLocation) 
+			scrollPane.setLocation(0,0);
+		else {
+			Point loc = scrollPane.getLocation();
+			if (loc.x>scrollPane.getWidth())
+				loc.x=scrollPane.getWidth();
+			if (loc.y>totalHeight)
+				loc.y=totalHeight;
+			scrollPane.setLocation(loc);
+		}
 		
 		int w = totalWidth;
 		int h = totalHeight;
@@ -241,6 +257,10 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		messagePanel.setSize(totalWidth, 16);
 		messagePanel.setLocation(0, totalHeight);
 		resetDisplay(treeDisplay);
+	}
+	/*.................................................................................................................*/
+	public void sizeDisplays(){
+		sizeDisplays(true);
 	}
 	void resetDisplay(TreeDisplay treeDisplay){
 		treeDisplay.setVisRect(new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight()));
