@@ -53,8 +53,8 @@ public class ClockWatcherThread extends Thread {
 			MesquiteTrunk.checkForResetCheckMenuItems();
 			if (sleptLong || sleepCount % (sleep/catnap) == 0) {
 				MesquiteThread.surveyDoomedIndicators();
-				//if (MesquiteTrunk.isMacOSXJaguar())
-				//	MesquiteThread.surveyNewWindows();
+				if (MesquiteTrunk.isMacOSX())
+					MesquiteThread.surveyNewWindows();
 			}
 			MesquiteThread[] mThreads = new MesquiteThread[MesquiteThread.threads.size()];
 			try {
@@ -63,7 +63,6 @@ public class ClockWatcherThread extends Thread {
 			}
 			catch (Exception e){
 			}
-
 
 			sleepTime = sleep;
 			sleepCount++;

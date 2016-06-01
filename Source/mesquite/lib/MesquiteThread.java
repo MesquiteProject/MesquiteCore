@@ -462,7 +462,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		}
 	}
 
-	/* Called only for OS X jaguar, whose paint bugs with new window are worked around if resize forced*/
+	/* Used to be called only for OS X jaguar, whose paint bugs with new window are worked around if resize forced, but resurrected for El Capitan*/
 	public static void surveyNewWindows(){
 		try {
 			if (MesquiteModule.mesquiteTrunk.windowVector.size() == 0)
@@ -473,7 +473,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 					MesquiteWindow win = (MesquiteWindow)e.nextElement();
 					if (win.isVisible()){
 						win.tickled++;
-						if (win.tickled==2) {
+						if (win.tickled==1) {
 							Toolkit.getDefaultToolkit().sync();
 							win.setWindowSize(win.getWindowWidth(), win.getWindowHeight());
 						}

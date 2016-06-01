@@ -28,6 +28,7 @@ import java.io.*;
 /* ======================================================================== */
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
+	public static int recoveryDelay = 0;
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -222,7 +223,6 @@ public class ShellScriptUtil  {
 		}
 	}
 
-
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
@@ -268,6 +268,15 @@ public class ShellScriptUtil  {
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
 			return false;
 		}
+		
+		try {  
+			Debugg.println("About to sleep");
+			Thread.sleep(recoveryDelay * 1000);
+			Debugg.println("Done sleeping");
+		}
+		catch (InterruptedException e){
+		}
+		
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
 		return true;

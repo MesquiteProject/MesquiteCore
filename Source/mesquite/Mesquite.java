@@ -674,6 +674,8 @@ public class Mesquite extends MesquiteTrunk
 				logWindow.showPrompt();
 			}
 			logWindow.setVisible(true);
+			logWindow.resetWindowSizeForce();
+
 		}
 
 		/* */
@@ -922,6 +924,11 @@ public class Mesquite extends MesquiteTrunk
 			if (MesquiteInteger.isCombinable(iq))
 				numPrevLogs = iq;
 		}
+		else if ("scriptRecoveryDelay".equalsIgnoreCase(tag)){
+			int iq = MesquiteInteger.fromString(content);
+			if (MesquiteInteger.isCombinable(iq))
+				ShellScriptUtil.recoveryDelay = iq;
+		}
 		else if ("maxNumMatrixUndoTaxa".equalsIgnoreCase(tag)){
 			int iq = MesquiteInteger.fromString(content);
 			if (MesquiteInteger.isCombinable(iq))
@@ -1007,6 +1014,7 @@ public class Mesquite extends MesquiteTrunk
 		StringUtil.appendXMLTag(buffer, 2, "configFile", configFile);  
 		StringUtil.appendXMLTag(buffer, 2, "consoleMode", consoleMode);  
 		StringUtil.appendXMLTag(buffer, 2, "numPrevLogs", numPrevLogs);  
+		StringUtil.appendXMLTag(buffer, 2, "scriptRecoveryDelay", ShellScriptUtil.recoveryDelay);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoTaxa", maxNumMatrixUndoTaxa);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoChars", maxNumMatrixUndoChars);  
 
