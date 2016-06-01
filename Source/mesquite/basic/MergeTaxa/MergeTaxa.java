@@ -25,7 +25,7 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class MergeTaxa extends TaxonUtility {
-//	int maxNameLength=30;
+	//	int maxNameLength=30;
 	boolean keepEntireName=true;
 	static int USEFIRSTNAME = 0;
 	static int KEEPENTIRE = 1;
@@ -35,6 +35,8 @@ public class MergeTaxa extends TaxonUtility {
 	int endLengthToKeep = 4;
 	boolean preferencesSet = false;
 	boolean setMultiplestatesToUncertainty = false;
+	boolean keepUnmergedTaxa = false;  
+	boolean addMergedToName = true;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
@@ -47,7 +49,7 @@ public class MergeTaxa extends TaxonUtility {
 		} else  if ("endLengthToKeep".equalsIgnoreCase(tag)) {
 			endLengthToKeep = MesquiteInteger.fromString(content);
 		} else  if ("keepEntireName".equalsIgnoreCase(tag)) {   // retain this for older installations before keepMode was added
-			keepEntireName = MesquiteBoolean.fromOffOnString(content);
+			keepEntireName = MesquiteBoolean.fromTrueFalseString(content);
 			if (keepEntireName)
 				keepMode=KEEPENTIRE;
 			else
@@ -55,18 +57,24 @@ public class MergeTaxa extends TaxonUtility {
 		} else  if ("keepMode".equalsIgnoreCase(tag)) {
 			keepMode = MesquiteInteger.fromString(content);
 		} else  if ("setMultiplestatesToUncertainty".equalsIgnoreCase(tag)) {
-			setMultiplestatesToUncertainty = MesquiteBoolean.fromOffOnString(content);
+			setMultiplestatesToUncertainty = MesquiteBoolean.fromTrueFalseString(content);
+		} else  if ("addMergedToName".equalsIgnoreCase(tag)) {
+			addMergedToName = MesquiteBoolean.fromTrueFalseString(content);
+		}  else  if ("keepUnmergedTaxa".equalsIgnoreCase(tag)) {
+			keepUnmergedTaxa = MesquiteBoolean.fromTrueFalseString(content);
 		}  
 
 		preferencesSet = true;
 	}
-/*.................................................................................................................*/
-public String preparePreferencesForXML () {
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "startLengthToKeep", startLengthToKeep);  
 		StringUtil.appendXMLTag(buffer, 2, "endLengthToKeep", endLengthToKeep);  
 		StringUtil.appendXMLTag(buffer, 2, "keepMode", keepMode);  
 		StringUtil.appendXMLTag(buffer, 2, "setMultiplestatesToUncertainty", setMultiplestatesToUncertainty);  
+		StringUtil.appendXMLTag(buffer, 2, "addMergedToName", addMergedToName);  
+		StringUtil.appendXMLTag(buffer, 2, "keepUnmergedTaxa", keepUnmergedTaxa);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -76,13 +84,15 @@ public String preparePreferencesForXML () {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Merge Taxa",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryDialog.addLabel("Merge Taxa");
-		
 		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, keepMode);
 
 		IntegerField startLengthToKeepField = queryDialog.addIntegerField("Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
 		IntegerField endLengthToKeepField = queryDialog.addIntegerField("Number of characters from end of each name to retain:", endLengthToKeep, 6, 0, 200);
-		
+
+		Checkbox addMergedToNameBox = queryDialog.addCheckBox("Add \"merged\" to name", addMergedToName);
 		Checkbox setMultipleStatesUncertaintyBox = queryDialog.addCheckBox("Set merged cells with multiple states to uncertainty rather than polymorphism", setMultiplestatesToUncertainty);
+		Checkbox keepUnmergedTaxaBox = queryDialog.addCheckBox("Keep original, unmerged taxa", keepUnmergedTaxa);
+
 
 		queryDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -90,6 +100,8 @@ public String preparePreferencesForXML () {
 			startLengthToKeep = startLengthToKeepField.getValue();
 			endLengthToKeep = endLengthToKeepField.getValue();
 			setMultiplestatesToUncertainty = setMultipleStatesUncertaintyBox.getState();
+			addMergedToName = addMergedToNameBox.getState();
+			keepUnmergedTaxa = keepUnmergedTaxaBox.getState();
 			storePreferences();
 		}
 		queryDialog.dispose();
@@ -135,31 +147,33 @@ public String preparePreferencesForXML () {
 		}
 		int firstSelected = taxa.firstSelected();
 		String originalTaxonName = taxa.getTaxonName(firstSelected);
-		
-	//now let's merge the taxon names
+
+		//now let's merge the taxon names
 		StringBuffer sb = new StringBuffer();
 		int count=0;
-			for (int it = 0; it<taxa.getNumTaxa(); it++) {
-				if (selected[it]) {
-					String s = taxa.getTaxonName(it);
-					if (keepMode==KEEPPARTIAL && startLengthToKeep>0 && endLengthToKeep>0) {
-						if (s.length()>startLengthToKeep+endLengthToKeep) {
-							sb.append(s.substring(0,startLengthToKeep)+s.substring(s.length()-endLengthToKeep));
-						}
-					} else {
-						sb.append(s);
-						if (keepMode==USEFIRSTNAME) {
-							break;
-						}
+		for (int it = 0; it<taxa.getNumTaxa(); it++) {
+			if (selected[it]) {
+				String s = taxa.getTaxonName(it);
+				if (keepMode==KEEPPARTIAL && startLengthToKeep>0 && endLengthToKeep>0) {
+					if (s.length()>startLengthToKeep+endLengthToKeep) {
+						sb.append(s.substring(0,startLengthToKeep)+s.substring(s.length()-endLengthToKeep));
 					}
-					count++;
-					if (count<numSelected)
-						sb.append("+");
+				} else {
+					sb.append(s);
+					if (keepMode==USEFIRSTNAME) {
+						break;
+					}
 				}
+				count++;
+				if (count<numSelected)
+					sb.append("+");
 			}
-	
-/*
- * 		if (sb.length()> maxNameLength && !keepEntireName) {
+		}
+		if (addMergedToName)
+			sb.append(" merged");
+
+		/*
+		 * 		if (sb.length()> maxNameLength && !keepEntireName) {
 			int indivLength = maxNameLength / numSelected-1;
 			count=0;
 			sb.setLength(0);
@@ -192,39 +206,52 @@ public String preparePreferencesForXML () {
 					}
 				}
 		}
-		*/
-	//	selected[firstSelected] = false;
+		 */
+		//	selected[firstSelected] = false;
+		int destinationTaxon = firstSelected;
+		if (keepUnmergedTaxa) {
+			int lastSelected = taxa.lastSelected();
+			taxa.addTaxa(lastSelected, 1, true);
+			destinationTaxon=lastSelected+1;
+		}
+
 		String report = "";
 		for (int iM = 0; iM < numMatrices; iM++){
 			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
-			boolean[] ma = data.mergeTaxa(firstSelected, selected, setMultiplestatesToUncertainty);
+			boolean[] ma = data.mergeTaxa(destinationTaxon, selected, setMultiplestatesToUncertainty);
 			if (ma!= null){
 				if (data instanceof CategoricalData)
 					report += "For matrix " + data.getName() + ", the following taxa when merged to taxon \"" + originalTaxonName + "\" required merging of character states:\n";
 				else
 					report += "For matrix " + data.getName() + ", states of the following taxa may have been discarded when merging with taxon \"" + originalTaxonName + "\":\n";
-					
+
 				for (int it = 0; it< ma.length; it++){
 					if (ma[it])
 						report += "  " + taxa.getTaxonName(it) + "\n";
 				}
 			}
 		}
-		
-		taxa.setTaxonName(firstSelected, sb.toString());
-		
-		for (int it =  taxa.getNumTaxa() -1; it> firstSelected; it--){
-			if (selected[it]) {
-				taxa.deleteTaxa(it, 1, false);
-			}
-		}
 
+		taxa.setTaxonName(destinationTaxon, sb.toString());
 		if (!StringUtil.blank(report))
 			alert(report);
-		taxa.notifyListeners(this, new Notification(PARTS_DELETED));
-		for (int iM = 0; iM < numMatrices; iM++){
-			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
-			data.notifyListeners(this, new Notification(PARTS_DELETED));
+
+		if (!keepUnmergedTaxa) {
+			for (int it =  taxa.getNumTaxa() -1; it>= firstSelected; it--){
+				if (it<selected.length && selected[it] && it!=destinationTaxon) {
+					taxa.deleteTaxa(it, 1, false);
+				}
+			}
+
+			//		if (addAsNewTaxon)
+			//			taxa.notifyListeners(this, new Notification(PARTS_ADDED));
+			taxa.notifyListeners(this, new Notification(PARTS_DELETED));
+			for (int iM = 0; iM < numMatrices; iM++){
+				CharacterData data = getProject().getCharacterMatrix(taxa, iM);
+				data.notifyListeners(this, new Notification(PARTS_DELETED));
+				//			if (addAsNewTaxon)
+				//				data.notifyListeners(this, new Notification(PARTS_ADDED));
+			}
 		}
 		return true;
 	}
