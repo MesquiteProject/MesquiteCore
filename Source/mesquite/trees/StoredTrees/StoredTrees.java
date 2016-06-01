@@ -94,7 +94,10 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			temp.addLine("laxMode");
 		if (preferredTaxa!=null && getProject().getNumberTaxas()>1)
 			temp.addLine("setTaxa " + getProject().getTaxaReferenceExternal(preferredTaxa));
-		if (currentSourceFile!=null && currentSourceFile != file)
+		if (currentTreeBlock != null){
+			temp.addLine("setTreeBlockID " + StringUtil.tokenize(currentTreeBlock.getUniqueID())); 
+		}
+		else if (currentSourceFile!=null && currentSourceFile != file)
 			temp.addLine("setTreeBlockInt " + currentListNumber); 
 		else
 			temp.addLine("setTreeBlock " + TreeVector.toExternal(currentListNumber)); 
@@ -121,6 +124,26 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
 				MesquiteTrunk.checkForResetCheckMenuItems();
+				return currentTreeBlock;
+			}
+		}
+		else if (checker.compare(this.getClass(),  "Sets which block of trees to use", "[block unique ID]", commandName, "setTreeBlockID")) {
+			String uniqueID = parser.getFirstToken(arguments);
+			if (!StringUtil.blank(uniqueID)) {
+				currentTreeBlock = manager.getTreeBlockByUniqueID(uniqueID);
+				if (currentTreeBlock ==null)
+					return null;
+				if (lastUsedTreeBlock !=null) 
+					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
+				blockName.setValue(currentTreeBlock.getName());
+				currentTreeBlock.addListener(this);
+				currentTreeBlockID = currentTreeBlock.getID();
+				currentSourceFile = currentTreeBlock.getFile();
+				lastUsedTreeBlock = currentTreeBlock;
+				currentListNumber = manager.getTreeBlockNumber(preferredTaxa, checker.getFile(), currentTreeBlock);
+				MesquiteTrunk.resetChecks(listSubmenu);
+				parametersChanged();
 				return currentTreeBlock;
 			}
 		}

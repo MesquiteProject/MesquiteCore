@@ -28,15 +28,27 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 	public static long totalCreated = 0;
 	public static long totalDisposed = 0;
 	long id;
+	private String uniqueID; // id's of the taxa block
+
 	private boolean writeTreeWeights = false;
 	public TreeVector  (Taxa taxa) {
 		super();
 		setTaxa(taxa);
 		totalCreated++;
 		id = totalCreated;
+		setUniqueID(MesquiteTrunk.getUniqueIDBase() + totalCreated);
 	}
 	public int getNumberOfTrees(){
 		return size();
+	}
+	// setting uniqueID for block
+	public void setUniqueID(String id) {
+		uniqueID = id;
+	}
+
+	// getting uniqueID for block
+	public String getUniqueID() {
+		return uniqueID;
 	}
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "treesSmall.gif";

@@ -195,6 +195,11 @@ public class ShellScriptRunner implements Commandable  {
 			}
 		}/* else
 			externalProcessManager.endStandardOutputsReaders();*/
+		try {  
+			Thread.sleep(ShellScriptUtil.recoveryDelay * 1000);
+		}
+		catch (InterruptedException e){
+		}
 
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);

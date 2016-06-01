@@ -1219,6 +1219,18 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
+	public TreeVector getTreeBlockByUniqueID(String uniqueID){  //this uses the temporary run-time id of the tree vector
+		if (treesVector==null || uniqueID == null)
+			return null;
+		
+		for (int j = 0; j< treesVector.size(); j++) {
+			TreeVector trees = (TreeVector)treesVector.elementAt(j);
+			if (uniqueID.equals(trees.getUniqueID()))
+				return trees;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){  //OK for doomed
 		if (treesVector==null)
 			return null;
@@ -1232,6 +1244,19 @@ public class ManageTrees extends TreesManager {
 			}
 		}
 		return null;
+	}
+	/*.................................................................................................................*/
+	public int getTreeBlockNumber(Taxa taxa, MesquiteFile file, TreeVector trees){ //OK for doomed
+		int count = 0;
+		for (int j = 0; j< treesVector.size(); j++) {
+			TreeVector t = (TreeVector)treesVector.elementAt(j);
+			if ((file==null || t.getFile()==file) && (taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
+				if (t == trees)
+					return count;
+				count++;
+			}
+		}
+		return -1;
 	}
 	/*.................................................................................................................*/
 	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){ //OK for doomed
@@ -1501,6 +1526,11 @@ public class ManageTrees extends TreesManager {
 				trees.setName(parser.getTokenNumber(2));
 				nameSet = true;
 			}
+			else if (commandName.equalsIgnoreCase("ID")) {
+				String id = parser.getTokenNumber(2);
+				if (!StringUtil.blank(id))
+					trees.setUniqueID(id);
+			}
 			else if (commandName.equalsIgnoreCase("LINK")) {
 				if ("taxa".equalsIgnoreCase(parser.getTokenNumber(2))) {
 					String taxaTitle = parser.getTokenNumber(4);
@@ -1654,6 +1684,8 @@ public class ManageTrees extends TreesManager {
 		block.append(endLine);
 		if (!NexusBlock.suppressTITLE){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
+			block.append(endLine);
+			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
 			block.append(endLine);
 		}
 		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressLINK)) {
