@@ -568,6 +568,7 @@ public class AlignUtil {
 
 		}
 		MesquiteTrunk.mesquiteTrunk.logln("Alignment completed.");
+		data.removeCharactersThatAreEntirelyGaps(icStart, icEnd, true);  // added 1 June 2016
 
 		return true;
 	}	
