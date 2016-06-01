@@ -270,9 +270,7 @@ public class ShellScriptUtil  {
 		}
 		
 		try {  
-			Debugg.println("About to sleep");
 			Thread.sleep(recoveryDelay * 1000);
-			Debugg.println("Done sleeping");
 		}
 		catch (InterruptedException e){
 		}

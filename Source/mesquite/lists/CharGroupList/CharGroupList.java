@@ -41,6 +41,10 @@ public class CharGroupList extends ListModule {
 	}
 
 	public void showListWindow(Object obj){
+		if (getModuleWindow() != null){
+			((CharGroupListWindow)getModuleWindow()).setObject(groups);
+			return;
+		}
 		setModuleWindow(new CharGroupListWindow(this));
 		groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 		((CharGroupListWindow)getModuleWindow()).setObject(groups);
