@@ -94,13 +94,13 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			temp.addLine("laxMode");
 		if (preferredTaxa!=null && getProject().getNumberTaxas()>1)
 			temp.addLine("setTaxa " + getProject().getTaxaReferenceExternal(preferredTaxa));
-		if (currentTreeBlock != null){
-			temp.addLine("setTreeBlockID " + StringUtil.tokenize(currentTreeBlock.getUniqueID())); 
-		}
-		else if (currentSourceFile!=null && currentSourceFile != file)
+		if (currentSourceFile!=null && currentSourceFile != file)
 			temp.addLine("setTreeBlockInt " + currentListNumber); 
 		else
 			temp.addLine("setTreeBlock " + TreeVector.toExternal(currentListNumber)); 
+		if (currentTreeBlock != null){  // this is done as a second command, so that files are written to be readable by old Mesquite, by having old numbering as back-up
+			temp.addLine("setTreeBlockID " + StringUtil.tokenize(currentTreeBlock.getUniqueID())); 
+		}
 		temp.addLine("toggleUseWeights " + useWeights.toOffOnString());
 		return temp;
 	}
