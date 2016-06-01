@@ -188,6 +188,10 @@ public String preparePreferencesForXML () {
 			data.setState(ic, it, CategoricalState.inapplicable);
 		 */
 	}
+	/*.................................................................................................................*/
+	public boolean isSubstantive(){
+		return true;
+	}
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
