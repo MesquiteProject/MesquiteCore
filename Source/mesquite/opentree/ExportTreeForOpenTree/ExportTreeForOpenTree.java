@@ -32,6 +32,11 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 	boolean suspend = false;
 
 	/*.................................................................................................................*/
+	public boolean loadModule(){
+		return false;
+	}
+
+	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;  //make this depend on taxa reader being found?)
 	}

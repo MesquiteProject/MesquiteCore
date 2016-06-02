@@ -30,7 +30,11 @@ import mesquite.opentree.lib.*;
 		public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 			return true;
 	  	 }
-	 
+		/*.................................................................................................................*/
+		public boolean loadModule(){
+			return false;
+		}
+
 		/*.................................................................................................................*/
 		public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 			if (this.taxa != null)

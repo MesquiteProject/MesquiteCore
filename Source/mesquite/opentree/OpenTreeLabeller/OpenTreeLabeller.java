@@ -26,6 +26,11 @@ public class OpenTreeLabeller extends TreeDisplayAssistantI {
 		return getPath() + "openTree.gif";
 	}
 	/*.................................................................................................................*/
+	public boolean loadModule(){
+		return false;
+	}
+
+	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
 		return true;
@@ -44,6 +49,10 @@ public class OpenTreeLabeller extends TreeDisplayAssistantI {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Open Tree Labeller";
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -95,10 +104,7 @@ class OpenTreeToolExtra extends TreeDisplayExtra implements Commandable  {
 		else
 			this.tree = null;
 	}
-	/*.................................................................................................................*/
-   	public boolean isPrerelease(){
-   		return true;  
-   	}
+
 
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
