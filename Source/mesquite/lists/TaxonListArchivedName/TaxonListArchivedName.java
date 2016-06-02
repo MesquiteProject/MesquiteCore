@@ -60,7 +60,7 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 		addMenuItem("Trade Taxon Names with Alternatives", makeCommand("trade",  this));
 		addMenuItem("Replace Alternatives by Taxon Names", makeCommand("copyToAlt",  this));
 		addMenuItem("Replace Taxon Names by Alternatives", makeCommand("replaceByAlt",  this));
-		addMenuItem("Replace Alternatives by List in File...", makeCommand("replaceByFileList",  this));
+	//	addMenuItem("Replace Alternatives by List in File...", makeCommand("replaceByFileList",  this));
 		addMenuItem("Replace Alternatives using Translation Table in File...", makeCommand("replaceUsingTranslationTable",  this));
 		addMenuItem("-", null);
 		addMenuItem("Store Alternatives...", makeCommand("storeCurrent",  this));
