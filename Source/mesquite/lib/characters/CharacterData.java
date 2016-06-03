@@ -2738,6 +2738,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return array;
 	}
 	/*.................................................................................................................*/
+	/** removes the array of object of type "name" attached to character ic, taxon it*/
+	public void removeCellObjects(NameReference nr) {
+		Object2DArray array = getWhichCellObjects(nr);
+		if (array!=null) 
+			cellObjects.removeElement(array);
+
+	}
+	/*.................................................................................................................*/
 	//this stores matrix-specific information on the taxa, e.g. regarding the sequences
 	Associable taxaInfo; 
 	public Associable getTaxaInfo(boolean makeIfNotPresent){
