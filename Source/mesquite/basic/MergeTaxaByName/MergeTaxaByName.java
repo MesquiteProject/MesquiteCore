@@ -50,7 +50,10 @@ public class MergeTaxaByName extends MergeTaxa {
 		boundaryString = searchField.getText();
 
 	}
-	SingleLineTextField searchField;
+	protected String getHelpStringStart() {
+		return "This will merge taxa whose names start the same. " ;
+	}
+SingleLineTextField searchField;
 	protected void addQueryItems(ExtensibleDialog queryDialog){
 		searchField = queryDialog.addTextField("Text after taxon name:", boundaryString, 12, true);
 	}

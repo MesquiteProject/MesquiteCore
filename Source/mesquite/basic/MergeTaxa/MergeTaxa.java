@@ -91,13 +91,22 @@ public class MergeTaxa extends TaxonUtility {
 	protected boolean permitRetainOriginal(){
 		return true;
 	}
+	protected String getHelpStringStart() {
+		return "This will cause the selected taxa to be merged together into a single taxon. " ;
+	}
 	/*.................................................................................................................*/
 	public boolean queryOptions(int numMatricesWithMultiple, String matrixList) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Merge Taxa",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		queryDialog.appendToHelpString(getHelpStringStart());
+		String s = "Their character states in their character matrices will be merged.  " 
+				+ "Other associated information like footnotes, attachments, and so forth WILL NOT be merged and will be lost from all but the first taxon."
+				+ "We recommend you save a version of the data file before you do this.  You will not be able to undo this. ";
+		queryDialog.appendToHelpString(s);
 		queryDialog.addLabel(getDialogTitle());
 		queryDialog.addHorizontalLine(1);
 		addQueryItems(queryDialog);
+		queryDialog.addLabel("Name of merged taxon", Label.CENTER, true, true);
 		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, keepMode);
 
 		IntegerField startLengthToKeepField = queryDialog.addIntegerField("Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
