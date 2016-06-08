@@ -74,6 +74,11 @@ public class BLASTSearch extends CategDataSearcher {
 			else
 				url += "&PROGRAM=blastn";
 			url += "&CLIENT=web&SERVICE=plain&PAGE=Nucleotides&CMD=Put&QUERY=";
+			try {
+				Thread.sleep(25);  // for some reason doing a bunch of these searches at once fails without this sleep in here.
+			}
+			catch(Exception e) {
+			}
 			MesquiteModule.showWebPage(url + firstLine+ seq, true);
 			try {
 				Thread.sleep(25);  // for some reason doing a bunch of these searches at once fails without this sleep in here.
