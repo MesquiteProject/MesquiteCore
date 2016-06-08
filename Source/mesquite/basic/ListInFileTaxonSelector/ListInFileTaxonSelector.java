@@ -113,7 +113,7 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 	}
 
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	public String getName() {

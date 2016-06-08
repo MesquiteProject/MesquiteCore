@@ -90,7 +90,7 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){

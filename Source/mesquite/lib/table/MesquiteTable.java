@@ -2553,7 +2553,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/** Sets all column widths to be of uniform width, with given width */
 	public void setColumnWidthsUniform(int width) {
 		baseColumnWidth = width;
-		for (int c = 0; c < numColumnsTotal; c++)
+		for (int c = 0; c < numColumnsTotal && c<columnWidths.length; c++)
 			columnWidths[c] = width;
 		columnWidthsAdjusted.clearAllBits();
 	}
