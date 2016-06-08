@@ -51,11 +51,13 @@ public class MergeTaxaByName extends MergeTaxa {
 
 	}
 	protected String getHelpStringStart() {
-		return "This will merge taxa whose names start the same. " ;
+		return "This will merge taxa whose names start with the same text.  The part of the names that is compared is the portion in front of the specified delimitation text string. If a name does not contain the delimitation text, then the entire name is compared. " ;
 	}
 SingleLineTextField searchField;
 	protected void addQueryItems(ExtensibleDialog queryDialog){
-		searchField = queryDialog.addTextField("Text after taxon name:", boundaryString, 12, true);
+		queryDialog.addHorizontalLine(1);
+		searchField = queryDialog.addTextField("Text that forms the boundary between the start and end of the taxon name:", boundaryString, 12, true);
+		queryDialog.addLabel("(Taxa whose names have the same start will be merged)");
 	}
 	protected boolean permitRetainOriginal(){
 		return false;

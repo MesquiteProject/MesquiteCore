@@ -104,8 +104,8 @@ public class MergeTaxa extends TaxonUtility {
 				+ "We recommend you save a version of the data file before you do this.  You will not be able to undo this. ";
 		queryDialog.appendToHelpString(s);
 		queryDialog.addLabel(getDialogTitle());
-		queryDialog.addHorizontalLine(1);
 		addQueryItems(queryDialog);
+		queryDialog.addHorizontalLine(1);
 		queryDialog.addLabel("Name of merged taxon", Label.CENTER, true, true);
 		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, keepMode);
 
