@@ -49,7 +49,7 @@ public class BLASTSearch extends CategDataSearcher {
 		return searchSelectedTaxa(data,table);
 	}
 	/*.................................................................................................................*/
-   	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+   	public synchronized boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
    		if (data==null)
    			return false;
    		String firstLine = data.getTaxa().getTaxonName(it);
@@ -75,6 +75,13 @@ public class BLASTSearch extends CategDataSearcher {
 				url += "&PROGRAM=blastn";
 			url += "&CLIENT=web&SERVICE=plain&PAGE=Nucleotides&CMD=Put&QUERY=";
 			MesquiteModule.showWebPage(url + firstLine+ seq, true);
+			try {
+				Thread.sleep(25);  // for some reason doing a bunch of these searches at once fails without this sleep in here.
+			}
+			catch(Exception e) {
+			}
+			if (MesquiteTrunk.debugMode)
+				logln("BLAST URL: " + url + firstLine+ seq);
 			return true;
 		}
 		else 
