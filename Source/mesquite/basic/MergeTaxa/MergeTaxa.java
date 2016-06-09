@@ -260,15 +260,6 @@ public class MergeTaxa extends TaxonUtility {
 				}
 			}
 
-			//		if (addAsNewTaxon)
-			//			taxa.notifyListeners(this, new Notification(PARTS_ADDED));
-			taxa.notifyListeners(this, new Notification(PARTS_DELETED));
-			for (int iM = 0; iM < numMatrices; iM++){
-				CharacterData data = getProject().getCharacterMatrix(taxa, iM);
-				data.notifyListeners(this, new Notification(PARTS_DELETED));
-				//			if (addAsNewTaxon)
-				//				data.notifyListeners(this, new Notification(PARTS_ADDED));
-			}
 		}
 		return true;	
 	}
@@ -328,6 +319,13 @@ public class MergeTaxa extends TaxonUtility {
 		}
 		StringBuffer report = new StringBuffer();
 		boolean success =  doMerge(taxa, selected, report);
+		if (!keepUnmergedTaxa || !permitRetainOriginal()) {
+			taxa.notifyListeners(this, new Notification(PARTS_DELETED));
+			for (int iM = 0; iM < numMatrices; iM++){
+				CharacterData data = getProject().getCharacterMatrix(taxa, iM);
+				data.notifyListeners(this, new Notification(PARTS_DELETED));
+			}
+		}
 		discreetAlert(report.toString());
 		return success;
 	}

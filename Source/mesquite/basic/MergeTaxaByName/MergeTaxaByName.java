@@ -17,6 +17,7 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -53,7 +54,7 @@ public class MergeTaxaByName extends MergeTaxa {
 	protected String getHelpStringStart() {
 		return "This will merge taxa whose names start with the same text.  The part of the names that is compared is the portion in front of the specified delimitation text string. If a name does not contain the delimitation text, then the entire name is compared. " ;
 	}
-SingleLineTextField searchField;
+	SingleLineTextField searchField;
 	protected void addQueryItems(ExtensibleDialog queryDialog){
 		queryDialog.addHorizontalLine(1);
 		searchField = queryDialog.addTextField("Text that forms the boundary between the start and end of the taxon name:", boundaryString, 12, true);
@@ -111,11 +112,17 @@ SingleLineTextField searchField;
 			int numSelected = 0;
 			for (int i = 0; i< selected.length; i++)
 				if (selected[i]) numSelected++;
-			if (numSelected>2){
+			if (numSelected>1){
 				boolean successThis = doMerge(taxa, selected, report);
 				success = successThis || success;
 			}
 		}
+		taxa.notifyListeners(this, new Notification(PARTS_DELETED));
+		for (int iM = 0; iM < numMatrices; iM++){
+			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
+			data.notifyListeners(this, new Notification(PARTS_DELETED));
+		}
+
 		if (report.length()>0){
 			logln(report.toString());
 		}
