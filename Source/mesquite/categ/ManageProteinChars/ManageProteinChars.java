@@ -226,7 +226,7 @@ public class ManageProteinChars extends CategMatrixManager {
 		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		blocks.append(endLine);
-		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 && (file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE)){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);

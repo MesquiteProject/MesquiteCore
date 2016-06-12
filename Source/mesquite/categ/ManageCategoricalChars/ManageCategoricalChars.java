@@ -365,7 +365,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		}
 		file.write(endLine);
-		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
+		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 && ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			file.write("\tTITLE  ");
 			file.write( StringUtil.tokenize(data.getName()));
 			file.write(endLine);
