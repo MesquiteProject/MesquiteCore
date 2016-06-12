@@ -1050,7 +1050,7 @@ public class ManageTrees extends TreesManager {
 					file.writeLine("[written " + d.toString() + " by Mesquite " + s + " version " + getMesquiteVersion()  + getBuildVersion() + loc + "]"); 
 					file.write("BEGIN TREES");
 					file.write(endLine);
-					if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressLINK)) {
+					if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa)&& getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 						file.write("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 						file.write(endLine);
 					}
@@ -1682,13 +1682,13 @@ public class ManageTrees extends TreesManager {
 		if (trees.getAnnotation()!=null) 
 			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
 		block.append(endLine);
-		if (!NexusBlock.suppressTITLE){
+		if (!NexusBlock.suppressTITLESANDLINKS){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
 			block.append(endLine);
 			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
 			block.append(endLine);
 		}
-		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressLINK)) {
+		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressTITLESANDLINKS)) {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
 		}

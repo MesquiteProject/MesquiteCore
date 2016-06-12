@@ -393,7 +393,7 @@ public class ManageTaxa extends TaxaManager {
 			for (int i=0; i<project.getNumberTaxas(); i++){
 				Taxa taxa = getProject().getTaxa(i);
 				String taxonReference = "";
-				if (taxa.getName() != null && (project.getNumberTaxas()>1 || (  !file.useSimplifiedNexus && !file.useConservativeNexus &&  !NexusBlock.suppressTITLE)))
+				if (taxa.getName() != null && (project.getNumberTaxas()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa)))
 					taxonReference = " TAXA = "+ StringUtil.tokenize(taxa.getName());
 				if (taxa.getFile() == file) {
 
@@ -1242,10 +1242,8 @@ public class ManageTaxa extends TaxaManager {
 		block.append(';');
 		block.append(end);
 
-		if (!file.useSimplifiedNexus){
-			if (getProject().getNumberTaxas()>1 || ( !file.useConservativeNexus && !NexusBlock.suppressTITLE))
-				block.append("\tTITLE " + StringUtil.tokenize(taxa.getName()) + ";" + end);
-		}
+		if (getProject().getNumberTaxas()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa))
+			block.append("\tTITLE " + StringUtil.tokenize(taxa.getName()) + ";" + end);
 		int numTaxaWrite = taxa.getNumTaxa();
 		if (file.writeOnlySelectedTaxa)
 			numTaxaWrite = taxa.numberSelected();

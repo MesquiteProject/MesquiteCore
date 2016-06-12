@@ -226,12 +226,12 @@ public class ManageProteinChars extends CategMatrixManager {
 		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		blocks.append(endLine);
-		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 && (file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE)){
+		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);
 		}
-		if ((file==null || !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && (cB==null || getProject().getNumberTaxas(cB.getFile())>1)){ 
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data.getTaxa())&& getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 			blocks.append("\tLINK TAXA = ");
 			blocks.append(StringUtil.tokenize(data.getTaxa().getName()));
 			blocks.append(endLine);

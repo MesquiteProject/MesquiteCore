@@ -178,7 +178,7 @@ public class ManageCodonPositions extends CharSpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(codSet.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&& !data.hasDefaultName() && !NexusBlock.suppressTITLE))
+				if (file.getProject().getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s+= " = "+  sT + ";" + StringUtil.lineEnding();
 			}

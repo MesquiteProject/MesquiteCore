@@ -240,11 +240,11 @@ public abstract class ManageContCharsA extends CharMatrixManager {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		
 		file.write(";" + StringUtil.lineEnding());
-		if (cData.getName()!=null &&  (getProject().getNumberCharMatrices()>1 && ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
+		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, cData)){
 			file.write("\tTITLE  " + StringUtil.tokenize(cData.getName()) + ";" + StringUtil.lineEnding());
 		}
 
-		if (cData.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //should have an isUntitled method??
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, cData.getTaxa()) && getProject().getNumberTaxas()>1){ //should have an isUntitled method??
 			file.write("\tLINK TAXA = " +  StringUtil.tokenize(cData.getTaxa().getName()) + ";" + StringUtil.lineEnding());
 		}
 		file.write("\tDIMENSIONS ");
