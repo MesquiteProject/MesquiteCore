@@ -154,7 +154,6 @@ public class MergeTaxa extends TaxonUtility {
 		if (numSelected <1)
 			return false;
 		int numMatrices = getProject().getNumberCharMatrices(taxa);
-
 		int firstSelected =-1;
 		for (int i = 0; i< selected.length; i++)
 			if (selected[i]) {

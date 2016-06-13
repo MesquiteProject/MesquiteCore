@@ -114,6 +114,7 @@ public class MergeTaxaByName extends MergeTaxa {
 				if (selected[i]) numSelected++;
 			if (numSelected>1){
 				boolean successThis = doMerge(taxa, selected, report);
+				taxa.notifyListeners(this, new Notification(PARTS_DELETED));
 				success = successThis || success;
 			}
 		}

@@ -548,7 +548,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 			//first try nexus.  If can't be read, then make list and query user...
 			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-			if (false && nfi!=null && nfi.canReadFile(thisFile))  //ERASETHIS  Debugg.println
+			if (nfi!=null && nfi.canReadFile(thisFile))  //ERASETHIS false  Debugg.println
 				fileInterp = nfi;
 			else {
 				imp = true;
@@ -588,10 +588,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				else {
 					p.fileSaved(thisFile);
 					if (imp && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
-						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");
+						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");//debugg.println (don't add if started as NEXUS)
 						if (MesquiteThread.isScripting() || thisFile.changeLocation("Save imported file as NEXUS file")) {
 							afterProjectRead();
-							writeFile(thisFile); 
+							writeFile(thisFile); //debugg.println (don't do this????)
 						}
 						else {
 							if (p !=null)
@@ -2073,7 +2073,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 			ownerModule.getProject().fileSaved(linkedFile);
 			Parser parser = new Parser();
 			if (imp && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
-				linkedFile.changeLocation(linkedFile.getDirectoryName(), linkedFile.getFileName()+".nex");
+				linkedFile.changeLocation(linkedFile.getDirectoryName(), linkedFile.getFileName()+".nex");  //debugg.println (don't add .nex if started as nexus)
 				if (MesquiteThread.isScripting() || linkedFile.changeLocation("Save imported linked file as NEXUS file"))
 					ownerModule.writeFile(linkedFile);  		//debugg.println (don't do this????)
 
