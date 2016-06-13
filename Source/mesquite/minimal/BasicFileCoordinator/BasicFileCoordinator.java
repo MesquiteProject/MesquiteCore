@@ -548,7 +548,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 			//first try nexus.  If can't be read, then make list and query user...
 			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-			if (nfi!=null && nfi.canReadFile(thisFile))
+			if (false && nfi!=null && nfi.canReadFile(thisFile))  //ERASETHIS  Debugg.println
 				fileInterp = nfi;
 			else {
 				imp = true;
@@ -2075,7 +2075,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 			if (imp && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
 				linkedFile.changeLocation(linkedFile.getDirectoryName(), linkedFile.getFileName()+".nex");
 				if (MesquiteThread.isScripting() || linkedFile.changeLocation("Save imported linked file as NEXUS file"))
-					ownerModule.writeFile(linkedFile);
+					ownerModule.writeFile(linkedFile);  		//debugg.println (don't do this????)
+
 				else {
 					linkedFile.close();
 				}

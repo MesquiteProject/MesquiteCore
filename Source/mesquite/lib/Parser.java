@@ -35,6 +35,8 @@ public class Parser extends StringUtil {
 	MesquiteInteger pos;
 	boolean hyphensArePartOfNumbers = true;
 	StringBuffer line = new StringBuffer(1000);
+	char[][] charTranslationTable = new char[50][2];  //50 max
+	
 	public Parser(){
 		pos = new MesquiteInteger(0);
 		buffer = new StringBuffer(100); 
@@ -48,6 +50,76 @@ public class Parser extends StringUtil {
 		this();
 		setString(line);
 	}
+	/*-------------------*/
+	//these methods allow the parser to be set to autotranslate particular characters on the fly
+	private int whichTranslated(char c){
+		for (int i=0; i<charTranslationTable.length; i++)
+			if (c == charTranslationTable[i][0])
+				return i;
+		return -1;
+	}
+	private int firstEmptyTranslated(){
+		for (int i=0; i<charTranslationTable.length; i++)
+			if (0 == charTranslationTable[i][0])
+				return i;
+		return -1;
+	}
+	private boolean checkForTranslations(){
+		for (int i=0; i<charTranslationTable.length; i++)
+			if (0 != charTranslationTable[i][0])
+				return true;
+		return false;
+	}
+	boolean anyTranslations = false;
+	public void setTranslatedCharacter(char fromChar, char toChar){
+		int i = whichTranslated(fromChar);
+		if (i>=0)
+			charTranslationTable[i][1] = toChar;
+		else {
+			i = firstEmptyTranslated();
+			charTranslationTable[i][0] = fromChar;
+			charTranslationTable[i][1] = toChar;
+		}
+		anyTranslations = checkForTranslations();
+	}
+	public void clearTranslatedCharacter(char fromChar){
+		int i = whichTranslated(fromChar);
+		if (i>=0){
+			charTranslationTable[i][0] = 0;
+			charTranslationTable[i][1] = 0;
+		}
+		anyTranslations = checkForTranslations();
+	}
+	public char getTranslation(char fromChar){
+		//Debugg.println("getting translation of " + fromChar);
+		int i = whichTranslated(fromChar);
+		if (i>=0){
+			return charTranslationTable[i][1];
+		}
+		return fromChar;
+	}
+	
+	char lineCharAt(String line, int pos){
+		if (line == null)
+			return 0;
+		if (pos>=line.length()) 
+			return 0;
+		char c = line.charAt(pos); 
+		if (anyTranslations)
+			return getTranslation(c);
+		return c;
+	}
+	char lineCharAt(StringBuffer line, int pos){
+		if (line == null)
+			return 0;
+		if (pos>=line.length()) 
+			return 0;
+		char c = line.charAt(pos); 
+		if (anyTranslations)
+			return getTranslation(c);
+		return c;
+	}
+	/*-------------------*/
 	public void setString(String s){
 		if (s == null)
 			s = "";
@@ -80,7 +152,7 @@ public class Parser extends StringUtil {
 		if (line.length() == 0)
 			return true;
 		for (int i=0; i< line.length(); i++)
-			if (!whitespace(line.charAt(i)))
+			if (!whitespace(lineCharAt(line, i)))
 				return false;
 		return true;
 	}
@@ -218,11 +290,11 @@ public class Parser extends StringUtil {
 		while (!done) {
 			int where = pos.getValue();
 			if (where<line.length()) {
-				c= line.charAt(where);
+				c= lineCharAt(line, where);
 				if (c==quoteChar){
 					int np = where + 1;
 					if (np<line.length()) {
-						char nxt= line.charAt(np);
+						char nxt= lineCharAt(line, np);
 						if (nxt==quoteChar) {
 							buffer2.append(quoteChar);
 							pos.increment();  //skip to \'
@@ -236,7 +308,7 @@ public class Parser extends StringUtil {
 				else if (c=='^'){
 					int np = where + 1;
 					if (np<line.length()) {
-						char nxt= line.charAt(np);
+						char nxt= lineCharAt(line, np);
 						if (nxt=='n') {
 							buffer2.append('\n');
 							pos.increment();  //skip to \n
@@ -276,11 +348,11 @@ public class Parser extends StringUtil {
 		while (!done) {
 			int where = pos.getValue();
 			if (where<line.length()) {
-				c= line.charAt(where);
+				c= lineCharAt(line, where);
 				if (c==quoteChar){
 					int np = where + 1;
 					if (np<line.length()) {
-						char nxt= line.charAt(np);
+						char nxt= lineCharAt(line, np);
 						if (nxt==quoteChar) {
 							buf.append('\'');
 							buf.append('\'');
@@ -325,7 +397,7 @@ public class Parser extends StringUtil {
 	/** if first character of string is a quote ('), takes to contents of the quote and returns them (calling getFirstToken).
 	Otherwise returns the string*/
 	public String getUnquotedToken() {
-		if (line == null || line.length()==0 || line.charAt(0)!= quoteChar)
+		if (line == null || line.length()==0 || lineCharAt(line, 0)!= quoteChar)
 			return line.toString();
 		else
 			return getFirstToken(line.toString());
@@ -1123,7 +1195,7 @@ public class Parser extends StringUtil {
 		if (posTemp>=line.length()) {
 			return 0;
 		}
-		char c = line.charAt(posTemp);
+		char c = lineCharAt(line, posTemp);
 		posTemp++;
 		int debt = pendingBrackets.getValue();
 		boolean hadBrack = false;
@@ -1134,7 +1206,7 @@ public class Parser extends StringUtil {
 
 			char next = 0;
 			if (posTemp<line.length())
-				next = line.charAt(posTemp);
+				next = lineCharAt(line, posTemp);
 			if (debt==0 && (next == '%')) { 
 				c = '<';
 				posTemp++; //done to go past %
@@ -1173,7 +1245,7 @@ public class Parser extends StringUtil {
 		int count = 0;
 		while  (debt>0 && posTemp< line.length()) {
 			count++;
-			c=line.charAt(posTemp);
+			c=lineCharAt(line, posTemp);
 			if (!whitespace(c) && count == 1 && checkExclamation){
 				if (checkExclamation && debt ==1)
 					if (c != '!' && c!= '&')
@@ -1220,7 +1292,7 @@ public class Parser extends StringUtil {
 		if (posTemp>=line.length()) {
 			return 0;
 		}
-		return line.charAt(posTemp);
+		return lineCharAt(line, posTemp);
 	}
 	/*.................................................................................................................*/
 	public char getNextChar() {
@@ -1228,7 +1300,7 @@ public class Parser extends StringUtil {
 		if (posTemp>=line.length()) {
 			return 0;
 		}
-		char c = line.charAt(posTemp);
+		char c = lineCharAt(line, posTemp);
 		posTemp++;
 		int debt = 0;
 		boolean hadBrack = false;
@@ -1238,7 +1310,7 @@ public class Parser extends StringUtil {
 			debt++;
 		}
 		while  (debt>0 && posTemp< line.length()) {
-			c=line.charAt(posTemp);
+			c=lineCharAt(line, posTemp);
 			hadBrack = true;
 			if (openingCommentBracket(c)) {
 				if (posTemp+1>= line.length()) //%% c was last character of line, therefore add space as workaround for line-ending "["
@@ -1358,7 +1430,7 @@ public class Parser extends StringUtil {
 		try {
 			int index = pos.getValue();
 			char c;
-			while ((c = line.charAt(index)) != closeCommentBracket) {
+			while ((c = lineCharAt(line, index)) != closeCommentBracket) {
 				if (c==openCommentBracket && allowComments) {
 					pos.setValue(index);
 					skipComment();
@@ -1375,7 +1447,7 @@ public class Parser extends StringUtil {
 	void skipToDarkspace() {
 		try {
 			int index = pos.getValue();
-			while (whitespace(line.charAt(index), whitespaceString))
+			while (whitespace(lineCharAt(line, index), whitespaceString))
 				index++;
 			pos.setValue(index);
 		}
@@ -1387,9 +1459,9 @@ public class Parser extends StringUtil {
 	public char nextDarkChar() {
 		try {
 			int index = pos.getValue();
-			while (whitespace(line.charAt(index), whitespaceString))
+			while (whitespace(lineCharAt(line, index), whitespaceString))
 				index++;
-			char dark =line.charAt(index);
+			char dark =lineCharAt(line, index);
 			pos.setValue(++index);
 			if (whitespace(dark, whitespaceString))
 				return '\0';
@@ -1405,9 +1477,9 @@ public class Parser extends StringUtil {
 	public char firstDarkChar() {
 		try {
 			int index = 0;
-			while (whitespace(line.charAt(index), whitespaceString))
+			while (whitespace(lineCharAt(line, index), whitespaceString))
 				index++;
-			return line.charAt(index);
+			return lineCharAt(line, index);
 		}
 		catch (StringIndexOutOfBoundsException e) {}
 		return '\0';
@@ -1416,7 +1488,7 @@ public class Parser extends StringUtil {
 	/*.................................................................................................................*/
 	public char getCharAt(int index) {
 		if (line != null && index >=0 && index<line.length())
-			return line.charAt(index);
+			return lineCharAt(line, index);
 		return '\0';
 	}
 	/*.................................................................................................................*/
@@ -1477,7 +1549,7 @@ public class Parser extends StringUtil {
 			return true;
 		else {
 			for (int i=0; i<line.length(); i++)
-				if (!whitespace(line.charAt(i)))
+				if (!whitespace(lineCharAt(line, i)))
 					return false;
 			return true;
 		}
@@ -1491,7 +1563,7 @@ public class Parser extends StringUtil {
 		else {
 			try{
 				for (int i=0; i<line.length(); i++)
-					if (!whitespace(line.charAt(i)))
+					if (!whitespace(lineCharAt(line, i)))
 						return false;
 			}
 			catch(StringIndexOutOfBoundsException e){ //here in case multithreading zaps line in progress

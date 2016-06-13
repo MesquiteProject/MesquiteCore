@@ -1513,7 +1513,40 @@ public class Mesquite extends MesquiteTrunk
 		}
 		return sb.toString();
 	}
-
+	private MesquiteProject openOrImportFileHandler(String path, String completeArguments, boolean forceImport){
+		MesquiteProject f;
+		CommandRecord comRec  = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord cr;
+		if (comRec == null || comRec == CommandRecord.nonscriptingRecord || comRec.getID()<2) {
+			cr =new CommandRecord((CommandThread)null, false);
+			if (comRec == null)
+				cr.setFromCommandLine(Thread.currentThread() instanceof ConsoleThread);
+			else
+				cr.setFromCommandLine(comRec.isFromCommandLine());
+		}
+		else
+			cr = comRec;
+		CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
+		MesquiteThread.setCurrentCommandRecord(cr);
+		//debugg.println (pass the fact that it's importer along)
+		if (StringUtil.blank(path)) {
+			f = openFile(null); 
+		}
+		else {
+			String baseN = null;
+			if (MesquiteThread.isScripting()) {
+				MesquiteFile base = null;
+				base = CommandRecord.getScriptingFileS();
+				if (base !=null)
+					baseN = base.getDirectoryName();
+			}
+			if (!MesquiteFile.fileExists(path) && (!StringUtil.blank(baseN) && MesquiteFile.fileExists(baseN+path)))
+				path = baseN+path;
+			f= openFile(path, completeArguments);
+		}
+		MesquiteThread.setCurrentCommandRecord(prevR);
+		return f;
+	}
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	String noticeLocation = "http://"; //before release, change URL to "http://"
@@ -1697,41 +1730,17 @@ public class Mesquite extends MesquiteTrunk
 			storePreferences();
 			discreetAlert("You will need to restart Mesquite to load all of the modules");
 		}
-		else if (checker.compare(this.getClass(), "Opens file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "openFile")) {
-			//hackathon
+		else if (checker.compare(this.getClass(), "Imports file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open, AND it will not be assumed it will use the usual NEXUS interpreter.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "importFile")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
 			String completeArguments = arguments;
-			MesquiteProject f;
-			CommandRecord comRec  = MesquiteThread.getCurrentCommandRecord();
-			CommandRecord cr;
-			if (comRec == null || comRec == CommandRecord.nonscriptingRecord || comRec.getID()<2) {
-				cr =new CommandRecord((CommandThread)null, false);
-				if (comRec == null)
-					cr.setFromCommandLine(Thread.currentThread() instanceof ConsoleThread);
-				else
-					cr.setFromCommandLine(comRec.isFromCommandLine());
-			}
-			else
-				cr = comRec;
-			CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
-			MesquiteThread.setCurrentCommandRecord(cr);
-			if (StringUtil.blank(path)) {
-				f = openFile(null); 
-			}
-			else {
-				String baseN = null;
-				if (MesquiteThread.isScripting()) {
-					MesquiteFile base = null;
-					base = CommandRecord.getScriptingFileS();
-					if (base !=null)
-						baseN = base.getDirectoryName();
-				}
-				if (!MesquiteFile.fileExists(path) && (!StringUtil.blank(baseN) && MesquiteFile.fileExists(baseN+path)))
-					path = baseN+path;
-				f= openFile(path, completeArguments);
-			}
-			MesquiteThread.setCurrentCommandRecord(prevR);
-			return f;
+			return openOrImportFileHandler( path,  completeArguments, true);
+
+		}
+		else if (checker.compare(this.getClass(), "Opens file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "openFile")) {
+			String path = ParseUtil.getFirstToken(arguments, stringPos);
+			String completeArguments = arguments;
+			return openOrImportFileHandler( path,  completeArguments, false);
+
 		}
 		else if (checker.compare(this.getClass(), "Opens file on web server.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[URL of file] - if parameter absent then presents user with dialog box to enter URL", commandName, "openURL")){
 			arguments = ParseUtil.getFirstToken(arguments, stringPos);
@@ -2266,6 +2275,7 @@ public class Mesquite extends MesquiteTrunk
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);
 		mesquiteTrunk.openFileCommand = makeCommand("openFile",  mesquiteTrunk);
+		mesquiteTrunk.importFileCommand = makeCommand("importFile",  mesquiteTrunk);
 		mesquiteTrunk.openURLCommand = makeCommand("openURL",  mesquiteTrunk);
 		mesquiteTrunk.currentCommandCommand = makeCommand("currentCommand",  mesquiteTrunk);
 		mesquiteTrunk.currentCommandCommand.setQueueBypass(true);

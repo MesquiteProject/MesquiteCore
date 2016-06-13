@@ -25,7 +25,7 @@ import mesquite.lib.duties.*;
 /** A file interpreter for a NEXUS file format.  Sends blocks to various managing modules for reading.  */
 public class InterpretNEXUS extends NexusFileInterpreter {
 	public String getName() {
-		return "NEXUS file interpreter";
+		return "NEXUS file interpreter";//debugg.println (Name?
 	}
 	public String getNameForMenuItem() {
 		return "NEXUS file";
@@ -60,6 +60,11 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 	}
 	/*.................................................................................................................*/
 	public boolean canImport(Class dataClass){
+		return true;
+	}
+	/*.................................................................................................................*/
+	public boolean exportFile(MesquiteFile f, String arguments){
+		writeFile(f.getProject(), f);
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -319,8 +324,16 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 							}
 							else
 								progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
+							if (mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+								mNF.setTranslatedCharacter('[', '<');
+								mNF.setTranslatedCharacter(']', '>');
+							}
 							progIndicator.setText("Processing block: " + blockName.getValue(), false, true);
 							NexusBlock nb = sendBlockToReader(mf, mNF, block, blockName.getValue(), length, readToNow, blockComments, arguments);
+							if (false && mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+								mNF.clearTranslatedCharacter('[');
+								mNF.clearTranslatedCharacter(']');
+							}
 							progIndicator.setText("Reading next block", false);
 							progIndicator.toFront();
 							readToNow += block.getNumCommands();

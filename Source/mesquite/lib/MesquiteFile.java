@@ -72,6 +72,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public boolean writeExcludedCharacters=true;
 	public boolean writeTaxaWithAllMissing = true;
 	public boolean writeOnlySelectedTaxa = false;
+	public boolean mrBayesReadingMode = false;  //todo: this is temporary until general format options system built
 	public String fileReadingArguments = null;
 	public int exporting = 0;  //todo: temporary.  0 = not exporting;  1 = first export; 2 = subsequent exports
 	public boolean notesBugWarn = false;
@@ -1704,6 +1705,15 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}
 	 */
 
+	/*.................................................................................................................*/
+	public void setTranslatedCharacter(char fromChar, char toChar){
+		if (parser != null)
+			parser.setTranslatedCharacter(fromChar, toChar);
+	}
+	public void clearTranslatedCharacter(char fromChar){
+		if (parser != null)
+			parser.clearTranslatedCharacter(fromChar);
+	}
 
 	/*.................................................................................................................*/
 	/** Returns next token from file. Used for first token of command, to preserves leading whitespace (used to preserve
