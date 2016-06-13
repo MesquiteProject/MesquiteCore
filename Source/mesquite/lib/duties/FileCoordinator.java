@@ -63,8 +63,11 @@ public abstract class FileCoordinator extends MesquiteModule {
 	/**
 	 * make a MesquiteProject, reading the information from the given path of a file (if local, interprets as file on disk; if not, as URL specification).
 	 */
-	public abstract MesquiteFile readProject(boolean local, String pathname, String arguments);
-
+	public MesquiteFile readProject(boolean local, String pathname, String arguments){  //will be overridden by BasicFileCoordinator
+		return readProject(local, pathname, arguments, false);
+	}
+	public abstract MesquiteFile readProject(boolean local, String pathname, String arguments, boolean forceImportQuery);
+	
 	/** make a MesquiteProject, using a module. */
 	public abstract MesquiteFile readProjectGeneral(String arguments);
 

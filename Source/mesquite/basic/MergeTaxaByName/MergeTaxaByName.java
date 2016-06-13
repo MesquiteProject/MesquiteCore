@@ -161,6 +161,11 @@ public class MergeTaxaByName extends MergeTaxa {
 	public boolean isPrerelease(){
 		return true;
 	}
+	/*.................................................................................................................*/
+	/**Returns true if the module is to appear in menus and other places in which users can choose, and if can be selected in any way other than by direct request*/
+	public boolean getUserChooseable(){
+		return false;  //Debugg.println
+	}
 
 }
 

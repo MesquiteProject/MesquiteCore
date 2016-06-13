@@ -1276,15 +1276,20 @@ public class Mesquite extends MesquiteTrunk
 		return newProject(urlString, 2);
 	}
 	/*.................................................................................................................*/
-	public MesquiteProject openFile(String pathname, String originalArguments){ //hackathon
-		return newProject(pathname, 1, false, originalArguments);
+	public MesquiteProject openFile(String pathname, String originalArguments, boolean forceImportQuery){ //hackathon
+		return newProject(pathname, 1, false, originalArguments,  forceImportQuery);
+	}
+	/*.................................................................................................................*/
+	
+	public MesquiteProject openFile(String pathname){
+		return newProject(pathname, 1,  false, null, false);
 	}
 	/*.................................................................................................................*/
 	/* give alternative method which takes full file and passes it to FileCoordinator,
 	which then uses alternative methods in MesquiteProject reader that parses this string
 	instead of input stream*/
-	public MesquiteProject openFile(String pathname){
-		return newProject(pathname, 1);
+	public MesquiteProject openFile(String pathname, boolean forceImportQuery){
+		return newProject(pathname, 1,  false, null, forceImportQuery);
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project, in process making taxa block.*/
@@ -1303,16 +1308,21 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/* makes and returns a new project.*/ //hackathon
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless){
-		return newProject(arguments, code, actAsScriptingRegardless, null);
+		return newProject(arguments, code, actAsScriptingRegardless, null, false);
+	}
+	/* makes and returns a new project.*/ //hackathon
+	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments){
+		return newProject(arguments, code, actAsScriptingRegardless, originalArguments, false);
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*///hackathon
-	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments){
+	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments, boolean forceImportQuery){
 		if (MesquiteThread.isScripting() || actAsScriptingRegardless) {
 			ObjectContainer projCont = new ObjectContainer();
 			ProjectRead pr = new ProjectRead(arguments,  code, mesquiteTrunk, projCont);
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
+			pr.setForceImportQuery(forceImportQuery);
 			pr.run();
 			MesquiteProject p = (MesquiteProject)projCont.getObject();
 			projCont.setObject(null); //This is done because Threads not being finalized, and need to remove references to projects
@@ -1323,6 +1333,7 @@ public class Mesquite extends MesquiteTrunk
 			ProjectReadThread pt = new ProjectReadThread(pr);
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
+			pr.setForceImportQuery(forceImportQuery);
 			pt.settempID(arguments);
 			pr.setThread(pt);
 			pt.start();
@@ -1513,7 +1524,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		return sb.toString();
 	}
-	private MesquiteProject openOrImportFileHandler(String path, String completeArguments, boolean forceImport){
+	private MesquiteProject openOrImportFileHandler(String path, String completeArguments, boolean forceImportQuery){
 		MesquiteProject f;
 		CommandRecord comRec  = MesquiteThread.getCurrentCommandRecord();
 		CommandRecord cr;
@@ -1528,9 +1539,9 @@ public class Mesquite extends MesquiteTrunk
 			cr = comRec;
 		CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
 		MesquiteThread.setCurrentCommandRecord(cr);
-		//debugg.println (pass the fact that it's importer along)
+
 		if (StringUtil.blank(path)) {
-			f = openFile(null); 
+			f = openFile(null, forceImportQuery); 
 		}
 		else {
 			String baseN = null;
@@ -1542,7 +1553,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 			if (!MesquiteFile.fileExists(path) && (!StringUtil.blank(baseN) && MesquiteFile.fileExists(baseN+path)))
 				path = baseN+path;
-			f= openFile(path, completeArguments);
+			f= openFile(path, completeArguments, forceImportQuery);
 		}
 		MesquiteThread.setCurrentCommandRecord(prevR);
 		return f;

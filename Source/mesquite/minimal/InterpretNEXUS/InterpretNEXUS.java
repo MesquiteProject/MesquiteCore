@@ -25,7 +25,7 @@ import mesquite.lib.duties.*;
 /** A file interpreter for a NEXUS file format.  Sends blocks to various managing modules for reading.  */
 public class InterpretNEXUS extends NexusFileInterpreter {
 	public String getName() {
-		return "NEXUS file interpreter";//debugg.println (Name?
+		return "NEXUS file";
 	}
 	public String getNameForMenuItem() {
 		return "NEXUS file";
@@ -699,6 +699,10 @@ public class InterpretNEXUS extends NexusFileInterpreter {
 		return "nex";
 	}
 	/*.................................................................................................................*/
+	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
+	public boolean usesNEXUSflavor(){
+		return true;
+	}
 
 
 }

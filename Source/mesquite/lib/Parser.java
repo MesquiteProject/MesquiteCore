@@ -91,7 +91,6 @@ public class Parser extends StringUtil {
 		anyTranslations = checkForTranslations();
 	}
 	public char getTranslation(char fromChar){
-		//Debugg.println("getting translation of " + fromChar);
 		int i = whichTranslated(fromChar);
 		if (i>=0){
 			return charTranslationTable[i][1];

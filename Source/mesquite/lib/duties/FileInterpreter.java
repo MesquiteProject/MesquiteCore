@@ -66,6 +66,9 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public Class getDutyClass() {
 		return FileInterpreter.class;
 	}
+ 	 public String[] getDefaultModule() {
+ 	 	return new String[] {"#InterpretNEXUS", "#InterpretFastaDNA", "#InterpretFastaProtein"};
+ 	 }
 	public String getFunctionIconPath(){
 		return getRootImageDirectoryPath() + "functionIcons/fileInterpret.gif";
 	}
@@ -155,6 +158,11 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	/*.................................................................................................................*/
 	public String preferredDataFileExtension() {
 		return "";
+	}
+	/*.................................................................................................................*/
+	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
+	public boolean usesNEXUSflavor(){
+		return false;
 	}
 
 	NameReference previousTaxaNameRef = new NameReference("previousTaxon");
