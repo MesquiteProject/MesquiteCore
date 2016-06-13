@@ -2772,6 +2772,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	protected String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) {
 		if (StringUtil.blank(nodeInfo))
 			return nodeInfo;
+		if (nodeInfo.indexOf('&')==1)
+			nodeInfo=nodeInfo.replaceFirst("&", " ");
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		nodeInfo = StringUtil.replace(nodeInfo, " ", "");
 		nodeInfo = StringUtil.replace(nodeInfo, "prob(percent)", "\'prob(percent)\'");
@@ -2781,6 +2783,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo = StringUtil.replace(nodeInfo, "length 95%HPD", "\'length 95%HPD\'");
 		nodeInfo = StringUtil.replace(nodeInfo, "{", "\'(");
 		nodeInfo = StringUtil.replace(nodeInfo, "}", ")\'");
+		nodeInfo = StringUtil.replace(nodeInfo, ",", ", ");
 		return nodeInfo;
 	}
 	/*...............................................  read tree ....................................................*/
@@ -2867,7 +2870,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						}
 					}
 					else if ("<".equals(c)) {
-						readAssociated(TreeDescription, sprouted, stringLoc);
+						if (readingMrBayesConTree) {
+							c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">") + ">";  //get next token
+							c = retokenizeMrBayesConTreeNodeInfo(c);
+							readAssociated(c, sprouted, new MesquiteInteger(0));
+							ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
+						} else
+							readAssociated(TreeDescription, sprouted, stringLoc);
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 6");
