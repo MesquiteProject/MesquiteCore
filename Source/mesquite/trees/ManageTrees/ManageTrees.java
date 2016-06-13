@@ -1627,7 +1627,10 @@ public class ManageTrees extends TreesManager {
 						thisTree.setTreeVector(trees);
 						trees.addElement(thisTree, false);
 						treeRead = true;
+						if (file.mrBayesReadingMode)
+							thisTree.setReadingMrBayesConTree(true);
 						thisTree.readTree(treeDescription);
+						thisTree.setReadingMrBayesConTree(false);
 						//thisTree.warnRetIfNeeded();
 						thisTree.setName(treeName);
 						if (whichType ==2) 
