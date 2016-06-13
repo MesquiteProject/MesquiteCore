@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.io.InterpretMrBayesNEXUSTreeFile;
+package mesquite.io.InterpretMrBayesConTreeFile;
 /*~~  */
 
 import java.util.*;
@@ -23,7 +23,7 @@ import mesquite.categ.lib.*;
 
 
 
-public class InterpretMrBayesNEXUSTreeFile extends FileInterpreterI {
+public class InterpretMrBayesConTreeFile extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -67,13 +67,13 @@ public class InterpretMrBayesNEXUSTreeFile extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Import MrBayes NEXUS Tree File";
+		return "Import MrBayes Consensus Tree File";
 	}
 	/*.................................................................................................................*/
 
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Imports MrBayes NEXUS Tree File to capture metadata recorded at nodes" ;
+		return "Imports MrBayes Consensus Tree File (a NEXUS file) to capture metadata recorded at nodes" ;
 	}
 	/*.................................................................................................................*/
 
