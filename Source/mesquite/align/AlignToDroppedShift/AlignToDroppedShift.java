@@ -29,6 +29,7 @@ import mesquite.lib.duties.*;
 public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	boolean defaultShiftToDragged = false;
 	MesquiteBoolean shiftToDragged = new MesquiteBoolean(defaultShiftToDragged);
+	MesquiteBoolean shiftToDropped = new MesquiteBoolean(!defaultShiftToDragged);
 
 
 
@@ -43,8 +44,10 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 	/*.................................................................................................................*/
 	public void processExtraSingleXMLPreference (String tag, String content) {
-		if ("shiftToDragged".equalsIgnoreCase(tag))
+		if ("shiftToDragged".equalsIgnoreCase(tag)){
 			shiftToDragged.setValue(MesquiteBoolean.fromTrueFalseString(content));
+			shiftToDropped.setValue(!shiftToDragged.getValue());
+		}
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
@@ -68,7 +71,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	}
 	/*.................................................................................................................*/
 	public void addExtraMenus(){
-		addCheckMenuItem(null, "Shift to Dragged Sequence", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
+		addCheckMenuItem(null, "Shift Dragged Sequence to Match Base Dragged", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
+		addCheckMenuItem(null, "Shift Dragged Sequence to Match Base on which it is Dropped", makeCommand("toggleShiftToDropped",  this), shiftToDropped);
 	}
 	/*.................................................................................................................*/
 	protected boolean alwaysAlignEntireSequences() {
@@ -241,7 +245,13 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 		if (checker.compare(this.getClass(), "Toggles whether the sequences are shifted to match the cell on which they are dropped or the site by which they are dragged.", "[on; off]", commandName, "toggleShiftToDragged")) {
 			if (ignoreCommand()) return null;
 			shiftToDragged.toggleValue(parser.getFirstToken(arguments));
-	}
+			shiftToDropped.setValue(!shiftToDragged.getValue());
+		}
+		else if (checker.compare(this.getClass(), "Toggles whether the sequences are shifted to match the cell on which they are dropped or the site by which they are dragged.", "[on; off]", commandName, "toggleShiftToDropped")) {
+			if (ignoreCommand()) return null;
+			shiftToDropped.toggleValue(parser.getFirstToken(arguments));
+			shiftToDragged.setValue(!shiftToDropped.getValue());
+		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -256,12 +266,12 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Shift To Dropped";
+		return "Shift Dragged Sequence To Dropped Sequence";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Supplies a tool that can be used on a set of sequences.  Sequences dropped by this tool on another sequence will be shifted to that other sequence (pairwise)." ;
+		return "Supplies a tool that can be used on a set of sequences.  Sequences dragged by this tool and dropped onto another sequence will be shifted to that other sequence (pairwise)." ;
 	}
 
 }
