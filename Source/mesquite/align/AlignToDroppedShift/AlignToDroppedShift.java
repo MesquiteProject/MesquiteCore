@@ -73,7 +73,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	public void addExtraMenus(){
 		addCheckMenuItem(null, "Shift Dragged Sequence to Match Base Dragged", makeCommand("toggleShiftToDragged",  this), shiftToDragged);
 		addCheckMenuItem(null, "Shift Dragged Sequence to Match Base on which it is Dropped", makeCommand("toggleShiftToDropped",  this), shiftToDropped);
-	}
+		addMenuItem(null, "-", null);
+}
 	/*.................................................................................................................*/
 	protected boolean alwaysAlignEntireSequences() {
 		return false;
