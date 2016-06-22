@@ -965,7 +965,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (evenVertSpacing > 0)
 							UPevenNodeLocs(treeDrawing, tree, root, evenVertSpacing);
 					}
-					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded && treeDrawing.y[subRoot]>rect.height)) {
+					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded )) { //&& treeDrawing.y[subRoot]>rect.height
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(rect.height-treeDisplay.getTipsMargin())) / (treeDrawing.y[subRoot] - (int)treeDisplay.getTipsMargin());
 						UPstretchNodeLocs(treeDisplay, treeDrawing, tree, root);
 						treeDrawing.y[subRoot]=rect.height-5;
@@ -1024,7 +1024,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (evenVertSpacing > 0)
 							DOWNevenNodeLocs(treeDrawing, tree, root, evenVertSpacing);
 					}
-					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded && treeDrawing.y[subRoot]<0)) {
+					if (!inhibitStretch.getValue() && treeDisplay.autoStretchIfNeeded) {  //&& treeDrawing.y[subRoot]>0)
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(rect.height-treeDisplay.getTipsMargin())) / (rect.height - treeDrawing.y[subRoot] - treeDisplay.getTipsMargin());
 						DOWNstretchNodeLocs(treeDisplay, treeDrawing, tree, root, rect.height-treeDisplay.getTipsMargin());
 						treeDrawing.y[subRoot]=5;
@@ -1081,7 +1081,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (evenVertSpacing > 0)
 							RIGHTevenNodeLocs(treeDrawing, tree, root, evenVertSpacing);
 					}
-					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded && treeDrawing.x[subRoot]<0)) {
+					if (!inhibitStretch.getValue() && treeDisplay.autoStretchIfNeeded) { //&& treeDrawing.x[subRoot]>0
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(rect.width-treeDisplay.getTipsMargin())) / (rect.width - treeDrawing.x[subRoot] -treeDisplay.getTipsMargin());
 						RIGHTstretchNodeLocs(treeDisplay,treeDrawing, tree, root,rect.width-treeDisplay.getTipsMargin());
 						treeDrawing.x[subRoot]=5;
@@ -1138,7 +1138,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 						if (evenVertSpacing > 0)
 							LEFTevenNodeLocs(treeDrawing, tree, root, evenVertSpacing);
 					}
-					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded && treeDrawing.x[subRoot]>rect.width)) {
+					if (!inhibitStretch.getValue() && (treeDisplay.autoStretchIfNeeded )) {  //&& treeDrawing.x[subRoot]>rect.width
 						treeDisplay.nodeLocsParameters[stretchfactor]=((double)(rect.width-treeDisplay.getTipsMargin())) / (treeDrawing.x[subRoot] - (int)treeDisplay.getTipsMargin());
 						LEFTstretchNodeLocs(treeDisplay, treeDrawing, tree, root);
 						treeDrawing.x[subRoot]=rect.width-5;
