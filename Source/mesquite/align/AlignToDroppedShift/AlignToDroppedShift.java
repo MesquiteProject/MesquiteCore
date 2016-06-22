@@ -203,6 +203,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			
 			amountToMove = positionOfDroppedInOriginalAlignment-columnDragged-1;
 		}
+		
 		Debugg.println("\n************ Pairwise Shifter *********");
 
 		MesquiteBoolean dataChanged = new MesquiteBoolean (false);
@@ -236,6 +237,10 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 		Debugg.println("   dragged row cells: " + data.getTotalNumApplicable(rowToAlign, false));
 		Debugg.println("   dropped row cells: " + data.getTotalNumApplicable(recipientRow, false));
 		Debugg.println("*********************");
+		if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData && charAdded.getValue()>1000) {
+			discreetAlert("WARNING!   more than 1000 characters added!!!!");
+		}
+
 
 	}
 
