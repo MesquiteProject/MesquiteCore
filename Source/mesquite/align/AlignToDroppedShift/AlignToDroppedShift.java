@@ -204,7 +204,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			amountToMove = positionOfDroppedInOriginalAlignment-columnDragged-1;
 		}
 
-
 		MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 		MesquiteInteger charAdded = new MesquiteInteger(0);
 		int added = 0;
@@ -221,7 +220,20 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
 		}
 		//MAY NEED TO NOTIFY!!!!!!
-
+		Debugg.println("\n************ Pairwise Shifter *********");
+		Debugg.println("   added: " + added);
+		Debugg.println("   amountToMove: " + amountToMove);
+		Debugg.println("   rowToAlign: " + rowToAlign);
+		Debugg.println("   recipientRow: " + recipientRow);
+		Debugg.println("   columnDragged: " + columnDragged);
+		Debugg.println("   columnDropped: " + columnDropped);
+		Debugg.println("   droppedOnData: " + droppedOnData);
+		Debugg.println("   draggedOnData: " + draggedOnData);
+		Debugg.println("   droppedCellCount: " + droppedCellCount);
+		Debugg.println("   draggedCellCount: " + draggedCellCount);
+		Debugg.println("   dragged row cells: " + data.getTotalNumApplicable(rowToAlign, false));
+		Debugg.println("   dropped row cells: " + data.getTotalNumApplicable(recipientRow, false));
+		Debugg.println("*********************");
 
 	}
 
