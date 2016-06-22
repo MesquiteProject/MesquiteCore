@@ -162,6 +162,15 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 					calculatedValues[ic]++;
 
 	}
+
+	/*.................................................................................................................*/
+	public static Color getColorOfScore(int num, int total){
+		if (num<=10)  
+			return MesquiteColorTable.getDefaultColor(30, 30-num*2, MesquiteColorTable.BLUESCALE);
+		else
+			return MesquiteColorTable.getDefaultColor(total, total-num, MesquiteColorTable.GREENSCALE);
+	}
+
 	/*.................................................................................................................*/
 	public void drawInCell(int ic, Graphics g, int x, int y, int w, int h, boolean selected) {
 		if (data == null || calculatedValues==null) 
@@ -171,13 +180,27 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 		if (ic<calculatedValues.length) {
 			Color cellColor = null;
 			String cellString = "";
-			Color stringColor = null;
+			Color stringColor = Color.black;
 			calculateValue(ic);
 			if (!MesquiteInteger.isCombinable(calculatedValues[ic])) {
 				cellColor=Color.white;
-			} else if (calculatedValues[ic]==0) {
-				cellColor=Color.white;
-				stringColor = Color.black;
+			} if (calculatedValues[ic]==0) {
+				cellColor=Color.black;
+				stringColor = Color.white;
+				cellString="0";
+			} else {
+				int numT = data.getNumTaxa();
+				if (table.numRowsSelected()>0)
+					numT = table.numRowsSelected();
+				cellColor = getColorOfScore(calculatedValues[ic], numT);
+				if (calculatedValues[ic]<10)
+					cellString = ""+calculatedValues[ic];
+				if (calculatedValues[ic]<6)
+					stringColor=Color.white;
+			}
+			/*			if (calculatedValues[ic]==0) {
+				cellColor=Color.blue;
+				stringColor = Color.white;
 				cellString="0";
 			} else if (calculatedValues[ic]==1) {
 				cellColor=ColorDistribution.lightRed;
@@ -202,7 +225,7 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 				else
 					stringColor = Color.black;
 			}
-
+			 */
 			g.setColor(cellColor);
 			g.fillRect(x,y,w,h);
 			g.setColor(stringColor);
