@@ -198,34 +198,6 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 				if (calculatedValues[ic]<6)
 					stringColor=Color.white;
 			}
-			/*			if (calculatedValues[ic]==0) {
-				cellColor=Color.blue;
-				stringColor = Color.white;
-				cellString="0";
-			} else if (calculatedValues[ic]==1) {
-				cellColor=ColorDistribution.lightRed;
-				cellString="1";
-				stringColor = Color.black;
-			} else if (calculatedValues[ic]==2) {
-				cellColor=ColorDistribution.lightGreen;
-				cellString="2";
-				stringColor = Color.black;
-			} else if (calculatedValues[ic]==3) {
-				cellColor=ColorDistribution.veryLightGreen;
-				cellString="3";
-				stringColor = Color.black;
-			} else if (calculatedValues[ic]>=4 && calculatedValues[ic]<10) {
-				cellColor = MesquiteColorTable.getBlueScale(10-calculatedValues[ic], 0, 10);
-				cellString=""+calculatedValues[ic];
-				stringColor = Color.black;
-			} else {
-				cellColor = MesquiteColorTable.getGrayScale(calculatedValues[ic], 0, data.getNumTaxa());
-				if (calculatedValues[ic]/data.getNumTaxa()>0.5)
-					stringColor=Color.white;
-				else
-					stringColor = Color.black;
-			}
-			 */
 			g.setColor(cellColor);
 			g.fillRect(x,y,w,h);
 			g.setColor(stringColor);
