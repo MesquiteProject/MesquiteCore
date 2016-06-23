@@ -125,10 +125,23 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			for (int ic=0; ic<newAlignment.length && ic<=droppedCellPositionInAlignment; ic++) {  // let's see how many cells are in the dragged sequence up to that point
 				if (!CategoricalState.isInapplicable(newAlignment[ic])) {
 					draggedAlignmentCellCount++;
-					lastFilledCellDraggedAlignmentPosition=ic;
+					lastFilledCellDraggedAlignmentPosition=ic;  // within the alignment, this is the last cell, to the left of the dropped site,  in the dragged sequence that has data
 				}
 			}
-			int extraGapsInNewAlignment= droppedCellPositionInAlignment-lastFilledCellDraggedAlignmentPosition;
+			int extraGapsInNewAlignment = 0;  // this will record how many 
+			if (lastFilledCellDraggedAlignmentPosition>=0)  // there is data to the left of the dropped site in the dragged sequence
+				extraGapsInNewAlignment= droppedCellPositionInAlignment-lastFilledCellDraggedAlignmentPosition;
+			else{  // there was nothing to the left; now we have to look to the right
+				int firstFilledCellDraggedAlignmentPosition =-1;
+				for (int ic=droppedCellPositionInAlignment; ic<newAlignment.length; ic++) {  // let's see how many cells are in the dragged sequence up to that point
+					if (!CategoricalState.isInapplicable(newAlignment[ic])) {  //let's find first one
+						draggedAlignmentCellCount=1;
+						firstFilledCellDraggedAlignmentPosition=ic;  // within the alignment, this is the last cell, to the left of the dropped site,  in the dragged sequence that has data
+						break;
+					}
+				}
+				extraGapsInNewAlignment= droppedCellPositionInAlignment-firstFilledCellDraggedAlignmentPosition;
+			}
 
 			// we now know what cell was moved onto the dropped cell.  Where was this cell in the original alignment?
 
@@ -143,7 +156,8 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 
 			int positionInOriginalAlignment= lastFilledCellDraggedOriginalPosition+extraGapsInNewAlignment;
 			amountToMove = columnDropped-positionInOriginalAlignment+1;
-		} else {  //shift to dragged sequence
+		} 
+		else {  //shift to dragged sequence
 			if (!draggedOnData) {  // not dragged on data; find nearest dragcell
 				if (draggedCellCount<=0){  //this means it was dragged to the left of the first cell in the dragged sequence 
 					draggedCellCount=1;
@@ -204,8 +218,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			amountToMove = positionOfDroppedInOriginalAlignment-columnDragged-1;
 		}
 		
-		Debugg.println("\n************ Pairwise Shifter *********");
-
 		MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 		MesquiteInteger charAdded = new MesquiteInteger(0);
 		int added = 0;
@@ -222,24 +234,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			//						((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
 		}
 		//MAY NEED TO NOTIFY!!!!!!
-		Debugg.println("   added: " + added);
-		Debugg.println("   charAdded: " + charAdded.getValue());
-		Debugg.println("   total number of characters: " + data.getNumChars());
-		Debugg.println("   amountToMove: " + amountToMove);
-		Debugg.println("   rowToAlign: " + rowToAlign);
-		Debugg.println("   recipientRow: " + recipientRow);
-		Debugg.println("   columnDragged: " + columnDragged);
-		Debugg.println("   columnDropped: " + columnDropped);
-		Debugg.println("   droppedOnData: " + droppedOnData);
-		Debugg.println("   draggedOnData: " + draggedOnData);
-		Debugg.println("   droppedCellCount: " + droppedCellCount);
-		Debugg.println("   draggedCellCount: " + draggedCellCount);
-		Debugg.println("   dragged row cells: " + data.getTotalNumApplicable(rowToAlign, false));
-		Debugg.println("   dropped row cells: " + data.getTotalNumApplicable(recipientRow, false));
-		Debugg.println("*********************");
-		if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData && charAdded.getValue()>1000) {
-			discreetAlert("WARNING!   more than 1000 characters added!!!!");
-		}
 
 
 	}
@@ -277,6 +271,15 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	/*.................................................................................................................*/
+	public String getProductName() {
+		return "Shift";
+	}
+	/*.................................................................................................................*/
+	public String getActionName() {
+		return "Shift";
+	}
+
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.

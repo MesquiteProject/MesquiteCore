@@ -246,7 +246,7 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	public String getTitle() {
 		return "Number of Data Cells Strip";

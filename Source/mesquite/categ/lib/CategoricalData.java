@@ -1627,12 +1627,12 @@ public class CategoricalData extends CharacterData {
 		if (originalCheckSum != newCheckSum) {
 			if (!warnCheckSum.getValue())
 				MesquiteTrunk.mesquiteTrunk.logln(warning);
-			else if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Checksum doesn't match",warning + "\n\nYou may suppress warnings of this type within this run of Mesquite.", "Continue", "Suppress warnings"))
+			else if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "  Checksum doesn't match",warning + "\n\nYou may suppress warnings of this type within this run of Mesquite.", "Continue", "Suppress warnings"))
 				warnCheckSum.setValue(false);
 			return false;
 		} 
 		else {
-			MesquiteTrunk.mesquiteTrunk.logln("Passed checksum");
+			MesquiteTrunk.mesquiteTrunk.logln("  Passed checksum");
 			return true;
 		}
 	}

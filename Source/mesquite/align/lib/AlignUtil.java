@@ -572,6 +572,24 @@ public class AlignUtil {
 
 		return true;
 	}	
+	/*.................................................................................................................*/
+	public static boolean hasSomeAlignedSites(long[][] alignedMatrix){
+		if (alignedMatrix == null)
+			return false;
+		int numSequences = Long2DArray.numFullRows(alignedMatrix);
+		int numSites = Long2DArray.numFullColumns(alignedMatrix);
+		for (int k = 0; k<numSites; k++) {
+			boolean foundData = false;
+			for (int i =0; i<numSequences; i++) {
+				if (!CategoricalState.isInapplicable(alignedMatrix[k][i])) {
+					if (foundData)
+						return true;
+					foundData=true;
+				}
+			}
+		}
+		return false;
+	}	
 
 }
 

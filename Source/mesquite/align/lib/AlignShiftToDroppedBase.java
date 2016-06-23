@@ -234,12 +234,15 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 				} else
 					aligned = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), recipientRow, rowToAlign,MesquiteInteger.unassigned,MesquiteInteger.unassigned,true,score);
 			}
-				
-			if (aligned==null) {
-				logln("Alignment failed!");
+			if (!AlignUtil.hasSomeAlignedSites(aligned)){
+				logln("Sequence " +(rowToAlign+1) + " relative to sequence " + (recipientRow+1)+": " + getProductName() + " not done, as there was no overlap between the two sequences.");
 				return false;
 			}
-			logln("Align " + (rowToAlign+1) + " onto " + (recipientRow+1));
+			if (aligned==null) {
+				logln("Sequence " +(rowToAlign+1) + " relative to sequence " + (recipientRow+1)+": " + getProductName() + " failed!");
+				return false;
+			}
+			logln(getActionName()+ " " + (rowToAlign+1) + " onto " + (recipientRow+1));
 			long[] newAlignment = Long2DArray.extractRow(aligned,1);
 
 			alignShiftTouchedToDropped(aligned,newAlignment,  rowToAlign,  recipientRow,  columnDropped,  columnDragged, droppedOnData, draggedOnData);
@@ -252,6 +255,14 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	}
 	protected boolean ignoreCommand(){
 		return (ignoreFileSettings.getValue() && MesquiteThread.isScripting());
+	}
+	/*.................................................................................................................*/
+	public String getProductName() {
+		return "Alignment";
+	}
+	/*.................................................................................................................*/
+	public String getActionName() {
+		return "Align";
 	}
 	/*.................................................................................................................*/
 	protected boolean alignJustTouchedRow = true;
