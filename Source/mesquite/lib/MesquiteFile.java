@@ -783,7 +783,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			tempDirectoryName=fdlg.getDirectory();
 			// fdlg.dispose();
 		}
-		else	if (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) {  
+		else	if (MesquiteTrunk.getJavaVersionAsDouble()<1.8 && (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX())) {  
 			MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.LOAD);
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			fdlg.setResizable(true);
@@ -811,7 +811,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setDialogTitle(message);
 			fdlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			Debugg.println("JFILE");
 			int returnValue = fdlg.showOpenDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule().getParentFrame());
+			Debugg.println("JFILE2");
 			if (returnValue == JFileChooser.APPROVE_OPTION){
 				tempDirectoryName = fdlg.getSelectedFile().getAbsolutePath();
 				tempFileName = null;
