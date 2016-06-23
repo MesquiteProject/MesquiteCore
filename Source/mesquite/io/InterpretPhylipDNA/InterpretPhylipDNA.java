@@ -15,6 +15,7 @@ package mesquite.io.InterpretPhylipDNA;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -37,6 +38,10 @@ public class InterpretPhylipDNA extends InterpretPhylip {
    						"Also, please ensure this is not an rtf or zip file or other format that is not simple text.  This warning may not be given again, but you may see subsequent warnings about impossible states.");
    			badImportWarningGiven = true;
    		}
+	}
+	/*.................................................................................................................*/
+	public String preferredDataFileExtension() {  //Debugg.println DAvid: is this OK?
+		return "phy";
 	}
 /*.................................................................................................................*/
 	public boolean canExportEver() {  

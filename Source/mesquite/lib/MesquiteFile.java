@@ -783,7 +783,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			tempDirectoryName=fdlg.getDirectory();
 			// fdlg.dispose();
 		}
-		else	if (MesquiteTrunk.getJavaVersionAsDouble()<1.8 && (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX())) {  
+		else	if (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) {  
 			MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.LOAD);
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			fdlg.setResizable(true);
