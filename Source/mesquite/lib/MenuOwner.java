@@ -2096,8 +2096,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				MesquiteMenuItem openItem = new MesquiteMenuItem("Open File...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.openFileCommand);
 				openItem.setShortcut(openShortcut);
 				newMenu.add(openItem);
-				MesquiteMenuItem importItem = new MesquiteMenuItem("Import File...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.importFileCommand);
-				newMenu.add(importItem);
+		//		MesquiteMenuItem importItem = new MesquiteMenuItem("Open Special NEXUS File...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.openSpecialNEXUSCommand);
+		//		newMenu.add(importItem);
 			}
 			/*-------------- open URL menu or submenu */
 			//newMenu.add(new MesquiteMenuItem("Open URL...", MesquiteModule.mesquiteTrunk, MesquiteModule.mesquiteTrunk.openURLCommand));

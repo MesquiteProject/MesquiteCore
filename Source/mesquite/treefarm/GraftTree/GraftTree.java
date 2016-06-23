@@ -94,7 +94,7 @@ public class GraftTree extends TreeAltererMult {
 	public boolean queryOptions(boolean singleTerminalSelected) {
 //		if (!singleTerminalSelected)
 //			return true;
-		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  //Debugg.println needs to check that options set well enough to proceed anyway
+		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options")) 
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Graft Tree Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()

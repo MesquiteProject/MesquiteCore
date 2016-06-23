@@ -23,7 +23,7 @@ import mesquite.categ.lib.*;
 
 
 
-public class InterpretMrBayesConTreeFile extends FileInterpreterI {
+public class InterpretMrBayesConTreeFile extends FileInterpreterI implements NEXUSInterpreter {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -36,9 +36,9 @@ public class InterpretMrBayesConTreeFile extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
-	public boolean usesNEXUSflavor(){
+	/*public boolean usesNEXUSflavor(){
 		return true;
-	}
+	}*/
 	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		return false;  //

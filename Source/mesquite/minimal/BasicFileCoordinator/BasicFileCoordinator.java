@@ -506,7 +506,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return thisFile;
 	}
 	/*.................................................................................................................*/
-	public MesquiteFile readProject(boolean local, String pathName, String arguments, boolean forceImportQuery) { 
+	public MesquiteFile readProject(boolean local, String pathName, String arguments, Class importerSubclass) { 
 
 		//ALLOW THIS ONLY ONCE FOR A FILE COORDINATOR
 		if (getProject()!=null) { 
@@ -549,11 +549,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 			//first try nexus.  If can't be read, then make list and query user...
 			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-			if (!forceImportQuery && nfi!=null && nfi.canReadFile(thisFile))  
+			if (importerSubclass== null && nfi!=null && nfi.canReadFile(thisFile))  
 				fileInterp = nfi;
 			else {
 				imp = true;
-				fileInterp = findImporter(thisFile, 0, arguments);
+				fileInterp = findImporter(thisFile, 0, importerSubclass, arguments);
 			}
 			if (fileInterp !=null) {
 				p = initiateProject(thisFile.getFileName(), thisFile);
@@ -587,8 +587,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					return null;
 				}
 				else {
-					p.fileSaved(thisFile);  //Debugg.println confirm this is the behaviour we want.  If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
-					if (imp && (!fileInterp.usesNEXUSflavor()) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+					// "Import" or "Translate"  Open Special NEXUS File
+					// behaviour: autosave or not
+					
+					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
+					if (imp && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
 						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");
 						if (MesquiteThread.isScripting() || thisFile.changeLocation("Save imported file as NEXUS file")) {
 							afterProjectRead();
@@ -1255,7 +1258,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return null;
 	}
 	/*.................................................................................................................*/
-	public FileInterpreter findImporter(String fileContents, String fileName, int fileType, String arguments,boolean mustReadFromString, Class stateClass) {
+	public FileInterpreter findImporter(String fileContents, String fileName, int fileType, Class importerSubclass, String arguments,boolean mustReadFromString, Class stateClass) {
 		//hackathon
 		String importerName = findImporterName(arguments);
 		if (importerName != null){
@@ -1270,7 +1273,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		TextDisplayer fd = displayText(fileContents, fileName);  //TODO: should say if scripting
 
 		MesquiteModule[] fInterpreters = null;
-		if (fileType == 0)
+		if (importerSubclass != null)
+			fInterpreters = getImmediateEmployeesWithDuty(importerSubclass);
+		else if (fileType == 0)
 			fInterpreters = getImmediateEmployeesWithDuty(FileInterpreterI.class);
 		else
 			fInterpreters = getImmediateEmployeesWithDuty(FileInterpreterITree.class);
@@ -1309,11 +1314,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return (FileInterpreter)fInt;
 	}
 	/*.................................................................................................................*/
-	public FileInterpreter findImporter(MesquiteFile f, int fileType, String arguments) {
+	public FileInterpreter findImporter(MesquiteFile f, int fileType, Class importerSubclass, String arguments) {
 		String s = MesquiteFile.getFileContentsAsString(f.getPath(), 4000); 
 		if (StringUtil.blank(s))
 			return null;
-		return findImporter(s,f.getName(),fileType, arguments, false, null);
+		return findImporter(s,f.getName(),fileType, importerSubclass, arguments, false, null);
 	}
 	/*.................................................................................................................*/
 	public Snapshot getIDSnapshot(MesquiteFile file) {
@@ -1994,6 +1999,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 			linkedFile =MesquiteFile.open(dirName, fileName);
 		}
 		boolean imp = false;
+		boolean wasTranslated = false;
 
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		if (linkedFile!=null) {
@@ -2036,6 +2042,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 				imp = true;
 			}
 			if (fileInterp !=null) {
+				if (!(fileInterp instanceof NEXUSInterpreter))
+					wasTranslated = true;
 				MesquiteFile sf = CommandRecord.getScriptingFileS();
 
 				CommandRecord.setScriptingFileS(linkedFile);
@@ -2073,8 +2081,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 		else if (!linkedFile.isClosed()) {
 			ownerModule.getProject().fileSaved(linkedFile);
 			Parser parser = new Parser();
-			//Debugg.println : note, for linked files, continues to use old system, with no "import" route for nexus files
-			if (imp && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+			//For linked files, no subclasses of interpreter can be specified in advance, and thus NEXUS files will be automatically read by InterpretNexus
+			if (imp && wasTranslated && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
 				linkedFile.changeLocation(linkedFile.getDirectoryName(), linkedFile.getFileName()+".nex");  
 				if (MesquiteThread.isScripting() || linkedFile.changeLocation("Save imported linked file as NEXUS file"))
 					ownerModule.writeFile(linkedFile);  		

@@ -64,9 +64,9 @@ public abstract class FileCoordinator extends MesquiteModule {
 	 * make a MesquiteProject, reading the information from the given path of a file (if local, interprets as file on disk; if not, as URL specification).
 	 */
 	public MesquiteFile readProject(boolean local, String pathname, String arguments){  //will be overridden by BasicFileCoordinator
-		return readProject(local, pathname, arguments, false);
+		return readProject(local, pathname, arguments, null);
 	}
-	public abstract MesquiteFile readProject(boolean local, String pathname, String arguments, boolean forceImportQuery);
+	public abstract MesquiteFile readProject(boolean local, String pathname, String arguments, Class importerSubclass);
 	
 	/** make a MesquiteProject, using a module. */
 	public abstract MesquiteFile readProjectGeneral(String arguments);
@@ -74,9 +74,16 @@ public abstract class FileCoordinator extends MesquiteModule {
 	public abstract void wrapUpAfterFileRead(MesquiteFile f);  //call after read() methods of file interpreters called outside context of the file Coordinator's project/file reading
 	public abstract MesquiteFile getNEXUSFileForReading(String arguments, String message);
 
-	public abstract FileInterpreter findImporter(MesquiteFile f, int fileType, String arguments);
+	public FileInterpreter findImporter(MesquiteFile f, int fileType, String arguments){
+		return findImporter(f, fileType, null, arguments);
+	}
+	public abstract FileInterpreter findImporter(MesquiteFile f, int fileType, Class subClass, String arguments);
 
-	public abstract FileInterpreter findImporter(String fileContents, String fileName, int fileType, String arguments,boolean mustReadFromString, Class stateClass);
+	public FileInterpreter findImporter(String fileContents, String fileName, int fileType, String arguments,boolean mustReadFromString, Class stateClass){
+		return findImporter(fileContents, fileName, fileType, null, arguments, mustReadFromString, stateClass);
+	}
+
+	public abstract FileInterpreter findImporter(String fileContents, String fileName, int fileType, Class subClass, String arguments,boolean mustReadFromString, Class stateClass);
 
 	public abstract MesquiteProject initiateProject(String pathName, MesquiteFile homeFile);
 

@@ -3009,7 +3009,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		Writer stream;
 		if (!MesquiteTrunk.isApplet()) {
-			//Debugg.println("put file contents " + relativePath);
 			try {
 				if (ascii && System.getProperty("os.name").startsWith("Mac"))
 					stream = new OutputStreamWriter(new FileOutputStream(relativePath), "ASCII");
@@ -3017,7 +3016,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					stream = new OutputStreamWriter(new FileOutputStream(relativePath));
 				if (contents!=null) {
 					stream.write(contents);
-					//Debugg.println("put file contents written");
 					stream.flush();
 					stream.close();
 					try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
@@ -3032,13 +3030,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				MesquiteMessage.warnProgrammer( "IO exception put file contents  (2)  [" + relativePath + "] " + e.getMessage());
 				//MesquiteMessage.printStackTrace();
 			}
-			//Debugg.println("put file contents done");
 		}
 		else {
 			//files cannot be written with applets
 		}
 		w = false;
-		//Debugg.println("put file contents done 2 and does file exist? " + MesquiteFile.fileExists(relativePath));
 	}
 	/*.................................................................................................................*/
 	/** Appends to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in

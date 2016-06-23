@@ -29,7 +29,7 @@ public class ProjectRead implements Runnable {
 	public static int totalCreated = 0; //to find memory leaks
 	public static int totalFinalized = 0;
 	boolean wasScripting;
-	boolean forceImportQuery = false;
+	Class importerSubclass = null;
 	public InputStream stream;
 	public ProjectRead (String arguments,  int  category, MesquiteModule mesquite, ObjectContainer p) {
 		projCont = p;
@@ -50,8 +50,8 @@ public class ProjectRead implements Runnable {
 	public String getCurrentCommandExplanation(){
 		return null;
 	}
-	public void setForceImportQuery(boolean forceImportQuery){  //this forces the import query to show even if Mesquite thinks it can handle this as a NEXUS file
-		this.forceImportQuery = forceImportQuery;
+	public void setImporterSubclass(Class importerSubclass){  //this forces the import query to show even if Mesquite thinks it can handle this as a NEXUS file
+		this.importerSubclass = importerSubclass;
 	}
 	/*.................................................................................................................*/
 	public MesquiteProject openGeneral(String arguments){
@@ -172,7 +172,7 @@ public class ProjectRead implements Runnable {
 			MesquiteThread.setCurrentCommandRecord(comRec);
 			if (originalArguments == null) //hackathon
 				originalArguments = arguments;
-			mb.readProject(true, pathname, originalArguments, forceImportQuery); 
+			mb.readProject(true, pathname, originalArguments, importerSubclass); 
 			/*================*/
 			mesquite.resetAllMenuBars();
 			mesquite.decrementMenuResetSuppression();
