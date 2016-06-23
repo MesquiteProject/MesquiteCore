@@ -155,16 +155,17 @@ public class MergeTaxaByName extends MergeTaxa {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 310;  
+		return NEXTRELEASE;  
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;
 	}
+
 	/*.................................................................................................................*/
 	/**Returns true if the module is to appear in menus and other places in which users can choose, and if can be selected in any way other than by direct request*/
-	public boolean getUserChooseable(){
-		return false;  //Debugg.println
+	public boolean loadModule(){
+		return false; 
 	}
 
 }

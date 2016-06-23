@@ -1276,20 +1276,20 @@ public class Mesquite extends MesquiteTrunk
 		return newProject(urlString, 2);
 	}
 	/*.................................................................................................................*/
-	public MesquiteProject openFile(String pathname, String originalArguments, boolean forceImportQuery){ //hackathon
-		return newProject(pathname, 1, false, originalArguments,  forceImportQuery);
+	public MesquiteProject openFile(String pathname, String originalArguments, Class importerSubclass){ //hackathon
+		return newProject(pathname, 1, false, originalArguments,  importerSubclass);
 	}
 	/*.................................................................................................................*/
 	
 	public MesquiteProject openFile(String pathname){
-		return newProject(pathname, 1,  false, null, false);
+		return newProject(pathname, 1,  false, null, null);
 	}
 	/*.................................................................................................................*/
 	/* give alternative method which takes full file and passes it to FileCoordinator,
 	which then uses alternative methods in MesquiteProject reader that parses this string
 	instead of input stream*/
-	public MesquiteProject openFile(String pathname, boolean forceImportQuery){
-		return newProject(pathname, 1,  false, null, forceImportQuery);
+	public MesquiteProject openFile(String pathname, Class importerSubclass){
+		return newProject(pathname, 1,  false, null, importerSubclass);
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project, in process making taxa block.*/
@@ -1308,21 +1308,21 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/* makes and returns a new project.*/ //hackathon
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless){
-		return newProject(arguments, code, actAsScriptingRegardless, null, false);
+		return newProject(arguments, code, actAsScriptingRegardless, null, null);
 	}
 	/* makes and returns a new project.*/ //hackathon
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments){
-		return newProject(arguments, code, actAsScriptingRegardless, originalArguments, false);
+		return newProject(arguments, code, actAsScriptingRegardless, originalArguments, null);
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*///hackathon
-	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments, boolean forceImportQuery){
+	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments, Class importerSubclass){
 		if (MesquiteThread.isScripting() || actAsScriptingRegardless) {
 			ObjectContainer projCont = new ObjectContainer();
 			ProjectRead pr = new ProjectRead(arguments,  code, mesquiteTrunk, projCont);
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
-			pr.setForceImportQuery(forceImportQuery);
+			pr.setImporterSubclass(importerSubclass);
 			pr.run();
 			MesquiteProject p = (MesquiteProject)projCont.getObject();
 			projCont.setObject(null); //This is done because Threads not being finalized, and need to remove references to projects
@@ -1333,7 +1333,7 @@ public class Mesquite extends MesquiteTrunk
 			ProjectReadThread pt = new ProjectReadThread(pr);
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
-			pr.setForceImportQuery(forceImportQuery);
+			pr.setImporterSubclass(importerSubclass);
 			pt.settempID(arguments);
 			pr.setThread(pt);
 			pt.start();
@@ -1524,7 +1524,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		return sb.toString();
 	}
-	private MesquiteProject openOrImportFileHandler(String path, String completeArguments, boolean forceImportQuery){
+	public MesquiteProject openOrImportFileHandler(String path, String completeArguments, Class importerSubclass){
 		MesquiteProject f;
 		CommandRecord comRec  = MesquiteThread.getCurrentCommandRecord();
 		CommandRecord cr;
@@ -1541,7 +1541,7 @@ public class Mesquite extends MesquiteTrunk
 		MesquiteThread.setCurrentCommandRecord(cr);
 
 		if (StringUtil.blank(path)) {
-			f = openFile(null, forceImportQuery); 
+			f = openFile(null, importerSubclass); 
 		}
 		else {
 			String baseN = null;
@@ -1553,7 +1553,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 			if (!MesquiteFile.fileExists(path) && (!StringUtil.blank(baseN) && MesquiteFile.fileExists(baseN+path)))
 				path = baseN+path;
-			f= openFile(path, completeArguments, forceImportQuery);
+			f= openFile(path, completeArguments, importerSubclass);
 		}
 		MesquiteThread.setCurrentCommandRecord(prevR);
 		return f;
@@ -1741,16 +1741,11 @@ public class Mesquite extends MesquiteTrunk
 			storePreferences();
 			discreetAlert("You will need to restart Mesquite to load all of the modules");
 		}
-		else if (checker.compare(this.getClass(), "Imports file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open, AND it will not be assumed it will use the usual NEXUS interpreter.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "importFile")) {
-			String path = ParseUtil.getFirstToken(arguments, stringPos);
-			String completeArguments = arguments;
-			return openOrImportFileHandler( path,  completeArguments, true);
-
-		}
+		
 		else if (checker.compare(this.getClass(), "Opens file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "openFile")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
 			String completeArguments = arguments;
-			return openOrImportFileHandler( path,  completeArguments, false);
+			return openOrImportFileHandler( path,  completeArguments, null);
 
 		}
 		else if (checker.compare(this.getClass(), "Opens file on web server.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[URL of file] - if parameter absent then presents user with dialog box to enter URL", commandName, "openURL")){
@@ -2286,7 +2281,6 @@ public class Mesquite extends MesquiteTrunk
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);
 		mesquiteTrunk.openFileCommand = makeCommand("openFile",  mesquiteTrunk);
-		mesquiteTrunk.importFileCommand = makeCommand("importFile",  mesquiteTrunk);
 		mesquiteTrunk.openURLCommand = makeCommand("openURL",  mesquiteTrunk);
 		mesquiteTrunk.currentCommandCommand = makeCommand("currentCommand",  mesquiteTrunk);
 		mesquiteTrunk.currentCommandCommand.setQueueBypass(true);

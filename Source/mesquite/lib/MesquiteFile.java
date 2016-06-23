@@ -783,7 +783,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			tempDirectoryName=fdlg.getDirectory();
 			// fdlg.dispose();
 		}
-		else	if (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) {  
+		else	if (MesquiteTrunk.getJavaVersionAsDouble()<1.8 && (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX())) {  
 			MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.LOAD);
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			fdlg.setResizable(true);
@@ -811,7 +811,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setDialogTitle(message);
 			fdlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			Debugg.println("JFILE");
 			int returnValue = fdlg.showOpenDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule().getParentFrame());
+			Debugg.println("JFILE2");
 			if (returnValue == JFileChooser.APPROVE_OPTION){
 				tempDirectoryName = fdlg.getSelectedFile().getAbsolutePath();
 				tempFileName = null;
@@ -3009,7 +3011,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		Writer stream;
 		if (!MesquiteTrunk.isApplet()) {
-			//Debugg.println("put file contents " + relativePath);
 			try {
 				if (ascii && System.getProperty("os.name").startsWith("Mac"))
 					stream = new OutputStreamWriter(new FileOutputStream(relativePath), "ASCII");
@@ -3017,7 +3018,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					stream = new OutputStreamWriter(new FileOutputStream(relativePath));
 				if (contents!=null) {
 					stream.write(contents);
-					//Debugg.println("put file contents written");
 					stream.flush();
 					stream.close();
 					try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
@@ -3032,13 +3032,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				MesquiteMessage.warnProgrammer( "IO exception put file contents  (2)  [" + relativePath + "] " + e.getMessage());
 				//MesquiteMessage.printStackTrace();
 			}
-			//Debugg.println("put file contents done");
 		}
 		else {
 			//files cannot be written with applets
 		}
 		w = false;
-		//Debugg.println("put file contents done 2 and does file exist? " + MesquiteFile.fileExists(relativePath));
 	}
 	/*.................................................................................................................*/
 	/** Appends to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in

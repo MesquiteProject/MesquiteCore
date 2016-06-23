@@ -2565,11 +2565,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (s != null) {
 				tree.setName(s);
 				TreeVector trees = null;
+				int numTreeBlocks = ownerModule.getProject().getNumberTreeVectors();
 				if (!inOther && originalTree != null && ((MesquiteTree) originalTree).getTreeVector() != null) {
 					trees = ownerModule.getProject().storeTree(this, ((MesquiteTree) originalTree).getTreeVector(), tree, true);
 				}
 				else
 					trees = ownerModule.getProject().storeTree(this, null, tree, true);
+				int numTreeBlocksAfter = ownerModule.getProject().getNumberTreeVectors();
+				if (numTreeBlocksAfter>numTreeBlocks)
+					MesquiteModule.resetAllMenuBars();
 				if (trees != null) {
 					TreesManager manager = (TreesManager) ownerModule.findElementManager(TreeVector.class);
 					if (manager != null) {
@@ -2895,8 +2899,16 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			MesquiteInteger io = new MesquiteInteger(0);
 			int branchFrom = MesquiteInteger.fromString(arguments, io);
 			int branchTo = MesquiteInteger.fromString(arguments, io);
-			if (branchFrom > 0 && branchTo > 0 && (tree.moveBranch(branchFrom, branchTo, true))) {
-				treeEdited(false);
+			
+			if (branchFrom > 0 && branchTo > 0){
+				int fromMother = tree.motherOfNode(branchFrom);  //new in 3. 1: finally, allowing interchange
+				int toMother = tree.motherOfNode(branchTo);
+				if (fromMother == toMother && toMother>0 && (arguments.indexOf("option") >= 0 || !tree.nodeIsPolytomous(fromMother))){
+					if (tree.interchangeBranches(branchFrom, branchTo, false, true))
+					treeEdited(false);
+				}
+				else if (tree.moveBranch(branchFrom, branchTo, true))
+					treeEdited(false);
 			}
 
 		}

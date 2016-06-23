@@ -161,10 +161,10 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	}
 	/*.................................................................................................................*/
 	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
-	public boolean usesNEXUSflavor(){
+	/*public boolean usesNEXUSflavor(){
 		return false;
 	}
-
+*/
 	NameReference previousTaxaNameRef = new NameReference("previousTaxon");
 	NameReference newlyAddedTaxaNameRef = new NameReference("newlyAddedTaxon");
 	
