@@ -92,7 +92,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	private boolean userVisible = true;
 	private boolean inhibitEditor = false;
-//	private boolean locked = false;
+	//	private boolean locked = false;
 
 	public String problemReading = null;
 	private boolean checksumValid = false;
@@ -287,7 +287,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return inventUniqueIDs;
 	}
 	public void dispose(){
-		
+
 		checkThread(true);
 		if (taxa!=null)
 			taxa.removeListener(this);
@@ -349,6 +349,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return null;
 	}
 
+	public CharactersGroup getCurrentGroup(int ic) {
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
+		if (partition==null){
+			return null;
+		}
+		return (CharactersGroup)partition.getProperty(ic);
+
+	}
 	public void setCurrentGroup(CharactersGroup group, int icStart, int icEnd, MesquiteModule ownerModule) {
 		if (icEnd<icStart || group==null)
 			return;
@@ -1269,7 +1277,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 						for (int i = gResultingEndBlock-distance; i>=startBlock; i--){
 							cs = moveOne(i, distance, it, cs, dataChanged);
 						}
-			}
+				}
 		} 
 		else if (distance<0){ //moving left
 			int g = 0;
@@ -2788,7 +2796,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 	}
-	
+
 	/* ................................................................................................................. */
 	String nextPasteString(StringBuffer sb) {
 		if (sb.length() == 0)
@@ -2825,7 +2833,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		for (int i = 0; i < numChars && sb.length()>0; i++) {
 			pasteCell(parser, i, it, nextPasteString(sb));
-			
+
 		}
 		return true;
 	}
@@ -2833,13 +2841,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/* ................................................................................................................. */
 
 	public void pasteDataFromStringIntoTaxon(int it, String s) {
-			if (StringUtil.notEmpty(s)) {
-				String[] lines = StringUtil.getLines(s);
-				if (lines.length==1) {
-					pasteData(it, s);
-					notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-				}
+		if (StringUtil.notEmpty(s)) {
+			String[] lines = StringUtil.getLines(s);
+			if (lines.length==1) {
+				pasteData(it, s);
+				notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 			}
+		}
 	}
 	/* ................................................................................................................. */
 

@@ -4582,6 +4582,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				s += "; Sequence site " + count;
 			}
 		}
+		CharactersGroup g = data.getCurrentGroup(column);
+		if (g!= null)
+			s += " [group: " + g.getName() + "]";
 		return s;
 	}
 
