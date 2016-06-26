@@ -278,7 +278,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 	public String getName() {

@@ -107,7 +107,7 @@ public abstract class AlignShiftToDroppedBase extends DataWindowAssistantI {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void addToSnapshot(Snapshot temp) {

@@ -67,7 +67,7 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void addExtraMenus(){
