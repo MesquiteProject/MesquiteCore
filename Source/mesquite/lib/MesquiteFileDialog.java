@@ -17,6 +17,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
+import javax.swing.JWindow;
+
 
 /*===============================================*/
 /** A dialog box*/
@@ -27,10 +29,29 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 	boolean holdsConsoleFocus = false;
 	boolean doneByConsole = false;
 	int type;
+	JWindow titleWindow;
+	Label titleWindowLabel;
 	//MFDThread mfdThread = null;
 	public static MesquiteFileDialog currentFileDialog = null;
 	public MesquiteFileDialog (MesquiteWindow f, String message, int type) {
 		super(getFrame(f), message, type);
+		if (type == FileDialog.LOAD &&  (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) && MesquiteTrunk.getOSXVersion()>10){
+			titleWindow = new JWindow(); 
+			int twWidth = 1000;
+			int twHeight = 30;
+			titleWindow.setSize(twWidth,twHeight);
+			titleWindowLabel = new Label();
+			titleWindowLabel.setBackground(ColorTheme.getExtInterfaceBackground()); //ColorDistribution.veryLightGray
+			titleWindow.add(titleWindowLabel);
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			int v, h;
+			h = (screenSize.width-twWidth)/2;
+			v = 26;
+			titleWindow.setLocation(h, v);
+			titleWindowLabel.setText("  " + message);
+			titleWindowLabel.setForeground(ColorTheme.getExtInterfaceElement(true));
+		
+		}
 		this.message = message;
 		this.type = type;
 		currentFileDialog = this;
@@ -75,7 +96,8 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 	boolean waiting = false;
 	public void setVisible(boolean vis){
 
-
+		if (titleWindow != null)
+			titleWindow.setVisible(vis);
 		if (type == 3){  //choosing a directory
 			if (vis) {
 				System.out.println("Choose Directory Dialog box shown.  Message: " + message);
@@ -186,6 +208,10 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			currentFileDialog = null;
 		if (alreadyDisposed)
 			return;
+		if (titleWindow != null){
+			titleWindow.setVisible(false);
+			titleWindow.dispose();
+		}
 		alreadyDisposed = true;
 		super.dispose();
 		if (holdsConsoleFocus)

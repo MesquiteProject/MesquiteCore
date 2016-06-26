@@ -811,9 +811,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setDialogTitle(message);
 			fdlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			Debugg.println("JFILE");
 			int returnValue = fdlg.showOpenDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule().getParentFrame());
-			Debugg.println("JFILE2");
 			if (returnValue == JFileChooser.APPROVE_OPTION){
 				tempDirectoryName = fdlg.getSelectedFile().getAbsolutePath();
 				tempFileName = null;
