@@ -24,7 +24,7 @@ import mesquite.lib.duties.*;
 public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 	public Vector extras;
 	public boolean first = true;
-	MesquiteBoolean on, horizontal, centred;
+	MesquiteBoolean on, horizontal, centred, showOnTerminals;
 	public ListableVector names;
 	static boolean asked= false;
 	int fontSize = 10;
@@ -37,10 +37,12 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 		on = new MesquiteBoolean(true);  //ON is currently true always
 		horizontal = new MesquiteBoolean(true);
 		centred = new MesquiteBoolean(true);
+		showOnTerminals = new MesquiteBoolean(true);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Text");
 		addItemToSubmenu(null, mss, "Choose Associated Text To Show...", makeCommand("chooseText",  this));
 		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
 		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
+		addCheckMenuItemToSubmenu(null, mss, "Show on Terminal Branches", makeCommand("toggleShowOnTerminals",  this), showOnTerminals);
 		addItemToSubmenu(null, mss, "Font Size...", makeCommand("setFontSize",  this));
 		addItemToSubmenu(null, mss, "Locations...", makeCommand("setOffset",  this));
 		return true;
@@ -71,6 +73,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 			temp.addLine("toggleHorizontal " + horizontal.toOffOnString());
 			temp.addLine("setFontSize " + fontSize); 
 			temp.addLine("setOffset " + xOffset + "  " + yOffset); 
+			temp.addLine("toggleShowOnTerminals " + showOnTerminals.toOffOnString());
 		}
 		return temp;
 	}
@@ -92,6 +95,13 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 			if (extras.size() == 0)
 				return null;
 			showChoiceDialog((Associable)((NodeAssocTextExtra)extras.elementAt(0)).lastTree);
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to show the values on the terminal branches", "[on or off]", commandName, "toggleShowOnTerminals")) {
+			if (StringUtil.blank(arguments))
+				showOnTerminals.setValue(!showOnTerminals.getValue());
+			else
+				showOnTerminals.toggleValue(parser.getFirstToken(arguments));
+			if (!MesquiteThread.isScripting()) parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to write the text horizontally", "[on or off]", commandName, "toggleHorizontal")) {
 			if (StringUtil.blank(arguments))
@@ -246,6 +256,8 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 	}
 	/*.................................................................................................................*/
 	public   void myDraw(Tree tree, int node, Graphics g, ObjectArray[] arrays) {
+		if (!assocTextModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			myDraw(tree, d, g, arrays);
 		for (int i=0; i<arrays.length; i++){
