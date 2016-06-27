@@ -22,7 +22,7 @@ import javax.swing.JWindow;
 
 /*===============================================*/
 /** A dialog box*/
-public class MesquiteFileDialog extends FileDialog implements Commandable, Listable, WindowListener {
+public class MesquiteFileDialog extends FileDialog implements Commandable, Listable {
 	String path = MesquiteTrunk.getRootPath(); //TODO: use default directory
 	String message = null;
 	String fileName = null;
@@ -38,11 +38,10 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 	public MesquiteFileDialog (MesquiteWindow f, String message, int type) {
 		super(getFrame(f), message, type);
 		if (type == FileDialog.LOAD &&  (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) && MesquiteTrunk.getOSXVersion()>10){
-			addWindowListener(this);
 			titleWindow = new JWindow(); 
 			titleWindow.setSize(twWidth,twHeight);
 			titleWindowLabel = new Label();
-			titleWindowLabel.setBackground(ColorTheme.getExtInterfaceBackground()); //ColorDistribution.veryLightGray
+			titleWindowLabel.setBackground(ColorDistribution.veryLightYellow); //ColorTheme.getExtInterfaceBackground()); //ColorDistribution.veryLightGray
 			titleWindow.add(titleWindowLabel);
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 			int v, h;
@@ -50,7 +49,8 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			v = 26;
 			titleWindow.setLocation(h, v);
 			titleWindowLabel.setText("  " + message);
-			titleWindowLabel.setForeground(ColorTheme.getExtInterfaceElement(true));
+		//	Color darkBlue = new Color((float)0.0, (float)0.0, (float)0.7);
+			titleWindowLabel.setForeground(ColorDistribution.darkBlue); //ColorTheme.getExtInterfaceElement(true));
 
 		}
 		this.message = message;
@@ -95,18 +95,40 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 		return s;
 	}
 
-	private void report(int i){ //Debugg.println
-		Debugg.println("where " + i);
-		
-		if (false && titleWindow != null){
+	public void setSize(int w, int h){
+		super.setSize(w, h);
+		if (titleWindow != null){
 			Point xy = this.getLocation();
 			int ww = this.getWidth();
+			titleWindow.setLocation(xy.x, xy.y-30);
 			Debugg.println("location " + xy);
 			Debugg.println("width " + ww);
-			titleWindow.setLocation(xy.x, xy.y-30);
 			titleWindow.setSize(ww, twHeight);
 		}
 	}
+	public void setLocation(int x, int y){
+		super.setLocation(x, y);
+		if (titleWindow != null){
+			Point xy = this.getLocation();
+			int ww = this.getWidth();
+			titleWindow.setLocation(xy.x, xy.y-30);
+			Debugg.println("location " + xy);
+			Debugg.println("width " + ww);
+			titleWindow.setSize(ww, twHeight);
+		}
+	}
+	public void setBounds(int x, int y, int w, int h){
+		super.setBounds(x, y, w, h);
+		if (titleWindow != null){
+			Point xy = this.getLocation();
+			int ww = this.getWidth();
+			titleWindow.setLocation(xy.x, xy.y-30);
+			Debugg.println("location " + xy);
+			Debugg.println("width " + ww);
+			titleWindow.setSize(ww, twHeight);
+		}
+	}
+
 
 	boolean waiting = false;
 	public void setVisible(boolean vis){
@@ -215,11 +237,10 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 
 	}
 	void sv(){
-		report(0);
 		super.setVisible(true);
 	}
 	public void dispose(){
-		report(1);
+
 		if (currentFileDialog == this)
 			currentFileDialog = null;
 		if (alreadyDisposed)
@@ -366,51 +387,6 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			}
 		}
 		System.out.println("Enter number to select file");
-	}
-	public void windowGainedFocus(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(2);
-		
-	}
-	public void windowLostFocus(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(3);
-		
-	}
-	public void windowActivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(4);
-		
-	}
-	public void windowClosed(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(5);
-		
-	}
-	public void windowClosing(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(6);
-		
-	}
-	public void windowDeactivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(7);
-		
-	}
-	public void windowDeiconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(8);
-		
-	}
-	public void windowIconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(9);
-	
-	}
-	public void windowOpened(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		report(10);
-		
 	}
 
 }
