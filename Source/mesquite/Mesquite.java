@@ -1552,7 +1552,7 @@ public class Mesquite extends MesquiteTrunk
 
 		Vector special = CommandChecker.commandsFromRegisteredClasses();
 		String allModulesHTML = " <title>Modules in Mesquite</title>";
-		allModulesHTML += "<body bgcolor=\"#ffffcc\">";
+		allModulesHTML += "<body>";
 		allModulesHTML += "<h1>List of All Installed Modules in Mesquite</h1>";
 		allModulesHTML += "Total number of modules: <b>"+count+"</b>";
 		allModulesHTML += ("<ul>");
