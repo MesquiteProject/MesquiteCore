@@ -603,6 +603,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		addMenuItem(helpMenu, "-", null);
 		addMenuItem(helpMenu, "Active Module Tree", makeCommand("showEmployeeTree",  this));
+		addMenuItem(helpMenu, "Show web page of all modules", makeCommand("showWebPageAllModules",  this));
 		addMenuItem(helpMenu, "List active modules", makeCommand("dumpEmployeeTree",  this));
 		addMenuItem(helpMenu, "List prerelease modules", makeCommand("dumpSubstantivePrerelease",  this));
 		//addMenuItem(helpMenu, "List ALL prerelease modules", makeCommand("dumpAllPrerelease",  this)); //delete this before release
@@ -1169,9 +1170,9 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "This is the central module for the Mesquite system. " +
-				"In it is the main method that starts up the Mesquite application.  This module" +
+				"In it is the main method that starts up the Mesquite application.  This module " +
 				"loads information for all of the other modules, and hires FileCoordinator " +
-				"modules as needed to deal with open files.  Thus, in the tree of employees" +
+				"modules as needed to deal with open files.  Thus, in the tree of employees " +
 				"that active modules make, this module is at its root.";
 	}
 	/*.................................................................................................................*/
@@ -1512,6 +1513,62 @@ public class Mesquite extends MesquiteTrunk
 	public void searchData(String s, MesquiteWindow window){
 		if (helpSearchManager != null)
 			helpSearchManager.searchData(s, window);
+	}
+	ProgressIndicator omp = null;
+	public static boolean documentationComposed = false;
+	/* ...................................................... */
+	/**
+	 * Composes and shows a web page listing all of the modules.
+	 */
+	public void composePageOfModules() {
+		omp = new ProgressIndicator(null, "Composing web page of modules", MesquiteTrunk.mesquiteModulesInfoVector.size(), false);
+		omp.start();
+		omp.setCurrentValue(0);
+		documentationComposed = true;
+
+		StringBuffer sb = new StringBuffer();
+		int count=0;
+		String prevPackageName="";
+		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+			if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
+				prevPackageName=mmi.getPackageName();
+				if (prevPackageName!=null){
+					sb.append("<hr>");
+					String vers = mmi.getVersion();
+					if (vers == null)
+						vers = "";
+					if (StringUtil.blank(vers))
+						sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
+					else
+						sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
+				}
+			}
+			sb.append("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
+			count++;
+		}
+//		composeModuleListing();
+//		composePuppeteerWebPage();
+
+		Vector special = CommandChecker.commandsFromRegisteredClasses();
+		String allModulesHTML = " <title>Modules in Mesquite</title>";
+		allModulesHTML += "<body bgcolor=\"#ffffcc\">";
+		allModulesHTML += "<h1>List of All Installed Modules in Mesquite</h1>";
+		allModulesHTML += "Total number of modules: <b>"+count+"</b>";
+		allModulesHTML += ("<ul>");
+		allModulesHTML += sb.toString();
+		allModulesHTML += ("</ul>");
+		allModulesHTML += ("</body>");
+		String modulesListPath= MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator + "allModules.html";
+
+		MesquiteFile.putFileContents(modulesListPath,allModulesHTML, true);
+		omp.goAway();
+		omp = null;
+		File testing = new File(modulesListPath);
+		if (testing.exists()) {
+			showWebPage(modulesListPath, true);
+		}
+
 	}
 
 	public String getNumModuleStarts() {
@@ -2225,6 +2282,9 @@ public class Mesquite extends MesquiteTrunk
 			}
 			logln("Modules installed: " + count);
 
+		}	
+		else if (checker.compare(this.getClass(), "Shows a web page of all modules installed", null, commandName, "showWebPageAllModules")) {
+			composePageOfModules();
 		}	
 		else if (checker.compare(this.getClass(), "Dumps to the log a list of all modules installed", null, commandName, "dumpAllModuleClasses")) {
 			showLogWindow();
