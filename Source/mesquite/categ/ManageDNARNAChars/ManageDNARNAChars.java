@@ -257,13 +257,14 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		}
 		blocks.append(endLine);
-		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
+		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
+//			if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);
 		}
 		//if (data.getTaxa().getName()!=null  && getProject().getNumberTaxas(cB.getFile())>1){ //before 13 Dec 01 had been this
-		if ((file==null || !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data.getTaxa())&& getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 			blocks.append("\tLINK TAXA = ");
 			blocks.append(StringUtil.tokenize(data.getTaxa().getName()));
 			blocks.append(endLine);

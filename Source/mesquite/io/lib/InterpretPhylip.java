@@ -42,6 +42,10 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		 return true;  
 	}
 	/*.................................................................................................................*/
+	public String preferredDataFileExtension() {  
+		return "phy";
+	}
+	/*.................................................................................................................*/
 	public boolean initializeTreeImport(MesquiteFile file, Taxa taxa) {  
 		 return true;  
 	}

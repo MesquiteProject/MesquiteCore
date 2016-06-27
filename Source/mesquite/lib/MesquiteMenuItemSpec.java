@@ -30,6 +30,7 @@ public class MesquiteMenuItemSpec implements Listable {
 	protected MesquiteSubmenuSpec submenu;
 	protected Class dutyClass = null;
 	protected Object compatibilityRestriction = null;
+	protected QualificationsTest qualificationsTest = null;
 	protected ListableVector lVector = null;
 	protected Class subclassFilter = null;
 	Class ownerClass = null;
@@ -141,6 +142,9 @@ public class MesquiteMenuItemSpec implements Listable {
 	public void setInMenu(MesquiteMenuSpec menu){
 		this.whichMenu = menu;
 	}
+	public MesquiteMenuSpec getMenu(){
+		return whichMenu;
+	}
 	public void setArgument(String argument){
 		this.argument = argument;
 	}
@@ -194,6 +198,12 @@ public class MesquiteMenuItemSpec implements Listable {
 	}
 	public void setCompatibilityCheck(Object obj){
 		this.compatibilityRestriction = obj;
+	}
+	public QualificationsTest getQualificationsTest(){
+		return qualificationsTest;
+	}
+	public void setQualificationsTest(QualificationsTest obj){
+		this.qualificationsTest = obj;
 	}
 	public Class getListableFilter(){
 		return subclassFilter;

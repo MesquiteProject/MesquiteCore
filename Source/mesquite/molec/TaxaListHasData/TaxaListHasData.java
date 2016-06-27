@@ -176,7 +176,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 			MesquiteCommand mcDelete = makeCommand("deleteDataTouched", this);
 			mcDelete.setDefaultArguments(""+ic);
-			MesquiteCheckMenuItem mDeleteItem = new MesquiteCheckMenuItem("Delete Data", this, mcDelete, null, null);
+			MesquiteCheckMenuItem mDeleteItem = new MesquiteCheckMenuItem("Delete Data...", this, mcDelete, null, null);
 			popup.add(mDeleteItem);
 
 			popup.showPopup(x,y+18);
@@ -226,18 +226,20 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(it) && StringUtil.notEmpty(localCopyDataClipboard)) {
-				data.pasteDataFromStringIntoTaxon(it, localCopyDataClipboard);
+				if (localCopyData.getStateClass()==data.getStateClass())
+					data.pasteDataFromStringIntoTaxon(it, localCopyDataClipboard);
+				else
+					MesquiteMessage.discreetNotifyUser("Can't copy data as the source cell is of a different type of data than the destination cell.");
 			}
 			return null;
 		}
-		else if (checker.compare(this.getClass(), "Pastes the data for selected taxon", null, commandName, "deleteDataTouched")) {
+		else if (checker.compare(this.getClass(), "Deletes the data for selected taxon", null, commandName, "deleteDataTouched")) {
 			if (observedStates == null)
 				return null;
 			CharacterData data = observedStates.getParentData();
 			if (data == null)
 				return null;
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			Debugg.println("prepare to delete row: "+it);
 			if (MesquiteInteger.isCombinable(it)) {
 				if (!AlertDialog.query(containerOfModule(), "Delete Data?", "Are you sure you want to delete the data for taxon " +data.getTaxa().getTaxonName(it) + " in the matrix \"" + data.getName() + "\"", "No", "Yes")) {
 					zapData(data,it);

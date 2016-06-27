@@ -250,7 +250,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		getProject().incrementProjectWindowSuppression();
 		if (pleaseStorePref)
 			storePreferences();
-		data.setEditorInhibition(true);
+		data.incrementEditInhibition();
 		String unique = MesquiteTrunk.getUniqueIDBase() + Math.abs(rng.nextInt());
 
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  //replace this with current directory of file
@@ -285,7 +285,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		if (!success) {
 			logln("File export failed");
-			data.setEditorInhibition(false);
+			data.decrementEditInhibition();
 			return null;
 		}
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
@@ -345,7 +345,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			Taxa originalTaxa =  data.getTaxa();
 
 			if (alignedData!=null) {
-				logln("Acquired aligned data");
+				logln("Acquired aligned data; now processing alignment.");
 				int numChars = alignedData.getNumChars();
 				//sorting to get taxon names in correct order
 				int[] keys = new int[alignedData.getNumTaxa()];
@@ -402,7 +402,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			if (runs == 1)
 				deleteSupportDirectory();
 			runs--;
-			data.setEditorInhibition(false);
+			data.decrementEditInhibition();
 			if (success) 
 				return aligned;
 			return null;
@@ -411,7 +411,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			deleteSupportDirectory();
 		runs--;
 		getProject().decrementProjectWindowSuppression();
-		data.setEditorInhibition(false);
+		data.decrementEditInhibition();
 		return null;
 	}	
 

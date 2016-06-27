@@ -24,7 +24,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class MultistateToMissing extends CategDataAlterer {
+public class MultistateToMissing extends CategDataAlterer implements AltererConvertGapMissPolyUncert {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

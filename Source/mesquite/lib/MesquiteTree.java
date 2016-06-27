@@ -111,6 +111,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private long topologyVersion = 0;
 	/** A number recording the branch lengths version number.  With changes of branch lengths or topology of the tree, the version number is incremented.  This way you know if you're dealing with the exact same tree or not.*/
 	private long branchLengthsVersion = 0;
+	/** a flag to tell the system the tree description being read is from a MrBayes contree file.*/
+	protected boolean readingMrBayesConTree = false;
 	/** A number recording the last taxa version with which synchronized.*/
 	private long taxaVersion = 0;
 	/** Locks name to provoke error messages if name change attempted.*/
@@ -484,6 +486,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public long getTaxaVersion(){
 		return taxaVersion;
 	}
+	/** sets whether or not this is a MrBayes consensus tree.*/
+	public void setReadingMrBayesConTree(boolean value) {
+		readingMrBayesConTree = true;
+	}
+
+	/** sets whether or not this is a MrBayes consensus tree.*/
+	public boolean getReadingMrBayesConTree() {
+		return readingMrBayesConTree;
+	}
+
+
 	/*----------------------------------------*/
 	private int recordMinTerms(Tree tree, int node, int[] minTerms){
 		if (tree.nodeIsTerminal(node)) {
@@ -1382,6 +1395,21 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return thisSister;
 	}
 	/*-----------------------------------------*/
+	/** Returns the legal root 
+	 * */
+	public  int getLegalRoot(int[] legality) {
+		int r = getRoot();
+		if (legality == null)
+			return r;
+		// if first and last the same, there is only one path, so follow it until there are two, or you hit the tips
+		while ((firstLegalDaughterOfNode(r, legality) == lastLegalDaughterOfNode(r, legality)) && (inBounds(firstLegalDaughterOfNode(r, legality))))
+			r = firstLegalDaughterOfNode(r, legality);
+
+		if (firstLegalDaughterOfNode(r, legality) == lastLegalDaughterOfNode(r, legality))
+			return 0;
+		return r;
+	}
+	/*-----------------------------------------*/
 	/** Returns the first (left-most) daughter of node.*/
 	public  int firstDaughterOfNode(int node) {
 		if (!inBounds(node))
@@ -2164,6 +2192,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return mrca(nodes, false);
 	}
 	/*-----------------------------------------*/
+	/** Returns most recent common ancestor for the selected taxa.*/
+	public int mrcaSelected(){
+		return mrca(taxa.getSelectedBits());
+	}
+	/*-----------------------------------------*/
 	/** Returns most recent common ancestor for an array of nodes; if boolean ignoreMissing = false, it 
 	 * will only return a non-zero (existing) node if all the nodes in the array are present in the 
 	 * tree.  If ignoreMissing = true, it will return the mrca of those nodes passed in the node array
@@ -2735,6 +2768,24 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean getPermitTaxaBlockEnlargement(){
 		return permitTaxaBlockEnlargement;
 	}
+	/** Takes the node information in a file created by a recent version of MrBayes, and retokenizes it as MrBayes does not use standard NEXUS tokenization rules for this. */
+	protected String retokenizeMrBayesConTreeNodeInfo(String nodeInfo) {
+		if (StringUtil.blank(nodeInfo))
+			return nodeInfo;
+		if (nodeInfo.indexOf('&')==1)
+			nodeInfo=nodeInfo.replaceFirst("&", " ");
+		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
+		nodeInfo = StringUtil.replace(nodeInfo, " ", "");
+		nodeInfo = StringUtil.replace(nodeInfo, "prob(percent)", "\'prob(percent)\'");
+		nodeInfo = StringUtil.replace(nodeInfo, "prob+-sd", "\'prob+-sd\'");
+		nodeInfo = StringUtil.replace(nodeInfo, "length mean", "length_mean");
+		nodeInfo = StringUtil.replace(nodeInfo, "length median", "length_median");
+		nodeInfo = StringUtil.replace(nodeInfo, "length 95%HPD", "\'length 95%HPD\'");
+		nodeInfo = StringUtil.replace(nodeInfo, "{", "\'(");
+		nodeInfo = StringUtil.replace(nodeInfo, "}", ")\'");
+		nodeInfo = StringUtil.replace(nodeInfo, ",", ", ");
+		return nodeInfo;
+	}
 	/*...............................................  read tree ....................................................*/
 	/** Continues reading a tree description, starting at node "node" and the given location on the string*/
 	static final int CONTINUE = 0;
@@ -2777,7 +2828,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					}
 				}
 				else if ("<".equals(c)) {
-					readAssociated(TreeDescription, sprouted, stringLoc);
+					if (readingMrBayesConTree) {
+						c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">") + ">";  //get next token
+						c = retokenizeMrBayesConTreeNodeInfo(c);
+						readAssociated(c, sprouted, new MesquiteInteger(0));
+						ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
+					} else
+						readAssociated(TreeDescription, sprouted, stringLoc);
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 3");
@@ -2813,7 +2870,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						}
 					}
 					else if ("<".equals(c)) {
-						readAssociated(TreeDescription, sprouted, stringLoc);
+						if (readingMrBayesConTree) {
+							c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">") + ">";  //get next token
+							c = retokenizeMrBayesConTreeNodeInfo(c);
+							readAssociated(c, sprouted, new MesquiteInteger(0));
+							ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
+						} else
+							readAssociated(TreeDescription, sprouted, stringLoc);
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
 							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 6");

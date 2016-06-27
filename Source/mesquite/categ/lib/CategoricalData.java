@@ -243,6 +243,29 @@ public class CategoricalData extends CharacterData {
 		resetCellMetadata();
 
 	}
+	public void moveDataBlock(int icSourceStart,  int icSourceEnd, int icStart, int itStart,int  itEnd, boolean allowOverwrite, boolean warn){
+		int numCharsToMove = icSourceEnd-icSourceStart+1;
+		for (int it=itStart; it<=itEnd; it++) {
+			for (int ic=icSourceStart; ic<=icSourceEnd; ic++){
+				int icMove = icStart+ (ic-icSourceStart);
+				if (it<getNumTaxa() && ic<getNumChars()){
+					if (!isInapplicable(icMove,it) && !allowOverwrite) {
+						if (warn) {
+							if (MesquiteTrunk.debugMode) {
+								MesquiteMessage.discreetNotifyUser("Attempt to overwrite data in data.moveDataBlock");
+							}
+						}
+					} else {
+						setState(icMove, it, getStateRaw(ic, it)); 
+						setToInapplicable(ic, it); 
+					}
+				}
+
+			}
+		}
+		resetCellMetadata();
+
+	}
 	/** Copies the block of data from the source to this data object */
 	public void copyDataBlock(CharacterData sourceData, int icSourceStart,  int itSourceStart, int icStart, int icEnd, int itStart, int itEnd){
 		if (sourceData == null)
@@ -1230,7 +1253,7 @@ public class CategoricalData extends CharacterData {
 		return (CategoricalState.isUncertain(s) && CategoricalState.hasMultipleStates(s));
 	}
 	/*..........................................    ..................................................*/
-	/** returns whether the state of character ic is missing in taxon it*/
+	/** returns whether the state of character ic is a multistate uncertainty or polymorphism in taxon it*/
 	public  boolean isMultistateOrUncertainty(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return (CategoricalState.hasMultipleStates(s));
@@ -1604,12 +1627,12 @@ public class CategoricalData extends CharacterData {
 		if (originalCheckSum != newCheckSum) {
 			if (!warnCheckSum.getValue())
 				MesquiteTrunk.mesquiteTrunk.logln(warning);
-			else if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Checksum doesn't match",warning + "\n\nYou may suppress warnings of this type within this run of Mesquite.", "Continue", "Suppress warnings"))
+			else if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "  Checksum doesn't match",warning + "\n\nYou may suppress warnings of this type within this run of Mesquite.", "Continue", "Suppress warnings"))
 				warnCheckSum.setValue(false);
 			return false;
 		} 
 		else {
-			MesquiteTrunk.mesquiteTrunk.logln("Passed checksum");
+			MesquiteTrunk.mesquiteTrunk.logln("  Passed checksum");
 			return true;
 		}
 	}
@@ -2024,6 +2047,45 @@ public class CategoricalData extends CharacterData {
 					frequencies[CategoricalState.uncertainBit]++;
 		}
 		return frequencies;
+	}
+	/*..........................................CategoricalData................*/
+	/** returns an integer array summarizing the frequencies of states of a taxon.*/
+	public int[] getStateFrequencyArrayOfTaxon(int it){
+		CategoricalState state=null;
+		int [] frequencies = new int[getTotalBitsInStateSet()];
+		IntegerArray.zeroArray(frequencies);
+		for (int ic=0; ic<numChars; ic++) {
+			state =(CategoricalState)getCharacterState(state, ic, it);
+			if (state.isUnassigned())
+				frequencies[CategoricalState.unassignedBit]++;
+			else if (state.isInapplicable())
+				frequencies[CategoricalState.inapplicableBit]++;
+			else if (state.cardinality()==1){
+				frequencies[CategoricalState.getOnlyElement(state.getValue())]++;
+			}
+			else if  (state.cardinality()>1)
+				if (CategoricalState.isUncertain(state.getValue()))
+					frequencies[CategoricalState.polymorphismElement]++;
+				else
+					frequencies[CategoricalState.uncertainBit]++;
+		}
+		return frequencies;
+	}
+	/*..........................................CategoricalData................*/
+	/** checks to see if two frequency arrays have the same applicable state frequencies.*/
+	public boolean stateFrequencyArraysEqual(int[] array1, int[] array2){
+		if (array1==null || array2==null)
+			return false;
+		if (array1.length!=array2.length)
+			return false;
+		if (array1.length==0 || array2.length==0)
+			return false;
+		for (int i=0; i<array1.length; i++) 
+			if (i!=CategoricalState.inapplicableBit)  // don't check for inapplicables changing in frequency
+				if (array1[i]!=array2[i])
+					return false;
+		return true;
+		
 	}
 	/*..........................................CategoricalData................*/
 	/** returns a String summarizing the frequencies of states of a character .*/
@@ -2566,7 +2628,7 @@ public class CategoricalData extends CharacterData {
 
 	/*..........................................CategoricalData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object */
-	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+	public boolean mergeSecondTaxonIntoFirst(int it1, int it2, boolean mergeMultistateAsUncertainty) {
 		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
 			return false;
 
@@ -2578,9 +2640,20 @@ public class CategoricalData extends CharacterData {
 				mergedAssigned = true;
 
 			long sMerged = CategoricalState.mergeStates(s1,s2);
+			if (mergeMultistateAsUncertainty && CategoricalState.hasMultipleStates(sMerged)) {   // set to uncertainty if it makes sense
+				if ((CategoricalState.hasMultipleStates(s1) && !CategoricalState.isUncertain(s1)) || (CategoricalState.hasMultipleStates(s2) && !CategoricalState.isUncertain(s2))) {  // has polymorphism, don't do anything
+				} else {
+					sMerged = CategoricalState.setUncertainty(sMerged, true);		
+				}
+			}
 			setState(ic,it1,sMerged);
 		}
 		return mergedAssigned;
+	}
+	/*..........................................CategoricalData.....................................*/
+	/**merges the states for taxon it2 into it1  within this Data object */
+	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+		return mergeSecondTaxonIntoFirst(it1, it2, false);
 	}
 
 

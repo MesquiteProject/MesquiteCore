@@ -128,7 +128,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		MesquiteWindow.addKeyListener(this, table);
 		resetTitle();
 	}
-
+	public void requestFocus(){
+		table.requestFocus();
+	}
 	public String getFindLabel(){
 		return "Find String in Table...";
 	}
@@ -755,7 +757,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			ownerModule.alert("Columns must be selected before \"Move\" command is given");
 	}
 	void selectedColumnsDropped(int whereToMove, boolean mouseDrop){
-		if (!owner.rowsMovable())
+		if (!owner.columnsMovable())  
 			return;
 		if (mouseDrop){
 			for (int ic = 0; ic<table.getNumColumns(); ic++){

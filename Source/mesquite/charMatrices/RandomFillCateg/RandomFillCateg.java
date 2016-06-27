@@ -25,7 +25,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class RandomFillCateg extends CategDataAlterer {
+public class RandomFillCateg extends CategDataAlterer implements AltererRandomizations {
 	CharacterState fillState;
 	int maxState = 1;
 	Random rng;

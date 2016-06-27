@@ -26,7 +26,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class RecodeCateg extends CategDataAlterer {
+public class RecodeCateg extends CategDataAlterer implements AltererSimpleCell {
 	long[] rules;
 	int maxState = 0;
 	/*.................................................................................................................*/

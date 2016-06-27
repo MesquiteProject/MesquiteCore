@@ -26,7 +26,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class RandomFillWithMissing extends CategDataAlterer {
+public class RandomFillWithMissing extends CategDataAlterer implements AltererRandomizations {
 	Random rng;
 
 	double probAlter = 1.0;

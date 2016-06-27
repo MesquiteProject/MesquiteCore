@@ -146,7 +146,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 				for (int i = 0; i<numStartTreesToIgnore; i++) {  //unset all of the initial ones (e.g., burnin ones)
 					treesToSample.setBit(i, false);
 				}
-				int numTreesToUnSet = availableTrees -  - numTreesToSample;
+				int numTreesToUnSet = availableTrees -  numTreesToSample;
 				for (int i = 0; i<numTreesToUnSet; i++) {
 					int candidate=-1;
 					while (candidate<0 || !treesToSample.isBitOn(candidate+numStartTreesToIgnore))
@@ -315,6 +315,8 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Specifies the tree file to use", "[path to file]", commandName, "setFilePath")) {
 			String path = parser.getFirstToken(arguments);
+			filePosVector.removeAllElements();
+			String secondToken =parser.getNextToken() ;  // have to store this as obtainFile uses the parser
 			if (obtainFile(arguments)){
 				if (processFile()){
 					if (!MesquiteThread.isScripting())
@@ -326,7 +328,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			}
 			else 
 				discreetAlert( "File was not obtained for " + getName() + " (path " + path + ")");
-			if (!("remain".equalsIgnoreCase(parser.getNextToken())))
+			if (!("remain".equalsIgnoreCase(secondToken)))
 				iQuit();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to reread the whole file if the file enlarges", "[on or off]", commandName, "toggleReread")) {

@@ -173,13 +173,15 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 		int localE;
 
 		localMin = minState;
+		//if (binBoundaries.length > 0 && binBoundaries[0]< minState)
+		//	localMin = binBoundaries[0];
 		localMax = MesquiteDouble.unassigned;
 		int localNumBoundaries;
 		int localMinK= -1;
 		int localMaxK = numBinBoundaries;
 		for (int k=0; k< numBinBoundaries; k++){  //what are the defined boundaries on either side of i?
 			if (MesquiteDouble.isCombinable(binBoundaries[k])){
-				if (k<i){
+				if (k<i || binBoundaries[k] < minState){
 					localMin = binBoundaries[k];
 					localMinK = k;
 				}
@@ -227,7 +229,8 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 			int localMaxK = numBinBoundaries;
 			for (int k=0; k< numBinBoundaries; k++){
 				if (MesquiteDouble.isCombinable(binBoundaries[k])){
-					if (k<e){
+					if (k<e || binBoundaries[k] < minState){
+
 						localMin = binBoundaries[k];
 						localMinK = k;
 					}
@@ -370,7 +373,7 @@ public class ContinuousHistory extends ContinuousAdjustable  implements Characte
 				int localMaxK = numBinBoundaries;
 				for (int k=0; k< numBinBoundaries; k++){
 					if (MesquiteDouble.isCombinable(binBoundaries[k])){
-						if (k<e){
+						if (k<e || binBoundaries[k] < minState){
 							localMin = binBoundaries[k];
 							localMinK = k;
 						}

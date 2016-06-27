@@ -23,6 +23,7 @@ import mesquite.lib.duties.*;import mesquite.lib.table.*;/* =================
 			Vector datas = new Vector();
 			for (int i = 0; i<numMatrices; i++){
 				CharacterData data = getProject().getCharacterMatrix(taxa, i);
+				if (data.isUserVisible())
 					datas.addElement(data);
 			}			if (getEmployer() instanceof ListModule){
 				ListModule listModule = (ListModule)getEmployer();
@@ -32,7 +33,8 @@ import mesquite.lib.duties.*;import mesquite.lib.table.*;/* =================
 					if (a instanceof mesquite.molec.TaxaListHasData.TaxaListHasData){
 						mesquite.molec.TaxaListHasData.TaxaListHasData tLHD = (mesquite.molec.TaxaListHasData.TaxaListHasData)a;
 						CharacterData data = tLHD.getCharacterData();
-						datas.removeElement(data);
+						if (datas.indexOf(data)>=0)
+							datas.removeElement(data);
 					}
 				}
 				Puppeteer puppeteer = new Puppeteer(this);

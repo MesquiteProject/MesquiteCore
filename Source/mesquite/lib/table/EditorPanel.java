@@ -63,8 +63,10 @@ public abstract class EditorPanel extends MesquitePanel {
 		int lastColumn = tb.getLastColumn();
 		if (lastColumn<0)
 			return 0;
-		else
+		else if (lastColumn<tb.columnWidths.length)
 			return startOfColumn(lastColumn)+tb.columnWidths[lastColumn];
+		else
+			return startOfColumn(lastColumn);
 	}
 	public int startOfRow(int row) {
 		if (row<tb.firstRowVisible)

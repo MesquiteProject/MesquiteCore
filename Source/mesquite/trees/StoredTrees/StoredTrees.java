@@ -77,7 +77,16 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public boolean isPrerelease(){
 		return false;
 	}
-	
+	/*.................................................................................................................*/
+	 /**Returns info to show in info panel etc. for tree block or source of trees.*/
+	public String getTreeSourceInfo(Taxa taxa){
+		if (currentTreeBlock == null)
+			return null;
+		String s = getName();
+		s+="\n" + currentTreeBlock.getAnnotation();
+		return s;
+	}
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -89,6 +98,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			temp.addLine("setTreeBlockInt " + currentListNumber); 
 		else
 			temp.addLine("setTreeBlock " + TreeVector.toExternal(currentListNumber)); 
+		if (currentTreeBlock != null){  // this is done as a second command, so that files are written to be readable by old Mesquite, by having old numbering as back-up
+			temp.addLine("setTreeBlockID " + StringUtil.tokenize(currentTreeBlock.getUniqueID())); 
+		}
 		temp.addLine("toggleUseWeights " + useWeights.toOffOnString());
 		return temp;
 	}
@@ -112,6 +124,26 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
 				MesquiteTrunk.checkForResetCheckMenuItems();
+				return currentTreeBlock;
+			}
+		}
+		else if (checker.compare(this.getClass(),  "Sets which block of trees to use", "[block unique ID]", commandName, "setTreeBlockID")) {
+			String uniqueID = parser.getFirstToken(arguments);
+			if (!StringUtil.blank(uniqueID)) {
+				currentTreeBlock = manager.getTreeBlockByUniqueID(uniqueID);
+				if (currentTreeBlock ==null)
+					return null;
+				if (lastUsedTreeBlock !=null) 
+					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
+				blockName.setValue(currentTreeBlock.getName());
+				currentTreeBlock.addListener(this);
+				currentTreeBlockID = currentTreeBlock.getID();
+				currentSourceFile = currentTreeBlock.getFile();
+				lastUsedTreeBlock = currentTreeBlock;
+				currentListNumber = manager.getTreeBlockNumber(preferredTaxa, checker.getFile(), currentTreeBlock);
+				MesquiteTrunk.resetChecks(listSubmenu);
+				parametersChanged();
 				return currentTreeBlock;
 			}
 		}

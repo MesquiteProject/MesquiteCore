@@ -109,10 +109,12 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			csA =observedStatesA.getCharacterState(csA, tree.taxonNumberOfNode(node)); //get observed states
 			csB =observedStatesB.getCharacterState(csB, tree.taxonNumberOfNode(node)); //get observed states
 			if ((csA == null || csA.isUnassigned() || csA.isInapplicable()) ||  //either of the two characters is missing data
-					(csB == null || csB.isUnassigned() || csB.isInapplicable())) //either of the two characters is inapplicable
+					(csB == null || csB.isUnassigned() || csB.isInapplicable())){ //either of the two characters is inapplicable
 				legality[node] = MesquiteTree.ILLEGAL;
-			else
+			}
+			else {
 				legality[node] = MesquiteTree.LEGAL;
+			}
 			if (legality[node] == MesquiteTree.ILLEGAL)
 				warningMessage = "Some taxa excluded (had character states that are missing or inapplicable).";
 
@@ -148,7 +150,9 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 			int left = tree.firstLegalDaughterOfNode(node, legality);
 			int right = tree.lastLegalDaughterOfNode(node, legality);
 
-			if (tree.nodeIsInternal(left) && tree.nodeIsInternal(right)) {  // both are internal
+			if (left == right)
+				return;
+			else if (tree.nodeIsInternal(left) && tree.nodeIsInternal(right)) {  // both are internal
 				maxPairs[noPathFromBelow][node] = MesquiteInteger.maximum(maxPairs[noPathFromBelow][left] + maxPairs[noPathFromBelow][right], maxPairs[pathFromBelow][left]  + maxPairs[pathFromBelow][right]  + 1);
 				maxPairs[pathFromBelow][node] = MesquiteInteger.maximum(maxPairs[noPathFromBelow][left] + maxPairs[pathFromBelow][right], maxPairs[pathFromBelow][left]  + maxPairs[noPathFromBelow][right]);
 				maxPairs[pathAcrossRoot][node] = maxPairs[pathFromBelow][left]  + maxPairs[pathFromBelow][right]  + 1;
@@ -193,9 +197,10 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 	public TaxaPairing getFirstPairing(Tree tree) {
 		if (tree == null)
 			return null;
+		legalityCheck(tree);
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
 		currentPairing = 0;
-		if (tree.hasPolytomies(tree.getRoot())){
+		if (tree.hasPolytomies(tree.getLegalRoot(legality))){
 			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
 			tp.setCalculationNotDone(true);
 			return tp;
@@ -206,12 +211,11 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 		numChoices = new int[num];
 		currentPath = new TaxaPath[num];
 		maxPairs = new int[numConditions][num];
-		legalityCheck(tree);
-		downPass(tree, tree.getRoot());
-		numPairs = maxPairs[noPathFromBelow][ tree.getRoot()];
-		firstPairingInClade(tree.getRoot(), tree);
+		downPass(tree, tree.getLegalRoot(legality));
+		numPairs = maxPairs[noPathFromBelow][ tree.getLegalRoot(legality)];
+		firstPairingInClade(tree.getLegalRoot(legality), tree);
 		firstTime=false;
-		harvestPaths(tree, tree.getRoot(), tp);
+		harvestPaths(tree, tree.getLegalRoot(legality), tp);
 		if (tp.getNumPairs()!= numPairs && !warnedNumPairs){
 			MesquiteMessage.println("Error: expected numpairs does not match number harvested, gFP" + tp.getNumPairs() + "  " + numPairs);
 			warnedNumPairs = true;
@@ -223,16 +227,16 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 		if (tree == null)
 			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
-		if (tree.hasPolytomies(tree.getRoot())){
+		if (tree.hasPolytomies(tree.getLegalRoot(legality))){
 			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
 			tp.setCalculationNotDone(true);
 			return tp;
 		}
 
 		if (!done) {
-			if (nextPairingInClade(tree, tree.getRoot())==lastChoice) 
+			if (nextPairingInClade(tree, tree.getLegalRoot(legality))==lastChoice) 
 				done=true;
-			harvestPaths(tree, tree.getRoot(), tp);
+			harvestPaths(tree, tree.getLegalRoot(legality), tp);
 			if (tp.getNumPairs()!= numPairs && !warnedNumPairs){
 				MesquiteMessage.println("Error: expected numpairs does not match number harvested, gNP" + tp.getNumPairs() + "  " + numPairs);
 				warnedNumPairs = true;
@@ -248,7 +252,7 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 		if (tree == null)
 			return null;
 		TaxaPairing tp = new TaxaPairing(tree.getNumTaxa());
-		if (tree.hasPolytomies(tree.getRoot())){
+		if (tree.hasPolytomies(tree.getLegalRoot(legality))){
 			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
 			tp.setCalculationNotDone(true);
 			return tp;
@@ -262,17 +266,17 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 		maxPairs = new int[numConditions][num];
 
 		legalityCheck(tree);
-		downPass(tree, tree.getRoot());
-		numPairs = maxPairs[noPathFromBelow][ tree.getRoot()];
-		firstPairingInClade(tree.getRoot(), tree);
+		downPass(tree, tree.getLegalRoot(legality));
+		numPairs = maxPairs[noPathFromBelow][ tree.getLegalRoot(legality)];
+		firstPairingInClade(tree.getLegalRoot(legality), tree);
 
 		int count=0;
 
-		while (count< index && count<(ownerModule.limitCheckOK(count)) && nextPairingInClade(tree, tree.getRoot())!=lastChoice) {
+		while (count< index && count<(ownerModule.limitCheckOK(count)) && nextPairingInClade(tree, tree.getLegalRoot(legality))!=lastChoice) {
 			if (count % 100 == 0) CommandRecord.tick("Skipping pairing " + count);
 			count++;
 		}
-		harvestPaths(tree, tree.getRoot(), tp);
+		harvestPaths(tree, tree.getLegalRoot(legality), tp);
 		if (tp.getNumPairs()!= numPairs && !warnedNumPairsI){
 			MesquiteMessage.println("Error: expected numpairs does not match number harvested, gP " + index + "  / " + tp.getNumPairs() + "  " + numPairs);
 			warnedNumPairsI = true;
@@ -285,7 +289,7 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 	public int getNumPairings(Tree tree){
 		if (tree == null)
 			return 0;
-		if (tree.hasPolytomies(tree.getRoot())){
+		if (tree.hasPolytomies(tree.getLegalRoot(legality))){
 			warningMessage = "The tree has polytomies; pairwise comparisons cannot be done";
 			return 0;
 		}
@@ -299,13 +303,13 @@ class NoCharTaxaPairer extends TaxaPairerChars {
 
 		maxPairs = new int[numConditions][num];
 		legalityCheck(tree);
-		downPass(tree, tree.getRoot());
-		numPairs = maxPairs[noPathFromBelow][ tree.getRoot()];
-		firstPairingInClade(tree.getRoot(), tree);
+		downPass(tree, tree.getLegalRoot(legality));
+		numPairs = maxPairs[noPathFromBelow][ tree.getLegalRoot(legality)];
+		firstPairingInClade(tree.getLegalRoot(legality), tree);
 
 		int count=1;
 		int limit;
-		while (count<(limit = ownerModule.limitCheckOK(count)) && (nextPairingInClade(tree, tree.getRoot())!=lastChoice)) {
+		while (count<(limit = ownerModule.limitCheckOK(count)) && (nextPairingInClade(tree, tree.getLegalRoot(legality))!=lastChoice)) {
 			count++;
 			if (count % 10000 ==0) MesquiteMessage.println("Number of pairings so far: " + count);
 			if (count % 1000 == 0) CommandRecord.tick("Counting pairings: " + count);

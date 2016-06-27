@@ -28,6 +28,7 @@ import java.io.*;
 /* ======================================================================== */
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
+	public static int recoveryDelay = 0;
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -141,18 +142,18 @@ public class ShellScriptUtil  {
 			String[] pathArray = null;
 			if (MesquiteTrunk.isMacOSX()){
 				if (visibleTerminal) {
-                    pathArray = new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath};
+					pathArray = new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath};
 				}
 				else {
 					scriptPath = scriptPath.replaceAll("//", "/");
-                   	pathArray = new String[] {scriptPath};
+					pathArray = new String[] {scriptPath};
 				}
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
-               	pathArray = new String[] {scriptPath};
-				proc = Runtime.getRuntime().exec(pathArray);
+				pathArray = new String[] {scriptPath};
+				//proc = Runtime.getRuntime().exec(pathArray);
 			} else {
 				scriptPath = "\"" + scriptPath + "\"";
 				pathArray = new String[] {"cmd", "/c", scriptPath};
@@ -162,11 +163,12 @@ public class ShellScriptUtil  {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;
 		}
-		if (proc != null) {
+		if (proc != null) { /*
 			StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
 			StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), "OUTPUT");
 			errorGobbler.start();
 			outputGobbler.start();
+		 */
 		}
 		return proc;
 	}
@@ -221,7 +223,6 @@ public class ShellScriptUtil  {
 		}
 	}
 
-
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
@@ -267,6 +268,13 @@ public class ShellScriptUtil  {
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
 			return false;
 		}
+		
+		try {  
+			Thread.sleep(recoveryDelay * 1000);
+		}
+		catch (InterruptedException e){
+		}
+		
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
 		return true;
@@ -296,30 +304,5 @@ public class ShellScriptUtil  {
 
 
 
-}
-
-class StreamGobbler extends Thread {
-	InputStream is;
-
-	String type;
-
-	StreamGobbler(InputStream is, String type) {
-		this.is = is;
-		this.type = type;
-	}
-
-	public void run() {
-		try {
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				System.out.println(type + ": " + line);
-
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-	}
 }
 

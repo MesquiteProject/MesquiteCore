@@ -55,7 +55,10 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 	public static final int AUTOSCROLLBOTH = 1;
 	public static final int AUTOSCROLLHORIZONTAL = 2;
 	public static final int AUTOSCROLLVERTICAL = 3;
-
+	private DragSource dragSource;
+	private DragGestureListener dgListener; 
+	private DragSourceListener dsListener;
+	
 	int autoscrollDirection = AUTOSCROLLBOTH;
 
 	static long exited, clicked, entered,pressed, released, dragged, moved;
@@ -105,6 +108,10 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 		disabledCursor = setupDisabledCursor("disabled.gif", "disabled", 4,2);
 		if (disabledCursor ==null)
 			disabledCursor = Cursor.getDefaultCursor();
+		
+		this.dragSource = DragSource.getDefaultDragSource();
+//		this.dgListener = new DragGestureListener();
+//		this.dsListener = new DragSourceAdapter();
 	}
 	public void dispose(){
 		if (downCommand!=null)

@@ -365,13 +365,13 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		}
 		file.write(endLine);
-		if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
+		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
 			file.write("\tTITLE  ");
 			file.write( StringUtil.tokenize(data.getName()));
 			file.write(endLine);
 		}
 		//if (data.getTaxa().getName()!=null  && getProject().getNumberTaxas(cB.getFile())>1){ //before 13 Dec 01 had been this
-		if (( !file.useSimplifiedNexus && !file.useConservativeNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data.getTaxa()) && getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 			file.write("\tLINK TAXA = ");
 			file.write(StringUtil.tokenize(data.getTaxa().getName()));
 			file.write(endLine);
@@ -646,7 +646,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					String dataSpec = "";
 					if (project.getNumberTaxas()>1)
 						dataSpec = " TAXA = " +  StringUtil.tokenize(data.getTaxa().getName()) + "";
-					if (project.getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&&  !file.useConservativeNexus && !data.hasDefaultName() && !NexusBlock.suppressTITLE))
+					if (project.getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data))
 						dataSpec += " CHARACTERS = " +  StringUtil.tokenize(data.getName()) + "";
 					for (int ic = 0; ic<data.getNumChars(); ic++){
 						for (int is = 0; is<=CategoricalState.maxCategoricalState; is++){

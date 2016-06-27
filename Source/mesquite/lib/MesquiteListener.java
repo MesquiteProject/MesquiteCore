@@ -69,6 +69,8 @@ public interface MesquiteListener {
 	public final static int DATA_CHANGED = -18; 
 	/** The main object (e.g. tree block) has been deleted*/
 	public final static int BLOCK_DELETED=-19;
+	/** The main object (e.g. data matrix) has been locked or unlocked from editing*/
+	public final static int LOCK_CHANGED=-20;
 
 	/** Param of the tree drawing have been changed in such a way that its size may have changed.*/
 	public final static int TREE_DRAWING_SIZING_CHANGED = 800; 

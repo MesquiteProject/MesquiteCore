@@ -72,6 +72,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public boolean writeExcludedCharacters=true;
 	public boolean writeTaxaWithAllMissing = true;
 	public boolean writeOnlySelectedTaxa = false;
+	public boolean mrBayesReadingMode = false;  //todo: this is temporary until general format options system built
 	public String fileReadingArguments = null;
 	public int exporting = 0;  //todo: temporary.  0 = not exporting;  1 = first export; 2 = subsequent exports
 	public boolean notesBugWarn = false;
@@ -157,6 +158,16 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public Taxa getCurrentTaxa(){
 		return currentTaxa;
 	}
+	public static boolean okToWriteTitleOfNEXUSBlock (MesquiteFile file, Listable obj) {
+		if (StringUtil.blank(obj.getName()))
+			return false;
+		if (NexusBlock.suppressTITLESANDLINKS)
+			return false;
+		if (file==null)
+			return true;
+		return !file.useSimplifiedNexus && !file.useConservativeNexus;
+	}
+
 	/*-------------------------------------------------------*/
 	public static int getNumberOfFiles(){
 		return totalCreated;
@@ -1694,6 +1705,15 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}
 	 */
 
+	/*.................................................................................................................*/
+	public void setTranslatedCharacter(char fromChar, char toChar){
+		if (parser != null)
+			parser.setTranslatedCharacter(fromChar, toChar);
+	}
+	public void clearTranslatedCharacter(char fromChar){
+		if (parser != null)
+			parser.clearTranslatedCharacter(fromChar);
+	}
 
 	/*.................................................................................................................*/
 	/** Returns next token from file. Used for first token of command, to preserves leading whitespace (used to preserve
@@ -2989,7 +3009,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		Writer stream;
 		if (!MesquiteTrunk.isApplet()) {
-
 			try {
 				if (ascii && System.getProperty("os.name").startsWith("Mac"))
 					stream = new OutputStreamWriter(new FileOutputStream(relativePath), "ASCII");

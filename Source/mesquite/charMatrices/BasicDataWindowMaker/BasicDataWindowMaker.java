@@ -232,6 +232,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		return "Character Matrix Editor";
 	}
 
+	public void fileReadIn(MesquiteFile file){
+		if (bdw != null)
+			bdw.requestFocus();
+	}
 	/* ................................................................................................................. */
 	// public BasicDataWindow getBasicDataWindow() {
 	// return bdw;
@@ -381,7 +385,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addItemToSubmenu(null, cmm, "Missing Data Symbol...", MesquiteModule.makeCommand("setUnassignedSymbol", this));
 		ownerModule.addItemToSubmenu(null, cmm, "Inapplicable Symbol...", MesquiteModule.makeCommand("setInapplicableSymbol", this));
 		ownerModule.addCheckMenuItem(null, "Show Matrix Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
-		editingNotPermitted.setValue(data.getEditorInhibition());
+		editingNotPermitted.setValue(data.isEditInhibited());
+		
 		ownerModule.addCheckMenuItemToSubmenu(null, cmm,"Editing Not Permitted", ownerModule.makeCommand("toggleEditingNotPermitted", this), editingNotPermitted);
 		ownerModule.addMenuItem("-", null);
 		
@@ -478,7 +483,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ibeamTool.setWorksOnRowNames(true);
 		ibeamTool.setWorksOnColumnNames(true);
 		addTool(ibeamTool);
-		ibeamTool.setEnabled(!data.getEditorInhibition());
+		ibeamTool.setEnabled(!data.isEditInhibited());
 
 		ListableVector v = ownerModule.getEmployeeVector();
 
@@ -605,7 +610,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		resetTitle();
 	}
-
+public void requestFocus(){
+	table.requestFocus();
+}
 	/* ................................................................................................................. */
 	/**
 	 * When called the window will determine its own title. MesquiteWindows need to be self-titling so that when things change (names of files, tree blocks, etc.) they can reset their titles properly
@@ -944,8 +951,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				temp.addLine("endTell");
 			}
 			temp.addLine("toggleInfoPanel " + infoPanelOn.toOffOnString());
-			temp.addLine("toggleEditingNotPermitted " + editingNotPermitted.toOffOnString());
 		}
+//			temp.addLine("toggleEditingNotPermitted " + editingNotPermitted.toOffOnString());   //WAYNEASK:  Why is this here?
 		return temp;
 	}
 
@@ -1380,9 +1387,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether editing is permitted or not", null, commandName, "toggleEditingNotPermitted")) {
 			editingNotPermitted.toggleValue(ParseUtil.getFirstToken(arguments, pos));
-			data.setEditorInhibition(editingNotPermitted.getValue());
-			if (ibeamTool!=null)
-				ibeamTool.setEnabled(!editingNotPermitted.getValue());
+			if (editingNotPermitted.getValue())
+				data.incrementEditInhibition();
+			else
+				data.decrementEditInhibition();
+			inhibitionChanged();
 			//setMatrixInfoPanel(infoPanelOn.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Selects sequence", "[number of taxon][number of starting site][number of ending site]", commandName, "selectSequence")) {
@@ -1487,7 +1496,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			ToolPalette palette = getPalette();
 			if (palette == null)
 				return null;
-			setCurrentTool((TableTool) palette.getToolWithName(arguments));
+			TableTool newTool = (TableTool) palette.getToolWithName(arguments);
+			if (newTool!=null) {
+				setCurrentTool(newTool);
+				palette.setCurrentTool(newTool);  //need to do this as otherwise the button is not set
+			}
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether scroll is of linked tables or not.", "[on = linked; off]", commandName, "toggleLinkedScrolling")) {
 			boolean current = linkedScrolling.getValue();
@@ -1723,7 +1736,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.setNumRows(data.getNumTaxa());
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected characters ", "[column to move after; -1 if at start]", commandName, "moveCharsTo")) {
-			if (data.getEditorInhibition()) {
+			if (data.isEditInhibited()) {
 				ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 				return null;
 			}
@@ -1836,7 +1849,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		/**/
 		else if (checker.compare(this.getClass(), "Hires utility module to operate on the data", "[name of module]", commandName, "doUtility")) {
 			if (table != null && data != null) {
-				if (data.getEditorInhibition()) {
+				if (data.isEditInhibited()) {
 					ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -2339,6 +2352,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	}
 
 	/* ................................................................................................................. */
+	void inhibitionChanged(){
+		editingNotPermitted.setValue(data.isEditInhibited());
+		if (ibeamTool!=null)
+			ibeamTool.setEnabled(!editingNotPermitted.getValue());
+	}
+	/* ................................................................................................................. */
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
 	public void changed(Object caller, Object obj, Notification notification) {
 		if (caller instanceof BasicDataWindow || caller instanceof MatrixTable)
@@ -2395,6 +2414,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.doAutosize = true;
 				table.repaintAll();
 				setUndoer(undoReference);
+			}
+			else if (code == MesquiteListener.LOCK_CHANGED) {
+				inhibitionChanged();
 			}
 			else if (code == MesquiteListener.SELECTION_CHANGED) {
 				if (caller != table) { // if object provoking notification is me, then don't repaint
@@ -2490,6 +2512,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		super.changed(caller, obj, notification);
 	}
 
+	
 	/* ................................................................................................................. */
 	/** passes which object is being disposed (from MesquiteListener interface) */
 	public void disposing(Object obj) {
@@ -2544,6 +2567,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	public void setWindowSize(int width, int height) {
 		super.setWindowSize(width, height);
 		checkSizes();
+	}
+	
+	public void setVisible(boolean vis){
+		super.setVisible(vis);
+		if (table != null)
+			table.requestFocus();
 	}
 
 	void checkSizes() {
@@ -3534,7 +3563,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				if (adjustNewSequences) {
 					Bits newTaxa = fileInterpreter.getNewlyAddedTaxa(taxa);
 					if (data instanceof DNAData){
-						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, 0, false, false);
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, referenceSequence, false, false); 
 					}
 					MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, newTaxa,0, false);
 					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
@@ -4553,6 +4582,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				s += "; Sequence site " + count;
 			}
 		}
+		CharactersGroup g = data.getCurrentGroup(column);
+		if (g!= null)
+			s += " [group: " + g.getName() + "]";
 		return s;
 	}
 
@@ -4619,11 +4651,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			return;
 		if (column >= 0) {
 			DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(subRow);
-			if (assistant != null)
+			if (assistant != null){
+				assistant.setColumnTouched(column);
 				if (((TableTool) window.getCurrentTool()).getSpecialToolForColumnNamesInfoStrips())
 					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, regionInCellH, regionInCellV, modifiers);
 				else
 					assistant.showPopUp(columnNames, x + 5, y + 5);
+			}
 		}
 	}
 

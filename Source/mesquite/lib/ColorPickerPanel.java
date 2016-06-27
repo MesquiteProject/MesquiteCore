@@ -78,7 +78,7 @@ public class ColorPickerPanel extends Panel implements MouseListener {
   			}
 
 		checkBounds();
-		setColorFromXY(indicatorX, indicatorY);
+		setColorFromXY(indicatorX+boxSizeX, indicatorY+boxSizeY);  //DRM: 25 April 2016, added boxSize to each to fix shift when first brining the dialog box up.  Not sure why this was needed.
 		/*float hu = colorLoc[0];
 		float sa = colorLoc[1];
 		indicatorX = (int)(offsetX + hu*hues*boxSizeX-1);
@@ -111,6 +111,8 @@ public class ColorPickerPanel extends Panel implements MouseListener {
 			brightness = colorLoc[2];
 			indicatorX = (int)(offsetX + hu*hues*boxSizeX-1);
 			indicatorY = (int)(offsetY+ sa*saturations*boxSizeY-1);
+		//	indicatorX = (int)(offsetX + hu*hues*boxSizeX-1+boxSizeX);
+		//	indicatorY = (int)(offsetY+ sa*saturations*boxSizeY-1+boxSizeY);
 		}
 		Rectangle d = indicator.getBounds();
 		if (d.x != indicatorX || d.y != indicatorY || d.width != boxSizeX+2 || d.height != boxSizeY+2)
@@ -142,6 +144,7 @@ public class ColorPickerPanel extends Panel implements MouseListener {
 		*/
 		float[] f = new float[3];
 		Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), f);
+//		Color out =new Color(Color.HSBtoRGB(f[0], f[1], f[2]));
 		
 		for (int b = 0; b < brightnesses ; b++){
 			float br = (float)(1.0-(b*1.0/brightnesses));

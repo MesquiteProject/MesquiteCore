@@ -38,24 +38,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2015.  Mesquite: A modular system for evolutionary analysis.  Version 3.04.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.1.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.04";
+		return "3.1";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 304;
+		return 310;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.04;
+		return 3.10;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "August 2015"; //"April 2007";
+		return "June 2016"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -603,6 +603,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		addMenuItem(helpMenu, "-", null);
 		addMenuItem(helpMenu, "Active Module Tree", makeCommand("showEmployeeTree",  this));
+		addMenuItem(helpMenu, "Show Web Page Listing Installed Modules", makeCommand("showWebPageAllModules",  this));
 		addMenuItem(helpMenu, "List active modules", makeCommand("dumpEmployeeTree",  this));
 		addMenuItem(helpMenu, "List prerelease modules", makeCommand("dumpSubstantivePrerelease",  this));
 		//addMenuItem(helpMenu, "List ALL prerelease modules", makeCommand("dumpAllPrerelease",  this)); //delete this before release
@@ -674,6 +675,8 @@ public class Mesquite extends MesquiteTrunk
 				logWindow.showPrompt();
 			}
 			logWindow.setVisible(true);
+			logWindow.resetWindowSizeForce();
+
 		}
 
 		/* */
@@ -922,6 +925,11 @@ public class Mesquite extends MesquiteTrunk
 			if (MesquiteInteger.isCombinable(iq))
 				numPrevLogs = iq;
 		}
+		else if ("scriptRecoveryDelay".equalsIgnoreCase(tag)){
+			int iq = MesquiteInteger.fromString(content);
+			if (MesquiteInteger.isCombinable(iq))
+				ShellScriptUtil.recoveryDelay = iq;
+		}
 		else if ("maxNumMatrixUndoTaxa".equalsIgnoreCase(tag)){
 			int iq = MesquiteInteger.fromString(content);
 			if (MesquiteInteger.isCombinable(iq))
@@ -1007,6 +1015,7 @@ public class Mesquite extends MesquiteTrunk
 		StringUtil.appendXMLTag(buffer, 2, "configFile", configFile);  
 		StringUtil.appendXMLTag(buffer, 2, "consoleMode", consoleMode);  
 		StringUtil.appendXMLTag(buffer, 2, "numPrevLogs", numPrevLogs);  
+		StringUtil.appendXMLTag(buffer, 2, "scriptRecoveryDelay", ShellScriptUtil.recoveryDelay);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoTaxa", maxNumMatrixUndoTaxa);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoChars", maxNumMatrixUndoChars);  
 
@@ -1161,9 +1170,9 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "This is the central module for the Mesquite system. " +
-				"In it is the main method that starts up the Mesquite application.  This module" +
+				"In it is the main method that starts up the Mesquite application.  This module " +
 				"loads information for all of the other modules, and hires FileCoordinator " +
-				"modules as needed to deal with open files.  Thus, in the tree of employees" +
+				"modules as needed to deal with open files.  Thus, in the tree of employees " +
 				"that active modules make, this module is at its root.";
 	}
 	/*.................................................................................................................*/
@@ -1268,15 +1277,20 @@ public class Mesquite extends MesquiteTrunk
 		return newProject(urlString, 2);
 	}
 	/*.................................................................................................................*/
-	public MesquiteProject openFile(String pathname, String originalArguments){ //hackathon
-		return newProject(pathname, 1, false, originalArguments);
+	public MesquiteProject openFile(String pathname, String originalArguments, Class importerSubclass){ //hackathon
+		return newProject(pathname, 1, false, originalArguments,  importerSubclass);
+	}
+	/*.................................................................................................................*/
+	
+	public MesquiteProject openFile(String pathname){
+		return newProject(pathname, 1,  false, null, null);
 	}
 	/*.................................................................................................................*/
 	/* give alternative method which takes full file and passes it to FileCoordinator,
 	which then uses alternative methods in MesquiteProject reader that parses this string
 	instead of input stream*/
-	public MesquiteProject openFile(String pathname){
-		return newProject(pathname, 1);
+	public MesquiteProject openFile(String pathname, Class importerSubclass){
+		return newProject(pathname, 1,  false, null, importerSubclass);
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project, in process making taxa block.*/
@@ -1295,16 +1309,21 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/* makes and returns a new project.*/ //hackathon
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless){
-		return newProject(arguments, code, actAsScriptingRegardless, null);
+		return newProject(arguments, code, actAsScriptingRegardless, null, null);
+	}
+	/* makes and returns a new project.*/ //hackathon
+	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments){
+		return newProject(arguments, code, actAsScriptingRegardless, originalArguments, null);
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*///hackathon
-	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments){
+	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments, Class importerSubclass){
 		if (MesquiteThread.isScripting() || actAsScriptingRegardless) {
 			ObjectContainer projCont = new ObjectContainer();
 			ProjectRead pr = new ProjectRead(arguments,  code, mesquiteTrunk, projCont);
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
+			pr.setImporterSubclass(importerSubclass);
 			pr.run();
 			MesquiteProject p = (MesquiteProject)projCont.getObject();
 			projCont.setObject(null); //This is done because Threads not being finalized, and need to remove references to projects
@@ -1315,6 +1334,7 @@ public class Mesquite extends MesquiteTrunk
 			ProjectReadThread pt = new ProjectReadThread(pr);
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
+			pr.setImporterSubclass(importerSubclass);
 			pt.settempID(arguments);
 			pr.setThread(pt);
 			pt.start();
@@ -1494,6 +1514,71 @@ public class Mesquite extends MesquiteTrunk
 		if (helpSearchManager != null)
 			helpSearchManager.searchData(s, window);
 	}
+	ProgressIndicator omp = null;
+	/* ...................................................... */
+	/**
+	 * Composes and shows a web page listing all of the modules.
+	 */
+	public void composePageOfModules() {
+		omp = new ProgressIndicator(null, "Composing web page of modules", MesquiteTrunk.mesquiteModulesInfoVector.size(), false);
+		omp.start();
+		omp.setCurrentValue(0);
+
+		StringBuffer sb = new StringBuffer();
+		int count=0;
+		String prevPackageName="";
+	    Vector<String> vector = new Vector<String>();
+	    
+	    for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+	    	MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+	    	if (mmi.loadModule()) {
+	    		if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
+	    			prevPackageName=mmi.getPackageName();
+	    			if (prevPackageName!=null){
+	    				Collections.sort(vector);
+	    				for(int j=0; j < vector.size(); j++){
+	    					sb.append(vector.get(j));
+	    				}
+	    				vector.clear();
+	    				sb.append("<hr>");
+	    				String vers = mmi.getVersion();
+	    				if (vers == null)
+	    					vers = "";
+	    				if (StringUtil.blank(vers))
+	    					sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
+	    				else
+	    					sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
+	    			}
+	    		}
+	    		vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
+	    		count++;
+	    	}
+	    } 
+	    if (!vector.isEmpty()) {
+	    	Collections.sort(vector);
+	    	for(int j=0; j < vector.size(); j++){
+	    		sb.append(vector.get(j));
+	    	}
+	    }
+		String allModulesHTML = " <title>Modules in Mesquite</title>";
+		allModulesHTML += "<body>";
+		allModulesHTML += "<h1>List of All Installed Modules in Mesquite</h1>";
+		allModulesHTML += "Total number of modules: <b>"+count+"</b>";
+		allModulesHTML += ("<ul>");
+		allModulesHTML += sb.toString();
+		allModulesHTML += ("</ul>");
+		allModulesHTML += ("</body>");
+		String modulesListPath= MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator + "allModules.html";
+
+		MesquiteFile.putFileContents(modulesListPath,allModulesHTML, true);
+		omp.goAway();
+		omp = null;
+		File testing = new File(modulesListPath);
+		if (testing.exists()) {
+			showWebPage(modulesListPath, true);
+		}
+
+	}
 
 	public String getNumModuleStarts() {
 		StringBuffer sb=new StringBuffer();
@@ -1505,7 +1590,40 @@ public class Mesquite extends MesquiteTrunk
 		}
 		return sb.toString();
 	}
+	public MesquiteProject openOrImportFileHandler(String path, String completeArguments, Class importerSubclass){
+		MesquiteProject f;
+		CommandRecord comRec  = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord cr;
+		if (comRec == null || comRec == CommandRecord.nonscriptingRecord || comRec.getID()<2) {
+			cr =new CommandRecord((CommandThread)null, false);
+			if (comRec == null)
+				cr.setFromCommandLine(Thread.currentThread() instanceof ConsoleThread);
+			else
+				cr.setFromCommandLine(comRec.isFromCommandLine());
+		}
+		else
+			cr = comRec;
+		CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
+		MesquiteThread.setCurrentCommandRecord(cr);
 
+		if (StringUtil.blank(path)) {
+			f = openFile(null, importerSubclass); 
+		}
+		else {
+			String baseN = null;
+			if (MesquiteThread.isScripting()) {
+				MesquiteFile base = null;
+				base = CommandRecord.getScriptingFileS();
+				if (base !=null)
+					baseN = base.getDirectoryName();
+			}
+			if (!MesquiteFile.fileExists(path) && (!StringUtil.blank(baseN) && MesquiteFile.fileExists(baseN+path)))
+				path = baseN+path;
+			f= openFile(path, completeArguments, importerSubclass);
+		}
+		MesquiteThread.setCurrentCommandRecord(prevR);
+		return f;
+	}
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	String noticeLocation = "http://"; //before release, change URL to "http://"
@@ -1689,41 +1807,12 @@ public class Mesquite extends MesquiteTrunk
 			storePreferences();
 			discreetAlert("You will need to restart Mesquite to load all of the modules");
 		}
+		
 		else if (checker.compare(this.getClass(), "Opens file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "openFile")) {
-			//hackathon
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
 			String completeArguments = arguments;
-			MesquiteProject f;
-			CommandRecord comRec  = MesquiteThread.getCurrentCommandRecord();
-			CommandRecord cr;
-			if (comRec == null || comRec == CommandRecord.nonscriptingRecord || comRec.getID()<2) {
-				cr =new CommandRecord((CommandThread)null, false);
-				if (comRec == null)
-					cr.setFromCommandLine(Thread.currentThread() instanceof ConsoleThread);
-				else
-					cr.setFromCommandLine(comRec.isFromCommandLine());
-			}
-			else
-				cr = comRec;
-			CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
-			MesquiteThread.setCurrentCommandRecord(cr);
-			if (StringUtil.blank(path)) {
-				f = openFile(null); 
-			}
-			else {
-				String baseN = null;
-				if (MesquiteThread.isScripting()) {
-					MesquiteFile base = null;
-					base = CommandRecord.getScriptingFileS();
-					if (base !=null)
-						baseN = base.getDirectoryName();
-				}
-				if (!MesquiteFile.fileExists(path) && (!StringUtil.blank(baseN) && MesquiteFile.fileExists(baseN+path)))
-					path = baseN+path;
-				f= openFile(path, completeArguments);
-			}
-			MesquiteThread.setCurrentCommandRecord(prevR);
-			return f;
+			return openOrImportFileHandler( path,  completeArguments, null);
+
 		}
 		else if (checker.compare(this.getClass(), "Opens file on web server.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[URL of file] - if parameter absent then presents user with dialog box to enter URL", commandName, "openURL")){
 			arguments = ParseUtil.getFirstToken(arguments, stringPos);
@@ -2202,6 +2291,9 @@ public class Mesquite extends MesquiteTrunk
 			}
 			logln("Modules installed: " + count);
 
+		}	
+		else if (checker.compare(this.getClass(), "Shows a web page of all modules installed", null, commandName, "showWebPageAllModules")) {
+			composePageOfModules();
 		}	
 		else if (checker.compare(this.getClass(), "Dumps to the log a list of all modules installed", null, commandName, "dumpAllModuleClasses")) {
 			showLogWindow();

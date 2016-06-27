@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.charMatrices.ManageCharPartitions;
 /*~~  */
 
@@ -26,17 +26,17 @@ import mesquite.lists.lib.GroupDialog;
 public class ManageCharPartitions extends CharSpecsSetManager {
 	final static String listOfCharacterGroupsName = "List of Character Group Labels";
 
-	
+
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.CharPartitionList.CharPartitionList.class, getName() + "  uses an assistant to display a list window.",
-		"The assistant is arranged automatically");
+				"The assistant is arranged automatically");
 	}
 	CharactersGroupVector groups; 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = new CharactersGroupVector();
 		getProject().addFileElement(groups);
- 		return true;
+		return true;
 	}
 	public void elementsReordered(ListableVector v){
 	}
@@ -109,33 +109,33 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	public void deleteElement(FileElement e){
 		if (e instanceof CharactersGroup){
 			ListableVector d = getProject().getCharacterMatrices();
-		for (int im = 0; im<d.size(); im++){
-			CharacterData data = (CharacterData)d.elementAt(im);
-			boolean changed = false;
-			SpecsSetVector ssv = data.getSpecSetsVector(CharacterPartition.class);
-			CharacterPartition cp = (CharacterPartition)ssv.getCurrentSpecsSet();
-			if (cp != null)
-				for (int ic = 0; ic< data.getNumChars(); ic++){
-				if (cp.getCharactersGroup(ic) == e) {
-					cp.setProperty(cp.getDefaultProperty(ic), ic);
-					changed = true;
-				}
-			}
-			for (int is = 0; is< ssv.size(); is++){
-				 cp = (CharacterPartition)ssv.elementAt(is);
-				for (int ic = 0; ic< data.getNumChars(); ic++){
-					if (cp.getCharactersGroup(ic) == e) {
-						cp.setProperty(cp.getDefaultProperty(ic), ic);
-						changed = true;
+			for (int im = 0; im<d.size(); im++){
+				CharacterData data = (CharacterData)d.elementAt(im);
+				boolean changed = false;
+				SpecsSetVector ssv = data.getSpecSetsVector(CharacterPartition.class);
+				CharacterPartition cp = (CharacterPartition)ssv.getCurrentSpecsSet();
+				if (cp != null)
+					for (int ic = 0; ic< data.getNumChars(); ic++){
+						if (cp.getCharactersGroup(ic) == e) {
+							cp.setProperty(cp.getDefaultProperty(ic), ic);
+							changed = true;
+						}
+					}
+				for (int is = 0; is< ssv.size(); is++){
+					cp = (CharacterPartition)ssv.elementAt(is);
+					for (int ic = 0; ic< data.getNumChars(); ic++){
+						if (cp.getCharactersGroup(ic) == e) {
+							cp.setProperty(cp.getDefaultProperty(ic), ic);
+							changed = true;
+						}
 					}
 				}
+				if (changed)
+					data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 			}
-			if (changed)
-				data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-		}
-		getProject().removeFileElement(e);//must remove first, before disposing
-		groups.removeElement(e, true);
-		e.dispose();
+			getProject().removeFileElement(e);//must remove first, before disposing
+			groups.removeElement(e, true);
+			e.dispose();
 		}
 	}
 	public void elementDisposed(FileElement e){
@@ -144,9 +144,9 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	}
 	public void projectEstablished(){
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, listOfCharacterGroupsName, makeCommand("showCharacterGroups",  this));
-//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu,"List of Character Groups", makeCommand("showCharacterGroups",  this),  (ListableVector)getProject().taxas);
-//		mmis2.setOwnerModuleID(getID());
-//		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		//		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu,"List of Character Groups", makeCommand("showCharacterGroups",  this),  (ListableVector)getProject().taxas);
+		//		mmis2.setOwnerModuleID(getID());
+		//		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		groups.addToFile(getProject().getHomeFile(), getProject(), this);
 		super.projectEstablished();
 	}
@@ -155,38 +155,30 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		Snapshot temp = new Snapshot();
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
 			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
-			 if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals(listOfCharacterGroupsName)) {
+			if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals(listOfCharacterGroupsName)) {
 				temp.addLine("showCharacterGroups ", e); 
 			}
 		}
 		return temp;
 	}
+	ManagerAssistant lister = null;
 	/*.................................................................................................................*/
-	 public ManagerAssistant showCharacterGroupList(Object obj, String listerName){
-	 		//Check to see if already has lister for this
-/*	 		boolean found = false;
-		for (int i = 0; i<getNumberOfEmployees(); i++) {
-			Object e=getEmployeeVector().elementAt(i);
-			if (e instanceof ManagerAssistant)
-				if (((ManagerAssistant)e).showing(obj)) {
-					((ManagerAssistant)e).getModuleWindow().setVisible(true);
-					return ((ManagerAssistant)e);
-				}
+	public ManagerAssistant showCharacterGroupList(Object obj, String listerName){
+		
+		if (lister == null)
+			lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
+		if (lister!=null) {
+			lister.showListWindow(obj);
+			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+				lister.getModuleWindow().setVisible(true);
 		}
-		*/
-		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
-			if (lister!=null) {
-				lister.showListWindow(null);
-	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
-	 				lister.getModuleWindow().setVisible(true);
-	 		}
 		return lister;
-	 		
-}
+
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows list of the character groups", null, commandName, "showCharacterGroups")) {
-					return showCharacterGroupList(null, listOfCharacterGroupsName);
+			return showCharacterGroupList(null, listOfCharacterGroupsName);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -204,36 +196,36 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	public String nexusToken(){
 		return "CHARPARTITION";
 	}
-	
+
 	private CharactersGroup makeGroup(String name, Parser subcommands, MesquiteFile file){
-			CharactersGroup group = groups.findGroup(name);
-			if (group==null) {
-				group = new CharactersGroup();
-				group.setName(name);
-				group.addToFile(file, getProject(), this);
-				if (groups.indexOf(group)<0) 
-					groups.addElement(group, false);
-			}
-			if (subcommands !=null){ //this should be passed into group to handle?
-				String token = null;
-				while ((token = subcommands.getNextToken())!=null){
-					if (token.equalsIgnoreCase("COLOR")){
-						token = subcommands.getNextToken(); //=
-						token = subcommands.getNextToken(); // (
-						token = subcommands.getNextToken(); // (
-							if (token!=null && token.equalsIgnoreCase("RGB")) {
-								double red = MesquiteDouble.fromString(subcommands.getNextToken()); //Red
-								double green = MesquiteDouble.fromString(subcommands.getNextToken()); //green
-								double blue = MesquiteDouble.fromString(subcommands.getNextToken()); //blue
-								if (MesquiteDouble.isCombinable(red) && MesquiteDouble.isCombinable(green) && MesquiteDouble.isCombinable(blue)){
-									Color c = new Color((float)red, (float)green, (float)blue);
-									group.setColor(c);
-								}
-							}
+		CharactersGroup group = groups.findGroup(name);
+		if (group==null) {
+			group = new CharactersGroup();
+			group.setName(name);
+			group.addToFile(file, getProject(), this);
+			if (groups.indexOf(group)<0) 
+				groups.addElement(group, false);
+		}
+		if (subcommands !=null){ //this should be passed into group to handle?
+			String token = null;
+			while ((token = subcommands.getNextToken())!=null){
+				if (token.equalsIgnoreCase("COLOR")){
+					token = subcommands.getNextToken(); //=
+					token = subcommands.getNextToken(); // (
+					token = subcommands.getNextToken(); // (
+					if (token!=null && token.equalsIgnoreCase("RGB")) {
+						double red = MesquiteDouble.fromString(subcommands.getNextToken()); //Red
+						double green = MesquiteDouble.fromString(subcommands.getNextToken()); //green
+						double blue = MesquiteDouble.fromString(subcommands.getNextToken()); //blue
+						if (MesquiteDouble.isCombinable(red) && MesquiteDouble.isCombinable(green) && MesquiteDouble.isCombinable(blue)){
+							Color c = new Color((float)red, (float)green, (float)blue);
+							group.setColor(c);
+						}
 					}
 				}
 			}
-			return group;
+		}
+		return group;
 	}
 	public Object getSpecification(String token){ //NEED TO PASS FILE
 		return makeGroup(token, null, getProject().getHomeFile());
@@ -267,7 +259,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			String sT = " ";
 			CharactersGroup[] parts = characterPartition.getGroups();
 			boolean firstTime = true;
-			
+
 			if (parts!=null)
 				for (int i=0; i<parts.length; i++) {
 					String q = ListableVector.getListOfMatches((Listable[])characterPartition.getProperties(), parts[i], CharacterStates.toExternal(0));
@@ -278,7 +270,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 						sT += StringUtil.tokenize(parts[i].getName()) + " : " + q;
 					}
 				}
-			
+
 			if (!StringUtil.blank(sT)) {
 				s+= "\tCHARPARTITION " ;
 				if (isCurrent)
@@ -290,7 +282,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 			}
 		}
 		return s;
-   	}
+	}
 	/*.................................................................................................................*/
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
 		if (blockName.equalsIgnoreCase("LABELS")) {
@@ -328,26 +320,26 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		else  {
 			return super.getNexusCommands(file, blockName);
 		}
-		}
+	}
 	/*.................................................................................................................*/
 	public NexusCommandTest getNexusCommandTest(){ 
 		return new PartitionNexusCommandTest();
 	}
 	/*.................................................................................................................*/
-   	 public boolean isPrerelease(){
-   	 	return false;
-   	 }
+	public boolean isPrerelease(){
+		return false;
+	}
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Manage character partititions";
-   	 }
+	}
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Manages (including NEXUS read/write) character partitions." ;
-   	 }
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Manages (including NEXUS read/write) character partitions." ;
+	}
 	/*.................................................................................................................*/
-   	 
+
 }
 
 /* ======================================================================== */
@@ -355,10 +347,10 @@ class PartitionNexusCommandTest  extends NexusCommandTest{
 	public boolean readsWritesCommand(String blockName, String commandName, String command){  //returns whether or not can deal with command
 		if ((blockName.equalsIgnoreCase("SETS") || blockName.equalsIgnoreCase("ASSUMPTIONS")) && commandName.equalsIgnoreCase("CHARPARTITION"))
 			return true;
-		
+
 		if ((blockName.equalsIgnoreCase("LABELS")) && commandName.equalsIgnoreCase("CHARGROUPLABEL"))
 			return true;
-		
+
 		return false;
 	}
 }

@@ -28,19 +28,19 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public static long totalProjectPanelRefreshes = 0;
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(FileInit.class, "Modules assist with tasks connected to each project or file.",
-		"");
+				"");
 		e2.setAsEntryPoint(null);
 		e2.setSuppressListing(true);
 		EmployeeNeed e3 = registerEmployeeNeed(FileElementManager.class, "Modules assist with management of taxa, matrices, trees and other data to each project or file.",
-		"");
+				"");
 		e3.setAsEntryPoint(null);
 		e3.setSuppressListing(true);
 		EmployeeNeed e4 = registerEmployeeNeed(FileInterpreter.class, "Modules assist with reading and writing files of various formats.",
-		"");
+				"");
 		e4.setAsEntryPoint(null);
 		e4.setSuppressListing(true);
 		EmployeeNeed e5 = registerEmployeeNeed(FileAssistant.class, "Modules assist with files.",
-		"");
+				"");
 		e5.setAsEntryPoint("newAssistant");
 		//e5.setSuppressListing(true);
 	}
@@ -53,7 +53,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Coordinates the reading, maintenance and linkages of files, which include Taxa, Trees, CharacterData, and other objects." 
-		+ " This module is hired directly by the Mesquite trunk module.";
+				+ " This module is hired directly by the Mesquite trunk module.";
 	}
 	MesquiteMenuSpec elementsMenu;
 
@@ -226,7 +226,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		Enumeration e = MesquiteTrunk.windowVector.elements();
 		mss.setList(MesquiteTrunk.windowVector);
 		mss.setListableFilter(ChartWindow.class);
-	//	MesquiteSubmenuSpec mss2 = addSubmenu(MesquiteTrunk.analysisMenu, "Other", makeCommand("newAssistant",  this), FileAssistantA.class);
+		//	MesquiteSubmenuSpec mss2 = addSubmenu(MesquiteTrunk.analysisMenu, "Other", makeCommand("newAssistant",  this), FileAssistantA.class);
 		addMenuItem(MesquiteTrunk.analysisMenu, "-", null);
 		addModuleMenuItems(MesquiteTrunk.analysisMenu, makeCommand("newAssistant",  this), FileAssistantA.class);
 
@@ -315,7 +315,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 						Object t = null;
 						if (mTaxa!=null) 
 							t = mTaxa.doCommand("newTaxa",Integer.toString(numberTaxa.getValue()) + " " + ParseUtil.tokenize(nameTaxa.getText()), CommandChecker.defaultChecker); //treat as scripting so as not to complain if something not found 19Jan02
-						
+
 						if (t!=null){
 							if (mcm.getState()){
 								CharactersManager mChars = (CharactersManager)findEmployeeWithDuty(CharactersManager.class);
@@ -506,13 +506,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return thisFile;
 	}
 	/*.................................................................................................................*/
-	public MesquiteFile readProject(boolean local, String pathName, String arguments) { 
+	public MesquiteFile readProject(boolean local, String pathName, String arguments, Class importerSubclass) { 
 
 		//ALLOW THIS ONLY ONCE FOR A FILE COORDINATOR
 		if (getProject()!=null) { 
 			alert("Error: attempt to read second project for single file coordinator");
 			return null;
 		}
+		
 
 		incrementMenuResetSuppression();
 		MesquiteProject p=null;
@@ -548,11 +549,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 			//first try nexus.  If can't be read, then make list and query user...
 			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-			if (nfi!=null && nfi.canReadFile(thisFile))
+			if (importerSubclass== null && nfi!=null && nfi.canReadFile(thisFile))  
 				fileInterp = nfi;
 			else {
 				imp = true;
-				fileInterp = findImporter(thisFile, 0, arguments);
+				fileInterp = findImporter(thisFile, 0, importerSubclass, arguments);
 			}
 			if (fileInterp !=null) {
 				p = initiateProject(thisFile.getFileName(), thisFile);
@@ -586,8 +587,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					return null;
 				}
 				else {
-					p.fileSaved(thisFile);
-					if (imp && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+					// "Import" or "Translate"  Open Special NEXUS File
+					// behaviour: autosave or not
+					
+					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
+					if (imp && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
 						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");
 						if (MesquiteThread.isScripting() || thisFile.changeLocation("Save imported file as NEXUS file")) {
 							afterProjectRead();
@@ -631,7 +635,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 		}
-		
+
 		if (thisFile != null && thisFile.getCloseAfterReading()){
 			closeFile(thisFile);
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
@@ -711,7 +715,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (MesquiteThread.isScripting()) {
 			ObjectContainer f = new ObjectContainer();
 			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 0, f, fileDescriptionText);
-			
+
 			pt.run();
 			MesquiteFile mf = (MesquiteFile)f.getObject();
 			f.setObject(null);
@@ -742,9 +746,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public void includeFileFuse(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file  DONE special to put on same thread
 		getProject().incrementProjectWindowSuppression();
 		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
-			pt.run();
-			cleanFusedReadingSuppressions();
-			getProject().decrementProjectWindowSuppression();
+		pt.run();
+		cleanFusedReadingSuppressions();
+		getProject().decrementProjectWindowSuppression();
 	}
 	void cleanFusedReadingSuppressions(){
 		int num = getProject().getNumberCharMatrices();
@@ -843,7 +847,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		ready = true;
 		if (getModuleWindow()!=null) {
 			getModuleWindow().getParentFrame().showFrontWindow();
-		//	getModuleWindow().getParentFrame().fixFrontness();
+			//	getModuleWindow().getParentFrame().fixFrontness();
 		}
 
 		resetAllMenuBars();
@@ -870,7 +874,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/** A method called immediately after a file has been read in.*/
 	public void wrapUpAfterFileRead(MesquiteFile f) {
-				broadcastFileRead(this, f);
+		broadcastFileRead(this, f);
 	}
 	/*.................................................................................................................*/
 	/** A method called immediately after a file has been read in.*/
@@ -1254,7 +1258,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return null;
 	}
 	/*.................................................................................................................*/
-	public FileInterpreter findImporter(String fileContents, String fileName, int fileType, String arguments,boolean mustReadFromString, Class stateClass) {
+	public FileInterpreter findImporter(String fileContents, String fileName, int fileType, Class importerSubclass, String arguments,boolean mustReadFromString, Class stateClass) {
 		//hackathon
 		String importerName = findImporterName(arguments);
 		if (importerName != null){
@@ -1269,7 +1273,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		TextDisplayer fd = displayText(fileContents, fileName);  //TODO: should say if scripting
 
 		MesquiteModule[] fInterpreters = null;
-		if (fileType == 0)
+		if (importerSubclass != null)
+			fInterpreters = getImmediateEmployeesWithDuty(importerSubclass);
+		else if (fileType == 0)
 			fInterpreters = getImmediateEmployeesWithDuty(FileInterpreterI.class);
 		else
 			fInterpreters = getImmediateEmployeesWithDuty(FileInterpreterITree.class);
@@ -1308,11 +1314,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return (FileInterpreter)fInt;
 	}
 	/*.................................................................................................................*/
-	public FileInterpreter findImporter(MesquiteFile f, int fileType, String arguments) {
+	public FileInterpreter findImporter(MesquiteFile f, int fileType, Class importerSubclass, String arguments) {
 		String s = MesquiteFile.getFileContentsAsString(f.getPath(), 4000); 
 		if (StringUtil.blank(s))
 			return null;
-		return findImporter(s,f.getName(),fileType, arguments, false, null);
+		return findImporter(s,f.getName(),fileType, importerSubclass, arguments, false, null);
 	}
 	/*.................................................................................................................*/
 	public Snapshot getIDSnapshot(MesquiteFile file) {
@@ -1646,7 +1652,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					return null;
 				}
 				else if (fi.getURL()!= null){
-					
+
 					path = fi.getURL().toString();
 					showWebPage(path, false);
 					return null;
@@ -1716,9 +1722,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		else {
 			String explanation = "<h3>Entities?</h3>First, each <strong>data point</strong> of your chart refers to an <strong>entity</strong>.  For example, each data point might represent a <strong>character</strong>, and tells us a particular value for the character."
-				+ " Alternatively, the data points could refer to <strong>matrices</strong>, or <strong>taxa</strong>, or <strong>trees</strong>.  Thus, your chart will summarize values that apply to each of a series of different entities.  "
-				+ "(This could seem confusing, because some data points refer to both a character and a tree, for example.  However, if the chart shows a value for a character in each of multiple trees, "
-				+"then you want a Trees chart.  If it shows a value for each of many characters with a single tree, then you want a Characters chart.)";
+					+ " Alternatively, the data points could refer to <strong>matrices</strong>, or <strong>taxa</strong>, or <strong>trees</strong>.  Thus, your chart will summarize values that apply to each of a series of different entities.  "
+					+ "(This could seem confusing, because some data points refer to both a character and a tree, for example.  However, if the chart shows a value for a character in each of multiple trees, "
+					+"then you want a Trees chart.  If it shows a value for each of many characters with a single tree, then you want a Characters chart.)";
 			String question = "What are the entities to which the data points of this chart refer?";
 			//
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -1780,7 +1786,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			else {
 
 				String explanation2 = "<h3>One or Two Dimensions?</h3>Second, your chart could display a <strong>single variable</strong> (among multiple entities) or the relationship between <strong>two variables</strong>.  A one-variable chart will be a histogram/bar chart/line chart."
-					+" A two-variable chart will be a scatterplot or scattergram.";
+						+" A two-variable chart will be a scatterplot or scattergram.";
 				String question2 = "Do you want a one-variable or two-variable chart?";
 				MesquiteInteger buttonPressed = new MesquiteInteger(1);
 				ExtensibleDialog dialog2 = new ExtensibleDialog(containerOfModule(), "Chart Wizard: Dimensions",  buttonPressed);
@@ -1921,8 +1927,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 	String importer;
 	int category;
 	int fileType;
-		String fileDescriptionText = null;
-		public FileRead (String path, String importer, String arguments, int fileType,  BasicFileCoordinator ownerModule, int category, ObjectContainer f, String filePurposeText) {
+	String fileDescriptionText = null;
+	public FileRead (String path, String importer, String arguments, int fileType,  BasicFileCoordinator ownerModule, int category, ObjectContainer f, String filePurposeText) {
 		this.f = f;
 		this.arguments = arguments;
 		this.path = path;
@@ -1954,18 +1960,18 @@ class FileRead implements CommandRecordHolder, Runnable {
 	public String getCurrentCommandExplanation(){
 		return null;
 	}
-	
+
 	private void warnLinkedNotFound(String pathName){
 		String warning = "";
 		if (fileDescriptionText != null){
 			warning = fileDescriptionText + " cannot be found. The file was expected by a script to be at the location \"" + pathName + "\". " +
-						"Because this file cannot be found, the remainder of the script might not execute properly, and various warning messages might be given.";
+					"Because this file cannot be found, the remainder of the script might not execute properly, and various warning messages might be given.";
 		}
 		else
 			warning = "A script refers to a linked file \"" + pathName + "\" that cannot be found. Because this linked file cannot be found, the remainder of the script might not " +
-				"execute properly, and various warning messages might be given.  A possible cause of this is that someone saved a file with a second file linked, and then separated the two files." + 
-		" To avoid this problem in the future, either unlink files before saving, or maintain the linked file in the same relative position (e.g., in the same directory).";
-		
+					"execute properly, and various warning messages might be given.  A possible cause of this is that someone saved a file with a second file linked, and then separated the two files." + 
+					" To avoid this problem in the future, either unlink files before saving, or maintain the linked file in the same relative position (e.g., in the same directory).";
+
 		ownerModule.alert(warning);
 	}
 	/*.................................................................................................................*/
@@ -1993,6 +1999,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 			linkedFile =MesquiteFile.open(dirName, fileName);
 		}
 		boolean imp = false;
+		boolean wasTranslated = false;
 
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		if (linkedFile!=null) {
@@ -2035,6 +2042,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 				imp = true;
 			}
 			if (fileInterp !=null) {
+				if (!(fileInterp instanceof NEXUSInterpreter))
+					wasTranslated = true;
 				MesquiteFile sf = CommandRecord.getScriptingFileS();
 
 				CommandRecord.setScriptingFileS(linkedFile);
@@ -2072,10 +2081,12 @@ class FileRead implements CommandRecordHolder, Runnable {
 		else if (!linkedFile.isClosed()) {
 			ownerModule.getProject().fileSaved(linkedFile);
 			Parser parser = new Parser();
-			if (imp && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
-				linkedFile.changeLocation(linkedFile.getDirectoryName(), linkedFile.getFileName()+".nex");
+			//For linked files, no subclasses of interpreter can be specified in advance, and thus NEXUS files will be automatically read by InterpretNexus
+			if (imp && wasTranslated && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+				linkedFile.changeLocation(linkedFile.getDirectoryName(), linkedFile.getFileName()+".nex");  
 				if (MesquiteThread.isScripting() || linkedFile.changeLocation("Save imported linked file as NEXUS file"))
-					ownerModule.writeFile(linkedFile);
+					ownerModule.writeFile(linkedFile);  		
+
 				else {
 					linkedFile.close();
 				}
@@ -2096,7 +2107,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 		MesquiteThread.numFilesBeingRead++;
 		try {
 			if (ownerModule.getProject() != null)
-			ownerModule.getProject().incrementProjectWindowSuppression();
+				ownerModule.getProject().incrementProjectWindowSuppression();
 
 			readLinkedFile(path);
 			if (ownerModule.getProject() != null)
@@ -2123,6 +2134,3 @@ class FileRead implements CommandRecordHolder, Runnable {
 	}
 
 }
-
-
-

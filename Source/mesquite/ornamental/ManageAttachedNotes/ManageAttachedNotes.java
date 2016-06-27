@@ -103,7 +103,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 			for (int i=0; i<project.getNumberCharMatrices(); i++){
 				CharacterData data = getProject().getCharacterMatrix(i);
 				if (data.getFile() == file && data.getWritable()){
-					if (project.getNumberCharMatrices()>1 || (!file.useSimplifiedNexus&&  !file.useConservativeNexus && !data.hasDefaultName() && !NexusBlock.suppressTITLE)) {
+					if (project.getNumberCharMatrices()>1&& MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)) {
 						if (project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 							context.append("\tCHARACTERS = " +  StringUtil.tokenize(data.getName(), null, tokSB) +" TAXA = " +  StringUtil.tokenize(data.getTaxa().getName(), null, tokSB) + eL);
 						else  //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note

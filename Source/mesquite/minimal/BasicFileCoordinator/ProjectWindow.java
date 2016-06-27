@@ -553,7 +553,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	//boolean fipOpen = false;
 	//FileIncorporatePanel fip = null;
 	public void refresh(){
+		
 		int sutd = sequenceUpToDate();  //integer passed to diagnose why not up to date, for debugging
+		
 		if (sutd==0){
 			resetSizes();
 			return;

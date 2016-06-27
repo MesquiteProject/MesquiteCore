@@ -19,6 +19,7 @@ import java.util.*;
 import java.lang.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -26,7 +27,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class AddCharsFromSource extends CategDataAlterer {
+public class AddCharsFromSource extends CategDataAlterer implements AltererWholeCharacterAddRemove {
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false; 

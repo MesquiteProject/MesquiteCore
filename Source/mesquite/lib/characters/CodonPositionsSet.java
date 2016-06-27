@@ -87,14 +87,17 @@ public class CodonPositionsSet  extends CharNumSet {
   	public String getListOfMatches(int targetPos){
   		return getListOfMatches(targetPos, 0, null);
   	}
-  	
- 	public String getListOfMatches(int targetPos, int offset, boolean[] include){  //offset is number to add to character numbers
+ 	public String getListOfMatches(int targetPos, int offset, boolean[] include){
+ 		return getListOfMatches(targetPos, offset, include, false);
+ 	}
+ 	public String getListOfMatches(int targetPos, int offset, boolean[] include, boolean writeCommas){  //offset is number to add to character numbers
 
  		int lastWritten = -1;
 		int unassignedPosition=4;
 		String list = "";
 		int continuing = 0;
 		int count = -1;
+		boolean writeSeparator = false;
 		MesquiteInteger charNumberOfLastThird = new MesquiteInteger(-1);
 		for (int ic=0; ic<getNumberOfParts(); ic++) {
 			if (include==null || ic>=include.length || include[ic]){   // it's one to consider
@@ -106,11 +109,17 @@ public class CodonPositionsSet  extends CharNumSet {
 						int lastThird = endSequenceByThree(targetPos, getNumberOfParts(), ic, count, include, charNumberOfLastThird);
 						//if so, then go the series of thirds 
 						if (lastThird != count){
+							if (writeSeparator)
+								list += ",";
+
 							list += " " + CharacterStates.toExternal(count+offset) + " - " +  CharacterStates.toExternal(lastThird+offset) + "\\3";
 							ic = charNumberOfLastThird.getValue();
 							count = lastThird;
+						
 						}
 						else { //otherwise write as normal*/
+							if (writeSeparator)
+								list += ",";
 							lastWritten = count;
 							list += " " + CharacterStates.toExternal(count+offset);
 							continuing = 1;
@@ -123,16 +132,24 @@ public class CodonPositionsSet  extends CharNumSet {
 				}
 				else if (continuing>0) {   // we are in a contiguous stretch of the same thing
 					if (lastWritten != count-1){  // last one we wrote wasn't the one just before
+						if (writeSeparator)
+							list += ",";
 						list += " " + CharacterStates.toExternal(count-1+offset);
 						lastWritten = count-1;
 					}
-					else
+					else {
+						writeSeparator=true;
 						lastWritten = -1;
+					}
 					continuing = 0;
 				}
 			}
 		}
 		if (continuing>1) {  // we are waiting for the last one
+			if (writeSeparator) {
+				list += ", ";
+				writeSeparator=false;
+			}
 			list += " " + CharacterStates.toExternal(count+offset) + " ";
 			//thisValueString += " " + CharacterStates.toExternal(data.getNumChars()-1+offset) + " ";
 		}

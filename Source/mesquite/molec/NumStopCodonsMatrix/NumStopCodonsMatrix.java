@@ -3,7 +3,8 @@ package mesquite.molec.NumStopCodonsMatrix;
 
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.ProteinData;
-import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -29,18 +30,31 @@ public class NumStopCodonsMatrix extends NumberForMatrix {
 				resultString.setValue("Number of stop codons can be calculated only for stored matrices");
 			return;
 		}
-		if (!(parentData instanceof DNAData)){
+
+		if (!(parentData instanceof DNAData) && !(parentData instanceof ProteinData)){
 			if (resultString != null)
-				resultString.setValue("Number of stop codons can be calculated only for DNA matrices");
+				resultString.setValue("Number of stop codons can be calculated only for DNA or Protein matrices");
 			return;
 		}
-		DNAData dnaData = (DNAData)parentData;
-		int numTaxa = parentData.getNumTaxa();
-		
 		int count = 0;
-		for (int it=0; it<numTaxa; it++)
-			count += dnaData.getAminoAcidNumbers(it,ProteinData.TER, false);
+		if (parentData instanceof DNAData){
+			DNAData dnaData = (DNAData)parentData;
+			int numTaxa = parentData.getNumTaxa();
 
+			for (int it=0; it<numTaxa; it++)
+				count += dnaData.getAminoAcidNumbers(it,ProteinData.TER, false);
+		}
+		else  if (parentData instanceof ProteinData){
+			ProteinData pData = (ProteinData)parentData;
+			int numTaxa = parentData.getNumTaxa();
+			int numChar = parentData.getNumChars();
+			for (int ic=0; ic<numChar; ic++)
+			for (int it=0; it<numTaxa; it++){
+				long state = pData.getState(ic, it);
+				if (ProteinState.isElement(state, ProteinData.TER))
+					count++;
+			}
+		}
 		if (count>0) {
 			result.setValue(count); 
 		}  else
@@ -56,7 +70,7 @@ public class NumStopCodonsMatrix extends NumberForMatrix {
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
 	public CompatibilityTest getCompatibilityTest(){
-		return new RequiresAnyDNAData();
+		return new RequiresAnyMolecularData();
 	}
 	public boolean isPrerelease (){
 		return false;

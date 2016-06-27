@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.molec.FetchGenBank; 
+package mesquite.molec.FetchAndAddGenBank; 
 
 
 import java.awt.*;
@@ -21,7 +21,7 @@ import mesquite.categ.lib.*;
 import mesquite.molec.lib.*;
 
 /* ======================================================================== */
-public class FetchGenBank extends DataUtility { 
+public class FetchAndAddGenBank extends DataUtility { 
 	CharacterData data;
 	String genBankNumbers;
 	/*.................................................................................................................*/
@@ -52,7 +52,7 @@ public class FetchGenBank extends DataUtility {
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryFilesDialog = new ExtensibleDialog(containerOfModule(), "Fetch & Add GenBank",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		queryFilesDialog.addLabel("Accession Numbers (separated by commas):");
+		queryFilesDialog.addLabel("Accession Numbers (separated by commas); \nranges with commas allowed:");
 
 		genBankNumbers = "";
 		TextArea numbersArea = queryFilesDialog.addTextArea("",  5);
@@ -73,7 +73,7 @@ public class FetchGenBank extends DataUtility {
 			logln("\nFetching GenBank entries: "  + genBankNumbers);
 
 			try {
-				String[] accessionNumbers = StringUtil.delimitedTokensToStrings(genBankNumbers,',');
+				String[] accessionNumbers = StringUtil.delimitedTokensToStrings(genBankNumbers,',',true);
 				for (int i=0; i<accessionNumbers.length; i++) 
 					if (!StringUtil.blank(accessionNumbers[i])) 				
 						logln ("Accession numbers " + accessionNumbers[i]);

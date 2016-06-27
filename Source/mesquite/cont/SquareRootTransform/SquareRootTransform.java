@@ -16,6 +16,7 @@ package mesquite.cont.SquareRootTransform;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -23,7 +24,7 @@ import mesquite.cont.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class SquareRootTransform extends ContDataAlterer {
+public class SquareRootTransform extends ContDataAlterer  implements AltererContinuousTransformations {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

@@ -36,10 +36,14 @@ public class ShellScriptRunner implements Commandable  {
 	String name;
 	String runningFilePath; //reconnect
 	String[] outputFilePaths; //reconnect
+	String stOutFilePath, stErrorFilePath;
+	static String stOutFileName = "StandardOutputFile";
+	static String stErrorFileName = "StandardErrorFile";
 	OutputFileProcessor outputFileProcessor; //reconnect
 	ShellScriptWatcher watcher; //reconnect
 	boolean visibleTerminal;
 	long[] lastModified;
+	MesquiteExternalProcess externalProcessManager;
 	
 	public ShellScriptRunner(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
 		this.scriptPath=scriptPath;
@@ -52,6 +56,8 @@ public class ShellScriptRunner implements Commandable  {
 		this.name = name;
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
+		stOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stOutFileName;
+		stErrorFilePath = MesquiteFile.getDirectoryPathFromFilePath(runningFilePath) + MesquiteFile.fileSeparator + stErrorFileName;
 		this.watcher = watcher;
 		this.visibleTerminal = visibleTerminal;
 	}
@@ -93,11 +99,33 @@ public class ShellScriptRunner implements Commandable  {
 		}
 		return null;
 	}	
-	
+	public boolean isVisibleTerminal() {
+		return visibleTerminal;
+	}
+	public void setVisibleTerminal(boolean visibleTerminal) {
+		this.visibleTerminal = visibleTerminal;
+	}
+	/*.................................................................................................................*/
+	public String getStdErr() {
+		return MesquiteFile.getFileContentsAsString(stErrorFilePath);
+	}
+	/*.................................................................................................................*/
+	public String getStdOut() {
+		return MesquiteFile.getFileContentsAsString(stOutFilePath);
+	}
+
 	/*.................................................................................................................*/
 	public void resetLastModified(int i){
 		if (i>=0 && i<lastModified.length)
 			lastModified[i]=0;
+	}
+	/*.................................................................................................................*/
+	public void stopExecution(){
+		if (proc!=null)
+			//if (MesquiteTrunk.isJavaVersionLessThan(1.8))
+				proc.destroy();
+			//else
+			//	proc.destroyForcibly();
 	}
 	/*.................................................................................................................*/
 	public void processOutputFiles(){
@@ -131,7 +159,10 @@ public class ShellScriptRunner implements Commandable  {
 				//+StringUtil.lineEnding()+ShellScriptUtil.getExitCommand()
 			}
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
-
+			externalProcessManager = new MesquiteExternalProcess(proc);
+			File outputFile = new File(stOutFilePath);
+			File errorFile = new File(stErrorFilePath);
+			externalProcessManager.startStandardOutputsReaders(outputFile, errorFile);
 		}
 		catch (IOException e){
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
@@ -149,11 +180,12 @@ public class ShellScriptRunner implements Commandable  {
 			LongArray.deassignArray(lastModified);
 		}
 
-		if (!StringUtil.blank(runningFilePath))   // is file at runningFilePath; watch for its disappearance
+		if (!StringUtil.blank(runningFilePath)) {  // is file at runningFilePath; watch for its disappearance
 			while (MesquiteFile.fileExists(runningFilePath) && stillGoing){
 				processOutputFiles();
 				try {
 					Thread.sleep(sleepTime);
+					//externalProcessManager.flushStandardOutputsReaders();
 				}
 				catch (InterruptedException e){
 					MesquiteMessage.notifyProgrammer("InterruptedException in shell script executed by " + name);
@@ -161,6 +193,13 @@ public class ShellScriptRunner implements Commandable  {
 				}
 				stillGoing = watcher == null || watcher.continueShellProcess(proc);
 			}
+		}/* else
+			externalProcessManager.endStandardOutputsReaders();*/
+		try {  
+			Thread.sleep(ShellScriptUtil.recoveryDelay * 1000);
+		}
+		catch (InterruptedException e){
+		}
 
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);

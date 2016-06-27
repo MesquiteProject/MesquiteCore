@@ -58,7 +58,6 @@ public class ManageTrees extends TreesManager {
 	Vector fillerThreads;  // for the TreeBlockThread and TreeMonitorThreads, to be able to shut them off as needed
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		treesVector = new ListableVector();
 		fillerThreads = new Vector();
 		blockListeners = new Vector();
 		setMenuToUse(MesquiteTrunk.treesMenu);
@@ -149,13 +148,14 @@ public class ManageTrees extends TreesManager {
 			Taxa taxa = (Taxa)obj;
 			taxa.removeListener(this);
 			int numSets = treesVector.size();
-			for (int i=0; i<numSets ; i++) {
+			for (int i=numSets-1; i>=0 ; i--) {
 				TreeVector treeBlock = (TreeVector)treesVector.elementAt( i);
 				if (treeBlock!=null && treeBlock.getTaxa()==taxa) {
 					getProject().removeFileElement(treeBlock);//must remove first, before disposing
+					treeBlock.dispose();
 				}
 			}
-
+/*
 			boolean someDeleted = true;
 			while (someDeleted){
 				someDeleted = false;
@@ -168,6 +168,7 @@ public class ManageTrees extends TreesManager {
 					}
 				}
 			}
+			*/
 			resetAllMenuBars();
 
 		}
@@ -196,6 +197,7 @@ public class ManageTrees extends TreesManager {
 	/** A method called immediately after the file has been read in.*/
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
+		treesVector = getProject().getTreeVectors(); //new ListableVector();
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "List of Trees", makeCommand("showTrees",  this), treesVector);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
@@ -219,6 +221,7 @@ public class ManageTrees extends TreesManager {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 
 		taxas = getProject().getTaxas();
+
 		taxas.addListener(this);
 		reviseListeners();
 		super.projectEstablished();
@@ -1047,7 +1050,7 @@ public class ManageTrees extends TreesManager {
 					file.writeLine("[written " + d.toString() + " by Mesquite " + s + " version " + getMesquiteVersion()  + getBuildVersion() + loc + "]"); 
 					file.write("BEGIN TREES");
 					file.write(endLine);
-					if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressLINK)) {
+					if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa)&& getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 						file.write("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 						file.write(endLine);
 					}
@@ -1216,6 +1219,18 @@ public class ManageTrees extends TreesManager {
 		return null;
 	}
 	/*.................................................................................................................*/
+	public TreeVector getTreeBlockByUniqueID(String uniqueID){  //this uses the temporary run-time id of the tree vector
+		if (treesVector==null || uniqueID == null)
+			return null;
+		
+		for (int j = 0; j< treesVector.size(); j++) {
+			TreeVector trees = (TreeVector)treesVector.elementAt(j);
+			if (uniqueID.equals(trees.getUniqueID()))
+				return trees;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	public TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i){  //OK for doomed
 		if (treesVector==null)
 			return null;
@@ -1229,6 +1244,19 @@ public class ManageTrees extends TreesManager {
 			}
 		}
 		return null;
+	}
+	/*.................................................................................................................*/
+	public int getTreeBlockNumber(Taxa taxa, MesquiteFile file, TreeVector trees){ //OK for doomed
+		int count = 0;
+		for (int j = 0; j< treesVector.size(); j++) {
+			TreeVector t = (TreeVector)treesVector.elementAt(j);
+			if ((file==null || t.getFile()==file) && (taxa == null || taxa.equals(t.getTaxa(), false)) && !t.isDoomed()) { 
+				if (t == trees)
+					return count;
+				count++;
+			}
+		}
+		return -1;
 	}
 	/*.................................................................................................................*/
 	public int getTreeBlockNumber(Taxa taxa, TreeVector trees){ //OK for doomed
@@ -1498,6 +1526,11 @@ public class ManageTrees extends TreesManager {
 				trees.setName(parser.getTokenNumber(2));
 				nameSet = true;
 			}
+			else if (commandName.equalsIgnoreCase("ID")) {
+				String id = parser.getTokenNumber(2);
+				if (!StringUtil.blank(id))
+					trees.setUniqueID(id);
+			}
 			else if (commandName.equalsIgnoreCase("LINK")) {
 				if ("taxa".equalsIgnoreCase(parser.getTokenNumber(2))) {
 					String taxaTitle = parser.getTokenNumber(4);
@@ -1594,7 +1627,10 @@ public class ManageTrees extends TreesManager {
 						thisTree.setTreeVector(trees);
 						trees.addElement(thisTree, false);
 						treeRead = true;
+						if (file.mrBayesReadingMode)
+							thisTree.setReadingMrBayesConTree(true);
 						thisTree.readTree(treeDescription);
+						thisTree.setReadingMrBayesConTree(false);
 						//thisTree.warnRetIfNeeded();
 						thisTree.setName(treeName);
 						if (whichType ==2) 
@@ -1649,11 +1685,13 @@ public class ManageTrees extends TreesManager {
 		if (trees.getAnnotation()!=null) 
 			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
 		block.append(endLine);
-		if (!NexusBlock.suppressTITLE){
+		if (!NexusBlock.suppressTITLESANDLINKS){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
 			block.append(endLine);
+			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
+			block.append(endLine);
 		}
-		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressLINK)) {
+		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressTITLESANDLINKS)) {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
 		}

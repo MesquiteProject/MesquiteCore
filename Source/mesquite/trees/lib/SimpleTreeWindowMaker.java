@@ -102,7 +102,8 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
-		simpleTreeWindow.setTree(tree, false);
+		if (simpleTreeWindow!=null)
+			simpleTreeWindow.setTree(tree, false);
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree, boolean suppressDrawing) {

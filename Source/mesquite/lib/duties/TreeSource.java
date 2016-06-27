@@ -54,10 +54,16 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
    	 /**Returns name of ith tree.*/
    	public abstract String getTreeNameString(Taxa taxa, int i);
    	
-  	 /**Returns name to show in windows etc. for tree block or source of trees.*/
-  	public String getTreesDescriptiveString(Taxa taxa){
-  		return getNameForMenuItem();
-  	}
+ 	 /**Returns name to show in windows etc. for tree block or source of trees.*/
+ 	public String getTreesDescriptiveString(Taxa taxa){
+ 		return getNameForMenuItem();
+ 	}
+ 	 /**Returns info to show in info panel etc. for tree block or source of trees.*/
+ 	public String getTreeSourceInfo(Taxa taxa){
+ 		String s= getName();
+ 		s+= "\n" + getParameters();
+ 		return s;
+ 	}
  	 /**Returns notes to show about these trees, e.g. in a footnote or text version.  For stored trees, this will include name and annotation of tree block.*/
  	public String getNotesAboutTrees(Taxa taxa){
  		return getNameAndParameters();

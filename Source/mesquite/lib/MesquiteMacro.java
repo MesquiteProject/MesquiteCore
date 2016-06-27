@@ -141,9 +141,9 @@ public class MesquiteMacro implements Listable, Explainable {
 			mmi.addMacro(macro);
 			if (target !=null) {
 				if (target.nameMatches("BasicTreeWindowMaker"))
-					target.alert("The macro saved may appear in Macros For Tree Window submenu of the Tree menu of the Tree Window or elsewhere, such as the Macros submenus of the Window or Analysis menu");
+					target.alert("The macro saved may appear in Macros For Tree Window submenu of the Tree or Display menu of the Tree Window or elsewhere, such as the Macros submenus of the Window or Analysis menu");
 				else
-					target.alert("The macro saved may appear in the Macros submenus of the Window or Analysis menus.");
+					target.alert("The macro saved may appear in the Macros submenus of the Window or Display or Analysis menus.");
 			}
 			MesquiteTrunk.mesquiteTrunk.resetAllMenuBars();
    	 }

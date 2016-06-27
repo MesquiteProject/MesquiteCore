@@ -24,7 +24,7 @@ import mesquite.lib.duties.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class Standardize extends ContDataAlterer {
+public class Standardize extends ContDataAlterer  implements AltererContinuousTransformations{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

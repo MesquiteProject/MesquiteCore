@@ -19,7 +19,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
 import mesquite.molec.lib.*;
 
-public class ReverseComplement extends DNADataAltererCon {
+public class ReverseComplement extends DNADataAltererCon  implements AltererAlignShift{
 
 
 	public boolean alterBlockInTaxon(CharacterData data, int icStart, int icEnd, int it) {

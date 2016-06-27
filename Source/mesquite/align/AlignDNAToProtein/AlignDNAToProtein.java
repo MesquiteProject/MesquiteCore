@@ -26,7 +26,7 @@ import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
 
 
 
-public class AlignDNAToProtein extends DNADataAltererCon {
+public class AlignDNAToProtein extends DNADataAltererCon  implements AltererAlignShift {
 	CharMatrixCoordIndep characterSourceTask;
 	boolean adjustCodonPositions = true;
 

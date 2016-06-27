@@ -85,7 +85,7 @@ public class ListTable extends MesquiteTable {
 			if (after >= getNumRows())
 				after = getNumRows();
 			if (window.getCurrentObject() !=null && window.getCurrentObject() instanceof Associable){
-					
+				
 				Bits b = getRowsSelected();
 				if (b.numBitsOn()==1 && b.firstBitOn() == after){
 					return;
@@ -136,6 +136,12 @@ public class ListTable extends MesquiteTable {
 				*/
 				synchronizeRowSelection(((Associable)window.getCurrentObject()));
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				if (window.owner.resetMenusOnNameChange()){
+					//MesquiteWindow.resetAllTitles();
+					window.owner.getProject().refreshProjectWindow();
+					window.owner.resetAllMenuBars();
+				}
+				// redo project panel if these are vectors of tree blocks or of character matrices  
 		 		repaintAll();
 	 		}
  		}

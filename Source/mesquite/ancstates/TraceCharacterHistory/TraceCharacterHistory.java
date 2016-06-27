@@ -479,7 +479,6 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			double[] qBins = queryBins(binBoundaries);
 			if (qBins != null)
 				binBoundaries = qBins;
-
 			resetAllTraceOperators();
 			parametersChanged();
 

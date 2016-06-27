@@ -182,21 +182,12 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		}
 		return temp;
 	}
-
+	ManagerAssistant lister = null;
 	/*.................................................................................................................*/
 	 public ManagerAssistant showTaxonGroupList(Object obj, String listerName){
-	 		//Check to see if already has lister for this
-/*	 		boolean found = false;
-		for (int i = 0; i<getNumberOfEmployees(); i++) {
-			Object e=getEmployeeVector().elementAt(i);
-			if (e instanceof ManagerAssistant)
-				if (((ManagerAssistant)e).showing(obj)) {
-					((ManagerAssistant)e).getModuleWindow().setVisible(true);
-					return ((ManagerAssistant)e);
-				}
-		}
-		*/
-		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
+	 		
+		 if (lister == null)
+			 lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
 			if (lister!=null) {
 				lister.showListWindow(obj);
 	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)

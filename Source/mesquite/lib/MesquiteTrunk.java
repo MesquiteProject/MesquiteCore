@@ -15,6 +15,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.trunk.ProjectTreeWindow;
@@ -107,7 +108,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static MesquiteMenuSpec fileMenu, editMenu, charactersMenu, treesMenu, analysisMenu, windowsMenu, helpMenu, utilitiesMenu;  
 	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu;
 	/** Commands belonging to special menu items owned by the trunk of Mesquite.  */
-	public MesquiteCommand newFileCommand, openFileCommand, openURLCommand, showLicenseCommand, resetMenusCommand,currentCommandCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
+	public MesquiteCommand newFileCommand, openFileCommand,  openURLCommand, showLicenseCommand, resetMenusCommand,currentCommandCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
 	public MesquiteSubmenuSpec openExternalSMS;
 	/** True if MesquiteModule hiring and firing should be logged.*/
 	public static boolean trackActivity = false;
@@ -181,6 +182,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Placed here so that MesquiteModules are able to request that the trunk module of Mesquite
 	open a new file */
 	public abstract MesquiteProject newProject(String pathname, int code, boolean actAsScriptingRegardless);
+	
+	
+	/*.................................................................................................................*/
+	public abstract MesquiteProject openOrImportFileHandler(String path, String completeArguments, Class importerSubclass);
 	/*.................................................................................................................*/
 	/** make a blank projects */
 	public static MesquiteProject makeBlankProject(){
@@ -257,55 +262,77 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean isJavaVersionLessThan(double queryVersion){
 		return getJavaVersionAsDouble() < queryVersion;
 	}
+	
+	/*.................................................................................................................*/
+	public static int getOSXVersion() {
+	    String osVersion = System.getProperty("os.version");
+	    String[] fragments = osVersion.split("\\.");
+
+	    // sanity check the "10." part of the version
+	    if (!fragments[0].equals("10")) return -1;
+	    if (fragments.length < 2) return -1;
+
+	    try {
+	        int minorVers = Integer.parseInt(fragments[1]);
+	        return minorVers;
+	    } catch (NumberFormatException e) {
+	    }
+	    return -1;
+	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXPanther(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.3")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3);
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXPanther33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.3")>=0) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3) && mrj.startsWith("3.3");
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXAfterJaguarRunning33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.0")<0 && System.getProperty("os.version").indexOf("10.1")<0 && System.getProperty("os.version").indexOf("10.2")<0) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=3) && mrj.startsWith("3.3");
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforePanther(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.0")>=0 || System.getProperty("os.version").indexOf("10.1")>=0 || System.getProperty("os.version").indexOf("10.2")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforeSnowLeopard(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.0")>=0 || System.getProperty("os.version").indexOf("10.1")>=0 || System.getProperty("os.version").indexOf("10.2")>=0|| System.getProperty("os.version").indexOf("10.3")>=0 || System.getProperty("os.version").indexOf("10.4")>=0 || System.getProperty("os.version").indexOf("10.5")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXLeopard(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.5")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==5);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXYosemite(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.10")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==10);
+	} 	
+	/*.................................................................................................................*/
+	public static boolean isMacOSXYosemiteOrLater(){
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=10);
+//		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.10")>=0 || System.getProperty("os.version").indexOf("10.11")>=0 || System.getProperty("os.version").indexOf("10.12")>=0|| System.getProperty("os.version").indexOf("10.13")>=0);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXJaguar(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.2")>=0) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==2) && mrj.startsWith("3.3");
 	}
 	public static boolean isLinux(){
 		return System.getProperty("os.name").indexOf("Linux")>=0 || System.getProperty("os.name").indexOf("linux")>=0 || System.getProperty("os.name").indexOf("LINUX")>=0;

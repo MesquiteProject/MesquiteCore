@@ -93,6 +93,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Show Subchoices in Module Dialogs", makeCommand("toggleSubChoicesOnInDialogs",  this), subChoicesOnInDialogs);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Stored Characters/Matrices by Default", makeCommand("toggleStoredAsDefault",  this), CharacterSource.storedAsDefault);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Calculations if Matrices Used are Deleted (req. restart)", makeCommand("toggleCloseIfMatrixDeleted",  this), CharacterSource.closeIfMatrixDeleted);
+		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Delay on Script File Recovery...", makeCommand("setDelayScriptFileRecovery",  this));
 //		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Close Tree Window if Tree Block Used is Deleted", makeCommand("toggleCloseIfTreeBlockDeleted",  this), TreeSource.closeIfTreeBlockDeleted);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
 		if (!MesquiteTrunk.isMacOSX())
@@ -410,6 +411,19 @@ public class Defaults extends MesquiteInit  {
 			if (!MesquiteInteger.isCombinable(numLogs) || numLogs == MesquiteTrunk.numPrevLogs)
 				return null;
 			MesquiteTrunk.numPrevLogs = numLogs;
+			MesquiteTrunk.mesquiteTrunk.storePreferences();
+
+		}
+		else if (checker.compare(getClass(), "Sets the delay in recovery of files during scripting external programs (e.g., alignment, tree inference)", "[seconds]", commandName, "setDelayScriptFileRecovery")) {
+			int delay = MesquiteInteger.fromString(arguments);
+			String helpString = "When Mesquite uses external programs for alignment or tree inference, the results are sometimes not recovered properly.  "
+					+"This has been seen on Linux. By introducing a delay of a few seconds, the asynchronous file writing may have time to complete, "
+					+" allowing the results to be recovered properly.";
+			if (!MesquiteInteger.isCombinable(delay))
+				delay = MesquiteInteger.queryInteger(containerOfModule(), "Seconds delay", "Delay before Mesquite attempts to recover results from external programs (in seconds)", "", helpString, ShellScriptUtil.recoveryDelay, 0, 100);
+			if (!MesquiteInteger.isCombinable(delay) || delay == ShellScriptUtil.recoveryDelay)
+				return null;
+			ShellScriptUtil.recoveryDelay = delay;
 			MesquiteTrunk.mesquiteTrunk.storePreferences();
 
 		}

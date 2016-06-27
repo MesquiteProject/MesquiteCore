@@ -47,7 +47,7 @@ public class aAlignIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
 	public String getPackageCitation(){
-		return "Maddison, D.R., T.J. Wheeler, and W.P. Maddison. 2014.  Align: A Mesquite package for aligning sequence data. Version " + getPackageVersion();
+		return "Maddison, D.R., T.J. Wheeler, and W.P. Maddison. 2016.  Align: A Mesquite package for aligning sequence data. Version " + getPackageVersion();
 	}
 	/*.................................................................................................................*/
 	/** Returns whether there is a splash banner*/
@@ -56,11 +56,11 @@ public class aAlignIntro extends PackageIntro {
 	}
 	/*.................................................................................................................*/
 	 public String getPackageVersion() {
-		return "1.70";
+		return "1.80";
  	 }
 		/*.................................................................................................................*/
  	 public int getPackageVersionInt() {
-		return 170;
+		return 180;
   	 }
   	/*.................................................................................................................*/
   	/** Returns the URL for the web page about the package*/

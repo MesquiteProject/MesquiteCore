@@ -75,6 +75,7 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	boolean prerelease = true;
 	boolean isPackageIntro = false;
 	boolean hideable = true;
+	boolean loadModule = true;
 	int versionOfFirstRelease = 0;
 	boolean def = false;
 	int numStarts = 0;
@@ -105,6 +106,7 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		this.nameForMenuItem = mb.getNameForMenuItem(); //�
  		this.authors =mb.getAuthors();//�
  		this.version =mb.getVersion();//�
+ 		this.loadModule = mb.loadModule();
  		
  		this.versionOfFirstRelease = mb.getVersionOfFirstRelease();
  		this.explanation =mb.getExplanation();//�
@@ -250,6 +252,10 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	public String getPackageDateReleased(){
  		return packageDateReleased;
  	}
+	public boolean loadModule(){
+ 		return loadModule;
+ 	}
+
 	public boolean isBuiltInPackage(){
  		return builtInPackage;
  	}

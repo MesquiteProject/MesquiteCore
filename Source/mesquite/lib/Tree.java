@@ -81,6 +81,7 @@ public interface Tree extends Listable {
 	public  int firstLegalDaughterOfNode(int node, int[] legality);
 	public  int nextLegalSisterOfNode(int node, int[] legality);
 	public  int lastLegalDaughterOfNode(int node, int[] legality);
+	public  int getLegalRoot(int[] legality);
 	/** Returns the number of parents of node.*/
 	public int numberOfParentsOfNode(int node);
 	/** Returns the indexTH parent of node.*/
@@ -198,6 +199,8 @@ public interface Tree extends Listable {
 	 * are ignored.*/
 	public int mrcaTaxons(int[] taxons, boolean ignoreMissing);
 	/*End new code added Aug.14.07 oliver*/
+	/** Returns most recent common ancestor of selected taxa.*/
+	public int mrcaSelected(); 
 	/** Returns the closest ancestor that has more than one daughter.*/
 	public  int branchingAncestor(int node);
 	/** Returns the closest descendant that has more than one daughter, or is terminal.*/

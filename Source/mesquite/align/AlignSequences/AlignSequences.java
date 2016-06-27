@@ -19,6 +19,7 @@ import java.lang.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -27,19 +28,24 @@ import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public class AlignSequences extends MolecDataEditorInit {
+public class AlignSequences extends MolecDataEditorInit implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
 		"The sequence aligner is chosen in the Align Multiple Sequences submenu of the Matrix menu");
 	}
-	static boolean separateThreadDefault = false;
-	boolean separateThread = separateThreadDefault;
+//	boolean separateThread = AlignMultipleSequencesMachine.separateThread;
 	MolecularData data ;
 	MultipleSequenceAligner aligner;
+	boolean jobDone = false;
+	boolean separateThread = false;
+	
+	AlignMultipleSequencesMachine alignmentMachine;
 
 	MesquiteTable table;
 
 	MesquiteSubmenuSpec mss= null;
+	
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		mss = addSubmenu(null, "Align Multiple Sequences", makeCommand("doAlign",  this));
@@ -72,7 +78,7 @@ public class AlignSequences extends MolecDataEditorInit {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAlign")) {
 			if (table!=null && data !=null){
-				if (data.getEditorInhibition()){
+				if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
@@ -94,74 +100,25 @@ public class AlignSequences extends MolecDataEditorInit {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	/*.................................................................................................................*/
-	public boolean integrateAlignment(long[][] alignedMatrix, MolecularData data, int icStart, int icEnd, int itStart, int itEnd){
-		if (alignedMatrix == null || data == null)
-			return false;
-		getProject().incrementProjectWindowSuppression();
-		boolean success = AlignUtil.integrateAlignment(alignedMatrix, data,  icStart,  icEnd,  itStart,  itEnd);
-		
-		/*
-		AlignUtil util = new AlignUtil();
-		Rectangle problem = null;
-		//alignedMatrix.setName("Aligned (" + data.getName() + ")");
-		boolean wasSel;
-		if (data.anySelected()) {
-			wasSel = true;
-		}
-		else {
-			wasSel = false;
-		}
-		logln("Alignment for " + (icEnd-icStart+1) + " sites; aligned to " + alignedMatrix.length + " sites.");
-		problem = util.forceAlignment(data, icStart, icEnd, itStart, itEnd, 0, alignedMatrix);
-		if (wasSel) {
-			data.deselectAll();
-			int numCharsOrig = icEnd-icStart+1;
-			if (alignedMatrix.length>numCharsOrig)
-				numCharsOrig = alignedMatrix.length;
-			for (int i = icStart; i<icStart + numCharsOrig; i++)
-				data.setSelected(i, true);
-
-		}
-		
-	*/
-		getProject().decrementProjectWindowSuppression();
-		if (separateThread)
+	
+	public void calculationCompleted (Object obj) {
+		if (obj.equals(alignmentMachine))
 			fireEmployee(aligner);
-		return success;
-	}	
+	}
+	public void setSeparateThread(boolean separateThread) {
+		this.separateThread = separateThread;
+	}
+
+/*
+	public void setSeparateThread(boolean separateThread){
+		this.separateThread=separateThread;
+	}
+*/
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public boolean alterData(CharacterData data, MesquiteTable table){
-		this.data = (MolecularData)data;
-		//to work, either nothing is selected (in which case it works on whole matrix), or 
-		// whole characters are selected (and they must be contiguous, AND more than one character
-//		if (table.anyCellSelectedAnyWay() && (!this.data.contiguousSelection() || !this.data.anySelected() || this.data.numberSelected()<=1)) {
-		if (table.anyCellSelectedAnyWay() && !table.contiguousColumnsSelected()) {
-			if (!MesquiteThread.isScripting()) {
-				if (AlertDialog.query(containerOfModule(), "Align entire matrix?", "Some data are currently selected, but not a block of data that can be aligned by Mesquite.  Data can be aligned only for the whole matrix or for a contiguous set of selected characters. If you wish to align only part of the matrix, then press Cancel and select a contiguous set of whole characters. ", "Align entire matrix", "Cancel"))
-					table.deselectAll();
-				else
-					return false;
-			}
-			else {
-				discreetAlert( "Data can be aligned only for the whole matrix or for a contiguous set of selected characters.  Please make sure that nothing in the matrix is selected, or that a contiguous set of characters (sites) is selected.");
-				return false;
-			}
-		}
-		//firstRowWithSelectedCell() != 
-		if (	aligner.permitSeparateThread() && (separateThread= !AlertDialog.query(containerOfModule(), "Separate Thread?", "Run on separate thread? (Beware! Don't close window before done)","No", "Separate"))){
-			AlignThread alignThread = new AlignThread(this, aligner, this.data, this.table);
-			alignThread.separateThread = true;
-			alignThread.start();
-		}
-		else {
-			AlignThread alignThread = new AlignThread(this, aligner, this.data, this.table);
-			alignThread.separateThread = false;
-			alignThread.run();  
-			return true;
-		}
-		return false;
+		alignmentMachine = new AlignMultipleSequencesMachine(this,this, this,aligner);
+		return alignmentMachine.alignData(data,table);
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation() {
@@ -183,6 +140,8 @@ public class AlignSequences extends MolecDataEditorInit {
 
 
 }
+
+/*
 
 class AlignThread extends Thread {
 	AlignSequences ownerModule;
@@ -228,4 +187,6 @@ class AlignThread extends Thread {
 
 	}
 }
+
+*/
 

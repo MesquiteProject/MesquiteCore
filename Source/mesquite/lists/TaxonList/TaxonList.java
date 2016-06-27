@@ -141,6 +141,10 @@ public class TaxonList extends ListModule {
 		return "Taxa";
 	}
 	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return true;
 	}

@@ -46,6 +46,10 @@ public class TaxonGroupList extends ListModule {
 		super.endJob();
 	}
 	public void showListWindow(Object obj){
+		if (getModuleWindow() != null){
+			((TaxonGroupListWindow)getModuleWindow()).setObject(groups);
+			return;
+		}
 		setModuleWindow(new TaxonGroupListWindow(this));
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 //		groups.addListener(this);
@@ -119,6 +123,10 @@ public class TaxonGroupList extends ListModule {
 			}
 		}
 		super.changed(caller, obj, notification);
+	}
+	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean rowsMovable(){

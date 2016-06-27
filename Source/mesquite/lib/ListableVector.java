@@ -147,6 +147,9 @@ public class ListableVector extends FileElement implements StringLister, Command
 		return temp;
 	}
 	public String getUniqueName(String base){
+		return getUniqueName(base, "");
+	}
+	public String getUniqueName(String base, String separator){
 		if (size()==0)
 			return base;
 		else {
@@ -157,7 +160,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 				if (count==1)
 					candidate = base;
 				else
-					candidate = base + count;
+					candidate = base + separator + count;
 				if (getElementIgnoreCase(candidate)==null)
 					return candidate;
 				count++;

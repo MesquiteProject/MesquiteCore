@@ -41,8 +41,8 @@ public class DuplicateTreeBlocks extends TreeBlockListUtility  {
    	}
    	/** Called to operate on the tree blocks.  Returns true if tree blocks altered*/
    	public boolean operateOnTreeBlocks(TreeVector[] blocks){
-   		if (blocks == null || blocks.length <=1 || blocks[0]==null) {
-   			alert("Sorry, no tree blocks are were chosen or available for duplication.");
+   		if (blocks == null || blocks.length <1 || blocks[0]==null) {
+   			alert("Sorry, no tree blocks were chosen or available for duplication.");
    			return false;
    		}
 		incrementMenuResetSuppression();

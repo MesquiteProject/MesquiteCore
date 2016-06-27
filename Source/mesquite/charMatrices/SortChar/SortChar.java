@@ -18,6 +18,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
@@ -54,7 +55,25 @@ public class SortChar extends DataWindowAssistantI {
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = table;
 		this.data = data;
-		charSortTool.setEnabled(data.canMoveChars());
+		data.addListener(this);
+		inhibitionChanged();
+	}
+	/* ................................................................................................................. */
+	void inhibitionChanged(){
+		if (charSortTool!=null && data!=null)
+			charSortTool.setEnabled(!data.isEditInhibited() && data.canMoveChars());
+	}
+	/* ................................................................................................................. */
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
+	public void changed(Object caller, Object obj, Notification notification) {
+		int code = Notification.getCode(notification);
+		if (obj instanceof CharacterData && (CharacterData) obj == data) {
+			if (code == MesquiteListener.LOCK_CHANGED) {
+				inhibitionChanged();
+			}
+		}
+		table.setMessage(data.getCellContentsDescription());
+		super.changed(caller, obj, notification);
 	}
 	/*.................................................................................................................*/
   	 boolean compare(boolean greaterThan, String one, String two){
@@ -78,7 +97,7 @@ public class SortChar extends DataWindowAssistantI {
     	 	if (checker.compare(this.getClass(),  "Touches on a cell with the sort characters tool", "[column touched][row touched]", commandName, "charSortTouch")) {
 	   	 		if (data == null)
 	   	 			return null;
-	    	 	if (data.getEditorInhibition()){
+	    	 	if (data.isEditInhibited()){
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 	    	 		return null;
 	    	 	}

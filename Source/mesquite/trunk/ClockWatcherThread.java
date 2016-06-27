@@ -51,10 +51,10 @@ public class ClockWatcherThread extends Thread {
 				Thread.currentThread().interrupt();
 			}
 			MesquiteTrunk.checkForResetCheckMenuItems();
-			if (sleptLong || sleepCount % (sleep/catnap) == 0) {
+			if (sleptLong || sleepCount % (sleep/catnap) == 1) {
 				MesquiteThread.surveyDoomedIndicators();
-				//if (MesquiteTrunk.isMacOSXJaguar())
-				//	MesquiteThread.surveyNewWindows();
+				if (MesquiteTrunk.isMacOSX())
+					MesquiteThread.surveyNewWindows();
 			}
 			MesquiteThread[] mThreads = new MesquiteThread[MesquiteThread.threads.size()];
 			try {
@@ -63,8 +63,11 @@ public class ClockWatcherThread extends Thread {
 			}
 			catch (Exception e){
 			}
-
-
+/*if (KeyboardFocusManager.getCurrentKeyboardFocusManager() != null && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null){
+	System.out.println("" + KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getClass());
+System.out.println("xxx " + MesquiteWindow.windowOfItem(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()));
+}
+*/
 			sleepTime = sleep;
 			sleepCount++;
 			for (int i=0; i<mThreads.length && mThreads[i]!=null; i++){  //go through current threads
