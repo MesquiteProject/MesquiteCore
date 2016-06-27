@@ -603,7 +603,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		addMenuItem(helpMenu, "-", null);
 		addMenuItem(helpMenu, "Active Module Tree", makeCommand("showEmployeeTree",  this));
-		addMenuItem(helpMenu, "Show web page of all modules", makeCommand("showWebPageAllModules",  this));
+		addMenuItem(helpMenu, "Show Web Page of All Modules", makeCommand("showWebPageAllModules",  this));
 		addMenuItem(helpMenu, "List active modules", makeCommand("dumpEmployeeTree",  this));
 		addMenuItem(helpMenu, "List prerelease modules", makeCommand("dumpSubstantivePrerelease",  this));
 		//addMenuItem(helpMenu, "List ALL prerelease modules", makeCommand("dumpAllPrerelease",  this)); //delete this before release
