@@ -40,7 +40,7 @@ public class InterpretPhylipDNA extends InterpretPhylip {
    		}
 	}
 	/*.................................................................................................................*/
-	public String preferredDataFileExtension() {  //Debugg.println DAvid: is this OK?
+	public String preferredDataFileExtension() {  
 		return "phy";
 	}
 /*.................................................................................................................*/
