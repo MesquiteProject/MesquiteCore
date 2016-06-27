@@ -1515,7 +1515,6 @@ public class Mesquite extends MesquiteTrunk
 			helpSearchManager.searchData(s, window);
 	}
 	ProgressIndicator omp = null;
-	public static boolean documentationComposed = false;
 	/* ...................................................... */
 	/**
 	 * Composes and shows a web page listing all of the modules.
@@ -1524,33 +1523,43 @@ public class Mesquite extends MesquiteTrunk
 		omp = new ProgressIndicator(null, "Composing web page of modules", MesquiteTrunk.mesquiteModulesInfoVector.size(), false);
 		omp.start();
 		omp.setCurrentValue(0);
-		documentationComposed = true;
 
 		StringBuffer sb = new StringBuffer();
 		int count=0;
 		String prevPackageName="";
-		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
-			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
-			if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
-				prevPackageName=mmi.getPackageName();
-				if (prevPackageName!=null){
-					sb.append("<hr>");
-					String vers = mmi.getVersion();
-					if (vers == null)
-						vers = "";
-					if (StringUtil.blank(vers))
-						sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
-					else
-						sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
-				}
-			}
-			sb.append("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
-			count++;
-		}
-//		composeModuleListing();
-//		composePuppeteerWebPage();
-
-		Vector special = CommandChecker.commandsFromRegisteredClasses();
+	    Vector<String> vector = new Vector<String>();
+	    
+	    for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+	    	MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+	    	if (mmi.loadModule()) {
+	    		if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
+	    			prevPackageName=mmi.getPackageName();
+	    			if (prevPackageName!=null){
+	    				Collections.sort(vector);
+	    				for(int j=0; j < vector.size(); j++){
+	    					sb.append(vector.get(j));
+	    				}
+	    				vector.clear();
+	    				sb.append("<hr>");
+	    				String vers = mmi.getVersion();
+	    				if (vers == null)
+	    					vers = "";
+	    				if (StringUtil.blank(vers))
+	    					sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
+	    				else
+	    					sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
+	    			}
+	    		}
+	    		vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
+	    		count++;
+	    	}
+	    } 
+	    if (!vector.isEmpty()) {
+	    	Collections.sort(vector);
+	    	for(int j=0; j < vector.size(); j++){
+	    		sb.append(vector.get(j));
+	    	}
+	    }
 		String allModulesHTML = " <title>Modules in Mesquite</title>";
 		allModulesHTML += "<body>";
 		allModulesHTML += "<h1>List of All Installed Modules in Mesquite</h1>";
