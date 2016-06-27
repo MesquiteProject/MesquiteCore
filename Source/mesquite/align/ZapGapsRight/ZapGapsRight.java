@@ -53,9 +53,11 @@ public class ZapGapsRight extends MolecularDataAlterer  implements AltererAlignS
 		if (table == null || !table.anythingSelected()){
 			for (int it = 0; it<data.getNumTaxa(); it++)
 				data.collapseGapsInCellBlockRight(it, 0, data.getNumChars()-1, false);
+			found = true;
 		}
 		else while (table.nextSingleRowBlockSelected(row,firstColumn,lastColumn)) {
 				data.collapseGapsInCellBlockRight(row.getValue(), firstColumn.getValue(), lastColumn.getValue(), false);
+				found = true;
 		}
 		data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED));
 		data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));

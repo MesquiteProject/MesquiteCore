@@ -417,7 +417,6 @@ public class ProcessDataFilesLib extends GeneralFileMaker {
 		writingFile.setPath(directoryPath+MesquiteFile.fileSeparator+"temp.nex");
 		processDirectory(directoryPath);
 
-		fireEmployee(importer);  //why would you fire this??? Debugg.println
 		if (success){
 			project.autosave = true;
 			return project;

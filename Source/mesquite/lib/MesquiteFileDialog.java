@@ -94,15 +94,13 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			s += " (" + getDirectory() + ")";
 		return s;
 	}
-
+/*
 	public void setSize(int w, int h){
 		super.setSize(w, h);
 		if (titleWindow != null){
 			Point xy = this.getLocation();
 			int ww = this.getWidth();
 			titleWindow.setLocation(xy.x, xy.y-30);
-			Debugg.println("location " + xy);
-			Debugg.println("width " + ww);
 			titleWindow.setSize(ww, twHeight);
 		}
 	}
@@ -112,8 +110,6 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			Point xy = this.getLocation();
 			int ww = this.getWidth();
 			titleWindow.setLocation(xy.x, xy.y-30);
-			Debugg.println("location " + xy);
-			Debugg.println("width " + ww);
 			titleWindow.setSize(ww, twHeight);
 		}
 	}
@@ -123,12 +119,10 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			Point xy = this.getLocation();
 			int ww = this.getWidth();
 			titleWindow.setLocation(xy.x, xy.y-30);
-			Debugg.println("location " + xy);
-			Debugg.println("width " + ww);
 			titleWindow.setSize(ww, twHeight);
 		}
 	}
-
+*/
 
 	boolean waiting = false;
 	public void setVisible(boolean vis){

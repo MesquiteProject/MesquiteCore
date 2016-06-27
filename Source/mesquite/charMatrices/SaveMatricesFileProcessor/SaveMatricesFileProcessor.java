@@ -190,8 +190,6 @@ public class SaveMatricesFileProcessor extends FileProcessor {
 				}
 				
 				path = path + "." + exporterTask.preferredDataFileExtension(); 
-				Debugg.println("exporterTask " + exporterTask.getName());
-				Debugg.println("exporterTask.preferredDataFileExtension() " + exporterTask.preferredDataFileExtension());
 				if (!StringUtil.blank(exporterTask.preferredDataFileExtension()) && !fileName.endsWith(exporterTask.preferredDataFileExtension()))
 					fileName = fileName + "." + exporterTask.preferredDataFileExtension();
 				MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(path), CommandChecker.defaultChecker); //TODO: never scripting???
