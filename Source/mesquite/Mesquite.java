@@ -38,11 +38,11 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.1.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.1+.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.1";
+		return "3.1+";
 	}
 
 	/*.................................................................................................................*/
@@ -67,7 +67,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
