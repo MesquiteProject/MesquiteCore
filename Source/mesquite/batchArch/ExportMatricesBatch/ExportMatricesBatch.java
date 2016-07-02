@@ -242,9 +242,15 @@ public class ExportMatricesBatch extends FileInit  {
 				progIndicator.start();
 				progIndicator.setCurrentValue(0);
 			}
-				
+			
+			StringBuffer parameterInfoBuffer = new StringBuffer();
+			parameterInfoBuffer.append("Mesquite version " + getMesquiteVersion() +", build " + getBuildVersion()+"\n");
+			parameterInfoBuffer.append("Time of creation of files:" + StringUtil.getDateTime()+"\n\n");
+			
+			
 			template.composeAccessoryFilesStart(num, baseName, basePath);
 			boolean usePrevious = false;
+			boolean parametersWritten = false;
 			boolean logVerbose = true;
 			CharMatrixManager manager = null;
 			TreeVector trees = null;
@@ -311,6 +317,10 @@ public class ExportMatricesBatch extends FileInit  {
 						template.composeAccessoryFilesReplicate(iMatrix, characterSourceTask.getMatrixName(taxa, iMatrix), 0, baseName, basePath);
 						manager.setLogVerbose(logVerbose);
 					}
+					if (!parametersWritten) {
+						parameterInfoBuffer.append(characterSourceTask.accumulateParameters("\n"));
+						parametersWritten=true;
+					}
 					MesquiteThread.setSuppressAllProgressIndicatorsCurrentThread(false);
 					if (progIndicator!=null) {
 						progIndicator.setCurrentValue(iMatrix+1);
@@ -335,6 +345,8 @@ public class ExportMatricesBatch extends FileInit  {
 				}
 			}
 			timer.end();
+			String analysisFilePath = MesquiteFile.getUniqueModifiedFileName(basePath+".AnalysisInfo", "txt");
+			MesquiteFile.putFileContents(analysisFilePath, parameterInfoBuffer.toString(), true);
 			if (trees !=null){
 				if (saveBasisTrees){
 					trees.addToFile(tempDataFile, getProject(), null);
