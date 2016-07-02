@@ -3364,6 +3364,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 
 	/*.................................................................................................................*/
+	/** gets the get titles for tabbed summary data about matrix*/
+	public String getTabbedTitles() {
+		return "Name\tNumber of Taxa\tNumber of Characters\tA\tC\tG\tT";
+	}
+	/*.................................................................................................................*/
+	/** gets the get  tabbed summary data about matrix*/
+	public String getTabbedSummary() {
+		return getName()+ "\t"+getNumTaxa() + "\t" + getNumChars();
+	}
+	/*.................................................................................................................*/
 	/** gets the explanation of this matrix*/
 	public String getExplanation() {
 		if (taxa == null)

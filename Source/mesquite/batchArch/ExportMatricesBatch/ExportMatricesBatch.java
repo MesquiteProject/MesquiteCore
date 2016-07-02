@@ -246,6 +246,7 @@ public class ExportMatricesBatch extends FileInit  {
 			StringBuffer parameterInfoBuffer = new StringBuffer();
 			parameterInfoBuffer.append("Mesquite version " + getMesquiteVersion() +", build " + getBuildVersion()+"\n");
 			parameterInfoBuffer.append("Time of creation of files:" + StringUtil.getDateTime()+"\n\n");
+			StringBuffer matrixInfoBuffer = new StringBuffer();
 			
 			
 			template.composeAccessoryFilesStart(num, baseName, basePath);
@@ -304,7 +305,10 @@ public class ExportMatricesBatch extends FileInit  {
 						logln(newMatrix.getExplanation() + "\n");	
 						newMatrix.addToFile(tempDataFile, getProject(), null);
 				 	 	tempDataFile.setPath(basePath + iMatrix + template.fileExtension(template.matrixExportFormat,coord, true));
-				 	 	
+						if (!parametersWritten) {
+							matrixInfoBuffer.append("file\t"+newMatrix.getTabbedTitles()+"\n");
+						}
+						matrixInfoBuffer.append(baseName + iMatrix+"\t"+newMatrix.getTabbedSummary()+"\n");
 				 	 	
 				 	 	saveFile(template.matrixExportFormat, tempDataFile, baseName + iMatrix,directoryPath, usePrevious, coord); 
 				 	 	newMatrix.deleteMe(false);
@@ -321,6 +325,7 @@ public class ExportMatricesBatch extends FileInit  {
 						parameterInfoBuffer.append(characterSourceTask.accumulateParameters("\n"));
 						parametersWritten=true;
 					}
+
 					MesquiteThread.setSuppressAllProgressIndicatorsCurrentThread(false);
 					if (progIndicator!=null) {
 						progIndicator.setCurrentValue(iMatrix+1);
@@ -347,6 +352,10 @@ public class ExportMatricesBatch extends FileInit  {
 			timer.end();
 			String analysisFilePath = MesquiteFile.getUniqueModifiedFileName(basePath+".AnalysisInfo", "txt");
 			MesquiteFile.putFileContents(analysisFilePath, parameterInfoBuffer.toString(), true);
+			if (includeMatrices && manager!=null) {
+				String matrixSummaryFilePath = MesquiteFile.getUniqueModifiedFileName(basePath+".MatrixSummaries", "txt");
+				MesquiteFile.putFileContents(matrixSummaryFilePath, matrixInfoBuffer.toString(), true);
+			}
 			if (trees !=null){
 				if (saveBasisTrees){
 					trees.addToFile(tempDataFile, getProject(), null);
