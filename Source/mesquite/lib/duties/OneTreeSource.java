@@ -40,6 +40,8 @@ public abstract class OneTreeSource extends MesquiteModule  {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract void initialize(Taxa taxa);
 
+   	public abstract Tree getTree(Taxa taxa, String explanationForUser);
+   	
    	public abstract Tree getTree(Taxa taxa);
 	/*.................................................................................................................*/
   	public abstract void setPreferredTaxa(Taxa taxa);
