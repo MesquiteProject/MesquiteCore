@@ -76,8 +76,12 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 
 			filter = true;
 		}
-		catch (IllegalAccessException e){alert("iae 17m"); }
-		catch (InstantiationException e){alert("ie 17m"); }
+		catch (IllegalAccessException e){
+			alert("iae 17m"); 
+		}
+		catch (InstantiationException e){
+			alert("ie 17m"); 
+		}
 		if (filter && mss != null)
 			mss.setListableFilter(cs.getCharacterDataClass());
 	}
