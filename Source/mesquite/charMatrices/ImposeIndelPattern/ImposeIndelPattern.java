@@ -28,7 +28,7 @@ import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
 import mesquite.charMatrices.lib.*;
 
 /* ======================================================================== */
-public class ImposeIndelPattern extends DataAlterer {
+public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift {
 	CharMatrixCoordIndep characterSourceTask;
 	boolean adjustCodonPositions = true;
 
