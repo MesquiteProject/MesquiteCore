@@ -199,7 +199,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 	  			((Showable)context).showMe();
 	  		String s = "The current tree (for " + employer.getName() + ") will be obtained from the window " + ((MesquiteModule)context).containerOfModule().getName();
 	  		if (StringUtil.notEmpty(explanationForUser))
-	  			s+="\n("+explanationForUser+")";
+	  			s+="\n\n("+explanationForUser+")";
 	  		s+= "\n\nIs this OK?";
 			if (AlertDialog.query(containerOfModule(), "Query", s, "Yes", "No"))
 	  			return context;
@@ -255,6 +255,14 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
    			return;
    		context = queryFindContext(taxa, null);
    	}
+  	 /** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
+   	happening at inopportune times (e.g., while a long chart calculation is in mid-progress).  This version allows one to supply an explanation to the user*/
+  	 public void initialize(Taxa taxa, String explanationForUser){
+    		if (taxa==null)
+       			return;
+       		context = queryFindContext(taxa, explanationForUser);
+  	 }
+
 	public void broadCastAssignedID(MesquiteModule module, String assignedID){
   		if (contextID !=null && contextID.equals(assignedID))
   			parametersChanged();
@@ -274,6 +282,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
    			return null;
    		if (doomed)
    			return null;
+   		
    		//if context is supplying tree with other Taxa, need to look for other contexts!
   		if (contextID !=null) {
   			/*try to find id'd context (looking through modules for their assignedIDString.

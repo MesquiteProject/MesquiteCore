@@ -176,7 +176,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
     	 	}
     	 	else if (checker.compare(this.getClass(), "Returns the current tree", null, commandName, "getTree")) {
     	 		if (lastTree==null && lastTaxa!=null && treeTask!=null) {
-				return treeTask.getTree(lastTaxa);
+				return treeTask.getTree(lastTaxa,"This will be the tree on which character evolution is simulated");
     	 		}
     	 		else 
     	 			return lastTree;
@@ -223,7 +223,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 		if (simulatorTask.isDoomed())
 				return;
 		initialized = true;
-		treeTask.initialize(taxa);
+		treeTask.initialize(taxa, "This will be the tree on which character evolution is simulated");
 		simulatorTask.initialize(taxa);
 		if (!numCharsSet){
 			numChars = simulatorTask.getMaximumNumChars(taxa); //not quite right; should have separate maxnum
@@ -277,7 +277,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 		catch (IllegalAccessException e){alert("iae getM"); return null; }
 		catch (InstantiationException e){alert("ie getM");  return null;}
 		
-		Tree tree = treeTask.getTree(taxa);
+		Tree tree = treeTask.getTree(taxa, "This will be the tree on which character evolution is simulated");
 		lastTree = tree;
 		CharacterDistribution states = null;
 		
