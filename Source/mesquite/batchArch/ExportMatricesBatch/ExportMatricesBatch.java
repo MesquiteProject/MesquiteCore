@@ -39,6 +39,7 @@ public class ExportMatricesBatch extends FileInit  {
 	CharMatrixSource characterSourceTask;
 	String directoryPath, baseName;
 	boolean writeOnlySelectedTaxa=false;
+	boolean writeOnlyTaxaWithData=true;
 
 	
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -96,7 +97,8 @@ public class ExportMatricesBatch extends FileInit  {
  	 	return temp;
   	 }
   	 
- 	Checkbox writeOnlySelectedTaxaCheckBox = null;
+  	Checkbox writeOnlySelectedTaxaCheckBox = null;
+ 	Checkbox writeOnlyTaxaWithDataCheckBox = null;
 
 	/*.................................................................................................................*/
 	public Object exportMatricesAndBatchFiles (String arguments,  boolean includeMatrices) {
@@ -168,6 +170,7 @@ public class ExportMatricesBatch extends FileInit  {
 			if (taxa.anySelected()) {
 				 writeOnlySelectedTaxaCheckBox = dialog.addCheckBox("include data only for selected taxa", writeOnlySelectedTaxa);
 			}
+			// writeOnlyTaxaWithDataCheckBox = dialog.addCheckBox("include data only for taxa with data", writeOnlyTaxaWithData);
 			dialog.completeAndShowDialog();
 			
 			
@@ -189,6 +192,8 @@ public class ExportMatricesBatch extends FileInit  {
 
 			if (writeOnlySelectedTaxaCheckBox!=null)
 				writeOnlySelectedTaxa= writeOnlySelectedTaxaCheckBox.getState();
+			if (writeOnlyTaxaWithDataCheckBox!=null)
+				writeOnlyTaxaWithData= writeOnlyTaxaWithDataCheckBox.getState();
 
 				dialog.dispose();
 			dialog = null;
