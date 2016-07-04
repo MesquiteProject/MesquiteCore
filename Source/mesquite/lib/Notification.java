@@ -125,7 +125,7 @@ public class Notification implements Identifiable {
 		else
 			return n.getSubcodes();
 	}
-	public static boolean appearsCosmetic(Notification n){
+	public static boolean appearsCosmetic(Notification n){  //WAYNECHECK: should this also have LOCK_CHANGED?
 		if (n==null)
 			return false;
 		else

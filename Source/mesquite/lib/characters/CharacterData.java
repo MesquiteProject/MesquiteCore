@@ -25,6 +25,7 @@ import javax.swing.text.JTextComponent;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lists.lib.ListModule;
 import mesquite.lib.table.*;
 
@@ -3874,6 +3875,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	 * unassigned + assigned or inapplicable + assigned */
 	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
 		return mergeTaxa(sinkTaxon, taxaToMerge, false);
+	}
+	
+	/*..........................................CharacterData.....................................*/
+	/**Gets the CharacterData object for an MCharactersDistribution.  It first checks to see if the CharacterData object
+	 * already exists, and if so, returns it; otherwise, it created one.  */
+	public static CharacterData getData (MesquiteModule mb, MCharactersDistribution matrix, Taxa taxa) {
+		if (matrix.getParentData()==null) {
+			CharactersManager manageCharacters = (CharactersManager)mb.findElementManager(CharacterData.class);
+			CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
+			return matrix.makeCharacterData(manager, taxa);
+		}
+		return matrix.getParentData();
 	}
 
 }

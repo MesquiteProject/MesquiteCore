@@ -42,10 +42,6 @@ public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift
 		characterSourceTask = (CharMatrixCoordIndep)hireEmployee(CharMatrixCoordIndep.class, "Source of Character Matrix containing indel pattern");
 			if (characterSourceTask == null)
 				return sorry(getName() + " couldn't start because no matrix obtained");
-/*			if (!MesquiteThread.isScripting())
-				if (!queryOptions())
-					return false;
-*/
 			return true;
   	 }
 
@@ -71,10 +67,6 @@ public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift
 		return true;
 	}
 
-	/*.................................................................................................................*
-   	public String getParameters() {
-   		return"Probability of missing data: " + probMissing;
-   	}
 	/*.................................................................................................................*/
     	 public String getName() {
    		return "Impose Indel Pattern of Other Matrix";

@@ -2096,12 +2096,17 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 	/*.................................................................................................................*/
 	public static boolean deleteDirectory(String directoryPath){
+		if (StringUtil.blank(directoryPath))
+			return false;
 		try {
 			File directory = new File(directoryPath);
+			String sep = "";
+			if (!directoryPath.endsWith(MesquiteFile.fileSeparator))
+				sep=MesquiteFile.fileSeparator;
 			if (directory!=null && directory.isDirectory()) {
 				String[] files = directory.list();
 				for (int i=0; i<files.length; i++) {
-					String path = directoryPath + MesquiteFile.fileSeparator + files[i];
+					String path = directoryPath + sep + files[i];
 					File f = new File(path);
 					if (f.isDirectory()) {
 						boolean success = deleteDirectory(path);

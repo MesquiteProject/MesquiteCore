@@ -99,12 +99,7 @@ public class AlteredMatrix extends SourceModifiedMatrix {
 		if (matrix==null)
 			return null;
 //		MAdjustableDistribution modified = matrix.makeBlankAdjustable();
-		CharacterData data = matrix.getParentData();
-		if (data==null) {
-			CharactersManager manageCharacters = (CharactersManager)findElementManager(CharacterData.class);
-			CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
-			data = matrix.makeCharacterData(manager, taxa);
-		}
+		CharacterData data = CharacterData.getData(this,  matrix, taxa);
 		data = data.cloneData();
 
 		
