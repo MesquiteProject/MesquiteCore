@@ -83,7 +83,7 @@ public class MatrixValuesChart extends FileAssistantCH  {
 		chartWindowTask.setTaxa(taxa);
 		chartWindowTask.setNumberTask(numberTask);
 		chartWindowTask.setItemsSource( matrixSourceTask);
-		cWindow.setChartTitle("Character Values");
+		cWindow.setChartTitle("Character Matrix Values");
 		if (!MesquiteThread.isScripting()){
 			cWindow.setChartVisible();
 			cWindow.setVisible(true);
