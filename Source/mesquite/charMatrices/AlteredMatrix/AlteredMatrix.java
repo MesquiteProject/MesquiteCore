@@ -33,6 +33,9 @@ public class AlteredMatrix extends SourceModifiedMatrix {
 	DataAlterer altererTask;
 	MesquiteString altererName;
 	MesquiteCommand stC;
+	CharacterData tempData;
+	protected boolean createdNewDataObject;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		if (!super.startJob(arguments, condition, hiredByName))
@@ -69,6 +72,12 @@ public class AlteredMatrix extends SourceModifiedMatrix {
 	public  Class getHireSubchoice(){
 		return DataAlterer.class;
 	}
+	public void endjob(){
+		if (createdNewDataObject && tempData!=null) {
+			tempData.dispose();
+			tempData=null;
+		}
+	}
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) { 
    	 	Snapshot temp = super.getSnapshot(file);
@@ -99,11 +108,13 @@ public class AlteredMatrix extends SourceModifiedMatrix {
 		if (matrix==null)
 			return null;
 //		MAdjustableDistribution modified = matrix.makeBlankAdjustable();
+		createdNewDataObject = matrix.getParentData()==null; 
 		CharacterData data = CharacterData.getData(this,  matrix, taxa);
-		data = data.cloneData();
+		tempData = data.cloneData();
+		data.dispose();
 
 		
-	   	altererTask.alterData(data, null, null);
+	   	altererTask.alterData(tempData, null, null);
 		String origName = null;
 		
    		if (matrix.getName()!=null)
@@ -113,8 +124,8 @@ public class AlteredMatrix extends SourceModifiedMatrix {
    		else
    			origName = "unknown matrix";
 
-   		data.setName( "Alteration of  " + origName + " by " + altererTask.getName());
-  		return data.getMCharactersDistribution();
+   		tempData.setName( "Alteration of  " + origName + " by " + altererTask.getName());
+  		return tempData.getMCharactersDistribution();
    	}
 	/*.................................................................................................................*/
     	 public String getMatrixName(Taxa taxa, int ic) {
