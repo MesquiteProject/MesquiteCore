@@ -520,6 +520,10 @@ public class MolecularData extends CategoricalData {
 	}
 
 	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
+		return getSequenceAsFasta(includeGaps, convertMultStateToMissing, it, getTaxa().getTaxonName(it));
+	}
+	
+	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it, String sequenceName) {
 		Taxa taxa = getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
@@ -531,7 +535,7 @@ public class MolecularData extends CategoricalData {
 		if (hasDataForTaxon(it)){
 			counter = 1;
 			outputBuffer.append(">");
-			outputBuffer.append(taxa.getTaxonName(it));
+			outputBuffer.append(sequenceName);
 			outputBuffer.append(StringUtil.lineEnding());
 			for (int ic = 0; ic<numChars; ic++) {
 				int currentSize = outputBuffer.length();
