@@ -325,7 +325,8 @@ public class MergeTaxa extends TaxonUtility {
 				data.notifyListeners(this, new Notification(PARTS_DELETED));
 			}
 		}
-		discreetAlert(report.toString());
+		if (StringUtil.notEmpty(report.toString()))
+			discreetAlert(report.toString());
 		return success;
 	}
 	/*.................................................................................................................*/
