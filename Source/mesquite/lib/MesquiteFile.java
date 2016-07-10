@@ -2895,9 +2895,23 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		String tempDirectoryName=fdlg.getDirectory();
 		// fdlg.dispose();
 		if (!StringUtil.blank(tempFileName) && !StringUtil.blank(tempDirectoryName)) {
-			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output, true);
+			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output,ascii);
 		}
 		MainThread.decrementSuppressWaitWindow();
+	}
+	/*.................................................................................................................*/
+	public static String putFileContentsQueryReturnDirectory(String message, String output){
+		MainThread.incrementSuppressWaitWindow();
+		MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.SAVE);   // Save File dialog box
+		fdlg.setVisible(true);
+		String tempFileName=fdlg.getFile();
+		String tempDirectoryName=fdlg.getDirectory();
+		// fdlg.dispose();
+		if (!StringUtil.blank(tempFileName) && !StringUtil.blank(tempDirectoryName)) {
+			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output,false);
+		}
+		MainThread.decrementSuppressWaitWindow();
+		return tempDirectoryName;
 	}
 	/*.................................................................................................................*/
 	static boolean w = false;
