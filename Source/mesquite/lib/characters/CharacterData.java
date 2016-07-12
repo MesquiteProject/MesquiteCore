@@ -23,6 +23,7 @@ import java.util.zip.*;
 import javax.swing.text.JTextComponent;
 
 import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
@@ -62,6 +63,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	protected boolean charNumChanging = false;
 
+	public static final NameReference publicationCodeNameRef = NameReference.getNameReference("publicationCode");//String: tInfo
+	public static final NameReference taxonMatrixNotesRef = NameReference.getNameReference("taxonMatrixNotes");//String: tInfo
 
 	private Taxa taxa; //taxa to which this matrix belongs
 	private long[] taxaIDs; //the remembered id's of the taxa; to use to reconcile changed Taxa with last used here
@@ -3887,6 +3890,27 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return matrix.makeCharacterData(manager, taxa);
 		}
 		return matrix.getParentData();
+	}
+
+	/*...............................................................................................................*/
+	/** Sets the publication code of a particular taxon in this data object. */
+	public void setPublicationCode(int it, String s){
+		Taxon taxon = getTaxa().getTaxon(it);
+		Associable tInfo = getTaxaInfo(true);
+		if (tInfo != null && taxon != null) {
+			tInfo.setAssociatedObject(CharacterData.publicationCodeNameRef, it, s);
+		}
+	}
+	/*...............................................................................................................*/
+	/** Gets the publication code of a particular taxon in this data object. */
+	public String getPublicationCode(int it){
+		Associable tInfo = getTaxaInfo(true);
+		if (tInfo == null)
+			return null;
+		Object obj = tInfo.getAssociatedObject(CharacterData.publicationCodeNameRef, it);
+		if (obj == null || !(obj instanceof String))
+			return null;
+		return (String)obj;
 	}
 
 }
