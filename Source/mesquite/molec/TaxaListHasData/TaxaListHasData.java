@@ -652,7 +652,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return ColorDistribution.lightGreenYellow;
 			} else  if (StringUtil.notEmpty(publicationNote)){
 				if ( !("x".equalsIgnoreCase(publicationNote)))
-					return new Color((float)0.85, (float)0.85, (float)0.99);
+					return ColorDistribution.veryVeryLightBlue;
 			}
 			return ColorDistribution.lightGreenYellow;
 
