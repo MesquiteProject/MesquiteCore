@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.molec.GenBankNumber;
+package mesquite.molec.PublicationCode;
 
 import mesquite.categ.lib.*;
 import mesquite.lists.lib.*;
@@ -24,13 +24,12 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class GenBankNumber extends TaxonListAssistant {
+public class PublicationCode extends TaxonListAssistant {
 	Taxa taxa;
 	MesquiteTable table=null;
 	Taxa currentTaxa = null;
 	MolecularData data = null;
 	MatrixSourceCoord matrixSourceTask;
-	MesquiteMenuItemSpec mss2;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, DNAState.class, "Source of DNA matrix (for " + getName() + ")"); 
@@ -52,8 +51,6 @@ public class GenBankNumber extends TaxonListAssistant {
 	}
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
-		deleteMenuItem(mss2);
-		mss2 = addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
 		if (this.taxa != null)
 			this.taxa.removeListener(this);
 		this.taxa = taxa;
@@ -93,56 +90,11 @@ public class GenBankNumber extends TaxonListAssistant {
 		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
 			return matrixSourceTask;
 		}
-		else if (checker.compare(this.getClass(), "Acquires GenBank numbers from imported GenBank taxon names", null, commandName, "moveNumbersFromName")) {
-			moveNumberFromGenBankTaxonName();
-			return null;
-		}
 		else return  super.doCommand(commandName, arguments, checker);
 	}
 	/*.................................................................................................................*/
-	private void moveNumberFromGenBankTaxonName() {
-			if (table !=null && taxa!=null) {
-				boolean changed=false;
-				String id = "";
-				Parser parser = new Parser();
-				parser.setWhitespaceString("|");
-				if (employer!=null && employer instanceof ListModule) {
-					int c = ((ListModule)employer).getMyColumn(this);
-					for (int i=0; i<taxa.getNumTaxa(); i++) {
-						if (table.isCellSelectedAnyWay(c, i)) {
-							id = taxa.getName(i);
-							parser.setString(id);
-							String  token = parser.getFirstToken();
-							while (token!=null && !token.equalsIgnoreCase("gb") && !StringUtil.blank(token)){
-								token = parser.getNextToken();
-							}
-							if (token!= null && token.equalsIgnoreCase("gb")){
-								token = parser.getNextToken();
-								if (token.indexOf(".")>=0) {
-									token = token.substring(0,token.indexOf("."));
-									if (!StringUtil.blank(token)){
-										setString(i,token);
-										if (!changed)
-											outputInvalid();
-										changed = true;
-									}
-								}
-							}
-						}
-					}
-				}
-
-//				if (changed)
-//					data.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
-				outputInvalid();
-				parametersChanged();
-
-			}
-		
-	}
-	/*.................................................................................................................*/
 	public String getTitle() {
-		return "GenBank Number";
+		return "Publication Code";
 	}
 	public String getStringForTaxon(int it){
 		if (data==null || taxa==null)
@@ -150,7 +102,7 @@ public class GenBankNumber extends TaxonListAssistant {
 		Taxon taxon = data.getTaxa().getTaxon(it);
 		Associable tInfo = data.getTaxaInfo(false);
 		if (tInfo != null && taxon != null) {
-			return (String)tInfo.getAssociatedObject(MolecularData.genBankNumberRef, it);
+			return (String)tInfo.getAssociatedObject(CharacterData.publicationCodeNameRef, it);
 		}
 		return "-";
 	}
@@ -167,7 +119,7 @@ public class GenBankNumber extends TaxonListAssistant {
 		Taxon taxon = data.getTaxa().getTaxon(row);
 		Associable tInfo = data.getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, row, s);
+			tInfo.setAssociatedObject(CharacterData.publicationCodeNameRef, row, s);
 		}
 	}
 	public boolean useString(int ic){
@@ -179,28 +131,28 @@ public class GenBankNumber extends TaxonListAssistant {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "GenBank Number";
+		return "Publication Code";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;  
+		return true;  
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 273;  
+		return NEXTRELEASE;  
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Lists the GenBank accession number of a sequence in a matrix." ;
+		return "Lists the primers used in the reads composing a sequence." ;
 	}
 }

@@ -36,7 +36,7 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class TaxaListHasData extends TaxonListAssistant  {
-	
+
 	Taxa taxa=null;
 	MesquiteTable table = null;
 	MatrixSourceCoord matrixSourceTask;
@@ -154,7 +154,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				if (data != null) {
 					copyMenuText += data.getName() + " Data";
 					copyMenuText += " [from " + data.getTaxa().getTaxonName(ic) + "]" ;
-					
+
 				}
 			}
 			MesquiteCommand mcCopy = makeCommand("copyData", this);
@@ -164,10 +164,10 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 			String pasteMenuText = "Paste ";
 			if (StringUtil.notEmpty(localCopyDataClipboard) && localCopyData != null) {
-					pasteMenuText += localCopyData.getName() + " Data";
-					if (StringUtil.notEmpty(localCopyDataTaxon)) {
-						pasteMenuText += " [from " + localCopyDataTaxon + "] " ;
-					}
+				pasteMenuText += localCopyData.getName() + " Data";
+				if (StringUtil.notEmpty(localCopyDataTaxon)) {
+					pasteMenuText += " [from " + localCopyDataTaxon + "] " ;
+				}
 			}
 			MesquiteCommand mcPaste = makeCommand("pasteData", this);  //only if something in clipboard
 			mcPaste.setDefaultArguments(""+ic);
@@ -601,8 +601,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		outputInvalid();
 		parametersChanged();
 	}
-	
-	
+
+
 
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
@@ -617,7 +617,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			iQuit();
 	}
 	/*.................................................................................................................*/
-	
+
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int it, boolean selected){
 		if (observedStates == null){
@@ -642,7 +642,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			if (bits.isBitOn(it))
 				return ColorDistribution.darkGreen;
 			else
-				return ColorDistribution.darkRed;		}
+				return ColorDistribution.darkRed;		
+		}
 		else if (bits.isBitOn(it)){
 			if (StringUtil.blank(genBankNote) && StringUtil.blank(publicationNote))
 				return ColorDistribution.veryLightGreen;
