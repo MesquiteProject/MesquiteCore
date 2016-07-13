@@ -46,6 +46,16 @@ public class StringArray implements StringLister, Listable {
 		return strings;
 	}
 	/*...........................................................*/
+	public static boolean allBlank(String[] array){
+		if (array==null || array.length==0)
+			return true;
+		for (int i=0; i<array.length; i++) {
+			if (StringUtil.notEmpty(array[i]))
+				return false;
+		}
+		return true;
+	}
+	/*...........................................................*/
 	public static void sort(String[] array){
 		if (array==null || array.length<=1)
 			return;
