@@ -1482,6 +1482,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 
+		logln(" MesquiteMenuBar.totalFinalized " +  MesquiteMenuBar.totalFinalized + "  MesquiteMenuBar.totalCreated " +  MesquiteMenuBar.totalCreated);
 		logln(" MesquiteMenuItem.totalFinalized " +  MesquiteMenuItem.totalFinalized + " MesquiteMenuItem.totalDisposed " + MesquiteMenuItem.totalDisposed + " MesquiteMenuItem.totalCreated " +  MesquiteMenuItem.totalCreated);
 		logln(" MesquiteMenuItemSpec.totalFinalized " +  MesquiteMenuItemSpec.totalFinalized + " MesquiteMenuItemSpec.totalDisposed " + MesquiteMenuItemSpec.totalDisposed + " MesquiteMenuItemSpec.totalCreated " +  MesquiteMenuItemSpec.totalCreated);
 		logln(" MesquiteModule.totalFinalized " +  MesquiteModule.totalFinalized + " EmployerEmployee.totalDisposed " +  EmployerEmployee.totalDisposed + " EmployerEmployee.totalCreated " +  EmployerEmployee.totalCreated);
@@ -1843,6 +1844,36 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Forces a reset of the menus.", null, commandName, "resetMenus")) {
 			zeroMenuResetSuppression();
+			//Debugg.println do this only once
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
 			resetAllMenuBars();
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {
@@ -1929,6 +1960,7 @@ public class Mesquite extends MesquiteTrunk
 				logln("MesquiteWindow.totalFinalized " +  MesquiteWindow.totalFinalized + " totalDisposed " + MesquiteWindow.totalDisposed + " numDisposing " +  MesquiteWindow.numDisposing + " totalCreated " +  MesquiteWindow.totalCreated);
 				logln("MesquiteDialogParent.totalFinalized " +  MesquiteDialogParent.totalFinalized + " totalDisposed " + MesquiteDialogParent.totalDisposed + " totalCreated " +  MesquiteDialogParent.totalCreated);
 				logln("ListableVector.totalFinalized " +  ListableVector.totalFinalized + " totalDisposed " + ListableVector.totalDisposed + " totalCreated " +  ListableVector.totalCreated);
+				logln("MesquiteMenuBar.totalFinalized " +  MesquiteMenuBar.totalFinalized +  " totalCreated " +  MesquiteMenuBar.totalCreated);
 				logln("MesquiteMenuItem.totalFinalized " +  MesquiteMenuItem.totalFinalized + " totalDisposed " + MesquiteMenuItem.totalDisposed + " totalCreated " +  MesquiteMenuItem.totalCreated);
 				logln("MesquiteMenuItemSpec.totalFinalized " +  MesquiteMenuItemSpec.totalFinalized + " totalDisposed " + MesquiteMenuItemSpec.totalDisposed + " totalCreated " +  MesquiteMenuItemSpec.totalCreated);
 				logln("NexusBlock.totalFinalized " +  NexusBlock.totalFinalized + " totalDisposed " + NexusBlock.totalDisposed + " totalCreated " +  NexusBlock.totalCreated);

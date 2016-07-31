@@ -249,7 +249,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			return;
 		resetWindowsMenuPending = false;
 		if (menuSuppression==0) {
-			Debugg.printStackTrace("resetAllMenuBars ");
+			Debugg.println("resetAllMenuBars ");
 			MesquiteTrunk.suppressResetCheckMenuItems();
 			resetAllMenuPending = false;
 			if (MesquiteTrunk.checkMemory)
