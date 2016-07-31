@@ -489,7 +489,7 @@ public class NCBIUtil {
 
 			return idList;
 		} catch ( Exception e ){
-			// give warning
+			mod.logln("Cannot get GenBank IDs");
 			return null;
 		}
 
@@ -504,9 +504,10 @@ public class NCBIUtil {
 		String[] idList = new String[accessionNumbers.length];
 		for (int i=0;i<idList.length; i+=20) {
 			String[] nextList = getGenBankIDs20(accessionNumbers, i, nucleotides, mod, writeLog);
-			for (int j=0; j<20 && j<nextList.length && i+j<idList.length; j++) {
-				idList[i+j]=nextList[j];
-			}
+			if (nextList!=null)
+				for (int j=0; j<20 && j<nextList.length && i+j<idList.length; j++) {
+					idList[i+j]=nextList[j];
+				}
 		}
 		return idList;
 	}
@@ -714,6 +715,7 @@ public class NCBIUtil {
 			return fetchBuffer.toString();
 		} catch ( Exception e ){
 			// give warning
+			mod.logln("could not fetch GenBank sequences " + id);
 			return null;
 		}
 

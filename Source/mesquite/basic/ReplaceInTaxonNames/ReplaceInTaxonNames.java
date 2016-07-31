@@ -38,8 +38,8 @@ public class ReplaceInTaxonNames extends TaxonNameAlterer {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Replace in Taxon Names",  buttonPressed);
 		queryDialog.addLabel("Replace in Taxon Name", Label.CENTER);
-		SingleLineTextField searchField = queryDialog.addTextField("Search for:", searchText, 12, true);
-		SingleLineTextField replaceField = queryDialog.addTextField("Replace with:", replaceText, 12, true);
+		SingleLineTextField searchField = queryDialog.addTextField("Search for:", searchText, 30, true);
+		SingleLineTextField replaceField = queryDialog.addTextField("Replace with:", replaceText, 20, true);
 	//	Checkbox addToEndBox = queryDialog.addCheckBox("add to end of names", addToEnd.getValue());
 		queryDialog.completeAndShowDialog(true);
 			

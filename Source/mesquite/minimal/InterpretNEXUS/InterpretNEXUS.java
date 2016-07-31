@@ -296,7 +296,8 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		mNF.linkProgressIndicator(progIndicator);
 		if (mNF.openReading()) {
 			try {
-				logln("Reading NEXUS file " + mNF.getFileName());
+				if (!MesquiteFile.suppressReadWriteLogging) 
+					logln("Reading NEXUS file " + mNF.getFileName());
 				mNF.foreignElements = new Vector();
 				String token= mNF.firstToken(null);
 				if (token!=null) {
@@ -380,7 +381,8 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 
 						}
 						progIndicator.goAway();
-						logln("File reading complete (file " + mNF.getFileName() + ")");
+						if (!MesquiteFile.suppressReadWriteLogging) 
+							logln("File reading complete (file " + mNF.getFileName() + ")");
 					}
 				}
 			}
@@ -560,7 +562,8 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		MesquiteModule rM = findEmployeeThatCanRead(getFileCoordinator(), block, blockName);
 		ListableVector blocks = getProject().getNexusBlocks();
 		if (rM!=null) {
-			logln("Reading block: " + blockName);
+			if (!MesquiteFile.suppressReadWriteLogging) 
+				logln("Reading block: " + blockName);
 			long startTimeForBlock = System.currentTimeMillis();
 			NexusBlock nb = rM.readNexusBlock( mf, blockName, block, blockComments, fileReadingArguments);
 			if (MesquiteTrunk.debugMode)

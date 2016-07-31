@@ -34,6 +34,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static final int LINKED = 0;
 	public static final int INCLUDED = 1;
 	public static final int HOME = -1;
+	
+	public static boolean suppressReadWriteLogging = false;
 
 	private boolean local = true;
 	private URL url;
@@ -980,12 +982,14 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return false;
 		}
 		writing = true;
-		MesquiteModule.mesquiteTrunk.logln( "Saving File: " + fileName);
+		if (!suppressReadWriteLogging)
+			MesquiteModule.mesquiteTrunk.logln( "Saving File: " + fileName);
 		if (directoryName !=null) {
 			writingFileName = directoryName + fileName;
 			backupDirPath = directoryName + "backups" + fileSeparator;
 			backupFileName = backupDirPath + fileName;
-			MesquiteModule.mesquiteTrunk.logln( "In Directory: " + directoryName);
+			if (!suppressReadWriteLogging)
+				MesquiteModule.mesquiteTrunk.logln( "In Directory: " + directoryName);
 		}
 		else {
 			writingFileName = fileName;
@@ -2895,9 +2899,23 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		String tempDirectoryName=fdlg.getDirectory();
 		// fdlg.dispose();
 		if (!StringUtil.blank(tempFileName) && !StringUtil.blank(tempDirectoryName)) {
-			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output, true);
+			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output,ascii);
 		}
 		MainThread.decrementSuppressWaitWindow();
+	}
+	/*.................................................................................................................*/
+	public static String putFileContentsQueryReturnDirectory(String message, String output){
+		MainThread.incrementSuppressWaitWindow();
+		MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), message, FileDialog.SAVE);   // Save File dialog box
+		fdlg.setVisible(true);
+		String tempFileName=fdlg.getFile();
+		String tempDirectoryName=fdlg.getDirectory();
+		// fdlg.dispose();
+		if (!StringUtil.blank(tempFileName) && !StringUtil.blank(tempDirectoryName)) {
+			MesquiteFile.putFileContents(tempDirectoryName+tempFileName, output,false);
+		}
+		MainThread.decrementSuppressWaitWindow();
+		return tempDirectoryName;
 	}
 	/*.................................................................................................................*/
 	static boolean w = false;

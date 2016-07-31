@@ -12,6 +12,6 @@
 	<classpathentry excluding="docs/mesquite/BeanTree/" kind="src" path="Resources"/>
 	<classpathentry kind="src" path="Source"/>
 	<classpathentry kind="lib" path="jars/commons-codec-1.6.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java 1.8"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>

@@ -31,8 +31,9 @@ import java.util.*;
 public class MolecularData extends CategoricalData {
 	public static String DATATYPENAME="Molecular Data";
 	GenCodeModelSet genCodeModelSet =null;
+	public static final String genBankNumberName="genBankNumber";
 	public static final NameReference reversedRef = NameReference.getNameReference("reversed"); //long: tInfo, data(ch); MesquiteInteger: data(cells)
-	public static final NameReference genBankNumberRef = NameReference.getNameReference("genBankNumber");//String: tInfo
+	public static final NameReference genBankNumberRef = NameReference.getNameReference(genBankNumberName);//String: tInfo
 
 	/*vectors, one for each taxon, of 3D Points indicating inversions in sequence
 	x = site marking left boundary of inverted region
@@ -466,6 +467,17 @@ public class MolecularData extends CategoricalData {
 			}
 
 		}
+		
+/*...............................................................................................................*/
+	/** Sets the GenBank number of a particular taxon in this data object. */
+	public void setGenBankNumber(int it, String s){
+		Taxon taxon = getTaxa().getTaxon(it);
+		Associable tInfo = getTaxaInfo(true);
+		if (tInfo != null && taxon != null) {
+			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, it, s);
+		}
+	}
+
 	/* ..........................................  .................................................. */
 
 	public boolean stripRightTerminalGaps(boolean notify){
@@ -520,6 +532,10 @@ public class MolecularData extends CategoricalData {
 	}
 
 	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
+		return getSequenceAsFasta(includeGaps, convertMultStateToMissing, it, getTaxa().getTaxonName(it));
+	}
+	
+	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it, String sequenceName) {
 		Taxa taxa = getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
@@ -531,7 +547,7 @@ public class MolecularData extends CategoricalData {
 		if (hasDataForTaxon(it)){
 			counter = 1;
 			outputBuffer.append(">");
-			outputBuffer.append(taxa.getTaxonName(it));
+			outputBuffer.append(sequenceName);
 			outputBuffer.append(StringUtil.lineEnding());
 			for (int ic = 0; ic<numChars; ic++) {
 				int currentSize = outputBuffer.length();
