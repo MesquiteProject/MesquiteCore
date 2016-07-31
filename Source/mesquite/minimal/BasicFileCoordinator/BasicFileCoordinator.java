@@ -951,6 +951,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public boolean closeFile(MesquiteFile fi){
 		if (getProject() ==null)
 			return false;
+		incrementMenuResetSuppression();
 		if (fi!=null) {
 			if (getProject().getHomeFile() == fi) { //should ask for all files
 				if (MesquiteThread.isScripting() || !getProject().isDirty()) {
@@ -981,6 +982,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 										}
 										else if (q==1) {
 											logln("File close cancelled by user");
+											decrementMenuResetSuppression();
 											return false;
 										}
 									}
@@ -1005,6 +1007,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 						writeFile(fi);
 					else if (q==1) {
 						logln("File close cancelled by user");
+						decrementMenuResetSuppression();
 						return false;
 					}
 					logln("Closing file " + fi.getName());
@@ -1012,6 +1015,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 		}
+		decrementMenuResetSuppression();
 		return true;
 	}
 	private void waitWriting(MesquiteFile f){

@@ -36,6 +36,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	public static final int DIRTY = 2;
 	
 	public static long totalCreated = 0;
+	public static long totalTrueFileElementCreated = 0;
 	public static long totalDisposed = 0;
 	public static long totalFinalized  = 0;
 	public static Vector classesCreated, classesFinalized, countsOfClasses, countsOfClassesDisposed; //to detect memory leaks
@@ -72,6 +73,8 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		super(numParts); //for Associable
 		listeners = new Vector();
 		FileElement.totalCreated++;
+		if (getClass() != ListableVector.class)  //straight listableVectors not counted
+			FileElement.totalTrueFileElementCreated++;
 		if (MesquiteTrunk.checkMemory)
 			countCreated();
 		idNumber = FileElement.totalCreated;
@@ -529,6 +532,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	/*-------------------------------------------------------*/
 	public void finalize() throws Throwable {
 		FileElement.totalFinalized++;
+		
 		if (MesquiteTrunk.checkMemory && classesFinalized.indexOf(getClass())<0)
 			classesFinalized.addElement(getClass());
 		/*

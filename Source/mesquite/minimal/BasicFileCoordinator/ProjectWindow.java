@@ -222,6 +222,10 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 
 	}
 	public void setFootnote(String heading, String text){
+		if (heading == null && text == null && MesquiteTrunk.debugMode){
+			heading = "FileElement instantiations - finalizations " + (FileElement.totalCreated - FileElement.totalFinalized);
+			text = "FileElement instantiations " + (FileElement.totalCreated);
+		}
 		projPanel.setFootnote(heading, text);
 	}
 	public void refresh(FileElement element){

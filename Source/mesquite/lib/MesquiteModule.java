@@ -1250,6 +1250,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** If scripting, puts alert in log; otherwise puts up alert dialog.*/
 	public void discreetAlert(boolean beDiscreet, String s) {
+		if (StringUtil.blank(s))
+			return;
 		if (beDiscreet)
 			logln("Note: " + s);
 		else

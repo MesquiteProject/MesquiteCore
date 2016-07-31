@@ -75,8 +75,10 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 	}
 
 	public static StringLister getFontList() {
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment(); //Debugg.println
 		String[] fonts = ge.getAvailableFontFamilyNames();
+		/*Toolkit tk = Toolkit.getDefaultToolkit();
+		String[] fonts = tk.getFontList();*/
 		StringArray f = new StringArray(fonts.length);
 		for (int i=0; i<fonts.length; i++)
 			f.setValue(i,fonts[i]);
@@ -98,9 +100,13 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 	
 	public static MesquiteSubmenu getFontSubmenu(String title, Menu ownerMenu, MesquiteModule ownerModule, MesquiteCommand setFontCommand) {
 		MesquiteSubmenu submenuFont=getSubmenu(title, ownerMenu, ownerModule);
+		//Debugg.println("getFontSubmenu");
 		submenuFont.setSelected(new MesquiteString(""));
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();  //Debugg.println
 		String[] fonts = ge.getAvailableFontFamilyNames();
+		
+		/*Toolkit tk = Toolkit.getDefaultToolkit();
+		String[] fonts = tk.getFontList();*/
 		for (int i=0; i<fonts.length; i++)
 			submenuFont.add(new MesquiteCheckMenuItem(fonts[i],  null, setFontCommand, StringUtil.tokenize(fonts[i]), submenuFont.checkString));
 		return submenuFont;

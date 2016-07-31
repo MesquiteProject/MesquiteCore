@@ -255,6 +255,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		if (taxa != null)
 			taxa.removeListener(this);
 		totalDisposed++;
+		Debugg.println("diposed " + id);
 		super.dispose();
 	}
 	public Object doCommand(String commandName, String arguments, CommandChecker checker){

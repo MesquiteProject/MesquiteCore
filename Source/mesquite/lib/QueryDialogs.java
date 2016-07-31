@@ -28,6 +28,7 @@ public class QueryDialogs  {
 	}
 	/*.................................................................................................................*/
 	public static boolean queryInteger(MesquiteWindow parent, String title, String message, String secondaryMessage, String help, boolean allowCancel, MesquiteInteger value) {
+		Debugg.println("parent " + parent);
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(parent, title,buttonPressed);
 		queryDialog.addLargeOrSmallTextLabel(message);

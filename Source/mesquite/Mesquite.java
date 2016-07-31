@@ -1492,6 +1492,7 @@ public class Mesquite extends MesquiteTrunk
 		logln("Associable.totalFinalizedA " + Associable.totalFinalizedA  + " Associable.totalDisposedA " +  Associable.totalDisposedA + " Associable.totalCreatedA " +  Associable.totalCreatedA);
 		logln("CharacterData.totalDisposed " + CharacterData.totalDisposed + " CharacterData.totalCreated " +  CharacterData.totalCreated);
 		logln("TreeVector.totalDisposed " + TreeVector.totalDisposed + " TreeVector.totalCreated " +  TreeVector.totalCreated);
+		logln("SpecsSet.totalDisposed " + SpecsSet.totalDisposed + " SpecsSet.totalCreated " +  SpecsSet.totalCreated);
 		logln("Listened.listenersRemaining " + Listened.listenersRemaining);
 		logln("Listened.listenersReport\n" + Listened.reportListeners());
 		logln("Threads");
@@ -1923,7 +1924,7 @@ public class Mesquite extends MesquiteTrunk
 				logln("MesquiteProject.totalFinalized " +  MesquiteProject.totalFinalized + " totalDisposed " + MesquiteProject.totalDisposed + " totalCreated " +  MesquiteProject.totalCreated);
 				logln("MesquiteFile.totalFinalized " +  MesquiteFile.totalFinalized + " totalDisposed " + MesquiteFile.totalDisposed + " totalCreated " +  MesquiteFile.totalCreated);
 				logln("ProjectRead.totalFinalized " +  ProjectRead.totalFinalized + " totalCreated " +  ProjectRead.totalCreated);
-				logln("FileElement.totalFinalized " +  FileElement.totalFinalized + " totalDisposed " + FileElement.totalDisposed + " totalCreated " +  FileElement.totalCreated);
+				logln("FileElement.totalFinalized " +  FileElement.totalFinalized + " totalDisposed " + FileElement.totalDisposed + " totalCreated " +  FileElement.totalCreated+ " totalTrueFileElementCreated " +  FileElement.totalTrueFileElementCreated);
 				logln("MesquiteFrame.totalFinalized " +  MesquiteFrame.totalFinalized + " totalDisposed " + MesquiteFrame.totalDisposed + " totalCreated " +  MesquiteFrame.totalCreated);
 				logln("MesquiteWindow.totalFinalized " +  MesquiteWindow.totalFinalized + " totalDisposed " + MesquiteWindow.totalDisposed + " numDisposing " +  MesquiteWindow.numDisposing + " totalCreated " +  MesquiteWindow.totalCreated);
 				logln("MesquiteDialogParent.totalFinalized " +  MesquiteDialogParent.totalFinalized + " totalDisposed " + MesquiteDialogParent.totalDisposed + " totalCreated " +  MesquiteDialogParent.totalCreated);
@@ -2429,7 +2430,6 @@ public class Mesquite extends MesquiteTrunk
 				}
 			}
 		}
-		//if passed --version then write text file with stringForVersion, tab, stringForBuild
 		if (outputVersion){
 			Writer stream;
 			try {

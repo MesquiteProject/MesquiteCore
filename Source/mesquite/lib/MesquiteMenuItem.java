@@ -15,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 
@@ -44,6 +45,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	public MesquiteMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command) {
 		super();
 		addActionListener(this);
+		//Debugg.println("#" + itemName);
 		if (itemName == null) {
 			MesquiteMessage.printStackTrace("Menu item with null name: ownerModule " + ownerModule);
 			this.setLabel("untitled");
@@ -88,6 +90,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 		}
 		else
 			this.setLabel(specification.itemName);
+		//Debugg.println("@" + specification.itemName);
 		if (specification.shortcut!=null)
 			setShortcut(new MenuShortcut(specification.shortcut.getValue(), specification.shortcutNeedsShift));
 		if (!specification.isEnabled())
@@ -182,6 +185,9 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 			command = null;
 			totalDisposed++;
 		}
+	/*	else if (MesquiteTrunk.debugMode){
+			MesquiteMessage.println("not disconnectable " + getLabel());
+		}*/
 	}
 	Journal j =null;
 

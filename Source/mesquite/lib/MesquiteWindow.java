@@ -2072,7 +2072,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			graphics[0].requestFocusInWindow();
 	}
 	/*--------------------------------MENU BARS ----------------------------------*/
-	private final void deassign(MenuItem mi){
+	private final void deassign(Menu m, MenuItem mi){
 		if (mi ==null)
 			return;
 		if (mi instanceof MesquiteMenuItem)
@@ -2082,8 +2082,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		else if (mi instanceof MesquiteSubmenu) {
 			((MesquiteSubmenu)mi).disconnect();
 			for (int k=0; k<((MesquiteSubmenu)mi).getItemCount(); k++) {
-				deassign( ((MesquiteSubmenu)mi).getItem(k));
+				deassign(((MesquiteSubmenu)mi), ((MesquiteSubmenu)mi).getItem(k));
 			}
+		}
+		else {
+			m.remove(mi);  //if not a Mesquite menu item, safe to remove
+			MesquiteMenuItem.totalDisposed++;
 		}
 	}
 	public final void deassignMenus(){
@@ -2092,12 +2096,14 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				for (int i=0; i<menuBar.getMenuCount(); i++){  
 					Menu m = menuBar.getMenu(i);
 					for (int j = 0; j< m.getItemCount(); j++) {
-						deassign(m.getItem(j));
+						deassign(m, m.getItem(j));
 					}
 				}
 				menuBar.disconnect();
 			}
 			catch (Exception e){
+				if (MesquiteTrunk.debugMode)
+					MesquiteMessage.println("exception in deassigning menus");
 			}
 		}
 	}
@@ -2112,6 +2118,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 		resetMenuTime.start();
 		deassignMenus();
+		
 		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
 		resetMenuTime.end();
 		if (ownerModule==null) {

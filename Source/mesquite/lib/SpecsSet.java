@@ -22,6 +22,7 @@ import java.awt.*;
 public abstract class SpecsSet extends FileElement {	
 	//protected int numParts;
 	public static long totalCreated = 0;
+	public static long totalDisposed = 0;
 	private String nexusBlockStored = null;
 	AssociableWithSpecs parent = null;
 	
@@ -33,6 +34,10 @@ public abstract class SpecsSet extends FileElement {
 	public SpecsSet (int numParts) {
 		this.numParts = numParts;
 		totalCreated++;
+	}
+	public void dispose(){
+		totalDisposed++;
+		super.dispose();
 	}
 	public abstract String getTypeName();
 	public abstract SpecsSet cloneSpecsSet();
