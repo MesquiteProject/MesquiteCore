@@ -232,14 +232,12 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			discreetAlert( "Sorry, " + getName() + " works only if given a full MolecularData object");
 			return null;
 		}
-		incrementMenuResetSuppression();
 		MolecularData data = (MolecularData)matrix.getParentData();
 		boolean isProtein = data instanceof ProteinData;
 		boolean pleaseStorePref = false;
 		if (!preferencesSet) {
 			programPath = MesquiteFile.openFileDialog("Choose " + getProgramName()+ ": ", null, null);
 			if (StringUtil.blank(programPath)){
-				decrementMenuResetSuppression();
 				return null;
 			}
 			if (!programPath.endsWith(MesquiteFile.fileSeparator))
@@ -289,7 +287,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (!success) {
 			logln("File export failed");
 			data.decrementEditInhibition();
-			decrementMenuResetSuppression();
 			return null;
 		}
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
@@ -329,7 +326,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		 success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
 
 		if (success){
-			Debugg.println("@@@@@@@@@@@@@@@@@@@@ success ");
 			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
 			logln("Processing results...");
 			FileCoordinator coord = getFileCoordinator();
@@ -343,14 +339,12 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			else
 				tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getProteinImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			MesquiteThread.setCurrentCommandRecord(oldCR);
-			Debugg.println("@@@@@@@@@@@@@@@@@@@@ file read");
 			CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
 			alignedData.removeTaxaThatAreEntirelyGaps();
 			long[][] aligned = null;
 			Taxa alignedTaxa =  alignedData.getTaxa();
 			Taxa originalTaxa =  data.getTaxa();
 
-			Debugg.println("@@@@@@@@@@@@@@@@@@@@ about to process alignment");
 			if (alignedData!=null) {
 				logln("Acquired aligned data; now processing alignment.");
 				int numChars = alignedData.getNumChars();
@@ -412,7 +406,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			data.decrementEditInhibition();
 			if (success) 
 				return aligned;
-			decrementMenuResetSuppression();
 			return null;
 		}
 		if (runs == 1)
@@ -420,7 +413,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		runs--;
 		getProject().decrementProjectWindowSuppression();
 		data.decrementEditInhibition();
-		decrementMenuResetSuppression();
 		return null;
 	}	
 

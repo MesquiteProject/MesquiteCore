@@ -98,7 +98,6 @@ class AlignThread extends Thread {
 	}
 
 	public void run() {
-		MesquiteTrunk.mesquiteTrunk.incrementMenuResetSuppression();
 		MesquiteInteger firstRow = new MesquiteInteger();
 		MesquiteInteger lastRow = new MesquiteInteger();
 		MesquiteInteger firstColumn = new MesquiteInteger();
@@ -115,11 +114,8 @@ class AlignThread extends Thread {
 		else 				
 			entireColumnsSelected =  table.isColumnSelected(firstColumn.getValue());
 		//NOTE: at present this deals only with whole character selecting, and with all taxa
-		Debugg.println("@@@@@@@@@@@@@@@@@@@@ about to align");
 		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue());
-		Debugg.println("@@@@@@@@@@@@@@@@@@@@ about to integrate");
 		alignmentMachine.integrateAlignment(m, data,  firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue());
-		Debugg.println("@@@@@@@@@@@@@@@@@@@@ integrated");
 		if (entireColumnsSelected) {
 			for (int ic = 0; ic<data.getNumChars(); ic++) 
 				data.setSelected(ic,ic>=firstColumn.getValue() && ic<=lastColumn.getValue()- (oldNumChars - data.getNumChars()));
@@ -128,7 +124,5 @@ class AlignThread extends Thread {
 		if (separateThread)
 			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
 		table.repaintAll();
-		MesquiteTrunk.mesquiteTrunk.decrementMenuResetSuppression();
-
 	}
 }

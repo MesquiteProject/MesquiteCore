@@ -1764,6 +1764,7 @@ abstract class FillerThread extends MesquiteThread {
 	ManageTrees ownerModule;
 	public FillerThread (ManageTrees ownerModule) {
 		super();
+		resetUIOnMe = false;
 		this.ownerModule = ownerModule;
 	}
 	public void threadGoodbye(){

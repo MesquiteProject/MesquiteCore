@@ -15,7 +15,9 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
+
 import java.io.*;
 
 /** A thread for executing commands */
@@ -41,7 +43,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	private Vector cleanUpJobs;
 	private int listenerSuppressionLevel = 0; //0 no suppression; 1 lower level only; 2 all suppressed
 	public static int numFilesBeingRead =0;
-	
+	public boolean resetUIOnMe = true;
 	static int numInst = 1;
 	static {
 		threads = new Vector(10);
@@ -68,7 +70,12 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	public String toString(){
 		return getClass().getName() + " = " + super.toString();
 	}
-
+	public static boolean okToResetUI(){
+		Thread thread = Thread.currentThread();
+		if (!(thread instanceof MesquiteThread))
+			return false;
+		return ((MesquiteThread)thread).resetUIOnMe;
+	}
 	//=====================
 	/*logger for current thread */
 	Logger logger = null;

@@ -245,9 +245,11 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	/*.................................................................................................................*/
 	/** This requests that ALL menu bars be recomposed.*/
 	public static final void resetAllMenuBars() {
+		if (!MesquiteThread.okToResetUI())
+			return;
 		resetWindowsMenuPending = false;
 		if (menuSuppression==0) {
-			Debugg.println("resetAllMenuBars ");
+			Debugg.printStackTrace("resetAllMenuBars ");
 			MesquiteTrunk.suppressResetCheckMenuItems();
 			resetAllMenuPending = false;
 			if (MesquiteTrunk.checkMemory)

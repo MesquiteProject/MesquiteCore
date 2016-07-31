@@ -67,10 +67,8 @@ public class ListableVector extends FileElement implements StringLister, Command
 	boolean wasDisposed = false;
 	public void dispose(){
 		if (getClass() == ListableVector.class){
-			Debugg.println("ListableVector disposed ");
 			if (size()>0){
 				Listable l = (Listable)elementAt(0);
-				Debugg.println("     ---> " + l.getName() + "  " + l.getClass());
 			}
 		}
 		wasDisposed = true;
@@ -81,8 +79,6 @@ public class ListableVector extends FileElement implements StringLister, Command
 		super.dispose();
 	}
 	public void finalize() throws Throwable {
-		if (!wasDisposed && getClass() == TreeVector.class)
-			Debugg.println("TreeVector finalized without being disposed ");
 		totalFinalized++;
 		super.finalize();
 	}
