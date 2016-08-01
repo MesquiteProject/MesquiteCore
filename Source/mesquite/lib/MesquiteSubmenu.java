@@ -15,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 
@@ -32,6 +33,7 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 //	static MesquiteSubmenu[] submenus = new MesquiteSubmenu[255];
 	public MesquiteSubmenu(MesquiteSubmenuSpec msms, Menu ownerMenu, MesquiteModule ownerModule) {
 		super(msms.getSubmenuName());  
+		MesquiteMenuItem.totalCreated++;
 		filterable = msms.isFilterable();
 		addActionListener(this);
 		this.msms = msms;
@@ -47,6 +49,7 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 
 	public MesquiteSubmenu(String submenuName, Menu ownerMenu, MesquiteModule ownerModule) {
 		super(submenuName);  
+		MesquiteMenuItem.totalCreated++;
 		addActionListener(this);
 		if (submenuName == null) {
 			System.out.println("submenu with no name");
@@ -181,6 +184,7 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 			if (checkString!=null)
 				checkString.releaseMenuItem();
 			checkString = null;
+			MesquiteMenuItem.totalDisposed++;
 		}
 	}
 	public void setSelected(MesquiteString selected) {

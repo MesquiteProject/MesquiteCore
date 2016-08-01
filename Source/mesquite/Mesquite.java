@@ -1438,6 +1438,15 @@ public class Mesquite extends MesquiteTrunk
 			logln("Memory status cannot be reported because checkMemory is not set");
 			return;
 		}
+		Vector wcre,wct, wctf;
+		wcre = MesquiteWindow.classesCreated;
+		wct = MesquiteWindow.countsOfClasses;
+		wctf = MesquiteWindow.countsOfClassesFinalized;
+			logln("Window classes created     " );
+			for (int i=0; i<wcre.size(); i++){
+				logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
+			}
+		
 		Vector cre, fin, ct, ctd;
 		cre = FileElement.classesCreated;
 		fin = FileElement.classesFinalized;

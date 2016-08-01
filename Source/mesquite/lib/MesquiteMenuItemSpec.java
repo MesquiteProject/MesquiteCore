@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -20,7 +20,7 @@ import mesquite.lib.duties.*;
 /* ======================================================================== */
 /** Specifications to later make menu items.*/
 
-public class MesquiteMenuItemSpec implements Listable {
+public class MesquiteMenuItemSpec implements Listable, Disposable {
 	public MesquiteCommand command;
 	private MesquiteModule ownerModule;
 	protected String itemName;
@@ -53,7 +53,7 @@ public class MesquiteMenuItemSpec implements Listable {
 		if (ownerModule!=null){
 			ownerID  = ownerModule.getID();
 			ownerClass = 	ownerModule.getClass();
-	}
+		}
 		this.command = command;
 		totalCreated++;
 	}
@@ -71,6 +71,21 @@ public class MesquiteMenuItemSpec implements Listable {
 			ownerModule.getMenuItemSpecs().addElement(mmis, false);
 			return mmis;
 		}
+	}
+boolean alreadyDisposed = false;
+	public void dispose(){
+		if (alreadyDisposed)
+			return;
+		if (command != null)
+			command.dispose();
+		command = null;
+		ownerModule = null;
+		whichMenu= null;
+		submenu= null;
+		compatibilityRestriction = null;
+		qualificationsTest = null;
+		lVector = null;
+		alreadyDisposed = true;
 	}
 	public void setZone(int zone){
 		if (zone > MAXZONE)
@@ -111,13 +126,13 @@ public class MesquiteMenuItemSpec implements Listable {
 		return itemName;
 	}
 	public void setName(String name){
-		 itemName = name;
+		itemName = name;
 	}
 	public void setReferentID(String name){
-		 referentID = name;
+		referentID = name;
 	}
 	public String getReferentID(){
-		 return referentID;
+		return referentID;
 	}
 	public void disconnect(){
 		//if (command!=null && command.getOwner()==ownerModule) //MEMORY shouldn't adways set null
@@ -157,7 +172,7 @@ public class MesquiteMenuItemSpec implements Listable {
 	public void setCommand(MesquiteCommand command){
 		this.command = command;
 	}
-	
+
 	public void setList(Class dutyClass){
 		this.dutyClass = dutyClass;
 	}
@@ -167,7 +182,7 @@ public class MesquiteMenuItemSpec implements Listable {
 	public void setList(StringLister s){
 		this.stringLister = s;
 	}
-	
+
 	public ListableVector getListableVector(){
 		return lVector;
 	}

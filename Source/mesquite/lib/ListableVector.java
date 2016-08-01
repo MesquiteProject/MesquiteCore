@@ -65,18 +65,25 @@ public class ListableVector extends FileElement implements StringLister, Command
 		return "<li>" + getTypeName() + " (" + size() + " units)<ul>" + sH + "</ul>" + super.toHTMLStringDescription() + "</li>";
 	}
 	boolean wasDisposed = false;
-	public void dispose(){
-		if (getClass() == ListableVector.class){
-			if (size()>0){
-				Listable l = (Listable)elementAt(0);
-			}
-		}
+	public void dispose(boolean disposeElements){
+		
+
 		wasDisposed = true;
+		if (disposeElements){
+			for (int i = 0; i<size(); i++){
+				Listable listable = elementAt(i);
+				if (listable instanceof Disposable)
+					((Disposable)listable).dispose();
+		}
+		}
 		removeAllElements(false);
 		if ((getClass() == TreeVector.class) || (getClass() == SpecsSetVector.class) || (getClass() == TaxaGroupVector.class))
 			//||  (getClass() == CharactersGroupVector.class) && (getClass() != ModelVector.class))
 			totalDisposed++;
 		super.dispose();
+	}
+	public void dispose(){
+		dispose(false);
 	}
 	public void finalize() throws Throwable {
 		totalFinalized++;

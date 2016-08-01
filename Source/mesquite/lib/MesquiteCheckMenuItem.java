@@ -23,7 +23,7 @@ import mesquite.lib.simplicity.InterfaceManager;
 /** A class for checkboxmenuitems.*/
 
 public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandable, ActionListener, ItemListener{
-	public MesquiteCommand command, resetCommand;
+	public MesquiteCommand command; //, resetCommand;
 	private MesquiteModule ownerModule;
 	public String itemName, itemID;
 	public String argument;
@@ -42,7 +42,8 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	//This is constructor used to make menu from specs
 	public MesquiteCheckMenuItem(MesquiteCMenuItemSpec specification) {
 		super();
-		resetCommand = new MesquiteCommand("reset", this);
+	//	resetCommand = new MesquiteCommand("reset", this);
+		MesquiteMenuItem.totalCreated++;
 		addActionListener(this);
 		addItemListener(this);
 		if (specification.itemName == null) {
@@ -74,7 +75,8 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	}
 	public MesquiteCheckMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command, String argument, MesquiteString selected) {
 		super();
-		resetCommand = new MesquiteCommand("reset", this);
+	//	resetCommand = new MesquiteCommand("reset", this);
+		MesquiteMenuItem.totalCreated++;
 		addActionListener(this);
 		addItemListener(this);
 		this.itemName = itemName;
@@ -157,6 +159,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 			ownerModule = null;
 			command = null;
 			checkBoolean = null;
+			MesquiteMenuItem.totalDisposed++;
 		}
 	}
 	public void set(boolean s){
@@ -270,11 +273,11 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 			command.doItMainThread(arg, CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
 		else
 			command.doItMainThread("", CommandChecker.getQueryModeString("Menu item", command, this), this, MesquiteDialog.useWizards);  // command invoked
-		resetCommand.doItMainThread("", null, false, false, this);
+	//	resetCommand.doItMainThread("", null, false, false, this);
 	}
 
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "resetsChecks", null, commandName, "resetCheckMenus")) {
+		if (checker.compare(this.getClass(), "resetsChecks", null, commandName, "reset")) {
 
 			MesquiteTrunk.resetCheckMenuItems();
 			MesquiteTrunk.checkForResetCheckMenuItems();   

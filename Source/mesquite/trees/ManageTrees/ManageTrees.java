@@ -1990,6 +1990,10 @@ class TreeBlock extends NexusBlock {
 		return (block.getBlockName().equalsIgnoreCase("TAXA") || block.getBlockName().equalsIgnoreCase("CHARACTERS"));
 
 	}
+	public void dispose(){
+		trees = null;
+		super.dispose();
+	}
 	public String getBlockName(){
 		return "TREES";
 	}

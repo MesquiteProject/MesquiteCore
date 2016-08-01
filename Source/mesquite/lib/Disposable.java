@@ -14,35 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import mesquite.lib.duties.*;
-
+import java.text.*;
 
 /* ======================================================================== */
-/**Represents a block in a NEXUS file that is editable raw (e.g., a foreign block, or a Mesquite block.
- */
-public abstract class NexusBlockEditableRaw extends NexusBlock {
-	EditRawNexusBlock editor;
-	public NexusBlockEditableRaw(MesquiteFile f, MesquiteModule manager){
-		super(f, manager);
-	}
-	public void dispose(){
-		editor = null;
-		super.dispose();
-	}
-	/** DOCUMENT */
-	public abstract String getText();
-
-	/** DOCUMENT */
-	public abstract void setText(String n);
-	
-	/** DOCUMENT THIS should only be called if it is an editable-raw nexus block*/
-	public void setEditor(EditRawNexusBlock editor) {
-		this.editor = editor;
-	}
-	/** DOCUMENT THIS should only be called if it is an editable-raw nexus block*/
-	public EditRawNexusBlock getEditor() {
-		return editor;
-	}
+/**Interface for object to claim it is listable, e.g. in List windows*/
+public interface Disposable {
+ 	public void dispose();
 }
-
 

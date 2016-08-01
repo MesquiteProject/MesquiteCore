@@ -34,7 +34,11 @@ public class ManageAssociations extends AssociationsManager {
  	public String getKeywords(){
  		return "genes species";
  	}
-
+ 	public void endJob(){
+ 		associationsVector.dispose(true);
+ 		blocks.dispose(true);
+		super.endJob();
+ 	}
 	public boolean isPrerelease(){
 		return false;
 	}

@@ -345,13 +345,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		windowToActivate = null;
 		activeWindowOfProject = null;
-		files.dispose();
-		taxas.dispose();
-		datas.dispose();
-		charModels.dispose();
-		treeVectors.dispose();
-		otherElements.dispose();
-		nexusBlocks.dispose();
+		files.dispose(true);
+		taxas.dispose(true);
+		datas.dispose(true);
+		charModels.dispose(true);
+		treeVectors.dispose(true);
+		otherElements.dispose(true);
+		nexusBlocks.dispose(true);
 		files = null;
 		taxas = null;
 		datas = null;
@@ -1154,12 +1154,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (block !=null) {
 				if (files.indexOf(block.getFile())<0)
 					MesquiteMessage.warnProgrammer("Error: NEXUS block found referring to file that no longer exists " + block.getClass());
+				block.dispose();
 				nexusBlocks.removeElement(block, true);
 			}
 		}
 	}
 	/*.................................................................................................................*/
-	/** Returns those NEXUS blocks belonging to the given file. */
+	/** Removes those NEXUS blocks belonging to the given file. */
 	public void removeNexusBlocks(MesquiteFile f) {
 		if (nexusBlocks==null)
 			return;

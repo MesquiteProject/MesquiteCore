@@ -283,9 +283,10 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 						newMatrix = null;
 					}
 				}
-
+				names.dispose(true);
+				
 				tempDataFile.close();
-
+				
 				if (progIndicator!=null) 
 					progIndicator.goAway();
 

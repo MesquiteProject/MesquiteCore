@@ -28,6 +28,10 @@ public class TaxaBlock extends NexusBlock {
 		return block.getBlockName().equalsIgnoreCase("AUTHORS");
 		
 	}
+	public void dispose(){
+		taxa = null;
+		super.dispose();
+	}
 	public void written() {
 		taxa.setDirty(false);
 	}

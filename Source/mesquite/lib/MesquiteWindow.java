@@ -34,6 +34,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	//	static Vector cd;
 	public MesquiteModule ownerModule;
 	public MesquiteMenuBar menuBar;
+	public static Vector classesCreated, countsOfClasses, countsOfClassesFinalized; //to detect memory leaks
 
 	public boolean resetMenuPending = false;
 	public int painting = 0;
@@ -118,15 +119,24 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		dialogAnchor.setBounds(-64, -64, 32,32);
 		closeWindowShortcut = new MenuShortcut(KeyEvent.VK_W);
 		defaultFont = new Font ("SanSerif", Font.PLAIN, 10); //added 5 Nov 01
-
+			if (MesquiteTrunk.checkMemory){
+				classesCreated = new Vector();
+				countsOfClasses = new Vector();
+				countsOfClassesFinalized = new Vector();
+			
+			}
 	}
 	/** a constructor not to be used except internally!!!  This is used for accumulating commands*/
 	public MesquiteWindow () {
 		id = numWindowsTotal++;
+		if (MesquiteTrunk.checkMemory)
+			countCreated();
 	}
 	/**the standard constructor for MesquiteWindows*/
 	public MesquiteWindow (MesquiteModule ownerModule, boolean showInfoBar) {
 		super();
+		if (MesquiteTrunk.checkMemory)
+			countCreated();
 		tileLocation = getDefaultTileLocation();
 		readyToPaint = false;
 		totalCreated++;
@@ -303,6 +313,18 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	}
 	
+	void countCreated(){
+		if (classesCreated.indexOf(getClass())<0) {
+			classesCreated.addElement(getClass());
+			countsOfClasses.addElement(new MesquiteInteger(1));
+			countsOfClassesFinalized.addElement(new MesquiteInteger(0));
+		}
+		else {
+			MesquiteInteger c = (MesquiteInteger)countsOfClasses.elementAt(classesCreated.indexOf(getClass()));
+			if (c!=null)
+				c.increment();
+		}
+	}
 	public void startWindowTimer(){
 		if (windowTimer!=null)
 			windowTimer.start();
@@ -2967,6 +2989,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 
 		deassignMenus();
+		
+
 		if (parentFrame != null)
 			parentFrame.removePage(this);
 		ETContentArea etc = (ETContentArea)graphics[1];
@@ -2978,6 +3002,9 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		menuBar=null;
 		wasDisposed = true;
 		ownerModule = null;
+		currentObject = null;
+		currentTool = null;
+		previousTool = null;
 
 
 		/*if (infoBarMenuItem !=null) {
@@ -3039,6 +3066,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		 */
 	}
 	public void finalize() throws Throwable {
+		if (MesquiteTrunk.checkMemory && classesCreated.indexOf(getClass())>=0) {
+			MesquiteInteger c = (MesquiteInteger)countsOfClassesFinalized.elementAt(classesCreated.indexOf(getClass()));
+			if (c!=null)
+				c.increment();
+		}
 		totalFinalized++;
 		super.finalize();
 	}

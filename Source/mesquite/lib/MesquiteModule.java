@@ -289,6 +289,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** endJob is called as a module is quitting; modules should put their clean up code here.*/
 	public void endJob() {
+		if (menuItemsSpecs != null) {
+			menuItemsSpecs.dispose(true);
+			//Debugg.println("!!!!!!!!EndJob " + getClass());
+		}
+		menuItemsSpecs = null;
 	}
 	/*.................................................................................................................*/
 	public void finalize() throws Throwable {
@@ -301,6 +306,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	finalize things it needs..  NOTE: if a module wants to quit on its own accord, it should call "iQuit" so that
 	the replacement hiring system can take effect.*/
 	protected void dispose() {
+	//	Debugg.println("########### dispose module " + this);
 		if (assignedMenuSpec !=null)
 			assignedMenuSpec.removeGuestModule(this);
 		if (moduleMenuSpec !=null)
@@ -334,7 +340,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		//	if (employer!=null && quit) //TODO: only call this if the employer quit on its own
 		//		employer.employeeQuit(this);
 		if (MesquiteTrunk.trackActivity) MesquiteMessage.notifyProgrammer ("MesquiteModule " + getName() + "  closing down ");
-		closeDownAllEmployees (this);
+		closeDownAllEmployees ();
 		if (employer!=null && !employer.doomed && employer.employees!=null) {
 			employer.employees.removeElement(this, false);
 		}
