@@ -345,6 +345,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		windowToActivate = null;
 		activeWindowOfProject = null;
+
 		files.dispose(true);
 		taxas.dispose(true);
 		datas.dispose(true);
@@ -359,6 +360,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		otherElements = null;
 		treeVectors = null;
 		nexusBlocks = null;
+		frame = null;
 
 		ownerModule = null; // to minimize chance of memory leaks
 		closeCommand= null;

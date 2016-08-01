@@ -213,6 +213,13 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	}
 	public void dispose(){
 		projPanel.dispose();
+		if (proj != null)
+			proj.removeListener(this);
+		proj = null;
+		bfc = null;
+		removeAll();
+		projPanel = null;
+		scrollPanel = null;
 		super.dispose();
 	}
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
@@ -295,13 +302,15 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	}
 
 	public void dispose(){
-		if (true)
-			return;
 		for (int i = 0; i<elements.size(); i++){
 			ClosablePanel panel = ((ClosablePanel)elements.elementAt(i));
-			remove(panel);
 			panel.dispose();
 		}
+		removeAll();
+		w = null;
+		bfc = null;
+		proj = null;
+		super.dispose();
 	}
 	public ClosablePanel getPrecedingPanel(ClosablePanel panel){
 		return null;
@@ -1042,16 +1051,7 @@ class TaxaPanel extends ElementPanel {
 		addCommand(true, null, "Delete Taxa Block", "Delete Taxa Block", new MesquiteCommand("deleteMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));
-		/*	Vector vv = ((FileElement)element).getSpecSetsVectorVector();
-		for (int i=0; i<vv.size(); i++){
-			SpecsSetVector v = (SpecsSetVector)vv.elementAt(i);
-			v.addListener(this);
-			for (int k=0; k<v.size(); k++){
-				FileElement fe = (FileElement)v.elementAt(k);
-				fe.addListener(this);
-			}
-		}
-		 */
+		
 	}
 
 	public String getTitleAddition(){

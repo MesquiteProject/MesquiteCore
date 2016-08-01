@@ -76,6 +76,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 					((Disposable)listable).dispose();
 		}
 		}
+		removeAllListeners();
 		removeAllElements(false);
 		if ((getClass() == TreeVector.class) || (getClass() == SpecsSetVector.class) || (getClass() == TaxaGroupVector.class))
 			//||  (getClass() == CharactersGroupVector.class) && (getClass() != ModelVector.class))

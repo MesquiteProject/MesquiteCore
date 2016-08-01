@@ -422,6 +422,8 @@ class TaxonListWindow extends ListWindow {
 		return taxa;
 	}
 	public void setCurrentObject(Object obj){
+		if (obj == null && taxa != null)
+			taxa.removeListener(this);
 		if (obj instanceof Taxa) {
 			if (taxa!=null)
 				taxa.removeListener(this);

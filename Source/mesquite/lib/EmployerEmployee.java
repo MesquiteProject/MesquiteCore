@@ -1978,13 +1978,13 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 	/* ................................................................................................................. */
 	/** Fires all employees. */
-	public void closeDownAllEmployees() {
+	public void closeDownAllEmployees(MesquiteModule mb) {
 	//	Debugg.println("@@@@@@@@@@closedownalleemployees " + this + " EMPLOYEES " + employees);
-		if (employees == null)
+		if (mb.employees == null)
 			return;
 	//	Debugg.println("      @@@@@@@" + this + " EMPLOYEES " + employees.size());
 
-		Enumeration e = employees.elements( );
+		Enumeration e = mb.employees.elements( );
 		while (e.hasMoreElements()) {
 			Object obj = e.nextElement();
 			MesquiteModule mbe = (MesquiteModule) obj;

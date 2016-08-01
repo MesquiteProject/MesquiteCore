@@ -2986,7 +2986,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (ownerModule!=null)
 			ownerModule.setModuleWindow(null);
 		MesquiteModule.mesquiteTrunk.windowVector.removeElement(this, false);
-
+		setMenuBar(null);
 
 		deassignMenus();
 		

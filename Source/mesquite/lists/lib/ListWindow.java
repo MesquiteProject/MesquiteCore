@@ -154,6 +154,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 
 	public void keyReleased(KeyEvent e){
 	}
+	public void dispose(){
+		super.dispose();
+	}
 	/*.................................................................................................................*/
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/
 	public void changed(Object caller, Object obj, Notification notification){
