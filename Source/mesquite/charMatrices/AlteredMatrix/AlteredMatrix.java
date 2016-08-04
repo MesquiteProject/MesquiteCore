@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 import mesquite.charMatrices.lib.*;
 
 /* ======================================================================== */
-public class AlteredMatrix extends SourceModifiedMatrix {
+public class AlteredMatrix extends SourceModifiedMatrix {  //WAYNECHECK: so that Altered Matrices are exposed to Make New Matrix From>Alter Matrix>
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DataAlterer.class, getName() + " needs a method to alter matrices.",
 				"You can request how matrices are altered either initially, or later under the Alter Matrix submenu.");
