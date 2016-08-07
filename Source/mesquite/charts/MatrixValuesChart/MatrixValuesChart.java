@@ -44,6 +44,7 @@ public class MatrixValuesChart extends FileAssistantCH  {
 	NumberForMatrix numberTask;
 	CharMatrixSource matrixSourceTask;  //WAYNECHECK: is it OK that I changed from a MatrixSourceCoordObed to a CharMatrixSource?
 	//DAVIDCHECK: I think so.  Why did you change?
+	//WAYNECHECK: as otherwise I couldn't use AlteredMatrix as a matrixSource
 	
 //	MatrixSourceCoordObed matrixSourceTask;   
 	ItemsCharter chartWindowTask;

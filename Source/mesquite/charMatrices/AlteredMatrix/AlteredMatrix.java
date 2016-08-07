@@ -111,7 +111,9 @@ public class AlteredMatrix extends SourceModifiedMatrix {  //So that Altered Mat
 		createdNewDataObject = matrix.getParentData()==null; 
 		CharacterData data = CharacterData.getData(this,  matrix, taxa); //DAVIDCHECK: this returns parentData of matrix, it if exists
 		tempData = data.cloneData();
-		data.dispose();  //DAVIDCHECK: therefore, if it had returned the parentdata, the original data here gets deleted.  
+		if (createdNewDataObject)  //WAYNECHECK:  I left the DAVIDCHECKS so that you could see them.  The problem was that I forgot
+			//to check the createdNewDataObject boolean before disposing
+			data.dispose();  //DAVIDCHECK: therefore, if it had returned the parentdata, the original data here gets deleted.  
 		// I presume you only want to delete if it had been created in getData? If so, might want to do the work of getData yourself?
 
 		
