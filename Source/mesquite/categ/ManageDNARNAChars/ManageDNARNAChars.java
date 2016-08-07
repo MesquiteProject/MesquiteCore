@@ -257,7 +257,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		}
 		blocks.append(endLine);
-		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
 //			if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));

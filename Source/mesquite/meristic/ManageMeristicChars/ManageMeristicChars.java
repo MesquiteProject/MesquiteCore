@@ -254,7 +254,7 @@ public class ManageMeristicChars extends CharMatrixManager {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		
 		file.write(";" + StringUtil.lineEnding());
-		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, cData)){
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, cData)){
 			file.write("\tTITLE  " + StringUtil.tokenize(cData.getName()) + ";" + StringUtil.lineEnding());
 		}
 
