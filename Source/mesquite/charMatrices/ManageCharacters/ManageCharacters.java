@@ -1905,7 +1905,7 @@ public class ManageCharacters extends CharactersManager {
 									 if (!StringUtil.blank((String)previous))
 										 string = (String)previous + "; " + string;
 									 if (name.equals(MolecularData.genBankNumberName)) {  // let's clean it up because of Mesquite 3.1 and before's confounding of GenBank numbers and other annotations
-											cleanUpGenBankAssociatedObject (as, whichTaxon, string);  //WAYNECHECK
+											cleanUpGenBankAssociatedObject (as, whichTaxon, string);  
 									 }
 									 else
 										 as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);

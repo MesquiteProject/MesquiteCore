@@ -23,7 +23,7 @@ import mesquite.lib.duties.*;
 import mesquite.charMatrices.lib.*;
 
 /* ======================================================================== */
-public class AlteredMatrix extends SourceModifiedMatrix {  //WAYNECHECK: so that Altered Matrices are exposed to Make New Matrix From>Alter Matrix>
+public class AlteredMatrix extends SourceModifiedMatrix {  //So that Altered Matrices are exposed to Make New Matrix From>Alter Matrix>
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DataAlterer.class, getName() + " needs a method to alter matrices.",
 				"You can request how matrices are altered either initially, or later under the Alter Matrix submenu.");
@@ -109,9 +109,10 @@ public class AlteredMatrix extends SourceModifiedMatrix {  //WAYNECHECK: so that
 			return null;
 //		MAdjustableDistribution modified = matrix.makeBlankAdjustable();
 		createdNewDataObject = matrix.getParentData()==null; 
-		CharacterData data = CharacterData.getData(this,  matrix, taxa);
+		CharacterData data = CharacterData.getData(this,  matrix, taxa); //DAVIDCHECK: this returns parentData of matrix, it if exists
 		tempData = data.cloneData();
-		data.dispose();
+		data.dispose();  //DAVIDCHECK: therefore, if it had returned the parentdata, the original data here gets deleted.  
+		// I presume you only want to delete if it had been created in getData? If so, might want to do the work of getData yourself?
 
 		
 	   	altererTask.alterData(tempData, null, null);
