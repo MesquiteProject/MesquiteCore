@@ -22,21 +22,26 @@ import java.text.*;
 public class ObjectContainer implements Listable {
 	Object object;
 	static int totalCreated = 0;
+	int totalWhenCreated = 0;  //WAYNECHECK:  added this variable as getID() in some circumstances was returning 1 more than the number when the object 
+					//was created, presumably because another object was created in the meantime and totalCreated is static
 	String name = null;
 	public ObjectContainer() {
  		totalCreated++;
+ 		totalWhenCreated=totalCreated;
 	}
 	public ObjectContainer(Object o) {
  		totalCreated++;
  		object = o;
+ 		totalWhenCreated=totalCreated;
 	}
 	public ObjectContainer(String name, Object o) {
  		totalCreated++;
  		object = o;
  		this.name = name;
+ 		totalWhenCreated=totalCreated;
 	}
 	public int getID() {
-		return totalCreated;
+		return totalWhenCreated;
 	}
  	public Object getObject(){
  		return object;
