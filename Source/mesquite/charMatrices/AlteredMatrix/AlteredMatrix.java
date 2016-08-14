@@ -109,13 +109,10 @@ public class AlteredMatrix extends SourceModifiedMatrix {  //So that Altered Mat
 			return null;
 //		MAdjustableDistribution modified = matrix.makeBlankAdjustable();
 		createdNewDataObject = matrix.getParentData()==null; 
-		CharacterData data = CharacterData.getData(this,  matrix, taxa); //DAVIDCHECK: this returns parentData of matrix, it if exists
+		CharacterData data = CharacterData.getData(this,  matrix, taxa); 
 		tempData = data.cloneData();
-		if (createdNewDataObject)  //WAYNECHECK:  (I left the DAVIDCHECKS so that you could see them.)  Yes, I realize what getData returns - I just wrote that
-			//The problem was that even though I made "createdNewDataObject" for this very reason, I forgot to use it!  
-			//I've now added this "if" condition that I had meant to use all along
-			data.dispose();  //DAVIDCHECK: therefore, if it had returned the parentdata, the original data here gets deleted.  
-		// I presume you only want to delete if it had been created in getData? If so, might want to do the work of getData yourself?
+		if (createdNewDataObject)  
+			data.dispose();  
 
 		
 	   	altererTask.alterData(tempData, null, null);
