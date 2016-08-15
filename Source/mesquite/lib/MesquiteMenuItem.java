@@ -78,6 +78,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 		super();
 		addActionListener(this);
 		this.specification = specification;
+		if (specification != null){
 		if (specification.itemName == null) {
 			MesquiteMessage.println("Menu item with null name: specification " + specification);
 			MesquiteCommand c = specification.getCommand();
@@ -100,6 +101,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 		if (command==null) {
 			setDocument(false);
 			setEnabled(false);
+		}
 		}
 		//	addActionListener(this);
 		totalCreated++;
@@ -178,9 +180,16 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	public Object getReferent(){
 		return referent;
 	}
+	public void dispose(){
+		disconnectable = true;
+		disconnect();
+	}
 	public void disconnect(){
 		if (disconnectable){
 			command = null;
+			referent = null;
+			others = null;
+			specification = null;
 			totalDisposed++;
 		}
 	/*	else if (MesquiteTrunk.debugMode){

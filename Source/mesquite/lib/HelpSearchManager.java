@@ -117,7 +117,7 @@ public class HelpSearchManager implements Commandable {
 		if (item instanceof MesquiteWindow){
 			String result = "";
 			MesquiteWindow f = ((MesquiteWindow)item);
-			MenuBar bar = f.getMenuBar();
+			MenuBar bar = f.getMenuBar(true);
 			if (bar != null){
 				for (int i = 0; i<bar.getMenuCount(); i++){
 					Menu m = bar.getMenu(i);

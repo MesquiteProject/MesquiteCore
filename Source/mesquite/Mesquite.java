@@ -1281,7 +1281,7 @@ public class Mesquite extends MesquiteTrunk
 		return newProject(pathname, 1, false, originalArguments,  importerSubclass);
 	}
 	/*.................................................................................................................*/
-	
+
 	public MesquiteProject openFile(String pathname){
 		return newProject(pathname, 1,  false, null, null);
 	}
@@ -1442,11 +1442,11 @@ public class Mesquite extends MesquiteTrunk
 		wcre = MesquiteWindow.classesCreated;
 		wct = MesquiteWindow.countsOfClasses;
 		wctf = MesquiteWindow.countsOfClassesFinalized;
-			logln("Window classes created     " );
-			for (int i=0; i<wcre.size(); i++){
-				logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
-			}
-		
+		logln("Window classes created     " );
+		for (int i=0; i<wcre.size(); i++){
+			logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
+		}
+
 		Vector cre, fin, ct, ctd;
 		cre = FileElement.classesCreated;
 		fin = FileElement.classesFinalized;
@@ -1538,39 +1538,39 @@ public class Mesquite extends MesquiteTrunk
 		StringBuffer sb = new StringBuffer();
 		int count=0;
 		String prevPackageName="";
-	    Vector<String> vector = new Vector<String>();
-	    
-	    for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
-	    	MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
-	    	if (mmi.loadModule()) {
-	    		if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
-	    			prevPackageName=mmi.getPackageName();
-	    			if (prevPackageName!=null){
-	    				Collections.sort(vector);
-	    				for(int j=0; j < vector.size(); j++){
-	    					sb.append(vector.get(j));
-	    				}
-	    				vector.clear();
-	    				sb.append("<hr>");
-	    				String vers = mmi.getVersion();
-	    				if (vers == null)
-	    					vers = "";
-	    				if (StringUtil.blank(vers))
-	    					sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
-	    				else
-	    					sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
-	    			}
-	    		}
-	    		vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
-	    		count++;
-	    	}
-	    } 
-	    if (!vector.isEmpty()) {
-	    	Collections.sort(vector);
-	    	for(int j=0; j < vector.size(); j++){
-	    		sb.append(vector.get(j));
-	    	}
-	    }
+		Vector<String> vector = new Vector<String>();
+
+		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
+			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
+			if (mmi.loadModule()) {
+				if (prevPackageName == null || (mmi!=null && prevPackageName != null && !prevPackageName.equalsIgnoreCase(mmi.getPackageName()))) {
+					prevPackageName=mmi.getPackageName();
+					if (prevPackageName!=null){
+						Collections.sort(vector);
+						for(int j=0; j < vector.size(); j++){
+							sb.append(vector.get(j));
+						}
+						vector.clear();
+						sb.append("<hr>");
+						String vers = mmi.getVersion();
+						if (vers == null)
+							vers = "";
+						if (StringUtil.blank(vers))
+							sb.append( "<h2>"+ mmi.getPackageName()+"</h2>");
+						else
+							sb.append( "<h2>"+ mmi.getPackageName() + ", version " + vers + "</h2>");
+					}
+				}
+				vector.add("<li><b>"+mmi.getName() + "</b>:\t" + mmi.getExplanation()  + "</li>");
+				count++;
+			}
+		} 
+		if (!vector.isEmpty()) {
+			Collections.sort(vector);
+			for(int j=0; j < vector.size(); j++){
+				sb.append(vector.get(j));
+			}
+		}
 		String allModulesHTML = " <title>Modules in Mesquite</title>";
 		allModulesHTML += "<body>";
 		allModulesHTML += "<h1>List of All Installed Modules in Mesquite</h1>";
@@ -1818,7 +1818,7 @@ public class Mesquite extends MesquiteTrunk
 			storePreferences();
 			discreetAlert("You will need to restart Mesquite to load all of the modules");
 		}
-		
+
 		else if (checker.compare(this.getClass(), "Opens file on disk.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file] - if parameter absent then presents user with dialog box to choose file", commandName, "openFile")) {
 			String path = ParseUtil.getFirstToken(arguments, stringPos);
 			String completeArguments = arguments;
@@ -1855,35 +1855,37 @@ public class Mesquite extends MesquiteTrunk
 			zeroMenuResetSuppression();
 			//Debugg.println do this only once
 			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
+			if (debugMode){
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+				resetAllMenuBars();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {
 			TextDisplayer displayer = (TextDisplayer)hireEmployee(TextDisplayer.class, null);

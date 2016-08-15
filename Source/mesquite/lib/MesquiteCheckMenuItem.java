@@ -151,6 +151,10 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 		if (specification != null)
 			setEnabled(specification.isEnabled());
 	}
+	public void dispose(){
+		disconnectable = true;
+		disconnect();
+	}
 	public void disconnect(){
 		//if (command!=null && command.getOwner()==ownerModule) //MEMORY shouldn't adways set null
 		//	command.setOwner(null);
@@ -159,6 +163,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 			ownerModule = null;
 			command = null;
 			checkBoolean = null;
+			specification = null;
 			MesquiteMenuItem.totalDisposed++;
 		}
 	}

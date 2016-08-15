@@ -284,7 +284,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 		
 		
-		menuBar = new MesquiteMenuBar(this);
+	//	menuBar = new MesquiteMenuBar(this);  Debugg.println OK to delete?
 		//setMenuBar(menuBar);  //���
 		parentFrame.setWindowLocation(60, 10, false, false); //default window position
 		addKeyListenerToAll(graphics[0], palette, true);
@@ -426,7 +426,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void setParentFrame(MesquiteFrame f){
 		parentFrame = f;
 		if (parentFrame != null)
-			parentFrame.setMenuBar(mbar);
+			parentFrame.setMenuBar(this, menuBar);
 	}
 	public boolean isFrontMostInLocation(){
 		return parentFrame.frontMostInLocation(getTileLocation()) == this;
@@ -576,7 +576,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		MenuContainer cont = ((MenuComponent)c).getParent();
 		while (cont!= null && !(cont instanceof MenuBar) && !(cont instanceof MesquitePopup)&& cont instanceof MenuComponent)
 			cont =  ((MenuComponent)cont).getParent();
-		if (cont instanceof MenuBar) {
+		if (cont instanceof MenuBar) {  //Debugg.println this may be broken under new minimal-refresh system
 			return getWindow((MenuBar)cont);
 		}
 		else if (cont instanceof MesquitePopup){
@@ -2136,10 +2136,20 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*.................................................................................................................*/
 	/** Resets the menu bar of the window */
-	public void resetMenus(){
-
+	static final boolean refreshMenusOnlyFrontWindows = true;  //if true, then uses new system that remakes menus only when window is front or brought to front
+	
+	public void resetMenus(boolean generateRegardless){
+		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //DAVIDCHECK: this is the short circuit
+			if (menuBar != null)
+				menuBar.dispose();
+			menuBar = null;
+			return;
+		}
+		
 		resetMenuTime.start();
 		deassignMenus();
+		if (menuBar != null)
+			menuBar.dispose();
 		
 		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
 		resetMenuTime.end();
@@ -2150,18 +2160,30 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		else {
 			ownerModule.composeMenuBar(tempMenuBar, this); //could set to menuBar
 		}
+			
 		resetMenuTime.start();
-		setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
 		menuBar = tempMenuBar;//need to remember this in case anyone wants access to menu bar
+		setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
 
 		menuResets++;
 		if (reportMenuResets)
 			System.out.println(Integer.toString(menuResets) + " menu resets for " + getTitle());
 		resetMenuTime.end();
 	}
-	public MesquiteMenuBar getMesquiteMenuBar(){
+	public void setMenuBar(MenuBar mbar) {
+		if (parentFrame!=null)
+			parentFrame.setMenuBar(this, menuBar);  //this actually calls the setMenuBar only if this window is at front
+	}
+	public MenuBar getMenuBar() {
 		return menuBar;
 	}
+	public MenuBar getMenuBar(boolean generateIfNeeded) { //DAVIDCHECK: new method; MenuBar object is build on demand at this point
+		if (generateIfNeeded && menuBar == null) {
+			resetMenus(true);
+		}
+		return menuBar;
+	}
+
 	public void setMinimalMenus(boolean minimal){
 		minimalMenus = minimal;
 	}
@@ -3186,15 +3208,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	public String getTitle() {
 		return title;
-	}
-	MenuBar mbar;
-	public void setMenuBar(MenuBar mbar) {
-		this.mbar = mbar;
-		if (parentFrame!=null)
-			parentFrame.setMenuBar(this, mbar);
-	}
-	public MenuBar getMenuBar() {
-		return mbar;
 	}
 	public void setResizable(boolean yes) {
 		if (parentFrame!=null)

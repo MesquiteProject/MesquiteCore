@@ -572,7 +572,7 @@ public class CommandCommunicator {
 		}
 		if (w == null)
 			return null;
-		MenuBar menus = w.getMenuBar();
+		MenuBar menus = w.getMenuBar(true);
 		return menus;
 	}
 	public void commandDone(Object returned){
