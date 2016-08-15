@@ -2153,7 +2153,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenuTime.start();
 		setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
 		menuBar = tempMenuBar;//need to remember this in case anyone wants access to menu bar
-
+		Debugg.println( getTitle() + " menu resets: " + Integer.toString(menuResets) +",   " + resetMenuTime.timeSinceLastInSeconds()+ " seconds ");
 		menuResets++;
 		if (reportMenuResets)
 			System.out.println(Integer.toString(menuResets) + " menu resets for " + getTitle());

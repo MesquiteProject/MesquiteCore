@@ -3560,6 +3560,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return writeClade(root, byWhat, associatedUseComments);
 	}
 	/*-----------------------------------------*/
+	/** Returns a string describing the tree in standard parenthesis notation (Newick standard), using taxon
+	names or numbers to refer to the taxa, depending on the boolean parameter byNames.*/
+	public String writeSimpleTreeByNamesWithNoAssociated() {
+		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
+			writeTreeByNames(root, s, true, false, false);
+		s.append(';');
+		return s.toString();
+	}
+	/*-----------------------------------------*/
 	private void writeTreeProperties(StringBuffer sb, boolean useComments){
 		String spref = "";
 		if (StringUtil.blank(writeAssociated(root, useComments))){ //if nothing at root put dummy so second will be tree properties

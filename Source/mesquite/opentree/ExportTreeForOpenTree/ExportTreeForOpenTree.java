@@ -21,6 +21,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
+import mesquite.opentree.lib.*;
 
 
 
@@ -33,7 +34,7 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public boolean loadModule(){
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -161,51 +162,6 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 	}
 
 	/*.................................................................................................................*/
-	public   void visitNodes(int node, AdjustableTree tree, NameReference nr) {
-		double value = tree.getAssociatedDouble(nr,node);
-		if (MesquiteDouble.isCombinable(value))
-			tree.setBranchLength(node, value, false);
-		else
-			tree.setBranchLength(node, MesquiteDouble.unassigned, false);
-		if (tree instanceof MesquiteTree)
-			((MesquiteTree)tree).setAssociatedDouble(nr, node, MesquiteDouble.unassigned);
-		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
-			visitNodes(d, tree, nr);
-	}
-	/*.................................................................................................................*/
-	public boolean transformTree(AdjustableTree tree){
-		if (tree == null)
-			return false;
-		ListableVector v = new ListableVector();
-		int num = tree.getNumberAssociatedDoubles();
-		if (num==1) {
-			DoubleArray da = tree.getAssociatedDoubles(0);
-			NameReference nr = NameReference.getNameReference(da.getName());
-			visitNodes(tree.getRoot(), tree, nr);
-			return true;
-		} else if (num>1){
-			boolean[] shown = new boolean[num]; //bigger than needed probably
-			for (int i = 0; i< num; i++){
-				DoubleArray da = tree.getAssociatedDoubles(i);
-				if (da != null)
-					v.addElement(new MesquiteString(da.getName(), ""), false);
-			}
-			Listable result = ListDialog.queryList(containerOfModule(), "Choose attached value", "Choose attached value to transfer to branch lengths", null, v, 0);
-			if (result != null){
-				MesquiteString name = (MesquiteString)result;
-				String sName = name.getName();
-				NameReference nr = NameReference.getNameReference(sName);
-
-				visitNodes(tree.getRoot(), tree, nr);
-
-				return true;
-			}
-		}
-		return false;
-
-	}
-
-	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
 		boolean usePrevious = args.parameterExists("usePrevious");
@@ -278,7 +234,7 @@ public class ExportTreeForOpenTree extends FileInterpreterI {
 					Tree tree =  treeSourceTask.getTree(taxa, i);
 					tree = tree.cloneTree();  // copy it so that we can modify it as we want.
 					if (convertToBranchLengths && tree instanceof AdjustableTree) {
-						transformTree((AdjustableTree)tree);
+						OpenTreeUtil.convertNodeValuesToBranchLengths(this,(AdjustableTree)tree);
 					}
 
 					if (progIndicator!=null) {
