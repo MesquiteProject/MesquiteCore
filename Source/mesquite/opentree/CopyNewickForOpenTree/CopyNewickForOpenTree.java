@@ -18,6 +18,7 @@ import mesquite.lib.duties.*;
 import mesquite.opentree.lib.OpenTreeUtil;
 
 import java.awt.Checkbox;
+import java.awt.Label;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -32,6 +33,63 @@ public class CopyNewickForOpenTree extends TreeUtility {
 		return true;  
  	}
  	
+	/* have node value: branch length 
+	/*.................................................................................................................*/
+	void showChoiceDialog(Associable tree, ListableVector names) {
+		if (tree == null)
+			return;
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ListableVector v = new ListableVector();
+		int num = tree.getNumberAssociatedDoubles();
+		boolean[] shown = new boolean[num + names.size()]; //bigger than needed probably
+		for (int i = 0; i< num; i++){
+			DoubleArray da = tree.getAssociatedDoubles(i);
+			if (da != null){
+				v.addElement(new MesquiteString(da.getName(), ""), false);
+			if (names.indexOfByName(da.getName())>=0)
+				shown[i] = true;
+			}
+		}
+		for (int i = 0; i<names.size(); i++){
+			String name = ((MesquiteString)names.elementAt(i)).getName();
+			if (v.indexOfByName(name)<0){
+				v.addElement(new MesquiteString(name, " (not in current tree)"), false);
+				if (v.size()-1>= shown.length)
+					shown[v.size()-1] = true;
+			}
+		}
+		if (v.size()==0)
+			alert("This Tree has no values associated with nodes");
+		else {
+			ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Values to show",  buttonPressed);
+			queryDialog.addLabel("Values to display on tree", Label.CENTER);
+			Checkbox[] checks = new Checkbox[v.size()];
+			for (int i=0; i<v.size(); i++){
+				MesquiteString ms = (MesquiteString)v.elementAt(i);
+				checks[i] = queryDialog.addCheckBox (ms.getName() + ms.getValue(), shown[i]);
+			}
+
+			queryDialog.completeAndShowDialog(true);
+
+			boolean ok = (queryDialog.query()==0);
+
+			if (ok) {
+				names.removeAllElements(false);
+				for (int i=0; i<checks.length; i++){
+					MesquiteString ms = (MesquiteString)v.elementAt(i);
+					if (checks[i].getState())
+						names.addElement(new MesquiteString(ms.getName(), ms.getName()), false);
+				}
+/*				for (int i =0; i<extras.size(); i++){
+					NodeAssocValuesExtra e = (NodeAssocValuesExtra)extras.elementAt(i);
+					e.setOn(on.getValue());
+				}
+*/			}
+
+			queryDialog.dispose();
+		}
+	}
+
 	public boolean queryOptions(){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Copy Newick Tree Description for Open Tree", buttonPressed);
@@ -69,29 +127,11 @@ public class CopyNewickForOpenTree extends TreeUtility {
 	}
 	
 	
-	/** These two methods adjust the vertical positions relative to the leftmost terminal taxon.*/
-	void moveOne (Tree tree, int node, Taxa taxa, MesquiteInteger target, MesquiteInteger count){
-		if (target.getValue()<0)
-			return;
-		if (tree.nodeIsTerminal(node)){
-			int taxon = tree.taxonNumberOfNode(node);
-			if (count.getValue() == target.getValue()) {
-				taxa.moveTaxa(taxon, 1, target.getValue()-1, false);
-				target.setValue(-1);
-				return;
-			}
-			count.increment();
-		}
-		else {
-			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d) && target.getValue()>=0; d = tree.nextSisterOfNode(d))
-				moveOne(tree, d, taxa, target, count);
-		}
-	}
 	public boolean isSubstantive(){
 		return true;
 	}
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
     	 public String getName() {
