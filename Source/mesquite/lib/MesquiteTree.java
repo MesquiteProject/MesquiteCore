@@ -67,14 +67,14 @@ UR that allow access to the tree as if unrooted.
 </ul>*/
 public class MesquiteTree extends Associable implements AdjustableTree, Listable, Renamable, Commandable, MesquiteListener, CompatibilityChecker, Identifiable {
 	/** The set of taxa to which terminal nodes refer. */
-	private Taxa taxa;
+	protected Taxa taxa;
 	/** The tree vector to which this Tree belongs.  The tree does not need to belong to a TreeVector, but if it is, then it is stored here
 	so that the TreeVector's translation table can be used when the Tree is written */
 	private TreeVector treeVector = null;
 	/** The name of the tree.*/
 	private String name;
 	/** the nodes that are the root and subRoot*/
-	private int root, subRoot;
+	protected int root, subRoot;
 	/** The number of taxa in the Taxa at last check. */
 	private int oldNumTaxa;
 	/** The size of various arrays within the tree object; that is, the number of spaces there are for individual nodes in the tree.  This is automatically increased as needed.*/
@@ -2773,7 +2773,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (StringUtil.blank(nodeInfo))
 			return nodeInfo;
 		if (nodeInfo.indexOf('&')==1)
-			nodeInfo=nodeInfo.replaceFirst("&", " ");
+			nodeInfo=nodeInfo.substring(2);
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		nodeInfo = StringUtil.replace(nodeInfo, " ", "");
 		nodeInfo = StringUtil.replace(nodeInfo, "prob(percent)", "\'prob(percent)\'");
@@ -2783,7 +2783,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo = StringUtil.replace(nodeInfo, "length 95%HPD", "\'length 95%HPD\'");
 		nodeInfo = StringUtil.replace(nodeInfo, "{", "\'(");
 		nodeInfo = StringUtil.replace(nodeInfo, "}", ")\'");
-		nodeInfo = StringUtil.replace(nodeInfo, ",", ", ");
+		nodeInfo = StringUtil.replace(nodeInfo, ",", " ");
 		return nodeInfo;
 	}
 	/*...............................................  read tree ....................................................*/
@@ -2831,7 +2831,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 					if (readingMrBayesConTree) {
 						c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">") + ">";  //get next token
 						c = retokenizeMrBayesConTreeNodeInfo(c);
-						readAssociated(c, sprouted, new MesquiteInteger(0));
+						readAssociated(c, sprouted, new MesquiteInteger(0), "", ">");
 						ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
 					} else
 						readAssociated(TreeDescription, sprouted, stringLoc);
@@ -2873,7 +2873,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 						if (readingMrBayesConTree) {
 							c = ParseUtil.getToken(TreeDescription, stringLoc, "", ">") + ">";  //get next token
 							c = retokenizeMrBayesConTreeNodeInfo(c);
-							readAssociated(c, sprouted, new MesquiteInteger(0));
+							readAssociated(c, sprouted, new MesquiteInteger(0), "", ">");
 							ParseUtil.getToken(TreeDescription, stringLoc, "", ">"); //skip ">"
 						} else
 							readAssociated(TreeDescription, sprouted, stringLoc);
@@ -3558,15 +3558,6 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	names or numbers to refer to the taxa, depending on the boolean parameter byNames.*/
 	public String writeTree(int byWhat, boolean associatedUseComments) {
 		return writeClade(root, byWhat, associatedUseComments);
-	}
-	/*-----------------------------------------*/
-	/** Returns a string describing the tree in standard parenthesis notation (Newick standard), using taxon
-	names or numbers to refer to the taxa, depending on the boolean parameter byNames.*/
-	public String writeSimpleTreeByNamesWithNoAssociated() {
-		StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
-			writeTreeByNames(root, s, true, false, false);
-		s.append(';');
-		return s.toString();
 	}
 	/*-----------------------------------------*/
 	private void writeTreeProperties(StringBuffer sb, boolean useComments){

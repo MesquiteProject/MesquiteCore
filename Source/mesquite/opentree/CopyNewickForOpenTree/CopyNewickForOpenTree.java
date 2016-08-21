@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.opentree.CopyNewickForOpenTree;
 
 import mesquite.lib.*;
@@ -22,111 +22,121 @@ import java.awt.Label;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.net.*;
 
 /** ======================================================================== */
 
-public class CopyNewickForOpenTree extends TreeUtility {
+public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 	boolean convertToBranchLengths = true;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;  
- 	}
- 	
-	/* have node value: branch length 
+	}
+
+	Checkbox[] nodeAssociatedLabels;
+	int associatedNumberToUseAsLabel = -1;
+
 	/*.................................................................................................................*/
-	void showChoiceDialog(Associable tree, ListableVector names) {
-		if (tree == null)
-			return;
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+	public boolean queryOptions(Tree tree){
+		ListableVector names = new ListableVector();
 		ListableVector v = new ListableVector();
 		int num = tree.getNumberAssociatedDoubles();
 		boolean[] shown = new boolean[num + names.size()]; //bigger than needed probably
+		int count = 0;
 		for (int i = 0; i< num; i++){
 			DoubleArray da = tree.getAssociatedDoubles(i);
 			if (da != null){
-				v.addElement(new MesquiteString(da.getName(), ""), false);
-			if (names.indexOfByName(da.getName())>=0)
-				shown[i] = true;
-			}
-		}
-		for (int i = 0; i<names.size(); i++){
-			String name = ((MesquiteString)names.elementAt(i)).getName();
-			if (v.indexOfByName(name)<0){
-				v.addElement(new MesquiteString(name, " (not in current tree)"), false);
-				if (v.size()-1>= shown.length)
-					shown[v.size()-1] = true;
-			}
-		}
-		if (v.size()==0)
-			alert("This Tree has no values associated with nodes");
-		else {
-			ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Values to show",  buttonPressed);
-			queryDialog.addLabel("Values to display on tree", Label.CENTER);
-			Checkbox[] checks = new Checkbox[v.size()];
-			for (int i=0; i<v.size(); i++){
-				MesquiteString ms = (MesquiteString)v.elementAt(i);
-				checks[i] = queryDialog.addCheckBox (ms.getName() + ms.getValue(), shown[i]);
-			}
-
-			queryDialog.completeAndShowDialog(true);
-
-			boolean ok = (queryDialog.query()==0);
-
-			if (ok) {
-				names.removeAllElements(false);
-				for (int i=0; i<checks.length; i++){
-					MesquiteString ms = (MesquiteString)v.elementAt(i);
-					if (checks[i].getState())
-						names.addElement(new MesquiteString(ms.getName(), ms.getName()), false);
+				if (StringUtil.notEmpty(da.getName())){
+					count++;
 				}
-/*				for (int i =0; i<extras.size(); i++){
-					NodeAssocValuesExtra e = (NodeAssocValuesExtra)extras.elementAt(i);
-					e.setOn(on.getValue());
-				}
-*/			}
-
-			queryDialog.dispose();
+			}
 		}
-	}
 
-	public boolean queryOptions(){
+		if (count==0)
+			return true;
+
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Copy Newick Tree Description for Open Tree", buttonPressed);
-		String helpString = "This will copy a tree in Newick format to the clipboard ready to be uploaded into Open Tree (opentreeoflife.org).  It will optionally convert node values "+
-		"such as consensus frequences as branch lengths (as that is one way Open Tree imports support values for branches).";
+		String helpString = "This will copy a tree in Newick format to the clipboard ready to be uploaded into Open Tree (opentreeoflife.org). " +
+				" It will optionally convert node values "+
+				"such as consensus frequences as branch lengths (as that is one way Open Tree imports support values for branches).";
 		dialog.appendToHelpString(helpString);
 		dialog.setDefaultButton(null);
-		Checkbox convertToBranchLengthsBox = dialog.addCheckBox("convert node values to branch lengths", convertToBranchLengths);
+
+		dialog.addLabel("Value to include as branch labels", Label.CENTER);
+
+		nodeAssociatedLabels = new Checkbox[count];
+		count=0;
+		for (int i = 0; i< num; i++){
+			DoubleArray da = tree.getAssociatedDoubles(i);
+			if (da != null){
+				if (StringUtil.notEmpty(da.getName())){
+					nodeAssociatedLabels[count]=dialog.addCheckBox(da.getName(), false);
+					count++;
+				}
+			}
+		}
+
+		//Checkbox convertToBranchLengthsBox = dialog.addCheckBox("convert node values to branch lengths", convertToBranchLengths);
 
 		dialog.completeAndShowDialog();
 
 		boolean ok = (dialog.query()==0);
 
-		convertToBranchLengths = convertToBranchLengthsBox.getState();
+		for (int i=0; i<nodeAssociatedLabels.length; i++) {
+			if (nodeAssociatedLabels[i].getState()) {  
+				associatedNumberToUseAsLabel = i;
+				break;
+			}
+		}
+
+		//		convertToBranchLengths = convertToBranchLengthsBox.getState();
 
 		dialog.dispose();
 		return ok;
 	}	
 
+
+	/*.................................................................................................................*/
+	public void itemStateChanged(ItemEvent e){
+
+		for (int i=0; i<nodeAssociatedLabels.length; i++) {
+			if (e.getItemSelectable() == nodeAssociatedLabels[i]){  //we have clicked on one
+				if (nodeAssociatedLabels[i].getState()) {  // this one is on, need to turn the rest off
+					for (int j=0; j<nodeAssociatedLabels.length; j++) {
+						if (i!=j)
+							nodeAssociatedLabels[j].setState(false);
+					}
+				}
+			}
+		}
+
+	}
+
+	/*.................................................................................................................*/
+
 	public  void useTree(Tree treeT) {
-		MesquiteTree tree = (MesquiteTree)treeT;
+		OpenTreeTree tree = (OpenTreeTree)treeT;
 		if (tree == null)
 			return;
 		Taxa taxa = tree.getTaxa();
 
-		if (queryOptions()) {
+		if (queryOptions(treeT)) {
 			if (convertToBranchLengths && tree instanceof AdjustableTree) {
 				OpenTreeUtil.convertNodeValuesToBranchLengths(this,(AdjustableTree)tree);
 			}
 			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-			StringSelection ss = new StringSelection(tree.writeSimpleTreeByNamesWithNoAssociated());
+			String description = tree.writeSimpleTreeByNamesWithNoAssociated();
+			StringSelection ss = new StringSelection(description);
 			clip.setContents(ss, ss);
 		}
 
 	}
-	
-	
+	/*.................................................................................................................*/
+
+
 	public boolean isSubstantive(){
 		return true;
 	}
@@ -134,15 +144,66 @@ public class CopyNewickForOpenTree extends TreeUtility {
 		return true;
 	}
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Copy Newick Tree for Open Tree";
-   	 }
+	}
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "This will copy a tree in Newick format to the clipboard ready to be uploaded into Open Tree (opentreeoflife.org).  It will optionally convert node values such as consensus frequences as branch lengths (as that is one way Open Tree imports support values for branches).";
- 		}
-   	 
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "This will copy a tree in Newick format to the clipboard ready to be uploaded into Open Tree (opentreeoflife.org).  It will optionally convert node values such as consensus frequences as branch lengths (as that is one way Open Tree imports support values for branches).";
+	}
+
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+
+	 class OpenTreeTree extends MesquiteTree {
+
+		public OpenTreeTree(Taxa taxa) {
+			super(taxa);
+		}
+		
+		/*-----------------------------------------*/
+		/** Returns a string describing the tree in standard parenthesis notation (Newick standard), using taxon
+		names or numbers to refer to the taxa, depending on the boolean parameter byNames.*/
+		public String writeSimpleTreeByNamesWithNoAssociated() {
+			StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
+		//	private void writeTreeByNames(int node, StringBuffer treeDescription, boolean includeBranchLengths, boolean includeAssociated, boolean associatedUseComments) {
+			writeTreeByNames(root, s, true, false, false);
+			s.append(';');
+			return s.toString();
+		}
+
+		/*-----------------------------------------*/
+		/** Writes a tree description into the StringBuffer using taxon names */
+		private void writeTreeByNames(int node, StringBuffer treeDescription, boolean includeBranchLengths, boolean includeAssociated, boolean associatedUseComments) {
+			if (nodeIsInternal(node)) {
+				treeDescription.append('(');
+				int thisSister = firstDaughterOfNode(node);
+				writeTreeByNames(thisSister, treeDescription, includeBranchLengths, includeAssociated, associatedUseComments);
+				while (nodeExists(thisSister = nextSisterOfNode(thisSister))) {
+					treeDescription.append(',');
+					writeTreeByNames(thisSister, treeDescription,includeBranchLengths, includeAssociated, associatedUseComments);
+				}
+				treeDescription.append(')');
+				if (nodeHasLabel(node))
+					treeDescription.append(StringUtil.tokenize(getNodeLabel(node)));
+			}
+			else {
+				treeDescription.append(StringUtil.tokenize(taxa.getTaxonName(taxonNumberOfNode(node))));
+			}
+			if ( includeBranchLengths && !branchLengthUnassigned(node)) {
+				treeDescription.append(':');
+				treeDescription.append(MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1)); //add -1 to signal full accuracy 17 Dec 01
+			}
+			if (includeAssociated){
+				String a = writeAssociated(node, associatedUseComments);
+				treeDescription.append(a);
+			}
+		}
+
+		 
+	}
+	
 }
 
 

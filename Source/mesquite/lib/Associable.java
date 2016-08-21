@@ -548,15 +548,18 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return s + ">";
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos){
+		readAssociated(assocString,node,pos,(String)null,(String)null);
+	}
+	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation){
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
-		String s=ParseUtil.getToken(assocString, pos);
+		String s=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
 		while (!">".equals(s)) {
 			if (StringUtil.blank(s))
 				return;
-			ParseUtil.getToken(assocString, pos); //eating up equals
+			ParseUtil.getToken(assocString, pos,whitespace, punctuation); //eating up equals
 			int oldPos = pos.getValue();
-			String value = ParseUtil.getToken(assocString, pos); //finding value
+			String value = ParseUtil.getToken(assocString, pos,whitespace, punctuation); //finding value
 			if (StringUtil.blank(value))
 				return;
 			if (value.equalsIgnoreCase("on")) {
@@ -585,7 +588,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				String stored = "";
 				String name = s;
 				while (!">".equals(s) && !"}".equals(s)) {
-					s=ParseUtil.getToken(assocString, pos);
+					s=ParseUtil.getToken(assocString, pos,whitespace, punctuation);
 					if ((!">".equals(s) && !"}".equals(s)))
 						stored += s;
 				}
@@ -635,9 +638,9 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 					bb.setValue(node, MesquiteInteger.fromString(assocString, pos));
 				}
 			}
-			s=ParseUtil.getToken(assocString, pos);
+			s=ParseUtil.getToken(assocString, pos,whitespace, punctuation);
 			if (",".equals(s)) //eating up "," separating subcommands
-				s=ParseUtil.getToken(assocString, pos);
+				s=ParseUtil.getToken(assocString, pos,whitespace, punctuation);
 		}
 	}
 	public void setAssociateds(Associable a){
