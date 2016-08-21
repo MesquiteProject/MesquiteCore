@@ -2,21 +2,70 @@ package mesquite.externalCommunication.lib;
 
 import mesquite.lib.*;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.*;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+
+
 public abstract class RESTCommunicator implements XMLPreferencesProcessor {
 	protected static String username = "";
 	protected static String password = ""; 
 	protected String xmlPrefsString = null;
 	protected String[] outputFilePaths; //local copies of files
 	protected MesquiteModule ownerModule;
+	protected boolean verbose = MesquiteTrunk.debugMode;
+
+	protected OutputFileProcessor outputFileProcessor; // for reconnection
+	protected ShellScriptWatcher watcher; // for reconnection
+
 
 	public RESTCommunicator () {
 	}
-	
+
 	public RESTCommunicator (MesquiteModule mb, String xmlPrefsString,String[] outputFilePaths) {
 		if (xmlPrefsString != null)
 			XMLUtil.readXMLPreferences(mb, this, xmlPrefsString);
 		this.outputFilePaths = outputFilePaths;
 		ownerModule = mb;
+	}
+	
+	
+	public String getAPITestUserName(){
+		return "";
+	}
+	public String getAPITestPassword(){
+		return "";
+	}
+	public boolean useAPITestUser() {
+		return false;
+	}
+
+	/*.................................................................................................................*/
+	public String getUserName(){
+		if (useAPITestUser()) {
+			return getAPITestUserName();
+		} else 
+			return username;
+	}
+	/*.................................................................................................................*/
+	public void setUserName(String newName){
+		if (!useAPITestUser()) 
+			username=newName;
+	}
+	/*.................................................................................................................*/
+	public String getPassword(){
+		if (useAPITestUser()) {
+			return getAPITestPassword();
+		} else 
+			return password;
+	}
+	/*.................................................................................................................*/
+	public void setPassword(String newPassword){
+		if (!useAPITestUser()) 
+			password=newPassword;
 	}
 
 	/*.................................................................................................................*/
@@ -54,30 +103,51 @@ public abstract class RESTCommunicator implements XMLPreferencesProcessor {
 		password="";
 	}
 
+
+	/*.................................................................................................................*/
+	public abstract String getBaseURL();
+	/*.................................................................................................................*/
+	public abstract String getAPIURL();
+	/*.................................................................................................................*/
+	public abstract String getRESTURL();
+	/*.................................................................................................................*/
+	public abstract String getRegistrationURL();
+	/*.................................................................................................................*/
+	public abstract String getSystemName();
 	/*.................................................................................................................*/
 	protected boolean checkUsernamePassword(boolean tellUserAboutSystem){
-		if (StringUtil.blank(username) || StringUtil.blank(password)){
+		if (StringUtil.blank(getUserName()) || StringUtil.blank(password)){
 			MesquiteBoolean answer = new MesquiteBoolean(false);
 			MesquiteString usernameString = new MesquiteString();
-			if (username!=null)
-				usernameString.setValue(username);
+			if (getUserName()!=null)
+				usernameString.setValue(getUserName());
 			MesquiteString passwordString = new MesquiteString();
-			if (password!=null)
-				passwordString.setValue(password);
-			String help = "You need an account on the CIPRes REST system to use this service.  To register, go to https://www.phylo.org/restusers/register.action";
-			new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to CIPRes", help, "", "Username", "Password", answer, usernameString, passwordString);
+			if (getPassword()!=null)
+				passwordString.setValue(getPassword());
+			String help = "You need an account on the "+getSystemName()+" REST system to use this service.  To register, go to " + getRegistrationURL();
+			new UserNamePasswordDialog(ownerModule.containerOfModule(), "Sign in to "+getSystemName(), help, "", "Username", "Password", answer, usernameString, passwordString);
 			if (answer.getValue()){
-				username=usernameString.getValue();
-				password=passwordString.getValue();
+				setUserName(usernameString.getValue());
+				setPassword(passwordString.getValue());
 			}
 			ownerModule.storePreferences();
 		}
-		boolean success = StringUtil.notEmpty(username) && StringUtil.notEmpty(password);
+		boolean success = StringUtil.notEmpty(getUserName()) && StringUtil.notEmpty(getPassword());
 		if (!success && tellUserAboutSystem) {
-			MesquiteMessage.discreetNotifyUser("Use of the CIPRes service requires an account with CIPRes's REST service.  Go to https://www.phylo.org/restusers/register.action to register for an account");
+			MesquiteMessage.discreetNotifyUser("Use of the "+getSystemName()+" service requires an account with the service.  Go to "+ getRegistrationURL()+" to register for an account");
 		}
 		return success;
 
 	}
+
+	/*.................................................................................................................*/
+	public HttpClient getHttpClient(){
+		// from http://www.artima.com/forums/flat.jsp?forum=121&thread=357685
+		CredentialsProvider provider = new BasicCredentialsProvider();
+		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+		provider.setCredentials(AuthScope.ANY, credentials);
+		return HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build();
+	}
+
 
 }
