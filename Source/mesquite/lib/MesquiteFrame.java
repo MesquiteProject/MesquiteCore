@@ -164,19 +164,16 @@ public class MesquiteFrame extends Frame implements Commandable {
 		project = null;
 		windows = null;
 	}
-	public void setMenuBar(MenuBar mbar){
-		super.setMenuBar(mbar);
-	}
 	public void setMenuBar(MesquiteWindow which, MenuBar mbar) {
 		if (which == frontWindow) {
 			try {
-				setMenuBar(mbar);
+				super.setMenuBar(mbar);
 				which.repaintInfoBar();
 			}
 			catch(Exception e){
 			}
-		checkInsets(true);
 		}
+		checkInsets(true);
 	}
 	public int getNumWindows(){
 		return windows.size();
@@ -294,7 +291,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		windows.addElement(w);
 
 		orderedWindows.addElement(w);
-		setAsFrontWindow(w, false);  //Debugg.println does this miss cases?
+		setAsFrontWindow(w);
 		resetSizes(true);
 		if (tabs !=null)
 			tabs.repaint();
@@ -397,7 +394,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		validate();
 		if (tabs !=null)
 			tabs.repaint();
-	//	setMenuBar(w, w.getMenuBar(true));  already done in setAsFrontWindow
+		setMenuBar(w, w.getMenuBar());
 
 	}
 	void showInLayout(int location, String s){
@@ -754,9 +751,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 
 	public void setAsFrontWindow(MesquiteWindow w){
-		setAsFrontWindow(w, true);
-	}
-	public void setAsFrontWindow(MesquiteWindow w, boolean resetMenuBar){
 		//	frontWindow = null;
 		if (w != null && windows.indexOf(w)>=0) {
 			if (w.getOwnerModule() != null && w.getOwnerModule().isDoomed())
@@ -774,9 +768,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 
 		}	
-		if (w != null && resetMenuBar && !MesquiteThread.isFileReadingThread()) { //Debugg.println
-			setMenuBar(w, w.getMenuBar(true));
-		}
+		if (w != null)
+			setMenuBar(w, w.getMenuBar());
 		if (tabs !=null)
 			tabs.repaint();
 	}

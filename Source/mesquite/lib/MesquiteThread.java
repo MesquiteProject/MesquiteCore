@@ -67,10 +67,6 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread t = Thread.currentThread();
 		return (t instanceof MesquiteThread) ||(t instanceof ConsoleThread);
 	}
-	public static boolean isFileReadingThread(){
-		Thread t = Thread.currentThread();
-		return (t instanceof ProjectReadThread);
-	}
 	public String toString(){
 		return getClass().getName() + " = " + super.toString();
 	}

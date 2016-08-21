@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
- */
+*/
 package mesquite.lib;
 
 import java.awt.*;
@@ -23,16 +23,12 @@ public class MesquiteMenuBar extends MenuBar {
 	MesquiteWindow ownerWindow;
 	public static long totalCreated = 0;
 	public static long totalFinalized = 0;
-	long id = 0;
 	public MesquiteMenuBar(MesquiteWindow ownerWindow){
 		super();
 		this.ownerWindow=ownerWindow;
-		id = totalCreated;
 		totalCreated++;
 	}
-	public long getID(){
-		return id;
-	}
+	
 	public MesquiteWindow getOwnerWindow(){
 		return ownerWindow;
 	}
@@ -55,50 +51,21 @@ public class MesquiteMenuBar extends MenuBar {
 		super.finalize();
 	}
 	private void removeItems(Menu menu){
-		for (int j=0; j<menu.getItemCount(); j++) {
-			MenuItem item = menu.getItem(j);
-			if (item instanceof Menu)
-				removeItems((Menu)item);
-			if (item instanceof ActionListener){
-				((MenuItem)item).removeActionListener((ActionListener)item);
+			for (int j=0; j<menu.getItemCount(); j++) {
+				MenuItem item = menu.getItem(j);
+				if (item instanceof Menu)
+					removeItems((Menu)item);
+				if (item instanceof ActionListener){
+					((MenuItem)item).removeActionListener((ActionListener)item);
+				}
+				if (item instanceof CheckboxMenuItem){
+					((CheckboxMenuItem)item).removeItemListener((ItemListener)item);
+				}
 			}
-			if (item instanceof CheckboxMenuItem){
-				((CheckboxMenuItem)item).removeItemListener((ItemListener)item);
-			}
-			if (item instanceof MesquiteCheckMenuItem){
-				MesquiteCheckMenuItem mmi = (MesquiteCheckMenuItem)item;
-				mmi.dispose();
-			}
-			else if (item instanceof MesquiteMenuItem){
-				MesquiteMenuItem mmi = (MesquiteMenuItem)item;
-				mmi.dispose();
-			}
-			else if (item instanceof MesquiteSubmenu){
-				MesquiteSubmenu mmi = (MesquiteSubmenu)item;
-				mmi.dispose();
-			}
-		}
-		menu.removeAll();
-	}
-	private void reportItems(MenuItem menuItem, String prefix, boolean recurse){
-		MesquiteMessage.println(menuItem.getLabel());
-		if (recurse && menuItem instanceof Menu){
-			Menu menu = (Menu)menuItem;
-			for (int i=0; i<menu.getItemCount(); i++){
-				reportItems(menu.getItem(i), prefix + "  ", recurse);
-			}
-		}
-	}
-	public void report(boolean recurse) {
-		for (int i=0; i<getMenuCount(); i++){
-			Menu menu = getMenu(i);
-			reportItems(menu, "", recurse);
-		}
-	}
-	public void dispose(){
-		disconnect();
+			menu.removeAll();
 	}
 	public void disconnect() {
+	//	Debugg.println("@@@@@@@@@@@@@ disconnect menu bar");
 		ownerWindow = null;
 		for (int i=0; i<getMenuCount(); i++){
 			Menu menu = getMenu(i);
@@ -108,6 +75,26 @@ public class MesquiteMenuBar extends MenuBar {
 			Menu menu = getMenu(i);
 			remove(menu);
 		}
+		
+	//	removeAll();
+	/*
+		for (int i=0; i<getMenuCount(); i++){
+			Menu menu = getMenu(i);
+			if (menu instanceof MesquiteMenu)
+				((MesquiteMenu)menu).recycle = true; //setting recycle flag so can be recycled
+			for (int j=0; j<menu.getItemCount(); j++) {
+				MenuItem item = menu.getItem(i);
+				if (item instanceof MesquiteMenu)
+					((MesquiteMenu)item).recycle = true; //setting recycle flag so can be recycled
+			}
+		}
+		for (int i=getMenuCount()-1; i>=0; i--){
+			Menu menu = getMenu(i);
+			menu.removeAll();
+			remove(menu);
+		}
+	//	removeAll();
+	*/
 	}
 }
 

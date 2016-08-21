@@ -71,8 +71,6 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 		return command;
 	}
 	public static MesquiteSubmenu getSubmenu(MesquiteSubmenuSpec msms, Menu ownerMenu, MesquiteModule ownerModule) {
-		if (msms == null)
-			return null;
 		return new MesquiteSubmenu(msms, ownerMenu, ownerModule);
 	}
 	public static MesquiteSubmenu getSubmenu(String submenuName, Menu ownerMenu, MesquiteModule ownerModule) {
@@ -176,10 +174,6 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 	}
 	public Object getReferent(){
 		return referent;
-	}
-	public void dispose(){
-		disconnectable = true;
-		disconnect();
 	}
 	public void disconnect(){
 		if (disconnectable){
