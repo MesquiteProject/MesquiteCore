@@ -2140,16 +2140,16 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	
 	public void resetMenus(boolean generateRegardless){
 		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //DAVIDCHECK: this is the short circuit
-			if (menuBar != null)
-				menuBar.dispose();
+		//	if (menuBar != null)
+		//		menuBar.dispose();
 			menuBar = null;
 			return;
 		}
 		
 		resetMenuTime.start();
 		deassignMenus();
-		if (menuBar != null)
-			menuBar.dispose();
+	//	if (menuBar != null)
+	//		menuBar.dispose();
 		
 		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
 		resetMenuTime.end();

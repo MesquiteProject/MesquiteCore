@@ -125,7 +125,7 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 
 		if (queryOptions(treeT)) {
 			if (convertToBranchLengths && tree instanceof AdjustableTree) {
-				OpenTreeUtil.convertNodeValuesToBranchLengths(this,(AdjustableTree)tree);
+				//OpenTreeUtil.convertNodeValuesToBranchLengths(this,(AdjustableTree)tree);
 			}
 			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 			String description = tree.writeSimpleTreeByNamesWithNoAssociated();
