@@ -57,7 +57,7 @@ public class SpecExtincLikelihood extends NumberForTreeDivers  {
 
 		addMenuItem("Set Speciation Rate...", makeCommand("setS", this));
 		addMenuItem("Set Extinction Rate...", makeCommand("setE", this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		addMenuItem("Write table to console", makeCommand("writeTable",this));
 		addMenuItem("Write code for R to console", makeCommand("writeForExternalApp",this));
 

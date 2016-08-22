@@ -56,7 +56,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
-		//addMenuItem("-", null);
+		//addMenuSeparator();
 		makeMenu("Display");
 		if (defaultDrawer !=null && (condition == null || !(condition instanceof MesquiteBoolean) || ((MesquiteBoolean)condition).getValue() )) {
 			treeDrawTask= (DrawTree)hireNamedEmployee(DrawTree.class, defaultDrawer);

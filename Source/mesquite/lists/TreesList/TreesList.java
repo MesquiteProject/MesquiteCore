@@ -114,7 +114,7 @@ public class TreesList extends ListLVModule {
 		MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
 		mss2.setList(TreeListUtility.class);
 		//addMenuItem( "Save selected set...", makeCommand("saveSelectedRows", this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		if (!MesquiteThread.isScripting()){
 			TreeListAssistant assistant;
 			assistant = (TreeListAssistant)hireNamedEmployee(TreeListAssistant.class, "$ #NumForTreeList #NumberOfTaxa");

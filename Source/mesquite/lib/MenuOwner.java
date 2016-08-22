@@ -458,7 +458,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	/*.................................................................................................................*/
 	/* ����� */
 	/** Adds a dividing line to the module's containing menu. */
-	public final MesquiteMenuItemSpec addMenuLine(){
+	public final MesquiteMenuItemSpec addMenuSeparator(){
 		return addMenuItem("-",null);
 	}
 	/*.................................................................................................................*/

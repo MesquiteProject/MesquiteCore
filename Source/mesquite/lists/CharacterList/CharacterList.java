@@ -50,7 +50,7 @@ public class CharacterList extends ListModule {
 		addMenuItem("Rename Matrix...", MesquiteModule.makeCommand("renameMatrix",  this));
 		addMenuItem("Delete Matrix...", MesquiteModule.makeCommand("deleteMatrix",  this));
 		addMenuItem("Show Matrix", MesquiteModule.makeCommand("showMatrix",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -93,7 +93,7 @@ public class CharacterList extends ListModule {
 		makeMenu("List");
 
 		addMenuItem( "Save Selected as Set...", makeCommand("saveSelectedRows", this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		if (!MesquiteThread.isScripting()){
 			CharListAssistant assistant= null;
 			if (!(data instanceof MolecularData)){ //added 1. 06

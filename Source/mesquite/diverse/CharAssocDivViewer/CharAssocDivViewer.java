@@ -76,7 +76,7 @@ public class CharAssocDivViewer extends TreeWindowAssistantA    {
 
 		addMenuItem( "Choose Character...", makeCommand("chooseCharacter",  this));
 		addMenuItem( "Close Character-Associated Diversification Analysis", makeCommand("close",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 
 		return true;
 	}

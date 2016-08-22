@@ -64,11 +64,11 @@ public class AnnotationsPanel extends MesquitePanel implements Commandable, Text
 		setBackground(ColorTheme.getContentBackground());
 		MesquiteModule mb = annotOwner.getModule();
 		if (mb != null){
-			m[0] = mb.addMenuItem("-", null);
+			m[0] = mb.addMenuSeparator();
 			m[1] = mb.addMenuItem("Copy One Note", new MesquiteCommand("copyOne", this));
 			m[2] = mb.addMenuItem("Copy All Notes", new MesquiteCommand("copyAll", this));
 			m[3] = mb.addMenuItem("Paste (Add) Note(s)", new MesquiteCommand("paste", this));
-			m[4] = mb.addMenuItem("-", null);
+			m[4] = mb.addMenuSeparator();
 			mb.resetContainingMenuBar();
 		}
 		add(controls = new ControlP(this));

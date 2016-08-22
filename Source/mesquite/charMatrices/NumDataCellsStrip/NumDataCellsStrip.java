@@ -58,7 +58,7 @@ public class NumDataCellsStrip extends DataColumnNamesAssistant {
 	}
 	public void addRemoveMenuItem() {
 		closeMenuItem= addMenuItem(null,"Remove Number of Data Cells Strip", makeCommand("remove", this));
-		lineMenuItem = addMenuLine();
+		lineMenuItem = addMenuSeparator();
 	}
 
 	public void setTableAndData(MesquiteTable table, CharacterData data) {

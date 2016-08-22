@@ -75,9 +75,9 @@ public class MatricesFromOrdinations extends CharMatrixSource {
 		}
 		addMenuItem("Item for Ordination...", MesquiteModule.makeCommand("setItem",  this));
 		if (numModulesAvailable(OrdinationAssistant.class)>0) {
-			addMenuItem( "-", null);
+			addMenuSeparator();
 			addModuleMenuItems(null, makeCommand("hireAssistant",  this), OrdinationAssistant.class);
-			addMenuItem( "-", null);
+			addMenuSeparator();
 		}
 		return true; 
 	}

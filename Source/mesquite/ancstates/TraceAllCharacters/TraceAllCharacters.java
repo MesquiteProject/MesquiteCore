@@ -72,7 +72,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 		addCheckMenuItem(null, "Show Terminal Nodes", makeCommand("toggleShowTerminals", this), showTerminals);
 		addCheckMenuItem(null, "Rows are Characters", makeCommand("toggleByCharacters", this), byCharacters);
 		addMenuItem( "Close Trace All", makeCommand("closeTrace",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
  		resetContainingMenuBar();
 		return true;
  	}

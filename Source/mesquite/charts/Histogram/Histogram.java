@@ -126,7 +126,7 @@ public class Histogram extends DrawChart {
 			 */
 			MesquiteSubmenuSpec analysis = addSubmenu(null, "Auxiliary Analysis", makeCommand("newAssistant", this), HistogramAssistantA.class);
 			MesquiteSubmenuSpec mCloseAsst = addSubmenu(null, "Close Auxiliary Analysis");
-			addMenuItem("-", null);
+			addMenuSeparator();
 			mCloseAsst.setList(getEmployeeVector());
 			mCloseAsst.setListableFilter(HistogramAssistantA.class);
 			mCloseAsst.setCommand(makeCommand("closeAssistant",  this));
@@ -142,7 +142,7 @@ public class Histogram extends DrawChart {
 			//			cumulativeItem = addCheckMenuItem(null, "Show Cumulative", MesquiteModule.makeCommand("showCumulativeToggle",  this), showCumulative);
 			barChartItem = addCheckMenuItem(null, "Show as Bar Chart", MesquiteModule.makeCommand("showAsBarChartToggle",  this), showAsBarChart);
 			addCheckMenuItem(null, "Show Individual Points in Text View", MesquiteModule.makeCommand("showRawToggle",  this), showRaw);
-			addMenuItem("-", null);
+			addMenuSeparator();
 		}
 		return true;
 	}

@@ -61,7 +61,7 @@ public abstract class TaxaSpecssetList extends ListModule {
 		addMenuItem("Store current set", makeCommand("storeCurrent",  this));
 		addMenuItem("Set stored to current", makeCommand("setToCurrent",  this));
 		addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
- 		addMenuItem( "-", null);
+ 		addMenuSeparator();
  		resetContainingMenuBar();
 		resetAllWindowsMenus();
   	 }

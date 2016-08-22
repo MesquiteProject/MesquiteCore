@@ -38,7 +38,7 @@ public class TreeLegendMaker extends TreeDisplayAssistantMA  {
 		makeMenu("Legend");
 		resetContainingMenuBar();
 		addSubmenu(null, "Show", makeCommand("newLegendItem",  this), NumberForTree.class);
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		MesquiteSubmenuSpec mCloseAsst = addSubmenu(null, "Close");
 		mCloseAsst.setList(getEmployeeVector());
 		mCloseAsst.setCommand(makeCommand("closeEmployee",  this));

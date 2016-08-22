@@ -72,7 +72,7 @@ public class LandmarkDrawings extends TreeDisplayAssistantMA implements LegendHo
 		addMenuItem("Drawing Sizes...", makeCommand("sizeDrawing",  this));
 		addCheckMenuItem(null, "Join last to first", MesquiteModule.makeCommand("toggleLastToFirst",  this), joinLastToFirst);
 		addMenuItem("Close Landmark Drawings", makeCommand("close",  this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		return true;
 	}
 

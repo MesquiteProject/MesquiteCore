@@ -28,7 +28,7 @@ public abstract class TreeWindowAssistantC extends TreeWindowAssistant  {
 	their own constructor-like call, without relying on the subclass to be polite enough to call super.startJob().*/
 	public boolean superStartJob(String arguments, Object condition, boolean hiredByName){
 		addMenuItem("Show Tree Window", makeCommand("showContext", this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		return true;
 	}
 

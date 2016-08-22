@@ -1051,10 +1051,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		storeTreeAsOtherMenuItem = ownerModule.addMenuItem("Store Tree In Tree Block As...", ownerModule.makeCommand("storeTreeAsOther", this));
 		setStoreTreeAsMenuItems(editMode);
 
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		recoverEditedMenuItem = ownerModule.addMenuItem("Recover Last Edited Tree", ownerModule.makeCommand("recoverLastEditedTree", this));
 		ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 
 		ownerModule.addMenuItem("Choose Tree...", ownerModule.makeCommand("chooseTree", this));
 		MesquiteMenuItemSpec mm = ownerModule.addMenuItem("Next Tree", ownerModule.makeCommand("nextTree", this)); // DOES THIS WORK??
@@ -1062,14 +1062,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mm = ownerModule.addMenuItem("Previous Tree", ownerModule.makeCommand("previousTree", this));
 		mm.setShortcut(KeyEvent.VK_DOWN); // right
 		ownerModule.addMenuItem("Step Through Trees...", ownerModule.makeCommand("stepThroughTrees", this));
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		ownerModule.addSubmenu(null, "Alter/Transform Tree", ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
 		ownerModule.addSubmenu(null, "Alter/Transform Branch Lengths", ownerModule.makeCommand("alterBranchLengths", this), BranchLengthsAlterer.class);
 		ownerModule.addMenuItem("Cut Selected Taxa", ownerModule.makeCommand("cutSelectedTaxa", this));
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		ownerModule.addModuleMenuItems(null, ownerModule.makeCommand("newWindowAssistant", this), TreeWindowAssistantN.class);
 		ownerModule.addModuleMenuItems(null, ownerModule.makeCommand("newAssistant", this), TreeDisplayAssistantD.class);
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 
 		MesquiteSubmenuSpec mBringToFrontAsst = ownerModule.addSubmenu(null, "Bring To Front");
 		mBringToFrontAsst.setList(treeDisplay.getExtras());
@@ -1085,7 +1085,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mCloseAsst.setListableFilter(TreeDisplayAssistantAD.class);
 		mCloseAsst.setCommand(ownerModule.makeCommand("closeDisplayAssistant", this));
 
-		treeDrawCoordTask.addMenuItem("-", null);
+		treeDrawCoordTask.addMenuSeparator();
 
 		drawingSizeMode = AUTOSIZE;
 		if (treeDrawCoordTask.hasPreferredSize())
@@ -1103,7 +1103,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		floatLegendsItem = treeDrawCoordTask.addCheckMenuItem(null, "Float Legends", ownerModule.makeCommand("toggleLegendFloat", this), floatLegends);
 		treeDrawCoordTask.addMenuItem("Legends To Default Positions", ownerModule.makeCommand("legendsToHome", this));
 		treeDrawCoordTask.addCheckMenuItem(null, "Text Extras On Trees", ownerModule.makeCommand("toggleTextOnTree", this), textVersionDrawOnTree);
-		treeDrawCoordTask.addMenuItem("-", null);
+		treeDrawCoordTask.addMenuSeparator();
 
 		undoCommand = MesquiteModule.makeCommand("undo", this);
 		copyCommand = MesquiteModule.makeCommand("copyTree", this);
