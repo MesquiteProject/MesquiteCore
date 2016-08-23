@@ -148,7 +148,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer implements Ac
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Location of File with Taxon Names",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Rename Taxa Based On ID Code File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
 		sampleCodeFilePathField = dialog.addTextField("Taxon names file:", sampleCodeListPath,26);
 		sampleCodeFilePathField.addTextListener(this);
