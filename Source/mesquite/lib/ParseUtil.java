@@ -151,7 +151,7 @@ public class ParseUtil extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns token from line starting at startChar; excluding square bracket comments*/
 	public static String getToken(String line, MesquiteInteger startChar, String whitespaceString, String punctuationString) {
-		return getToken(line, startChar, whitespaceString, punctuationString, false);
+		return getToken(line, startChar, whitespaceString, punctuationString, true);
 	}
 	/*............................................  ....................................................*/
 	/** returns token from line starting at startChar; excluding square bracket comments*/
