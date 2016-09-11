@@ -188,13 +188,13 @@ public class CharListGenCodeModels extends CharListAssistant {
 		deleteMenuItem(webPageSubmenu);
 		deleteMenuItem(toStringSubmenu);
 		mss = addSubmenu(null, "Genetic Code", makeCommand("setModel", this), getProject().getCharacterModels());
-		mLine = addMenuItem("-",null);
+		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
 		mss.setCompatibilityCheck(new ModelCompatibilityInfo(GenCodeModel.class, data.getStateClass()));
 		if (data !=null)
 			mStc = addSubmenu(null, "Load genetic code set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(GenCodeModelSet.class));
-		mLine2 = addMenuItem("-",null);
+		mLine2 = addMenuSeparator();
 		webPageSubmenu = addSubmenu(null, "Show NCBI Web Page", makeCommand("showNCBIPage", this), getProject().getCharacterModels());
 		webPageSubmenu.setCompatibilityCheck(new ModelCompatibilityInfo(GenCodeModel.class, data.getStateClass()));
 		toStringSubmenu = addSubmenu(null, "List Code in Log Window", makeCommand("showCodeInLog", this), getProject().getCharacterModels());

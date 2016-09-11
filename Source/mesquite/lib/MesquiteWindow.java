@@ -2145,7 +2145,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			menuBar = null;
 			return;
 		}
-		
+
 		resetMenuTime.start();
 		deassignMenus();
 	//	if (menuBar != null)
@@ -2177,7 +2177,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public MenuBar getMenuBar() {
 		return menuBar;
 	}
-	public MenuBar getMenuBar(boolean generateIfNeeded) { //DAVIDCHECK: new method; MenuBar object is build on demand at this point
+	public MenuBar getMenuBar(boolean generateIfNeeded) { //DAVIDCHECK: new method; MenuBar object is built on demand at this point
 		if (generateIfNeeded && menuBar == null) {
 			resetMenus(true);
 		}

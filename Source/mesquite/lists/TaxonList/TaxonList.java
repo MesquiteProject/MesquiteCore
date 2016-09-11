@@ -51,7 +51,7 @@ public class TaxonList extends ListModule {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Rename Block of Taxa...", MesquiteModule.makeCommand("renameBlock",  this));
 		addMenuItem("Delete Block of Taxa...", MesquiteModule.makeCommand("deleteBlock",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -101,7 +101,7 @@ public class TaxonList extends ListModule {
 			MesquiteSubmenuSpec mss3 = addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames",  this));
 			mss3.setList(TaxonNameAlterer.class);
 			addMenuItem( "Save selected as set...", makeCommand("saveSelectedRows", this));
-			addMenuItem( "-", null);
+			addMenuSeparator();
 
 			/* default columns*
 			TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#DefaultTaxaOrder"));

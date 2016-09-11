@@ -111,7 +111,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 
 
 
-		//ownerModule.addMenuItem( "-", null);
+		//ownerModule.addMenuSeparator();
 		if (owner.rowsAddable())
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
 		if (owner.rowsDeletable()) {

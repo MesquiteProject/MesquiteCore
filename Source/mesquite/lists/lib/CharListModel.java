@@ -146,7 +146,7 @@ public abstract class CharListModel extends CharListAssistant {
 		if(mStc !=null)
 			deleteMenuItem(mStc);
 		mss = addSubmenu(null, getTitle(), makeCommand("setModel", this), getProject().getCharacterModels());
-		mLine = addMenuItem("-",null);
+		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current set", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)

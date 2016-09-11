@@ -270,6 +270,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 					shown[v.size()-1] = true;
 			}
 		}
+		
 		if (v.size()==0)
 			alert("This Tree has no values associated with nodes");
 		else {

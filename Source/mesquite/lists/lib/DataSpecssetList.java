@@ -68,7 +68,7 @@ public abstract class DataSpecssetList extends ListModule {
 			addMenuItem("Set stored to current", makeCommand("setToCurrent",  this));
 			addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
  		}
- 		addMenuItem( "-", null);
+ 		addMenuSeparator();
  		resetContainingMenuBar();
 		resetAllWindowsMenus();
   	 }

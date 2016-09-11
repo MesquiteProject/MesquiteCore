@@ -42,7 +42,7 @@ public class CharListInclusion extends CharListAssistant {
 		addMenuItem("Include", makeCommand("include", this));
 		addMenuItem("Exclude", makeCommand("exclude", this));
 		addMenuItem("Reverse", makeCommand("reverse", this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		return true;
 	}
 	void doChange(int which){

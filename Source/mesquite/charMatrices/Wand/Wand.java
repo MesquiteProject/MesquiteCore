@@ -67,11 +67,11 @@ public class Wand extends DataWindowAssistantI {
 		lessthan = new MesquiteBoolean(defaultLT);
 		addCheckMenuItem(null, "Select by Text", makeCommand("selectByText",  this), selectByText);
 		addCheckMenuItem(null, "Select by Color", makeCommand("selectByColor",  this), selectByColor);
-		addMenuItem("-", null);
+		addMenuSeparator();
 		eItem = addCheckMenuItem(null, "Equal", makeCommand("toggleEquals",  this), equals);
 		gItem = addCheckMenuItem(null, "Greater than", makeCommand("toggleGT",  this), greaterthan);
 		lItem = addCheckMenuItem(null, "Less than", makeCommand("toggleLT",  this), lessthan);
-		addMenuItem("-", null);
+		addMenuSeparator();
 		addCheckMenuItem(null, "Whole Matrix", makeCommand("toggleWholeMatrix",  this), wholeMatrix);
 		addCheckMenuItem(null, "Restrict to single taxon", makeCommand("toggleSingleTaxon",  this), singleTaxon);
 		addCheckMenuItem(null, "Restrict to single character", makeCommand("toggleSingleCharacter",  this), singleCharacter);

@@ -58,7 +58,7 @@ public class ColorCells extends DataWindowAssistantID implements CellColorer, Ce
 		removeColor = new MesquiteBoolean(false);
 		addCheckMenuItem(null, "Remove color", makeCommand("removeColor",  this), removeColor);
 		addMenuItem(null, "Remove all color", makeCommand("removeAllColor",  this));
-		addMenuItem(null, "-", null);
+		addMenuSeparator();
 		addMenuItem(null, "Set Color of Selected", makeCommand("colorSelected",  this));
 		return true;
 	}

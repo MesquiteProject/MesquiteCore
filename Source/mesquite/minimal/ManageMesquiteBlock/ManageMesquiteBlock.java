@@ -61,7 +61,7 @@ public class ManageMesquiteBlock extends ScriptingManager {
 		MesquiteBlock b =makeBlock(homeFile, "");  //merely a placeholder
 		b.setName("AUTO*");
 		addNEXUSBlock(b);
-		//getFileCoordinator().addMenuItem("-", null);
+		//getFileCoordinator().addMenuSeparator();
 		super.projectEstablished();
 	}
 	public Class getElementClass(){

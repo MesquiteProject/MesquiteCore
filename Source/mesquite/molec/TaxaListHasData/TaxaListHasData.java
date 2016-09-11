@@ -68,7 +68,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
 		//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
 		addMenuItem("Delete Stored Annotation", makeCommand("deleteAnnotation", this));

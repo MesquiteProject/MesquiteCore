@@ -77,7 +77,7 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 		addMenuItem( "Choose Character Y...", makeCommand("chooseY",  this));
 		addMenuItem( "Re-run analysis", makeCommand("rerun",  this));
 		addMenuItem( "Close Correlation Analysis", makeCommand("close",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 
 		return true;
 	}

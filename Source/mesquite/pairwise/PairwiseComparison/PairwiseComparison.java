@@ -88,11 +88,11 @@ public class PairwiseComparison extends TreeDisplayAssistantMA {
 		addMenuItem( "Previous Character (Indep.)", makeCommand("previousCharacterA",  this));
 		addMenuItem( "Next Character (Dep.)", makeCommand("nextCharacterB",  this));
 		addMenuItem( "Previous Character (Dep.)", makeCommand("previousCharacterB",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		addMenuItem( "Next Pairing", makeCommand("nextPairing",  this));
 		addCheckMenuItem(null, "Show states", MesquiteModule.makeCommand("showStates",  this), showStates);
 		addMenuItem( "Close Pairwise Comparison", makeCommand("closeShowPairs",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		resetContainingMenuBar();
 		return true;
 	}

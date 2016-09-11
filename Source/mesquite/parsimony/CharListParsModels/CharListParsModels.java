@@ -158,7 +158,7 @@ public class CharListParsModels extends CharListAssistant {
 		deleteMenuItem(mLine);
 		deleteMenuItem(mStc);
 		mss = addSubmenu(null, "Parsimony model", makeCommand("setModel", this), getProject().getCharacterModels());
-		mLine = addMenuItem("-",null);
+		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
 		mss.setCompatibilityCheck(new ModelCompatibilityInfo(ParsimonyModel.class, data.getStateClass()));

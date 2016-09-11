@@ -43,11 +43,11 @@ public class MatrixSelection extends DataWindowAssistantI {
 		makeMenu("Select");
 		addMenuItem("Select All", makeCommand("selectAll",  this));
 		addMenuItem("Deselect All", makeCommand("deselectAll",  this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		charSel = (CharSelectCoordinator)hireEmployee(CharSelectCoordinator.class, null);
 		taxaSel = (TaxaSelectCoordinator)hireEmployee(TaxaSelectCoordinator.class, null);
  		addModuleMenuItems(null, makeCommand("newAssistant",  this), DataWSelectionAssistant.class);
- 		addMenuItem("-", null);
+ 		addMenuSeparator();
 		return true;
   	 }
 	/*.................................................................................................................*/

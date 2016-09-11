@@ -769,7 +769,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 		}	
 		if (w != null)
-			setMenuBar(w, w.getMenuBar());
+			setMenuBar(w, w.getMenuBar(true));
 		if (tabs !=null)
 			tabs.repaint();
 	}

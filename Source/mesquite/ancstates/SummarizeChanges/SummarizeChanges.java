@@ -115,7 +115,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 		addCheckMenuItem(null, "Save Details To File...", makeCommand("toggleSaveDetails", this), saveDetailsToFile);
 
 		addMenuItem( "Close Summarize Changes", makeCommand("closeSummarizeChanges",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 
 
 		allowedChanges = new boolean[CategoricalState.maxCategoricalState][CategoricalState.maxCategoricalState];
