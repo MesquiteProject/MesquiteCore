@@ -164,10 +164,15 @@ public class MesquiteFrame extends Frame implements Commandable {
 		project = null;
 		windows = null;
 	}
+	static int countSMB = 0;
+	public void setMenuBar(MenuBar mbar) {
+		if (!MesquiteThread.isReadingThread())
+			super.setMenuBar(mbar);
+	}
 	public void setMenuBar(MesquiteWindow which, MenuBar mbar) {
 		if (which == frontWindow) {
 			try {
-				super.setMenuBar(mbar);
+				setMenuBar(mbar);
 				which.repaintInfoBar();
 			}
 			catch(Exception e){

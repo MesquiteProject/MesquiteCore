@@ -43,6 +43,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	private Vector cleanUpJobs;
 	private int listenerSuppressionLevel = 0; //0 no suppression; 1 lower level only; 2 all suppressed
 	public static int numFilesBeingRead =0;
+	boolean readingThread = false;
 	public boolean resetUIOnMe = true;
 	static int numInst = 1;
 	static {
@@ -67,6 +68,12 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread t = Thread.currentThread();
 		return (t instanceof MesquiteThread) ||(t instanceof ConsoleThread);
 	}
+	public static boolean isReadingThread(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread)
+			return ((MesquiteThread)t).isReading();
+		return false;
+	}
 	public String toString(){
 		return getClass().getName() + " = " + super.toString();
 	}
@@ -75,6 +82,13 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		if (!(thread instanceof MesquiteThread))
 			return false;
 		return ((MesquiteThread)thread).resetUIOnMe;
+	}
+	//=====================
+	public void setIsReading(boolean isReading){
+		this.readingThread = isReading;
+	}
+	public boolean isReading(){
+		return readingThread;
 	}
 	//=====================
 	/*logger for current thread */

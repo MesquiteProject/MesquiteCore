@@ -53,12 +53,15 @@ public class ProjectReadThread extends MesquiteThread {
 	}
 	public void run(){
 		try {
+			setIsReading(true);
 			super.run();
 			ongoingThread = null;
 			if (subsequent != null) 
 				
 				subsequent.start();
 
+			setIsReading(false);
+			MesquiteTrunk.resetAllMenuBars();
 			threadGoodbye();
 		}
 		catch (MesquiteException e){
