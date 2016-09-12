@@ -17,9 +17,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.opentree.lib.OpenTreeUtil;
 
-import java.awt.Checkbox;
-import java.awt.Label;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ItemEvent;
@@ -53,7 +51,6 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 				}
 			}
 		}
-
 		if (count==0)
 			return true;
 
@@ -67,17 +64,19 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 
 		dialog.addLabel("Value to include as branch labels", Label.CENTER);
 
-		nodeAssociatedLabels = new Checkbox[count];
+
+		String[] nodeAssocDoubleLabels = new String[count];
 		count=0;
 		for (int i = 0; i< num; i++){
 			DoubleArray da = tree.getAssociatedDoubles(i);
 			if (da != null){
 				if (StringUtil.notEmpty(da.getName())){
-					nodeAssociatedLabels[count]=dialog.addCheckBox(da.getName(), false);
+					nodeAssocDoubleLabels[count]=da.getName();
 					count++;
 				}
 			}
 		}
+		Choice nodeAssocDoublesChoice = dialog.addPopUpMenu("Node associated doubles to write as node labels", nodeAssocDoubleLabels, 0);
 
 		//Checkbox convertToBranchLengthsBox = dialog.addCheckBox("convert node values to branch lengths", convertToBranchLengths);
 
@@ -85,10 +84,20 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 
 		boolean ok = (dialog.query()==0);
 
-		for (int i=0; i<nodeAssociatedLabels.length; i++) {
-			if (nodeAssociatedLabels[i].getState()) {  
-				associatedNumberToUseAsLabel = i;
-				break;
+		if (ok) {
+			String selectedItem = nodeAssocDoublesChoice.getSelectedItem();
+			count=0;
+			for (int i = 0; i< num; i++){
+				DoubleArray da = tree.getAssociatedDoubles(i);
+				if (da != null){
+					if (StringUtil.notEmpty(da.getName())){
+						if (da.getName().equals(selectedItem)){
+							associatedNumberToUseAsLabel=i;
+							break;
+						}
+						count++;
+					}
+				}
 			}
 		}
 
@@ -118,19 +127,22 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 	/*.................................................................................................................*/
 
 	public  void useTree(Tree treeT) {
-		OpenTreeTree tree = (OpenTreeTree)treeT;
-		if (tree == null)
-			return;
-		Taxa taxa = tree.getTaxa();
+		if (treeT instanceof MesquiteTree) {
+			OpenTreeTree tree = new OpenTreeTree(treeT.getTaxa());
+			tree.setToClone((MesquiteTree)treeT);
+			if (tree == null)
+				return;
+			Taxa taxa = tree.getTaxa();
 
-		if (queryOptions(treeT)) {
-			if (convertToBranchLengths && tree instanceof AdjustableTree) {
-				//OpenTreeUtil.convertNodeValuesToBranchLengths(this,(AdjustableTree)tree);
+			if (queryOptions(treeT)) {
+				if (convertToBranchLengths && tree instanceof AdjustableTree) {
+					//OpenTreeUtil.convertNodeValuesToBranchLengths(this,(AdjustableTree)tree);
+				}
+				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+				String description = tree.writeSimpleTreeByNamesWithNoAssociated();
+				StringSelection ss = new StringSelection(description);
+				clip.setContents(ss, ss);
 			}
-			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-			String description = tree.writeSimpleTreeByNamesWithNoAssociated();
-			StringSelection ss = new StringSelection(description);
-			clip.setContents(ss, ss);
 		}
 
 	}
@@ -156,18 +168,18 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 
-	 class OpenTreeTree extends MesquiteTree {
+	class OpenTreeTree extends MesquiteTree {
 
 		public OpenTreeTree(Taxa taxa) {
 			super(taxa);
 		}
-		
+
 		/*-----------------------------------------*/
 		/** Returns a string describing the tree in standard parenthesis notation (Newick standard), using taxon
 		names or numbers to refer to the taxa, depending on the boolean parameter byNames.*/
 		public String writeSimpleTreeByNamesWithNoAssociated() {
 			StringBuffer s = new StringBuffer(numberOfNodesInClade(root)*40);
-		//	private void writeTreeByNames(int node, StringBuffer treeDescription, boolean includeBranchLengths, boolean includeAssociated, boolean associatedUseComments) {
+			//	private void writeTreeByNames(int node, StringBuffer treeDescription, boolean includeBranchLengths, boolean includeAssociated, boolean associatedUseComments) {
 			writeTreeByNames(root, s, true, false, false);
 			s.append(';');
 			return s.toString();
@@ -201,9 +213,9 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 			}
 		}
 
-		 
+
 	}
-	
+
 }
 
 
