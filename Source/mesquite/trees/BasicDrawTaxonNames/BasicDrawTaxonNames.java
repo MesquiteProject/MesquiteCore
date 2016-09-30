@@ -896,6 +896,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						currentFont = fontToSet;
 				}
 				Font tempFont = g.getFont();
+				//currentFont = currentFont.deriveFont(Font.BOLD);
 				g.setFont(currentFont);
 				fm=g.getFontMetrics(currentFont);
 				rise= fm.getMaxAscent();

@@ -251,6 +251,10 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 		resetWindowsMenuPending = false;
 		if (menuSuppression==0) {
 			allMenuBarRests++;
+			MesquiteTimer timer = new MesquiteTimer();
+			if (MesquiteTrunk.debugMode)
+				timer.start();
+				
 			//Debugg.println("resetAllMenuBars ");
 			MesquiteTrunk.suppressResetCheckMenuItems();
 			resetAllMenuPending = false;
@@ -267,8 +271,11 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				}
 			}
 			MesquiteTrunk.resumeResetCheckMenuItems();
-			if (MesquiteTrunk.debugMode)
-				MesquiteModule.mesquiteTrunk.logln(">- All Menus Reset -< " + allMenuBarRests);  //temporary; to check efficiency
+			if (MesquiteTrunk.debugMode){
+				MesquiteModule.mesquiteTrunk.logln("\n>>>- All Menus Reset (" + allMenuBarRests + " times). This reset took " + timer.timeSinceLastInSeconds() + " seconds -<<< \n");  //temporary; to check efficiency
+				timer.end();
+				timer=null;
+			}
 		}
 		else 
 			resetAllMenuPending = true; //set this so will later know that full reset is needed

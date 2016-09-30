@@ -74,7 +74,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	private int setSizeDebugg = 0;
 	private boolean wasDisposed = false;
 	private int menuResets = 0;
-	private static boolean reportMenuResets = false;
+	private static boolean reportMenuResets = true;
 	OuterContentArea outerContents;
 	private InterContentArea interContents;
 	private ContentArea[] graphics;
@@ -2167,7 +2167,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 		menuResets++;
 		if (reportMenuResets)
-			System.out.println(Integer.toString(menuResets) + " menu resets for " + getTitle());
+			ownerModule.logln(Integer.toString(menuResets) + " menu resets for " + getTitle());
 		resetMenuTime.end();
 	}
 	public void setMenuBar(MenuBar mbar) {
