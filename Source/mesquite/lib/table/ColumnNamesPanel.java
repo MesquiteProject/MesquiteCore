@@ -34,7 +34,9 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 	int origShimmer = -1;
 	int numRows = 1;
 	int numInfoStrips = 0;
-	int rowH=20;
+	static int defaultRowH = 20;
+	int rowH=defaultRowH;
+	int infoStripRowH = defaultRowH;
 	boolean diagonal = false;
 	TextRotator textRotator;
 	Polygon diagonalMask, diagonalColumnMask;
@@ -67,12 +69,11 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		if (d)
 			table.setColumnNamesRowHeight(diagonalHeight);
 		else
-			table.setColumnNamesRowHeight(20);
+			table.setColumnNamesRowHeight(defaultRowH);
 
 		if (d) {
 			textRotator.assignBackground(null);
 			resetDiagonalHeight();
-
 		}
 		table.resetComponentSizes();
 	}
@@ -126,10 +127,10 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 	/*...............................................................................................................*/
 	/** Gets the height of the columnNames Panel.*/
 	public int calcColumnNamesHeight() {
-		return rowHeight(-1)*getNumRows() + table.getColumnGrabberWidth();
+		return rowHeight(-1) + numInfoStrips*infoStripRowHeight(0) + table.getColumnGrabberWidth();
 	}
 	public void setHeight () {
-		this.height=rowHeight(-1)*numRows + table.getColumnGrabberWidth();
+		this.height=rowHeight(-1) + numInfoStrips*infoStripRowHeight(0) + table.getColumnGrabberWidth();
 		setSize(width, height);
 	}
 	public int getNumRows () {
@@ -140,15 +141,15 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 	}
 	public void setNumInfoStrips (int num) {
 		numInfoStrips = num;
-		numRows = numInfoStrips+1;
+//		numRows = numInfoStrips+1;
 	}
 	public void appendInfoStrip () {
 		numInfoStrips++;
-		numRows++;
+//		numRows++;
 	}
 	public void decrementInfoStrips () {
 		numInfoStrips--;
-		numRows--;
+//		numRows--;
 	}
 
 	/*@@@...............................................................................................................*/
@@ -174,7 +175,7 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 	/** returns in which column x lies, -1 if to left, -2 if to right.*/
 	public int findRegionInCellV(int y) {
 		if (y<=0)
-			return 50;
+			return 50;  //???
 		return (y-startOfRow(-1))*100/(rowHeight(-1));
 	}
 	public int startOfRow(int row){
@@ -202,6 +203,9 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 	public void setRowHeight(int h) {
 		rowH = h;
 	}
+	public int infoStripRowHeight(int num) {
+		return infoStripRowH;
+	}
 	public int nameRowTop() {
 		return (startOfRow(-1));
 	}
@@ -209,13 +213,13 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		return (startOfRow(-1) + nameRowHeight());
 	}
 	public int extraRowTop(int extraRow) {
-		return (nameRowBottom() + rowHeight(-1)*(extraRow));
+		return (nameRowBottom() + infoStripRowHeight(0)*(extraRow));
 	}
 	public int nameRowHeight() {
 		return (rowHeight(-1));
 	}
 	public int lastRowBottom() {
-		return (startOfRow(-1) + rowHeight(-1)*getNumRows());
+		return (startOfRow(-1) + rowHeight(-1) + numInfoStrips*infoStripRowHeight(0));
 	}
 	public void textReturned(int column, int row, String text){
 		table.returnedColumnNameText(column, text);
@@ -443,20 +447,28 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 					resetDiagonalHeight();
 				int rLeft = startOfColumn(0);
 				int rRight = endOfColumn(table.numColumnsTotal-1);
-				diagonalMask.translate(-rLeft -diagonalSize, height);
+//				diagonalMask.translate(-rLeft -diagonalSize, height);
+				int diagonalMaskShift = nameRowBottom();
+				diagonalMask.translate(-rLeft -diagonalSize, diagonalMaskShift);  //shift it 
+				
 				g.setColor(ColorTheme.getContentBackgroundPale()); //ggray
+				
 				g.fillPolygon(diagonalMask);
-				diagonalMask.translate(rLeft +diagonalSize, -height);
-				diagonalMask.translate(rRight, height);
+				diagonalMask.translate(rLeft +diagonalSize, -diagonalMaskShift);
+				diagonalMask.translate(rRight, diagonalMaskShift);
 				g.fillPolygon(diagonalMask);
-				diagonalMask.translate(-rRight, -height);
+				diagonalMask.translate(-rRight, -diagonalMaskShift);  // move it back to where it was
 
-				g.fillRect(0, 0, leftmostNumber-1, height - rowHeight(-1));
+				g.fillRect(rRight, nameRowBottom(), width, height);  // fill region to the left of the column numbers
+				
+				g.fillRect(0, 0, leftmostNumber-1, startOfRow(-1));  // fill region to the left of the column numbers
+				//g.fillRect(0, 0, leftmostNumber-1, height - rowHeight(-1));
 
-				g.fillRect(rightmostNumber+1, 0, width, height - rowHeight(-1));
+				g.fillRect(rightmostNumber+1, 0, width, startOfRow(-1));    // fill region to the right of the column numbers
 				g.setColor(ColorTheme.getContentEdgeDark());
 				g.drawLine(0, height-1, width, height-1);
 				g.setClip(clip);
+				table.drawColumnNamesPanelExtras(g, 0,nameRowBottom(),endOfLastColumn(), getBounds().height);
 				return;
 			}
 			g.setClip(0,0, getBounds().width, getBounds().height);
@@ -641,12 +653,14 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		return -1;
 	}
 	/*@@@...............................................................................................................*/
-	/** returns in which row y lies, -1 if above, -2 if below.*/
+	/** Returns in which subrow y lies, -1 if above, -2 if below.*/
 	public int findSubRow(int x, int y) {
-		if (y<=nameRowBottom())
+		if (y<=nameRowBottom()) {
 			return -1;
+		}
 		else {
-			return (int)(y-nameRowBottom())/rowHeight(-1);
+			int subrow = (int)(y-nameRowBottom())/infoStripRowHeight(0);
+			return subrow;
 		}
 	}
 	/* ............................................................................................................... */
