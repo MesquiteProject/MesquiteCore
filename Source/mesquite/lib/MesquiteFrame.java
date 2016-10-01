@@ -602,6 +602,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	/*.................................................................................................................*/
 	public void hide(MesquiteWindow w){
 		setVisible(w, false);
+		fixFrontness();
 	}
 	public MesquiteWindow frontMostInLocation(int location){
 		for (int i=orderedWindows.size()-1; i>=0; i--){
