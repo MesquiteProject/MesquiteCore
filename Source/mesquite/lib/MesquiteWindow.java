@@ -2139,7 +2139,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	static final boolean refreshMenusOnlyFrontWindows = true;  //if true, then uses new system that remakes menus only when window is front or brought to front
 	
 	public void resetMenus(boolean generateRegardless){
-	if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //DAVIDCHECK: this is the short circuit
+	if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 		//	if (menuBar != null)
 		//		menuBar.dispose();
 			menuBar = null;
@@ -2177,7 +2177,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public MenuBar getMenuBar() {
 		return menuBar;
 	}
-	public MenuBar getMenuBar(boolean generateIfNeeded) { //DAVIDCHECK: new method; MenuBar object is built on demand at this point
+	public MenuBar getMenuBar(boolean generateIfNeeded) { //MenuBar object is built on demand at this point
 		if (generateIfNeeded && menuBar == null) {
 			resetMenus(true);
 		}
