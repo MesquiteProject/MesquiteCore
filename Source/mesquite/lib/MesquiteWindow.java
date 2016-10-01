@@ -74,7 +74,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	private int setSizeDebugg = 0;
 	private boolean wasDisposed = false;
 	private int menuResets = 0;
-	private static boolean reportMenuResets = true;
+	private static boolean reportMenuResets = false;
 	OuterContentArea outerContents;
 	private InterContentArea interContents;
 	private ContentArea[] graphics;

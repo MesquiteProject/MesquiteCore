@@ -2005,6 +2005,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	void resetForTreeSource(boolean setToZero, boolean firstTimeTreeSource, boolean retainEditedRegardless, int notificationCode) {
 		if (disposing)
 			return;
+		windowModule.editMode = false;   //if you get here, you can't be in editMode.  
 		resetTitle();
 		if (firstTimeTreeSource)
 			warningGivenForTreeSource = false;
@@ -2013,7 +2014,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			ownerModule.iQuit();
 			return;
 		}
-
 		if (tree != null) {
 			boolean retainTree = false;
 			if (retainEditedRegardless || MesquiteThread.isScripting() || editedTreeMODE == CONTINUE_WITH_EDITED || notificationCode == MesquiteListener.ITEMS_ADDED || notificationCode == MesquiteListener.PARTS_ADDED || notificationCode == MesquiteListener.PARTS_DELETED || notificationCode == MesquiteListener.PARTS_MOVED)
@@ -3668,8 +3668,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		GraphicsUtil.drawOval(g, x - spotSize / 2, y - spotSize / 2, spotSize, spotSize);
 		g.setColor(oldColor);
 	}
-
 	/* _________________________________________________ */
+	/* Historical note: this method's name begins with an upper case letter because it descends directly
+	from Pascal source code for MacClade 1 (1986), under the name ScanPick */
 	public boolean ScanTouch(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null || treeDrawCoordTask == null || treeDrawCoordTask.getNamesTask() == null || treeDisplay.getTreeDrawing() == null)
 			return false;
@@ -3742,8 +3743,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		// return false;
 	}
-
 	/* _________________________________________________ */
+	/* Historical note: this method's name begins with an upper case letter because it descends directly
+	from Pascal source code for MacClade 1 (1986) */
 	public void ScanDrop(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null || treeDisplay.getTreeDrawing() == null)
 			return;
@@ -3840,6 +3842,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* _________________________________________________ */
+	/* Historical note: this method's name begins with an upper case letter because it descends directly
+	from Pascal source code for MacClade 1 (1986) */
 	public void ScanDrag(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null)
 			return;
@@ -4442,10 +4446,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else {
 			if (t != null && t.hasName())
 				treename = t.getName();
-			else
+			else {
 				treename = treeSourceTask.getTreeNameString(taxa, MesquiteTree.toInternal(palette.paletteScroll.getCurrentValue()));
+			}
 		}
 		messagePanel.setMessage(treename);
+		
 		if (treeInfoPanel != null)
 			treeInfoPanel.setTreeAndSourceName(treename, treeSourceTask.getName());
 
@@ -5081,6 +5087,7 @@ class MessagePanel extends Panel {
 		else
 			ownerModule.magnifyExtra.name = null;
 		if (ownerModule.treeSourceTask != null && !edited) {
+					
 			String s = ownerModule.treeSourceTask.getNameAndParameters();
 			if (!StringUtil.blank(s))
 				treeSourceAddendum = "   [" + s + "]";
