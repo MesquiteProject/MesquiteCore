@@ -563,7 +563,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 					if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
 						basicTreeWindow.taxa.removeListener((MesquiteTree) basicTreeWindow.originalTree);
 					basicTreeWindow.originalTree = null; // otree
-
+					editMode = false;
 					basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); // if switching between tree blocks, should reset to zero! If storing tree in tree block, shouldn't!
 					basicTreeWindow.contentsChanged();
 				}
