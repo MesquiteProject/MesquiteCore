@@ -77,7 +77,7 @@ public class BasicDataWindowCoord extends FileInit {
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (employee instanceof DataWindowMaker){
 			if (cadw != null) cadw.setEnabled(getNumMatrixWindows()>0);
-			resetAllMenuBars();
+			resetAllWindowsMenus();
 		}
 	}
 	/*.................................................................................................................*/

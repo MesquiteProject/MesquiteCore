@@ -255,7 +255,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			if (MesquiteTrunk.debugMode)
 				timer.start();
 				
-			//Debugg.println("resetAllMenuBars ");
+			//Debugg.printStackTrace("resetAllMenuBars ");
 			MesquiteTrunk.suppressResetCheckMenuItems();
 			resetAllMenuPending = false;
 
