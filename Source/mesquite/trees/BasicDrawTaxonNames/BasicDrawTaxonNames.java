@@ -494,7 +494,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 
 
 			if (treeDrawing.namesFollowLines ){
-				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])/(treeDrawing.lineBaseX[N]-treeDrawing.lineTipX[N]);
+				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])*1.0/(treeDrawing.lineBaseX[N]*1.0-treeDrawing.lineTipX[N]);
 				//setBounds(namePolys[taxonNumber], horiz+separation, vert, lengthString, rise+descent);
 				boolean upper = treeDrawing.lineTipY[N]>treeDrawing.lineBaseY[N];
 				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
