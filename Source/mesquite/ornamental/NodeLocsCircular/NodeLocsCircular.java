@@ -301,10 +301,10 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	
 //	{-----------------------------------------------------------------------------}
 	private void adjustForLengths (int root){
-		int tpa;
-		tpa=(int)tree.tallestPathAboveNode(root, 1.0);
-		if (tpa!=0)
-			scaling=(radius-rootHeight)/tpa;
+		double tpaD = tree.tallestPathAboveNode(root, 1.0);
+		
+		if (tpaD>0)
+			scaling=(radius-rootHeight)/tpaD;
 		else // all assigned 0's give arbitrary scaling (not great solution!)
 			scaling=20;
 		adjustNodeLocsWithLengths(root, 0, root);
@@ -369,7 +369,6 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			else
 				radius=(treeRectangle.height) * 3 / 8;
 			circleSlice = radius / (mostNodesToTip(drawnRoot) + emptyRootSlices);  //{v4: have it based upon an ellipse}
-			
 			
 			treeCenter.x = /*treeRectangle.x +*/ treeRectangle.width / 2;
 			treeCenter.y = /*treeRectangle.y +*/ treeRectangle.height / 2;
