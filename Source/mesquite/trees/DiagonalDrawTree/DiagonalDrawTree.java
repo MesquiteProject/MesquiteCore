@@ -222,9 +222,10 @@ public class DiagonalDrawTree extends DrawTree {
 
 /* ======================================================================== */
 class DiagonalTreeDrawing extends TreeDrawing  {
-	public Path2D[] branchPoly;
-	public Path2D[] touchPoly;
-	public Path2D[] fillBranchPoly;
+	public Path2D.Double[] branchPoly;
+	public Path2D.Double[] touchPoly;
+	public Path2D.Double[] fillBranchPoly;
+	Path2D.Double utilityPolygon;
 
 	private int lastleft;
 	private int taxspacing;
@@ -234,7 +235,6 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	public int edgeWidth = 12;
 	public int preferredEdgeWidth = 12;
 	int oldNumTaxa = 0;
-	Path2D utilityPolygon;
 	public static final int inset=1;
 	private boolean ready=false;
 
@@ -257,9 +257,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
-		branchPoly= new Path2D[numNodes];
-		touchPoly= new Path2D[numNodes];
-		fillBranchPoly= new Path2D[numNodes];
+		branchPoly= new Path2D.Double[numNodes];
+		touchPoly= new Path2D.Double[numNodes];
+		fillBranchPoly= new Path2D.Double[numNodes];
 		for (int i=0; i<numNodes; i++) {
 			branchPoly[i] = new Path2D.Double();
 			touchPoly[i] = new Path2D.Double();
@@ -296,8 +296,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		return (width-branchEdgeWidth(node,false))/2;
 	}
 	/*_________________________________________________*/
-	private void UPdefineFillPoly(int node, Path2D poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
+	private void UPdefineFillPoly(int node, Path2D.Double poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
 		if (poly!=null) {
+			poly.reset();
 			int sliceWidth=branchEdgeWidth(node, isTouch);
 			if (numSlices>1) {
 				Nx+= (sliceNumber-1)*(branchEdgeWidth(node, isTouch)-inset)/numSlices;
@@ -356,8 +357,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		UPdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
-	private void UPdefinePoly(int node, Path2D poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
+	private void UPdefinePoly(int node, Path2D.Double poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
+			poly.reset();
 			Nx -= getOffset(branchEdgeWidth(node,isTouch), node);
 			mNx -= getOffset(branchEdgeWidth(node,isTouch), node);
 			if (internalNode)  {
@@ -378,7 +380,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		}
 	}
 	/*_________________________________________________*/
-	private void UPCalcBranchPolys(Tree tree, int node, Path2D[] polys, boolean isTouch)
+	private void UPCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -386,10 +388,11 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			UPdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node), x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
 		}
 		else {
-			Path2D poly = polys[node];
+			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
 			int rightN = tree.rightmostTerminalOfNode(node);
+			poly.reset();
 			poly.moveTo(x[node], y[node]);
 			poly.lineTo(x[leftN], y[leftN]);
 			poly.lineTo(x[rightN]+branchEdgeWidth(node, isTouch), y[rightN]);
@@ -401,7 +404,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
-	private void DOWNdefineFillPoly(int node, Path2D poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
+	private void DOWNdefineFillPoly(int node, Path2D.Double poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
 		int sliceWidth=branchEdgeWidth(node, isTouch);
 		if (numSlices>1) {
 			Nx+= (sliceNumber-1)*(branchEdgeWidth(node, isTouch)-inset)/numSlices;
@@ -409,6 +412,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			sliceWidth=(branchEdgeWidth(node, isTouch)-inset)-((sliceNumber-1)*(branchEdgeWidth(node, isTouch)-inset)/numSlices);
 		}
 		if ((internalNode) && (numSlices==1)){ 
+			poly.reset();
 			poly.moveTo(Nx+inset, Ny);
 			poly.lineTo(Nx+sliceWidth/2, Ny+sliceWidth/2+inset);
 			poly.lineTo(Nx+sliceWidth-inset, Ny);
@@ -417,6 +421,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			poly.lineTo(Nx+inset, Ny);
 		}
 		else {
+			poly.reset();
 			if (Nx==mNx) {
 				if ((internalNode) && (numSlices>1)) {
 					Ny+=(branchEdgeWidth(node, isTouch)-inset)/4;
@@ -459,8 +464,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		DOWNdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
-	private void DOWNdefinePoly(int node, Path2D poly,boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
+	private void DOWNdefinePoly(int node, Path2D.Double poly,boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null){
+			poly.reset();
 			Nx -= getOffset(branchEdgeWidth(node,isTouch), node);
 			mNx -= getOffset(branchEdgeWidth(node,isTouch), node);
 			if (internalNode) 
@@ -483,7 +489,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		}
 	}
 	/*_________________________________________________*/
-	private void DOWNCalcBranchPolys(Tree tree, int node, Path2D[] polys, boolean isTouch)
+	private void DOWNCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -491,10 +497,11 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			DOWNdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
 		}
 		else {
-			Path2D poly = polys[node];
+			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
 			int rightN = tree.rightmostTerminalOfNode(node);
+			poly.reset();
 			poly.moveTo(x[node], y[node]);
 			poly.lineTo(x[leftN], y[leftN]);
 			poly.lineTo(x[rightN]+branchEdgeWidth(node, isTouch), y[rightN]);
@@ -506,7 +513,8 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
-	private void RIGHTdefineFillPoly(int node, Path2D poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
+	private void RIGHTdefineFillPoly(int node, Path2D.Double poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
+		poly.reset();
 		int sliceWidth=branchEdgeWidth(node, isTouch);
 		if (numSlices>1) {
 			Ny+= (sliceNumber-1)*(branchEdgeWidth(node, isTouch)-inset)/numSlices;
@@ -564,8 +572,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		RIGHTdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
-	private void RIGHTdefinePoly(int node, Path2D poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
+	private void RIGHTdefinePoly(int node, Path2D.Double poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
+			poly.reset();
 			Ny -= getOffset(branchEdgeWidth(node,isTouch), node);
 			mNy -= getOffset(branchEdgeWidth(node,isTouch), node);
 			if (internalNode) 
@@ -588,7 +597,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		}
 	}
 	/*_________________________________________________*/
-	private void RIGHTCalcBranchPolys(Tree tree, int node, Path2D[] polys, boolean isTouch)
+	private void RIGHTCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -596,10 +605,11 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			RIGHTdefinePoly(node, polys[node], isTouch, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]);
 		}
 		else {
-			Path2D poly = polys[node];
+			Path2D.Double poly = polys[node];
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
 			int rightN = tree.rightmostTerminalOfNode(node);
+			poly.reset();
 			poly.moveTo(x[node], y[node]);
 			poly.lineTo(x[leftN], y[leftN]);
 			poly.lineTo(x[rightN], y[rightN]+branchEdgeWidth(node, isTouch));
@@ -611,8 +621,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	/*_________________________________________________*/
-	private void LEFTdefineFillPoly(int node, Path2D poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
+	private void LEFTdefineFillPoly(int node, Path2D.Double poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
 		int sliceWidth=branchEdgeWidth(node, isTouch);
+		poly.reset();
 		if (numSlices>1) {
 			Ny+= (sliceNumber-1)*((branchEdgeWidth(node, isTouch)-inset)-inset-inset)/numSlices;
 			mNy+= (sliceNumber-1)*(branchEdgeWidth(node, isTouch)-inset)/numSlices;
@@ -669,8 +680,9 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		LEFTdefineFillPoly(node, fillBranchPoly[node], false, tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
-	private void LEFTdefinePoly(int node, Path2D poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
+	private void LEFTdefinePoly(int node, Path2D.Double poly, boolean isTouch, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
+			poly.reset();
 			Ny -= getOffset(branchEdgeWidth(node,isTouch), node);
 			mNy -= getOffset(branchEdgeWidth(node,isTouch), node);
 			if (internalNode) 
@@ -693,7 +705,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		}
 	}
 	/*_________________________________________________*/
-	private void LEFTCalcBranchPolys(Tree tree, int node, Path2D[] polys, boolean isTouch)
+	private void LEFTCalcBranchPolys(Tree tree, int node, Path2D.Double[] polys, boolean isTouch)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -705,6 +717,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			int mN = tree.motherOfNode(node);
 			int leftN = tree.leftmostTerminalOfNode(node);
 			int rightN = tree.rightmostTerminalOfNode(node);
+			poly.reset();
 			poly.moveTo(x[node], y[node]);
 			poly.lineTo(x[leftN], y[leftN]);
 			poly.lineTo(x[rightN], y[rightN]+branchEdgeWidth(node, isTouch));

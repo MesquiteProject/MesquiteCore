@@ -117,6 +117,12 @@ public class GraphicsUtil {
 			return;
 		((Graphics2D)g).fill(shape);
 	}
+	/*_________________________________________________*/
+	public static void draw(Graphics g, Shape shape) {
+		if (!(g instanceof Graphics2D))
+			return;
+		((Graphics2D)g).draw(shape);
+	}
 
 	/*_________________________________________________*/
 	public static void drawArrow(Graphics2D g2, int fromX, int fromY, int toX, int toY, int thickness) {
@@ -155,6 +161,14 @@ public class GraphicsUtil {
 		g.drawLine(x, y-size, x, y+size);
 		g.drawLine(x-size, y, x+size, y);
 		g.setClip(oldClip);
+	}
+	/*_________________________________________________*/
+	public static void drawCross(Graphics g, double x, double y, int size) {
+		Shape oldClip = g.getClip();
+		//g.setClip(x-size, y-size, size*2, size*2);
+		drawLine(g,x, y-size, x, y+size);
+		drawLine(g, x-size, y, x+size, y);
+		//g.setClip(oldClip);
 	}
 
 	/* ............................................................................................................... */
@@ -269,13 +283,13 @@ public class GraphicsUtil {
 	}
 	/* ............................................................................................................... */
 	/** creates a square beginning at x,y and tilted in the direction of the angle. */
-	public static Path2D createAngledSquare(double x, double y, double angle, int length) {
+	public static Path2D.Double createAngledSquare(double x, double y, double angle, int length) {
 		double adj= -(Math.cos(angle)*length);
 		double opp =-(Math.sin(angle)*length);
 		x -=opp/2;
 		y-=adj/2;
 
-		Path2D poly = new Path2D.Double();
+		Path2D.Double poly = new Path2D.Double();
 		poly.moveTo(x,y);
 		poly.lineTo(x+opp,y+adj);
 		poly.lineTo(x+opp-adj,y+adj+opp);

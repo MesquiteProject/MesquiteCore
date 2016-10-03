@@ -493,12 +493,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				centeringOffset = (longestString-lengthString)/2;
 
 			if (treeDrawing.namesFollowLines ){
-
 				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])*1.0/(treeDrawing.lineBaseX[N]*1.0-treeDrawing.lineTipX[N]);
-				//setBounds(namePolys[taxonNumber], horiz+separation, vert, lengthString, rise+descent);
-				boolean upper = treeDrawing.lineTipY[N]>treeDrawing.lineBaseY[N];
-				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
 				double radians = Math.atan(slope);
+				
+				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
 				Font font = gL.getFont();
 				FontMetrics fontMet = gL.getFontMetrics(font);
 				double height = fontMet.getHeight(); //0.667
