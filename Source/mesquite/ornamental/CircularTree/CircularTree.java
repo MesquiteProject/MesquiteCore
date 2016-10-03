@@ -311,6 +311,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 				BasicStroke wideStroke = new BasicStroke(edgewidth);
 				Graphics2D g2 = (Graphics2D)g;
 				g2.setStroke(wideStroke);
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				g2.draw(arc);
 				g2.setStroke(defaultStroke);
 			}
