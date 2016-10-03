@@ -392,7 +392,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 	NameReference colorNameRef = NameReference.getNameReference("color");
 	/*.................................................................................................................*/
-	protected void drawNamesOnTree(Tree tree, int N, TreeDisplay treeDisplay, TaxaPartition partitions, int triangleBase) {
+	protected void drawNamesOnTree(Tree tree, int drawnRoot, int N, TreeDisplay treeDisplay, TaxaPartition partitions, int triangleBase) {
 		if (triangleBase < 0 && tree.getAssociatedBit(triangleNameRef, N))
 			triangleBase = N;
 		if  (tree.nodeIsTerminal(N)) {   //terminal
@@ -496,8 +496,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (treeDrawing.namesFollowLines ){
 				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])*1.0/(treeDrawing.lineBaseX[N]*1.0-treeDrawing.lineTipX[N]);
 				//setBounds(namePolys[taxonNumber], horiz+separation, vert, lengthString, rise+descent);
-				boolean upper = treeDrawing.lineTipY[N]>treeDrawing.lineBaseY[N];
-				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
+				boolean upper = treeDrawing.lineTipY[N]>treeDrawing.y[drawnRoot];
+				boolean right = treeDrawing.lineTipX[N]>treeDrawing.x[drawnRoot];
 				double radians = Math.atan(slope);
 				Font font = gL.getFont();
 				FontMetrics fontMet = gL.getFontMetrics(font);
@@ -726,7 +726,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-				drawNamesOnTree(tree, d, treeDisplay, partitions, triangleBase);
+				drawNamesOnTree(tree,drawnRoot, d, treeDisplay, partitions, triangleBase);
 
 			String label = null;
 			if (showNodeLabels.getValue())
@@ -915,7 +915,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					triangleBase = drawnRoot;
 				else
 					triangleBase = -1;
-				drawNamesOnTree(tree, drawnRoot, treeDisplay, part, triangleBase);
+				drawNamesOnTree(tree, drawnRoot, drawnRoot, treeDisplay, part, triangleBase);
 		
 				g.setFont(tempFont);
 			}
