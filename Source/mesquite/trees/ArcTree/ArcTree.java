@@ -247,15 +247,15 @@ class ArcTreeDrawing extends TreeDrawing  {
 		lineBaseX[node] =  x[tree.motherOfNode(node)];
 	}
 
-	public int getBranchCenterX(int node){
-		int bX =lineBaseX[node];
+	public double getBranchCenterX(int node){
+		double bX =lineBaseX[node];
 		if (treeDisplay.getOrientation()==TreeDisplay.RIGHT || treeDisplay.getOrientation()==TreeDisplay.LEFT)
 			return (bX-x[node])/3 + x[node];
 		else 
 			return x[node]; 
 	}
-	public int getBranchCenterY(int node){
-		int bY = lineBaseY[node];
+	public double getBranchCenterY(int node){
+		double bY = lineBaseY[node];
 		if (treeDisplay.getOrientation()==TreeDisplay.RIGHT || treeDisplay.getOrientation()==TreeDisplay.LEFT)
 			return y[node];
 		else 
@@ -297,10 +297,10 @@ class ArcTreeDrawing extends TreeDrawing  {
 			g.setColor(Color.blue);
 
 		if (treeDisplay.getOrientation()==TreeDisplay.DOWN || treeDisplay.getOrientation()==TreeDisplay.UP){
-			g.fillOval(x[node]-4, y[node], 8, 8);
+			GraphicsUtil.fillOval(g, x[node]-4, y[node], 8, 8);
 		}
 		else {
-			g.fillOval(x[node], y[node]-4, 8,8);
+			GraphicsUtil.fillOval(g,x[node], y[node]-4, 8,8);
 		}
 
 		g.setColor(tC);
@@ -356,94 +356,94 @@ class ArcTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		Rectangle box;
+		Rectangle2D box;
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-			box = new Rectangle(x[node], y[node]-edgewidth/2-2, edgewidth, edgewidth);
-			g.fillArc(box.x, box.y, box.width, box.height, 0, 180);
+			box = new Rectangle2D.Double(x[node], y[node]-edgewidth/2-2, edgewidth, edgewidth);
+			GraphicsUtil.fillArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0, 180);
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 0, 180);
-			g.drawLine(box.x, box.y+ edgewidth/2, box.x+edgewidth,  box.y+ edgewidth/2);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0, 180);
+			GraphicsUtil.drawLine(g,box.getX(), box.getY()+ edgewidth/2, box.getX()+edgewidth,  box.getY()+ edgewidth/2);
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
-			box = new Rectangle(x[node], y[node] + 2, edgewidth, edgewidth);
-			g.fillArc(box.x, box.y -  box.height/2, box.width, box.height, 180, 180);
+			box = new Rectangle2D.Double(x[node], y[node] + 2, edgewidth, edgewidth);
+			GraphicsUtil.fillArc(g,box.getX(), box.getY() -  box.getHeight()/2, box.getWidth(), box.getHeight(), 180, 180);
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y -  box.height/2, box.width, box.height, 180, 180);
-			g.drawLine(box.x, box.y , box.x+edgewidth,  box.y);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY() -  box.getHeight()/2, box.getWidth(), box.getHeight(), 180, 180);
+			GraphicsUtil.drawLine(g,box.getX(), box.getY() , box.getX()+edgewidth,  box.getY());
 		}
 		else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-			box = new Rectangle(x[node] + 2, y[node], edgewidth, edgewidth);
-			g.fillArc(box.x- box.width/2, box.y, box.width, box.height, 270, 180);
+			box = new Rectangle2D.Double(x[node] + 2, y[node], edgewidth, edgewidth);
+			GraphicsUtil.fillArc(g,box.getX()- box.getWidth()/2, box.getY(), box.getWidth(), box.getHeight(), 270, 180);
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x- box.width/2, box.y, box.width, box.height, 270, 180);
-			g.drawLine(box.x, box.y, box.x ,  box.y+edgewidth);
+			GraphicsUtil.drawArc(g,box.getX()- box.getWidth()/2, box.getY(), box.getWidth(), box.getHeight(), 270, 180);
+			GraphicsUtil.drawLine(g,box.getX(), box.getY(), box.getX() ,  box.getY()+edgewidth);
 		}
 		else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
-			box = new Rectangle(x[node]-edgewidth/2-2, y[node], edgewidth, edgewidth);
-			g.fillArc(box.x, box.y, box.width, box.height, 90, 180);
+			box = new Rectangle2D.Double(x[node]-edgewidth/2-2, y[node], edgewidth, edgewidth);
+			GraphicsUtil.fillArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 90, 180);
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 90, 180);
-			g.drawLine(box.x+edgewidth/2, box.y, box.x+edgewidth/2,  box.y+edgewidth);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 90, 180);
+			GraphicsUtil.drawLine(g,box.getX()+edgewidth/2, box.getY(), box.getX()+edgewidth/2,  box.getY()+edgewidth);
 		}
 		else {
-			box = new Rectangle(x[node], y[node], edgewidth, edgewidth);
-			g.fillArc(box.x, box.y, box.width, box.height, 0, 360);
+			box = new Rectangle2D.Double(x[node], y[node], edgewidth, edgewidth);
+			GraphicsUtil.fillArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0, 360);
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 0, 360);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0, 360);
 		}
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
-		Rectangle box;
+		Rectangle2D box;
 		int numColors = colors.getNumColors();
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
-			box = new Rectangle(x[node], y[node]-edgewidth/2-2, edgewidth, edgewidth);
+			box = new Rectangle2D.Double(x[node], y[node]-edgewidth/2-2, edgewidth, edgewidth);
 			for (int i=0; i<numColors; i++) {
 				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y, box.width, box.height, 0+ (i*180/numColors), 180- (i*180/numColors));
+				GraphicsUtil.fillArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0+ (i*180/numColors), 180- (i*180/numColors));
 			}
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 0, 180);
-			g.drawLine(box.x, box.y+ edgewidth/2, box.x+edgewidth,  box.y+ edgewidth/2);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0, 180);
+			GraphicsUtil.drawLine(g,box.getX(), box.getY()+ edgewidth/2, box.getX()+edgewidth,  box.getY()+ edgewidth/2);
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
-			box = new Rectangle(x[node], y[node] + 2, edgewidth, edgewidth);
+			box = new Rectangle2D.Double(x[node], y[node] + 2, edgewidth, edgewidth);
 			for (int i=0; i<numColors; i++) {
 				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y -  box.height/2, box.width, box.height, 180+ (i*180/numColors), 180- (i*180/numColors));
+				GraphicsUtil.fillArc(g,box.getX(), box.getY() -  box.getHeight()/2, box.getWidth(), box.getHeight(), 180+ (i*180/numColors), 180- (i*180/numColors));
 			}
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y -  box.height/2, box.width, box.height, 180, 180);
-			g.drawLine(box.x, box.y , box.x+edgewidth,  box.y);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY() -  box.getHeight()/2, box.getWidth(), box.getHeight(), 180, 180);
+			GraphicsUtil.drawLine(g,box.getX(), box.getY() , box.getX()+edgewidth,  box.getY());
 		}
 		else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
-			box = new Rectangle(x[node] + 2, y[node], edgewidth, edgewidth);
+			box = new Rectangle2D.Double(x[node] + 2, y[node], edgewidth, edgewidth);
 			for (int i=0; i<numColors; i++) {
 				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x- box.width/2, box.y, box.width, box.height, 270+ (i*180/numColors), 180- (i*180/numColors));
+				GraphicsUtil.fillArc(g,box.getX()- box.getWidth()/2, box.getY(), box.getWidth(), box.getHeight(), 270+ (i*180/numColors), 180- (i*180/numColors));
 			}
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x- box.width/2, box.y, box.width, box.height, 270, 180);
-			g.drawLine(box.x, box.y, box.x ,  box.y+edgewidth);
+			GraphicsUtil.drawArc(g,box.getX()- box.getWidth()/2, box.getY(), box.getWidth(), box.getHeight(), 270, 180);
+			GraphicsUtil.drawLine(g,box.getX(), box.getY(), box.getX() ,  box.getY()+edgewidth);
 		}
 		else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
-			box = new Rectangle(x[node]-edgewidth/2-2, y[node], edgewidth, edgewidth);
+			box = new Rectangle2D.Double(x[node]-edgewidth/2-2, y[node], edgewidth, edgewidth);
 			for (int i=0; i<numColors; i++) {
 				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y, box.width, box.height, 90+ (i*180/numColors), 180- (i*180/numColors));
+				GraphicsUtil.fillArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 90+ (i*180/numColors), 180- (i*180/numColors));
 			}
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 90, 180);
-			g.drawLine(box.x+edgewidth/2, box.y, box.x+edgewidth/2,  box.y+edgewidth);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 90, 180);
+			GraphicsUtil.drawLine(g,box.getX()+edgewidth/2, box.getY(), box.getX()+edgewidth/2,  box.getY()+edgewidth);
 		}
 		else {
-			box = new Rectangle(x[node], y[node], edgewidth, edgewidth);
+			box = new Rectangle2D.Double(x[node], y[node], edgewidth, edgewidth);
 			for (int i=0; i<numColors; i++) {
 				g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-				g.fillArc(box.x, box.y, box.width, box.height, 0, 360);
+				GraphicsUtil.fillArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0, 360);
 			}
 			g.setColor(treeDisplay.getBranchColor(node));
-			g.drawArc(box.x, box.y, box.width, box.height, 0, 360);
+			GraphicsUtil.drawArc(g,box.getX(), box.getY(), box.getWidth(), box.getHeight(), 0, 360);
 		}
 	}
 	/*_________________________________________________*/
@@ -471,28 +471,26 @@ class ArcTreeDrawing extends TreeDrawing  {
 	}
 
 	/*_________________________________________________*/
-	public Polygon nodePoly(int node) {
-		int offset = (getNodeWidth()-getEdgeWidth())/2;
-		int doubleOffset = (getNodeWidth()-getEdgeWidth());
-		int startX = x[node] - offset;
-		int startY= y[node] - offset;
+	public Path2D nodePoly(int node) {
+		double offset = (getNodeWidth()-getEdgeWidth())/2;
+		double doubleOffset = (getNodeWidth()-getEdgeWidth());
+		double startX = x[node] - offset;
+		double startY= y[node] - offset;
 		if (treeDisplay.getOrientation()==TreeDisplay.RIGHT){
 			startX -= getNodeWidth()-doubleOffset;
 		} else if (treeDisplay.getOrientation()==TreeDisplay.DOWN)
 			startY -= getNodeWidth()-doubleOffset;
-		Polygon poly = new Polygon();
-		poly.npoints=0;
-		poly.addPoint(startX,startY);
-		poly.addPoint(startX+getNodeWidth(),startY);
-		poly.addPoint(startX+getNodeWidth(),startY+getNodeWidth());
-		poly.addPoint(startX,startY+getNodeWidth());
-		poly.addPoint(startX,startY);
-		poly.npoints=5;
+		Path2D poly = new Path2D.Double();
+		poly.moveTo(startX,startY);
+		poly.lineTo(startX+getNodeWidth(),startY);
+		poly.lineTo(startX+getNodeWidth(),startY+getNodeWidth());
+		poly.lineTo(startX,startY+getNodeWidth());
+		poly.lineTo(startX,startY);
 		return poly;
 	}
 	/*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){
-		Polygon nodeP = nodePoly(node);
+		Path2D nodeP = nodePoly(node);
 		if (nodeP!=null && nodeP.contains(x,y))
 			return true;
 		else

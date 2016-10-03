@@ -1297,8 +1297,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		if (usingPane) {
 			TreeDrawing td = treeDisplay.getTreeDrawing();
-			int x = td.x[treeDisplay.getTree().nodeOfTaxonNumber(i)];
-			int y = td.y[treeDisplay.getTree().nodeOfTaxonNumber(i)];
+			int x = (int)td.x[treeDisplay.getTree().nodeOfTaxonNumber(i)];    //integer node loc approximation
+			int y = (int)td.y[treeDisplay.getTree().nodeOfTaxonNumber(i)];    //integer node loc approximation
 			int w = getTreePaneWidth();
 			int h = getTreePaneHeight();
 			setOrigin(x - w / 2, y - h / 2, true);
@@ -3894,8 +3894,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	public void findContained(Tree tree, int N, int x, int y, int w, int h, Vector nodes, Vector taxons) {
 		TreeDrawing drawing = treeDisplay.getTreeDrawing();
-		int dX = drawing.x[N];
-		int dY = drawing.y[N];
+		int dX = (int)drawing.x[N];   //integer node loc approximation
+		int dY = (int)drawing.y[N];   //integer node loc approximation
 
 		if (dX >= x && dX <= x + w && dY >= y && dY <= y + h)
 			nodes.addElement(new MesquiteInteger(N));
@@ -5881,7 +5881,7 @@ class MagnifyExtra extends TreeDisplayExtra {
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 		if (drawnRoot != tree.getRoot()) {
 			TreeDrawing td = treeDisplay.getTreeDrawing();
-			g.drawImage(image, td.x[drawnRoot], td.y[drawnRoot], treeDisplay);
+			g.drawImage(image, (int)td.x[drawnRoot], (int)td.y[drawnRoot], treeDisplay);
 		}
 	}
 
@@ -5952,11 +5952,11 @@ class BirdsEyePanel extends MesquitePanel {
 	}
 
 	private int getTransformedX(int node) {
-		return getBounds().width * treeDrawing.x[node] / (treeWindow.treeDisplay.getFieldWidth());
+		return (int)(getBounds().width * treeDrawing.x[node] / (treeWindow.treeDisplay.getFieldWidth()));    //integer node loc approximation
 	}
 
 	private int getTransformedY(int node) {
-		return getBounds().height * treeDrawing.y[node] / (treeWindow.treeDisplay.getFieldHeight());
+		return (int)(getBounds().height * treeDrawing.y[node] / (treeWindow.treeDisplay.getFieldHeight()));    //integer node loc approximation
 	}
 
 	public void paint(Graphics g) {

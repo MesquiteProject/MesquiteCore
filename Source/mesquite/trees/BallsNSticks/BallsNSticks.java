@@ -295,8 +295,8 @@ public class BallsNSticks extends DrawTree {
 
 /* ======================================================================== */
 class BallsNSticksDrawing extends TreeDrawing  {
-	public Polygon[] branchPoly;
-	public Polygon[] touchPoly;
+	public Path2D[] branchPoly;
+	public Path2D[] touchPoly;
 
 	public BallsNSticks ownerModule;
 	int spotSize;
@@ -331,11 +331,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	}
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
-		branchPoly= new Polygon[numNodes];
-		touchPoly= new Polygon[numNodes];
+		branchPoly= new Path2D[numNodes];
+		touchPoly= new Path2D[numNodes];
 		for (int i=0; i<numNodes; i++) {
-			branchPoly[i] = new Polygon();
-			touchPoly[i] = new Polygon();
+			branchPoly[i] = new Path2D.Double();
+			touchPoly[i] = new Path2D.Double();
 		}
 	}
 	private boolean isUP(){
@@ -365,7 +365,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		}
 
 	/*_________________________________________________*/
-	private void UPCalcBranchPolys(Tree tree, int node, Polygon[] polys, int width)
+	private void UPCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -376,7 +376,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			DrawTreeUtil.UPdefineSquarePoly(this,polys[node], width, (node==tree.getRoot()), x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)],0);
 	}
 	/*_________________________________________________*/
-	private void DOWNCalcBranchPolys(Tree tree, int node, Polygon[] polys, int width)
+	private void DOWNCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -388,7 +388,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			DrawTreeUtil.DOWNdefineSquarePoly(this,polys[node], width,(node==tree.getRoot()), x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)],0);
 	}
 	/*_________________________________________________*/
-	private void RIGHTCalcBranchPolys(Tree tree, int node, Polygon[] polys, int width)
+	private void RIGHTCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -399,7 +399,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			DrawTreeUtil.RIGHTdefineSquarePoly(this,polys[node], width, (node==tree.getRoot()), x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)],0);
 	}
 	/*_________________________________________________*/
-	private void LEFTCalcBranchPolys(Tree tree, int node, Polygon[] polys, int width)
+	private void LEFTCalcBranchPolys(Tree tree, int node, Path2D[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node))
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -480,7 +480,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			g.setColor(Color.blue);
 
 		for (int i=1; i<4; i++)
-			GraphicsUtil.drawOval(g, x[node]- spotSize/2 - 2 - i, y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);
+			GraphicsUtil.drawOval(g, (int)x[node]- spotSize/2 - 2 - i, (int)y[node]- spotSize/2 - 2 - i, spotSize + 3 + i + i, spotSize + 3 + i + i);  // integer nodeloc approxmation
 
 
 		g.setColor(tC);
@@ -534,11 +534,11 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			if (SHOWTOUCHPOLYS) {  //fordebugging
 				Color prev = g.getColor();
 				g.setColor(ColorDistribution.burlyWood);
-				g.fillPolygon(touchPoly[node]); 
+				GraphicsUtil.fill(g,touchPoly[node]); 
 				g.setColor(prev);
 			}
 
-			g.fillPolygon(branchPoly[node]);  //TODO: no longer supports cosmic!
+			GraphicsUtil.fill(g,branchPoly[node]);  //TODO: no longer supports cosmic!
 		}
 		else if (ownerModule.style == BallsNSticks.CURVED)
 			DrawTreeUtil.drawOneCurvedBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, node, 0, getEdgeWidth(),0, emphasizeNodes(), null, defaultStroke);
@@ -547,20 +547,20 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			if (SHOWTOUCHPOLYS) {  //fordebugging
 				Color prev = g.getColor();
 				g.setColor(ColorDistribution.burlyWood);
-				g.fillPolygon(touchPoly[node]); 
+				GraphicsUtil.fill(g,touchPoly[node]); 
 				g.setColor(prev);
 			}
-			g.fillPolygon(branchPoly[node]);  //TODO: no longer supports cosmic!
+			GraphicsUtil.fill(g,branchPoly[node]);  //TODO: no longer supports cosmic!
 
 			// if (drawnRoot==node && tree.getRoot()!=node)
 			if (tree.numberOfParentsOfNode(node)>1) { //for reticulate trees
 				for (int i=1; i<=tree.numberOfParentsOfNode(node); i++) {
 					int anc =tree.parentOfNode(node, i);
 					if (anc!= tree.motherOfNode(node)) {
-						g.drawLine(x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
-						g.drawLine(x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
-						g.drawLine(x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
-						g.drawLine(x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
+						GraphicsUtil.drawLine(g,x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
+						GraphicsUtil.drawLine(g,x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
+						GraphicsUtil.drawLine(g,x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
+						GraphicsUtil.drawLine(g,x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
 					}
 				}
 			}
@@ -568,9 +568,9 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		if (tree.getAssociatedBit(triangleNameRef,node)) {
 			for (int j=0; j<2; j++)
 				for (int i=0; i<2; i++) {
-					g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
-					g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-					g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
+					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
+					GraphicsUtil.drawLine(g,x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
+					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 				}
 		}
 	}
@@ -722,7 +722,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		return inBranch(tree, touchPoly, node, xPos, yPos);
 	}
 	/*_________________________________________________*/
-	private boolean inBranch(Tree tree, Polygon[] polys, int node, int x, int y){
+	private boolean inBranch(Tree tree, Path2D[] polys, int node, int x, int y){
 		if (ownerModule.style == BallsNSticks.DIAGONAL||ownerModule.style == BallsNSticks.SQUARE) {
 			if (polys!=null && polys[node]!=null && polys[node].contains(x, y))
 				return true;
@@ -734,7 +734,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		return false;
 	}
 	/*_________________________________________________*/
-	private void ScanBranches(Tree tree,Polygon[] polys, int node, int x, int y, MesquiteDouble fraction)
+	private void ScanBranches(Tree tree,Path2D[] polys, int node, int x, int y, MesquiteDouble fraction)
 	{
 		if (foundBranch==0) {
 			if (inBranch(tree,polys,node,x,y) || inNode(node, x, y)) {

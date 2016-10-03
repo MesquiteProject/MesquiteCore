@@ -528,8 +528,8 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			MesquiteLabel c = (MesquiteLabel)labelsAtNodes.getPanel(t);
 			if (c != null){
 				if (pairModule.showStates.getValue()) {
-					int nodeX = treeDisplay.getTreeDrawing().x[N];
-					int nodeY = treeDisplay.getTreeDrawing().y[N];
+					int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer nodeloc approximation
+					int nodeY = (int)treeDisplay.getTreeDrawing().y[N]; // integer nodeloc approximation
 					//	c.setText( observedStatesA.toString(t, " ") + "/" + observedStatesB.toString(t, " ")); 
 					c.setText("\2" + observedStatesA.toString(t, " "));  //\2=boldface
 					c.addLine(observedStatesB.toString(t, " ")); 

@@ -133,9 +133,9 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 		      			imHeight *= scale;
 		      		}
 				if (usePanels && panels!=null && panels[taxonNumber] != null) 
-					panels[taxonNumber].setLocation( treeDisplay.getTreeDrawing().x[node]-imWidth/2, treeDisplay.getTreeDrawing().y[node]-imHeight/2);
+					panels[taxonNumber].setLocation((int) treeDisplay.getTreeDrawing().x[node]-imWidth/2, (int)treeDisplay.getTreeDrawing().y[node]-imHeight/2);
 				else
-					g.drawImage(im, treeDisplay.getTreeDrawing().x[node]-imWidth/2, treeDisplay.getTreeDrawing().y[node]-imHeight/2, imWidth, imHeight, (ImageObserver)treeDisplay);
+					g.drawImage(im, (int)treeDisplay.getTreeDrawing().x[node]-imWidth/2, (int)treeDisplay.getTreeDrawing().y[node]-imHeight/2, imWidth, imHeight, (ImageObserver)treeDisplay);
 			}
 		}
 	}
@@ -333,7 +333,7 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 					taxonImages[M]=  image;
 					if (usePanels) {
 						panels[M].setImage(taxonImages[M]);
-						panels[M].setLocation( treeDisplay.getTreeDrawing().x[M]-taxonImages[M].getWidth((ImageObserver)treeDisplay)/2, treeDisplay.getTreeDrawing().y[M]-taxonImages[M].getHeight((ImageObserver)treeDisplay)/2);
+						panels[M].setLocation((int) treeDisplay.getTreeDrawing().x[M]-taxonImages[M].getWidth((ImageObserver)treeDisplay)/2, (int)treeDisplay.getTreeDrawing().y[M]-taxonImages[M].getHeight((ImageObserver)treeDisplay)/2);
 						panels[M].setSize(taxonImages[M].getWidth((ImageObserver)treeDisplay), taxonImages[M].getHeight((ImageObserver)treeDisplay));
 						addPanelPlease(panels[M]);
 

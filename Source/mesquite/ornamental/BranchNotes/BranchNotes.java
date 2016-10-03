@@ -120,12 +120,12 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 				String note = getNote(tree, node);
 				box.setColors(Color.red, Color.white);
 				box.setString("* " +note);
-				box.draw(g,  treeDisplay.getTreeDrawing().x[node], treeDisplay.getTreeDrawing().y[node]);
+				box.draw(g,  (int)treeDisplay.getTreeDrawing().x[node],(int) treeDisplay.getTreeDrawing().y[node]);  //integer nodeloc approximation
 			}
 			else if (branchNotesModule.asterisk == null)
-				StringUtil.highlightString(g, "*", treeDisplay.getTreeDrawing().x[node]-8, treeDisplay.getTreeDrawing().y[node]+8, Color.red, Color.white);
+				StringUtil.highlightString(g, "*", (int)treeDisplay.getTreeDrawing().x[node]-8, (int) treeDisplay.getTreeDrawing().y[node]+8, Color.red, Color.white);  //integer nodeloc approximation
 			else
-				g.drawImage(branchNotesModule.asterisk, treeDisplay.getTreeDrawing().x[node], treeDisplay.getTreeDrawing().y[node], (ImageObserver)treeDisplay);
+				g.drawImage(branchNotesModule.asterisk, (int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node], (ImageObserver)treeDisplay);  //integer nodeloc approximation
 		}
 	}
 	
@@ -181,7 +181,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 			if (link!=null) {
 				int tM = tree.nodeOfTaxonNumber(M);
 				shown = true;
-				message.setLocation(treeDisplay.getTreeDrawing().x[tM], treeDisplay.getTreeDrawing().y[tM]);
+				message.setLocation((int)treeDisplay.getTreeDrawing().x[tM], (int)treeDisplay.getTreeDrawing().y[tM]);  //integer nodeloc approximation
 				message.setText(link);
 				message.setVisible(true);
 				message.setCommand(taxonCommand);
@@ -203,7 +203,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 			String link = getNote(tree, N);
 			if (link!=null) {
 				shown = true;
-				message.setLocation(treeDisplay.getTreeDrawing().x[N], treeDisplay.getTreeDrawing().y[N]);
+				message.setLocation((int)treeDisplay.getTreeDrawing().x[N], (int)treeDisplay.getTreeDrawing().y[N]);  //integer nodeloc approximation
 				message.setText(link);
 				message.setVisible(true);
 				message.setCommand(branchCommand);

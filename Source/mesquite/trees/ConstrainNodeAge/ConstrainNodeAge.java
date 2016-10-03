@@ -88,7 +88,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
 		if (editorOn && node == editorNode) {
 			if (tree.nodeExists(editorNode))
-				miniEditor.setLocation(treeDisplay.getTreeDrawing().x[editorNode], treeDisplay.getTreeDrawing().y[editorNode]);
+				miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[editorNode], (int)treeDisplay.getTreeDrawing().y[editorNode]);
 			else hideMiniEditor();
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -108,8 +108,8 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 		if (getConstraints(tree, node)!=null) {
 			Font f = g.getFont();
 			g.setFont(small);
-			int x = treeDisplay.getTreeDrawing().x[node];
-			int y = treeDisplay.getTreeDrawing().y[node];
+			int x = (int)treeDisplay.getTreeDrawing().x[node];  // integer nodeloc approximation
+			int y = (int)treeDisplay.getTreeDrawing().y[node]; // integer nodeloc approximation
 			g.drawImage(anchor, x, y, treeDisplay);
 			//if (mouse){
 			//	g.drawString("age", x+11, y + 8);
@@ -134,7 +134,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 			miniEditor = new MiniStringEditor(ownerModule, ownerModule.makeCommand("acceptAge", this));
 			addPanelPlease(miniEditor);
 		}
-		miniEditor.setLocation(treeDisplay.getTreeDrawing().x[node], treeDisplay.getTreeDrawing().y[node]);
+		miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node]);
 		miniEditor.setText(getConstraints(t, node));
 		miniEditor.setVisible(true);
 		miniEditor.prepare();

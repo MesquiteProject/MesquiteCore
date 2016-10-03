@@ -307,7 +307,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			return tree.getBranchLength(N);
 	}
 	/*_________________________________________________*/
-	private int lastleft;
+	private double lastleft;
 	/*_________________________________________________*/
 	private void UPCalcInternalLocs(TreeDrawing treeDrawing, Tree tree, int N) {
 		if (tree.nodeIsInternal(N)) { //internal
@@ -320,10 +320,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				treeDrawing.x[N] =treeDrawing.x[fD];
 			}
 			else {
-				int nFDx = treeDrawing.x[fD];
-				int nFDy = treeDrawing.y[fD];
-				int nLDx = treeDrawing.x[lD];
-				int nLDy = treeDrawing.y[lD];
+				double nFDx = treeDrawing.x[fD];
+				double nFDy = treeDrawing.y[fD];
+				double nLDx = treeDrawing.x[lD];
+				double nLDy = treeDrawing.y[lD];
 				treeDrawing.y[N] = (-nFDx + nLDx+nFDy + nLDy) / 2;
 				treeDrawing.x[N] =(nFDx + nLDx - nFDy + nLDy) / 2;
 			}
@@ -337,8 +337,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 			int fD =tree.firstDaughterOfNode(N);
 			int lD =tree.lastDaughterOfNode(N);
 			if (lD!=fD)   {//> one descendant
-				int nFDx = treeDrawing.x[fD];
-				int nLDx = treeDrawing.x[lD];
+				double nFDx = treeDrawing.x[fD];
+				double nLDx = treeDrawing.x[lD];
 				treeDrawing.x[N] =(nFDx + nLDx) / 2;
 			}
 		}
@@ -375,7 +375,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void UPevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, int evenVertSpacing) {
 		if (tree.nodeIsInternal(N)){
-			int deepest = 0;
+			double deepest = 0;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 				UPevenNodeLocs(treeDrawing, tree, d, evenVertSpacing);
 				if (treeDrawing.y[d]>deepest)
@@ -412,10 +412,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				DOWNCalcInternalLocs(treeDrawing, tree, d);
 			int nFD = tree.firstDaughterOfNode(N);
 			int nLD = tree.lastDaughterOfNode(N);
-			int nFDx = treeDrawing.x[nFD];
-			int nFDy = treeDrawing.y[nFD];
-			int nLDx = treeDrawing.x[nLD];
-			int nLDy = treeDrawing.y[nLD];
+			double nFDx = treeDrawing.x[nFD];
+			double nFDy = treeDrawing.y[nFD];
+			double nLDx = treeDrawing.x[nLD];
+			double nLDy = treeDrawing.y[nLD];
 			if (nLD==nFD)   {//only one descendant; put same as descendant, to be adjusted later
 				treeDrawing.y[N] = treeDrawing.y[nFD];
 				treeDrawing.x[N] =treeDrawing.x[nFD];
@@ -463,7 +463,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void DOWNevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, int evenVertSpacing) {
 		if (tree.nodeIsInternal(N)){
-			int deepest = 10000000;
+			double deepest = 10000000;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 				DOWNevenNodeLocs(treeDrawing, tree, d, evenVertSpacing);
 				if (treeDrawing.y[d]<deepest)
@@ -493,10 +493,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				RIGHTCalcInternalLocs(treeDrawing, tree,  d);
 			int fD = tree.firstDaughterOfNode(N);
 			int lD = tree.lastDaughterOfNode(N);
-			int nFDx = treeDrawing.x[fD];
-			int nFDy = treeDrawing.y[fD];
-			int nLDx = treeDrawing.x[lD];
-			int nLDy = treeDrawing.y[lD];
+			double nFDx = treeDrawing.x[fD];
+			double nFDy = treeDrawing.y[fD];
+			double nLDx = treeDrawing.x[lD];
+			double nLDy = treeDrawing.y[lD];
 			if (lD==fD)   {//only one descendant
 				treeDrawing.y[N] = treeDrawing.y[fD];
 				treeDrawing.x[N] =treeDrawing.x[fD];
@@ -515,8 +515,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 			int fD =tree.firstDaughterOfNode(N);
 			int lD =tree.lastDaughterOfNode(N);
 			if (lD!=fD)   {//> one descendant
-				int nFDy = treeDrawing.y[fD];
-				int nLDy = treeDrawing.y[lD];
+				double nFDy = treeDrawing.y[fD];
+				double nLDy = treeDrawing.y[lD];
 				treeDrawing.y[N] =(nFDy + nLDy) / 2;
 			}
 		}
@@ -559,7 +559,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void RIGHTevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, int evenVertSpacing) {
 		if (tree.nodeIsInternal(N)){
-			int deepest = 1000000;
+			double deepest = 1000000;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 				RIGHTevenNodeLocs(treeDrawing, tree, d, evenVertSpacing);
 				if (treeDrawing.x[d]<deepest)
@@ -588,10 +588,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				LEFTCalcInternalLocs(treeDrawing, tree, d);
 			int fD = tree.firstDaughterOfNode(N);
 			int lD = tree.lastDaughterOfNode(N);
-			int nFDx = treeDrawing.x[fD];
-			int nFDy = treeDrawing.y[fD];
-			int nLDx = treeDrawing.x[lD];
-			int nLDy = treeDrawing.y[lD];
+			double nFDx = treeDrawing.x[fD];
+			double nFDy = treeDrawing.y[fD];
+			double nLDx = treeDrawing.x[lD];
+			double nLDy = treeDrawing.y[lD];
 			if (lD==fD)   {//only one descendant
 				treeDrawing.y[N] = treeDrawing.y[fD];
 				treeDrawing.x[N] =treeDrawing.x[fD];
@@ -640,7 +640,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void LEFTevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, int evenVertSpacing) {
 		if (tree.nodeIsInternal(N)){
-			int deepest = 0;
+			double deepest = 0;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 				LEFTevenNodeLocs(treeDrawing, tree, d, evenVertSpacing);
 				if (treeDrawing.x[d]>deepest)
@@ -663,20 +663,20 @@ public class NodeLocsStandard extends NodeLocsVH {
 			LEFTdoAdjustLengths(treeDisplay, treeDrawing, tree, bottom, d, nH, root);
 	}
 	/*....................................................................................................*/
-	private int edgeNode (TreeDrawing treeDrawing, Tree tree, int node, boolean x, boolean max) {
+	private double edgeNode (TreeDrawing treeDrawing, Tree tree, int node, boolean x, boolean max) {
 		if (tree.nodeIsTerminal(node)) {
 			if (x)
 				return treeDrawing.x[node];
 			else
 				return treeDrawing.y[node];
 		}
-		int t;
+		double t;
 		if (max)
 			t = 0;
 		else
 			t = 1000000;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
-			int e = edgeNode( treeDrawing, tree, d, x, max);
+			double e = edgeNode( treeDrawing, tree, d, x, max);
 			if (max && e> t)
 				t = e;
 			else if (!max && e < t)
@@ -733,10 +733,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 						q = tree.firstDaughterOfNode(q);
 					}
 					//adjust nodes in chain
-					int bottomX =treeDrawing.x[tree.motherOfNode(N)] ;
-					int bottomY =treeDrawing.y[tree.motherOfNode(N)] ;
-					int topX =treeDrawing.x[N] ;
-					int topY =treeDrawing.y[N] ;
+					double bottomX =treeDrawing.x[tree.motherOfNode(N)] ;
+					double bottomY =treeDrawing.y[tree.motherOfNode(N)] ;
+					double topX =treeDrawing.x[N] ;
+					double topY =treeDrawing.y[N] ;
 					treeDrawing.y[N] = (bottomY+topY)/count;
 					treeDrawing.x[N] = (bottomX+topX)/count;
 					int count2=1;
@@ -1149,11 +1149,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 		}
 
 	}
-	private void drawString(Graphics g, String s, int x, int y){
+	private void drawString(Graphics g, String s, double x, double y){
 		if (g == null || StringUtil.blank(s))
 			return;
 		try {
-			g.drawString(s, x, y);
+			Graphics2D g2 = (Graphics2D)g;
+			g2.drawString(s,(float) x, (float)y);
 		}
 		catch (Exception e){
 		}
@@ -1178,9 +1179,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 		double thisHeight = totalScaleHeight + hundredthHeight;
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 			double base = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
-			int leftEdge = treeDisplay.getTreeDrawing().x[tree.leftmostTerminalOfNode(drawnRoot)];
+			double leftEdge = treeDisplay.getTreeDrawing().x[tree.leftmostTerminalOfNode(drawnRoot)];
 
-			int rightEdge = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)]+ scaleBuffer;
+			double rightEdge = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)]+ scaleBuffer;
 			if (narrowScaleOnly)
 				leftEdge = rightEdge - 10;
 			while ( thisHeight>=0) {
@@ -1190,20 +1191,20 @@ public class NodeLocsStandard extends NodeLocsVH {
 					g.setColor(Color.cyan);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
-					g.drawLine(rightEdge-rulerWidth, (int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)));
+					GraphicsUtil.drawLine(g,rightEdge-rulerWidth, (int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)));
 				else
-					g.drawLine(leftEdge, (int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)));
+					GraphicsUtil.drawLine(g,leftEdge, (int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)));
 				if (countTenths % 10 == 0)
 					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), rightEdge + buffer, (int)(base- (thisHeight*scaling)));
 
 				countTenths ++;
 			}
 			if (rulerOnly)
-				g.drawLine(rightEdge, (int)(base), rightEdge,  (int)(base- (totalScaleHeight*scaling)));
+				GraphicsUtil.drawLine(g,rightEdge, (int)(base), rightEdge,  (int)(base- (totalScaleHeight*scaling)));
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.DOWN) {
-			int leftEdge = treeDisplay.getTreeDrawing().x[tree.leftmostTerminalOfNode(drawnRoot)];
-			int rightEdge = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)]+ scaleBuffer;
+			double leftEdge = treeDisplay.getTreeDrawing().x[tree.leftmostTerminalOfNode(drawnRoot)];
+			double rightEdge = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)]+ scaleBuffer;
 			if (narrowScaleOnly)
 				leftEdge = rightEdge - 10;
 			double base = treeDrawing.y[drawnRoot];
@@ -1216,21 +1217,21 @@ public class NodeLocsStandard extends NodeLocsVH {
 					g.setColor(Color.cyan);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
-					g.drawLine(rightEdge-rulerWidth, (int)(base+ (thisHeight*scaling)), rightEdge,  (int)(base+ (thisHeight*scaling)));
+					GraphicsUtil.drawLine(g,rightEdge-rulerWidth, (int)(base+ (thisHeight*scaling)), rightEdge,  (int)(base+ (thisHeight*scaling)));
 				else
-					g.drawLine(leftEdge, (int)(base+ (thisHeight*scaling)), rightEdge,  (int)(base+ (thisHeight*scaling)));
+					GraphicsUtil.drawLine(g,leftEdge, (int)(base+ (thisHeight*scaling)), rightEdge,  (int)(base+ (thisHeight*scaling)));
 				if (countTenths % 10 == 0)
 					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), rightEdge + buffer, (int)(base+ (thisHeight*scaling)));
 				countTenths ++;
 			}
 			if (rulerOnly)
-				g.drawLine(rightEdge, (int)(base), rightEdge,  (int)(base+ (totalScaleHeight*scaling)));
+				GraphicsUtil.drawLine(g,rightEdge, (int)(base), rightEdge,  (int)(base+ (totalScaleHeight*scaling)));
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.LEFT) {
 			fm=g.getFontMetrics(g.getFont());
 			int textHeight = fm.getHeight();
-			int leftEdge = treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(drawnRoot)];
-			int rightEdge = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)]+ scaleBuffer;
+			double leftEdge = treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(drawnRoot)];
+			double rightEdge = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)]+ scaleBuffer;
 			if (narrowScaleOnly)
 				leftEdge = rightEdge - 10;
 
@@ -1243,21 +1244,21 @@ public class NodeLocsStandard extends NodeLocsVH {
 					g.setColor(Color.cyan);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
-					g.drawLine((int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)),  rightEdge-rulerWidth);
+					GraphicsUtil.drawLine(g,(int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)),  rightEdge-rulerWidth);
 				else
-					g.drawLine((int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)),  leftEdge);
+					GraphicsUtil.drawLine(g,(int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)),  leftEdge);
 				if (countTenths % 10 == 0)
 					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), (int)(base- (thisHeight*scaling)), rightEdge + buffer + textHeight);
 				countTenths ++;
 			}
 			if (rulerOnly)
-				g.drawLine((int)(base), rightEdge, (int)(base- (totalScaleHeight*scaling)),rightEdge);
+				GraphicsUtil.drawLine(g,(int)(base), rightEdge, (int)(base- (totalScaleHeight*scaling)),rightEdge);
 		}
 		else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
 			fm=g.getFontMetrics(g.getFont());
 			int textHeight = fm.getHeight();
-			int leftEdge = treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(drawnRoot)];
-			int rightEdge = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)] + scaleBuffer;
+			double leftEdge = treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(drawnRoot)];
+			double rightEdge = treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(drawnRoot)] + scaleBuffer;
 			if (narrowScaleOnly) {
 				leftEdge = rightEdge - 10;
 			}
@@ -1271,15 +1272,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 					g.setColor(Color.cyan);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
-					g.drawLine((int)(base+ (thisHeight*scaling)), rightEdge-rulerWidth,  (int)(base+ (thisHeight*scaling)),  rightEdge);
+					GraphicsUtil.drawLine(g,(int)(base+ (thisHeight*scaling)), rightEdge-rulerWidth,  (int)(base+ (thisHeight*scaling)),  rightEdge);
 				else
-					g.drawLine((int)(base+ (thisHeight*scaling)), leftEdge,  (int)(base+ (thisHeight*scaling)),  rightEdge);
+					GraphicsUtil.drawLine(g,(int)(base+ (thisHeight*scaling)), leftEdge,  (int)(base+ (thisHeight*scaling)),  rightEdge);
 				if (countTenths % 10 == 0)
 					drawString(g, MesquiteDouble.toStringInRange(totalScaleHeight - thisHeight, totalScaleHeight), (int)(base+ (thisHeight*scaling)), rightEdge + buffer + textHeight);
 				countTenths ++;
 			}
 			if (rulerOnly)
-				g.drawLine((int)(base), rightEdge, (int)(base+ (totalScaleHeight*scaling)),rightEdge);
+				GraphicsUtil.drawLine(g,(int)(base), rightEdge, (int)(base+ (totalScaleHeight*scaling)),rightEdge);
 		}
 		if (c !=null)
 			g.setColor(c);
@@ -1423,13 +1424,13 @@ class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
 		}
 		return null;
 	}
-	int cladeTop = -1;
-	int cladeBottom = -1;
-	int cladeLeft = -1;
-	int cladeRight = -1;
-	int tempHeight = -1;
-	int tempLeft = -1;
-	int tempWidth = -1;
+	double cladeTop = -1;
+	double cladeBottom = -1;
+	double cladeLeft = -1;
+	double cladeRight = -1;
+	double tempHeight = -1;
+	double tempLeft = -1;
+	double tempWidth = -1;
 	int touchX = -1;
 	int touchY = -1;
 
@@ -1447,16 +1448,16 @@ class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
 			Graphics g = treeDisplay.getGraphics();
 			g.setXORMode(Color.white);
 			g.setColor(Color.red);
-			g.drawRect(tempLeft, cladeTop, tempWidth, tempHeight);
+			GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 			g.dispose();
 		}
 	}
-	int tallestNode(Tree tree, int node, int[] x, int[] y){
+	double tallestNode(Tree tree, int node, double[] x, double[] y){
 		if (tree.nodeIsTerminal(node))
 			return y[node];
-		int tallest = MesquiteInteger.unassigned;
+		double tallest = MesquiteInteger.unassigned;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
-			int height = tallestNode(tree, d, x, y);
+			double height = tallestNode(tree, d, x, y);
 			if (tallest == MesquiteInteger.unassigned || height < tallest)
 				tallest = height;
 		}
@@ -1479,7 +1480,7 @@ class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
 			g.setXORMode(Color.white);
 			g.setColor(Color.red);
 			if (lineOnTouch)
-				g.drawRect(tempLeft, cladeTop, tempWidth, tempHeight);
+				GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 			cladeTop = tallestNode(tree, drawing.getDrawnRoot(), drawing.x, drawing.y);
 			cladeBottom = drawing.y[node];
 			cladeLeft = drawing.x[tree.leftmostTerminalOfNode(node)];
@@ -1489,7 +1490,7 @@ class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
 			tempWidth = cladeRight - cladeLeft;
 			tempZoomFactor = -1;
 				
-			g.drawRect(tempLeft, cladeTop, tempWidth, tempHeight);
+			GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 			g.dispose();
 		}
 		lineOnTouch=true;
@@ -1512,16 +1513,16 @@ class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
 			Graphics g = treeDisplay.getGraphics();
 			g.setXORMode(Color.white);
 			g.setColor(Color.red);
-			int oldHeight =(cladeBottom - cladeTop);
+			double oldHeight =(cladeBottom - cladeTop);
 			double expansionFactor = (oldHeight + (y - touchY))*1.0/oldHeight;
 			if (setTempZoom(treeDisplay, tree, node, expansionFactor)){
 			//	locsModule.setZoom(treeDisplay, node, expansionFactor);
-				g.drawRect(tempLeft, cladeTop, tempWidth, tempHeight);
+				GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 				tempHeight = (int)(oldHeight * expansionFactor);
 				int newWidth = (int)((cladeRight-cladeLeft) * expansionFactor);
 				tempLeft = cladeLeft - (newWidth-(cladeRight-cladeLeft))/2;
 				tempWidth = newWidth;
-				g.drawRect(tempLeft, cladeTop, tempWidth, tempHeight);
+				GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 				lineOnTouch = true;
 			}
 			g.dispose();
@@ -1544,7 +1545,7 @@ class NodeLocsExtra extends TreeDisplayBkgdExtra implements Commandable {
 			Graphics g = treeDisplay.getGraphics();
 			g.setXORMode(Color.white);
 			g.setColor(Color.red);
-			g.drawRect(tempLeft, cladeTop, tempWidth, tempHeight);
+			GraphicsUtil.drawRect(g,tempLeft, cladeTop, tempWidth, tempHeight);
 			g.dispose();
 		}
 
