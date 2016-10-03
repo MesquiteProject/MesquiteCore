@@ -140,6 +140,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 		treeDisplay.setOrientation(TreeDisplay.CIRCULAR);
 		oldNumTaxa = numTaxa;
 		namesFollowLines = true;
+		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
 		ready = true;
 	}
 	public void resetNumNodes(int numNodes){
@@ -368,6 +369,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*----------------------------------------------------------------------------*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
 		if (MesquiteTree.OK(tree)) {
+			treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
 			g.setColor(treeDisplay.branchColor);

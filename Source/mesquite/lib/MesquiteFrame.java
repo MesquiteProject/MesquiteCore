@@ -420,7 +420,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 				poptileLayout.show(poptile, s);
 			}
 			else if (location == RESOURCES) {
-				Debugg.println("showInLayout ");
 				if (!resourcesFullWindow){
 					resourcesFullWindow = true;
 					resetSizes(true);
@@ -805,7 +804,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 
 	public void showFrontWindow(){
-		Debugg.println("sfw ");
+		//Debugg.println("sfw ");
 		fixFrontness();
 		if (frontWindow != null){
 			showInLayout(frontWindow.getTileLocation(), Integer.toString(frontWindow.getID()));	
@@ -816,7 +815,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	/*.................................................................................................................*/
 	/** Shows the window */
 	public void setVisible(boolean vis) {
-		Debugg.println("sv ");
+		//Debugg.println("sv ");
 		if (doingShow)
 			return;
 		doingShow = true;
