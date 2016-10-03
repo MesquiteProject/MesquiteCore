@@ -106,12 +106,12 @@ class SpotsDrawing extends TreeDisplayDrawnExtra {
 				if (spotsize>height)
 					height = spotsize;
 		        	g.setColor(Color.yellow);
-				g.fillOval(treeDisplay.getTreeDrawing().x[N] +i - width/2 , treeDisplay.getTreeDrawing().y[N] +i - height/2, width-i-i, height-i-i);
+				GraphicsUtil.fillOval(g,treeDisplay.getTreeDrawing().x[N] +i - width/2 , treeDisplay.getTreeDrawing().y[N] +i - height/2, width-i-i, height-i-i);
 		        	g.setColor(Color.black);
 		        	
-				g.drawOval(treeDisplay.getTreeDrawing().x[N] +i - width/2 , treeDisplay.getTreeDrawing().y[N] +i - height/2, width-i-i, height-i-i);
+				GraphicsUtil.drawOval(g,treeDisplay.getTreeDrawing().x[N] +i - width/2 , treeDisplay.getTreeDrawing().y[N] +i - height/2, width-i-i, height-i-i);
 		        	
-				g.drawString(Integer.toString(N), treeDisplay.getTreeDrawing().x[N]+2- width/2, treeDisplay.getTreeDrawing().y[N]-4+ height/2);
+				GraphicsUtil.drawString(g, Integer.toString(N), treeDisplay.getTreeDrawing().x[N]+2- width/2, treeDisplay.getTreeDrawing().y[N]-4+ height/2);
 			}
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				drawSpot(treeDisplay, tree, g, d);

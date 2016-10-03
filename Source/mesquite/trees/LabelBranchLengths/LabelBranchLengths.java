@@ -114,8 +114,8 @@ class BranchLengthsLabeler extends TreeDisplayDrawnExtra   {
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				writeLengthAtNode(g, d, tree);
 				
-		int nodeX = treeDisplay.getTreeDrawing().x[N];
-		int nodeY = treeDisplay.getTreeDrawing().y[N];
+		double nodeX = treeDisplay.getTreeDrawing().x[N];
+		double nodeY = treeDisplay.getTreeDrawing().y[N];
 		if (treeDisplay.getOrientation() == treeDisplay.UP) {
 			nodeY+=10;
 			//nodeX+=10;

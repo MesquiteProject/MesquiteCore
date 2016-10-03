@@ -159,7 +159,7 @@ class ConstellationDrawing extends TreeDrawing  {
 		else
 			g.setColor(Color.blue);
 		for (int i=1; i<4; i++)
-			g.drawOval( x[node]- spotsize/2 - 2 - i, y[node]- spotsize/2 - 2 - i, spotsize + 3 + i + i, spotsize + 3 + i + i);
+			GraphicsUtil.drawOval(g, x[node]- spotsize/2 - 2 - i, y[node]- spotsize/2 - 2 - i, spotsize + 3 + i + i, spotsize + 3 + i + i);
 
 		g.setColor(tC);
 	}
@@ -172,10 +172,10 @@ class ConstellationDrawing extends TreeDrawing  {
 				for (int i=1; i<=tree.numberOfParentsOfNode(node); i++) {
 						int anc =tree.parentOfNode(node, i);
 						if (anc!= tree.motherOfNode(node)) {
-							g.drawLine(x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
-							g.drawLine(x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
-							g.drawLine(x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
-							g.drawLine(x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
+							GraphicsUtil.drawLine(g,x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
+							GraphicsUtil.drawLine(g,x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
+							GraphicsUtil.drawLine(g,x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
+							GraphicsUtil.drawLine(g,x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
 						}
 				}
 			}
@@ -277,7 +277,7 @@ class ConstellationDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void highlightSpot(Graphics g, int node){
 		for (int diam = spotsize + 12; diam> spotsize + 8; diam --)
-			g.drawOval( x[node]- (int)((double)diam/2 + 0.5), y[node]- (int)((double)diam/2 + 0.5), diam, diam);
+			GraphicsUtil.drawOval(g,x[node]- (int)((double)diam/2 + 0.5), y[node]- (int)((double)diam/2 + 0.5), diam, diam);
 	}
 	/*_________________________________________________*/
 	private void fillSpot(Graphics g, int node){
