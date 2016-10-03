@@ -184,7 +184,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			tree.setBranchLength(node, length, false);
 	}
 	void stretchTouched(int node, int x, int y, String mod) {
-		Point2D newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+		Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 		originalX = newOnLine.getX();
 		originalY = newOnLine.getY();
 		lastBL = tree.getBranchLength(node);
@@ -214,7 +214,7 @@ class AdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 	}
 	int count=0;
 	void stretchDragged(Tree t, int node, int x, int y){
-		Point2D newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+		Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 		//WARNING":  This shouldn't result in length increase if simple click and release with no drag; must subtract original X, Y
 		double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
 		double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];

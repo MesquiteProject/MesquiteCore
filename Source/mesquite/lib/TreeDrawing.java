@@ -331,7 +331,7 @@ public abstract class TreeDrawing  {
 	public abstract int getEdgeWidth();
 	
 	/** project point x,y onto the line between N's lineBase to lineTip. */
-	public Point2D projectionOnLine(int N, double x, double y) {
+	public Point2D.Double projectionOnLine(int N, double x, double y) {
 		double newX = x;
 		double newY = y;
 		try {
@@ -350,7 +350,7 @@ public abstract class TreeDrawing  {
 				//MesquiteModule.mesquiteTrunk.logln(" y " + MesquiteDouble.toString(newY));
 				//MesquiteModule.mesquiteTrunk.logln(" x " + MesquiteDouble.toString(newX));
 			}
-			Point2D thePoint= new Point2D.Double(x, y);
+			Point2D.Double thePoint= new Point2D.Double(x, y);
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
 		}

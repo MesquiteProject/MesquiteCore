@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -117,8 +118,8 @@ class CircleTreeDrawing extends TreeDrawing  {
 	int oldNumTaxa = 0;
  	public static final int inset=1;
 	private boolean ready=false;
-	public Polygon[] branchPoly;
-	public Polygon[] fillBranchPoly;
+	public Path2D[] branchPoly;
+	public Path2D[] fillBranchPoly;
 	BasicStroke defaultStroke;
 
 	private int foundBranch;
@@ -141,67 +142,48 @@ class CircleTreeDrawing extends TreeDrawing  {
 	}
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
-		branchPoly= new Polygon[numNodes];
-		fillBranchPoly= new Polygon[numNodes];
+		branchPoly= new Path2D[numNodes];
+		fillBranchPoly= new Path2D[numNodes];
 		for (int i=0; i<numNodes; i++) {
-			branchPoly[i] = new Polygon();
-			branchPoly[i].xpoints = new int[16];
-			branchPoly[i].ypoints = new int[16];
-			branchPoly[i].npoints=16;
-			fillBranchPoly[i] = new Polygon();
-			fillBranchPoly[i].xpoints = new int[16];
-			fillBranchPoly[i].ypoints = new int[16];
-			fillBranchPoly[i].npoints=16;
+			branchPoly[i] = new Path2D.Double();
+			fillBranchPoly[i] = new Path2D.Double();
 		}
 	}
 	/*----------------------------------------------------------------------------*/
-	private void nodePolarToLoc (double polarlength, double angle, Point center, Point loc){
-		loc.x = center.x + (int)Math.round(polarlength * Math.sin(angle));
-		loc.y = center.y - (int)Math.round(polarlength * Math.cos(angle));
+	private void nodePolarToLoc (double polarlength, double angle, Point2D center, Point2D.Double loc){
+		loc.setLocation(1.0*center.getX() + polarlength * Math.sin(angle),1.0*center.getY() - polarlength * Math.cos(angle));
 	}
 	/*----------------------------------------------------------------------------*/
 	private void nodeLocToPolar (Point loc, Point center, PolarCoord polar){
 		polar.length = Math.sqrt((loc.x-center.x) *(loc.x-center.x) + (center.y-loc.y)*(center.y-loc.y));
 		polar.angle = Math.asin((loc.x-center.x)/polar.length);
 }
-	private void makeSlantedRectangleOLD(Polygon poly, Point lowerCorner, double polarlength, double angle, int width){
-		Point loc = new Point();
-		poly.npoints=0;
-		poly.addPoint(lowerCorner.x, lowerCorner.y);
-		nodePolarToLoc (polarlength, angle, lowerCorner, loc);
-		poly.addPoint(loc.x, loc.y);
-		nodePolarToLoc (width, angle + Math.PI/2, loc, loc);
-		poly.addPoint(loc.x, loc.y);
-		nodePolarToLoc (polarlength, angle + Math.PI, loc, loc);
-		poly.addPoint(loc.x, loc.y);
-		poly.addPoint(lowerCorner.x, lowerCorner.y);
-		poly.npoints=5;
-	}
+	/*----------------------------------------------------------------------------*/
 //	makeSlantedRectangle(branchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth, angle[node], edgewidth);
-	private void makeSlantedRectangle(Polygon poly, double[] polarlength, double[] angle, int node, int motherN, int width){
-		Point loc = new Point();
-		Point w = new Point();
+	private void makeSlantedRectangle(Path2D poly, double[] polarlength, double[] angle, int node, int motherN, int width){
+		Point2D.Double loc = new Point2D.Double();
+		Point2D.Double w = new Point2D.Double();
 		nodePolarToLoc (width, angle[node] + Math.PI/2, ownerModule.nodeLocsTask.treeCenter, w);
-		int wx2p = (w.x -ownerModule.nodeLocsTask.treeCenter.x)/2;
+		double wx2p = (w.getX() -ownerModule.nodeLocsTask.treeCenter.getX())/2;
 		if (wx2p == 0)
 			wx2p = 1;
-		int wx2m = -wx2p;
-		int wy2p = (w.y -ownerModule.nodeLocsTask.treeCenter.y)/2;
+		double wx2m = -wx2p;
+		double wy2p = (w.getY() -ownerModule.nodeLocsTask.treeCenter.getY())/2;
 		if (wy2p == 0)
 			wy2p = 1;
-		int wy2m = -wy2p;
+		double wy2m = -wy2p;
 		//if (wx2p == 0 && wy2p == 0)
 		//	wx2p = 1;
-		poly.npoints=0;
 		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
 /**/
-		poly.addPoint(loc.x + wx2p, loc.y + wy2p);
-		poly.addPoint(loc.x + wx2m, loc.y + wy2m);
+		poly.reset();
+		poly.moveTo(loc.getX() + wx2p, loc.getY() + wy2p);
+		poly.lineTo(loc.getX() + wx2m, loc.getY() + wy2m);
 		nodePolarToLoc(polarlength[motherN], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-		poly.addPoint(loc.x + wx2m, loc.y + wy2m);
-		poly.addPoint(loc.x + wx2p, loc.y + wy2p);
+		poly.lineTo(loc.getX() + wx2m, loc.getY() + wy2m);
+		poly.lineTo(loc.getX() + wx2p, loc.getY() + wy2p);
 		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
-		poly.addPoint(loc.x + wx2p, loc.y + wy2p);
+		poly.lineTo(loc.getX() + wx2p, loc.getY() + wy2p);
 /**
  		poly.addPoint(loc.x + wx, loc.y + wy);
 		poly.addPoint(loc.x, loc.y);
@@ -211,7 +193,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
 		poly.addPoint(loc.x + wx, loc.y + wy);
 /**/
-		poly.npoints=5;
 	}
 	private double findHighest(Tree tree, int node, double[] polarLength){
 		if (tree.nodeIsTerminal(node))
@@ -228,7 +209,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*----------------------------------------------------------------------------*/
 	private  void drawOneBranch(Tree tree, int node, Graphics g) {
 		int motherN= tree.motherOfNode(node);
-		Point loc = new Point();
+		Point2D.Double loc = new Point2D.Double(0.0, 0.0);
 		double[] polarLength= ownerModule.nodeLocsTask.polarLength;
 		double[] angle= ownerModule.nodeLocsTask.angle;
 		
@@ -238,31 +219,31 @@ class CircleTreeDrawing extends TreeDrawing  {
 
 		nodePolarToLoc(polarLength[motherN]-edgewidth, angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
 
-		lineBaseX[node]= loc.x;
-		lineBaseY[node]= loc.y;
+		lineBaseX[node]= loc.getX();
+		lineBaseY[node]= loc.getY();
 
 //		private void makeSlantedRectangle(Polygon poly, double[] polarlength, double[] angle, int node, int motherN, int width){
 			makeSlantedRectangle(branchPoly[node],polarLength, angle, node, motherN, edgewidth);
 			makeSlantedRectangle(fillBranchPoly[node],polarLength, angle, node, motherN, edgewidth-2);
 	//	makeSlantedRectangle(fillBranchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth-2, angle[node], edgewidth-2);
-		g.fillPolygon(branchPoly[node]);
+		GraphicsUtil.fill(g,branchPoly[node]);
 
 
 
 		
-		int L, R, T, B;
+		double L, R, T, B;
 		drawArc(g, polarLength, angle, node, motherN, 0);
 
  
 		if (tree.getAssociatedBit(triangleNameRef,node)) {
 			double highestTerminal = findHighest(tree, node, polarLength);
-			R = (int)Math.round(ownerModule.nodeLocsTask.treeCenter.x + highestTerminal);
-			L = (int)Math.round(ownerModule.nodeLocsTask.treeCenter.x - highestTerminal);
-			T =  (int)Math.round(ownerModule.nodeLocsTask.treeCenter.y - highestTerminal);
-			B =  (int)Math.round(ownerModule.nodeLocsTask.treeCenter.y + highestTerminal);
+			R = ownerModule.nodeLocsTask.treeCenter.getX() + highestTerminal;
+			L = ownerModule.nodeLocsTask.treeCenter.getX() - highestTerminal;
+			T =  ownerModule.nodeLocsTask.treeCenter.getY()  - highestTerminal;
+			B =  ownerModule.nodeLocsTask.treeCenter.getY()  + highestTerminal;
 
 			for (int i=0; i<3; i++)
-				g.drawArc(L+i, T+i, R-L-i-i, B-T-i-i, convertToDegrees(myAngleToTheirs(angle[tree.leftmostTerminalOfNode(node)])), convertToDegrees(-angle[tree.rightmostTerminalOfNode(node)] +angle[tree.leftmostTerminalOfNode(node)]));
+				GraphicsUtil.drawArc(g,L+i, T+i, R-L-i-i, B-T-i-i, convertToDegrees(myAngleToTheirs(angle[tree.leftmostTerminalOfNode(node)])), convertToDegrees(-angle[tree.rightmostTerminalOfNode(node)] +angle[tree.leftmostTerminalOfNode(node)]));
 		
 			for (int j=0; j<2; j++)
 				for (int i=0; i<2; i++) {
@@ -284,8 +265,8 @@ class CircleTreeDrawing extends TreeDrawing  {
 		if (g instanceof Graphics2D)
 			try {
 				double L, W, T;
-				L = ownerModule.nodeLocsTask.treeCenter.x - polarLength[motherN];
-				T =  ownerModule.nodeLocsTask.treeCenter.y - polarLength[motherN];
+				L = ownerModule.nodeLocsTask.treeCenter.getX() - polarLength[motherN];
+				T =  ownerModule.nodeLocsTask.treeCenter.getY() - polarLength[motherN];
 				
 				W = 2 * polarLength[motherN];
 				
@@ -341,28 +322,28 @@ class CircleTreeDrawing extends TreeDrawing  {
 		}
 		catch (Throwable e){
 			int L, R, T, B;
-			R = (int)Math.round(ownerModule.nodeLocsTask.treeCenter.x + polarLength[motherN]);
-			L = (int)Math.round(ownerModule.nodeLocsTask.treeCenter.x - polarLength[motherN]);
-			T =  (int)Math.round(ownerModule.nodeLocsTask.treeCenter.y - polarLength[motherN]);
-			B =  (int)Math.round(ownerModule.nodeLocsTask.treeCenter.y + polarLength[motherN]);
+			R = (int)Math.round(ownerModule.nodeLocsTask.treeCenter.getX() + polarLength[motherN]);
+			L = (int)Math.round(ownerModule.nodeLocsTask.treeCenter.getX() - polarLength[motherN]);
+			T =  (int)Math.round(ownerModule.nodeLocsTask.treeCenter.getY() - polarLength[motherN]);
+			B =  (int)Math.round(ownerModule.nodeLocsTask.treeCenter.getY() + polarLength[motherN]);
 			
 		for (int i=inset; i<edgewidth-inset; i++)
-			g.drawArc(L+i, T+i, R-L-i-i, B-T-i-i, convertToDegrees(myAngleToTheirs(angle[motherN]))-1, convertToDegrees(angle[motherN] -angle[node]));
+			GraphicsUtil.drawArc(g,L+i, T+i, R-L-i-i, B-T-i-i, convertToDegrees(myAngleToTheirs(angle[motherN]))-1, convertToDegrees(angle[motherN] -angle[node]));
 		}
 	}
 	/*----------------------------------------------------------------------------*/
 	private double convertToDoubleDegrees(double angle){
 		if (angle<0)
-			return -Math.round((-angle/2/Math.PI) * 360);
+			return -(-angle/2/Math.PI) * 360;
 		else
-			return Math.round((angle/2/Math.PI) * 360);
+			return (angle/2/Math.PI) * 360;
 	}
 	/*----------------------------------------------------------------------------*/
-	private int convertToDegrees(double angle){
+	private double convertToDegrees(double angle){
 		if (angle<0)
-			return (int)-Math.round((-angle/2/Math.PI) * 360);
+			return -(-angle/2/Math.PI) * 360;
 		else
-			return (int)Math.round((angle/2/Math.PI) * 360);
+			return (angle/2/Math.PI) * 360;
 	}
 	/*----------------------------------------------------------------------------*/
 	private double myAngleToTheirs(double myAngle) {
@@ -429,7 +410,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
-					g.fillPolygon(fillBranchPoly[node]);
+					GraphicsUtil.fill(g,fillBranchPoly[node]);
 					int motherN= tree.motherOfNode(node);
 					double[] polarLength= ownerModule.nodeLocsTask.polarLength;
 					double[] angle= ownerModule.nodeLocsTask.angle;
@@ -452,7 +433,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
-			g.fillPolygon(fillBranchPoly[node]);
+			GraphicsUtil.fill(g,fillBranchPoly[node]);
 			int motherN= tree.motherOfNode(node);
 			double[] polarLength= ownerModule.nodeLocsTask.polarLength;
 			double[] angle= ownerModule.nodeLocsTask.angle;

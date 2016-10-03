@@ -114,7 +114,7 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			String mod= ParseUtil.getRemaining(arguments, io);
 
 
-			Point2D newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+			Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 			originalX = newOnLine.getX();
 			originalY = newOnLine.getY();
 			//lastX= newOnLine.x;
@@ -168,7 +168,7 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
 			if (lineOn) {
-				Point2D newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+				Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 				double bX = treeDisplay.getTreeDrawing().lineBaseX[node];
 				double bY = treeDisplay.getTreeDrawing().lineBaseY[node];
 				double tX = treeDisplay.getTreeDrawing().lineTipX[node];
@@ -217,7 +217,7 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
 			if (lineOn) {
-				Point2D newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+				Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 				//WARNING":  This shouldn't result in length increase if simple click and release with no drag; must subtract original X, Y
 				Graphics g = null;
 				if (GraphicsUtil.useXORMode(null, false)){
