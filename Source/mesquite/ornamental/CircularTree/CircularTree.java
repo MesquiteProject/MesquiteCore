@@ -17,6 +17,7 @@ package mesquite.ornamental.CircularTree;
 import java.util.*;
 import java.awt.*;
 import java.awt.geom.Arc2D;
+import java.awt.geom.Path2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -265,15 +266,15 @@ class CircleTreeDrawing extends TreeDrawing  {
 		
 			for (int j=0; j<2; j++)
 				for (int i=0; i<2; i++) {
-					g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
+					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
 					//g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-					g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
+					GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 				}
 		}
 		if (emphasizeNodes()) {
 			Color prev = g.getColor();
 			g.setColor(Color.red);//for testing
-			g.fillRect(x[node]-2, y[node]-2, 4, 4);
+			GraphicsUtil.fillRect(g,x[node]-2, y[node]-2, 4, 4);
 			//g.fillPolygon(nodePoly(node));
 			g.setColor(prev);
 		}
@@ -479,8 +480,8 @@ class CircleTreeDrawing extends TreeDrawing  {
 		if (tree.nodeExists(motherNode)) {
 			double[] angles= ownerModule.nodeLocsTask.angle;
 			double[] polarLength= ownerModule.nodeLocsTask.polarLength;
-			MesquiteInteger xN = new MesquiteInteger(this.x[N]);
-			MesquiteInteger yN = new MesquiteInteger(this.y[N]);
+			MesquiteDouble xN = new MesquiteDouble(this.x[N]);
+			MesquiteDouble yN = new MesquiteDouble(this.y[N]);
 			double thisAngle = 3*Math.PI/2+angles[N];
 			GraphicsUtil.translateAlongAngle(xN,yN, thisAngle,(int)(Math.abs(polarLength[N]-polarLength[motherNode])/2));
 			angle.setValue(angles[N]);
@@ -489,21 +490,21 @@ class CircleTreeDrawing extends TreeDrawing  {
 		}
 	}
 	/*_________________________________________________*/
-	public Polygon nodePoly(int node) {
+	public Path2D nodePoly(int node) {
 		double[] angle= ownerModule.nodeLocsTask.angle;
 		
 		//drawArc(g, polarLength, angle, node, motherN, 1);
 
 		int offset = (getNodeWidth()-getEdgeWidth())/2;
 		int halfNodeWidth = getNodeWidth()/2;
-		MesquiteInteger startX = new MesquiteInteger(x[node]);
-		MesquiteInteger startY = new MesquiteInteger(y[node]);
+		MesquiteDouble startX = new MesquiteDouble(x[node]);
+		MesquiteDouble startY = new MesquiteDouble(y[node]);
 		GraphicsUtil.translateAlongAngle(startX,startY, angle[node],offset);
 		return GraphicsUtil.createAngledSquare(startX.getValue(),startY.getValue(),-angle[node],getNodeWidth());
 		}
 	/*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){
-		Polygon nodeP = nodePoly(node);
+		Path2D nodeP = nodePoly(node);
 		if (nodeP!=null && nodeP.contains(x,y))
 			return true;
 		else
@@ -525,8 +526,8 @@ class CircleTreeDrawing extends TreeDrawing  {
 						if (tree.nodeExists(motherNode)) {
 							double[] angle= ownerModule.nodeLocsTask.angle;
 							double[] polarLength= ownerModule.nodeLocsTask.polarLength;
-							MesquiteInteger startX = new MesquiteInteger(this.x[node]);
-							MesquiteInteger startY = new MesquiteInteger(this.y[node]);
+							MesquiteDouble startX = new MesquiteDouble(this.x[node]);
+							MesquiteDouble startY = new MesquiteDouble(this.y[node]);
 							int offset = (getNodeWidth()-getEdgeWidth())/2;
 							double thisAngle = 3*Math.PI/2+angle[node];
 							GraphicsUtil.translateAlongAngle(startX,startY, thisAngle,(int)Math.abs(polarLength[node]-polarLength[motherNode]));

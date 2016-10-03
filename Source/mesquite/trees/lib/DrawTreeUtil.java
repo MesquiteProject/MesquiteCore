@@ -296,13 +296,13 @@ public class DrawTreeUtil {
 	}
 
 	/*_________________________________________________*/
-	public static void drawOneCurvedBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+	public static void drawOneCurvedBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Path2D nodePoly, BasicStroke defaultStroke) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];
 			boolean done = false;
 			try{
 				if ( g instanceof Graphics2D) {
@@ -461,11 +461,11 @@ public class DrawTreeUtil {
 				for (int i=0; i<width; i++) {
 					if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 						if (xnM>xN) {
-							g.drawArc(xN + start, yN - (ynM - yN), (xnM-xN)*2,  (ynM - yN)*2, 180, 90); // left
+							GraphicsUtil.drawArc(g,xN + start, yN - (ynM - yN), (xnM-xN)*2,  (ynM - yN)*2, 180, 90); // left
 							ynM--;
 						}
 						else {
-							g.drawArc(xnM-(xN-xnM) + start, yN - (ynM - yN), (xN-xnM)*2,  (ynM - yN)*2, 0, -90); //right
+							GraphicsUtil.drawArc(g,xnM-(xN-xnM) + start, yN - (ynM - yN), (xN-xnM)*2,  (ynM - yN)*2, 0, -90); //right
 							ynM++; //** start off -
 
 						}
@@ -474,33 +474,33 @@ public class DrawTreeUtil {
 
 					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//����
 						if (xnM>xN) {
-							g.drawArc(xN - start,ynM, (xnM-xN)*2,  (yN -ynM)*2, 90, 90); //right
+							GraphicsUtil.drawArc(g,xN - start,ynM, (xnM-xN)*2,  (yN -ynM)*2, 90, 90); //right
 							ynM++;
 						}
 						else {
-							g.drawArc(xnM-(xN-xnM) - start,ynM, (xN-xnM)*2,   (yN -ynM)*2, 0, 90); //left 
+							GraphicsUtil.drawArc(g,xnM-(xN-xnM) - start,ynM, (xN-xnM)*2,   (yN -ynM)*2, 0, 90); //left 
 							ynM--;  //**start off + edgewidth
 						}
 						xN++;
 					}
 					else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
 						if (ynM>yN) {
-							g.drawArc(xnM, yN + start, (xN-xnM)*2,  (ynM - yN)*2, 90, 90);  //left
+							GraphicsUtil.drawArc(g,xnM, yN + start, (xN-xnM)*2,  (ynM - yN)*2, 90, 90);  //left
 							xnM++;
 						}
 						else {
-							g.drawArc(xnM,ynM - (yN -ynM) + start, (xN-xnM)*2,  (yN -ynM)*2, 180, 90);  //right 
+							GraphicsUtil.drawArc(g,xnM,ynM - (yN -ynM) + start, (xN-xnM)*2,  (yN -ynM)*2, 180, 90);  //right 
 							xnM--;  //start off + edgewidth
 						}
 						yN++;
 					}
 					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //����
 						if (ynM>yN) {
-							g.drawArc(xN - (xnM-xN), yN - start, (xnM-xN)*2,  (ynM - yN)*2, 0, 90);  //right
+							GraphicsUtil.drawArc(g,xN - (xnM-xN), yN - start, (xnM-xN)*2,  (ynM - yN)*2, 0, 90);  //right
 							xnM--;
 						}
 						else {
-							g.drawArc(xN - (xnM-xN),ynM - (yN -ynM) - start, (xnM-xN)*2,  (yN -ynM)*2, 0, -90);  //left 
+							GraphicsUtil.drawArc(g,xN - (xnM-xN),ynM - (yN -ynM) - start, (xnM-xN)*2,  (yN -ynM)*2, 0, -90);  //left 
 							xnM++;  //start off - edgewidth
 						}
 						yN++;
@@ -512,7 +512,8 @@ public class DrawTreeUtil {
 			if (emphasizeNodes && nodePoly!=null) {
 				Color prev = g.getColor();
 				g.setColor(Color.red);//for testing
-				g.fillPolygon(nodePoly);
+				if (g instanceof Graphics2D)
+					((Graphics2D)g).fill(nodePoly);
 				g.setColor(prev);
 			}
 		}
@@ -778,13 +779,13 @@ public class DrawTreeUtil {
 
 
 	/*_________________________________________________*/
-	public static boolean inBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, int node, int h, int v) {
+	public static boolean inBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, int node, int h, int v) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];
 			double centerX, centerY,axisX, axisY;
 			centerX =  centerY =  axisX =   axisY =0;
 
