@@ -96,7 +96,7 @@ class NodeNamerExtra extends TreeDisplayExtra implements Commandable  {
 		this.tree = tree;
 		if (editorOn) {
 			if (tree.nodeExists(editorNode))
-				miniEditor.setLocation(treeDisplay.getTreeDrawing().x[editorNode], treeDisplay.getTreeDrawing().y[editorNode]);
+				miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[editorNode], (int)treeDisplay.getTreeDrawing().y[editorNode]);
 			else hideMiniEditor();
 		}
 	}
@@ -119,7 +119,7 @@ class NodeNamerExtra extends TreeDisplayExtra implements Commandable  {
 			miniEditor = new MiniStringEditor(ownerModule, ownerModule.makeCommand("acceptName", this));
 			treeDisplay.addPanelPlease(miniEditor);
 		}
-		miniEditor.setLocation(treeDisplay.getTreeDrawing().x[node], treeDisplay.getTreeDrawing().y[node]);
+		miniEditor.setLocation((int)treeDisplay.getTreeDrawing().x[node], (int)treeDisplay.getTreeDrawing().y[node]);
 		String lab = t.getNodeLabel(node);
 		if (lab == null)
 			lab = "";

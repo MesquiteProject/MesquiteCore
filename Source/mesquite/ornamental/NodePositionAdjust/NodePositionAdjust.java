@@ -16,6 +16,7 @@ package mesquite.ornamental.NodePositionAdjust;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -57,7 +58,7 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 	MesquiteMenuItemSpec hideMenuItem = null;
 	NodePositionAdjust selectModule;
 	Tree tree;
-	int originalX, originalY, lastX, lastY;
+	double originalX, originalY, lastX, lastY;
 	double lastBL;	
 	boolean lineOn = true;
 	boolean editorOn = false;
@@ -92,10 +93,10 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 		this.tree = tree;
 	}
 
-	public void drawThickLine(Graphics g, int fromX, int fromY, int toX, int toY){
-		g.drawLine(fromX, fromY, toX, toY);
-		g.drawLine(fromX+1, fromY, toX+1, toY);
-		g.drawLine(fromX+2, fromY, toX+2, toY);
+	public void drawThickLine(Graphics g, double fromX, double fromY, double toX, double toY){
+		GraphicsUtil.drawLine(g,fromX, fromY, toX, toY);
+		GraphicsUtil.drawLine(g,fromX+1, fromY, toX+1, toY);
+		GraphicsUtil.drawLine(g,fromX+2, fromY, toX+2, toY);
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
@@ -113,9 +114,9 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			String mod= ParseUtil.getRemaining(arguments, io);
 
 
-			Point newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
-			originalX = newOnLine.x;
-			originalY = newOnLine.y;
+			Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+			originalX = newOnLine.getX();
+			originalY = newOnLine.getY();
 			//lastX= newOnLine.x;
 			//lastY = newOnLine.y;
 			Graphics g = null;
@@ -137,17 +138,17 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 				upperLimit = shortestAbove + lastBL;
 			else
 				upperLimit = shortestAbove + 1.0;
-			int ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
-			int ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
+			double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
+			double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
 			lastX = treeDisplay.getTreeDrawing().lineTipX[node];
 			lastY = treeDisplay.getTreeDrawing().lineTipY[node];
 			if (GraphicsUtil.useXORMode(null, false)){
 				drawThickLine(g,ibX, ibY, lastX, lastY);
 				for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
 					drawThickLine(g,treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], lastX, lastY);
-				g.fillOval(lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+				GraphicsUtil.fillOval(g,lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
 				try {
-					g.drawString(MesquiteDouble.toString(lastBL), lastX+10, lastY);
+					GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
 				}
 				catch(InternalError e){  //workaround for bug on windows java 1.7.
 				}
@@ -167,7 +168,7 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
 			if (lineOn) {
-				Point newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+				Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 				double bX = treeDisplay.getTreeDrawing().lineBaseX[node];
 				double bY = treeDisplay.getTreeDrawing().lineBaseY[node];
 				double tX = treeDisplay.getTreeDrawing().lineTipX[node];
@@ -175,7 +176,7 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 				double lengthLine =  Math.sqrt((originalY-bY)*(originalY-bY) + (originalX-bX)*(originalX-bX));
 				double bL;
 				if (lengthLine!=0) {
-					double extension =  Math.sqrt((newOnLine.y-bY)*(newOnLine.y-bY) + (newOnLine.x-bX)*(newOnLine.x-bX))/lengthLine;
+					double extension =  Math.sqrt((newOnLine.getY()-bY)*(newOnLine.getY()-bY) + (newOnLine.getX()-bX)*(newOnLine.getX()-bX))/lengthLine;
 					if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node)) 
 						bL = extension;
 					else
@@ -216,7 +217,7 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
 			if (lineOn) {
-				Point newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+				Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
 				//WARNING":  This shouldn't result in length increase if simple click and release with no drag; must subtract original X, Y
 				Graphics g = null;
 				if (GraphicsUtil.useXORMode(null, false)){
@@ -231,10 +232,10 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 				//g.drawLine(originalX, originalY, newOnLine.x, newOnLine.y);
 
 //				if decreasing, & unassigned involved: push unassigned down and assign values to unassigned above; if increasing, push unassigne up
-				int ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
-				int ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
-				int itX = treeDisplay.getTreeDrawing().lineTipX[node];
-				int itY = treeDisplay.getTreeDrawing().lineTipY[node];
+				double ibX = treeDisplay.getTreeDrawing().lineBaseX[node];
+				double ibY = treeDisplay.getTreeDrawing().lineBaseY[node];
+				double itX = treeDisplay.getTreeDrawing().lineTipX[node];
+				double itY = treeDisplay.getTreeDrawing().lineTipY[node];
 
 				double bX = ibX;
 				double bY = ibY;
@@ -244,12 +245,12 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 				if (lengthLine!=0) {
 					if (GraphicsUtil.useXORMode(null, false)){
 						if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-							g.fillRect(lastX, lastY-20, 100, 20);
-						g.drawString(MesquiteDouble.toString(lastBL), lastX+10, lastY);
+							GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
+						GraphicsUtil.drawString(g,MesquiteDouble.toString(lastBL), lastX+10, lastY);
 						if (MesquiteTrunk.isMacOSX() && MesquiteTrunk.getJavaVersionAsDouble()>=1.5 && MesquiteTrunk.getJavaVersionAsDouble()<1.6)  //due to a JVM bug
-							g.fillRect(lastX, lastY-20, 100, 20);
+							GraphicsUtil.fillRect(g,lastX, lastY-20, 100, 20);
 					}
-					double extension =  Math.sqrt((newOnLine.y-bY)*(newOnLine.y-bY) + (newOnLine.x-bX)*(newOnLine.x-bX))/lengthLine;
+					double extension =  Math.sqrt((newOnLine.getY()-bY)*(newOnLine.getY()-bY) + (newOnLine.getX()-bX)*(newOnLine.getX()-bX))/lengthLine;
 					double bL;
 					if (t.getBranchLength(node)==0 || t.branchLengthUnassigned(node)) 
 						bL = extension;
@@ -274,16 +275,16 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 						drawThickLine(g,ibX, ibY, lastX, lastY);
 						for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
 							drawThickLine(g,treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], lastX, lastY);
-						g.fillOval(lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+						GraphicsUtil.fillOval(g,lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
 					}
-					int newX =ibX+(int)(extension*(tX-bX));
-					int newY = ibY+(int)(extension*(tY-bY));
+					double newX =ibX+(int)(extension*(tX-bX));
+					double newY = ibY+(int)(extension*(tY-bY));
 					if (GraphicsUtil.useXORMode(null, false)){
-						g.drawString(MesquiteDouble.toString(bL), newX+10, newY);
+						GraphicsUtil.drawString(g,MesquiteDouble.toString(bL), newX+10, newY);
 						drawThickLine(g,ibX, ibY, newX, newY);
 						for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
 							drawThickLine(g,treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], newX, newY);
-						g.fillOval(newX-ovalRadius, newY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+						GraphicsUtil.fillOval(g,newX-ovalRadius, newY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
 					}
 					lastX= newX;
 					lastY = newY;

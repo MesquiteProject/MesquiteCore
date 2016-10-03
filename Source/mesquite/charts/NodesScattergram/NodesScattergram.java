@@ -445,8 +445,8 @@ class NodeLabeller extends TreeDisplayExtra {
 	/*.................................................................................................................*/
 	public void drawOneLabel(int N, Tree tree, Graphics g) {
 		makeSureLabelsReady(tree);
-		int nodeX = treeDisplay.getTreeDrawing().x[N];
-		int nodeY = treeDisplay.getTreeDrawing().y[N];
+		double nodeX = treeDisplay.getTreeDrawing().x[N];
+		double nodeY = treeDisplay.getTreeDrawing().y[N];
 		MesquiteLabel c = (MesquiteLabel)labelsAtNodes.getPanel(N);
 
 		c.setColor(brightbrightGreen); 
@@ -459,15 +459,15 @@ class NodeLabeller extends TreeDisplayExtra {
 		c.repaint();
 		int w = c.getWidth(g);
 		if (w+nodeX+16>treeDisplay.getBounds().width)
-			c.setLocation(treeDisplay.getBounds().width- w, nodeY + 18);
+			c.setLocation((int)treeDisplay.getBounds().width- w, (int)nodeY + 18);  // integer nodeloc approximation
 		else
-			c.setLocation(nodeX + 16, nodeY + 18);
+			c.setLocation((int)nodeX + 16, (int)nodeY + 18); // integer nodeloc approximation
 		g.setColor(brightGreen);
 		g.setXORMode(Color.white);
-		g.drawLine(nodeX, nodeY, c.getBounds().x, c.getBounds().y);
-		g.drawLine(nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
-		g.drawLine(nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
-		g.drawLine(nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
+		GraphicsUtil.drawLine(g,nodeX, nodeY, c.getBounds().x, c.getBounds().y);
+		GraphicsUtil.drawLine(g,nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
+		GraphicsUtil.drawLine(g,nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
+		GraphicsUtil.drawLine(g,nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
 		g.setPaintMode();
 		g.setColor(Color.black);
 		labelDrawn = N;
@@ -482,14 +482,14 @@ class NodeLabeller extends TreeDisplayExtra {
 		c.setVisible(false);
 		if (g==null)
 			return;
-		int nodeX = treeDisplay.getTreeDrawing().x[N];
-		int nodeY = treeDisplay.getTreeDrawing().y[N];
+		double nodeX = treeDisplay.getTreeDrawing().x[N];
+		double nodeY = treeDisplay.getTreeDrawing().y[N];
 		g.setColor(brightGreen);
 		g.setXORMode(Color.white);
-		g.drawLine(nodeX, nodeY, c.getBounds().x, c.getBounds().y);
-		g.drawLine(nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
-		g.drawLine(nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
-		g.drawLine(nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
+		GraphicsUtil.drawLine(g,nodeX, nodeY, c.getBounds().x, c.getBounds().y);
+		GraphicsUtil.drawLine(g,nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
+		GraphicsUtil.drawLine(g,nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
+		GraphicsUtil.drawLine(g,nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
 		g.setPaintMode();
 		labelDrawn = -1;
 	}

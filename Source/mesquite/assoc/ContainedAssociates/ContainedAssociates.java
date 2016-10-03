@@ -16,6 +16,8 @@ package mesquite.assoc.ContainedAssociates;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -486,10 +488,10 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 
 /* ======================================================================== */
 class WideTreeDrawing extends TreeDrawing  {
-	public Polygon[] branchPoly;
-	public Polygon[] fillBranchPoly;
+	public Path2D[] branchPoly;
+	public Path2D[] fillBranchPoly;
 
-	private int lastleft;
+	private double lastleft;
 	private int taxspacing;
 	public int highlightedBranch, branchFrom;
 	public int xFrom, yFrom, xTo, yTo;
@@ -509,7 +511,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	MesquiteTree originalContainedTree=null;
 	public int edgeWidth = 64;
 	int oldNumTaxa = 0;
-	Polygon utilityPolygon;
+	Path2D utilityPolygon;
 	public static final int inset=1;
 	private boolean ready=false;
 	private int boxHeight;
@@ -519,7 +521,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	DoubleArray widths = null;
 	double maxWidth = 0;
 	//private int[][] contained;
-	private int[] miniX, miniY;
+	private double[] miniX, miniY;
 	private boolean[] inTree;
 	private int oldNumSpaces =0;
 	TextRotator textRotator;
@@ -555,10 +557,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		treeDisplay.addExtra(extra);
 		treeDisplay.branchColor = containingColor;
 		ready = true;
-		utilityPolygon=new Polygon();
-		utilityPolygon.xpoints = new int[16];
-		utilityPolygon.ypoints = new int[16];
-		utilityPolygon.npoints=16;
+		utilityPolygon=new Path2D.Double();
 
 		legend = new ContainedLegend(ownerModule, this);
 		if (treeSourceTask !=null && treeSourceTask instanceof TreeSource && containedTaxa != null)
@@ -573,17 +572,11 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
-		branchPoly= new Polygon[numNodes];
-		fillBranchPoly= new Polygon[numNodes];
+		branchPoly= new Path2D.Double[numNodes];
+		fillBranchPoly= new Path2D.Double[numNodes];
 		for (int i=0; i<numNodes; i++) {
-			branchPoly[i] = new Polygon();
-			branchPoly[i].xpoints = new int[16];
-			branchPoly[i].ypoints = new int[16];
-			branchPoly[i].npoints=16;
-			fillBranchPoly[i] = new Polygon();
-			fillBranchPoly[i].xpoints = new int[16];
-			fillBranchPoly[i].ypoints = new int[16];
-			fillBranchPoly[i].npoints=16;
+			branchPoly[i] = new Path2D.Double();
+			fillBranchPoly[i] = new Path2D.Double();
 		}
 	}
 	int branchEdgeWidth(int node){
@@ -606,7 +599,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		containingColor = c;
 	}
 	/*_________________________________________________*/
-	private void UPdefineFillPoly(int node, Polygon poly, boolean internalNode, int Nx, int Ny, int mNx, int mNy, int sliceNumber, int numSlices) {
+	private void UPdefineFillPoly(int node, Path2D poly, boolean internalNode, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices) {
 		if (poly!=null) {
 			int sliceWidth=branchEdgeWidth(node);
 			if (numSlices>1) {
@@ -615,53 +608,45 @@ class WideTreeDrawing extends TreeDrawing  {
 				sliceWidth=(branchEdgeWidth(node)-inset)-((sliceNumber-1)*(branchEdgeWidth(node)-inset)/numSlices);
 			}
 			if ((internalNode) && (numSlices==1)){ 
-				poly.npoints=0;
-				poly.addPoint(Nx+inset, Ny);
-				poly.addPoint(Nx+sliceWidth/2, Ny-sliceWidth/2-inset);
-				poly.addPoint(Nx+sliceWidth-inset, Ny);
-				poly.addPoint(mNx+sliceWidth-inset, mNy);
-				poly.addPoint(mNx+inset, mNy);
-				poly.addPoint(Nx+inset, Ny);
-				poly.npoints=6;
+				poly.moveTo(Nx+inset, Ny);
+				poly.lineTo(Nx+sliceWidth/2, Ny-sliceWidth/2-inset);
+				poly.lineTo(Nx+sliceWidth-inset, Ny);
+				poly.lineTo(mNx+sliceWidth-inset, mNy);
+				poly.lineTo(mNx+inset, mNy);
+				poly.lineTo(Nx+inset, Ny);
 			}
 			else {
 				if (Nx==mNx) {
 					if ((internalNode) && (numSlices>1)) {
 						Ny-=(branchEdgeWidth(node)-inset)/4;
 					}
-					poly.npoints=0;
-					poly.addPoint(Nx+inset, Ny+inset);
-					poly.addPoint(Nx+sliceWidth-inset, Ny+inset);
-					poly.addPoint(mNx+sliceWidth-inset, mNy);
-					poly.addPoint(mNx+inset, mNy);
-					poly.addPoint(Nx+inset, Ny+inset);
-					poly.npoints=5;
+					poly.moveTo(Nx+inset, Ny+inset);
+					poly.lineTo(Nx+sliceWidth-inset, Ny+inset);
+					poly.lineTo(mNx+sliceWidth-inset, mNy);
+					poly.lineTo(mNx+inset, mNy);
+					poly.lineTo(Nx+inset, Ny+inset);
 				}
 				else if (Nx>mNx) {
 					if ((internalNode) && (numSlices>1)) {
 						Nx+=(branchEdgeWidth(node)-inset)/4;
 						Ny-=(branchEdgeWidth(node)-inset)/4;
 					}
-					poly.npoints=0;
-					poly.addPoint(Nx, Ny+inset);
-					poly.addPoint(Nx+sliceWidth-inset-inset, Ny+inset);
-					poly.addPoint(mNx+sliceWidth-inset, mNy);
-					poly.addPoint(mNx+inset, mNy);
-					poly.addPoint(Nx, Ny+inset);
-					poly.npoints=5;
+					poly.moveTo(Nx, Ny+inset);
+					poly.lineTo(Nx+sliceWidth-inset-inset, Ny+inset);
+					poly.lineTo(mNx+sliceWidth-inset, mNy);
+					poly.lineTo(mNx+inset, mNy);
+					poly.lineTo(Nx, Ny+inset);
 				}
 				else if (Nx<mNx) {
 					if ((internalNode) && (numSlices>1)) {
 						Nx-=(branchEdgeWidth(node)-inset)/4;
 						Ny-=(branchEdgeWidth(node)-inset)/4;
 					}
-					poly.npoints=0;
-					poly.addPoint(Nx+inset+inset, Ny+inset);
-					poly.addPoint(Nx+sliceWidth, Ny+inset);
-					poly.addPoint(mNx+sliceWidth-inset, mNy);
-					poly.addPoint(mNx+inset, mNy);
-					poly.addPoint(Nx+inset+inset, Ny+inset);
-					poly.npoints=5;
+					poly.moveTo(Nx+inset+inset, Ny+inset);
+					poly.lineTo(Nx+sliceWidth, Ny+inset);
+					poly.lineTo(mNx+sliceWidth-inset, mNy);
+					poly.lineTo(mNx+inset, mNy);
+					poly.lineTo(Nx+inset+inset, Ny+inset);
 				}
 			}
 		}
@@ -673,28 +658,24 @@ class WideTreeDrawing extends TreeDrawing  {
 		UPdefineFillPoly(node, fillBranchPoly[node], tree.nodeIsInternal(node),x[node],y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0);
 	}
 	/*_________________________________________________*/
-	private void UPdefinePoly(int node, Polygon poly, boolean internalNode, int Nx, int Ny, int mNx, int mNy) {
+	private void UPdefinePoly(int node, Path2D poly, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
 			if (internalNode&& false) 
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx+branchEdgeWidth(node)/2, Ny-branchEdgeWidth(node)/2);
-				poly.addPoint(Nx+branchEdgeWidth(node), Ny);
-				poly.addPoint(mNx+branchEdgeWidth(node), mNy);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=6;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx+branchEdgeWidth(node)/2, Ny-branchEdgeWidth(node)/2);
+				poly.lineTo(Nx+branchEdgeWidth(node), Ny);
+				poly.lineTo(mNx+branchEdgeWidth(node), mNy);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 			else
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx+branchEdgeWidth(node), Ny);
-				poly.addPoint(mNx+branchEdgeWidth(node), mNy);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=5;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx+branchEdgeWidth(node), Ny);
+				poly.lineTo(mNx+branchEdgeWidth(node), mNy);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 		}
 	}
@@ -744,11 +725,11 @@ class WideTreeDrawing extends TreeDrawing  {
 			g.setColor(containingColor);
 		if (treeDisplay.getOrientation()==TreeDisplay.DOWN || treeDisplay.getOrientation()==TreeDisplay.UP){
 			for (int i=0; i<4; i++)
-				g.drawLine(x[node]-2 - i, y[node], x[tree.motherOfNode(node)]-2 - i, y[tree.motherOfNode(node)]);
+				GraphicsUtil.drawLine(g,x[node]-2 - i, y[node], x[tree.motherOfNode(node)]-2 - i, y[tree.motherOfNode(node)]);
 		}
 		else {
 			for (int i=0; i<4; i++)
-				g.drawLine(x[node], y[node]-2 - i, x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]-2 - i);
+				GraphicsUtil.drawLine(g,x[node], y[node]-2 - i, x[tree.motherOfNode(node)], y[tree.motherOfNode(node)]-2 - i);
 		}
 		g.setColor(tC);
 	}
@@ -757,7 +738,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	private   void drawBranches(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
 			if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node]!=null) {
-				g.drawPolygon(branchPoly[node]);
+				GraphicsUtil.fill(g,branchPoly[node]);
 				
 			}
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -782,7 +763,7 @@ class WideTreeDrawing extends TreeDrawing  {
 			if (emphasizeNodes()) {
 				Color prev = g.getColor();
 				g.setColor(Color.red);//for testing
-				g.fillPolygon(nodePoly(node));
+				GraphicsUtil.fill(g,nodePoly(node));
 				g.setColor(prev);
 			}
 			
@@ -849,7 +830,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	NameReference migrateRef = NameReference.getNameReference("Migration");
 	/*....................................................................................................*/
-	private void miniTerminals(Graphics g, Tree tree, int node, int[] terminals, int terminalY, int miniSpacing, boolean atTip, Color containedColor) {
+	private void miniTerminals(Graphics g, Tree tree, int node, int[] terminals, double terminalY, int miniSpacing, boolean atTip, Color containedColor) {
 		boolean inA =IntegerArray.inArray(node, terminals);
 		if (tree.nodeIsInternal(node) /*&& !inA*/) {
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
@@ -859,8 +840,8 @@ class WideTreeDrawing extends TreeDrawing  {
 		if (inA && inTree[node]) { //terminal
 
 			lastleft+= miniSpacing;
-			int oldX = miniX[node];
-			int oldY = miniY[node];
+			double oldX = miniX[node];
+			double oldY = miniY[node];
 
 			if (!atTip){ //(tree.nodeIsInternal(node) ||
 				boolean useOld = false;
@@ -877,23 +858,23 @@ class WideTreeDrawing extends TreeDrawing  {
 					g.setColor(containedColor);
 
 				if (legalXY(oldX, oldY) && legalXY(miniX[node], miniY[node])){
-					g.drawLine(oldX, oldY, miniX[node], miniY[node]);
-					g.drawLine(oldX+1, oldY, miniX[node]+1, miniY[node]);
+					GraphicsUtil.drawLine(g,oldX, oldY, miniX[node], miniY[node]);
+					GraphicsUtil.drawLine(g,oldX+1, oldY, miniX[node]+1, miniY[node]);
 				}
 				else if (legalXY(miniX[node], miniY[node])) {
 					Color cc = g.getColor();
 					g.setColor(Color.red);
-					g.fillOval(miniX[node], miniY[node], 5, 5);
+					GraphicsUtil.fillOval(g,miniX[node], miniY[node], 5, 5);
 					g.setColor(Color.yellow);
-					g.drawOval(miniX[node], miniY[node], 5, 5);
+					GraphicsUtil.drawOval(g,miniX[node], miniY[node], 5, 5);
 					g.setColor(cc);
 				}
 				else if (legalXY(oldX, oldY)) {
 					Color cc = g.getColor();
 					g.setColor(Color.red);
-					g.fillOval(oldX, oldY, 5, 5);
+					GraphicsUtil.fillOval(g,oldX, oldY, 5, 5);
 					g.setColor(Color.yellow);
-					g.drawOval(oldX, oldY, 5, 5);
+					GraphicsUtil.drawOval(g,oldX, oldY, 5, 5);
 					g.setColor(cc);
 				}
 			}
@@ -908,7 +889,7 @@ class WideTreeDrawing extends TreeDrawing  {
 					g.setColor(selectedContainedColor);
 				else
 					g.setColor(containedColor);
-				textRotator.drawRotatedText(s, taxonNumber, g, treeDisplay, miniX[node]-2, miniY[node]-6);
+				textRotator.drawRotatedText(s, taxonNumber, g, treeDisplay, (int)miniX[node]-2, (int)miniY[node]-6);  //integer nodeloc approximation
 				}
 			}
 
@@ -932,10 +913,10 @@ class WideTreeDrawing extends TreeDrawing  {
 			}
 			if (fD!=0) {
 				//lD = fD;
-				int nFDx = miniX[fD];
-				int nFDy = miniY[fD];
-				int nLDx = miniX[lD];
-				int nLDy = miniY[lD];
+				double nFDx = miniX[fD];
+				double nFDy = miniY[fD];
+				double nLDx = miniX[lD];
+				double nLDy = miniY[lD];
 				miniY[node] = (-nFDx + nLDx+nFDy + nLDy) / 2;
 				miniX[node] =(nFDx + nLDx - nFDy + nLDy) / 2;
 			}
@@ -943,7 +924,7 @@ class WideTreeDrawing extends TreeDrawing  {
 
 	}
 	/*_________________________________________________*/
-	private void miniSlantInternalLocs(Tree tree, int node, int[] terminals, int yStart, int xDiff, int yDiff) {
+	private void miniSlantInternalLocs(Tree tree, int node, int[] terminals, double yStart, double xDiff, double yDiff) {
 		if (yDiff == 0)
 			return;
 		if (!IntegerArray.inArray(node, terminals)) { //internal
@@ -959,21 +940,21 @@ class WideTreeDrawing extends TreeDrawing  {
 
 	/*-----------------------------------------*/
 	/** returns total of branchlengths from node up to tallest terminal, with unassigned lengths given value "perUnassignedLength" */
-	public int minimumYOfContained (Tree containingTree, int node) {
+	public double minimumYOfContained (Tree containingTree, int node) {
 		if (containingTree.nodeIsTerminal(node)) {
 			Taxon[] t =association.getAssociates(containingTree.getTaxa().getTaxon(containingTree.taxonNumberOfNode(node)));
 			if (t==null || t.length==0)
 				return MesquiteInteger.unassigned;
 			return y[node];
 		}
-		int minimum = MesquiteInteger.unassigned;
+		double minimum = MesquiteDouble.unassigned;
 		for (int daughter=containingTree.firstDaughterOfNode(node); containingTree.nodeExists(daughter); daughter = containingTree.nextSisterOfNode(daughter) ) {
-			minimum = MesquiteInteger.minimum(minimumYOfContained(containingTree, daughter), minimum);
+			minimum = MesquiteDouble.minimum(minimumYOfContained(containingTree, daughter), minimum);
 		}
 		return minimum;
 	}
 	/*....................................................................................................*/
-	private void miniScaleInternalLocs (Tree tree, int node, int[] terminals, int top, int cladeTop, int containing, int root, double scaling) {
+	private void miniScaleInternalLocs (Tree tree, int node, int[] terminals, double top, double cladeTop, int containing, int root, double scaling) {
 		
 		if (IntegerArray.inArray(node, terminals)){ //internal
 			miniY[node]=top;
@@ -1026,7 +1007,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		return 0;
 	}
 	boolean warned = false;
-	boolean legalXY(int x, int y){
+	boolean legalXY(double x, double y){
 		boolean L = (x<treeDisplay.getBounds().width && y>treeDisplay.getBounds().height && y<300000000);
 		if (!L)
 			L = x>=0 && x<treeDisplay.getBounds().width && y>=0;
@@ -1036,8 +1017,8 @@ class WideTreeDrawing extends TreeDrawing  {
 	boolean legalX(int x){
 		return x>=0 && x<treeDisplay.getBounds().width;
 	}
-	boolean legalY(int y){
-		return y>0 && MesquiteInteger.isCombinable(y); // && y<treeDisplay.getBounds().height;
+	boolean legalY(double y){
+		return y>0 && MesquiteDouble.isCombinable(y); // && y<treeDisplay.getBounds().height;
 	}
 	/*....................................................................................................*/
 	private void miniDraw(Graphics g, Tree tree, int node, int[] terminals, Color containedColor) {
@@ -1062,8 +1043,8 @@ class WideTreeDrawing extends TreeDrawing  {
 						//if (miniY[node]<=0) MesquiteMessage.warnProgrammer("miniDraw Error: miniY[node] <=0 " + node + " miniY[node] " + miniY[node]);
 					}
 					if (legalXY(miniX[node], miniY[node]) && legalXY(miniX[d], miniY[d])){
-						g.drawLine(miniX[d], miniY[d], miniX[node], miniY[node]);
-						g.drawLine(miniX[d]+1, miniY[d], miniX[node]+1, miniY[node]);
+						GraphicsUtil.drawLine(g,miniX[d], miniY[d], miniX[node], miniY[node]);
+						GraphicsUtil.drawLine(g,miniX[d]+1, miniY[d], miniX[node]+1, miniY[node]);
 
 					}
 					g.setColor(containedColor);
@@ -1159,8 +1140,8 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 		else
 			aNodes = history.getContainedNodes(tree.motherOfNode(containingNode));//aNodes = history.condenseClades(containedTree, cNodes);//
-		int xC= x[containingNode];
-		int yC= y[containingNode];
+		double xC= x[containingNode];
+		double yC= y[containingNode];
 
 		int taxaSpacing = branchEdgeWidth(containingNode)/(howMany(terminals) +1);
 		lastleft = xC;
@@ -1173,11 +1154,11 @@ class WideTreeDrawing extends TreeDrawing  {
 
 				miniTerminals(g, containedTree, aNodes[i], terminals, yC, taxaSpacing, atTip, cc);
 				miniCalcInternalLocs(containedTree, aNodes[i], terminals);
-				int ySpan = (yC-y[tree.motherOfNode(containingNode)]);
+				double ySpan = (yC-y[tree.motherOfNode(containingNode)]);
 				if (ownerModule.scale.getValue() && allLengthsAssigned(containedTree, containedTree.getRoot())){
 					double scaling = 1.0;
-					int top = yC;
-					int cladeTop = minimumYOfContained(tree, containingNode); 
+					double top = yC;
+					double cladeTop = minimumYOfContained(tree, containingNode); 
 					if (tree.tallestPathAboveNode(tree.getRoot(), 1.0) ==0){ //tree.tallestPathAboveNode(tree.getRoot(), 1.0)
 						scaling = 0.1;  //this is arbitrary; scale not shown anyway
 					}
@@ -1383,8 +1364,8 @@ class WideTreeDrawing extends TreeDrawing  {
 
 			if (originalContainedTree !=null){
 				if (miniX==null || oldNumSpaces != originalContainedTree.getNumNodeSpaces()){
-					miniX = new int[originalContainedTree.getNumNodeSpaces()];
-					miniY = new int[originalContainedTree.getNumNodeSpaces()];
+					miniX = new double[originalContainedTree.getNumNodeSpaces()];
+					miniY = new double[originalContainedTree.getNumNodeSpaces()];
 					inTree = new boolean[originalContainedTree.getNumNodeSpaces()];
 					oldNumSpaces = originalContainedTree.getNumNodeSpaces();
 				}
@@ -1415,8 +1396,8 @@ class WideTreeDrawing extends TreeDrawing  {
 			multipleHomes = false;
 			if (association !=null)
 				checkInTree(tree, containedTree, containedTree.getRoot());
-			IntegerArray.zeroArray(miniX);
-			IntegerArray.zeroArray(miniY);
+			DoubleArray.zeroArray(miniX);
+			DoubleArray.zeroArray(miniY);
 			currentTree=tree;
 			currentContainedTree = originalContainedTree;
 
@@ -1466,31 +1447,31 @@ class WideTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		Rectangle box;
+		Rectangle2D box;
 		int ew = edgeWidth-2;
 
-		box = new Rectangle(x[node], y[node]-ew-3, ew, boxHeight);
-		g.fillRect(box.x, box.y, box.width, box.height);
+		box = new Rectangle2D.Double(x[node], y[node]-ew-3, ew, boxHeight);
+		GraphicsUtil.fillRect(g, box.getX(), box.getY(), box.getWidth(), box.getHeight());
 		g.setColor(Color.black);
-		g.drawRect(box.x, box.y, box.width, box.height);
+		GraphicsUtil.drawRect(g, box.getX(), box.getY(), box.getWidth(), box.getHeight());
 	}
 
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
-		Rectangle box;
+		Rectangle2D box;
 		int ew = edgeWidth-2;
 		int numColors = colors.getNumColors();
 		if (numColors == 0) numColors = 1;
 
-		box = new Rectangle(x[node], y[node]-ew-3, ew, boxHeight);
+		box = new Rectangle2D.Double(x[node], y[node]-ew-3, ew, boxHeight);
 		for (int i=0; i<colors.getNumColors(); i++) {
 			Color color;
 			if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 				g.setColor(color);
-			g.fillRect(box.x + (i*box.width/numColors), box.y, box.width-  (i*box.width/numColors), box.height);
+			GraphicsUtil.fillRect(g,box.getX() + (i*box.getWidth()/numColors), box.getY(), box.getWidth()-  (i*box.getWidth()/numColors), box.getHeight());
 		}
 		g.setColor(Color.black);
-		g.drawRect(box.x, box.y, box.width, box.height);
+		GraphicsUtil.drawRect(g, box.getX(), box.getY(), box.getWidth(), box.getHeight());
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
@@ -1502,7 +1483,7 @@ class WideTreeDrawing extends TreeDrawing  {
 				Color color;
 				if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 					g.setColor(color);
-				g.fillPolygon(utilityPolygon);
+				GraphicsUtil.fill(g, utilityPolygon);
 			}
 			g.setColor(Color.black);
 		}
@@ -1510,16 +1491,16 @@ class WideTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
 		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
-			g.fillPolygon(fillBranchPoly[node]);
+			GraphicsUtil.fill(g, fillBranchPoly[node]);
 		}
 	}
 
 	/*_________________________________________________*/
-	public Polygon nodePoly(int node) {
+	public Path2D nodePoly(int node) {
 		int offset = (getNodeWidth()-getEdgeWidth())/2;
 		int halfNodeWidth = getNodeWidth()/2;
-		int startX =0;
-		int startY =0;
+		double startX =0;
+		double startY =0;
 		if (treeDisplay.getOrientation()==TreeDisplay.UP || treeDisplay.getOrientation()==TreeDisplay.DOWN){
 			startX = x[node]-offset;
 			startY= y[node]-offset;
@@ -1527,19 +1508,17 @@ class WideTreeDrawing extends TreeDrawing  {
 			startX = x[node];
 			startY= y[node]-offset;
 		}
-		Polygon poly = new Polygon();
-		poly.npoints=0;
-		poly.addPoint(startX,startY);
-		poly.addPoint(startX+getNodeWidth(),startY);
-		poly.addPoint(startX+getNodeWidth(),startY+offset*2);
-		poly.addPoint(startX,startY+offset*2);
-		poly.addPoint(startX,startY);
-		poly.npoints=5;
+		Path2D poly = new Path2D.Double();
+		poly.moveTo(startX,startY);
+		poly.lineTo(startX+getNodeWidth(),startY);
+		poly.lineTo(startX+getNodeWidth(),startY+offset*2);
+		poly.lineTo(startX,startY+offset*2);
+		poly.lineTo(startX,startY);
 		return poly;
 	}
 	/*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){
-		Polygon nodeP = nodePoly(node);
+		Path2D nodeP = nodePoly(node);
 		if (nodeP!=null && nodeP.contains(x,y))
 			return true;
 		else

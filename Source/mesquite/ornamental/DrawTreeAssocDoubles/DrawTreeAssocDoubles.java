@@ -352,10 +352,10 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 					box.setColors(Color.black, null);
 				box.setString(MesquiteDouble.toStringDigitsSpecified(d, assocDoublesModule.digits));
 
-				int x, y;
+				double x, y;
 				if (assocDoublesModule.centred.getValue()){   // center on branch
-					int centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocDoublesModule.xOffset;
-					int centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocDoublesModule.yOffset;
+					double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocDoublesModule.xOffset;
+					double centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocDoublesModule.yOffset;
 					/*g.setColor(Color.yellow);
 					g.drawLine(treeDisplay.getTreeDrawing().lineBaseX[node], treeDisplay.getTreeDrawing().lineBaseY[node], treeDisplay.getTreeDrawing().lineTipX[node], treeDisplay.getTreeDrawing().lineTipY[node]);
 					/*g.setColor(Color.red);
@@ -385,7 +385,7 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 				if (assocDoublesModule.horizontal.getValue())
 					box.draw(g,  x, y);
 				else
-					box.draw(g,  x, y, 0, 1500, treeDisplay, false);
+					box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);
 
 			}
 		}
