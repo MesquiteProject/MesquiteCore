@@ -1,21 +1,20 @@
-/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison.
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
-Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code.
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
 
 Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 Mesquite's web site is http://mesquiteproject.org
 
-This source code and its compiled class files are free and modifiable under the terms of
+This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
 import java.awt.*;
 import java.text.*;
-
 import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -33,7 +32,7 @@ public class StringUtil {
 		lineSeparator = System.getProperty("line.separator"); //"\n"
 	}
 
-	public static FontMetrics defaultFontMetrics = null;
+	public static FontMetrics defaultFontMetrics = null; 
 	// standard line ends:  UNIX: LF (\n),   Mac: CR (\r),   DOS:  CR LF (\r\n)
 	public static final String defaultLineEnd = "\r\n";
 	public static final String defaultWhitespace = " \t\n\r\f\b" + (char)0;
@@ -41,14 +40,38 @@ public class StringUtil {
 	public static final String defaultPunctuationPlusLB = defaultPunctuation + "\n\r"; //Note: & isn't punctuation by NEXUS format //[] added Nov 03
 	public static final String xmlPunctuation = "(){}:,;+<>=\\*/\''\"[]$%#^";
 	public static final String allPunctuation = "(){}:,;+<>=\\*/\''\"[]$%#^&@!-|";
-	public static final char defaultQuote = '\'';
+	public static final char defaultQuote = '\''; 
 	public static final String digits = "0123456789";
-	public static final char argumentMarker = '@';
+	public static final char argumentMarker = '@'; 
 
 	/*.................................................................................................................*
 	public static String getUniqueObjectID(){
 		return "Mesquite"+ MesquiteTrunk.mesquiteTrunk.getVersion() + URL+startupTimeMillis;
 	}
+		/* ................................................................................................................. */
+	public static String[] getLines(String s) {
+		s = StringUtil.replace(s, "\r\n", "\r");
+		s = StringUtil.replace(s, "\n", "\r");
+
+		StringTokenizer t = new StringTokenizer(s, "\r");
+		String tok = null;
+		int count = t.countTokens();
+		String[] result = new String[count];
+		tok = null;
+		count = 0;
+		try {
+			while (t.hasMoreTokens()) {
+				tok = t.nextToken();
+				if (tok == null)
+					tok = "";
+				result[count] = tok;
+				count++;
+			}
+		} catch (NoSuchElementException e) {
+		}
+		return result;
+	}
+
 	/*.................................................................................................................*/
 	public static String getDateDayOnly() {
 		long startupTime = System.currentTimeMillis();
@@ -556,10 +579,10 @@ public class StringUtil {
 	public static int getStringDrawLength(Graphics g, String s){
 		if (g!=null) {
 			FontMetrics fm = getFontMetrics(g);
-			if (fm!=null)
+			if (fm!=null) 
 				return fm.stringWidth(s);
 		}
-		if (defaultFontMetrics!=null)
+		if (defaultFontMetrics!=null) 
 			return defaultFontMetrics.stringWidth(s); //added Dec 2001
 		return 0;
 	}
@@ -584,7 +607,7 @@ public class StringUtil {
 	public static int getTextLineHeight(Graphics g){
 		if (g!=null) {
 			FontMetrics fm = getFontMetrics(g);
-			if (fm!=null)
+			if (fm!=null) 
 				return fm.getHeight();
 		}
 		return 0;
@@ -593,7 +616,7 @@ public class StringUtil {
 	public static int getMaxCharWidth(Component component){
 		if (component!=null) {
 			FontMetrics fm = getFontMetrics(component);
-			if (fm!=null)
+			if (fm!=null) 
 				return fm.getMaxAdvance();
 		}
 		return 0;
@@ -602,7 +625,7 @@ public class StringUtil {
 	public static int getTextLineHeight(Component component){
 		if (component!=null) {
 			FontMetrics fm = getFontMetrics(component);
-			if (fm!=null)
+			if (fm!=null) 
 				return fm.getHeight();
 		}
 		return 0;
@@ -687,7 +710,7 @@ public class StringUtil {
 				}*/
 			return "'" + sb.toString() + defaultQuote;
 		}
-		else
+		else 
 			return  "'" + token + defaultQuote;
 	}
 	/*.................................................................................................................*/
@@ -695,7 +718,7 @@ public class StringUtil {
 		if (token == null)
 			return "";
 		if (hasPunctuation(token,punctuationString) || token.indexOf("_")>=0 || hasSpecial(token))  //28Feb05: added "_" so that this forced quoted token to preserve the underscore
-			return quote(token, sb);
+			return quote(token, sb);  
 		if (sb == null)
 			sb = new StringBuffer(token);
 		else {
@@ -733,7 +756,7 @@ public class StringUtil {
 		if (token==null) return 0;
 		int numMatches = 0;
 		for (int i=0; i<token.length(); i++) {
-			if (token.charAt(i)==c)
+			if (token.charAt(i)==c) 
 				numMatches++;
 		}
 		return numMatches;
@@ -791,7 +814,7 @@ public class StringUtil {
 		if (token == null)
 			return "";
 		String trimmedString = token.trim();
-		int charPos = trimmedString.lastIndexOf((int)c) ;
+		int charPos = trimmedString.lastIndexOf((int)c) ;  
 		if (charPos == trimmedString.length()-1)   // then the last none-whitespace is the character c
 			return token.substring(0,token.lastIndexOf((int)c));   //DRM March 2014:  changed from 0,token.lastIndexOf((int)c-1
 		else
@@ -812,7 +835,7 @@ public class StringUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static String stripWhitespace(String token) {
+	public static String stripWhitespace(String token) { 
 		if (token == null)
 			return "";
 		StringBuffer sb = new StringBuffer();
@@ -945,7 +968,7 @@ public class StringUtil {
 		if (useNEXUSRules) {
 			MesquiteMessage.warnProgrammer("numTokens doesn't support NEXUS rules yet!!!");
 		}
-		else
+		else 
 			try {
 				while (pos<s.length()) {
 					if (!whitespace(s.charAt(pos),defaultWhitespace)) {// we are at start of a new token
@@ -967,7 +990,7 @@ public class StringUtil {
 		if (c<0)
 			return true;
 		if (c==0)
-			return false;
+			return false;  
 
 
 		if (whitespaceString!=null)
@@ -1018,18 +1041,148 @@ public class StringUtil {
 		}
 		return strings;
 	}
+	/*.................................................................................................................*/
+	public static String commonIgnoreCaseStart(String a, String b) {
+		if (a==null)
+			return null;
+		if (b==null)
+			return null;
+		if (a.equalsIgnoreCase(b))
+			return a;
+		String common = "";
+		for (int i = 0; i< b.length() && i<a.length(); i++){
+			char ca = Character.toLowerCase(a.charAt(i));
+			char cb = Character.toLowerCase(b.charAt(i));
+			if (ca == cb)
+				common+=a.charAt(i);
+			else
+				break;
+		}
+		return common;
+	}
+	/*.................................................................................................................*/
+
+	public static int numberOfStringsInRange(String token) {
+		StringTokenizer t = new StringTokenizer(token, "-,–");
+		try{
+			String startRange = null;
+			String endRange = null;
+			if (t.hasMoreTokens())
+				startRange = t.nextToken();
+			if (t.hasMoreTokens())
+				endRange = t.nextToken();
+			if (startRange!=null && endRange!=null) {
+				startRange=StringUtil.stripBoundingWhitespace(startRange);
+				endRange=StringUtil.stripBoundingWhitespace(endRange);
+				String common = StringUtil.commonIgnoreCaseStart(startRange, endRange);
+				if (common!=null) {
+					if (!common.equals("")) {
+						startRange=startRange.substring(common.length(),startRange.length());
+						endRange=endRange.substring(common.length(),endRange.length());
+					}
+					int startValue = MesquiteInteger.fromString(startRange);
+					int endValue = MesquiteInteger.fromString(endRange);
+					if (MesquiteInteger.isCombinable(startValue) && MesquiteInteger.isCombinable(endValue)) {
+						return endValue-startValue+1;
+					}
+				}
+			}
+		}
+		catch (NoSuchElementException e){
+		}
+		catch (StringIndexOutOfBoundsException e){
+		}
+		return 0;
+	}
+	/*.................................................................................................................*/
+
+	public static int fillNextArrayElements(String[] result, String token, int indexStart) {
+		if (result==null)
+			return 0;
+		StringTokenizer t = new StringTokenizer(token, "-,–");
+		try{
+			String startRange = null;
+			String endRange = null;
+			if (t.hasMoreTokens())
+				startRange = t.nextToken();
+			if (t.hasMoreTokens())
+				endRange = t.nextToken();
+			if (startRange!=null && endRange!=null) {
+				startRange=StringUtil.stripBoundingWhitespace(startRange);
+				endRange=StringUtil.stripBoundingWhitespace(endRange);
+				int lengthOfToken = startRange.length();
+				if (endRange.length()>lengthOfToken)
+					lengthOfToken=endRange.length();
+				String common = StringUtil.commonIgnoreCaseStart(startRange, endRange);
+				if (common!=null) {
+					if (common!="") {
+						startRange=startRange.substring(common.length(),startRange.length());
+						endRange=endRange.substring(common.length(),endRange.length());
+					}
+					int startValue = MesquiteInteger.fromString(startRange);
+					int endValue = MesquiteInteger.fromString(endRange);
+					if (MesquiteInteger.isCombinable(startValue) && MesquiteInteger.isCombinable(endValue)) {
+						int numElements = endValue-startValue+1;
+						int count=0;
+						String endSuffix ="";
+						int index = indexStart;
+						for (int i=0; i<numElements && index<result.length;i++) {
+							result[index]=common;
+							endSuffix=""+(startValue+i); // need to insert 0s as appropriate
+							int currentLength = common.length() + endSuffix.length();
+							if (currentLength<lengthOfToken)
+								for (int j=0; j<lengthOfToken-currentLength; j++)
+									result[index]+="0";
+							result[index]+=endSuffix;
+							index++;
+							count++;
+						}
+						return count;
+					}
+				}
+			}
+		}
+		catch (NoSuchElementException e){
+		}
+		return 0;
+	}
 	/*-----------------------------------------------------------*/
-	public static String[] delimitedTokensToStrings(String line, char delimiter){
+	public static String[] delimitedTokensToStrings(String line, char delimiter, boolean allowHyphenForRanges){
 		if (delimiter == '\t')
 			return tabDelimitedTokensToStrings(line);
-		String[] result;
-
+		String[] result =  null;
 		StringTokenizer t = new StringTokenizer(line, "" + delimiter);
 		String tok = null;
-		int count = t.countTokens();
+		int count = 0;
+
+		if (allowHyphenForRanges && (line.indexOf("-")>0 || line.indexOf("–")>0)) {  // let's figure out how many are in here
+			tok = null;
+			try{
+				while (t.hasMoreTokens()){
+					tok = t.nextToken();
+					if (tok == null)
+						tok = "";
+					else
+						tok = stripBoundingWhitespace(tok);
+					if (tok.indexOf("-")>0 || tok.indexOf("–")>0) {  // this is a range; let's calculate how many elements there are in it.
+						int num = numberOfStringsInRange(tok);
+						count+=num;
+					} else {
+						count++;  // just onemore;
+					}
+				}
+			}
+			catch (NoSuchElementException e){
+			}
+
+		} 
+		else {
+			count = t.countTokens();
+		}
 		result = new String[count];
 		tok = null;
 		count = 0;
+		t = new StringTokenizer(line, "" + delimiter);
 		try{
 			while (t.hasMoreTokens()){
 				tok = t.nextToken();
@@ -1037,13 +1190,22 @@ public class StringUtil {
 					tok = "";
 				else
 					tok = stripBoundingWhitespace(tok);
-				result[count] = tok;
-				count++;
+				if (tok.indexOf("-")>0 || tok.indexOf("–")>0) {
+					count+=fillNextArrayElements(result,tok, count);
+				} else {
+					result[count] = tok;
+					count++;  // just onemore;
+				}
 			}
 		}
 		catch (NoSuchElementException e){
 		}
+
 		return result;
+	}
+	/*-----------------------------------------------------------*/
+	public static String[] delimitedTokensToStrings(String line, char delimiter){
+		return delimitedTokensToStrings(line,delimiter, false);
 	}
 	/*-----------------------------------------------------------*/
 	public static String[] tabDelimitedTokensToStrings(String line){
@@ -1089,7 +1251,7 @@ public class StringUtil {
 		if (s==null) return null;
 		StringBuffer buffer = new StringBuffer(s.length()*2);
 		for (int i=0; i<s.length(); i++) {
-			if (Character.isSpaceChar(s.charAt(i)))
+			if (Character.isSpaceChar(s.charAt(i))) 
 				buffer.append("%20");
 			else if (s.charAt(i)=='>')
 				buffer.append("%3E");
@@ -1125,12 +1287,14 @@ public class StringUtil {
 		return buffer.toString();
 	}
 
-	public static String protectForWindows(String s) {
-		String returnVal = protectForUnix(s, false);
-		return "\"" + returnVal + "\"";
+	public static String protectForWindows(String s) {  // to be used only for file paths
+		//String r = protectForUnix(s, false);
+		return "\"" + s + "\"";
 	}
 
-	public static String protectForUnix(String s, boolean escapeSpaces) {
+	public static String protectForUnix(String s, boolean escapeSpaces) {//This is called only for file paths, and is perhaps best left that way.  
+		//As of March 2015, it is never called directly, i.e. escapeSpaces is always true
+		//As of June 2015, stripping accents turned off, because it meant the file path was no longer correct
 		if (s==null) return null;
 		StringBuffer buffer = new StringBuffer(s.length()*2);
 		for (int i=0; i<s.length(); i++) {
@@ -1160,12 +1324,12 @@ public class StringUtil {
 				buffer.append("\\\"");
 			else if (s.charAt(i)=='”')
 				buffer.append("\\\"");
-			else if (stripAccent(s.charAt(i))!= 0)
-				buffer.append(stripAccent(s.charAt(i)));
+		//	else if (stripAccent(s.charAt(i))!= 0)
+		//		buffer.append(stripAccent(s.charAt(i)));
 			else
 				buffer.append(s.charAt(i));
 		}
-		return buffer.toString();
+		return buffer.toString();  		 
 	}
 	private static char stripAccent(char a){
 		if ((int)a==65533)
@@ -1250,12 +1414,91 @@ public class StringUtil {
 		return 0;
 	}
 	/*.................................................................................................................*/
-	public static String protectForUnix(String s){
+	public static String protectForUnix(String s){  //This is only called for file paths, and is perhaps best left that way
 		return protectForUnix(s, true);
 	}
 
 
-	/* For a description of how to write simple, one-level deep XML preferences, search for "XMLPreferencesDocumentation" in MesquiteModule */
+	private static String accentedCharToEscape(char a){
+		if (a=='é')
+			return "&eacute;";
+		else if (a=='á')
+			return "&aacute;";
+		else if (a=='ó')
+			return "&oacute;";
+		else if (a=='ú')
+			return "&uacute;";
+		else if (a=='í')
+			return "&iacute;";
+		else if (a=='É')
+			return "&Eacute;";
+		else if (a=='Á')
+			return "&Aacute;";
+		else if (a=='Í')
+			return "&Iacute;";
+		else if (a=='Ó')
+			return "&Oacute;";
+		else if (a=='Ú')
+			return "&Uacute;";
+
+		else if (a=='è')
+			return "&egrave;";
+		else if (a=='à')
+			return "&agrave;";
+		else if (a=='ò')
+			return "&ograve;";
+		else if (a=='ù')
+			return "&ugrave;";
+		else if (a=='ì')
+			return "&igrave;";
+		else if (a=='È')
+			return "&Egrave;";
+		else if (a=='À')
+			return "&Agrave;";
+		else if (a=='Ì')
+			return "&Igrave;";
+		else if (a=='Ò')
+			return "&Ograve;";
+		else if (a=='Ù')
+			return "&Ugrave;";
+
+		else if (a=='ë')
+			return "&euml;";
+		else if (a=='ä')
+			return "&auml;";
+		else if (a=='ö')
+			return "&ouml;";
+		else if (a=='ü')
+			return "&uuml;";
+		else if (a=='ï')
+			return "&iuml;";
+		else if (a=='Ë')
+			return "&Euml;";
+		else if (a=='Ä')
+			return "&Auml;";
+		else if (a=='Ï')
+			return "&Iuml;";
+		else if (a=='Ö')
+			return "&Ouml;";
+		else if (a=='Ü')
+			return "&Uuml;";
+
+		else if (a=='ø')
+			return "&oslash;";
+
+		else if (a=='Ø')
+			return "&Oslash;";
+
+		else if (a=='ñ')
+			return "&ntilde;";
+		else if (a=='Ñ')
+			return "&Ntilde;";
+		else if (a=='ç')
+			return "&ccedil;";
+		else if (a=='Ç')
+			return "&Ccedil;";
+		return null;
+	}	/* For a description of how to write simple, one-level deep XML preferences, search for "XMLPreferencesDocumentation" in MesquiteModule */
 	/*.................................................................................................................*/
 	public static String protectForXML(String s) {
 		//TODO: finish this !!
@@ -1263,20 +1506,31 @@ public class StringUtil {
 			return s;
 		StringBuffer buffer = new StringBuffer(s.length()*2);
 		for (int i=0; i<s.length(); i++) {
-			if (s.charAt(i)=='&')
+			char c = s.charAt(i);
+			if (c=='&')
 				buffer.append("&amp;");
-			else if (s.charAt(i)=='<')
+			else if (c=='<')
 				buffer.append("&lt;");
-			else if (s.charAt(i)=='>')
+			else if (c=='>')
 				buffer.append("&gt;");
-			else if (s.charAt(i)=='\'')
+			else if (c=='\'')
 				buffer.append("&apos;");
-			else if (s.charAt(i)=='"')
+			else if (c=='"')
 				buffer.append("&quot;");
-			else
-				buffer.append(s.charAt(i));
+			else {
+				buffer.append(c);
+				/*
+				String d = accentedCharToEscape(c);
+				if (d == null)
+					buffer.append(c);
+				else
+					buffer.append(d);
+					*/
+			}
+			
+			
 		}
-		return buffer.toString();
+		return buffer.toString();  		 
 	}
 	/*.................................................................................................................*/
 	public static String cleanXMLEscapeCharacters(String s) {
@@ -1290,7 +1544,45 @@ public class StringUtil {
 		newString = replace(newString,"&gt;",">");
 		newString = replace(newString,"&apos;","'");
 		newString = replace(newString,"&quot;","\"");
-		return newString;
+		/*
+		newString = replace(newString,"&eacute", "é");
+		newString = replace(newString,"&aacute", "á");
+		newString = replace(newString,"&oacute", "ó");
+		newString = replace(newString,"&uacute", "ú");
+		newString = replace(newString,"&iacute", "í");
+		newString = replace(newString,"&Eacute", "É");
+		newString = replace(newString,"&Aacute", "Á");
+		newString = replace(newString,"&Iacute", "Í");
+		newString = replace(newString,"&Oacute", "Ó");
+		newString = replace(newString,"&Uacute", "Ú");
+		newString = replace(newString,"&egrave", "è");
+		newString = replace(newString,"&agrave", "à");
+		newString = replace(newString,"&ograve", "ò");
+		newString = replace(newString,"&ugrave", "ù");
+		newString = replace(newString,"&igrave", "ì");
+		newString = replace(newString,"&Egrave", "È");
+		newString = replace(newString,"&Agrave", "À");
+		newString = replace(newString,"&Igrave", "Ì");
+		newString = replace(newString,"&Ograve", "Ò");
+		newString = replace(newString,"&Ugrave", "Ù");
+		newString = replace(newString,"&euml", "ë");
+		newString = replace(newString,"&auml", "ä");
+		newString = replace(newString,"&ouml", "ö");
+		newString = replace(newString,"&uuml", "ü");
+		newString = replace(newString,"&iuml", "ï");
+		newString = replace(newString,"&Euml", "Ë");
+		newString = replace(newString,"&Auml", "Ä");
+		newString = replace(newString,"&Iuml", "Ï");
+		newString = replace(newString,"&Ouml", "Ö");
+		newString = replace(newString,"&Uuml", "Ü");
+		newString = replace(newString,"&oslash", "ø");
+		newString = replace(newString,"&Oslash", "Ø");
+		newString = replace(newString,"&ntilde", "ñ");
+		newString = replace(newString,"&Ntilde", "Ñ");
+		newString = replace(newString,"&ccedil", "ç");
+		newString = replace(newString,"&Ccedil", "Ç");
+		*/
+		return newString;  		 
 	}
 
 	/*.................................................................................................................*/
@@ -1335,7 +1627,7 @@ public class StringUtil {
 			}
 			sb.append("</");
 			sb.append(tag);
-			sb.append(">\n");
+			sb.append(">\n"); 
 		}
 	}
 	/*.................................................................................................................*/
@@ -1343,7 +1635,7 @@ public class StringUtil {
 		if (sb!=null) {
 			sb.append("</");
 			sb.append(tag);
-			sb.append(">\n");
+			sb.append(">\n"); 
 		}
 	}
 	/*.................................................................................................................*/
@@ -1452,7 +1744,7 @@ public class StringUtil {
 					buffer.append(s.charAt(i));
 				else if (stripAccent(s.charAt(i))!= 0)
 					buffer.append(stripAccent(s.charAt(i)));
-				else
+				else 
 					buffer.append('_');
 			}
 			else if (s.charAt(i)=='“')
@@ -1563,7 +1855,7 @@ public class StringUtil {
 	public static boolean stringsEqual(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null)
+		if (a == null || b == null) 
 			return false;
 		return (a.equals(b));
 	}
@@ -1571,7 +1863,7 @@ public class StringUtil {
 	public static boolean stringsEqualIgnoreCase(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null)
+		if (a == null || b == null) 
 			return false;
 		return (a.equalsIgnoreCase(b));
 	}
@@ -1579,7 +1871,7 @@ public class StringUtil {
 	public static boolean stringsEqualIgnoreCaseIgnoreBlanksUnderlines(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null)
+		if (a == null || b == null) 
 			return false;
 		if (a.equalsIgnoreCase(b))
 			return true;
@@ -1588,10 +1880,26 @@ public class StringUtil {
 		return false;
 	}
 	/*.................................................................................................................*/
+	public static boolean endsWithIgnoreCase(String a, String b) {
+		if (a ==b)
+			return true;
+		if (a == null || b == null) 
+			return false;
+		
+		if (b.length()> a.length())
+			return false;
+		
+		int endingSize = b.length();
+		String aEnding = a.substring(a.length()-endingSize, a.length());
+		
+		return b.equalsIgnoreCase(aEnding);
+	}
+
+	/*.................................................................................................................*/
 	public static boolean startsWithIgnoreCase(String a, String b) {
 		if (a ==b)
 			return true;
-		if (a == null || b == null)
+		if (a == null || b == null) 
 			return false;
 		if (b.length()> a.length())
 			return false;
@@ -1607,7 +1915,7 @@ public class StringUtil {
 	public static String blankIfNull(String line) {
 		if (line==null)
 			return "";
-		else
+		else 
 			return line;
 	}
 	/*.................................................................................................................*/
@@ -1680,7 +1988,7 @@ public class StringUtil {
 	public static boolean blank(FileBlock line) {
 		if (line==null)
 			return true;
-		else
+		else 
 			return line.isEmpty();
 	}
 
@@ -1693,5 +2001,4 @@ public class StringUtil {
 	}
 
 }
-
 
