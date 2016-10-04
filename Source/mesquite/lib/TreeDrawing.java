@@ -95,6 +95,12 @@ public abstract class TreeDrawing  {
 		}
 	}
 
+	public double getX(int node){
+		return x[node];
+	}
+	public double getY(int node){
+		return y[node];
+	}
 	public int getDrawnRoot(){
 		return drawnRoot;
 	}
