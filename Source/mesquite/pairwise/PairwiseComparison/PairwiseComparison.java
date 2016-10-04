@@ -16,6 +16,7 @@ package mesquite.pairwise.PairwiseComparison;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -26,6 +27,17 @@ public class PairwiseComparison extends TreeDisplayAssistantMA {
 	public String getName() {
 		return "Pairwise Comparison";
 	}
+	
+	/*  BUGS
+	 * cut taxa from tree; labels remain
+	 * 
+	 * 
+	 * 
+	 * 
+	 * *
+	 */
+	
+	
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
 		return "Performs pairwise comparison character correlation tests. Phylogenetically independent pairs are chosen, and the states of two binary characters are compared to see if they are correlated among these pairs." ;
@@ -379,7 +391,7 @@ rising from below.  At each internal node must be stored the current choice at t
  ======================================================================== */
 class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 	public TaxaPairing pairing;
-	private TaxaPairerChars pairer;
+	TaxaPairerChars pairer;
 	public ShowPairsLegend legend;
 	private double pMax = 0;
 	private double pMin = 1;
@@ -425,10 +437,20 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 	}
 	
 	public String getWritableText(){
-		if (legend == null)
-			return null;
-		return legend.getTextVersion();
+		return getTextVersion();
 	}
+	
+	public String textAtNode(Tree tree, int node){
+		if (pairing == null)
+			return " pairing null ";
+		if (pairing.getNumPairs() == 0)
+			return " no pairs ";
+		TaxaPath path = pairing.findPath(node);
+		if (path == null)
+			return "";
+		return describePathContrast(path);
+	}
+
 	/*.................................................................................................................*/
 	void calculatePRange (TaxaPairerChars pairer) {
 		Tree tree = treeDisplay.getTree();
@@ -559,6 +581,46 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 
 		}
 	}
+	
+	private String describePath(TaxaPath path){
+		if (observedStatesA == null)
+			return "";
+		Taxa taxa = observedStatesA.getTaxa();
+		
+		return taxa.getTaxonName(path.gettaxon1()) + " vs. "  + taxa.getTaxonName(path.gettaxon2()) + "; MRCA " + path.getBase();
+	}
+	private String describeContrast(int tax1, int tax2){
+		return "X = "+ observedStatesA.toString(tax1, "") + " vs. " + observedStatesA.toString(tax2, "") + "; Y = "+ observedStatesB.toString(tax1, "") + " vs. " + observedStatesB.toString(tax2, "");
+	}
+	/*.................................................................................................................*/
+	private String describePathContrast(TaxaPath path) {
+		if (path == null)
+			return "Remainder " + describePath(path);
+		if (observedStatesA == null || observedStatesB== null)
+			return "";
+		int tax1 =path.gettaxon1();
+		int tax2 = path.gettaxon2();
+
+		if (observedStatesA.firstIsGreater(tax1, tax2)) {
+			if (observedStatesB.firstIsGreater(tax1, tax2))
+				return "Positive: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else if (observedStatesB.firstIsGreater(tax2, tax1))
+				return "Negative: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else 
+				return "Neutral: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+		}
+		else if (observedStatesA.firstIsGreater(tax2, tax1)) {
+			if (observedStatesB.firstIsGreater(tax1, tax2))
+				return "Negative: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else if (observedStatesB.firstIsGreater(tax2, tax1))
+				return "Positive: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+			else 
+				return "Neutral: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+		}
+		else {
+			return "Remainder: "+ describeContrast(tax1, tax2) + " for " + describePath(path);
+		}
+	}
 	/*.................................................................................................................*/
 	private int categoryOfPath(TaxaPath path) {
 		if (path == null)
@@ -601,7 +663,7 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			else if (category == NEGATIVE)
 				g.setColor(Color.red);
 			else if (category == NEUTRAL)
-				g.setColor(Color.gray);
+				g.setColor(ColorDistribution.lightBlue);
 			else
 				g.setColor(Color.blue);
 			//g.setColor(new Color(Color.HSBtoRGB((float)(i * 1.0 /numTaxa),(float)1.0,(float)1.0)));
@@ -617,6 +679,54 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			}
 		}
 	}
+	String textVersion = "";
+	public String setResults(int[] results, TaxaPairing pairing, double pMin, double pMax) {
+		if(pairing == null){
+			String s = "Calculation not done";
+			textVersion = s;
+			return s;
+		}
+		else if (pairing.getCalculationNotDone()){
+			String s = "Calculation not done\n" + pairer.getWarningMessage();
+			textVersion = s;
+			return s;
+		}
+		
+		int numP = pairing.getNumPairs(); 
+		int currentPairing = pairer.getCurrentPairingNumber();
+		String s = "Pairing " + (currentPairing+1) +" of " + numPairings;
+		if (pairModule.pairSelectorTask.limitReached(numPairings))
+			s += " (There may be more pairings; the limit of number of pairings allowed was reached.)";
+		if (!StringUtil.blank(pairer.getWarningMessage()))
+			s += "\n" + pairer.getWarningMessage();
+		s +="\nSelector: " + pairModule.pairSelectorTask.getName() + "\n" + numP + " pairs\n";
+		s += "   Positive " + results[1] + "\n   Negative " + results[0] + "\n   Neutral " + results[2] + "\n   Remainder " + results[3];
+		s += "\n best tail p=" + MesquiteDouble.toString(Binomial.bestTail(results[0] + results[1], results[1], 0.5));
+		if (pMax>0 && pMin>0) {
+			s += "\nRange (" + numPairings + " pairings):";
+			s += "\n" + MesquiteDouble.toString(pMin) + " - " + MesquiteDouble.toString(pMax);
+		}
+		
+		textVersion = "Pairing\t" + (currentPairing+1) +"\tof\t" + numPairings + "\t";
+		if (pairModule.pairSelectorTask.limitReached(numPairings))
+			textVersion += " (There may be more pairings; the limit of number of pairings allowed was reached.) ";
+		textVersion += " " + pairer.getWarningMessage();
+		textVersion +=" Selector: " + pairModule.pairSelectorTask.getName() + "\t" + numP + "\tpairs. ";
+		textVersion += "   Positive\t" + results[1] + "\tNegative\t" + results[0] + "\tNeutral\t" + results[2] + "\tRemainder\t" + results[3];
+		textVersion += "\tbest tail p=\t" + MesquiteDouble.toString(Binomial.bestTail(results[0] + results[1], results[1], 0.5));
+		if (pMax>0 && pMin>0) {
+			textVersion += "\tRange (" + numPairings + " pairings):";
+			textVersion += "\t" + MesquiteDouble.toString(pMin) + "\t" + MesquiteDouble.toString(pMax);
+		}
+		else {
+			textVersion += "\t \t  \t ";
+		}
+		return s;
+	}	
+	String getTextVersion(){
+		return textVersion;
+	}
+	
 	public void nextPairing() {
 		if (pairer == null)
 			return;
@@ -626,8 +736,9 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 				legend.adjustPairingScroll(pairer.getCurrentPairingNumber(), numPairings);
 			calculateCategories(pairing, treeDisplay.getTree());
 			//legend.setResults(cat, pairing, new TwoCharPairing(tree, observedStatesA, observedStatesB));
+			String s = setResults(cat, pairing, pMin, pMax);
 			if (legend != null)
-				legend.setResults(cat, pairing, pMin, pMax);
+				legend.setMessage(s);
 		}
 		if (treeDisplay!=null)
 			treeDisplay.pleaseUpdate(false);
@@ -641,8 +752,9 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 				legend.adjustPairingScroll(pairer.getCurrentPairingNumber(), numPairings);
 			calculateCategories(pairing, treeDisplay.getTree());
 			//legend.setResults(cat, pairing, new TwoCharPairing(tree, observedStatesA, observedStatesB));
+			String s = setResults(cat, pairing, pMin, pMax);
 			if (legend != null)
-				legend.setResults(cat, pairing, pMin, pMax);
+				legend.setMessage(s);
 		}
 		if (treeDisplay!=null)
 			treeDisplay.pleaseUpdate(false);
@@ -667,8 +779,9 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			legend.adjustPairingScroll(pairer.getCurrentPairingNumber(), numPairings);
 		calculateCategories(pairing, treeDisplay.getTree());
 		//legend.setResults(cat, pairing, new TwoCharPairing(tree, observedStatesA, observedStatesB));
+		String s = setResults(cat, pairing, pMin, pMax);
 		if (legend != null)
-			legend.setResults(cat, pairing, pMin, pMax);
+			legend.setMessage(s);
 		treeDisplay.pleaseUpdate(false);
 	}
 	/*.................................................................................................................*/
@@ -694,7 +807,9 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			drawPairs(treeDisplay, tree, drawnRoot, g);
 			//	calculateCategories(pairing, tree);
 			//legend.setResults(cat, pairing, new TwoCharPairing(tree, observedStatesA, observedStatesB));
-			legend.setResults(cat, pairing, pMin, pMax);
+			String s = setResults(cat, pairing, pMin, pMax);
+			if (legend != null)
+				legend.setMessage(s);
 
 			legend.adjustLocation(); //dont do this without protection for loop
 			if (toShow || !legend.isVisible())
@@ -906,37 +1021,8 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		MesquiteWindow.uncheckDoomed(this);
 	}
 
-	String textVersion = "";
-	public void setResults(int[] results, TaxaPairing pairing, double pMin, double pMax) {
-		int numP = pairing.getNumPairs(); 
-		String s = "Pairing " + (oldCurrentPairing+1) +" of " + oldNumPairings;
-		if (ownerModule.pairSelectorTask.limitReached(oldNumPairings))
-			s += " (There may be more pairings; the limit of number of pairings allowed was reached.)";
-		s +="\nSelector: " + ownerModule.pairSelectorTask.getName() + "\n" + numP + " pairs\n";
-		s += "   Positive " + results[1] + "\n   Negative " + results[0] + "\n   Neutral " + results[2] + "\n   Remainder " + results[3];
-		s += "\n best tail p=" + MesquiteDouble.toString(Binomial.bestTail(results[0] + results[1], results[1], 0.5));
-		if (pMax>0 && pMin>0) {
-			s += "\nRange (" + oldNumPairings + " pairings):";
-			s += "\n" + MesquiteDouble.toString(pMin) + " - " + MesquiteDouble.toString(pMax);
-		}
-		
-		textVersion = "Pairing\t" + (oldCurrentPairing+1) +"\tof\t" + oldNumPairings + "\t";
-		if (ownerModule.pairSelectorTask.limitReached(oldNumPairings))
-			textVersion += " (There may be more pairings; the limit of number of pairings allowed was reached.) ";
-		textVersion +="Selector: " + ownerModule.pairSelectorTask.getName() + "\t" + numP + "\tpairs. ";
-		textVersion += "   Positive\t" + results[1] + "\tNegative\t" + results[0] + "\tNeutral\t" + results[2] + "\tRemainder\t" + results[3];
-		textVersion += "\tbest tail p=\t" + MesquiteDouble.toString(Binomial.bestTail(results[0] + results[1], results[1], 0.5));
-		if (pMax>0 && pMin>0) {
-			textVersion += "\tRange (" + oldNumPairings + " pairings):";
-			textVersion += "\t" + MesquiteDouble.toString(pMin) + "\t" + MesquiteDouble.toString(pMax);
-		}
-		else {
-			textVersion += "\t \t  \t ";
-		}
-		setMessage(s);
-	}
 	String getTextVersion(){
-		return textVersion;
+		return pD.getTextVersion();
 	}
 	public void setMessage(String s) {
 		if (s==null || s.equals("")) {

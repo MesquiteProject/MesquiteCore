@@ -182,21 +182,12 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		}
 		return temp;
 	}
-
+	ManagerAssistant lister = null;
 	/*.................................................................................................................*/
 	 public ManagerAssistant showTaxonGroupList(Object obj, String listerName){
-	 		//Check to see if already has lister for this
-/*	 		boolean found = false;
-		for (int i = 0; i<getNumberOfEmployees(); i++) {
-			Object e=getEmployeeVector().elementAt(i);
-			if (e instanceof ManagerAssistant)
-				if (((ManagerAssistant)e).showing(obj)) {
-					((ManagerAssistant)e).getModuleWindow().setVisible(true);
-					return ((ManagerAssistant)e);
-				}
-		}
-		*/
-		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
+	 		
+		 if (lister == null)
+			 lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
 			if (lister!=null) {
 				lister.showListWindow(obj);
 	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
@@ -337,7 +328,8 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					s += "\tTAXAGROUPLABEL " + ParseUtil.tokenize(cg.getName());
 					if (cg.colorSet()){
 						Color c = cg.getColor();
-						s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
+						if (c!=null)
+							s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
 					}
 					if (cg.symbolSet()){
 						MesquiteSymbol symbol = cg.getSymbol();

@@ -351,6 +351,19 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		return treeDisplay.getOrientation()==TreeDisplay.RIGHT;
 	}
 
+	public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
+		if(tree==null || xValue==null || yValue==null)
+			return;
+		if(!tree.nodeExists(N))
+			return;
+		int mother = tree.motherOfNode(N);
+		int daughter = tree.firstDaughterOfNode(N);
+		xValue.setValue(x[mother]+(x[daughter]-x[mother])/2);
+		yValue.setValue(y[mother]+(y[daughter]-y[mother])/2);
+	//	xValue.setValue(x[mother]+(x[N]-x[mother])/2);
+	//	yValue.setValue(y[mother]+(y[N]-y[mother])/2);
+		}
+
 	/*_________________________________________________*/
 	private void UPCalcBranchPolys(Tree tree, int node, Polygon[] polys, int width)
 	{

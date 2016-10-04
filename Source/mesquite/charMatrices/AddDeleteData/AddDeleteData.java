@@ -216,6 +216,10 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 					discreetAlert("You cannot delete all of the taxa; the command will be ignored");
 					return;
 				}
+				if (data.getTaxa().isEditInhibited()){
+					discreetAlert("You cannot delete taxa; the taxa block is locked.");
+					return;
+				}
 				if (!MesquiteThread.isScripting()
 						&& !AlertDialog
 								.query(

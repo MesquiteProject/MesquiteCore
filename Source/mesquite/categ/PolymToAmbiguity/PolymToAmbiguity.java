@@ -24,7 +24,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class PolymToAmbiguity extends CategDataAlterer {
+public class PolymToAmbiguity extends CategDataAlterer implements AltererConvertGapMissPolyUncert {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

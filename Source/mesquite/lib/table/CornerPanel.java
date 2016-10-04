@@ -46,6 +46,8 @@ public class CornerPanel extends MesquitePanel {
 		}
 	}
 	public void redrawName(Graphics g){
+		if (g ==null)
+			return;
 		int w = getBounds().width;
 		int h = getBounds().height;
 		if (table.cornerIsHeading){

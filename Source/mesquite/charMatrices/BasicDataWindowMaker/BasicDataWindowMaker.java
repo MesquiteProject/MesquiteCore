@@ -55,6 +55,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	BasicDataWindow bdw;
 	boolean isExtra = false;
 	MesquiteMenuSpec matrixMenu, displayMenu;
+	static boolean warnAgainAboutTaxonNameDuplication = true;
 	
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -105,8 +106,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			return data;
 		}
 		else if (checker.compare(this.getClass(), "Hides the data matrix window", null, commandName, "hideWindow")) {
-			if (bdw != null)
+			if (bdw != null){
 				bdw.hide();
+				parametersChanged();
+			}
 		}
 		else if (checker.compare(this.getClass(), "Makes a data editor window (but doesn't display it)", "[number or reference string of data set to be shown]", commandName, "makeWindow")) {
 			if (bdw != null)
@@ -188,21 +191,26 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		setModuleWindow(bdw = new BasicDataWindow(this, data));
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
-		if (!MesquiteThread.isScripting()) {
-			getModuleWindow().setVisible(true);
-			getModuleWindow().contentsChanged();
-			getModuleWindow().toFront();
+		if (!MesquiteThread.isScripting() && bdw != null) {
+			bdw.setVisible(true);
+			bdw.contentsChanged();
+			bdw.toFront();
 		}
 	}
 
 	/* ................................................................................................................. */
 	public CharacterData getCharacterData() {
+		if (data.isDisposed())
+			return null;
 		return data;
 	}
 
 	/* ................................................................................................................. */
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
+		parametersChanged();
 		if (isExtra) {
 			whichWindow.dispose();
 			iQuit();
@@ -224,6 +232,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		return "Character Matrix Editor";
 	}
 
+	public void fileReadIn(MesquiteFile file){
+		if (bdw != null)
+			bdw.requestFocus();
+	}
 	/* ................................................................................................................. */
 	// public BasicDataWindow getBasicDataWindow() {
 	// return bdw;
@@ -256,13 +268,20 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		}
 		super.employeeParametersChanged(employee, source, notification);
 	}
+
+	public static boolean getWarnAgainAboutTaxonNameDuplication() {
+		return warnAgainAboutTaxonNameDuplication;
+	}
+
+	public static void setWarnAgainAboutTaxonNameDuplication(boolean warnAgainAboutTaxonNameDuplication) {
+		BasicDataWindowMaker.warnAgainAboutTaxonNameDuplication = warnAgainAboutTaxonNameDuplication;
+	}
 }
 
 /* ======================================================================== */
 class BasicDataWindow extends TableWindow implements MesquiteListener {
 	CharacterData data;
 
-	// BasicDataWindowMaker ownerModule;
 	protected TableTool scrollTool;
 	MatrixTable table;
 	int windowWidth = 420;
@@ -366,7 +385,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addItemToSubmenu(null, cmm, "Missing Data Symbol...", MesquiteModule.makeCommand("setUnassignedSymbol", this));
 		ownerModule.addItemToSubmenu(null, cmm, "Inapplicable Symbol...", MesquiteModule.makeCommand("setInapplicableSymbol", this));
 		ownerModule.addCheckMenuItem(null, "Show Matrix Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
-		editingNotPermitted.setValue(data.getEditorInhibition());
+		editingNotPermitted.setValue(data.isEditInhibited());
+		
 		ownerModule.addCheckMenuItemToSubmenu(null, cmm,"Editing Not Permitted", ownerModule.makeCommand("toggleEditingNotPermitted", this), editingNotPermitted);
 		ownerModule.addMenuItem("-", null);
 		
@@ -463,7 +483,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ibeamTool.setWorksOnRowNames(true);
 		ibeamTool.setWorksOnColumnNames(true);
 		addTool(ibeamTool);
-		ibeamTool.setEnabled(!data.getEditorInhibition());
+		ibeamTool.setEnabled(!data.isEditInhibited());
 
 		ListableVector v = ownerModule.getEmployeeVector();
 
@@ -590,7 +610,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		resetTitle();
 	}
-
+public void requestFocus(){
+	table.requestFocus();
+}
 	/* ................................................................................................................. */
 	/**
 	 * When called the window will determine its own title. MesquiteWindows need to be self-titling so that when things change (names of files, tree blocks, etc.) they can reset their titles properly
@@ -929,8 +951,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				temp.addLine("endTell");
 			}
 			temp.addLine("toggleInfoPanel " + infoPanelOn.toOffOnString());
-			temp.addLine("toggleEditingNotPermitted " + editingNotPermitted.toOffOnString());
 		}
+//			temp.addLine("toggleEditingNotPermitted " + editingNotPermitted.toOffOnString());   //WAYNEASK:  Why is this here?
 		return temp;
 	}
 
@@ -1365,9 +1387,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether editing is permitted or not", null, commandName, "toggleEditingNotPermitted")) {
 			editingNotPermitted.toggleValue(ParseUtil.getFirstToken(arguments, pos));
-			data.setEditorInhibition(editingNotPermitted.getValue());
-			if (ibeamTool!=null)
-				ibeamTool.setEnabled(!editingNotPermitted.getValue());
+			if (editingNotPermitted.getValue())
+				data.incrementEditInhibition();
+			else
+				data.decrementEditInhibition();
+			inhibitionChanged();
 			//setMatrixInfoPanel(infoPanelOn.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Selects sequence", "[number of taxon][number of starting site][number of ending site]", commandName, "selectSequence")) {
@@ -1472,7 +1496,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			ToolPalette palette = getPalette();
 			if (palette == null)
 				return null;
-			setCurrentTool((TableTool) palette.getToolWithName(arguments));
+			TableTool newTool = (TableTool) palette.getToolWithName(arguments);
+			if (newTool!=null) {
+				setCurrentTool(newTool);
+				palette.setCurrentTool(newTool);  //need to do this as otherwise the button is not set
+			}
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether scroll is of linked tables or not.", "[on = linked; off]", commandName, "toggleLinkedScrolling")) {
 			boolean current = linkedScrolling.getValue();
@@ -1685,13 +1713,18 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Adds taxa", "[taxon number after which new taxa to be inserted] [number of new taxa]", commandName, "addTaxa")) {
-			MesquiteInteger io = new MesquiteInteger(0);
+			if (data.getTaxa().isEditInhibited())
+				ownerModule.discreetAlert("You cannot add taxa; the taxa block is locked.");
+		MesquiteInteger io = new MesquiteInteger(0);
 			int starting = Taxon.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
 			if (data.getTaxa().addTaxa(starting, number, true))
 				table.setNumRows(data.getNumTaxa());
 		}
 		else if (checker.compare(this.getClass(), "Deletes taxa", "[first taxon to be deleted] [number of taxa]", commandName, "deleteTaxa")) {
+			if (data.getTaxa().isEditInhibited())
+				ownerModule.discreetAlert("You cannot delete taxa; the taxa block is locked.");
+
 			MesquiteInteger io = new MesquiteInteger(0);
 			int starting = Taxon.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
@@ -1703,8 +1736,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.setNumRows(data.getNumTaxa());
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected characters ", "[column to move after; -1 if at start]", commandName, "moveCharsTo")) {
-			if (data.getEditorInhibition()) {
-				ownerModule.discreetAlert("This matrix is marked as locked against editing.");
+			if (data.isEditInhibited()) {
+				ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 				return null;
 			}
 			if (!table.anyColumnSelected()) {
@@ -1816,8 +1849,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		/**/
 		else if (checker.compare(this.getClass(), "Hires utility module to operate on the data", "[name of module]", commandName, "doUtility")) {
 			if (table != null && data != null) {
-				if (data.getEditorInhibition()) {
-					ownerModule.discreetAlert("This matrix is marked as locked against editing.");
+				if (data.isEditInhibited()) {
+					ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 					return null;
 				}
 				DataUtility tda = (DataUtility) ownerModule.hireNamedEmployee(DataUtility.class, arguments);
@@ -2319,6 +2352,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	}
 
 	/* ................................................................................................................. */
+	void inhibitionChanged(){
+		editingNotPermitted.setValue(data.isEditInhibited());
+		if (ibeamTool!=null)
+			ibeamTool.setEnabled(!editingNotPermitted.getValue());
+	}
+	/* ................................................................................................................. */
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
 	public void changed(Object caller, Object obj, Notification notification) {
 		if (caller instanceof BasicDataWindow || caller instanceof MatrixTable)
@@ -2375,6 +2414,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.doAutosize = true;
 				table.repaintAll();
 				setUndoer(undoReference);
+			}
+			else if (code == MesquiteListener.LOCK_CHANGED) {
+				inhibitionChanged();
 			}
 			else if (code == MesquiteListener.SELECTION_CHANGED) {
 				if (caller != table) { // if object provoking notification is me, then don't repaint
@@ -2470,6 +2512,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		super.changed(caller, obj, notification);
 	}
 
+	
 	/* ................................................................................................................. */
 	/** passes which object is being disposed (from MesquiteListener interface) */
 	public void disposing(Object obj) {
@@ -2524,6 +2567,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	public void setWindowSize(int width, int height) {
 		super.setWindowSize(width, height);
 		checkSizes();
+	}
+	
+	public void setVisible(boolean vis){
+		super.setVisible(vis);
+		if (table != null)
+			table.requestFocus();
 	}
 
 	void checkSizes() {
@@ -2620,6 +2669,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		s += "Number of characters excluded: " + countExcluded + "\n";
 		s += "Proportion of missing data: " + MesquiteDouble.toString(1.0 * countUnassigned / (data.getNumChars() * data.getNumTaxa())) + "\n";
 		s += "Proportion of inapplicable codings: " + MesquiteDouble.toString(1.0 * countInapplicable / (data.getNumChars() * data.getNumTaxa())) + "\n\n";
+		String an = data.getAnnotation();
+		if (!StringUtil.blank(an)){
+			s += "----------------\nNote about matrix:\n" + an + "\n----------------\n\n";
+		}
 		s += table.getTextVersion();
 		return s;
 	}
@@ -3076,7 +3129,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					if (clipboardDimensionsFit(s)) {
 						editorModule.getProject().incrementProjectWindowSuppression();
 						data.incrementNotifySuppress();
-						UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule);
+						UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule, new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});  //TODO: check to see if there can ever be changes
 						pasteIt(s);
 						// deselectAll();
 						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, pasteUndoReference));
@@ -3098,7 +3151,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 							editorModule.getProject().decrementProjectWindowSuppression();
 							if (success) {
 								data.incrementNotifySuppress();
-								UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule);
+								UndoReference pasteUndoReference = UndoReference.getUndoReferenceForMatrixSelection(data, this, editorModule, new int[] {UndoInstructions.CHAR_ADDED_TO_END});
 								pasteIt(s);
 								// deselectAll();
 								data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED, pasteUndoReference));
@@ -3259,26 +3312,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ................................................................................................................. */
 	public String[] getLines(String s) {
-		s = StringUtil.replace(s, "\r\n", "\r");
-		s = StringUtil.replace(s, "\n", "\r");
-
-		StringTokenizer t = new StringTokenizer(s, "\r");
-		String tok = null;
-		int count = t.countTokens();
-		String[] result = new String[count];
-		tok = null;
-		count = 0;
-		try {
-			while (t.hasMoreTokens()) {
-				tok = t.nextToken();
-				if (tok == null)
-					tok = "";
-				result[count] = tok;
-				count++;
-			}
-		} catch (NoSuchElementException e) {
-		}
-		return result;
+		return StringUtil.getLines(s);
 	}
 
 	/* ................................................................................................................. */
@@ -3305,6 +3339,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		return result;
 
 	}
+	/* ................................................................................................................. */
+	void removeTaxonNameIfPresent(StringBuffer sb) {
+		if (sb.indexOf("\t") >= 0) {
+			String result = sb.substring(0, sb.indexOf("\t"));
+			sb.delete(0, sb.indexOf("\t") + 1);
+		}
+	}
 
 	/* ................................................................................................................. */
 	boolean pasteMolecular(String s) {
@@ -3326,15 +3367,18 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (sbUsed)
 			lineCount++;
 		boolean taxNamesChanged = false;
+		boolean atLeastOneFullRowSelected = isAnyRowSelected();
 		for (int j = 0; j < numRowsTotal && lineCount < lines.length; j++) {
 			if (sbUsed)
 				sb = new StringBuffer(lines[lineCount]);
 			sbUsed = false;
-			if (rowNamesCopyPaste && (isRowNameSelected(j) || isRowSelected(j))) { // for name of taxon
+			if (atLeastOneFullRowSelected) {  // need to remove part before tab if a tab is there
+				removeTaxonNameIfPresent(sb);
+			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon
 				returnedRowNameText(j, molecToken(sb, true));
 				taxNamesChanged = true;
 				sbUsed = true;
-			}
+			}  
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
 					returnedMatrixText(i, j, molecToken(sb, false));
@@ -3519,7 +3563,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				if (adjustNewSequences) {
 					Bits newTaxa = fileInterpreter.getNewlyAddedTaxa(taxa);
 					if (data instanceof DNAData){
-						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, 0, false, false);
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, editorModule, taxa, newTaxa, referenceSequence, false, false); 
 					}
 					MolecularDataUtil.pairwiseAlignMatrix(editorModule, (MolecularData)data, referenceSequence, newTaxa,0, false);
 					data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED, null, null));
@@ -4394,6 +4438,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+
 		if ((window.getCurrentTool() == window.arrowTool) && (clickCount > 1) && window.ibeamTool != null) {
 			window.setCurrentTool(window.ibeamTool);
 			window.getPalette().setCurrentTool(window.ibeamTool);
@@ -4537,6 +4582,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				s += "; Sequence site " + count;
 			}
 		}
+		CharactersGroup g = data.getCurrentGroup(column);
+		if (g!= null)
+			s += " [group: " + g.getName() + "]";
 		return s;
 	}
 
@@ -4548,6 +4596,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void mouseInCell(int modifiers, int column, int subColumn, int row, int subRow, MesquiteTool tool) {
+				
 		if (column >= 0 && column <= data.getNumChars(false)) {
 			if (subRow >= 0) {
 				DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(subRow);
@@ -4602,11 +4651,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			return;
 		if (column >= 0) {
 			DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(subRow);
-			if (assistant != null)
+			if (assistant != null){
+				assistant.setColumnTouched(column);
 				if (((TableTool) window.getCurrentTool()).getSpecialToolForColumnNamesInfoStrips())
 					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, regionInCellH, regionInCellV, modifiers);
 				else
 					assistant.showPopUp(columnNames, x + 5, y + 5);
+			}
 		}
 	}
 
@@ -4767,7 +4818,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		CharacterState cs = data.makeCharacterState(); // so as to get the default state
 		UndoInstructions undoInstructions;
 		if (anyCellSelected())
-			undoInstructions = data.getUndoInstructionsAllData();
+			undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		else
 			undoInstructions = new UndoInstructions(UndoInstructions.ALLCHARACTERNAMES, data, data);
 
@@ -4842,6 +4893,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					window.ownerModule.discreetAlert("You cannot delete all of the taxa; the data will be cleared but the taxa will remain.");
 					return;
 				}
+				if (data.getTaxa().isEditInhibited()){
+					window.ownerModule.discreetAlert("You cannot delete taxa; the taxa block is locked.");
+					return;
+				}
 				if (!MesquiteThread.isScripting() && !AlertDialog.query(window, "Delete taxa?", "The data for the selected taxa have been cleared.  Do you also want to delete the selected taxa?", "Yes", "No"))
 					return;
 
@@ -4903,8 +4958,15 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				taxNC = true; // for pasting, to discover if taxon names were changed (see pasteIt)
 				window.setUndoer(window.setUndoInstructions(UndoInstructions.SINGLETAXONNAME, -1, row, new MesquiteString(oldTaxonName), new MesquiteString(s)));
 			}
-			else {
-				window.ownerModule.discreetAlert(warning);
+			else if (window.ownerModule != null){
+				boolean giveWarning = BasicDataWindowMaker.getWarnAgainAboutTaxonNameDuplication();
+				if (giveWarning)
+					if (MesquiteThread.isScripting())
+						window.ownerModule.logln(warning);
+					else {
+						giveWarning = AlertDialog.query(window, "Duplicate taxon name", warning, "OK", "Don't warn again");
+						BasicDataWindowMaker.setWarnAgainAboutTaxonNameDuplication(giveWarning);
+					}
 			}
 		}
 	}

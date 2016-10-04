@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.table.*;
 import mesquite.lib.characters.*;
@@ -31,14 +32,24 @@ public abstract class FileProcessor extends MesquiteModule  {
  		return "File Processor";
    	}
    	
+ 	public String getNameForProcessorList() {
+ 		return getName();
+   	}
    	/** if returns true, then requests to remain on even after alterFile is called.  Default is false*/
    	public boolean pleaseLeaveMeOn(){
    		return false;
    	}
 	/*.................................................................................................................*/
-   	/** Called to process file. */
-   	public  abstract boolean processFile(MesquiteFile file);
-   	
+   	/** Called to process file. Override this or the next*/
+   	public  boolean processFile(MesquiteFile file){
+   		return true;
+   	}
+  	
+	/*.................................................................................................................*/
+	/** Called to process file. */
+	public boolean processFile(MesquiteFile file, MesquiteString notice){
+		return processFile(file);
+	}
 
 }
 

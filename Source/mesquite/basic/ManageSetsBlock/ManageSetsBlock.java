@@ -53,12 +53,13 @@ public class ManageSetsBlock extends FileInit {
 		String s;
 		NexusBlock[] bs = getProject().getNexusBlocks(SETSBlock.class, file);//added Sept 2011
 		SETSBlock sB = null;
-		if (bs == null || bs.length == 0)
+		if (bs == null || bs.length == 0) {
 			sB = new SETSBlock(file, this); //TODO: should this store the sets??
+			numBlocks++;
+		}
 		else
 			sB= (SETSBlock)bs[0];
 		
-		numBlocks++;
 		int numChars=0;
 		MesquiteString comment = new MesquiteString();
 		while (!StringUtil.blank(s=block.getNextFileCommand(comment))) {

@@ -16,6 +16,7 @@ package mesquite.cont.AddNoise;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
@@ -23,7 +24,7 @@ import mesquite.lib.table.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class AddNoise extends ContDataAlterer {
+public class AddNoise extends ContDataAlterer implements AltererRandomizations {
 	CharacterState fillState;
 	Random rng;
 	double standardDeviation;

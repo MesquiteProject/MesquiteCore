@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharGroupListColor;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Shape;
 
@@ -103,7 +104,7 @@ public class CharGroupListColor extends CharGroupListAssistant  {
 		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
 			String newColorText = parser.getFirstToken(arguments);
 			if (StringUtil.blank(newColorText)){
-				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+				CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 				if (groups!=null  && table != null) {
 					Color oldColor = null;
 					boolean variable = false;
@@ -160,7 +161,7 @@ public class CharGroupListColor extends CharGroupListAssistant  {
 		}
 	}
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){
 		if (ic>=0 && doubleClick) {
 			specifyColor(ic);
 			return true;

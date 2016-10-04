@@ -135,7 +135,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		if (myFont!=null)
-			temp.addLine("setFont " + myFont);  //TODO: this causes problem since charts come before tree window
+			temp.addLine("setFont " + StringUtil.tokenize(myFont));  //TODO: this causes problem since charts come before tree window
 		if (myFontSize>0)
 			temp.addLine("setFontSize " + myFontSize);  //TODO: this causes problem since charts come before tree window
 		temp.addLine("setColor " + ParseUtil.tokenize(fontColorName.toString()));  //TODO: this causes problem since charts come before tree window
@@ -262,7 +262,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets the font used for the taxon names", "[name of font]", commandName, "setFont")) {
-			String t = parser.getFirstToken(arguments);
+			String t= parser.getFirstToken(arguments);
 			if (currentFont==null){
 				myFont = t;
 				fontName.setValue(t);
@@ -296,7 +296,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (fontToSet!= null) {
 						currentFont = fontToSet;
 						fontSizeName.setValue(Integer.toString(fontSize));
-						parametersChanged();
+						parametersChanged(new Notification(TreeDisplay.FONTSIZECHANGED));
 					}
 				}
 			}
@@ -915,6 +915,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				else
 					triangleBase = -1;
 				drawNamesOnTree(tree, drawnRoot, treeDisplay, part, triangleBase);
+		
 				g.setFont(tempFont);
 			}
 		}

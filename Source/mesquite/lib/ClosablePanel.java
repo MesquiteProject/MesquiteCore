@@ -30,6 +30,7 @@ public class ClosablePanel extends MousePanel {
 	protected Color bgBottomColor = ColorDistribution.veryVeryVeryLightGray;
 	protected Color barColor = ColorDistribution.veryLightGray;
 	protected Color textColor = Color.darkGray;
+	protected boolean hover = false;  //if true, then mouse is hovering over it
 	/*
 	 * 	Color bgTopColor = Color.lightGray;
 	Color bgBottomColor = ColorDistribution.veryVeryLightGray;
@@ -142,6 +143,10 @@ public class ClosablePanel extends MousePanel {
 		if (getTitle() != null){
 			g.drawString(getTitle(), tightness + triangleOffset, MINHEIGHT-4);
 		}
+		if (hover){
+			g.setColor(Color.lightGray);
+			g.drawRect(0, 4, getWidth()-2, MINHEIGHT-6);
+		}
 
 	}
 	/* to be used by subclasses to tell that panel touched */
@@ -179,6 +184,7 @@ public class ClosablePanel extends MousePanel {
 	Cursor dC = new Cursor(Cursor.DEFAULT_CURSOR);
 	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseEntered(modifiers, x, y, tool);
+		hover = true;
 		ClosablePanel prev = container.getPrecedingPanel(this);
 		if (prev != null && prev.userExpandable()){
 			if (y < 4){
@@ -191,6 +197,7 @@ public class ClosablePanel extends MousePanel {
 	}
 	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseMoved(modifiers, x, y, tool);
+		hover = true;
 		ClosablePanel prev = container.getPrecedingPanel(this);
 		if (prev != null && prev.userExpandable()){
 			if (y < 4){
@@ -203,6 +210,7 @@ public class ClosablePanel extends MousePanel {
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 		super.mouseExited(modifiers, x, y, tool);
+		hover = false;
 		ClosablePanel prev = container.getPrecedingPanel(this);
 		if (prev != null && prev.userExpandable()){
 

@@ -43,7 +43,7 @@ public class ConsensusTree extends TreeSource {
 		cC = makeCommand("setConsenser", this);
 		if (treeSource==null)
 			return sorry(getName() + " couldn't start because no source of trees obtained");
-		treeSource.setHiringCommand(tlsC);
+		//treeSource.setHiringCommand(tlsC);
 		treeSourceName = new MesquiteString();
 		if (numModulesAvailable(TreeSource.class)>1) {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Tree Source for Consensus", tlsC, TreeSource.class);
@@ -60,6 +60,10 @@ public class ConsensusTree extends TreeSource {
 			mss.setSelected(consenserName);
 		}
 		return true;
+	}
+	public void employeeQuit(MesquiteModule m){
+		if (m instanceof TreeSource)
+			iQuit();
 	}
 	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
@@ -78,7 +82,7 @@ public class ConsensusTree extends TreeSource {
 			if (temp!=null) {
 				treeSource = temp;
 				startTree = 0;
-				treeSource.setHiringCommand(tlsC);
+			//	treeSource.setHiringCommand(tlsC);
 				treeSourceName.setValue(treeSource.getName());
 				parametersChanged();
 			}
@@ -169,6 +173,10 @@ public class ConsensusTree extends TreeSource {
 	}
 	/*.................................................................................................................*/
 	public Tree getTree(Taxa taxa, int ic) {  
+		return getTree(taxa,ic,true);
+	}
+	/*.................................................................................................................*/
+	public Tree getTree(Taxa taxa, int ic, boolean verbose) {  
 		oldTaxa = taxa;
 
 		int numTrees = checkNumTrees(taxa);
@@ -180,7 +188,7 @@ public class ConsensusTree extends TreeSource {
 				iConsenser.reset(taxa);
 			boolean done = false;
 			int count = 0;
-			logln("Consensing trees ");
+			if (verbose) logln("Consensing trees ");
 			for (int i= startTree; i<numTrees && !done; i++) {
 				Tree t = trees.getTree(i);
 				if (t == null)
@@ -190,13 +198,16 @@ public class ConsensusTree extends TreeSource {
 					CommandRecord.tick("Processing tree " + (i+1));
 					startTree++;
 					count++;
-					if (startTree % 1000 == 0)
-						log(" " + startTree + " ");
-					else if (count % 100==0)
-						log(".");
+					if (verbose) {
+						if (startTree % 1000 == 0)
+							log(" " + startTree + " ");
+						else if (count % 100==0)
+							log(".");
+					}
 				}
 			}
-			logln("Trees consensed");
+			if (verbose)
+				logln("Trees consensed");
 			//			if (count>0)
 			tree = iConsenser.getConsensus();
 			if (tree instanceof MesquiteTree)
@@ -210,7 +221,8 @@ public class ConsensusTree extends TreeSource {
 			if (tree instanceof MesquiteTree)
 				((MesquiteTree)tree).setName(consenser.getName() + " from " + treeSource.getNameAndParameters());
 		}
-		logln("");
+		if (verbose)
+			logln("");
 
 		return tree;
 	}
@@ -256,7 +268,7 @@ public class ConsensusTree extends TreeSource {
 			}
 			else if (notification.getCode() != MesquiteListener.SELECTION_CHANGED){
 				startTree =  0;
-				parametersChanged();
+				parametersChanged(new Notification(notification.getCode()));
 			}
 		}
 	}

@@ -51,10 +51,10 @@ public class ClockWatcherThread extends Thread {
 				Thread.currentThread().interrupt();
 			}
 			MesquiteTrunk.checkForResetCheckMenuItems();
-			if (sleptLong || sleepCount % (sleep/catnap) == 0) {
+			if (sleptLong || sleepCount % (sleep/catnap) == 1) {
 				MesquiteThread.surveyDoomedIndicators();
-				//if (MesquiteTrunk.isMacOSXJaguar())
-				//	MesquiteThread.surveyNewWindows();
+				if (MesquiteTrunk.isMacOSX())
+					MesquiteThread.surveyNewWindows();
 			}
 			MesquiteThread[] mThreads = new MesquiteThread[MesquiteThread.threads.size()];
 			try {
@@ -63,8 +63,11 @@ public class ClockWatcherThread extends Thread {
 			}
 			catch (Exception e){
 			}
-
-
+/*if (KeyboardFocusManager.getCurrentKeyboardFocusManager() != null && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null){
+	System.out.println("" + KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getClass());
+System.out.println("xxx " + MesquiteWindow.windowOfItem(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()));
+}
+*/
 			sleepTime = sleep;
 			sleepCount++;
 			for (int i=0; i<mThreads.length && mThreads[i]!=null; i++){  //go through current threads
@@ -94,7 +97,9 @@ public class ClockWatcherThread extends Thread {
 							try {
 								if (thread.getProgressIndicator() == null && thread.getSpontaneousIndicator()) {
 									ProgressIndicator pi;
+							
 									thread.setProgressIndicator(pi = new ProgressIndicator(null, "Command is executing", "A command is executing.", 0, "Emergency Cancel")); //"Cancel Command");
+									pi.setSecondaryMessage("Thread " + thread.getClass().getName() + " id " + thread.getID());
 									pi.setIsFromWatcher(true);
 									//pi.setSize(400, 220);
 									pi.setButtonMode(ProgressIndicator.OFFER_KILL_THREAD);

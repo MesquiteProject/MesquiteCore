@@ -22,13 +22,17 @@ public class Debugg {
 	public static int count = 0;
 	public static void print(String s) {
 		System.out.print(s);
+		MesquiteThread.suspendThreadLogging();
 		if (MesquiteTrunk.mesquiteTrunk != null)
 		MesquiteTrunk.mesquiteTrunk.log(s);
+		MesquiteThread.resumeThreadLogging();
 	}
 	public static void println(String s) {
 		System.out.println(s);
+		MesquiteThread.suspendThreadLogging();
 		if (MesquiteTrunk.mesquiteTrunk != null)
 			MesquiteTrunk.mesquiteTrunk.logln(s);
+		MesquiteThread.resumeThreadLogging();
 	}
 	public static void printLogln(String s) {
 		MesquiteMessage.warnUser(s);

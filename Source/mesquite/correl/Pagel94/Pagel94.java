@@ -101,6 +101,7 @@ public class Pagel94 extends Pagel94Calculator {
 				return false;
 
 		}
+		postBean("startJob", false);
 		if (currentConstrainedModel == INDEPENDENT4)
 			modelConstrained = new PagelMatrixModel("",CategoricalState.class,PagelMatrixModel.MODEL4PARAM);
 		else {

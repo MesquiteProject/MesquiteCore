@@ -393,7 +393,7 @@ public class ManageTaxa extends TaxaManager {
 			for (int i=0; i<project.getNumberTaxas(); i++){
 				Taxa taxa = getProject().getTaxa(i);
 				String taxonReference = "";
-				if (taxa.getName() != null && (project.getNumberTaxas()>1 || !NexusBlock.suppressTITLE))
+				if (taxa.getName() != null && (project.getNumberTaxas()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa)))
 					taxonReference = " TAXA = "+ StringUtil.tokenize(taxa.getName());
 				if (taxa.getFile() == file) {
 
@@ -1236,15 +1236,14 @@ public class ManageTaxa extends TaxaManager {
 		String end = StringUtil.lineEnding();
 		block.append(end);
 		CommandRecord.tick("Composing taxa block");
-		block.append("BEGIN TAXA;");
+		block.append("BEGIN TAXA");
+		if (taxa.getAnnotation()!=null) 
+			block.append("[!" + StringUtil.tokenize(taxa.getAnnotation()) + "]");
+		block.append(';');
 		block.append(end);
 
-		if (!file.useSimplifiedNexus){
-			if (getProject().getNumberTaxas()>1 || !NexusBlock.suppressTITLE)
-				block.append("\tTITLE " + StringUtil.tokenize(taxa.getName()) + ";" + end);
-			if (taxa.getAnnotation()!=null) 
-				block.append("[!" + taxa.getAnnotation() + "]" + StringUtil.lineEnding());
-		}
+		if (getProject().getNumberTaxas()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa))
+			block.append("\tTITLE " + StringUtil.tokenize(taxa.getName()) + ";" + end);
 		int numTaxaWrite = taxa.getNumTaxa();
 		if (file.writeOnlySelectedTaxa)
 			numTaxaWrite = taxa.numberSelected();
@@ -1268,7 +1267,7 @@ public class ManageTaxa extends TaxaManager {
 
 		CommandRecord.tick("Writing IDs ");
 		int last = lastID(taxa);
-		if (!file.useSimplifiedNexus && last>-1){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && last>-1){
 			block.append("\tIDS ");
 			for (int it=0; it<= last; it++) {
 
@@ -1284,7 +1283,7 @@ public class ManageTaxa extends TaxaManager {
 			block.append(";" + end);
 		}
 		CommandRecord.tick("Taxa block composed ");
-		if (!file.useSimplifiedNexus && !StringUtil.blank(taxa.getUniqueID()))
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !StringUtil.blank(taxa.getUniqueID()))
 			block.append("\tBLOCKID " + taxa.getUniqueID() + ";" + end);
 		if (tB != null) block.append( tB.getUnrecognizedCommands()+ end);
 		block.append("END;" + end+ end);

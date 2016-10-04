@@ -113,13 +113,13 @@ public class IOUtil {
 					}
 				}
 			} 
-		} else if (writeCodPosPartition && partByCodPos) {//TODO: never accessed because in the only call of this method, partByCodPos is false.
+		} else if (writeCodPosPartition && partByCodPos) {//TODO: never accessed by Zephyr because in the only Zephyr call of this method, partByCodPos is false.
 			//codon positions if nucleotide
 			int numberCharSets = 0;
 			boolean[] include = data.getBooleanArrayOfIncluded();
 			CodonPositionsSet codSet = (CodonPositionsSet)data.getCurrentSpecsSet(CodonPositionsSet.class);
 			for (int iw = 0; iw<4; iw++){
-				String locs = codSet.getListOfMatches(iw,0, include);
+				String locs = codSet.getListOfMatches(iw,0, include, true);
 				if (!StringUtil.blank(locs)) {
 					String charSetName = "";
 					if (iw==0) 
@@ -159,7 +159,7 @@ public class IOUtil {
 			MesquiteTree t = new MesquiteTree(taxa);
 			t.setPermitTaxaBlockEnlargement(permitTaxaBlockEnlarge);
 			//t.setTreeVector(treeVector);
-			t.readTree(line,namer);
+			t.readTree(line,namer, null, "():;,[]\'");  //tree reading adjusted to use Newick punctuation rather than NEXUS
 			/*MesquiteInteger pos = new MesquiteInteger(0);
 			treeParser.setString(line);
 			readClade(t, t.getRoot());

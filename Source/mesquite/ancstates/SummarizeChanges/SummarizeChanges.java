@@ -38,7 +38,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CharHistorySource.class, getName() + " needs a source of character histories.",
-		"The source of a traced history can be chosen using the Character History Source submenu");
+				"The source of a traced history can be chosen using the Character History Source submenu");
 	}
 
 	static int maxNumMappings = 50;
@@ -167,6 +167,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 	}
 	/**/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		if (whichWindow != textWindow)
 			return;
 		whichWindow.hide();
@@ -587,7 +589,13 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 					historyTask.prepareForMappings(true);
 					historyTask.prepareHistory(tempTree, currentChar);
 
-					tempCharStates = (CategoricalHistory)historyTask.getMapping(0, tempCharStates, null);
+					CharacterHistory ch = historyTask.getMapping(0, tempCharStates, null);
+					if (!(ch instanceof CategoricalHistory)){
+						discreetAlert("To summarize changes, they must be of categorical characters.  Continuous and meristic characters cannot be summarized.  We don't know how you managed to get to this point, but the calculation will fail.");
+						resultString.setValue("Calculation not done; character type incompatible");
+						return;
+					}
+					tempCharStates = (CategoricalHistory)ch;
 					if (tempCharStates!=null) {
 						oneValidMapping = true;
 						if (stateChanges==null) {
@@ -647,7 +655,7 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 				leadText = "\nSummarizing changes over trees in character " + (currentChar+1);
 				if (branchesMode){
 					leadText += " in the clade whose ancestor is selected in the tree in Tree Window.  Trees are considered only if they also have this " +
-					"clade, and changes are counted only within the clade.";
+							"clade, and changes are counted only within the clade.";
 				}
 				leadText += "\nSource of Trees: " + treeSourceTask.getName() + "\n";
 				leadText += "Further details about Source of Trees: " + treeSourceTask.getParameters() + "\n";

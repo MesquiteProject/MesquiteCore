@@ -20,7 +20,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class GapsToMissing extends CategDataAlterer {
+public class GapsToMissing extends CategDataAlterer implements AltererConvertGapMissPolyUncert {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/
@@ -57,6 +57,11 @@ public class GapsToMissing extends CategDataAlterer {
 	public String getName() {
 		return "Gaps to Missing";
 	}
+	/*.................................................................................................................*/
+	public boolean loadModule(){
+		return false;
+	}
+
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.

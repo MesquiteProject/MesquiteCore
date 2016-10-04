@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.table.AutoScrollThread;
 
@@ -39,6 +40,7 @@ menu is the Font selection */
 public class MousePanel extends Panel implements Commandable, FileDirtier, MouseMotionListener, MouseListener, DropTargetListener {
 	MesquiteCommand downCommand, upCommand, dragCommand, movedCommand, clickedCommand, enteredCommand, exitedCommand;
 	MesquiteCommand filesDroppedCommand, fileStringDroppedCommand;
+	MesquiteCommand showWindowCommand;
 	MesquiteDropManager dropManager;
 	long moveFrequency, moveCount;
 	boolean suppressEvents = false; //WWW
@@ -53,7 +55,10 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 	public static final int AUTOSCROLLBOTH = 1;
 	public static final int AUTOSCROLLHORIZONTAL = 2;
 	public static final int AUTOSCROLLVERTICAL = 3;
-
+	private DragSource dragSource;
+	private DragGestureListener dgListener; 
+	private DragSourceListener dsListener;
+	
 	int autoscrollDirection = AUTOSCROLLBOTH;
 
 	static long exited, clicked, entered,pressed, released, dragged, moved;
@@ -62,6 +67,7 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 	}
 	public MousePanel() {
 		super();
+
 		try {
 			setFocusTraversalKeysEnabled(false);
 		}
@@ -102,6 +108,10 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 		disabledCursor = setupDisabledCursor("disabled.gif", "disabled", 4,2);
 		if (disabledCursor ==null)
 			disabledCursor = Cursor.getDefaultCursor();
+		
+		this.dragSource = DragSource.getDefaultDragSource();
+//		this.dgListener = new DragGestureListener();
+//		this.dsListener = new DragSourceAdapter();
 	}
 	public void dispose(){
 		if (downCommand!=null)
@@ -319,8 +329,11 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteException.lastLocation = 101;
 			requestFocus();
-			mouseDown(modifiers, clickCount, when, x, y, getT());
-
+			try{
+				mouseDown(modifiers, clickCount, when, x, y, getT());
+			}
+			catch (Exception e){
+			}
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse up", "[modifiers as integer][x][y]", commandName, "mouseUp")) {
@@ -328,7 +341,11 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			int x = MesquiteInteger.fromString(arguments, pos);
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteException.lastLocation = 102;
-			mouseUp(modifiers, x, y, getT());
+			try{
+				mouseUp(modifiers, x, y, getT());
+			}
+			catch (Exception e){
+			}
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse drag", "[modifiers as integer][x][y]", commandName, "mouseDrag")) {
@@ -336,7 +353,11 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			int x = MesquiteInteger.fromString(arguments, pos);
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteException.lastLocation = 103;
-			mouseDrag(modifiers, x, y, getT());
+			try{
+				mouseDrag(modifiers, x, y, getT());
+			}
+			catch (Exception e){
+			}
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse moved", "[modifiers as integer][x][y]", commandName, "mouseMoved")) {
@@ -347,7 +368,11 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			MesquiteException.lastLocation = 104;
 			if (t!=null)
 				t.cursorInPanel(modifiers, x, y, this, true);
-			mouseMoved(modifiers, x, y, getT());
+			try{
+				mouseMoved(modifiers, x, y, getT());
+			}
+			catch (Exception e){
+			}
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse entered", "[modifiers as integer][x][y]", commandName, "mouseEntered")) {
@@ -358,7 +383,11 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			MesquiteTool t = getT();
 			if (t!=null)
 				t.cursorInPanel(modifiers, x, y, this, true);
-			mouseEntered(modifiers, x, y, getT());
+			try{
+				mouseEntered(modifiers, x, y, getT());
+			}
+			catch (Exception e){
+			}
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse exited", "[modifiers as integer][x][y]", commandName, "mouseExited")) {
@@ -369,7 +398,11 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			MesquiteTool t = getT();
 			if (t!=null)
 				t.cursorInPanel(modifiers, x, y, this, false);
-			mouseExited(modifiers, x, y, getT());
+			try{
+				mouseExited(modifiers, x, y, getT());
+			}
+			catch (Exception e){
+			}
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse clicked", "[modifiers as integer][x][y]", commandName, "mouseClicked")) {
@@ -377,7 +410,11 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			int x = MesquiteInteger.fromString(arguments, pos);
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteException.lastLocation = 106;
-			mouseClicked(modifiers, x, y, getT());
+			try{
+				mouseClicked(modifiers, x, y, getT());
+			}
+			catch (Exception e){
+			}
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "File String Dropped into Panel", "[ObjectContainer ID]", commandName, "fileStringDropped")) {
@@ -481,6 +518,7 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 		downCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " + e.getClickCount() + " " + e.getWhen() + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}
+
 	/*...............................................................................................................*/
 	public void mouseReleased(MouseEvent e)  {
 		if (MesquiteDialog.currentWizard != null){
@@ -491,11 +529,13 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 			return;
 		currentX = e.getX();
 		currentY = e.getY();
-
-		upCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " "  +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteWindow w = MesquiteWindow.windowOfItem(this);
-		if (w != null && w.setAsFrontOnClickAnyContent() && w.getParentFrame().frontWindow != w)
-			w.getParentFrame().setAsFrontWindow(w);
+		if (w != null && w.setAsFrontOnClickAnyContent() && w.getParentFrame().frontWindow != w){
+			if (showWindowCommand == null)
+				showWindowCommand = new MesquiteCommand("setAsFront", w);
+			showWindowCommand.doItMainThread("", null, false, false);
+		}
+		upCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " "  +  e.getX() + " " + e.getY(), null, false, false);
 		currentX = MesquiteInteger.unassigned;
 		currentY = MesquiteInteger.unassigned;
 	}

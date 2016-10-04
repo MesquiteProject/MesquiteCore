@@ -21,17 +21,14 @@ public class MesquiteExternalProcess  {
 	OutputStream inputToProcess;
 	OutputStreamWriter inputStreamsWriter;
 	BufferedWriter inputBufferedWriter;
-	StreamGobbler errorGobbler;
-	StreamGobbler outputGobbler;
+	StandardOutputsStreamReader errorReader;
+	StandardOutputsStreamReader outputReader;
+	FileWriter outputWriter;
+	FileWriter errorWriter;
 	Process proc;
 
 	public MesquiteExternalProcess(Process proc) {
 		this.proc = proc;
-		errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
-		outputGobbler = new StreamGobbler(proc.getInputStream(), "OUTPUT");
-		errorGobbler.start();
-		outputGobbler.start();
-
 	}
 	public MesquiteExternalProcess() {
 	}
@@ -71,8 +68,50 @@ public class MesquiteExternalProcess  {
 		}
 		return false;
 	}
+	
+	public void startStandardOutputsReaders(File outputFile, File errorFile) {
+		try { 
+			errorWriter = new FileWriter(errorFile);
+			outputWriter = new FileWriter(outputFile);
+		} 
+		catch (FileNotFoundException e) {
+			MesquiteMessage.warnProgrammer("Output file not found");
+		}
+		catch (IOException e) {
+			MesquiteMessage.warnProgrammer("IOException");
+		}
+		errorReader = new StandardOutputsStreamReader(proc.getErrorStream(), errorWriter);
+		outputReader = new StandardOutputsStreamReader(proc.getInputStream(),  outputWriter);
+		errorReader.start();
+		outputReader.start();
 
-	/*.................................................................................................................*/
+	}
+	/*.................................................................................................................*
+
+	public void flushStandardOutputsReaders() {
+		if (fos!=null) {
+			try { 
+				fos.flush();
+			} 
+			catch (IOException e) {
+				MesquiteMessage.warnProgrammer("IOException on standard output file.");
+			}
+		}
+	}
+	
+	public void endStandardOutputsReaders() {
+		if (fos!=null) {
+			try { 
+				fos.close();      
+			} 
+			catch (IOException e) {
+				MesquiteMessage.warnProgrammer("IOException on standard output file.");
+			}
+		}
+	}
+
+
+	/*.................................................................................................................*
 	public void sendStringToProcess(String s) {
 		if (proc==null)
 			return;
@@ -97,4 +136,45 @@ public class MesquiteExternalProcess  {
 		}
 
 	}
+	/*.................................................................................................................*/
 }
+
+
+class StandardOutputsStreamReader extends Thread {
+	InputStream is;
+	FileWriter os;
+
+
+	StandardOutputsStreamReader(InputStream is, FileWriter os) {
+		this.is = is;
+		this.os = os;
+	}
+	StandardOutputsStreamReader(InputStream is) {
+		this(is, null);
+	}
+	public void run() {
+		try {
+		/*	PrintWriter pw = null;
+			if (os != null)
+				pw = new PrintWriter(os);
+*/
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			String line=null;
+			while ( (line = br.readLine()) != null) {
+				if (os != null) {
+					os.write(line+StringUtil.lineEnding());
+				}
+			}
+			if (os != null) {
+				os.flush();
+				os.close();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();  
+		}
+	}
+
+
+}
+

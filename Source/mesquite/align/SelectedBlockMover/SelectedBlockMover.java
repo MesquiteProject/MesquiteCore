@@ -78,12 +78,20 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		currentBlock = new CellBlock((CategoricalData)data, table);
 		currentBlock.setRight(true);
 		currentBlock.setLeft(true);
+		data.addListener(this);
+		inhibitionChanged();
 	}
 	/*.................................................................................................................*/
 	public void addExtraSnapshotItems(Snapshot temp) {
 		if (selectWholeSequences.getValue()!=defaultSelectWholeSequences)
 			temp.addLine("toggleWholeSequences " + selectWholeSequences.toOffOnString());
 	}
+	/* ................................................................................................................. */
+	public void inhibitionChanged(){
+		if (moveTool!=null && data!=null)
+			moveTool.setEnabled(!data.isEditInhibited());
+	}
+
 	/*.................................................................................................................*/
 	public void setOptionTools(){
 	}

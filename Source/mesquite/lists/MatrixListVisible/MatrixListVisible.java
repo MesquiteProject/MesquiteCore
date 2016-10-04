@@ -18,6 +18,7 @@ import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -40,8 +41,6 @@ public class MatrixListVisible extends DataSetsListAssistant implements Mesquite
 	public int getVersionOfFirstRelease(){
 		return 270;  
 	}
-	/*.................................................................................................................*/
-	ListableVector datas=null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Toggle Visibility", makeCommand("toggleVisibility", this));
@@ -114,6 +113,9 @@ public class MatrixListVisible extends DataSetsListAssistant implements Mesquite
 			return "";
 		}
 	}
+	
+
+
 	public String getWidestString(){
 		
 		return " 888888";

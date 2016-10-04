@@ -64,7 +64,14 @@ public class FileBlock {
 		withinCommandComments = new StringBuffer(10);
 		reset();
 		
+	
 		String command = file.getNextCommand(status, withinCommandComments);
+		String wcc = withinCommandComments.toString();
+		if (!StringUtil.blank(wcc)){
+			wcc = wcc.substring(1, wcc.length()-2);
+			wcc = new Parser().getFirstToken(wcc);
+			blockComments.append(wcc);
+		}
 		if (StringUtil.blank(command))
 			empty = true;
 		if (betweenCommandComments.length()>0 && fileComments!=null) {
@@ -108,7 +115,8 @@ public class FileBlock {
 			firstCommand = null;
 			return q;
 		}
-		
+		withinCommandComments.setLength(0);
+		betweenCommandComments.setLength(0);
 		//##########################
 		String command = file.getNextCommand(status, withinCommandComments, true);
 		if (betweenCommandComments.length()>0 && fileComments!=null) {

@@ -18,7 +18,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
 
-public class TrimTermPartTriplets extends DNADataAlterer {
+public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNACell {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -39,7 +39,7 @@ public class TrimTermPartTriplets extends DNADataAlterer {
 		if (!data.someCoding()) 
 			return false;
 
-		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+   		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean changed = false;
 		
 		for (int it = 0; it<data.getNumTaxa(); it++)
@@ -97,13 +97,18 @@ public class TrimTermPartTriplets extends DNADataAlterer {
 		return false;
 	}
 	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+   	public boolean requestPrimaryChoice(){
+   		return false;  
+   	}
+	/*.................................................................................................................*/
 	public String getName() {
-		return "Trim Terminal Incomplete Codons";
+		return "Remove Terminal Incomplete Codons";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Trims any incomplete codons from the start and end of each sequence." ;
+		return "Removes any incomplete codons from the start and end of each sequence." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

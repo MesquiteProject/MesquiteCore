@@ -18,6 +18,7 @@ import mesquite.lists.lib.*;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -50,7 +51,9 @@ public class DatasetList extends ListLVModule {
 		return true;
 	}
 	public void showListWindow(Object obj){
-		setModuleWindow(new ListableVectorWindow(this));
+		CharMatricesListWindow charMatricesListWindow = new CharMatricesListWindow(this);
+		charMatricesListWindow.setDatas(datas);
+		setModuleWindow(charMatricesListWindow); 
 		((ListableVectorWindow)getModuleWindow()).setObject(datas);
 		datas.addListener(this);
 		makeMenu("List");
@@ -70,6 +73,11 @@ public class DatasetList extends ListLVModule {
 				assistant.setUseMenubar(false);
 			}
 			assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, "#DatasetsListClass");
+			if (assistant!= null){
+				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
+				assistant.setUseMenubar(false);
+			}
+			assistant = (DataSetsListAssistant)hireNamedEmployee(DataSetsListAssistant.class, "#MatrixListVisible");
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
@@ -105,10 +113,17 @@ public class DatasetList extends ListLVModule {
 	public boolean rowsDeletable(){
 		return true;
 	}
+	public void aboutToDeleteRow(int row){  //called just before superclass deletes rows, in case specific module needs to prepare for deletion
+		if (row<0 || row>= getNumberOfRows())
+			return;
+		CharacterData rdata = getProject().getCharacterMatrixDoomedOrNot(row);
+		if (rdata != null)
+			rdata.doom();
+	}
 	public boolean deleteRow(int row, boolean notify){
 		if (row<0 || row>= getNumberOfRows())
 			return false;
-		CharacterData data = getProject().getCharacterMatrix(row);
+		CharacterData data = getProject().getCharacterMatrixDoomedOrNot(row);
 		getProject().removeFileElement(data);//must remove first, before disposing
 		data.dispose();
 		return true;
@@ -168,6 +183,8 @@ public class DatasetList extends ListLVModule {
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 

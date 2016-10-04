@@ -15,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.duties.*;
 
 /** The main thread for executing commands */
@@ -115,7 +116,16 @@ public class MainThread extends MesquiteThread {
 							currentlyExecuting = pc;
 							setCurrent(pc.id);
 							patience = 5;
+							boolean loggerSet = false;
+							if (c.getSupplementalLogger() != null && logger == null){
+								MesquiteThread.setLoggerCurrentThread(c.getSupplementalLogger());
+								loggerSet = true;
+							}
+								
 							pc.go();
+							if (loggerSet){
+								MesquiteThread.setLoggerCurrentThread(null);
+							}
 							setCurrent(-1);
 							currentlyExecuting = null;
 						}

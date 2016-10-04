@@ -16,6 +16,7 @@ package mesquite.charMatrices.BasicDataWindowCoord;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -29,12 +30,15 @@ public class BasicDataWindowCoord extends FileInit {
 		e.setAsEntryPoint("showDataWindow " + 0);
 	}
 	MesquiteSubmenuSpec elementsSubmenu, newViewSubmenu;
+	MesquiteMenuItemSpec cadw = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		elementsSubmenu = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Character Matrix Editor", makeCommand("showDataWindow",  this));
 		elementsSubmenu.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		newViewSubmenu = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Extra Matrix Editor", makeCommand("showExtraDataWindow",  this));
 		newViewSubmenu.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		cadw = getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Close All Character Matrix Editors", makeCommand("closeAllMatrixWindows",  this));
+		cadw.setEnabled(false);
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -68,6 +72,13 @@ public class BasicDataWindowCoord extends FileInit {
 			}
 		}
 		return null;
+	}
+	/* ................................................................................................................. */
+	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
+		if (employee instanceof DataWindowMaker){
+			if (cadw != null) cadw.setEnabled(getNumMatrixWindows()>0);
+			resetAllMenuBars();
+		}
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
@@ -116,7 +127,8 @@ public class BasicDataWindowCoord extends FileInit {
 			}
 		}
 		else { 
-			data =  getProject().getCharacterMatrixByReference(file, parser.getFirstToken(arguments), true);
+			// in general, will only show user visible matrices.  However, if arguments starts with #, then assume a direct, non-numbered request that will be obeyed even if not user visible
+			data =  getProject().getCharacterMatrixByReference(file, parser.getFirstToken(arguments), !arguments.startsWith("#"));
 		}
 		return data;
 	}
@@ -146,8 +158,20 @@ public class BasicDataWindowCoord extends FileInit {
 		if (employee instanceof DataWindowMaker) {  // character source quit and none rehired automatically
 			DataWindowMaker dwm = (DataWindowMaker)employee;
 			unlinkEditors(dwm.getCharacterData(), dwm);
+			if (cadw != null) cadw.setEnabled(getNumMatrixWindows()>0);
+			resetAllMenuBars();
 
 		}
+	}
+	
+	int getNumMatrixWindows(){
+		int count = 0;
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof DataWindowMaker && ((DataWindowMaker) e).getModuleWindow().isVisible()) 
+				count++;
+		}
+		return count;
 	}
 	void linkEditors(CharacterData data, DataWindowMaker newDWM){
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
@@ -184,8 +208,11 @@ public class BasicDataWindowCoord extends FileInit {
 				return null;
 			/**/
 			DataWindowMaker dwm = findEditor(data);
-			if (dwm!=null)
+			if (dwm!=null){
+				if (cadw != null) cadw.setEnabled(true);
+				resetAllMenuBars();
 				return dwm;
+			}
 
 			//if no data window module active, hire one
 			DataWindowMaker mb = (DataWindowMaker)hireEmployee(DataWindowMaker.class, null);
@@ -193,6 +220,8 @@ public class BasicDataWindowCoord extends FileInit {
 				mb.setAsExtra(false);
 				mb.doCommand("makeWindow", getProject().getCharMatrixReferenceInternal(data), checker);
 			}
+			if (cadw != null) cadw.setEnabled(true);
+			resetAllMenuBars();
 		return mb;
 		}
 		else if (checker.compare(this.getClass(), "Shows an extra data editor window.", "[number of data matrix to be shown] [name of data matrix to be shown]", commandName, "showExtraDataWindow")) {  //IF WINDOW ALREADY SHOWN, JUST BRING IT TO FRONT
@@ -208,7 +237,21 @@ public class BasicDataWindowCoord extends FileInit {
 				mb.doCommand("makeWindow", getProject().getCharMatrixReferenceInternal(data), checker);
 				linkEditors(data, mb);
 			}
+			if (cadw != null) cadw.setEnabled(true);
+			resetAllMenuBars();
 			return mb;
+		}
+		else if (checker.compare(this.getClass(), "Closes all character matrix editor windows", null, commandName, "closeAllMatrixWindows")) {
+			for (int i = getNumberOfEmployees()-1; i>=0; i--) {
+				Object e=getEmployeeVector().elementAt(i);
+				if (e instanceof DataWindowMaker) {
+					DataWindowMaker dwm = (DataWindowMaker)e;
+					dwm.windowGoAway(dwm.getModuleWindow());
+				}
+			}
+			if (cadw != null) cadw.setEnabled(false);
+			resetAllMenuBars();
+			return null;
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

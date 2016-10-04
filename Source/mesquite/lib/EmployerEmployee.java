@@ -535,6 +535,25 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	}
 
 	/* ................................................................................................................. */
+	/** Closes all windows. */
+	public boolean closeEmployeeWindows(MesquiteModule butNotThis) {
+		boolean closed = false;
+		Enumeration enumeration = employees.elements();
+		while (enumeration.hasMoreElements()) {
+			MesquiteModule mb = (MesquiteModule) enumeration.nextElement();
+			closed = mb.closeEmployeeWindows(butNotThis) || closed;
+		}
+		if (this != butNotThis){
+			MesquiteWindow win = getModuleWindow();
+			if (win != null && win.isVisible()){
+				module.windowGoAway(win);
+				return true;
+			}
+		}
+		return closed;
+	}
+
+	/* ................................................................................................................. */
 	/** Finds the first more senior employer in the heirarchy that belongs to a particular subclass. */
 	public MesquiteModule findEmployerWithDuty(Class dutyClass) {
 		if (employer == null)
@@ -1278,7 +1297,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		return findAndHire(dutyClass, null, explanation);
 	}
 	/* ................................................................................................................. */
-	private Listable[] prioritize(Listable[] moduleInfos, Class dutyClass){
+	protected Listable[] prioritize(Listable[] moduleInfos, Class dutyClass){
 		if (moduleInfos == null)
 			return null;
 		boolean secondaryExist = false;
@@ -1293,6 +1312,27 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		for (int i= 0; i< moduleInfos.length; i++)
 			if (!((Prioritizable)moduleInfos[i]).isFirstPriority(dutyClass))
 				p[count++] = moduleInfos[i];
+		return p;
+	}
+	/* ................................................................................................................. */
+	protected MesquiteModule[] prioritize(MesquiteModule[] modules, Class dutyClass){
+		if (modules == null)
+			return null;
+		boolean secondaryExist = false;
+		MesquiteModule[] p = new MesquiteModule[modules.length];
+		int count = 0;
+		for (int i= 0; i< modules.length; i++){
+			MesquiteModuleInfo mmi = modules[i].getModuleInfo();
+			if (((Prioritizable)mmi).isFirstPriority(dutyClass))
+				p[count++] = modules[i];
+			else
+				secondaryExist = true;
+		}
+		for (int i= 0; i< modules.length; i++){
+			MesquiteModuleInfo mmi = modules[i].getModuleInfo();
+			if (!((Prioritizable)mmi).isFirstPriority(dutyClass))
+				p[count++] = modules[i];
+		}
 		return p;
 	}
 
@@ -1741,9 +1781,30 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	/* ................................................................................................................. */
 	/** Returns the command for hiring a replacement to this module */
 	public final MesquiteCommand getHiringCommand() {
+		if (doesAnEmployerSuppressAutoRehiring())
+			return null;
 		return hiringCommand;
 	}
 
+	/* ................................................................................................................. */
+	/**
+	 * Before rehiring done, look into employer chain to seed if any request no rehiring
+	 */
+	boolean suppressAutoRehireInEmployeeTree = false;
+	public final void setSuppressEmployeeAutoRehiring(boolean s) {
+		suppressAutoRehireInEmployeeTree = s;
+	}
+	public final boolean getSuppressEmployeeAutoRehiring() {
+		return suppressAutoRehireInEmployeeTree;
+	}
+	public final boolean doesAnEmployerSuppressAutoRehiring() {
+		if (employer != null){
+			if (employer.suppressAutoRehireInEmployeeTree)
+				return true;
+			return employer.doesAnEmployerSuppressAutoRehiring();
+		}
+		return false;
+	}
 	/* ................................................................................................................. */
 	/**
 	 * returns whether this module has an employee hired for the given dutyClass and having the given MesquiteModuleInfo. For use by hireAllOtherEmployees
@@ -1767,6 +1828,55 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		return null;
 	}
 
+	/* ................................................................................................................. */
+	/** Clones employee if possible */
+	public  Object cloneEmployee(MesquiteModule employee) {
+		if (employee == null)
+			return null;
+		String cloneCommand = getClonableEmployeeCommand(employee);
+		if (!StringUtil.blank(cloneCommand)){
+			cloneCommand += "\ntell It;\n";
+			cloneCommand += Snapshot.getSnapshotCommands(employee, null, "");
+			cloneCommand += "\nendTell;";
+			Puppeteer p = new Puppeteer(module);
+			MesquiteInteger pos = new MesquiteInteger(0);
+			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+			CommandRecord record = new CommandRecord(true);
+			MesquiteThread.setCurrentCommandRecord(record);
+			MesquiteModule.incrementMenuResetSuppression();	
+			Object obj = p.sendCommands(this, cloneCommand, pos, "", false, null,CommandChecker.defaultChecker);
+			MesquiteModule.decrementMenuResetSuppression();	
+			MesquiteModule cloned = null;
+			if (obj != null){
+				MesquiteWindow w = null;
+				if (obj instanceof MesquiteWindow){
+					w = (MesquiteWindow)obj;
+					cloned = w.getOwnerModule();
+				}
+				else if (obj instanceof MesquiteModule){
+					w = ((MesquiteModule)obj).getModuleWindow(); // Not all employees may have a window, so this may return null
+					cloned = ((MesquiteModule)obj);
+				}
+				if (w!=null) {
+					w.doCommand("setLocation", Integer.toString(w.getLocation().x + 20) + " " + (w.getLocation().y + 20),CommandChecker.defaultChecker);
+					w.getParentFrame().showPage(Integer.toString(w.getID())); // Only do this if w != null
+				}
+
+			}
+			MesquiteThread.setCurrentCommandRecord(previous);
+			return cloned;
+		}
+		return null;
+	}
+	
+	/* ................................................................................................................. */
+	/** Clones employee if possible */
+	public synchronized Object synchronizedCloneEmployee(MesquiteModule employee) {
+		synchronized(this) {
+			return cloneEmployee(employee);
+		}
+	}
+	
 	private String whichModInfo(MesquiteModuleInfo mbi) {
 		if (mbi == null)
 			return "NULL";

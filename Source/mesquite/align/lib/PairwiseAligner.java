@@ -185,7 +185,6 @@ public class PairwiseAligner  {
         int gEt = gapExtendTerminal;
         if (! this.allowNewInternalGaps)  // make internal gaps impossibly expensive .. but not high enough to cause wrap around of the capacity of an int
             gE = Integer.MAX_VALUE / 10 ;
-
         
 		totalGapChars = preProcess(A_withGaps, B_withGaps);
 		
@@ -488,6 +487,46 @@ public class PairwiseAligner  {
 		for (int ic = firstSite; ic<=lastSite; ic++){
 			extracted1[ic-firstSite] = data.getState(ic, taxon1);
 			extracted2[ic-firstSite] = data.getState(ic, taxon2);
+		}
+		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
+		
+		long[][] aligned =  alignSequences(extracted1, extracted2, returnAlignment, score);
+	
+		return aligned;
+	}
+
+	/** This method returns a 2d-long array ([site][taxon]) representing the alignment of the sequences identified by the "taxon" and "site" arguments.
+	 * If object has been told to retain gaps, gaps in taxon1 will remain intact (new ones  may be added)*/
+	public long[][] alignSequences(MCategoricalDistribution data, int taxon1,  int firstSite1, int lastSite1, int taxon2, int firstSite2, int lastSite2, boolean returnAlignment, MesquiteNumber score) {
+		if (lastSite1 - firstSite1+1 <0 || !MesquiteInteger.isCombinable(firstSite1) || !MesquiteInteger.isCombinable(lastSite1)){
+			firstSite1 = 0;
+			lastSite1 = data.getNumChars()-1;
+		}
+		if (firstSite1<0)
+			firstSite1=0;
+		if (lastSite1>data.getNumChars()-1 || lastSite1<0)
+			lastSite1 = data.getNumChars()-1;
+		int numChars1 = lastSite1 - firstSite1+1;
+
+		if (lastSite2 - firstSite2+1 <0 || !MesquiteInteger.isCombinable(firstSite2) || !MesquiteInteger.isCombinable(lastSite2)){
+			firstSite2= 0;
+			lastSite2 = data.getNumChars()-1;
+		}
+		if (firstSite2<0)
+			firstSite2=0;
+		if (lastSite2>data.getNumChars()-1 || lastSite2<0)
+			lastSite2 = data.getNumChars()-1;
+		int numChars2 = lastSite2 - firstSite2+1;
+
+		long[] extracted1 = new long[numChars1];
+		long[] extracted2 = new long[numChars2];
+		
+
+		for (int ic = firstSite1; ic<=lastSite1; ic++){
+			extracted1[ic-firstSite1] = data.getState(ic, taxon1);
+		}
+		for (int ic = firstSite2; ic<=lastSite2; ic++){
+			extracted2[ic-firstSite2] = data.getState(ic, taxon2);
 		}
 		CategoricalState state=(CategoricalState)(data.getParentData().makeCharacterState());
 		

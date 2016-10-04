@@ -240,10 +240,12 @@ public  class MesquiteColorTable  {
 		}
 	}
 	
+	double[] bins;
 	public double[] getPreferredBinBoundaries(){  //appropriate only for ContColorTable!
-		return null;
+		return bins;
 	}
 	public void setPreferredBinBoundaries(double[] b){  //appropriate only for ContColorTable!
+		bins = b;
 	}
 	
 	/** gets color for state i with given maximum state possible, from default color table*/
@@ -461,6 +463,11 @@ public  class MesquiteColorTable  {
 	public static Color getBlueScale(double state, double min, double max, boolean log) {
 		return getBlueScale(state,min,max,log,1);
 	}
+	public static Color getBlueScale(int value, int min, int max) {
+		double state = (1.0*(value-min))/(max-min);
+		return getBlueScale(state,0,1.0,false,1);
+	}
+
 	/** gets gray value for double "state" given range*/
 	public static Color getGrayScale(double state, double min, double max, boolean log, int power) {
 		if (state>= min && state <= max && min !=max) {
@@ -485,6 +492,10 @@ public  class MesquiteColorTable  {
 	}
 	public static Color getGrayScale(double state, double min, double max) {
 		return getGrayScale(state,min,max,false,1);
+	}
+	public static Color getGrayScale(int value, int min, int max) {
+		double state = (1.0*(value-min))/(max-min);
+		return getGrayScale(state,0,1.0,false,1);
 	}
 
 }

@@ -20,7 +20,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class TermGapsToMissing extends CategDataAlterer {
+public class TermGapsToMissing extends CategDataAlterer implements AltererConvertGapMissPolyUncert{
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/
@@ -38,7 +38,7 @@ public class TermGapsToMissing extends CategDataAlterer {
 			return false;
 		}
 		CategoricalData data = (CategoricalData)dData;
-		UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+   		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean noRowsSelected =  table == null || !table.anyRowSelected() ;
 		for (int it = 0; it<data.getNumTaxa(); it++){
 			if (table==null || noRowsSelected || table.isRowSelected(it)) {
@@ -91,6 +91,10 @@ public class TermGapsToMissing extends CategDataAlterer {
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation(){
+		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean loadModule(){
 		return false;
 	}
 	/*.................................................................................................................*/

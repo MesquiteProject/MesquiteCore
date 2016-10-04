@@ -233,8 +233,8 @@ public class QuickKeySelector extends DataWindowAssistantI implements ToolKeyLis
 	public void keyReleased(KeyEvent e, MesquiteTool tool){
 		if (data == null)
 			return;
-		if (data.getEditorInhibition()){
-			alert("This matrix is marked as locked against editing.");
+		if (data.isEditInhibited()){
+			discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 			return;
 		}
 		if (MesquiteEvent.commandOrControlKeyDown(MesquiteEvent.getModifiers(e)))

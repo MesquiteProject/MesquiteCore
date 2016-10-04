@@ -41,9 +41,14 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	protected String filePath=null;
 
 	
-	protected static int REPLACEDATA = 0;
-	protected static int REPLACEIFEMPTY = 1;
-	protected static int ADDASNEW = 2;
+	protected static int STOPIMPORT = -1;
+	protected static int DONTADD = 0;
+	protected static int REPLACEDATA = 1;
+	protected static int REPLACEIFEMPTYOTHERWISEADD = 2;
+	protected static int REPLACEIFEMPTYOTHERWISEIGNORE = 3;
+	protected static int ADDASNEW = 4;
+	
+	protected static int treatmentOfIncomingDuplicates = DONTADD;
 
 //	protected static boolean defaultReplaceDataOfTaxonWithSameName = false;
 	protected static int defaultReplaceDataOfTaxonWithSameNameInt = ADDASNEW;
@@ -61,6 +66,9 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public Class getDutyClass() {
 		return FileInterpreter.class;
 	}
+ 	 public String[] getDefaultModule() {
+ 	 	return new String[] {"#InterpretNEXUS", "#InterpretFastaDNA", "#InterpretFastaProtein"};
+ 	 }
 	public String getFunctionIconPath(){
 		return getRootImageDirectoryPath() + "functionIcons/fileInterpret.gif";
 	}
@@ -68,7 +76,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 
 	/*.................................................................................................................*/
@@ -151,7 +159,12 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	public String preferredDataFileExtension() {
 		return "";
 	}
-
+	/*.................................................................................................................*/
+	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
+	/*public boolean usesNEXUSflavor(){
+		return false;
+	}
+*/
 	NameReference previousTaxaNameRef = new NameReference("previousTaxon");
 	NameReference newlyAddedTaxaNameRef = new NameReference("newlyAddedTaxon");
 	
@@ -233,20 +246,32 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		 */
 	}
 	/*.................................................................................................................*/
-	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
+	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suffix, String suggestedFileEnding, String filePath) {
 		if (outputBuffer == null)
 			return;
 		String output = outputBuffer.toString();
 
-		String name = getProject().getHomeFileName();
-		if (name==null)
-			name = "untitled." + suggestedFileEnding;
-		else if (suggestedFileEnding.equalsIgnoreCase("NEX"))
-			name = stripNex(name)+"2." + suggestedFileEnding;
-		else 
-			name = stripNex(name) + "." + suggestedFileEnding;
-		saveExportedFile(output, arguments, name);
-
+		if (StringUtil.blank(filePath)) {
+			String name = getProject().getHomeFileName();
+			if (suffix==null)
+				suffix="";
+			if (name==null)
+				name = "untitled.";
+			else if (suggestedFileEnding.equalsIgnoreCase("NEX"))
+				name = stripNex(name)+"2.";
+			else 
+				name = stripNex(name) + ".";
+			if (StringUtil.notEmpty(suffix))
+				name+=suffix+".";
+			name += suggestedFileEnding;
+			saveExportedFile(output, arguments, name);
+		}
+		else
+			saveExportedFileToFilePath(output, arguments, filePath);
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFileWithExtension(StringBuffer outputBuffer, String arguments, String suggestedFileEnding) {
+		saveExportedFileWithExtension(outputBuffer,arguments, null, suggestedFileEnding, null);
 	}
 	/*.................................................................................................................*/
 	public String getPathForExport(String arguments, String suggestedFileName, MesquiteString dir, MesquiteString fn) {
@@ -309,6 +334,15 @@ public abstract class FileInterpreter extends MesquiteModule  {
 			return MesquiteFile.getFileNameFromFilePath(filePath);
 		}
 		return null;
+	}
+	/*.................................................................................................................*/
+	public void saveExportedFileToFilePath(String output, String arguments, String filePath) {
+
+		if (filePath!=null) {
+			logln("Exporting file to " + filePath);
+			MesquiteFile.putFileContents(filePath, output, true);
+			logln("Export complete.");
+		}
 	}
 	/*.................................................................................................................*/
 	public void saveExportedFile(String output, String arguments, String suggestedFileName) {

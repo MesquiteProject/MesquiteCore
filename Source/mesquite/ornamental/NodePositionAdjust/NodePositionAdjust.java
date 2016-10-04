@@ -146,7 +146,13 @@ class PAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 				for (int daughter = t.firstDaughterOfNode(node); t.nodeExists(daughter); daughter = t.nextSisterOfNode(daughter))
 					drawThickLine(g,treeDisplay.getTreeDrawing().lineTipX[daughter], treeDisplay.getTreeDrawing().lineTipY[daughter], lastX, lastY);
 				g.fillOval(lastX-ovalRadius, lastY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
-				g.drawString(MesquiteDouble.toString(lastBL), lastX+10, lastY);
+				try {
+					g.drawString(MesquiteDouble.toString(lastBL), lastX+10, lastY);
+				}
+				catch(InternalError e){  //workaround for bug on windows java 1.7.
+				}
+				catch(Throwable e){
+				}
 				lineOn=true;
 				g.dispose();
 			}

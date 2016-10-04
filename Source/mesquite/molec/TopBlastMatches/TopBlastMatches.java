@@ -47,22 +47,24 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	boolean interleaveResults = false;
 	boolean adjustSequences = false;
 	boolean addInternalGaps = false;
+	boolean appendQueryName = false;
 //	boolean blastx = false;
 	int maxTime = 300;
 //	static int upperMaxHits = 30;
 
 	double eValueCutoff = 10.0;
+	int wordSize  = 11;
 
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(Blaster.class, getName() + "  needs a Blast module.","");
+		EmployeeNeed e = registerEmployeeNeed(Blaster.class, getName() + "  needs a BLAST module.","");
 	}
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		blasterTask = (Blaster)hireEmployee(Blaster.class, "Blaster (for " + getName() + ")"); 
+		blasterTask = (Blaster)hireEmployee(Blaster.class, "BLASTer (for " + getName() + ")"); 
 		if (blasterTask==null)
-			return sorry(getName() + " couldn't start because no Blast module could be obtained.");
+			return sorry(getName() + " couldn't start because no BLAST module could be obtained.");
 		else if (!blasterTask.initialize())
 			return false;
 		results = new StringBuffer();
@@ -83,8 +85,12 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			adjustSequences = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("addInternalGaps".equalsIgnoreCase(tag))
 			addInternalGaps = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("appendQueryName".equalsIgnoreCase(tag))
+			appendQueryName = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("blastType".equalsIgnoreCase(tag))
 			blastType = MesquiteInteger.fromString(content);
+		else if ("wordSize".equalsIgnoreCase(tag))
+			wordSize = MesquiteInteger.fromString(content);
 		else if ("eValueCutoff".equalsIgnoreCase(tag))
 			eValueCutoff = MesquiteDouble.fromString(content);
 		else if ("maxTime".equalsIgnoreCase(tag))
@@ -101,11 +107,13 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
 		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
 		StringUtil.appendXMLTag(buffer, 2, "addInternalGaps", addInternalGaps);  
+		StringUtil.appendXMLTag(buffer, 2, "appendQueryName", appendQueryName);  
 		StringUtil.appendXMLTag(buffer, 2, "adjustSequences", adjustSequences);  
 //		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
 		StringUtil.appendXMLTag(buffer, 2, "eValueCutoff", eValueCutoff);  
 		StringUtil.appendXMLTag(buffer, 2, "maxHits", maxHits);  
 		StringUtil.appendXMLTag(buffer, 2, "blastType", blastType);  
+		StringUtil.appendXMLTag(buffer, 2, "wordSize", wordSize);  
 		StringUtil.appendXMLTag(buffer, 2, "saveResultsToFile", saveResultsToFile);  
 
 		preferencesSet = true;
@@ -119,6 +127,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	Checkbox interleaveResultsCheckBox;
 	Checkbox adjustSequencesCheckBox;
 	Checkbox addInternalGapsCheckBox;
+	Checkbox appendQueryNameCheckBox;
 	/*.................................................................................................................*/
 	private void checkEnabling(){
 		//importCheckBox.setEnabled(!blastXCheckBox.getState());
@@ -131,13 +140,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Top Blast Matches",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLabel("Options for Top Blast Matches");
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Top BLAST Matches",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Options for Top BLAST Matches");
 		int oldBlastType = blastType;
 
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 //		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
+		IntegerField wordSizeField = dialog.addIntegerField("Word size:",  wordSize,5,0,Integer.MAX_VALUE);
 		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
@@ -145,6 +155,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		interleaveResultsCheckBox = dialog.addCheckBox("insert hits after sequence that was BLASTed",interleaveResults);
 		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement in needed and align imported sequences",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
+		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
 		
 		IntegerField maxTimeField = dialog.addIntegerField("Maximum time for BLAST response (seconds):",  maxTime,5);
 	//	blastXCheckBox.addItemListener(this);
@@ -165,6 +176,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			interleaveResults = interleaveResultsCheckBox.getState();
 			adjustSequences = adjustSequencesCheckBox.getState();
 			addInternalGaps = addInternalGapsCheckBox.getState();
+			wordSize = wordSizeField.getValue();
+			appendQueryName = appendQueryNameCheckBox.getState();
 			maxTime=maxTimeField.getValue();
 			storePreferences();
 		}
@@ -266,10 +279,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			StringBuffer blastResponse = new StringBuffer();
 			String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
 
+			String appendToTaxonName = "";
+			if (appendQueryName)
+				appendToTaxonName = " ["+data.getTaxa().getTaxonName(it)+"]";
+
 
 			numTaxaAdded = data.getNumTaxa();
 			if (StringUtil.notEmpty(newSequencesAsFasta))
-				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps);
+				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, appendToTaxonName);
 			else
 				logln("BLAST database returned no sequences in response to query.");
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
@@ -293,7 +310,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		if (data==null || blasterTask==null)
 			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
-		results.append("\n   BLASTing "+ sequenceName+ "\n");
+		results.append("\n   BLASTing "+ sequenceName+ " (matrix: "+ data.getName() + ")\n");
 		StringBuffer sequence = new StringBuffer(data.getNumChars());
 		for (int ic = icStart; ic<=icEnd; ic++) {
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);
@@ -303,9 +320,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		//blasterTask.setBlastx(blastx);
 		blasterTask.setBlastType(blastType);
 		if (data instanceof ProteinData)
-			blasterTask.blastForMatches("blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,response, true);
+			blasterTask.blastForMatches("blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,wordSize, response, true);
 		else {	
-			blasterTask.basicDNABlastForMatches(blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, response, true);
+			blasterTask.basicDNABlastForMatches(blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, wordSize, response, true);
 		}
 
 		BLASTResults blastResults = new BLASTResults(maxHits);

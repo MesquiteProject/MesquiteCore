@@ -19,9 +19,11 @@ import java.awt.image.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-/** An object a module can create and pass back to store in module info.  Tests whether module will be compatible with
+/** An object a module can create and pass back to store in module info.  This test is done by the prospective
+ *  employee module.  It tests whether module will be compatible with
 passed object.  Classes of modules will have known ways of responding to particular classes of objects, e.g. character sources
-should test whether they can handle given CharacterState types.*/
+should test whether they can handle given CharacterState types.
+(In contrast, a QualificationsTest is done by the employer, inspecting the prospective employee to see if it's OK)*/
 public abstract class CompatibilityTest implements CompatibilityChecker {
 	public abstract  boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer);
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer, MesquiteString report){

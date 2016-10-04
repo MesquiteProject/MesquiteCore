@@ -26,7 +26,7 @@ import mesquite.lib.duties.*;
 public abstract class PairMaker extends MesquiteModule  {
 	protected int limit = MesquiteInteger.unassigned;
 	protected boolean limitSet = false;
-	static final int QUERYTRIGGER = 5;
+	static final int QUERYTRIGGER = 1000;
 	
 	public Class getDutyClass(){
 		return PairMaker.class;
@@ -88,8 +88,7 @@ public abstract class PairMaker extends MesquiteModule  {
 				lim = QUERYTRIGGER;
 			if (!MesquiteInteger.isCombinable(L))
 				L = MesquiteInteger.queryInteger(containerOfModule(), "Number of pairs?", "Indicate the maximum number of pairings examined:", lim, 1, MesquiteInteger.infinite);
-			
-			if (MesquiteInteger.isCombinable(L)) {
+			if (MesquiteInteger.isCombinable(L) || MesquiteInteger.infinite == L) {
 				setLimit(L);
 				if (!MesquiteThread.isScripting())
 					parametersChanged();

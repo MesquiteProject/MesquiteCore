@@ -26,7 +26,7 @@ import mesquite.stochchar.lib.AsymmModel;
 public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	public Vector extras;
 	public boolean first = true;
-	MesquiteBoolean on, percentage, horizontal, centred, whiteEdges;
+	MesquiteBoolean on, percentage, horizontal, centred, whiteEdges, showOnTerminals;
 	MesquiteInteger positionAlongBranch;
 	MesquiteSubmenuSpec positionSubMenu;
 	public static final boolean CENTEREDDEFAULT = false;
@@ -47,6 +47,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		horizontal = new MesquiteBoolean(true);
 		centred = new MesquiteBoolean(CENTEREDDEFAULT);
 		whiteEdges = new MesquiteBoolean(true);
+		showOnTerminals = new MesquiteBoolean(true);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Values");
 		addItemToSubmenu(null, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
 		MesquiteSubmenuSpec mss2 =  addSubmenu(mss, "Styles");  //Wayne: here it is.   x123y
@@ -55,6 +56,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		addCheckMenuItemToSubmenu(null, mss, "Show As Percentage", makeCommand("writeAsPercentage",  this), percentage);
 		addItemToSubmenu(null, mss, "Font Size...", makeCommand("setFontSize",  this));
 		addCheckMenuItemToSubmenu(null, mss, "White Edges", makeCommand("toggleWhiteEdges",  this), whiteEdges);
+		addCheckMenuItemToSubmenu(null, mss, "Show on Terminal Branches", makeCommand("toggleShowOnTerminals",  this), showOnTerminals);
 		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
 //		addItemToSubmenu(null, mss, "Position Along Branch...", makeCommand("setPositionAlongBranch",  this));
 		addItemToSubmenu(null, mss, "Locations...", makeCommand("setOffset",  this));
@@ -89,6 +91,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 //			temp.addLine("setPositionAlongBranch " + positionAlongBranch); 
 			temp.addLine("toggleHorizontal " + horizontal.toOffOnString());
 			temp.addLine("toggleWhiteEdges " + whiteEdges.toOffOnString());
+			temp.addLine("toggleShowOnTerminals " + showOnTerminals.toOffOnString());
 			temp.addLine("setFontSize " + fontSize); 
 			temp.addLine("setOffset " + xOffset + "  " + yOffset); 
 		}
@@ -148,6 +151,13 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 				whiteEdges.setValue(!whiteEdges.getValue());
 			else
 				whiteEdges.toggleValue(parser.getFirstToken(arguments));
+			if (!MesquiteThread.isScripting()) parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to show the values on the terminal branches", "[on or off]", commandName, "toggleShowOnTerminals")) {
+			if (StringUtil.blank(arguments))
+				showOnTerminals.setValue(!showOnTerminals.getValue());
+			else
+				showOnTerminals.toggleValue(parser.getFirstToken(arguments));
 			if (!MesquiteThread.isScripting()) parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to write the values centrally over the branches", "[on or off]", commandName, "toggleCentred")) {
@@ -326,6 +336,8 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 	}
 	/*.................................................................................................................*/
 	public   void myDraw(Tree tree, int node, Graphics g, DoubleArray[] arrays) {
+		if (!assocDoublesModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			myDraw(tree, d, g, arrays);
 		for (int i=0; i<arrays.length; i++){

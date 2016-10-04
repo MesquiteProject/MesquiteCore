@@ -34,7 +34,7 @@ public class DefaultTrees extends TreeSource {
 	/*.................................................................................................................*/
 	/** passes which object changed*/
 	public void changed(Object caller, Object obj, Notification notification){
-		if (Notification.appearsCosmetic(notification))
+		if (Notification.appearsCosmeticOrSelection(notification))
 			return;
 		if (obj == currentTaxa) {
 				parametersChanged(notification);
@@ -85,6 +85,8 @@ public class DefaultTrees extends TreeSource {
    	}
 	/*.................................................................................................................*/
    	public Tree getTree(Taxa taxa, int itree) {
+   		if (taxa == null)
+   			return null;
    		currentTree = itree;
    		if (itree==BUSH) {
 			MesquiteTree tree = new MesquiteTree(taxa);
@@ -98,7 +100,7 @@ public class DefaultTrees extends TreeSource {
 			tree.setName("Default ladder");
 	   		return tree;
    		}
-   		else {
+   		else { //Symmetrical
    			int numTaxa = taxa.getNumTaxa();
 			MesquiteTree tree = new MesquiteTree(taxa);
 			if (numTaxa == 1){

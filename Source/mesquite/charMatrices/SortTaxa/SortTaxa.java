@@ -18,6 +18,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 
 /* ======================================================================== */
 public class SortTaxa extends DataWindowAssistantI {
@@ -51,9 +52,30 @@ public class SortTaxa extends DataWindowAssistantI {
    	 }
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = table;
-		if (data !=null)
+		if (data !=null) {
 			this.taxa = data.getTaxa();
+		}
 		this.data = data;
+		data.addListener(this);
+		inhibitionChanged();
+	}
+
+	/* ................................................................................................................. */
+	void inhibitionChanged(){
+		if (taxaSortTool!=null && data!=null)
+			taxaSortTool.setEnabled(!data.isEditInhibited());
+	}
+	/* ................................................................................................................. */
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
+	public void changed(Object caller, Object obj, Notification notification) {
+		int code = Notification.getCode(notification);
+		if (obj instanceof CharacterData && (CharacterData) obj == data) {
+			if (code == MesquiteListener.LOCK_CHANGED) {
+				inhibitionChanged();
+			}
+		}
+		table.setMessage(data.getCellContentsDescription());
+		super.changed(caller, obj, notification);
 	}
 	/*.................................................................................................................*/
   	 boolean compare(boolean greaterThan, String one, String two){

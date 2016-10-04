@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -32,12 +32,12 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 			properties[i] = defaultProperty;
 		}
 	}
-	
+
 	public String toString(int ic){
 		return "" + getProperty(ic);
 	}
- 	/*.................................................................................................................*/
- 	/** Sets model of character*/
+	/*.................................................................................................................*/
+	/** Sets model of character*/
 	public void setProperty(Object property, int index) {
 		setDirty(true);
 		if (index<0)
@@ -47,71 +47,79 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		else
 			properties[index]=property;
 	}
- 	/*.................................................................................................................*/
- 	/** Sets the value for part "part" to be the same as that at part "otherPart" in the incoming specsSet*/
+	/*.................................................................................................................*/
+	/** Sets the value for part "part" to be the same as that at part "otherPart" in the incoming specsSet*/
 	public void equalizeSpecs(SpecsSet other, int otherPart, int part){
 		if (other instanceof ObjectSpecsSet){
 			setProperty(((ObjectSpecsSet)other).getProperty(otherPart), part);
 		}
 	}
- 	/*.................................................................................................................*/
- 	/** return array of character properties (can also get indivitually using getProperty)*/
+	/*.................................................................................................................*/
+	/** return array of character properties (can also get indivitually using getProperty)*/
 	public Object[] getProperties() {
 		return properties;
 	}
- 	/*.................................................................................................................*/
- 	/** returns property for specified character*/
+	/*.................................................................................................................*/
+	/** returns property for specified character*/
 	public Object getProperty(int index) {
 		if (index>= 0 && index< properties.length)
 			return properties[index];
 		else
 			return null;
 	}
- 	/*.................................................................................................................*/
- 	/** Gets default property specified for PropertySet*/
+	/*.................................................................................................................*/
+	/** Gets default property specified for PropertySet*/
 	public Object getDefaultProperty() {
 		return defaultProperty;
 	}
- 	/*.................................................................................................................*/
- 	/** sets default property*/
+	/*.................................................................................................................*/
+	/** sets default property*/
 	public void setDefaultProperty(Object defaultProperty) {
 		setDirty(true);
 		this.defaultProperty = defaultProperty;
 	}
 	/*.................................................................................................................*/
- 	/** Gets default model specified for ModelSet*/
+	/** Gets default model specified for ModelSet*/
 	public Object getDefaultProperty(int ic) {
 		return getDefaultProperty();
 	}
- 	/*.................................................................................................................*/
- 	/** gets storage for set of properties*/
+	/*.................................................................................................................*/
+	/** gets storage for set of properties*/
 	public abstract Object[] getNewPropertyStorage(int numParts);
 	/*.................................................................................................................*/
 	/** Add num characters just after "starting" (filling with default values)  */
-  	public boolean addParts(int starting, int num){  
-  		if (num <=0)
-  			return false;
-  		if (getProject() != null && getProject().isDoomed)
-  			return false;
+	public boolean addParts(int starting, int num){  
+		if (num <=0)
+			return false;
+		if (getProject() != null && getProject().isDoomed)
+			return false;
 		setDirty(true);
-		if (starting<0)
-			starting = -1;
-		else if (starting>=getNumberOfParts())
-			starting = getNumberOfParts()-1;
-		int newNumParts = getNumberOfParts() + num;
-		Object[] newProperties = getNewPropertyStorage(newNumParts);
-		for (int i=0; i<=starting; i++) {
-			newProperties[i] = properties[i];
+		if (properties == null || properties.length==0){
+			properties = getNewPropertyStorage(num);
+			for (int i=0; i<num; i++) 
+				properties[i] = getDefaultProperty(0);
+			numParts = num;
 		}
-		for (int i=0; i<num; i++) {
-			newProperties[starting + i + 1] = getDefaultProperty(starting);
-		}
-		for (int i=0; i<properties.length-starting-1; i++) {
-			newProperties[i +starting+num+1] = properties[starting + i+1];
-		}
+		else {
+			if (starting<0)
+				starting = -1;
+			else if (starting>=getNumberOfParts())
+				starting = getNumberOfParts()-1;
+			int newNumParts = getNumberOfParts() + num;
+			Object[] newProperties = getNewPropertyStorage(newNumParts);
+			for (int i=0; i<=starting; i++) {
+				newProperties[i] = properties[i];
+			}
+			for (int i=0; i<num; i++) {
+				newProperties[starting + i + 1] = getDefaultProperty(starting);
+			}
+			for (int i=0; i<properties.length-starting-1; i++) {
+				newProperties[i +starting+num+1] = properties[starting + i+1];
+			}
 
-		properties = newProperties;
-		numParts = newNumParts;
+			properties = newProperties;
+			numParts = newNumParts;
+		}
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -145,7 +153,7 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		return true;
 	}
 	/*.................................................................................................................*/
- 	/** */
+	/** */
 	public boolean moveParts(int starting, int num, int justAfter){  
 		if (num<=0)
 			return false;
@@ -155,12 +163,12 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 			return false;
 		setDirty(true);
 		Object[] newValues = getNewPropertyStorage(getNumberOfParts());
-		
+
 		if (starting>justAfter){
 			int count =0;
 			for (int i=0; i<=justAfter; i++)
 				newValues[count++]=properties[i];
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues[count++]=properties[i];
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -172,7 +180,7 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 			int count =0;
 			for (int i=0; i<=starting-1; i++)
 				newValues[count++]=properties[i];
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues[count++]=properties[i];
 			for (int i=starting; i<=starting+num-1; i++)
@@ -184,15 +192,15 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 			properties[i]=newValues[i];
 		return true;
 	}
- 	/*.................................................................................................................*/
- 	public void disposing(Object obj){
- 		
- 		for (int i=0; i<properties.length; i++) {
- 			if (properties[i] == obj)
- 				properties[i] = getDefaultProperty();
- 		}
- 		
- 	}
+	/*.................................................................................................................*/
+	public void disposing(Object obj){
+
+		for (int i=0; i<properties.length; i++) {
+			if (properties[i] == obj)
+				properties[i] = getDefaultProperty();
+		}
+
+	}
 
 }
 

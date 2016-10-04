@@ -48,6 +48,7 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	Class mbClass;
 	Class dutyClass;
 	Class hireSubchoice;
+	Class[] dontHireSubchoice;
 	String directoryPath;
 	String splashURL;
 	String packageName;
@@ -74,6 +75,7 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	boolean prerelease = true;
 	boolean isPackageIntro = false;
 	boolean hideable = true;
+	boolean loadModule = true;
 	int versionOfFirstRelease = 0;
 	boolean def = false;
 	int numStarts = 0;
@@ -99,10 +101,12 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		this.mbClass = c;
 		isPrimaryChoice = mb.requestPrimaryChoice();
 		this.hireSubchoice = mb.getHireSubchoice();
+		this.dontHireSubchoice = mb.getDontHireSubchoice();
 		this.name = mb.getName(); //�
 		this.nameForMenuItem = mb.getNameForMenuItem(); //�
  		this.authors =mb.getAuthors();//�
  		this.version =mb.getVersion();//�
+ 		this.loadModule = mb.loadModule();
  		
  		this.versionOfFirstRelease = mb.getVersionOfFirstRelease();
  		this.explanation =mb.getExplanation();//�
@@ -248,6 +252,10 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	public String getPackageDateReleased(){
  		return packageDateReleased;
  	}
+	public boolean loadModule(){
+ 		return loadModule;
+ 	}
+
 	public boolean isBuiltInPackage(){
  		return builtInPackage;
  	}
@@ -393,9 +401,13 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
    		return nexusBlockTest;
    	}
    	
- 	/** returns the class of the module*/
+ 	/** returns the class of the employee desired*/
  	public Class getHireSubchoice() { 
  		return hireSubchoice;
+   	}
+ 	/** returns the classes that the employee shouldn't represent*/
+ 	public Class[] getDontHireSubchoice() { 
+ 		return dontHireSubchoice;
    	}
 	/** Returns whether module is compatible with given object*/
  	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer) {
@@ -447,6 +459,16 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 			return false;
 		}
 		else
+			return false;
+	}
+ 	/** Returns whether module is instance of particular duty-defining class*/
+	public boolean doesADuty (Class[] dutyClasses) {
+		if (dutyClasses == null)
+			return false;
+		for (int i=0; i<dutyClasses.length; i++){
+			if (doesDuty(dutyClasses[i]))
+					return true;
+		}
 			return false;
 	}
 	public String getPackageName(){

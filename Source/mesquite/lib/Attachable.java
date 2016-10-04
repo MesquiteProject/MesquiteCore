@@ -186,7 +186,10 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			for (int i=0; i<attachments.size(); i++) {
 				Object obj = attachments.elementAt(i);
 				if (obj instanceof Listable && ((Listable)obj).getName()!=null){
-					if (obj instanceof MesquiteDouble || obj instanceof MesquiteLong){
+					if (obj instanceof MesquiteDouble){
+						s += ParseUtil.tokenize(((Listable)obj).getName()) + " = " + ((MesquiteDouble)obj).getValue() + " ";
+					}
+					else if (obj instanceof MesquiteLong){
 						s += ParseUtil.tokenize(((Listable)obj).getName()) + " = " + obj + " ";
 					}
 					else if (obj instanceof MesquiteBoolean){

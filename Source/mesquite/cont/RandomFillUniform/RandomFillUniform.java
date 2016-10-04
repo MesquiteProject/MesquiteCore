@@ -16,6 +16,7 @@ package mesquite.cont.RandomFillUniform;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.table.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -23,7 +24,7 @@ import mesquite.lib.characters.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class RandomFillUniform extends ContDataAlterer {
+public class RandomFillUniform extends ContDataAlterer implements AltererRandomizations {
 	CharacterState fillState;
 	Random rng;
 	MesquiteDouble max;

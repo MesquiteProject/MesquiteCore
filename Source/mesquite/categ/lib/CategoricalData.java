@@ -66,6 +66,7 @@ public class CategoricalData extends CharacterData {
 		}
 		catch (OutOfMemoryError e){
 			MesquiteMessage.warnProgrammer("Sorry, the Character Matrix could not be created because of lack of memory.  See file memory.txt in the Mesquite_Folder.");
+			discreetAlert("Sorry, the Character Matrix could not be created because of lack of memory.  See file memory.txt in the Mesquite_Folder.");
 			matrix = null;
 			numChars = 0;
 			numTaxa = 0;
@@ -77,7 +78,44 @@ public class CategoricalData extends CharacterData {
 
 	/** true if the matrix is a valid one */
 	public boolean isValid(){
-		return (matrix!=null || matrixShort!=null) && numTaxa>0 && numChars>0;
+		return (matrix!=null || matrixShort!=null) && numTaxa>0; // && numChars>0;
+	}
+
+	public int getNumDataBlocks(int it, int icStart, int icEnd) {
+		int count=0;
+		boolean inBlock=false;
+		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {
+			if (!isInapplicable(ic, it) && !inBlock){  // start of block
+				inBlock=true;
+				count++;
+			} else if (isInapplicable(ic,it) && inBlock){  // block has ended
+				inBlock=false;
+			}
+		}
+		return count;
+	}
+	
+	public void getDataBlockBoundaries(int it, int icStart, int icEnd, int whichBlock, MesquiteInteger blockStart, MesquiteInteger blockEnd) {
+		if (blockStart==null || blockEnd==null) 
+			return;
+		int count=0;
+		boolean inBlock=false;
+		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {
+			if (!isInapplicable(ic, it) && !inBlock){  // start of block
+				inBlock=true;
+				count++;
+				if (count==whichBlock) {
+					blockStart.setValue(ic);
+				}
+			} else if (isInapplicable(ic,it) && inBlock){  // block has ended
+				inBlock=false;
+				if (count==whichBlock) {
+					blockEnd.setValue(ic);
+				}
+			}
+		}
+		if (blockStart.isCombinable()&&!blockEnd.isCombinable()) // end didn't get assigned, but start did
+			blockEnd.setValue(getNumChars()-1);
 	}
 
 	/*.................................................................................................................*/
@@ -200,6 +238,29 @@ public class CategoricalData extends CharacterData {
 				int icSource = ic-icStart;
 				if (itSource<sourceData.getNumTaxa() && icSource<sourceData.getNumChars())
 					setState(ic, it, ((CategoricalData)sourceData).getStateRaw(icSource, itSource)); 
+			}
+		}
+		resetCellMetadata();
+
+	}
+	public void moveDataBlock(int icSourceStart,  int icSourceEnd, int icStart, int itStart,int  itEnd, boolean allowOverwrite, boolean warn){
+		int numCharsToMove = icSourceEnd-icSourceStart+1;
+		for (int it=itStart; it<=itEnd; it++) {
+			for (int ic=icSourceStart; ic<=icSourceEnd; ic++){
+				int icMove = icStart+ (ic-icSourceStart);
+				if (it<getNumTaxa() && ic<getNumChars()){
+					if (!isInapplicable(icMove,it) && !allowOverwrite) {
+						if (warn) {
+							if (MesquiteTrunk.debugMode) {
+								MesquiteMessage.discreetNotifyUser("Attempt to overwrite data in data.moveDataBlock");
+							}
+						}
+					} else {
+						setState(icMove, it, getStateRaw(ic, it)); 
+						setToInapplicable(ic, it); 
+					}
+				}
+
 			}
 		}
 		resetCellMetadata();
@@ -476,6 +537,17 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**swaps characters first and second*/
+	public  boolean swapAssociated(int first, int second){
+		if (first<0 || first >= numChars)
+			return false;
+		if (second<0 || second >= numChars)
+			return false;
+
+		return super.swapParts(first,second);
+
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/**swaps characters first and second*/
 	public  boolean swapParts(int first, int second){
 		if (first<0 || first >= numChars)
 			return false;
@@ -667,6 +739,7 @@ public class CategoricalData extends CharacterData {
 		return super.addTaxa(starting, num);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
+
 	/**Deletes num taxa from position "starting"; returns true iff successful.*/
 	public boolean deleteTaxa(int starting, int num){
 		if (num<=0)
@@ -807,8 +880,9 @@ public class CategoricalData extends CharacterData {
 		}
 		int numChars = ic2-ic1+1;
 		int halfWay = numChars/2;
-		for (int ic= 0; ic<halfWay; ic++)
+		for (int ic= 0; ic<halfWay; ic++){
 			tradeStatesBetweenCharactersInternal(ic1+ic,ic2-ic,it,false, false);  // don't ask it to adjust linked as we will do it ourselves, below
+		}
 
 
 		if (adjustCellLinked){
@@ -819,6 +893,29 @@ public class CategoricalData extends CharacterData {
 						((CategoricalData)d).tradeStatesBetweenCharactersInternal(ic1+ic,ic2-ic,it,false, false);
 					else
 						d.tradeStatesBetweenCharacters(ic1+ic,ic2-ic,it,false);
+				}
+
+			}
+		}
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/**Reverses the metadata from character icStart to icEnd.  
+	 * If adjustLinks is true, then the linked matrices will also have their metadata reversed.  adjustLinks should be true
+	 * in almost all cases, as reversing without it will disrupt linkages between matrices and cause features in
+	 * Mesquite to fail */
+	public void reverseCharacterMetadata(int icStart, int icEnd, boolean adjustCellLinked){
+		int numChars = icEnd-icStart+1;
+		int halfWay = numChars/2;
+		for (int ic= 0; ic<halfWay; ic++){
+			swapCharacterMetadata(icStart+ic,icEnd-ic);  // don't ask it to adjust linked as we will do it ourselves, below
+		}
+
+
+		if (adjustCellLinked){
+			for (int i=0; i<linkedDatas.size(); i++){
+				CharacterData d= (CharacterData)linkedDatas.elementAt(i);
+				for (int ic= 0; ic<halfWay; ic++){
+					d.swapCharacterMetadata(icStart+ic,icEnd-ic);
 				}
 
 			}
@@ -1095,6 +1192,38 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns whether the character ic is inapplicable to taxon it*/
+	public  boolean isInternalInapplicable(int ic, int it){
+		if (!isInapplicable(ic, it))
+			return false;
+		// it is inappllicable.  But is it internal?  
+		if (ic< getNumChars()/2){ // first half, look left first
+			boolean foundState = false;
+			for (int icc = ic-1; icc>=0 && !foundState; icc--)  //look left for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+			foundState = false;
+			for (int icc = ic+1; icc<getNumChars() && !foundState; icc++)  //look right for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+		}
+		else {
+			boolean foundState = false;
+			for (int icc = ic+1; icc<getNumChars() && !foundState; icc++)  //look right for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+			foundState = false;
+			for (int icc = ic-1; icc>=0 && !foundState; icc--)  //look left for state
+				foundState = !isInapplicable(icc, it);
+			if (!foundState)
+				return false;
+		}
+		return true;
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns whether the character ic is inapplicable to taxon it*/
 	public  boolean isInapplicable(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return(s== CategoricalState.inapplicable || s==CategoricalState.impossible);
@@ -1124,7 +1253,7 @@ public class CategoricalData extends CharacterData {
 		return (CategoricalState.isUncertain(s) && CategoricalState.hasMultipleStates(s));
 	}
 	/*..........................................    ..................................................*/
-	/** returns whether the state of character ic is missing in taxon it*/
+	/** returns whether the state of character ic is a multistate uncertainty or polymorphism in taxon it*/
 	public  boolean isMultistateOrUncertainty(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return (CategoricalState.hasMultipleStates(s));
@@ -1498,12 +1627,12 @@ public class CategoricalData extends CharacterData {
 		if (originalCheckSum != newCheckSum) {
 			if (!warnCheckSum.getValue())
 				MesquiteTrunk.mesquiteTrunk.logln(warning);
-			else if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Checksum doesn't match",warning + "\n\nYou may suppress warnings of this type within this run of Mesquite.", "Continue", "Suppress warnings"))
+			else if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "  Checksum doesn't match",warning + "\n\nYou may suppress warnings of this type within this run of Mesquite.", "Continue", "Suppress warnings"))
 				warnCheckSum.setValue(false);
 			return false;
 		} 
 		else {
-			MesquiteTrunk.mesquiteTrunk.logln("Passed checksum");
+			MesquiteTrunk.mesquiteTrunk.logln("  Passed checksum");
 			return true;
 		}
 	}
@@ -1781,6 +1910,13 @@ public class CategoricalData extends CharacterData {
 		return cs1.equalsIgnoreCase(cs2);
 	}
 	/*-----------------------------------------------------------*/
+	/** checks to see if the two cells have the same states */
+	public boolean sameStateIgnoreCase(int ic1, int it1, int ic2, int it2, boolean allowMissing, boolean allowNearExact, boolean allowSubset){
+		CategoricalState cs1 = (CategoricalState)getCharacterState(null, ic1, it1);
+		CategoricalState cs2 = (CategoricalState)getCharacterState(null, ic2, it2);
+		return cs1.equals(cs2,allowMissing,allowNearExact,allowSubset);
+	}
+	/*-----------------------------------------------------------*/
 	/** checks to see if the two characters have identical distributions of states */
 	public boolean samePattern(int oic, int ic){
 		
@@ -1913,6 +2049,45 @@ public class CategoricalData extends CharacterData {
 		return frequencies;
 	}
 	/*..........................................CategoricalData................*/
+	/** returns an integer array summarizing the frequencies of states of a taxon.*/
+	public int[] getStateFrequencyArrayOfTaxon(int it){
+		CategoricalState state=null;
+		int [] frequencies = new int[getTotalBitsInStateSet()];
+		IntegerArray.zeroArray(frequencies);
+		for (int ic=0; ic<numChars; ic++) {
+			state =(CategoricalState)getCharacterState(state, ic, it);
+			if (state.isUnassigned())
+				frequencies[CategoricalState.unassignedBit]++;
+			else if (state.isInapplicable())
+				frequencies[CategoricalState.inapplicableBit]++;
+			else if (state.cardinality()==1){
+				frequencies[CategoricalState.getOnlyElement(state.getValue())]++;
+			}
+			else if  (state.cardinality()>1)
+				if (CategoricalState.isUncertain(state.getValue()))
+					frequencies[CategoricalState.polymorphismElement]++;
+				else
+					frequencies[CategoricalState.uncertainBit]++;
+		}
+		return frequencies;
+	}
+	/*..........................................CategoricalData................*/
+	/** checks to see if two frequency arrays have the same applicable state frequencies.*/
+	public boolean stateFrequencyArraysEqual(int[] array1, int[] array2){
+		if (array1==null || array2==null)
+			return false;
+		if (array1.length!=array2.length)
+			return false;
+		if (array1.length==0 || array2.length==0)
+			return false;
+		for (int i=0; i<array1.length; i++) 
+			if (i!=CategoricalState.inapplicableBit)  // don't check for inapplicables changing in frequency
+				if (array1[i]!=array2[i])
+					return false;
+		return true;
+		
+	}
+	/*..........................................CategoricalData................*/
 	/** returns a String summarizing the frequencies of states of a character .*/
 	public String  getStateFrequencyString(int ic){
 		int [] frequencies = getStateFrequencyArray(ic);
@@ -1992,6 +2167,15 @@ public class CategoricalData extends CharacterData {
 			return cm;
 		}
 	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** appends to buffer string describing the state(s) specified in the long array s.  The first element in s is presumed (for the sake of state symbols
+	 * and state names) to correspond to character ic. */
+	public void statesIntoStringBufferCore(int ic, long[] s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+		for (int i=0; i<s.length; i++) {
+			statesIntoStringBufferCore(ic+i, s[i],  sb, forDisplay, includeInapplicable, includeUnassigned);
+		}
+	}
+
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
 	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay){
@@ -2444,7 +2628,7 @@ public class CategoricalData extends CharacterData {
 
 	/*..........................................CategoricalData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object */
-	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+	public boolean mergeSecondTaxonIntoFirst(int it1, int it2, boolean mergeMultistateAsUncertainty) {
 		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
 			return false;
 
@@ -2452,44 +2636,26 @@ public class CategoricalData extends CharacterData {
 		for (int ic=0; ic<getNumChars(); ic++) {
 			long s1 = getState(ic,it1);
 			long s2 = getState(ic,it2);
-			if (	(s1& CategoricalState.statesBitsMask) != 0L && (s2& CategoricalState.statesBitsMask) != 0L)
+			if ((s1& CategoricalState.statesBitsMask) != 0L && (s2& CategoricalState.statesBitsMask) != 0L)
 				mergedAssigned = true;
 
 			long sMerged = CategoricalState.mergeStates(s1,s2);
+			if (mergeMultistateAsUncertainty && CategoricalState.hasMultipleStates(sMerged)) {   // set to uncertainty if it makes sense
+				if ((CategoricalState.hasMultipleStates(s1) && !CategoricalState.isUncertain(s1)) || (CategoricalState.hasMultipleStates(s2) && !CategoricalState.isUncertain(s2))) {  // has polymorphism, don't do anything
+				} else {
+					sMerged = CategoricalState.setUncertainty(sMerged, true);		
+				}
+			}
 			setState(ic,it1,sMerged);
 		}
 		return mergedAssigned;
 	}
 	/*..........................................CategoricalData.....................................*/
-	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
-	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
-	 * unassigned + assigned or inapplicable + assigned */
-	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
-		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
-			return null;
-		boolean[] mA = new boolean[taxaToMerge.length];
-		boolean mergedAssigned = false;
-		boolean firstHasData = hasDataForTaxon(sinkTaxon);
-		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
-			if (it!=sinkTaxon && taxaToMerge[it]){
-				boolean mergingHadData = hasDataForTaxon(it);
-				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it);
-				if (mergingHadData && ! firstHasData){
-					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
-					Associable a = getTaxaInfo(false);
-					if (a != null)
-						a.swapParts(sinkTaxon, it);
-				}
-				mA[it] = ma;   
-				mergedAssigned = mergedAssigned | ma;
-
-			}
-		}
-		if (mergedAssigned)
-			return mA;
-		else
-			return null;
+	/**merges the states for taxon it2 into it1  within this Data object */
+	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+		return mergeSecondTaxonIntoFirst(it1, it2, false);
 	}
+
 
 }
 

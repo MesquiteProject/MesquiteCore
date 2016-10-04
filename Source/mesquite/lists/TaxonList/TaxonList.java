@@ -34,16 +34,16 @@ public class TaxonList extends ListModule {
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e00 = registerEmployeeNeed(TaxaSelectCoordinator.class, "The List of Taxa window has facilities to select taxa.",
-		"This module is started automatically. ");
+				"This module is started automatically. ");
 		EmployeeNeed e0 = registerEmployeeNeed(TaxaListAssistantI.class, "The List of Taxa window can display columns showing information for each taxon.",
-		"This module is started automatically. ");
+				"This module is started automatically. ");
 		EmployeeNeed e = registerEmployeeNeed(TaxonListAssistant.class, "The List of Taxa window can display columns showing information for each taxon.",
-		"You can request that columns be shown using the Columns menu of the List of Taxa Window. ");
+				"You can request that columns be shown using the Columns menu of the List of Taxa Window. ");
 		e.setEntryCommand("newAssistant");
 		EmployeeNeed e2 = registerEmployeeNeed(TaxonUtility.class, "Utilities operating on taxa can be used through the List of Taxa window.",
-		"You can request such a utility using the Taxon Utilities submenu of the List menu of the List of Taxa Window. ");
+				"You can request such a utility using the Taxon Utilities submenu of the List menu of the List of Taxa Window. ");
 		EmployeeNeed e3 = registerEmployeeNeed(TaxonNameAlterer.class, "Utilities to change taxon names can be used through the List of Taxa window.",
-		"You can request such a utility using the Taxon Names submenu of the List menu of the List of Taxa Window. ");
+				"You can request such a utility using the Taxon Names submenu of the List menu of the List of Taxa Window. ");
 	}
 	Taxa taxa;
 	TaxonListWindow window;
@@ -115,7 +115,7 @@ public class TaxonList extends ListModule {
 				((TaxonListWindow)window).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
 			}
-		/*	*/
+			/*	*/
 			resetContainingMenuBar();
 			resetAllWindowsMenus();
 		}
@@ -141,6 +141,10 @@ public class TaxonList extends ListModule {
 		return "Taxa";
 	}
 	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return true;
 	}
@@ -150,6 +154,11 @@ public class TaxonList extends ListModule {
 	}
 	public boolean deleteRow(int row, boolean notify){
 		if (taxa!=null && taxa.getNumTaxa() > 1) {
+			if (taxa.isEditInhibited()){
+				discreetAlert("You cannot delete taxa; the taxa block is locked.");
+				return false;
+			}
+
 			taxa.deleteTaxa(row,1, notify);
 			return true;
 		}
@@ -157,6 +166,10 @@ public class TaxonList extends ListModule {
 	}
 	public boolean deleteRows(int first, int last, boolean notify){
 		if (taxa!=null) {
+			if (taxa.isEditInhibited()){
+				discreetAlert("You cannot delete taxa; the taxa block is locked.");
+				return false;
+			}
 			taxa.deleteTaxa(first, last-first+1, notify);
 			return true;
 		}
@@ -168,6 +181,10 @@ public class TaxonList extends ListModule {
 	}
 	public boolean addRow(){
 		if (taxa!=null) {
+			if (taxa.isEditInhibited()){
+				discreetAlert("You cannot add taxa; the taxa block is locked.");
+				return false;
+			}
 			taxa.addTaxa(taxa.getNumTaxa(), 1, false);
 			return true;
 		}
@@ -258,7 +275,7 @@ public class TaxonList extends ListModule {
 					fireEmployee(tda);
 					if (a)
 						taxa.notifyListeners(this, new Notification(NAMES_CHANGED, undoReference));
-}
+				}
 			}
 		}
 		else if (checker.compare(this.getClass(), "Returns the taxa block shown", null, commandName, "getTaxa")) {
@@ -274,6 +291,8 @@ public class TaxonList extends ListModule {
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 
@@ -317,14 +336,14 @@ class TaxonListWindow extends ListWindow {
 	}
 	public void focusInRow(int row){
 		try {
-		Enumeration enumeration=ownerModule.getEmployeeVector().elements();
-		while (enumeration.hasMoreElements()){
-			Object obj = enumeration.nextElement();
-			if (obj instanceof TaxaListAssistantI) {
-				TaxaListAssistantI init = (TaxaListAssistantI)obj;
-				init.focusInRow(row);
+			Enumeration enumeration=ownerModule.getEmployeeVector().elements();
+			while (enumeration.hasMoreElements()){
+				Object obj = enumeration.nextElement();
+				if (obj instanceof TaxaListAssistantI) {
+					TaxaListAssistantI init = (TaxaListAssistantI)obj;
+					init.focusInRow(row);
+				}
 			}
-		}
 		}
 		catch (NullPointerException e){
 		}
@@ -342,7 +361,7 @@ class TaxonListWindow extends ListWindow {
 	/*...............................................................................................................*/
 	NameReference colorNameRef = NameReference.getNameReference("color");
 	public void setRowNameColor(Graphics g, int row){
-//		g.setColor(Color.black);
+		//		g.setColor(Color.black);
 		if (taxa!=null ) {
 			long c = taxa.getAssociatedLong(colorNameRef, row);
 			if (MesquiteLong.isCombinable(c))
@@ -358,13 +377,13 @@ class TaxonListWindow extends ListWindow {
 		String listData = taxa.searchData(s, commandResult);
 
 		if (!StringUtil.blank(listData))
-				return "<h2>Matches to search string: \"" + s + "\"</h2>" + listData;
+			return "<h2>Matches to search string: \"" + s + "\"</h2>" + listData;
 		else
 			return "<h2>No matches found (searched: \"" + s + "\")</h2>";
 	}
 	public void addRowsNotify(int first, int num) {
 		taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {first, num}));
-	//	this causes problems, as the taxa are added, AND numtaxa in CharacterData is incremented twice
+		//	this causes problems, as the taxa are added, AND numtaxa in CharacterData is incremented twice
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -451,10 +470,16 @@ class TaxonListWindow extends ListWindow {
 		}
 	}
 	public String getRowName(int row){
-		if (taxa!=null)
-			return taxa.getTaxonName(row);
+		if (taxa!=null){
+			if (row>=0 && row<taxa.getNumTaxa())
+				return taxa.getTaxonName(row);
+			return null;
+		}
 		else
 			return null;
+	}
+	public String getRowNameForSorting(int row){
+		return getRowName(row);
 	}
 	public void saveSelectedRows() {
 		if (table.anyRowSelected()) {
@@ -487,8 +512,8 @@ class TaxonListWindow extends ListWindow {
 		return true;  //TODO: respond
 	}
 
-		
-	
+
+
 	/*.................................................................................................................*/
 	/** passes which object changed*/
 	public void changed(Object caller, Object obj, Notification notification){

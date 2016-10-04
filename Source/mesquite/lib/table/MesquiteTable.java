@@ -34,7 +34,7 @@ import mesquite.lib.duties.FileInterpreter;
  * 
  * Currently there are not too many settable parameters to customize the appearance of the table, but in the future it should be made possible to customize the table's appearance
  */
-public class MesquiteTable extends MesquitePanel implements KeyListener {
+public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWheelListener {
 	protected ColumnNamesPanel columnNames = null;
 	protected RowNamesPanel rowNames = null;
 	protected MatrixPanel matrix;
@@ -187,6 +187,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 			setColumnGrabberWidth(14);
 		matrixWidth = totalWidth - rowNamesWidth - 16 - rowGrabberWidth;
 		matrixHeight = totalHeight - columnNamesRowHeight - 16 - columnGrabberWidth;
+		addMouseWheelListener(this);
 
 		columnWidths = new int[numColumnsTotal];
 		rowWidthsAdjusted = new Bits(numRowsTotal);
@@ -813,7 +814,6 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		}
 	}
 
-	/* ................................................................................................................. */
 	/* ................................................................................................................. */
 	public void copyIt(StringBuffer s, boolean literal) {
 		copyIt(s, literal, true, true);
@@ -2471,6 +2471,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/**
 	 * Calculates the number of visible rows, rounded up to the nearest whole number. Also sets the value of the lastRowVisible, and sets the appropriate page increment for the vertical scroll bar.
 	 */
+	int verticalScrollPageIncrement=1;
 	public void resetNumRowsVisible() {
 		numRowsVisible = (numRowsTotal - firstRowVisible + 1);
 		int sum = 0;
@@ -2483,7 +2484,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 				break;
 			}
 		}
-		int verticalScrollPageIncrement = numRowsVisible - 1;
+		verticalScrollPageIncrement = numRowsVisible - 1;
 		if (sum>0) {
 			double avgRowHeight = (1.0*sum)/numRows;
 			int numRowsPossiblyVisible = (int)(matrixHeight/avgRowHeight)-1;
@@ -2552,7 +2553,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/** Sets all column widths to be of uniform width, with given width */
 	public void setColumnWidthsUniform(int width) {
 		baseColumnWidth = width;
-		for (int c = 0; c < numColumnsTotal; c++)
+		for (int c = 0; c < numColumnsTotal && c<columnWidths.length; c++)
 			columnWidths[c] = width;
 		columnWidthsAdjusted.clearAllBits();
 	}
@@ -3258,6 +3259,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 		return null;
 	}
 	/* ............................................................................................................... */
+	//to be overridden to change color; works only for MatrixPanel, and only when useString & overriding permit it
+	public Color getTextColor(int column, int row, boolean selected){
+		return null;
+	}
+	/* ............................................................................................................... */
 	/**
 	 * ���� HAVE THIS BY COLUMNS; ALSO HAVE COLUMN NAMES AND ROW NAMES JUSTIFYABLE
 	 */
@@ -3725,10 +3731,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	/* ............................................................................................................... */
 	/** Called if row is touched. Can be overridden in subclasses to change response to touch. */
 	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
-		if (!rowsSelectable)
+		if (!rowsSelectable) {
 			return;
-		if (!rowLegal(row))
+		}
+		if (!rowLegal(row)) {
 			return;
+		}
 		if ((MesquiteEvent.shiftKeyDown(modifiers) || MesquiteEvent.commandOrControlKeyDown(modifiers)) && anyRowSelected()) {
 			if (MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 				if (isRowSelected(row)) {
@@ -5092,6 +5100,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 
 	/* ............................................................................................................... */
+	/** is any row selected. */
+	public boolean isAnyRowSelected() {
+		return rowsSelected[0].anyBitsOn();
+	}
+
+	/* ............................................................................................................... */
 	/** returns a Bits saying what rows are selected. */
 	public Bits getRowsSelected() {
 		return rowsSelected[0].cloneBits();
@@ -5283,6 +5297,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	public void deselectRow(int row) {
 		if (rowLegal(row))
 			rowsSelected[0].clearBit(row);
+
 	}
 
 	/* ............................................................................................................... */
@@ -5714,6 +5729,35 @@ public class MesquiteTable extends MesquitePanel implements KeyListener {
 	}
 	public void setShowRowNames(boolean showRowNames) {
 		this.showRowNames = showRowNames;
+	}
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int amount = e.getScrollAmount();  //verticalScrollPageIncrement, numColumnsVisible
+		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;
+		boolean vert = !e.isShiftDown();
+		boolean upleft=e.getWheelRotation()<0;
+		if (vert) {
+			if (blockScroll) 
+				amount=verticalScrollPageIncrement;
+			if (upleft){
+				amount = -amount;
+				if (vertScroll.getValue()==0)
+					amount=0;
+			}
+			if (amount!=0)
+				setValue(vertScroll, vertScroll.getValue()+amount);
+		} else {
+			if (blockScroll) 
+				amount=numColumnsVisible-1;
+			if (upleft){
+				amount = -amount;
+				if (horizScroll.getValue()==0)
+					amount=0;
+			}
+			if (amount!=0)
+				setValue(horizScroll, horizScroll.getValue()+amount);
+		}
+
 	}
 }
 

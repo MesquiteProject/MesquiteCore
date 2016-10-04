@@ -28,6 +28,7 @@ public class Notification implements Identifiable {
 	long nn = -1;
 	static long numCreated = 0;
 	UndoReference undoReference = null;
+	Class objectClass = null;
 	
 	public Notification(int code, int[] parameters){
 		this();
@@ -48,6 +49,10 @@ public class Notification implements Identifiable {
 		this.code = code;
 		this.undoReference = undoReference;
 		this.parameters = parameters;
+	}
+	
+	public String toString(){
+		return "Notification: " + getID() + " code = " + code + " parameters " + IntegerArray.toString(parameters);
 	}
 	public Notification(){
 		id = numCreated++;
@@ -75,6 +80,12 @@ public class Notification implements Identifiable {
 	public int[] getParameters(){
 		return parameters;
 	}
+	public Class getObjectClass(){
+		return objectClass;
+	}
+	public void setObjectClass(Class c){
+		this.objectClass=c;
+	}
 	public int[] getSubcodes(){
 		return subcodes;
 	}
@@ -90,6 +101,12 @@ public class Notification implements Identifiable {
 		return false;
 	}
 	
+	public static long getNotificationNumber(Notification n){
+		if (n==null)
+			return -1;
+		else
+			return n.getNotificationNumber();
+	}
 	public static int getCode(Notification n){
 		if (n==null)
 			return MesquiteListener.UNKNOWN;
@@ -113,6 +130,12 @@ public class Notification implements Identifiable {
 			return false;
 		else
 			return n.getCode() == MesquiteListener.ANNOTATION_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_ADDED  || n.getCode() == MesquiteListener.ANNOTATION_DELETED  ||n.getCode() == MesquiteListener.NAMES_CHANGED  ;
+	}
+	public static boolean appearsCosmeticOrSelection(Notification n){
+		if (n==null)
+			return false;
+		else
+			return n.getCode() == MesquiteListener.SELECTION_CHANGED  || n.getCode() == MesquiteListener.ANNOTATION_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_ADDED  || n.getCode() == MesquiteListener.ANNOTATION_DELETED  ||n.getCode() == MesquiteListener.NAMES_CHANGED  ;
 	}
 	public UndoReference getUndoReference() {
 		return undoReference;

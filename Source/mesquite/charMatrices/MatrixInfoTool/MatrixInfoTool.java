@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.charMatrices.MatrixInfoTool; 
 
 import java.util.*;
@@ -35,9 +35,9 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 	protected TableTool matrixInfoTool;
 	MesquiteWindow window;
 	MesquitePopup popup;
-	MesquiteCommand respondCommand;
+	MesquiteCommand respondCommand, moveToPrevCommand, moveToNextCommand;
 
-	
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (containerOfModule() instanceof MesquiteWindow) {
@@ -50,14 +50,16 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 			window = (MesquiteWindow)containerOfModule();
 			window.addTool(matrixInfoTool);
 			respondCommand = makeCommand("respond", this);
+			moveToPrevCommand = makeCommand("moveToPrev", this);
+			moveToNextCommand = makeCommand("moveToNext", this);
 		}
 		else return sorry(getName() + " couldn't start because the window with which it would be associated is not a tool container.");
 		return true;
 	}
 	/*.................................................................................................................*/
-   	 public boolean isSubstantive(){
-   	 	return false;
-   	 }
+	public boolean isSubstantive(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = (CMTable)table;
@@ -85,13 +87,49 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 			return;
 		popup.addItem(s, this, respondCommand, Integer.toString(response));
 	}
- 	/*.................................................................................................................*/
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(this.getClass(), "move touched cell or selected cells", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "matrixInfo")) {
- 	 		if (table!=null && data !=null && taxa!=null){
- 	   	 		MesquiteInteger io = new MesquiteInteger(0);
-	   			int column= MesquiteInteger.fromString(arguments, io);
-	   			int row= MesquiteInteger.fromString(arguments, io);
+	/*.................................................................................................................*/
+	void addToPopup(String s,MesquiteCommand command, int response){
+		if (popup==null)
+			return;
+		popup.addItem(s, this, command, Integer.toString(response));
+	}
+	/*.................................................................................................................*/
+	public void moveToNext(boolean next) { 
+		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
+			return;
+		boolean selectionChange = false;
+		int icCurrent = column;
+		if (next) {
+			if (!MesquiteInteger.isCombinable(icCurrent))
+				icCurrent = -1;
+			for (int ic=icCurrent+1; ic<data.getNumChars(); ic++) {
+				if (!data.isInapplicable(ic, row)){
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		} else {
+			if (!MesquiteInteger.isCombinable(icCurrent))
+				icCurrent = data.getNumChars();
+			for (int ic=icCurrent-1; ic>=0; ic--) {
+				if (!data.isInapplicable(ic, row)){
+					table.scrollToColumn(ic);
+					break;
+				}
+			}
+		}
+		column = MesquiteInteger.unassigned;
+		row = MesquiteInteger.unassigned;
+	}
+	int column = MesquiteInteger.unassigned;
+	int row = MesquiteInteger.unassigned;
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "move touched cell or selected cells", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "matrixInfo")) {
+			if (table!=null && data !=null && taxa!=null){
+				MesquiteInteger io = new MesquiteInteger(0);
+				column= MesquiteInteger.fromString(arguments, io);
+				row= MesquiteInteger.fromString(arguments, io);
 				int responseNumber = 0;
 				if (popup==null)
 					popup = new MesquitePopup(window.getGraphicsArea());
@@ -104,42 +142,51 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 				int totalApplicableNonMissing = applicableNonMissingBefore + applicableNonMissingAfter;
 				if (!data.isUnassigned(column, row) && !data.isInapplicable(column, row))
 					totalApplicableNonMissing++;
-				
+
 				addToPopup("Total number of " + data.getNameOfCellEntry(2)+ ": " + totalApplicableNonMissing, responseNumber++);
 				addToPopup("Number to left: " + applicableNonMissingBefore + " " + data.getNameOfCellEntry(applicableNonMissingBefore), responseNumber++);
 				addToPopup("Number to right: " + applicableNonMissingAfter + " " + data.getNameOfCellEntry(applicableNonMissingAfter), responseNumber++);
+				addToPopup("-", responseNumber++);
+				addToPopup("Scroll to previous", moveToPrevCommand, responseNumber++);
+				addToPopup("Scroll to next", moveToNextCommand, responseNumber++);
 				if (data instanceof DNAData){
 					addToPopup("-", responseNumber++);
 					addToPopup("Frequencies within character: ", responseNumber++);
 					addToPopup("   "+ ((DNAData)data).getStateFrequencyString(column), responseNumber++);
-					
+
 				}
 				popup.showPopup(table.getColumnX(column), table.getRowY(row));
-	   		}
-   	 	}
-    	 	else if (checker.compare(this.getClass(), "Responds to choice of popup menu", "[choice number]", commandName, "respond")) {
-    	 	}
-    	 	else
-    	 		return  super.doCommand(commandName, arguments, checker);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Responds to choice of popup menu", "[choice number]", commandName, "respond")) {
+		}
+		else if (checker.compare(this.getClass(), "Move to Previous", "", commandName, "moveToPrev")) {
+			moveToNext(false);
+		}
+		else if (checker.compare(this.getClass(), "Move to Next", "", commandName, "moveToNext")) {
+			moveToNext(true);
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
-   	 }
+	}
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Matrix Info";
-   	 }
-    		/*.................................................................................................................*/
-    		/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
-    		 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-    		 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-    		public int getVersionOfFirstRelease(){
-    			return 200;  
-    		}
+	}
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Shows Information about the data in each taxon." ;
-   	 }
-   	 
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 200;  
+	}
+	/*.................................................................................................................*/
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Shows Information about the data in each taxon." ;
+	}
+
 }
 
 

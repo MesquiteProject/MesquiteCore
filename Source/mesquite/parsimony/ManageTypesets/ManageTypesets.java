@@ -16,6 +16,7 @@ package mesquite.parsimony.ManageTypesets;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -105,7 +106,7 @@ public class ManageTypesets extends CharSpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(modelSet.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices(file)>1) 
+				if (writeLinkWithCharacterMatrixName(file, data))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s+= "  = "+  sT + ";" + StringUtil.lineEnding();
 			}

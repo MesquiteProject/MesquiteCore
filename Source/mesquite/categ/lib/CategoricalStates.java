@@ -440,6 +440,10 @@ public abstract class CategoricalStates extends CharacterStates {
 	/*..........................................  CategoricalStates  ...................................................*/
 	/** returns true if state sets have single element each, and that at node N is greater than that at node M.  */
 	public boolean firstIsGreater (int N, int M){
+		if (isUnassigned(N) || isInapplicable(N))
+			return false;
+		if (isUnassigned(M) || isInapplicable(M))
+			return false;
 		if (CategoricalState.cardinality(getState(N)) == 1 && CategoricalState.cardinality(getState(M)) == 1) {
 			if (CategoricalState.minimum(getState(N)) > CategoricalState.minimum(getState(M)))
 				return true;

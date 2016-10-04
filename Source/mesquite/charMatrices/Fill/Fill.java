@@ -25,7 +25,7 @@ import mesquite.lib.*;
 import mesquite.charMatrices.lib.*;
 
 /* ======================================================================== */
-public class Fill extends DataAlterer {
+public class Fill extends DataAlterer implements AltererSimpleCell {
 	CharacterState fillState=null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

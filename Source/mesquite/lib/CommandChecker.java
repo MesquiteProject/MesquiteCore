@@ -989,7 +989,9 @@ public class CommandChecker {
 					else if (ref instanceof Explainable)
 						e += "(" + ((Explainable) ref).getExplanation() + ")";
 					if (e.length() > 0) {
-						if (expl.endsWith("</ul>")) {
+						if (expl == null)
+							expl = e;
+						else if (expl.endsWith("</ul>")) {
 							StringBuffer sp = new StringBuffer(expl);
 							sp.insert(expl.length() - 5, e);
 							expl = sp.toString();

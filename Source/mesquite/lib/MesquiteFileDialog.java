@@ -17,6 +17,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
+import javax.swing.JWindow;
+
 
 /*===============================================*/
 /** A dialog box*/
@@ -27,10 +29,30 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 	boolean holdsConsoleFocus = false;
 	boolean doneByConsole = false;
 	int type;
+	JWindow titleWindow;
+	Label titleWindowLabel;
+	int twWidth = 1000;
+	int twHeight = 30;
 	//MFDThread mfdThread = null;
 	public static MesquiteFileDialog currentFileDialog = null;
 	public MesquiteFileDialog (MesquiteWindow f, String message, int type) {
 		super(getFrame(f), message, type);
+		if (type == FileDialog.LOAD &&  (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) && MesquiteTrunk.getOSXVersion()>10){
+			titleWindow = new JWindow(); 
+			titleWindow.setSize(twWidth,twHeight);
+			titleWindowLabel = new Label();
+			titleWindowLabel.setBackground(ColorDistribution.veryLightYellow); //ColorTheme.getExtInterfaceBackground()); //ColorDistribution.veryLightGray
+			titleWindow.add(titleWindowLabel);
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			int v, h;
+			h = (screenSize.width-twWidth)/2;
+			v = 26;
+			titleWindow.setLocation(h, v);
+			titleWindowLabel.setText("  " + message);
+		//	Color darkBlue = new Color((float)0.0, (float)0.0, (float)0.7);
+			titleWindowLabel.setForeground(ColorDistribution.darkBlue); //ColorTheme.getExtInterfaceElement(true));
+
+		}
 		this.message = message;
 		this.type = type;
 		currentFileDialog = this;
@@ -72,9 +94,41 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			s += " (" + getDirectory() + ")";
 		return s;
 	}
+/*
+	public void setSize(int w, int h){
+		super.setSize(w, h);
+		if (titleWindow != null){
+			Point xy = this.getLocation();
+			int ww = this.getWidth();
+			titleWindow.setLocation(xy.x, xy.y-30);
+			titleWindow.setSize(ww, twHeight);
+		}
+	}
+	public void setLocation(int x, int y){
+		super.setLocation(x, y);
+		if (titleWindow != null){
+			Point xy = this.getLocation();
+			int ww = this.getWidth();
+			titleWindow.setLocation(xy.x, xy.y-30);
+			titleWindow.setSize(ww, twHeight);
+		}
+	}
+	public void setBounds(int x, int y, int w, int h){
+		super.setBounds(x, y, w, h);
+		if (titleWindow != null){
+			Point xy = this.getLocation();
+			int ww = this.getWidth();
+			titleWindow.setLocation(xy.x, xy.y-30);
+			titleWindow.setSize(ww, twHeight);
+		}
+	}
+*/
+
 	boolean waiting = false;
 	public void setVisible(boolean vis){
-
+		if (titleWindow != null){
+			titleWindow.setVisible(vis);
+		}
 
 		if (type == 3){  //choosing a directory
 			if (vis) {
@@ -131,32 +185,32 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			}
 		}
 		else {
-				if (vis) {
-					System.out.println("Save File Dialog box shown.  Message: " + message);
-					System.out.println("");
+			if (vis) {
+				System.out.println("Save File Dialog box shown.  Message: " + message);
+				System.out.println("");
 
-					showFiles();
-					System.out.println("Enter name of file to be saved as \"name '<filename>'\"");
-					ConsoleThread.setConsoleObjectCommanded(this, false, true);
-					holdsConsoleFocus = true;
-					if (!MesquiteWindow.GUIavailable ||  MesquiteWindow.suppressAllWindows) {
-						try {
-							waiting = true;
-							while (waiting)
-								Thread.sleep(20);
-						}
-						catch (InterruptedException e){
-						}
-						return;
+				showFiles();
+				System.out.println("Enter name of file to be saved as \"name '<filename>'\"");
+				ConsoleThread.setConsoleObjectCommanded(this, false, true);
+				holdsConsoleFocus = true;
+				if (!MesquiteWindow.GUIavailable ||  MesquiteWindow.suppressAllWindows) {
+					try {
+						waiting = true;
+						while (waiting)
+							Thread.sleep(20);
 					}
-				}
-				else {
-					if (holdsConsoleFocus)
-						ConsoleThread.releaseConsoleObjectCommanded(this, true);
-					holdsConsoleFocus = false;
-
+					catch (InterruptedException e){
+					}
+					return;
 				}
 			}
+			else {
+				if (holdsConsoleFocus)
+					ConsoleThread.releaseConsoleObjectCommanded(this, true);
+				holdsConsoleFocus = false;
+
+			}
+		}
 		if (!vis){
 			if (currentFileDialog == this)
 				currentFileDialog = null;
@@ -174,7 +228,6 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			catch (InterruptedException e){
 			}*/
 		}
-		
 
 	}
 	void sv(){
@@ -186,6 +239,10 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 			currentFileDialog = null;
 		if (alreadyDisposed)
 			return;
+		if (titleWindow != null){
+			titleWindow.setVisible(false);
+			titleWindow.dispose();
+		}
 		alreadyDisposed = true;
 		super.dispose();
 		if (holdsConsoleFocus)
@@ -226,32 +283,32 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 				}
 				if (type != 3){
 					fileName = name;
-				doneByConsole = true;
-				waiting = false;
-				setVisible(false);
-				dispose();
+					doneByConsole = true;
+					waiting = false;
+					setVisible(false);
+					dispose();
 				}
 			}
 		}
 		else if (checker.compare(getClass(), null, null, commandName, "chooseThis")) {
 			if (path == null)
 				return null;
-			
-					fileName = null;
-				doneByConsole = true;
-				waiting = false;
-				setVisible(false);
-				dispose();
-			
+
+			fileName = null;
+			doneByConsole = true;
+			waiting = false;
+			setVisible(false);
+			dispose();
+
 		}
 		else if (checker.compare(getClass(), null, null, commandName, "cancel")) {
 
-				fileName = null;
-				path = null;
-				doneByConsole = true;
-				waiting = false;
-				setVisible(false);
-				dispose();
+			fileName = null;
+			path = null;
+			doneByConsole = true;
+			waiting = false;
+			setVisible(false);
+			dispose();
 
 		}
 		else {
@@ -277,7 +334,7 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 					}
 				}
 			}
-			
+
 		}
 		/*
     	 	else 

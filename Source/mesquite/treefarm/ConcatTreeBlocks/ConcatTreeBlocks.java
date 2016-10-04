@@ -15,6 +15,7 @@ package mesquite.treefarm.ConcatTreeBlocks;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lists.lib.*;
@@ -22,10 +23,27 @@ import mesquite.lists.lib.*;
 
 /* ======================================================================== */
 public class ConcatTreeBlocks extends TreeBlockListUtility  {
+	boolean prefixTreeNameByBlockName = true;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		loadPreferences();
 		return true;
 	}
+	
+	
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference(String tag, String content) {
+		if ("prefixTreeNameByBlockName".equalsIgnoreCase(tag))
+			prefixTreeNameByBlockName = MesquiteBoolean.fromTrueFalseString(content);
+	}
+
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML() {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "prefixTreeNameByBlockName", prefixTreeNameByBlockName);
+		return buffer.toString();
+	}
+
 	/*.................................................................................................................*/
    	public boolean isPrerelease(){
    		return false;
@@ -39,12 +57,35 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
    	public boolean pleaseLeaveMeOn(){
    		return false;
    	}
+   	
+	/*.................................................................................................................*/
+	public boolean queryOptions() {
+		loadPreferences();
+
+		if (!MesquiteThread.isScripting()){
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			Checkbox prefixBox = dialog.addCheckBox("prefix tree names by tree block name", prefixTreeNameByBlockName);
+			dialog.completeAndShowDialog(true);
+			if (buttonPressed.getValue()==0)  {
+				prefixTreeNameByBlockName = prefixBox.getState();
+				storePreferences();
+			}
+			dialog.dispose();
+			return (buttonPressed.getValue()==0);
+		}
+		return true;
+	}
+
    	/** Called to operate on the tree blocks.  Returns true if tree blocks altered*/
    	public boolean operateOnTreeBlocks(TreeVector[] blocks){
    		if (blocks == null || blocks.length <=1 || blocks[0]==null) {
-   			alert("Sorry, no tree blocks are were chosen or available for concatenation.");
+   			alert("Sorry, no tree blocks were chosen or available for concatenation.");
    			return false;
    		}
+		if (!queryOptions())
+			return false;
+
    		TreeVector block = blocks[0];
     		Taxa taxa = block.getTaxa();
    		int count = 0;
@@ -65,8 +106,14 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
    			if (blocks[i].getTaxa() == taxa) {
 				for (int j=0; j<blocks[i].size(); j++){
 						Tree tree = blocks[i].getTree(j);
-						if (tree!=null)
-							concat.addElement(tree.cloneTree(), false);
+						if (tree!=null) {
+							MesquiteTree t = tree.cloneTree();
+							if (prefixTreeNameByBlockName){
+								String name = blocks[i].getName()+": "+t.getName();
+								t.setName(name);
+							}
+							concat.addElement(t, false);
+						}
 				}
    			}
    			else

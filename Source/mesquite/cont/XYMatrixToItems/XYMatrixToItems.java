@@ -118,14 +118,16 @@ public class XYMatrixToItems extends CharMatrixSource {
 	public  MCharactersDistribution getCurrentMatrix(Taxa taxa){
 		MCharactersDistribution orig = dataTask.getCurrentMatrix(taxa);
 		MCharactersDistribution xy = translate(orig);
-		xy.setName("XY compaction of " + orig.getName());
+		if (xy != null)
+			xy.setName("XY compaction of " + orig.getName());
 		return xy;
 	}
 	/** gets the indicated matrix.*/
 	public  MCharactersDistribution getMatrix(Taxa taxa, int im){
 		MCharactersDistribution orig = dataTask.getMatrix(taxa, im);
 		MCharactersDistribution xy = translate(orig);
-		xy.setName("XY compaction of " + orig.getName());
+		if (xy != null)
+			xy.setName("XY compaction of " + orig.getName());
 		return xy;
 	}
 	/** gets name of the indicated matrix.*/

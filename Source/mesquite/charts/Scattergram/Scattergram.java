@@ -82,8 +82,8 @@ public class Scattergram extends DrawChart {
 		selectSubmenu = addSubmenu(null, "Select");
 		addItemToSubmenu(null, selectSubmenu, "Deselect all", MesquiteModule.makeCommand("selectionOff",  this));
 		menuItems= new MesquiteMenuItemSpec[11];
-		MesquiteSubmenuSpec analysis = addSubmenu(null, "Analysis", makeCommand("newAssistant", this), ScattergramAssistantA.class);
-		MesquiteSubmenuSpec mCloseAsst = addSubmenu(null, "Close Analysis");
+		MesquiteSubmenuSpec analysis = addSubmenu(null, "Auxiliary Analysis", makeCommand("newAssistant", this), ScattergramAssistantA.class);
+		MesquiteSubmenuSpec mCloseAsst = addSubmenu(null, "Close Auxiliary Analysis");
 		addMenuItem("-", null);
 		mCloseAsst.setList(getEmployeeVector());
 		mCloseAsst.setListableFilter(ScattergramAssistantA.class);

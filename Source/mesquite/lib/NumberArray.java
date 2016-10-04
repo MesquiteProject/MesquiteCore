@@ -936,6 +936,21 @@ public class NumberArray {
 		return mn;				
 	}
 	/*...........................................................*/
+	/** returns the MesquiteNumber at a particular index */
+	public MesquiteNumber getMesquiteNumber(int index) {
+		MesquiteNumber mn = new MesquiteNumber(0);
+		if (valueClass==INT) {
+			mn.setValue(intValues[index]);
+		}
+		else if (valueClass == LONG) {
+			mn.setValue(longValues[index]);
+		}
+		else if (valueClass == DOUBLE) {
+			mn.setValue(doubleValues[index]);
+		}
+		return mn;				
+	}
+	/*...........................................................*/
 	/** returns whether or not the value at index is equal to that in the passed MesquiteNumber */
 	public boolean equals(int index, MesquiteNumber n) {
 		if (!legalIndex(index)) 

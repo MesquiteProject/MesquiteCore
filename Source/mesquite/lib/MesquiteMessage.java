@@ -22,32 +22,42 @@ go only to the console, while others will bring up dialog boxes).*/
 public class MesquiteMessage extends Debugg {
 	
 	public static void warnProgrammer(String s) {
+		MesquiteThread.suspendThreadLogging();
 		MesquiteModule.showLogWindow(true);
 		if (MesquiteTrunk.mesquiteTrunk !=null)
 			MesquiteTrunk.mesquiteTrunk.logln(s);
 		else
 			System.out.println(s);
+		MesquiteThread.resumeThreadLogging();
 	}
 	public static void notifyProgrammer(String s) {
+		MesquiteThread.suspendThreadLogging();
 		MesquiteModule.showLogWindow(true);
 		if (MesquiteTrunk.mesquiteTrunk !=null)
 			MesquiteTrunk.mesquiteTrunk.logln(s);
 		else
 			System.out.println(s);
+		MesquiteThread.resumeThreadLogging();
 	}
 	public static void warnUser(String s) {
+		MesquiteThread.suspendThreadLogging();
 		if (MesquiteTrunk.mesquiteTrunk !=null)
 			MesquiteTrunk.mesquiteTrunk.logln(s);
 		else
 			System.out.println(s);
+		MesquiteThread.resumeThreadLogging();
 	}
 	public static void discreetNotifyUser( String s) {
+		MesquiteThread.suspendThreadLogging();
 		if (MesquiteTrunk.mesquiteTrunk !=null)
 			MesquiteTrunk.mesquiteTrunk.discreetAlert( s);
+		MesquiteThread.resumeThreadLogging();
 	}
 	public static void notifyUser(String s) {
+		MesquiteThread.suspendThreadLogging();
 		if (MesquiteTrunk.mesquiteTrunk !=null)
 			AlertDialog.notice(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Notice", s);
+		MesquiteThread.resumeThreadLogging();
 	}
 	public static void beep() {
            try {
@@ -60,11 +70,13 @@ public class MesquiteMessage extends Debugg {
 	
 	
 	public static void logCurrentTime(String message) {
+		MesquiteThread.suspendThreadLogging();
 		String s = getCurrentTime();
 		if (MesquiteTrunk.mesquiteTrunk !=null)
 			MesquiteTrunk.mesquiteTrunk.logln(message + " " + s);
 		else
 			System.out.println(message + " " + s);
+		MesquiteThread.resumeThreadLogging();
 		
 	}
 	public static String getCurrentTime() {

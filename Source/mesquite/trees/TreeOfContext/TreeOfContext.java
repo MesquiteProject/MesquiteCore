@@ -39,9 +39,10 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 	  		context = (TreeContext)findEmployerWithDuty(TreeContext.class);
 	  		if (context == null)
 	  			context = (TreeContext)findNearestColleagueWithDuty(TreeContext.class);
-	   		if (context == null)
-	   			return sorry("Sorry, for the function \"" + employer.getName() + "\" you need to have an open Tree Window to serve as a source of a current tree; no appropriate Tree Window could be found.  You may request a Tree Window from the Trees menu.  The Multi Tree window is not appropriate, as it does not show a single current tree."); //TODO: should alert user
-   		}
+	   		if (context == null){
+	   			return sorry("Sorry, " + whatIsMyPurpose()+ " you need to have an open Tree Window to serve as a source of a current tree; no appropriate Tree Window could be found.  You may request a Tree Window from the Trees menu.  The Multi Tree window is not appropriate, as it does not show a single current tree."); //TODO: should alert user
+	   		}
+	   		}
    		context = null; // the check on context had been just to ensure that there was something
 		addMenuItem("Display Tree (used by " + getEmployer().getName() +")", makeCommand("showContext", this));
   		return true;
@@ -229,7 +230,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 	/*.................................................................................................................*/
 	/** For TreeContextListener */
 	public void treeChanged(Tree tree) { 
-		parametersChanged();
+		parametersChanged(new Notification());
 	}
 	/*.................................................................................................................*/
 	/** For TreeContextListener */

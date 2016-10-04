@@ -26,8 +26,9 @@ public abstract class DisplayNumbersAtNodes extends MesquiteModule  {
 	protected MesquiteBoolean shadeBranches= new MesquiteBoolean(true);   // added DRM 07.iv.14
 	protected MesquiteBoolean shadeInColor= new MesquiteBoolean(true);
 	protected MesquiteBoolean labelTerminals= new MesquiteBoolean(true);  // added DRM 07.iv.14
+	protected MesquiteBoolean usePercentages= new MesquiteBoolean(false);  // added DRM 1 October 2014
 
-   	 public Class getDutyClass() {
+	public Class getDutyClass() {
    	 	return DisplayNumbersAtNodes.class;
    	 }
  	public String getDutyName() {
@@ -66,6 +67,12 @@ public abstract class DisplayNumbersAtNodes extends MesquiteModule  {
 	}
 	public void setLabelTerminals(boolean labelTerminals) {
 		this.labelTerminals.setValue(labelTerminals);
+	}
+   	 public boolean getUsePercentages() {
+		return usePercentages.getValue();
+	}
+	public void setUsePercentages(boolean usePercentages) {
+		this.usePercentages.setValue(usePercentages);
 	}
 
 }

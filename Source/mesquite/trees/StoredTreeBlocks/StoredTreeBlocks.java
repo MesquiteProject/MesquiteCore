@@ -16,6 +16,7 @@ package mesquite.trees.StoredTreeBlocks;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
@@ -67,7 +68,8 @@ public class StoredTreeBlocks extends TreeBlockSource implements MesquiteListene
 	public void disposing(Object obj){
 		if (obj == preferredTaxa) {
 			setHiringCommand(null); //since there is no rehiring
-			iQuit();
+			if (!MesquiteThread.isScripting())
+				iQuit();
 		}
 	}
 	/** Asks whether it's ok to delete the object as far as the listener is concerned (e.g., is it in use?)*/

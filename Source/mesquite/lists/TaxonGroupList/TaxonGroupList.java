@@ -46,6 +46,10 @@ public class TaxonGroupList extends ListModule {
 		super.endJob();
 	}
 	public void showListWindow(Object obj){
+		if (getModuleWindow() != null){
+			((TaxonGroupListWindow)getModuleWindow()).setObject(groups);
+			return;
+		}
 		setModuleWindow(new TaxonGroupListWindow(this));
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 //		groups.addListener(this);
@@ -119,6 +123,10 @@ public class TaxonGroupList extends ListModule {
 			}
 		}
 		super.changed(caller, obj, notification);
+	}
+	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean rowsMovable(){
@@ -199,6 +207,8 @@ public class TaxonGroupList extends ListModule {
 	/** Requests a getModuleWindow() to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
 		//Debug.println("disposing of getModuleWindow()");
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 	/*.................................................................................................................*/
@@ -273,10 +283,16 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 		}
 	}
 	public String getRowName(int row){
-		if (groups!=null)
+		if (groups!=null){
+			if (row<0 && row >= groups.size())
+				return null;
 			return ((Listable)groups.elementAt(row)).getName();
+		}
 		else
 			return null;
+	}
+	public String getRowNameForSorting(int row){
+		return getRowName(row);
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/

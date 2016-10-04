@@ -27,14 +27,22 @@ public class SelectionRectangle  {
 	}
 
 	public static Area createAreaFromRectangle(Rectangle rect) {
-		Path2D.Float path = new Path2D.Float();
+		try{
+			MesquitePath2DFloat path = new MesquitePath2DFloat();
 		path.moveTo(rect.x, rect.y);
 		path.lineTo(rect.x+rect.width, rect.y);
 		path.lineTo(rect.x+rect.width, rect.y+rect.height);
 		path.lineTo(rect.x, rect.y+rect.height);
 		path.lineTo(rect.x, rect.y);
 		path.closePath();
-		return new Area(path);
+		return path.getArea();
+		}
+		catch (Error e){
+			return null;
+		}
+		catch (Exception e){
+			return null;
+		}
 	}
 	public void drawSelectionDifference(Graphics2D g2, Component comp, int x, int y, int w, int h) {
 		Rectangle newRect = new Rectangle(x,y,w,h);

@@ -347,6 +347,10 @@ class TreeNote extends ResizableLegend {
 		if (getBounds().height<gH)
 			resetHeight(gH);
 	}
+	public void setPanelFont(Font f) {
+		super.setPanelFont(f);
+		setFont(f);
+	}
 	
 	public void setFont(Font f) {
 		font = f;

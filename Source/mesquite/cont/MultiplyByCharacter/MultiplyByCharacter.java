@@ -24,7 +24,7 @@ import mesquite.lib.duties.*;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
-public class MultiplyByCharacter extends ContDataAlterer {
+public class MultiplyByCharacter extends ContDataAlterer   implements AltererContinuousTransformations{
 	double scalingFactor = 1.0;
 	CharSourceCoordObed characterSourceTask;
 	int multiplyingIC = 0;

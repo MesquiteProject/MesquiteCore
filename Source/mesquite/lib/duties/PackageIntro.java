@@ -14,6 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+import java.io.*;
+import java.util.Iterator;
+
+
 import mesquite.lib.*;
 
 
@@ -54,6 +58,63 @@ public abstract class PackageIntro extends MesquiteModule implements PackageIntr
 	public boolean getSearchableAsModule(){
 		return false;
 	}
+	
+	
+	/*.................................................................................................................*
+	/** Returns the number of downloads of the latest release*
+	public int getNumReleaseDownloads(){
+		if (StringUtil.notEmpty(getGitHubReleaseURL())) {
+			try {
+				GitHub github = GitHub.connect();
+				if (github!=null) {
+					GHRepository repo = github.getRepository(getGitHubRepository());
+					if (repo!=null) {
+						PagedIterable pagedIterable = repo.listReleases();
+						java.util.List releases = (java.util.List) pagedIterable.asList();
+						for (Iterator iter = releases.iterator(); iter.hasNext();) {
+							GHRelease nextRelease = (GHRelease) iter.next();
+						}
+
+					}
+				}
+				 
+			}
+			catch (IOException ioe) {
+			}
+		}
+		return 0;
+	}
+	
+	/*.................................................................................................................*/
+	
+	public final static int NOREPOSITORY = 0;
+	public final static int GITHUBREPOSITORY = 1;
+	
+	/*.................................................................................................................*/
+	/** Returns the kind of repository*/
+	public int getRepositoryKind(){
+		return NOREPOSITORY;
+	}
+	/** Returns the URL for the release package*/
+	public String getReleaseURL(){
+		return "";
+	}
+	/*.................................................................................................................*/
+	/** Returns the tag for the release tag*/
+	public String getReleaseTag(){
+		return "";
+	}
+	/*.................................................................................................................*/
+	/** Returns the repository path on the repository server*/
+	public String getRepositoryPath(){
+		return "";
+	}
+	/*.................................................................................................................*/
+	/** Returns the repository URL*/
+	public String getRepositoryFullURL(){
+		return "";
+	}
+
 	/*.................................................................................................................*/
 	/** Returns whether hideable*/
 	public boolean getHideable(){

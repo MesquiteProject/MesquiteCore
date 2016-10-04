@@ -13,8 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.characters; 
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.util.*;
 import java.util.zip.*;
+
+import javax.swing.text.JTextComponent;
 
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.duties.*;
@@ -52,7 +58,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	public static boolean defaultInventUniqueIDs = false;
 	protected boolean inventUniqueIDs = defaultInventUniqueIDs;
-	
+
 	protected boolean charNumChanging = false;
 
 
@@ -86,7 +92,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	private boolean userVisible = true;
 	private boolean inhibitEditor = false;
-	private boolean locked = false;
+	//	private boolean locked = false;
 
 	public String problemReading = null;
 	private boolean checksumValid = false;
@@ -198,13 +204,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 
 	/*.................................................................................................................*/
-	public UndoInstructions getUndoInstructionsAllData(){
-		//undoInstructions = new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);
+	public UndoInstructions getUndoInstructionsAllMatrixCells(int[] changesThatMightHappen){
 		if (allowFullUndo())
-			return new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this);
+			return new UndoInstructions (UndoInstructions.ALLDATACELLS, this, this, changesThatMightHappen);
 		else 
 			return null;
 	}
+	/*.................................................................................................................*/
+	/** this is deprecated and will be removed as soon as all modules no longer call this **/  
+	public UndoInstructions getUndoInstructionsAllData(){   //WAYNECHECK:  needs to be removed from gataga and, ideally, pdap, and above method called instead.
+		return getUndoInstructionsAllMatrixCells(null);
+	}
+
 
 	/** true if the matrix is a valid one */
 	public boolean isValid(){
@@ -276,6 +287,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return inventUniqueIDs;
 	}
 	public void dispose(){
+
 		checkThread(true);
 		if (taxa!=null)
 			taxa.removeListener(this);
@@ -337,6 +349,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return null;
 	}
 
+	public CharactersGroup getCurrentGroup(int ic) {
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
+		if (partition==null){
+			return null;
+		}
+		return (CharactersGroup)partition.getProperty(ic);
+
+	}
 	public void setCurrentGroup(CharactersGroup group, int icStart, int icEnd, MesquiteModule ownerModule) {
 		if (icEnd<icStart || group==null)
 			return;
@@ -404,8 +424,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			groups.addElement(group, false);	
 		return group;
 	}
-	
-	public void prefixGroupNames(String prefix, int icStart, int icEnd, MesquiteModule ownerModule) {
+
+	public void adjustGroupLabels(String prefix, int icStart, int icEnd, boolean createNewGroups, boolean prefixGroupNamesIfAlreadyAssigned, MesquiteModule ownerModule) {
 		if (icEnd<icStart)
 			return;
 		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
@@ -443,9 +463,21 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 						}
 					} else 
 						currentGroup=newGroup;
-				} 
-				if (!currentGroup.isRecentlyModified()) {  // rename it with prefix
-					currentGroup.setName(prefix+"."+currentGroup.getName());
+				}
+				if (currentGroup!=null && !currentGroup.isRecentlyModified() && prefixGroupNamesIfAlreadyAssigned) {  // rename it with prefix
+					String groupName = prefix+"."+currentGroup.getName();
+					if (createNewGroups) {  // we need to create a new group with the prefix, rather than renaming the one that exists
+						group = groups.findGroup(groupName);  //see if one with prefix already exists
+						if (group==null) {  // there is no group of this name; let's create it
+							currentGroup = createNewGroup(groups,groupName,ownerModule);
+							//							newGroup2.setRecentlyModified(true);
+							//							currentGroup=newGroup2;
+						} else {
+							currentGroup=group;
+							//							currentGroup.setRecentlyModified(true);  // because the character is not assigned to any group, this character will get the group that uses the prefix name, which we don't want to modify, so we set it as already modified.
+						}
+					} else
+						currentGroup.setName(groupName);
 					currentGroup.setRecentlyModified(true);
 				}
 				partition.setProperty(currentGroup, ic);
@@ -498,7 +530,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
 		return isCompatible(obj, project, prospectiveEmployer, null);
 	}
-	
+
 	/** Takes a listable, that in theory should be of length numChars, and returns a copy of it from which all 
 	 * entries corresponding to excluded characters are removed from the list */
 	public Listable[] removeExcludedFromListable(Listable[] listable) {
@@ -572,7 +604,36 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public abstract String getDataTypeName();
 
 	/** clones the data set.  Does not clone the associated specs sets etc.*/
-	public abstract CharacterData cloneData(); //TODO: ? SHOULD HERE PASS boolean to say whether to DEAL WITH CHARACTER SPEC SETS, character names, etc.
+	public abstract CharacterData cloneData(); //SHOULD HERE PASS boolean to say whether to DEAL WITH CHARACTER SPEC SETS, character names, etc.
+
+	public void copyCurrentSpecsSetsTo(CharacterData targetData){
+		Vector specsVectors = getSpecSetsVectorVector();
+		if (specsVectors!=null){ 
+			for (int i=0; i<specsVectors.size(); i++) { 
+				SpecsSetVector origSV = (SpecsSetVector)specsVectors.elementAt(i);
+				SpecsSet origSS = origSV.getCurrentSpecsSet();
+				if (origSS!=null) {
+					Class specsClass = origSV.getType();
+					SpecsSet cloneSS = targetData.getCurrentSpecsSet(specsClass);
+					if (cloneSS == null){
+						cloneSS = origSS.makeSpecsSet(targetData, getNumberOfParts());
+						if (cloneSS != null){
+							if (targetData instanceof FileElement){
+								cloneSS.addToFile(((FileElement)targetData).getFile(), ((FileElement)targetData).getProject(), ((FileElement)targetData).getProject().getCoordinatorModule().findElementManager(specsClass)); 
+							}
+							targetData.setCurrentSpecsSet(cloneSS, specsClass);
+						}
+					}
+					if (cloneSS != null){
+						for (int ic = 0; ic< getNumChars() && ic< targetData.getNumChars(); ic++){
+							cloneSS.equalizeSpecs(origSS, ic, ic);
+						}
+					}
+				}
+
+			}
+		}
+	}
 	//TODO: also need setToClone(data) method to set specsets and names etc. including super.setToClone()
 
 	/**clones a portion of CharacterData and return new copy.  Does not clone the associated specs sets etc.*/ //TODO: here should use super.setToClone(data) to handle specssets etc.???
@@ -613,6 +674,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public int getNumTaxa() {
 		return getNumTaxa(true);
 	}
+	/** returns number of taxa in data matrix*/
+	public int getNumTaxaWithAnyApplicable() {
+		int count=0;
+		for (int it=0; it<getNumTaxa(); it++) 
+			if (anyApplicableAfter(0,it))
+				count++;
+		return count;
+	}
 	/** returns number of characters in data matrix*/
 	public int getNumChars() {
 		return getNumChars(true);
@@ -639,8 +708,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {starting, num}));
 		return added;
 	}
-	
+
 	public void calculateFirstLastApplicable(int it){
+		/*   enable once the system of calling this is more refined
 		if (firstApplicable!=null){
 			int first = -1;
 			for (int ic=0; ic<numChars; ic++) {
@@ -664,6 +734,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			if (it<lastApplicable.length)
 				lastApplicable[it] = last;
 		}
+		 */
 
 	}
 	public void calculateFirstLastApplicable(){
@@ -893,7 +964,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 			changedSinceSave = newCOD;
 		}
-		
+
 		if (characterIllustrations!=null){
 			Image[] newCharacterIllustrations = new Image[newNumChars];
 			for (int i=0; i<starting; i++) {
@@ -977,23 +1048,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}
 	/*-----------------------------------------------------------*/
-	/**Swaps characters first and second.*/
-	public boolean swapParts(int first, int second){
+	/**Swaps metadata for cells of characters first and second.*/
+	public boolean swapCellMetadata(int first, int second){
 		if (!checkThread(false))
 			return false;
-		StringArray.swapParts(characterNames, first, second); 
 		StringArray.swapColumns(footnotes,  first, second); 
-		StringArray.swapParts(characterIllustrationPath,  first, second); 
-
-		StringArray.swapParts(uniqueIDs, first, second);
-		//adjusting character id's 
-		if (first<charIDs.length && second<charIDs.length){
-			long oldFirst  = charIDs[first];
-			charIDs[first] = charIDs[second];
-			charIDs[second] = oldFirst;
-		}
-		notifyOfChangeLowLevel(MesquiteListener.PARTS_SWAPPED, first, second, 0);  
-
 		if (cellObjects.size()>0){
 			for (int k =0; k<cellObjects.size(); k++){
 				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
@@ -1003,11 +1062,60 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		Bits.swapColumns(cellObjectsDisplay,  first, second);
 		Bits.swapColumns(changedSinceSave,  first, second);
+
+		uncheckThread();
+		return true;
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps metadata for cells of characters first and second in taxon it.*/
+	public boolean swapCellMetadata(int first, int second, int it){
+		if (!checkThread(false))
+			return false;
+		StringArray.swapCell(footnotes,  first, second, it); 
+		if (cellObjects.size()>0){
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				Object[][] oldObjects = objArray.getMatrix();
+				Object2DArray.swapCell(oldObjects,  first, second, it);
+			}
+		}
+		Bits.swapCell(cellObjectsDisplay,  first, second, it);
+		Bits.swapCell(changedSinceSave,  first, second, it);
+
+		uncheckThread();
+		return true;
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps metadata for characters first and second.*/
+	public boolean swapCharacterMetadata(int first, int second){
+		if (!checkThread(false))
+			return false;
+
+		StringArray.swapParts(characterIllustrationPath,  first, second); 
+		StringArray.swapParts(characterNames, first, second); 
+		StringArray.swapParts(uniqueIDs, first, second);
+		//adjusting character id's 
+		if (first<charIDs.length && second<charIDs.length){
+			long oldFirst  = charIDs[first];
+			charIDs[first] = charIDs[second];
+			charIDs[second] = oldFirst;
+		}
+		notifyOfChangeLowLevel(MesquiteListener.PARTS_SWAPPED, first, second, 0);  
+
 		calculateFirstLastApplicable();
 		MesquiteImage.swapParts( characterIllustrations,  first, second); 
 		nMove++;
 		boolean swapped =  super.swapParts( first, second);
 		uncheckThread();
+		return swapped;
+	}
+	/*-----------------------------------------------------------*/
+	/**Swaps characters first and second.*/
+	public boolean swapParts(int first, int second){
+		boolean meta = swapCellMetadata(first, second);
+		if (!meta)
+			return false;
+		boolean swapped =  swapCharacterMetadata( first, second);  // this includes call to super.swapParts!!!!!
 		return swapped;
 	}
 
@@ -1163,12 +1271,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				}
 			}
 			//now move from end
-			for (int it=0; it<getNumTaxa(); it++) {
-				if (whichTaxa.isBitOn(it))
-					for (int i = gResultingEndBlock-distance; i>=startBlock; i--){
-						cs = moveOne(i, distance, it, cs, dataChanged);
-					}
-			}
+			if (distance!=0)
+				for (int it=0; it<getNumTaxa(); it++) {
+					if (whichTaxa.isBitOn(it))
+						for (int i = gResultingEndBlock-distance; i>=startBlock; i--){
+							cs = moveOne(i, distance, it, cs, dataChanged);
+						}
+				}
 		} 
 		else if (distance<0){ //moving left
 			int g = 0;
@@ -1200,11 +1309,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 
 			//now move from front end
-			for (int it=0; it<getNumTaxa(); it++)
-				if (whichTaxa.isBitOn(it))
-					for (int i = startBlock; i<=endBlock; i++){
-						cs = moveOne(i, distance, it, cs, dataChanged);
-					}
+			if (distance!=0)
+				for (int it=0; it<getNumTaxa(); it++)
+					if (whichTaxa.isBitOn(it))
+						for (int i = startBlock; i<=endBlock; i++){
+							cs = moveOne(i, distance, it, cs, dataChanged);
+						}
 
 		}
 		if (includingLinked){
@@ -1400,6 +1510,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 
 	/*-----------------------------------------------------------*/
+
 	/**Deletes num taxa from position "starting"; returns true iff successful.  Assumes details already handled in subclasses, and numTaxa reset there.*/
 	public boolean deleteTaxa(int starting, int num){
 		if (taxa == null)
@@ -1423,7 +1534,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (lastApplicable !=null) {
 			lastApplicable = IntegerArray.deleteParts(lastApplicable, starting, num);
 		}
-
 
 		if (cellObjects != null && cellObjects.size()>0){//Vector of arrays of objects that are attached to cells
 			for (int k =0; k<cellObjects.size(); k++){
@@ -1476,10 +1586,34 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		uncheckThread();
 		return true;
 	}
+	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
+	private boolean notificationFound(Notification notification){
+		if (notification ==null)
+			return false;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return false;
+		if (LongArray.indexOf(lastNotifications, id)>=0)
+			return true;
+		return false;
+	}
+	private void rememberNotification(Notification notification){
+		if (notification ==null)
+			return;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return;
+		for (int i = 0; i< lastNotifications.length-1; i++)
+			lastNotifications[i+1] = lastNotifications[i];
+		lastNotifications[0] = id;
+	}
 	/** For MesquiteListener interface; passes which object changed, along with optional integer (e.g. for character)*/
 	public void changed(Object caller, Object obj, Notification notification){
+		if (notificationFound(notification))
+			return;
+		rememberNotification(notification);
 		if (obj == taxa) {
-			if (Notification.appearsCosmetic(notification))
+			if (Notification.appearsCosmetic(notification) || notification == null   || notification.getCode() == MesquiteListener.SELECTION_CHANGED)
 				return;
 			int code = Notification.getCode(notification);
 			int[] parameters = Notification.getParameters(notification);
@@ -1509,8 +1643,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public boolean okToDispose(Object obj, int queryUser){
 		return true;
 	}
-	
-	
+
+
 	public boolean checkTaxaIDs(){  //here for compatibility with older modules
 		String s =  checkIntegrity();
 		if (s == null)
@@ -1596,8 +1730,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			else {
 				String s = checkIntegrity();
 				if (s !=null) {
-					
-						dataIntegrityAlert(s + " (" + this + ")");
+
+					dataIntegrityAlert(s + " (" + this + ")");
 				}
 
 			}
@@ -1618,26 +1752,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 			}
 			else if (code== MesquiteListener.PARTS_DELETED) {
-				//cycle through finding which taxa in matrix have been deleted && deleting them from matrix
-				for (int i=numTaxa-1; i>=0; i--) {
-					Taxon t = taxa.getTaxonByID(oldTaxaIDs[i]);
-					if (t==null) {
-						deleteTaxa(i, 1);
-						//should instead find contiguous block and delete all at once!
-					}
+				deleteByBlocks(oldTaxaIDs);
 
-				}
 			}
 			else {
-				//cycle through finding which taxa deleted && deleting them from matrix
-				for (int i=numTaxa-1; i>=0; i--) {
-					Taxon t = null;
-					t = taxa.getTaxonByID(oldTaxaIDs[i]);
-					if (t==null) {
-						deleteTaxa(i, 1);
-						//should instead find contiguous block and delete all at once!
-					}
-				}
+				deleteByBlocks(oldTaxaIDs);
 				//cycle through finding which taxa in Taxa are not in matrix, and adding them
 				for (int i=0; i<newNumTaxa; i++) {
 					Taxon t = taxa.getTaxon(i);
@@ -1658,7 +1777,39 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
 		}
 	}
+	private void deleteByBlocks(long[] oldTaxaIDs){
+		int firstOfBlock = -1;
+		int lastOfBlock = -1;
+		//cycle through finding which taxa in matrix have been deleted && deleting them from matrix
+		for (int i=numTaxa-1; i>=0; i--) {
+			Taxon t = taxa.getTaxonByID(oldTaxaIDs[i]);
+			if (t==null) { // taxon was deleted
+				if (lastOfBlock <0){  // no current block growing; establish rightmost of block (going backwards!)
+					firstOfBlock = i;
+					lastOfBlock = i;
+				}
+				else if (firstOfBlock == i+1)  //last deleted was immediately later, so now turn this into last deleted
+					firstOfBlock = i;
+				else {  //there is current block, but last deleted was not immediately after, so delete the current block and establish i as start of new block
+					deleteTaxa(firstOfBlock, lastOfBlock-firstOfBlock +1);
+					firstOfBlock = i;
+					lastOfBlock = i;
+				}						
+			}
+			else if (lastOfBlock>=0){  // this taxon was not deleted, but there is a current block, so delete it
+				deleteTaxa(firstOfBlock, lastOfBlock-firstOfBlock +1);
+				firstOfBlock = -1;
+				lastOfBlock = -1;
+			}
 
+		}
+		if (lastOfBlock>=0){  // this taxon was not deleted, but there is a current block, so delete it
+			deleteTaxa(firstOfBlock, lastOfBlock-firstOfBlock +1);
+			firstOfBlock = -1;
+			lastOfBlock = -1;
+		}
+
+	}
 	long statesVersion = 0;
 	public long getStatesVersion(){
 		return statesVersion;
@@ -1783,7 +1934,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/** sets the state of character ic in taxon it from CharacterState cs*/
 	public abstract void setState(int ic, int it, CharacterState cs);
-	
+
 	/** returns whether the character ic in taxon it has a terminal inapplicable*/
 	public boolean isTerminalInapplicable(int ic, int it){
 		if (!isInapplicable(ic,it)) 
@@ -1792,7 +1943,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return true;
 		if (lastApplicable!=null && it<lastApplicable.length && ic>lastApplicable[it] && lastApplicable[it]>=0)
 			return true;
-/*		boolean terminal = true;
+		/*		boolean terminal = true;
 		for (int i=ic-1; i>=0; i--)
 			if (!isInapplicable(i,it)){
 				terminal=false;
@@ -1804,26 +1955,44 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		for (int i=ic+1; i<numChars; i++)
 			if (!isInapplicable(i,it))
 				return false;
-				*/
+		 */
 		return false;
 
 	}
-	
+
 	/** returns whether the character ic is inapplicable to taxon it*/
 	public abstract boolean isInapplicable(int ic, int it);
 	/** returns whether the character ic is entirely inapplicable codings*/
 
 	/** sets the state of character ic in taxon it to inapplicable*/
 	public  abstract void setToInapplicable(int ic, int it);
+	/** sets the state of all characters in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
+	public void setToInapplicable(int it) {
+		for (int ic=0; ic<numChars; ic++)
+			setToInapplicable(ic,it);
+	}
 	/** sets the state of character ic in taxon it to unassigned*/
 	public  abstract void setToUnassigned(int ic, int it);
+	/** sets the state of all characters in taxon it to unassigned*/
+	public void setToUnassigned(int it) {
+		for (int ic=0; ic<numChars; ic++)
+			setToUnassigned(ic,it);
+	}
 	/** sets the state of character ic in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
 	public  abstract void deassign(int ic, int it);
-	
+
 	public boolean hasDataForTaxon(int it){
 		int numChars = getNumChars();
 		for (int ic=0; ic<numChars; ic++) {
 			if (!isInapplicable(ic, it) && !isUnassigned(ic, it))
+				return true;
+		}		
+		return false;
+	}
+	public boolean hasMissingForTaxon(int it){
+		int numChars = getNumChars();
+		for (int ic=0; ic<numChars; ic++) {
+			if (isUnassigned(ic, it))
 				return true;
 		}		
 		return false;
@@ -1836,14 +2005,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}		
 		return false;
 	}
-	
+
 	public boolean hasDataForTaxa(int itStart, int itEnd){
 		for (int it=itStart; it<=itEnd; it++)
 			if (hasDataForTaxon(it))
 				return true;
 		return false;
 	}
-	
+
 	public boolean hasDataForCharacter(int ic){
 		int numTaxa = getNumTaxa();
 		for (int it=0; it<numTaxa; it++) {
@@ -1852,14 +2021,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}		
 		return false;
 	}
-	
+
 	public boolean hasDataForCharacters(int icStart, int icEnd){
 		for (int ic=icStart; ic<=icEnd; ic++)
 			if (hasDataForCharacter(ic))
 				return true;
 		return false;
 	}
-	
+
 	/*.................................................................................................................*/
 	public boolean anyApplicableBefore(int ic, int it){
 		for (int i = 0; i<ic; i++)
@@ -1877,8 +2046,51 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return false;
 	}
 
+	public boolean removeTaxaThatAreEntirelyGaps(){
+		boolean removedSome = false;
+		int numT = getNumTaxa();
+		for (int it = numT; it>=0; it--){
+			if (entirelyInapplicableTaxon(it)) {
+				int numToDelete = 1;
+				int firstToDelete = it;
+				for (int it2 =it-1; it2>=0; it2--){
+					if (entirelyInapplicableTaxon(it2)) {
+						numToDelete++;
+						firstToDelete= it2;
+					} else break;
+				}
+				deleteTaxa(firstToDelete, numToDelete);
+				it=it-numToDelete+1;
+				removedSome=true;
+			}
+		}
+		return removedSome;
+	}
 
-	
+
+
+
+	public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boolean notify){
+		boolean removedSome = false;
+		for (int ic = icEnd; ic>=icStart; ic--){
+			if (entirelyInapplicable(ic)) {
+				int numToDelete = 1;
+				int firstToDelete = ic;
+				for (int ic2 =ic-1; ic2>=0; ic2--){
+					if (entirelyInapplicable(ic2)) {
+						numToDelete++;
+						firstToDelete= ic2;
+					} else break;
+				}
+				deleteCharacters(firstToDelete, numToDelete, notify);
+				deleteInLinked(firstToDelete,numToDelete,notify);
+				ic=ic-numToDelete+1;
+				removedSome=true;
+			}
+		}
+		return removedSome;
+	}
+
 	public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		boolean removedSome = false;
 		for (int ic = getNumChars()-1; ic>=0; ic--){
@@ -1899,9 +2111,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		return removedSome;
 	}
-	
-	
-	
+
+
+
 	public boolean removeCharactersThatAreEntirelyUnassigned(boolean notify){
 		boolean removedSome = false;
 		for (int ic = getNumChars()-1; ic>=0; ic--){
@@ -1983,6 +2195,12 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	public boolean entirelyInapplicable(int ic){
 		for (int it = 0; it< numTaxa; it++)
+			if (!isInapplicable(ic, it))
+				return false;
+		return true;
+	}
+	public boolean entirelyInapplicableTaxon(int it){
+		for (int ic = 0; ic< numChars; ic++)
 			if (!isInapplicable(ic, it))
 				return false;
 		return true;
@@ -2206,15 +2424,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		int allowedMismatches = (int)((masterEnd-masterStart+1) * (1.0-matchFraction));
 		for (int ic= 0; ic < masterEnd-masterStart+1; ic++){
 			cs1 = getCharacterState(cs1, checkChar + ic, it);  
-			cs2 = getCharacterState(cs2,masterStart+ic, masterTaxon);  //
+			cs2 = getCharacterState(cs2,masterStart+ic, masterTaxon);  // 
 			if (!cs2.equals(cs1,allowMissing, allowNearExact)) {
 				mismatches++;
-				if (matchFraction==1.0 || mismatches>allowedMismatches)
+				if (matchFraction==1.0 || mismatches>allowedMismatches) {
 					return false;
+				}
 			} 
 			matchEnd.setValue(ic);
 		}
-
 		return true;
 
 	}
@@ -2528,6 +2746,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return array;
 	}
 	/*.................................................................................................................*/
+	/** removes the array of object of type "name" attached to character ic, taxon it*/
+	public void removeCellObjects(NameReference nr) {
+		Object2DArray array = getWhichCellObjects(nr);
+		if (array!=null) 
+			cellObjects.removeElement(array);
+
+	}
+	/*.................................................................................................................*/
 	//this stores matrix-specific information on the taxa, e.g. regarding the sequences
 	Associable taxaInfo; 
 	public Associable getTaxaInfo(boolean makeIfNotPresent){
@@ -2570,6 +2796,100 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 	}
+
+	/* ................................................................................................................. */
+	String nextPasteString(StringBuffer sb) {
+		if (sb.length() == 0)
+			return null;
+		String result = sb.substring(0, 1);
+		sb.delete(0, 1);
+		return result;
+	}
+	/* ............................................................................................................... */
+	public void pasteCell(Parser parser, int column, int row, String s) { 
+		if (StringUtil.blank(s))
+			return;
+		CharacterState csBefore = getCharacterState(null, column, row);
+		parser.setString(s);
+		MesquiteString result = new MesquiteString("");
+		int response = setState(column, row, parser, true, result); // receive errors?
+		if (response == CharacterData.OK) {
+			CharacterState csAfter = getCharacterState(null, column, row);
+			if (csBefore != null && !csBefore.equals(csAfter)) {
+				int[] subcodes = new int[] { MesquiteListener.SINGLE_CELL };
+				if (csBefore.isInapplicable() == csAfter.isInapplicable())
+					subcodes = new int[] { MesquiteListener.SINGLE_CELL, MesquiteListener.CELL_SUBSTITUTION };
+			}
+		}
+	}	
+	/* ................................................................................................................. */
+	boolean pasteData(int it, String s) {
+		String[] lines = StringUtil.getLines(s);
+		StringBuffer sb = new StringBuffer(lines[0]);
+		Parser parser = new Parser();
+		if (sb.indexOf("\t") >= 0) {
+			String result = sb.substring(0, sb.indexOf("\t"));
+			sb.delete(0, sb.indexOf("\t") + 1);
+		}
+		for (int i = 0; i < numChars && sb.length()>0; i++) {
+			pasteCell(parser, i, it, nextPasteString(sb));
+
+		}
+		return true;
+	}
+
+	/* ................................................................................................................. */
+
+	public void pasteDataFromStringIntoTaxon(int it, String s) {
+		if (StringUtil.notEmpty(s)) {
+			String[] lines = StringUtil.getLines(s);
+			if (lines.length==1) {
+				pasteData(it, s);
+				notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+			}
+		}
+	}
+	/* ................................................................................................................. */
+
+	public void pasteDataIntoTaxon(int it) {
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = clip.getContents(this);
+		try {
+			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+			pasteDataFromStringIntoTaxon(it, s);
+		} catch (Exception e) {
+			MesquiteMessage.printStackTrace(e);
+		}
+	}
+
+	/*.................................................................................................................*/
+
+	public void copyDataFromRowIntoBuffer(int row, StringBuffer sb) {
+		if (sb ==null)
+			return;
+		String t = null;
+		t = taxa.getTaxonName(row);
+		if (t != null)
+			sb.append(t);
+		sb.append('\t');
+
+		for (int i = 0; i < numChars; i++) {
+			statesIntoStringBuffer(i, row, sb, true);
+		}
+		sb.append(StringUtil.lineEnding());
+	}
+	/*.................................................................................................................*/
+
+	public void copyDataFromRow(int row) {
+		StringBuffer sb = new StringBuffer();
+		copyDataFromRowIntoBuffer(row, sb);
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		StringSelection ss = new StringSelection(sb.toString());
+		clip.setContents(ss, ss);
+	}
+
 	/*.................................................................................................................*/
 	NameReference historyRef = NameReference.getNameReference("ChangeHistory");
 	/** Marks the data for character ic, taxon it as having changed*/
@@ -2939,26 +3259,49 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void setUserVisible(boolean userVisible) {
 		this.userVisible = userVisible;
 	}
+
+	private int inhibitEdit = 0;
 	/*.................................................................................................................*/
-	public boolean isLocked() {
-		return locked;
-	}
-	public void setLocked(boolean locked) {
-		this.locked = locked;
+	public void incrementEditInhibition(){
+		boolean sendNotification = inhibitEdit==0;
+		inhibitEdit++;
+		if (sendNotification)
+			notifyListeners(this, new Notification(MesquiteListener.LOCK_CHANGED, null,null));
 	}
 	/*.................................................................................................................*/
+	public void decrementEditInhibition(){
+		boolean sendNotification = inhibitEdit>0;
+		inhibitEdit--;
+		if (inhibitEdit < 0)
+			inhibitEdit = 0;
+		if (sendNotification && inhibitEdit==0)
+			notifyListeners(this, new Notification(MesquiteListener.LOCK_CHANGED, null,null));
+	}
+	public boolean isEditInhibited(){
+		return inhibitEdit>0;
+	}
+	public int inhibitionLevels(){
+		return inhibitEdit;
+	}
+
+	/*.................................................................................................................*
 	public boolean getEditorInhibition(){
-		return inhibitEditor || locked;
+		return inhibitEditor;
 	}
 	/*.................................................................................................................*/
 	public void setEditorInhibition(boolean i){
-		inhibitEditor = i;
+		if (!isEditInhibited() && i) // wasn't inhibited, so need to make it so.
+			incrementEditInhibition();
+		else if (isEditInhibited() && !i){  // was inhibited, so need to turn it off
+			inhibitEdit=0;
+			notifyListeners(this, new Notification(MesquiteListener.LOCK_CHANGED, null,null));
+		}
 	}
 	/*.................................................................................................................*/
 	protected void setDirty(boolean d, int ic, int it){
 		setDirty(d); 
 		stampHistoryChange(ic, it);
-	//	calculateFirstLastApplicable(it);
+		calculateFirstLastApplicable(it);
 	}
 	/*.................................................................................................................*/
 	public boolean someApplicableInTaxon(int it, boolean countMissing){
@@ -3155,13 +3498,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		return (linkedDatas.size()>0);
 	}
-/*------------------*/
+	/*------------------*/
 	public boolean concatenate(CharacterData oData, boolean addTaxaIfNew, boolean explainIfProblem, boolean notify){
-		return concatenate(oData, addTaxaIfNew, true, explainIfProblem, notify);
+		return concatenate(oData, addTaxaIfNew, true, false, false, explainIfProblem,notify);
 	}
 
 	/** Concatenates the CharacterData oData to this object. */
-	public boolean concatenate(CharacterData oData, boolean addTaxaIfNew, boolean concatExcludedCharacters, boolean explainIfProblem, boolean notify){
+	public boolean concatenate(CharacterData oData, boolean addTaxaIfNew, boolean concatExcludedCharacters, boolean adjustGroupLabels, boolean prefixGroupNamesIfAlreadyAssigned, boolean explainIfProblem, boolean notify){
 		if (oData==null)
 			return false;
 		if (oData.isLinked(this) || isLinked(oData)) {
@@ -3189,14 +3532,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			if (extra && addTaxaIfNew){
 				if (AlertDialog.query(module.containerOfModule(), "Import taxa from other matrix?", "The matrix you are concatenating to this one is based on a different block of taxa, and includes taxa not in this matrix.  Do you want to add these taxa to this matrix before concatenating?")){
 					String names = "";
-					
+
 					for (int oit = 0; oit<oTaxa.getNumTaxa(); oit++){
 						if (taxa.findEquivalentTaxon(oTaxa, oit)<0){
 							taxa.addTaxa(taxa.getNumTaxa(), 1, false);
 							taxa.equalizeTaxon(oTaxa, oit, taxa.getNumTaxa()-1);
 							names += taxa.getTaxonName(taxa.getNumTaxa()-1) + "\n";
 							CommandRecord.tick("Added taxon " + taxa.getTaxonName(taxa.getNumTaxa()-1));
-							
+
 						}
 					}
 					if (!StringUtil.blank(names)){
@@ -3230,9 +3573,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			else
 				setCurrentGroup(group,origNumChars, getNumChars()-1, module);   //set group
 		}
-		
+
 		addInLinked(getNumChars()+1, oData.getNumChars(), true);
-			
+
 		CharacterState cs = null;
 		int count=0;
 		for (int ic = 0; ic<oData.getNumChars(); ic++){
@@ -3242,14 +3585,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				count++;
 			}
 		}
-		
-		if (oPartition != null)
-			prefixGroupNames(oData.getName(), origNumChars, getNumChars()-1, module);  //there exists a partition in the incoming, so just redo the names for the groups there.
+
+		if (oPartition != null && adjustGroupLabels)
+			adjustGroupLabels(oData.getName(), origNumChars, getNumChars()-1, true, prefixGroupNamesIfAlreadyAssigned, module);  //there exists a partition in the incoming, so just redo the names for the groups there.
 
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {origNumChars, oData.getNumChars()}));
 		return true;
-}
+	}
 	/*------------------*/
 	public void setBasisTree(Tree tree){
 		if (tree == null) {
@@ -3284,7 +3627,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			if (file!=null && file.getProject()!=null) {
 				popup.add(new MenuItem("-"));
 				popup.add(new MesquiteMenuItem("Show List of Characters of \"" + getName() + "\"", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("showCharacters", (MesquiteModule)manager), getFile().getProject().getCharMatrixReferenceInternal(this)));
-				popup.add(new MesquiteMenuItem("Show Data Editor for \"" + getName() + "\"", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("showDataWindow", (MesquiteModule)manager), getFile().getProject().getCharMatrixReferenceInternal(this)));
+				popup.add(new MesquiteMenuItem("Show Matrix Editor for \"" + getName() + "\"", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("showDataWindow", (MesquiteModule)manager), getFile().getProject().getCharMatrixReferenceInternal(this)));
 			}
 		}
 	}
@@ -3305,8 +3648,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		Snapshot temp = super.getSnapshot(file);
 		if (temp == null)
 			temp = new Snapshot();
-		if (getEditorInhibition()){
-			temp.addLine("inhibitEditing");
+		if (isEditInhibited()){
+			temp.addLine("inhibitEditing "+inhibitionLevels());
 		}
 		if (!isUserVisible())
 			temp.addLine("setHidden");
@@ -3316,11 +3659,17 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets editor inhibition", null, commandName, "inhibitEditing")) {
-			setEditorInhibition(true);
+		if (checker.compare(this.getClass(), "Sets editor inhibition",  "[inhibition levels]", commandName, "inhibitEditing")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int levels= MesquiteInteger.fromString(arguments, io);
+			if (MesquiteInteger.isCombinable(levels) && levels>0) {
+				for (int i = 0; i<levels; i++)
+					incrementEditInhibition();
+			} else
+				incrementEditInhibition();
 		}
 		else if (checker.compare(this.getClass(), "Sets editor inhibition to false", null, commandName, "uninhibitEditing")) {
-			setEditorInhibition(false);
+			decrementEditInhibition();
 		}
 		else if (checker.compare(this.getClass(), "Sets user visibility to false", null, commandName, "setHidden")) {
 			setUserVisible(false);
@@ -3329,23 +3678,23 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			setUserVisible(true);
 		}
 		else if (checker.compare(this.getClass(), "Duplicates the matrix", null, commandName, "duplicateMe")) {
-				if (getProject() != null)
-					getProject().incrementProjectWindowSuppression();
+			if (getProject() != null)
+				getProject().incrementProjectWindowSuppression();
 
-				CharacterData starter = makeCharacterData(getMatrixManager(), getTaxa());  
-				if (getMatrixManager() != null)
+			CharacterData starter = makeCharacterData(getMatrixManager(), getTaxa());  
+			if (getMatrixManager() != null)
 				starter.addToFile(getProject().getHomeFile(), getProject(),  getMatrixManager().findElementManager(CharacterData.class));  
 
-				boolean success = starter.concatenate(this, false, true, false, false);
-				if (success){
-					String name = getName() + " (duplicate)";
-					if (getProject()!= null)
-						name = getProject().getCharacterMatrices().getUniqueName(name);
-					starter.setName(name);
-				}
-				if (getProject() != null)
-					getProject().decrementProjectWindowSuppression();
-				return starter;
+			boolean success = starter.concatenate(this, false, true, false, false, false, false);
+			if (success){
+				String name = getName() + " (duplicate)";
+				if (getProject()!= null)
+					name = getProject().getCharacterMatrices().getUniqueName(name);
+				starter.setName(name);
+			}
+			if (getProject() != null)
+				getProject().decrementProjectWindowSuppression();
+			return starter;
 		}
 		else if (checker.compare(this.getClass(), "Exports the matrix", null, commandName, "exportMe")) {
 			ElementManager manager = getManager();
@@ -3389,7 +3738,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return s;
 
 	}
-	
+
 	public boolean setInclusionExclusion(MesquiteModule module, MesquiteTable table, boolean include){
 		boolean changed=false;
 		if (table !=null) {
@@ -3446,6 +3795,77 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		else
 			return "entries";
 	}
+
+	/*..........................................CharacterData.....................................*/
+	/**merges the states for taxon it2 into it1  within this Data object */
+	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2, boolean mergeMultistateAsUncertainty) {
+		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
+			return false;
+
+		boolean mergedAssigned = false;
+		CharacterState cs1= null;
+		CharacterState cs2= null;
+		for (int ic=0; ic<getNumChars(); ic++) {
+			cs1 = getCharacterState(cs1, ic,it1);
+			cs2 = getCharacterState(cs2, ic,it2);
+			if (cs1.isCombinable() && cs2.isCombinable()){ //both have states; just leave first state as is
+				mergedAssigned = true;
+			}
+			else if (cs1.isCombinable()){  // taxon 1 has state but not taxon 2; just use first
+			}
+			else if (cs2.isCombinable()){  // taxon 2 has state but not taxon 1; just use second
+				setState( ic, it1, cs2);
+			}
+			else {
+				setToUnassigned( ic, it1);
+			}
+		}
+		return mergedAssigned;
+	}
+	/*..........................................CharacterData.....................................*/
+	/**merges the states for taxon it2 into it1  within this Data object */
+	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
+		return mergeSecondTaxonIntoFirst(it1,it2,false);
+	}
+	/*..........................................CharacterData.....................................*/
+	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
+	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
+	 * unassigned + assigned or inapplicable + assigned */
+	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge, boolean mergeMultistateAsUncertainty) {
+		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
+			return null;
+		boolean[] mA = new boolean[taxaToMerge.length];
+		boolean mergedAssigned = false;
+		boolean firstHasData = hasDataForTaxon(sinkTaxon);
+		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
+			if (it!=sinkTaxon && taxaToMerge[it]){
+				boolean mergingHadData = hasDataForTaxon(it);
+				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it, mergeMultistateAsUncertainty);
+				if (mergingHadData && ! firstHasData){
+					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
+					Associable a = getTaxaInfo(false);
+					if (a != null)
+						a.swapParts(sinkTaxon, it);
+				}
+				mA[it] = ma;   
+				mergedAssigned = mergedAssigned | ma;
+
+			}
+		}
+		if (mergedAssigned)
+			return mA;
+		else
+			return null;
+	}
+
+	/*..........................................CharacterData.....................................*/
+	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
+	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
+	 * unassigned + assigned or inapplicable + assigned */
+	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
+		return mergeTaxa(sinkTaxon, taxaToMerge, false);
+	}
+
 }
 
 

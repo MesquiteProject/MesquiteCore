@@ -331,6 +331,8 @@ public class BasicParametersExplorer extends ParametersExplorer  {
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		abort = true;
 		whichWindow.hide();
 		whichWindow.dispose();

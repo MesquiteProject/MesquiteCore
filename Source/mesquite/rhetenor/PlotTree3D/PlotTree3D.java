@@ -60,6 +60,10 @@ public class PlotTree3D extends AnalyticalDrawTree {
 		return treeDrawing;
 	}
   
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return false;
+	}
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) {
    	 	Snapshot temp = new Snapshot();

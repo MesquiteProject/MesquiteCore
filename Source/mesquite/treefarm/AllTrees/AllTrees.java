@@ -152,7 +152,7 @@ public class AllTrees extends TreeSource {
 	/*.................................................................................................................*/
 	/** passes which object changed*/
 	public void changed(Object caller, Object obj, Notification notification){
-		if (Notification.appearsCosmetic(notification))
+		if (Notification.appearsCosmeticOrSelection(notification))
 			return;
 		if (obj == currentTaxa) {
 			parametersChanged(notification);

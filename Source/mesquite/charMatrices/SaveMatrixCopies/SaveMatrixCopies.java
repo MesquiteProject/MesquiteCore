@@ -17,12 +17,16 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+
+import javax.swing.JLabel;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.charMatrices.lib.*;
 
-public class SaveMatrixCopies extends FileInit  {
+public class SaveMatrixCopies extends FileInit implements ItemListener {
 	ExtensibleDialog dialog = null;
 	String exporterString = "NEXUS file";
 
@@ -148,9 +152,14 @@ public class SaveMatrixCopies extends FileInit  {
 				String message = "This will save a series of files, each containing a matrix, using the matrix source: " + characterSourceTask.getName();
 				dialog.addLargeTextLabel(message);
 				dialog.addBlankLine();
-				dialog.addLabel("Base name for files:");
+				useBaseName = dialog.addRadioButtons (new String[] {"Name files by matrix names", "Name files by base name and number"}, 0);
+				
+				baseLabel = dialog.addLabel("Base name for files:");
 				dialog.suppressNewPanel();
-				SingleLineTextField baseNameField = dialog.addTextField("untitled");
+				baseNameField = dialog.addTextField("untitled");
+				useBaseName.addItemListener(this);
+				baseNameField.setEnabled(useBaseName.getValue() == 1);
+				baseLabel.setEnabled(useBaseName.getValue() == 1);
 				SingleLineTextField numReps = null;
 				if (!MesquiteInteger.isCombinable(num)) {
 					dialog.addBlankLine();
@@ -184,14 +193,15 @@ public class SaveMatrixCopies extends FileInit  {
 					num = MesquiteInteger.fromString(numReps.getText());
 				if (!MesquiteInteger.isCombinable(num)) 
 					return bailOut(null, characterSourceTask, null);
-
+				boolean useBaseNameForFiles = useBaseName.getValue() == 1;
 				String directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 				if (StringUtil.blank(directoryPath))
 					return bailOut(null, characterSourceTask, null);
-				String basePath = directoryPath + MesquiteFile.fileSeparator + baseName;
+				String basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
 				exporterString = exporterChoice.getSelectedItem();
 
 				dialog.dispose();
+				useBaseName.removeItemListener(this);
 				dialog = null;
 
 
@@ -199,7 +209,7 @@ public class SaveMatrixCopies extends FileInit  {
 				String s2 = "";
 
 				FileCoordinator coord = getFileCoordinator();
-				MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(basePath + ".nex"), CommandChecker.defaultChecker); //TODO: never scripting???
+				MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(basePath + baseName + ".nex"), CommandChecker.defaultChecker); //TODO: never scripting???
 				TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
 				Taxa newTaxa =taxa.cloneTaxa();
 				newTaxa.addToFile(tempDataFile, null, taxaManager);
@@ -209,6 +219,8 @@ public class SaveMatrixCopies extends FileInit  {
 				progIndicator.setCurrentValue(0);
 				boolean usePrevious = false;
 				tempDataFile.exporting =1;
+				ListableVector names = new ListableVector();
+				
 				try {
 					for (int iMatrix = 0; iMatrix<num; iMatrix++){
 						if (progIndicator!=null)
@@ -220,10 +232,14 @@ public class SaveMatrixCopies extends FileInit  {
 						CharactersManager manageCharacters = (CharactersManager)findElementManager(CharacterData.class);
 						CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
 						if (manager != null){
+							String fileName = baseName + (iMatrix+1);
+							if (!useBaseNameForFiles)
+								fileName = characterSourceTask.getMatrixName(taxa, iMatrix);
+							fileName = names.getUniqueName(fileName, "-");
 							newMatrix = matrix.makeCharacterData(manager, taxa);
 							newMatrix.setName(characterSourceTask.getMatrixName(taxa, iMatrix));
-
-							logln("Saving file " + basePath + (iMatrix+1) + ".nex\n" + newMatrix.getExplanation() + "\n");	
+							
+							logln("Saving file " + basePath + fileName + "\n" + newMatrix.getExplanation() + "\n");	
 							newMatrix.addToFile(tempDataFile, getProject(), null);
 							TreeVector trees = null;
 							if (matrix.getBasisTree()!=null) {
@@ -233,11 +249,11 @@ public class SaveMatrixCopies extends FileInit  {
 								trees.addElement(matrix.getBasisTree().cloneTree(), false);//no need to establish listener to Taxa, as temporary
 								trees.addToFile(tempDataFile, getProject(), null);
 							}
-							tempDataFile.setPath(basePath +  (iMatrix+1) + ".nex");
+							tempDataFile.setPath(basePath +  fileName + ".nex");  //if nexus
 
-
+							names.addElement(new MesquiteString(fileName, fileName), false);
 							//should allow choice here
-							saveFile(exporterString, tempDataFile, baseName +  (iMatrix+1), directoryPath, usePrevious, coord); 
+							saveFile(exporterString, tempDataFile, fileName, directoryPath, usePrevious, coord); 
 							tempDataFile.exporting = 2;  //to say it's the second or later export in sequence
 
 							newMatrix.deleteMe(false);
@@ -285,6 +301,16 @@ public class SaveMatrixCopies extends FileInit  {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	RadioButtons useBaseName = null;
+	JLabel baseLabel = null;
+	SingleLineTextField baseNameField;
+	public void itemStateChanged(ItemEvent e) {
+		if (useBaseName != null && baseNameField != null && baseLabel != null){
+			baseNameField.setEnabled(useBaseName.getValue() == 1);
+			baseLabel.setEnabled(useBaseName.getValue() == 1);
+		}
+	}
+
 
 	private Object bailOut(MesquiteFile tempDataFile, MesquiteModule characterSourceTask, ProgressIndicator progIndicator){
 		if (tempDataFile !=null)
@@ -312,7 +338,6 @@ public class SaveMatrixCopies extends FileInit  {
 	public String getExplanation() {
 		return "Provides for the saving of copies of matrices to separate files.  This is available under the Characters menu." ;
 	}
-
 }
 
 

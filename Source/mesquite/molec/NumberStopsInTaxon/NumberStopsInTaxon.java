@@ -16,6 +16,7 @@ package mesquite.molec.NumberStopsInTaxon;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -33,7 +34,7 @@ public class NumberStopsInTaxon extends NumberForTaxon {
 	MesquiteBoolean countEvenIfOthers;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for number of stops)"); 
+		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, DNAState.class, "Source of character matrix (for number of stops)"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		countEvenIfOthers = new MesquiteBoolean(false);

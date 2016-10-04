@@ -15,6 +15,7 @@ package mesquite.meristic.ManageMeristicChars;
 /*~~  */
 
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -248,17 +249,17 @@ public class ManageMeristicChars extends CharMatrixManager {
 		MeristicData cData = (MeristicData)data;
 		//StringBuffer blocks = new StringBuffer(cData.getNumChars()*cData.getNumTaxa()*10*cData.getNumItems());
 		StringBuffer line = new StringBuffer(cData.getNumChars()*10*cData.getNumItems());
-		file.write("BEGIN CHARACTERS;" + StringUtil.lineEnding());
-		if (cData.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		file.write("BEGIN CHARACTERS");
+		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
+			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
+		
+		file.write(";" + StringUtil.lineEnding());
+		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, cData)){
 			file.write("\tTITLE  " + StringUtil.tokenize(cData.getName()) + ";" + StringUtil.lineEnding());
 		}
 
-		if (cData.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //should have an isUntitled method??
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, cData.getTaxa()) && getProject().getNumberTaxas()>1){ //should have an isUntitled method??
 			file.write("\tLINK TAXA = " +  StringUtil.tokenize(cData.getTaxa().getName()) + ";" + StringUtil.lineEnding());
-		}
-		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
-			file.write("[!" + data.getAnnotation() + "]");
-			file.write(StringUtil.lineEnding());
 		}
 		file.write("\tDIMENSIONS ");
 		int numCharsToWrite;
@@ -283,7 +284,7 @@ public class ManageMeristicChars extends CharMatrixManager {
 		}
 		file.write(" GAP = " + data.getInapplicableSymbol() + " MISSING = " + data.getUnassignedSymbol());
 		file.write(";" + StringUtil.lineEnding());
-		if (data.isLinked() && !file.useSimplifiedNexus){
+		if (data.isLinked() && !file.useSimplifiedNexus  && !file.useConservativeNexus){
 			file.write("\tOPTIONS ");
 			Vector ds = data.getDataLinkages();
 			for (int i = 0; i<ds.size(); i++) {
@@ -321,13 +322,14 @@ public class ManageMeristicChars extends CharMatrixManager {
 		}
 		file.write(StringUtil.lineEnding()+ ";");
 		file.write( StringUtil.lineEnding());
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				file.write("\t" + idsCommand + StringUtil.lineEnding());
 		}
 		if (cB != null) file.write(cB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		file.write("END;" + StringUtil.lineEnding());
+		file.write("END");
+		file.write(";" + StringUtil.lineEnding());
 
 		//file.write( blocks.toString());
 	}

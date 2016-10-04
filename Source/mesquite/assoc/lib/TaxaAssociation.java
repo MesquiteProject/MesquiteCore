@@ -270,17 +270,41 @@ public class TaxaAssociation extends FileElement  {
 		return false;
 	}
 	/*.................................................................................................................*/
+	/** Copies associations in {@code association} to this instance of {@code TaxaAssociation}.
+	 * 
+	 * <p>May lead to contained (gene) taxa being associated with multiple containing (species) 
+	 * taxons.  To avoid this, see {@link #copyAssociates(TaxaAssociation, boolean)}.</p>
+	 * 
+	 * @param	association	the association to copy.*/
 	public void copyAssociates(TaxaAssociation association){
-		if (association==null) return;
+		copyAssociates(association, false);
+	}
+	/*.................................................................................................................*/
+	/** Copies associations in {@code association} to this instance of {@code TaxaAssociation}.
+	 * 
+	 * @param	association	the association to copy.
+	 * 
+	 * @param	zeroAll	boolean indicating whether or not to zero all current associations before copying.  If set to 
+	 * {@code false}, copying may result in contained (gene) taxa being associated with multiple containing (species) 
+	 * taxons.*/
+	public void copyAssociates (TaxaAssociation association, boolean zeroAll) {
+		if (association == null) {
+			return;
+		}
 		Taxa sourceTaxaA = association.getTaxa(0);
 		Taxa sourceTaxaB = association.getTaxa(1);
-		if (taxaA.getNumTaxa()!= sourceTaxaA.getNumTaxa() || taxaB.getNumTaxa()!= sourceTaxaB.getNumTaxa())
+		if (taxaA.getNumTaxa()!= sourceTaxaA.getNumTaxa() || taxaB.getNumTaxa()!= sourceTaxaB.getNumTaxa()) {
 			return;
-		for (int a=0; a<taxaA.getNumTaxa(); a++)
-			for (int b=0; b<taxaB.getNumTaxa(); b++)
+		}
+		if (zeroAll) {
+			zeroAllAssociations();
+		}
+		for (int a=0; a<taxaA.getNumTaxa(); a++) {
+			for (int b=0; b<taxaB.getNumTaxa(); b++) {
 				setAssociated(a,b,association.getAssociation(sourceTaxaA.getTaxon(a), sourceTaxaB.getTaxon(b)));
+			}
+		}
 	}
-
 	/*.................................................................................................................*/
 	private boolean areAssociated(int a, int b){
 		if (a >=0 && a < taxaA.getNumTaxa() && b >= 0 && b < taxaB.getNumTaxa()){

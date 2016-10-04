@@ -40,6 +40,11 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 	public String preferredDataFileExtension() {
  		return "nex";
    	 }
+	/*.................................................................................................................*/
+	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
+	public boolean usesNEXUSflavor(){
+		return true;
+	}
 /*.................................................................................................................*/
 	public boolean canExportEver() {  
 		 return true;  //

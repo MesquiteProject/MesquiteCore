@@ -132,7 +132,7 @@ public class XMLUtil {
 			contents = stripSchema(contents);
 		Document doc = null;
 		try { 
-			doc = DocumentHelper.parseText(contents); 
+			doc = DocumentHelper.parseText(contents);   //WARNING: this can't handle UTF-8 and other encodings.  Thus, accented characters are disallowed.  Use SAXReader instead
 		} catch (Exception e) {
 			return null;
 		}
@@ -186,6 +186,24 @@ public class XMLUtil {
 		return root;
 	}
 	/*.................................................................................................................*/
+	public static Element getRootXMLElementFromFile(String rootElementName, String path) {
+		SAXReader saxReader = new SAXReader();
+		Document doc = null;
+		try { 
+			doc = saxReader.read(new File(path)); 
+		} catch (Exception e) {
+			return null;
+		}
+
+		if (doc == null || doc.getRootElement() == null) {
+			return  null;
+		} else if (!StringUtil.blank(rootElementName) && !doc.getRootElement().getName().equals(rootElementName)) {
+			return null;
+		}
+		Element root = doc.getRootElement();
+		return root;
+	}
+	/*.................................................................................................................*/
 	public static Element getRootXMLElementFromURL(String url) {
 		return getRootXMLElementFromURL("",url);
 	}
@@ -193,6 +211,26 @@ public class XMLUtil {
 	/*.................................................................................................................*/
 	public static void readXMLPreferences(MesquiteModule module, XMLPreferencesProcessor xmlPrefProcessor, String contents) {
 		Element root = getRootXMLElementFromString("mesquite",contents);
+		if (root==null)
+			return;
+		Element element = root.element(module.getXMLModuleName());
+		if (element != null) {
+			Element versionElement = element.element("version");
+			if (versionElement == null)
+				return ;
+			else {
+				int version = MesquiteInteger.fromString(element.elementText("version"));
+				boolean acceptableVersion = (module.getXMLPrefsVersion()==version || !module.xmlPrefsVersionMustMatch());
+				if (acceptableVersion) 
+					processPreferencesFromXML(xmlPrefProcessor, element);
+				else
+					return;
+			}
+		} 
+	}
+	/*.................................................................................................................*/
+	public static void readXMLPreferencesFromFile (MesquiteModule module, XMLPreferencesProcessor xmlPrefProcessor, String path) {
+		Element root = getRootXMLElementFromFile("mesquite",path);
 		if (root==null)
 			return;
 		Element element = root.element(module.getXMLModuleName());

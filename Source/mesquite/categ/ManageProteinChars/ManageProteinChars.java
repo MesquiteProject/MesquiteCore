@@ -17,6 +17,7 @@ package mesquite.categ.ManageProteinChars;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -222,20 +223,18 @@ public class ManageProteinChars extends CategMatrixManager {
 			blocks.append("BEGIN DATA");
 		else
 			blocks.append("BEGIN CHARACTERS");
+		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
+			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		blocks.append(endLine);
-		if ((file==null || !file.useSimplifiedNexus) && data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);
 		}
-		if ((file==null || !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && (cB==null || getProject().getNumberTaxas(cB.getFile())>1)){ 
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data.getTaxa())&& getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 			blocks.append("\tLINK TAXA = ");
 			blocks.append(StringUtil.tokenize(data.getTaxa().getName()));
 			blocks.append(endLine);
-		}
-		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
-			blocks.append("[!" + data.getAnnotation() + "]");
-			blocks.append(StringUtil.lineEnding());
 		}
 		blocks.append("\tDIMENSIONS ");
 		if (file!=null && file.useSimplifiedNexus && file.useDataBlocks){
@@ -262,7 +261,7 @@ public class ManageProteinChars extends CategMatrixManager {
 			blocks.append(" INTERLEAVE");
 		blocks.append(" GAP = " + data.getInapplicableSymbol() + " MISSING = " + data.getUnassignedSymbol());
 		blocks.append(endLine);
-		if (data.isLinked() && !file.useSimplifiedNexus){
+		if (data.isLinked() && !file.useSimplifiedNexus  && !file.useConservativeNexus){
 			blocks.append("\tOPTIONS ");
 			Vector ds = data.getDataLinkages();
 			for (int i = 0; i<ds.size(); i++) {
@@ -276,14 +275,16 @@ public class ManageProteinChars extends CategMatrixManager {
 
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
 
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus  && !file.useConservativeNexus){
 			String idsCommand = getIDsCommand(data);
 			if (!StringUtil.blank(idsCommand))
 				blocks.append("\t" + idsCommand + StringUtil.lineEnding());
 		}
 		if (cB != null)
 			blocks.append(cB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		blocks.append("END;" + StringUtil.lineEnding());
+		blocks.append("END");
+		
+		blocks.append(";" + StringUtil.lineEnding());
 
 		file.writeLine( blocks.toString());
 	}
