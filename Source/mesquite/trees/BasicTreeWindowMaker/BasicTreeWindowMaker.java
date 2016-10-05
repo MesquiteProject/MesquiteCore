@@ -4699,7 +4699,7 @@ class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, Mouse
 
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		Adjustable hScroll = getHAdjustable();
-		Adjustable vScroll = getHAdjustable();
+		Adjustable vScroll = getVAdjustable();
 
 		window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
 	}

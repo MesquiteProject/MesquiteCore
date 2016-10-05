@@ -29,6 +29,7 @@ public class DrawTreeUtil {
 		if (poly!=null) {
 			Nx -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNx -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode)  {
 				poly.moveTo(Nx, Ny);
 				poly.lineTo(Nx+width/2, Ny-width/2);//Ny+width/2 for down
@@ -51,6 +52,7 @@ public class DrawTreeUtil {
 		if (poly!=null){
 			Nx -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNx -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode) 
 			{
 				poly.moveTo(Nx, Ny);
@@ -75,6 +77,7 @@ public class DrawTreeUtil {
 		if (poly!=null) {
 			Ny -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNy -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode) 
 			{
 				poly.moveTo(Nx, Ny);
@@ -99,6 +102,7 @@ public class DrawTreeUtil {
 		if (poly!=null) {
 			Ny -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNy -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode) 
 			{
 				poly.moveTo(Nx, Ny);
@@ -123,6 +127,7 @@ public class DrawTreeUtil {
 		Nx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy -= getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
 			poly.moveTo(Nx, Ny); //root left
 			poly.lineTo(Nx+width, Ny);	 //root right
@@ -157,6 +162,7 @@ public class DrawTreeUtil {
 		Nx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy += getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
 			poly.moveTo(Nx, Ny); // root right
 			poly.lineTo(Nx+width, Ny);	//root left
@@ -191,6 +197,7 @@ public class DrawTreeUtil {
 		Ny -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx += getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
 			poly.moveTo(Nx, Ny); // root left
 			poly.lineTo(Nx, Ny+width);	//root right
@@ -226,6 +233,7 @@ public class DrawTreeUtil {
 		Ny -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx -= getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
 			poly.moveTo(Nx, Ny); // root right
 			poly.lineTo(Nx, Ny+width);	//root left

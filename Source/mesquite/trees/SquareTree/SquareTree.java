@@ -312,9 +312,10 @@ public class SquareTree extends DrawTree {
 
 /* ======================================================================== */
 class SquareTreeDrawing extends TreeDrawing   {
-	public Path2D[] branchPoly;
-	public Path2D[] touchPoly;
-	public Path2D[] fillBranchPoly;
+	public Path2D.Double[] branchPoly;
+	public Path2D.Double[] touchPoly;
+	public Path2D.Double[] fillBranchPoly;
+	private Path2D.Double utilityPolygon;
 
 	public SquareTree ownerModule;
 	public int edgewidth = 6;
@@ -323,7 +324,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 	private int foundBranch;
 	private boolean ready=false;
 	private static final int  inset=1;
-	private Path2D utilityPolygon;
 	NameReference triangleNameRef;
 	int cornerMode;
 	BasicStroke defaultStroke;
@@ -398,13 +398,14 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	//makes polygon clockwise
-	private void UPdefineFillPoly(Path2D poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
+	private void UPdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Nx+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-( (sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
 		//rightedge needs to join to right edge of mother, not left edge of mother
+		poly.reset();
 		if (isRoot) {
 			poly.moveTo(Nx+inset, Ny+inset); // root left
 			poly.lineTo(Nx+sliceWidth-inset, Ny+inset);	//root right 
@@ -448,6 +449,8 @@ class SquareTreeDrawing extends TreeDrawing   {
 			poly.lineTo(Nx+inset, Ny+inset);  //return to daughter left
 			//	poly.npoints=7;
 		}
+		poly.closePath();
+
 	}
 	/*_________________________________________________*/
 	private void UPCalcFillBranchPolys(Tree tree, int node, double nShortcut)
@@ -461,7 +464,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 
 	/*_________________________________________________*/
-	private void UPCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D[] polys, int width)
+	private void UPCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
 			double dShortcut = getShortcutOfDaughters(tree, node);
@@ -472,12 +475,14 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	//makes polygon counterclockwise
-	private void DOWNdefineFillPoly(Path2D poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
+	private void DOWNdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Nx+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-((sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
+		poly.reset();
+
 		if (isRoot) {
 			poly.moveTo(Nx+inset, Ny-inset); //root right
 			poly.lineTo(Nx+sliceWidth-inset, Ny-inset);	//root left
@@ -532,7 +537,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		DOWNdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0, nShortcut, true);
 	}
 	/*_________________________________________________*/
-	private void DOWNCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D[] polys, int width)
+	private void DOWNCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
 			double dShortcut = getShortcutOfDaughters(tree, node);
@@ -543,12 +548,14 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	//makes polygon clockwise
-	private void RIGHTdefineFillPoly(Path2D poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices,  double nShortcut, boolean complete) {
+	private void RIGHTdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices,  double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Ny+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-((sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
+		poly.reset();
+
 		if (isRoot) {
 			poly.moveTo(Nx-inset, Ny+inset);// root left
 			poly.lineTo(Nx-inset, Ny+sliceWidth-inset);	//root right 
@@ -603,7 +610,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		RIGHTdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0,  nShortcut, true);
 	}
 	/*_________________________________________________*/
-	private void RIGHTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D[] polys, int width)
+	private void RIGHTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
 			double dShortcut = getShortcutOfDaughters(tree, node);
@@ -614,12 +621,14 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	/* make polygon counterclockwise*/
-	private void LEFTdefineFillPoly(Path2D poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
+	private void LEFTdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Ny+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-((sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
+		poly.reset();
+
 		if (isRoot) {
 			poly.moveTo(Nx+inset, Ny+inset); // root right
 			poly.lineTo(Nx+inset, Ny+sliceWidth-inset);	//root left
@@ -658,6 +667,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 				poly.lineTo(mNx -  nShortcut - inset, Ny+inset); //corner right
 
 			poly.lineTo(Nx+inset, Ny+inset); //return to daughter right
+			poly.closePath();
 		}
 	}
 	/*_________________________________________________*/
@@ -671,7 +681,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		LEFTdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0,  nShortcut, true);
 	}
 	/*_________________________________________________*/
-	private void LEFTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D[] polys, int width)
+	private void LEFTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
 			double dShortcut = getShortcutOfDaughters(tree, node);
@@ -940,7 +950,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		}
 	}
 
-	void fillOneBranch(Tree tree, Graphics g, Path2D poly, int node, boolean total){
+	void fillOneBranch(Tree tree, Graphics g, Path2D.Double poly, int node, boolean total){
 		if (cornerMode == 2){
 			if (!total)
 				drawOneCurvedBranch(tree, g, node, inset, edgewidth-inset*2) ;
@@ -1267,7 +1277,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		}
 	}
 	/*_________________________________________________*/
-	public Path2D nodePoly(int node) {
+	public Path2D.Double nodePoly(int node) {
 		double offset = (getNodeWidth()-getEdgeWidth())/2;
 		int doubleOffset = (getNodeWidth()-getEdgeWidth());
 		double startX = x[node] - offset;
@@ -1276,7 +1286,8 @@ class SquareTreeDrawing extends TreeDrawing   {
 			startX -= getNodeWidth()-doubleOffset;
 		} else if (isDOWN())
 			startY -= getNodeWidth()-doubleOffset;
-		Path2D poly = new Path2D.Double();
+		Path2D.Double poly = new Path2D.Double();
+		poly.reset();
 		poly.moveTo(startX,startY);
 		poly.lineTo(startX+getNodeWidth(),startY);
 		poly.lineTo(startX+getNodeWidth(),startY+getNodeWidth());
@@ -1286,7 +1297,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){
-		Path2D nodeP = nodePoly(node);
+		Path2D.Double nodeP = nodePoly(node);
 		if (nodeP!=null && nodeP.contains(x,y))
 			return true;
 		else
