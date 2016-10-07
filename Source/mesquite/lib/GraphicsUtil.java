@@ -51,6 +51,7 @@ public class GraphicsUtil {
 	/*_________________________________________________*/
 	public static void fillRect(Graphics2D g2, double x, double y, double width, double height) {
 		Rectangle2D rect = new Rectangle2D.Double(x,y,width,height);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.fill(rect);
 	}
 	/*_________________________________________________*/

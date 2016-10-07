@@ -394,6 +394,7 @@ public class DrawTreeUtil {
 						BasicStroke wideStroke = new BasicStroke(width);
 						Graphics2D g2 = (Graphics2D)g;
 						g2.setStroke(wideStroke);
+						g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 						g2.draw(arc);
 						done  = true;
 						g2.setStroke(defaultStroke);
@@ -505,6 +506,7 @@ public class DrawTreeUtil {
 				Stroke stroke = g2.getStroke();
 				g2.setStroke(wideStroke);
 				Shape line;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 					if (yN!=ynM){
 						line = new Line2D.Double(xN+halfEdge,yN+halfEdge,xN+halfEdge,ynM+halfEdge);
@@ -571,7 +573,8 @@ public class DrawTreeUtil {
 				Graphics2D g2 = (Graphics2D)g;
 				Stroke stroke = g2.getStroke();
 				g2.setStroke(wideStroke);
-				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 					xNHor = xN+start+halfLine;
 					if (xN>xnM){ // branch going to right
 						ynMVert = ynM+start+halfLine;
