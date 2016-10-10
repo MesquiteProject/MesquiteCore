@@ -43,6 +43,11 @@ public abstract class DrawTaxa extends MesquiteModule  {
    	public boolean isSubstantive(){
    		return false;  
    	}
+   	
+	public double getRescaleValue() {
+		return 1.0;
+	}
+
 }
 
 

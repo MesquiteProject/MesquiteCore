@@ -179,14 +179,6 @@ public void setTreeDrawing(TreeDrawing td) {
 		repaint();
 	}
 	
-	Rectangle visRect;
-
-	public Rectangle getVisRect(){
-		return visRect;
-	}
-	public void setVisRect(Rectangle r){
-		visRect = r;
-	}
 	public Tree getTree() {
 		return tree;
 	}

@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 import mesquite.lib.duties.*;
 
@@ -112,9 +113,16 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 			bound = maxHeight;
 
 		if (getIsPolygon()) {
+			AffineTransform scaleMatrix = new AffineTransform();
+			scaleMatrix.scale(rescaleValue, rescaleValue);
+			Graphics2D g2 = (Graphics2D)g;
+			AffineTransform saveTransform = g2.getTransform();
+			g2.setTransform(scaleMatrix);
 			Polygon poly = getPolygon(bound);
+			int xTranslate = (int)(x/rescaleValue);
+			int yTranslate = (int)(y/rescaleValue);
 			if (poly!=null) {
-				poly.translate(x, y);
+				poly.translate(xTranslate,yTranslate);
 				if (fillBlack) {
 					g.setColor(Color.black);
 					g.fillPolygon(poly);
@@ -124,9 +132,11 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 					g.fillPolygon(poly);
 				}
 				g.setColor(rimColor);
-				g.drawPolygon(poly);
-				poly.translate(-x, -y);
+
+				g2.drawPolygon(poly);
+				poly.translate(-xTranslate,-yTranslate);
 			}
+			g2.setTransform(saveTransform);
 		}
 		else
 			drawShape(g, bound, fillBlack);
@@ -144,7 +154,16 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 			Polygon poly = getPolygon(bound);
 			if (poly!=null) {
 				poly.translate(x, y);
-				g.fillPolygon(poly);
+				if (g instanceof Graphics2D) {
+					Graphics2D g2 = (Graphics2D)g;
+					AffineTransform scaleMatrix = new AffineTransform();
+					scaleMatrix.scale(rescaleValue, rescaleValue);
+					AffineTransform saveTransform = g2.getTransform();
+					g2.setTransform(scaleMatrix);
+					g2.fillPolygon(poly);
+					g2.setTransform(saveTransform);
+		       } else
+		    	   g.fillPolygon(poly);
 				poly.translate(-x, -y);
 			}
 		}

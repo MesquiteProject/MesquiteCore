@@ -66,7 +66,7 @@ public class CircleSymbol extends FillableMesquiteSymbol  {
 	}
 	/*.................................................................................................................*/
 	public boolean inSymbol(int symbolX, int symbolY, int x, int y, int maxWidth, int maxHeight){
-		int symSize = size;
+		int symSize = (int)(size*rescaleValue);
 		if (size>maxWidth && maxWidth>0)
 			symSize = maxWidth;
 		if (size>maxHeight && maxHeight>0)
@@ -85,7 +85,7 @@ public class CircleSymbol extends FillableMesquiteSymbol  {
 	}
 	/*.................................................................................................................*/
 	public void drawSymbol(Graphics g, int x, int y,  int maxWidth, int maxHeight, boolean fillBlack){
-		int symSize = size;
+		int symSize = (int)(size*rescaleValue);
 		if (size>maxWidth && maxWidth>0)
 			symSize = maxWidth;
 		if (size>maxHeight && maxHeight>0)

@@ -856,6 +856,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	// MesquiteScrollbar hScroll, vScroll;
 	TreeScrollPane treePane;
 	Adjustable hScroll, vScroll;
+	
 	int scanLineThickness = 3;
 	boolean usingPane = false;
 	TreeSource treeSourceTask;
@@ -1848,8 +1849,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			// hScroll.setValue(treePane.x);
 			treePane.setHMinMax(0, treeDisplay.getFieldWidth() - treePane.getWidth() - scrollWidth);
 
-			vScroll.setBlockIncrement(treePane.getHeight() / 10);
-			hScroll.setBlockIncrement(treePane.getWidth() / 10);
+			int increment = treePane.getHeight() / 10;
+			if (increment>treeDisplay.getFieldHeight())
+				increment = treeDisplay.getFieldHeight();
+			vScroll.setBlockIncrement(increment);
+			increment = treePane.getWidth() / 10;
+			if (increment>treeDisplay.getFieldWidth())
+				increment = treeDisplay.getFieldWidth();
+			hScroll.setBlockIncrement(increment);
 			vScroll.setUnitIncrement(10);
 			hScroll.setUnitIncrement(10);
 			resetScrolls();
@@ -2747,8 +2754,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					MesquiteBoolean answer = new MesquiteBoolean(false);
 					MesquiteInteger newWidth = new MesquiteInteger(totalTreeFieldWidth);
 					MesquiteInteger newHeight = new MesquiteInteger(totalTreeFieldHeight);
-					MesquiteInteger
-					.queryTwoIntegers(ownerModule.containerOfModule(), "Size of tree drawing", "Width (Pixels)", "Height (Pixels)", answer, newWidth, newHeight, 10, MesquiteInteger.unassigned, 10, MesquiteInteger.unassigned, "Enter the width and height of the tree drawing.  These values must be at least 10 pixels each.");
+					MesquiteInteger.queryTwoIntegers(ownerModule.containerOfModule(), "Size of tree drawing", "Width (Pixels)", "Height (Pixels)", answer, newWidth, newHeight, 10, MesquiteInteger.unassigned, 10, MesquiteInteger.unassigned, "Enter the width and height of the tree drawing.  These values must be at least 10 pixels each.");
 					if (answer.getValue() && newWidth.getValue() > 10 && newHeight.getValue() > 10) {
 						totalTreeFieldWidth = newWidth.getValue();
 						totalTreeFieldHeight = newHeight.getValue();
@@ -4679,7 +4685,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 }
 
-/* ======================================================================== */
+/* ======================================================================== *
 class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, MouseWheelListener { // REALTreeScrollPane
 	BasicTreeWindow window;
 

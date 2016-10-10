@@ -604,7 +604,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 	{
 		if (foundBranch==0) {
 			if (fillBranchPoly[node].contains(x, y) || inNode(node,x,y)) {
-				Debugg.println("node " + node);
 				foundBranch = node;
 				if (fraction!=null)
 					if (inNode(node,x,y))

@@ -22,6 +22,7 @@ public abstract class MesquiteSymbol extends Listened implements Listable  {
 	protected int size=8;
 	Color color = Color.black;
 	IntegerField sizeField = null;
+	double rescaleValue = 1.0;
 	public MesquiteSymbol() {
 	}
 	/**sets the size of the symbol*/
@@ -44,6 +45,13 @@ public abstract class MesquiteSymbol extends Listened implements Listable  {
 	public String getExtraNexusOptions(){
 		return " ";
 	}
+	public double getRescaleValue() {
+		return rescaleValue;
+	}
+	public void setRescaleValue(double rescaleValue) {
+		this.rescaleValue = rescaleValue;
+	}
+
 	/*.................................................................................................................*/
 	public void  setToCloned(MesquiteSymbol cloned){
 		setSize(cloned.getSize());
