@@ -59,7 +59,7 @@ public class WandTaxon extends DataWindowAssistantI {
 		selectByColor = new MesquiteBoolean(!selectByText.getValue());
 		addCheckMenuItem(null, "Select by Text", makeCommand("selectByText",  this), selectByText);
 		addCheckMenuItem(null, "Select by Color", makeCommand("selectByColor",  this), selectByColor);
-		addMenuItem("-", null);
+		addMenuSeparator();
 		eItem = addCheckMenuItem(null, "Equal", makeCommand("toggleEquals",  this), equals);
 		gItem = addCheckMenuItem(null, "Greater than", makeCommand("toggleGT",  this), greaterthan);
 		lItem = addCheckMenuItem(null, "Less than", makeCommand("toggleLT",  this), lessthan);

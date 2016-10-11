@@ -123,8 +123,8 @@ class ShadeStatesDecorator extends TreeDecorator {
 	private   void writeStateAtNode(CharacterHistory statesAtNodes,CharacterDistribution observedStates, Graphics g, int N,  Tree tree) {
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			writeStateAtNode(statesAtNodes, observedStates, g, d, tree);
-		int nodeX = treeDisplay.getTreeDrawing().x[N];
-		int nodeY = treeDisplay.getTreeDrawing().y[N];
+		int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer node approximation
+		int nodeY = (int)treeDisplay.getTreeDrawing().y[N];  // integer node approximation
 		if (treeDisplay.getOrientation() == treeDisplay.UP) {
 			nodeY+=10;
 			//nodeX+=10;

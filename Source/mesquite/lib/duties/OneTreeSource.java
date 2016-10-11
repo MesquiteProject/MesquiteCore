@@ -34,13 +34,21 @@ public abstract class OneTreeSource extends MesquiteModule  {
    	 }
  	 
    	 public String[] getDefaultModule() {
-   	 	return new String[] {"#TreeOfContext"};
+   		 return new String[] {"#TreeOfContext"};
    	 }
-   	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
-   	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-   	public abstract void initialize(Taxa taxa);
+   	 /** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
+    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress).  This version allows one to supply an explanation to the user*/
+   	 public void initialize(Taxa taxa, String explanationForUser){
+   		 initialize(taxa);
+   	 }
 
-   	public abstract Tree getTree(Taxa taxa);
+   	 /** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
+       	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
+   	 public abstract void initialize(Taxa taxa);
+
+   	 public abstract Tree getTree(Taxa taxa, String explanationForUser);
+
+   	 public abstract Tree getTree(Taxa taxa);
 	/*.................................................................................................................*/
   	public abstract void setPreferredTaxa(Taxa taxa);
 

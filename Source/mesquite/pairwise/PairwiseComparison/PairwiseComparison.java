@@ -88,11 +88,11 @@ public class PairwiseComparison extends TreeDisplayAssistantMA {
 		addMenuItem( "Previous Character (Indep.)", makeCommand("previousCharacterA",  this));
 		addMenuItem( "Next Character (Dep.)", makeCommand("nextCharacterB",  this));
 		addMenuItem( "Previous Character (Dep.)", makeCommand("previousCharacterB",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		addMenuItem( "Next Pairing", makeCommand("nextPairing",  this));
 		addCheckMenuItem(null, "Show states", MesquiteModule.makeCommand("showStates",  this), showStates);
 		addMenuItem( "Close Pairwise Comparison", makeCommand("closeShowPairs",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		resetContainingMenuBar();
 		return true;
 	}
@@ -528,8 +528,8 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			MesquiteLabel c = (MesquiteLabel)labelsAtNodes.getPanel(t);
 			if (c != null){
 				if (pairModule.showStates.getValue()) {
-					int nodeX = treeDisplay.getTreeDrawing().x[N];
-					int nodeY = treeDisplay.getTreeDrawing().y[N];
+					int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer nodeloc approximation
+					int nodeY = (int)treeDisplay.getTreeDrawing().y[N]; // integer nodeloc approximation
 					//	c.setText( observedStatesA.toString(t, " ") + "/" + observedStatesB.toString(t, " ")); 
 					c.setText("\2" + observedStatesA.toString(t, " "));  //\2=boldface
 					c.addLine(observedStatesB.toString(t, " ")); 

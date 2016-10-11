@@ -298,7 +298,8 @@ public class Listened implements Listenable {
 						stillGoing = true;
 				}
 			}
-			listeners.removeAllElements();
+			removeAllListeners();
+			//listeners.removeAllElements();
 		}
 	}
 

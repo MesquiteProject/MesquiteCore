@@ -226,7 +226,7 @@ public class ManageProteinChars extends CategMatrixManager {
 		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		blocks.append(endLine);
-		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);

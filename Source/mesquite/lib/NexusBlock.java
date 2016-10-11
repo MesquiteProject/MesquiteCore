@@ -26,7 +26,7 @@ import mesquite.lib.characters.*;
 /**Represents a block in a NEXUS file.  Often contains a reference to the object to be written (e.g., a CharacterData
 or TreeVector.
  */
-public abstract class NexusBlock implements Listable, Identifiable {
+public abstract class NexusBlock implements Listable, Identifiable, Disposable {
 	public static int  numBackups =0; //number of backups of NEXUS files
 	MesquiteModule manager;
 	MesquiteFile file;
@@ -222,9 +222,17 @@ public abstract class NexusBlock implements Listable, Identifiable {
 				c.increment();
 		}
 	}
+	boolean disposedAlready = false;
 	public void dispose() {
+		//Debugg.println("disposing " + getClass());
+		if (disposedAlready)
+			return;
 		manager = null;
 		file = null;
+		if (unrec != null)
+			unrec.removeAllElements();
+		unrec = null;
+		disposedAlready = true;
 		totalDisposed++;
 	}
 	public void finalize() throws Throwable {

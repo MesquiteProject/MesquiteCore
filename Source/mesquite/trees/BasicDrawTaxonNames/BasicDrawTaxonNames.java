@@ -392,7 +392,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 	NameReference colorNameRef = NameReference.getNameReference("color");
 	/*.................................................................................................................*/
-	protected void drawNamesOnTree(Tree tree, int N, TreeDisplay treeDisplay, TaxaPartition partitions, int triangleBase) {
+	protected void drawNamesOnTree(Tree tree, int drawnRoot, int N, TreeDisplay treeDisplay, TaxaPartition partitions, int triangleBase) {
 		if (triangleBase < 0 && tree.getAssociatedBit(triangleNameRef, N))
 			triangleBase = N;
 		if  (tree.nodeIsTerminal(N)) {   //terminal
@@ -402,8 +402,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			//Color bgColor = bgTransparent;
 
 			textRotator.assignBackground(bgColor);
-			int horiz=treeDrawing.x[N];
-			int vert=treeDrawing.y[N];
+			double horiz=treeDrawing.x[N];
+			double vert=treeDrawing.y[N];
 			int lengthString;
 			boolean warn = true;
 			Taxa taxa = tree.getTaxa();
@@ -492,13 +492,11 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (treeDisplay.centerNames)
 				centeringOffset = (longestString-lengthString)/2;
 
-
 			if (treeDrawing.namesFollowLines ){
-				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])/(treeDrawing.lineBaseX[N]-treeDrawing.lineTipX[N]);
-				//setBounds(namePolys[taxonNumber], horiz+separation, vert, lengthString, rise+descent);
-				boolean upper = treeDrawing.lineTipY[N]>treeDrawing.lineBaseY[N];
-				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
+				double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])*1.0/(treeDrawing.lineBaseX[N]*1.0-treeDrawing.lineTipX[N]);
 				double radians = Math.atan(slope);
+				
+				boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
 				Font font = gL.getFont();
 				FontMetrics fontMet = gL.getFontMetrics(font);
 				double height = fontMet.getHeight(); //0.667
@@ -516,10 +514,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					textOffsetV = (int)(Math.sin(radians + Math.atan(height*0.6/separation))*separation*1.4);
 				}
 
-				int horizPosition = treeDrawing.lineTipX[N];
-				int vertPosition = treeDrawing.lineTipY[N];
+				double horizPosition = treeDrawing.lineTipX[N];
+				double vertPosition = treeDrawing.lineTipY[N];
 
-				textRotator.drawFreeRotatedText(s, gL, horizPosition, vertPosition, radians, new Point(textOffsetH, textOffsetV), false, namePolys[taxonNumber]);
+				textRotator.drawFreeRotatedText(s, gL, (int)horizPosition, (int)vertPosition, radians, new Point(textOffsetH, textOffsetV), false, namePolys[taxonNumber]);  //integer nodeloc approximation
 
 			}
 			else if ((treeDrawing.labelOrientation[N]==270) || treeDisplay.getOrientation()==TreeDisplay.UP) {
@@ -528,16 +526,16 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					horiz -= StringUtil.getStringDrawLength(gL,"A");
 				}
 				if (MesquiteDouble.isCombinable(treeDrawing.namesAngle) && treeDrawing.labelOrientation[N]!=270){
-					textRotator.drawFreeRotatedText(s,  gL, horiz-rise/2, vert-separation, treeDrawing.namesAngle, null, true, namePolys[taxonNumber]);
+					textRotator.drawFreeRotatedText(s,  gL, (int)horiz-rise/2, (int)vert-separation, treeDrawing.namesAngle, null, true, namePolys[taxonNumber]); //integer nodeloc approximation
 				}
 				else {
 					vert -= centeringOffset;
 					if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
-						setBounds(namePolys[taxonNumber], horiz-rise/2, vert-separation-lengthString, rise+descent, lengthString);
+						setBounds(namePolys[taxonNumber], (int)horiz-rise/2, (int)vert-separation-lengthString, rise+descent, lengthString); //integer nodeloc approximation
 					if (nameIsVisible(treeDisplay, taxonNumber))
-						textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, horiz-rise/2, vert-separation);
+						textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz-rise/2, (int)vert-separation); //integer nodeloc approximation
 
 					if (underlined){
 						Rectangle b =namePolys[taxonNumber].getB();
@@ -557,9 +555,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
-					setBounds(namePolys[taxonNumber], horiz-rise/2, vert+separation, rise+descent, lengthString);
+					setBounds(namePolys[taxonNumber], (int)horiz-rise/2, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
 					if (nameIsVisible(treeDisplay, taxonNumber))
-						textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, horiz-rise/2, vert+separation, false);
+						textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz-rise/2, (int)vert+separation, false); //integer nodeloc approximation
 					if (underlined){
 						Rectangle b =namePolys[taxonNumber].getB();
 						gL.drawLine(b.x+b.width, b.y, b.x+b.width, b.y+b.height);
@@ -577,15 +575,15 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
-					setBounds(namePolys[taxonNumber], horiz+separation, vert-rise/2, lengthString, rise+descent);
+					setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
 
 					if (nameIsVisible(treeDisplay, taxonNumber)){
 						if (bgColor!=null) {
 							gL.setColor(bgColor);
-							gL.fillRect(horiz+separation, vert-rise/2, lengthString, rise+descent);
+							GraphicsUtil.fillRect(gL,horiz+separation, vert-rise/2, lengthString, rise+descent);
 							gL.setColor(taxonColor);
 						}
-						gL.drawString(s, horiz+separation, vert+rise/2);
+						gL.drawString(s, (int)horiz+separation, (int)vert+rise/2); //integer nodeloc approximation
 						if (underlined){
 							Rectangle b =namePolys[taxonNumber].getB();
 							gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
@@ -604,14 +602,14 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
-					setBounds(namePolys[taxonNumber], horiz - separation - lengthString, vert-rise/2, lengthString, rise+descent);
+					setBounds(namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
 					if (nameIsVisible(treeDisplay, taxonNumber)){
 						if (bgColor!=null) {
 							gL.setColor(bgColor);
-							gL.fillRect(horiz - separation - lengthString, vert-rise/2, lengthString, rise+descent);
+							GraphicsUtil.fillRect(gL,horiz - separation - lengthString, vert-rise/2, lengthString, rise+descent);
 							gL.setColor(taxonColor);
 						}
-						gL.drawString(s, horiz - separation - lengthString, vert+rise/2);
+						gL.drawString(s, (int)horiz - separation - lengthString, (int)vert+rise/2); //integer nodeloc approximation
 						if (underlined){
 							Rectangle b =namePolys[taxonNumber].getB();
 							gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
@@ -624,14 +622,14 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 					setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 				else
-				setBounds(namePolys[taxonNumber], horiz+separation, vert-rise/2, lengthString, rise+descent);
+				setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
 				if (nameIsVisible(treeDisplay, taxonNumber)){
 					if (bgColor!=null) {
 						gL.setColor(bgColor);
-						gL.fillRect(horiz+separation, vert-rise/2, lengthString, rise+descent);
+						GraphicsUtil.fillRect(gL,horiz+separation, vert-rise/2, lengthString, rise+descent);
 						gL.setColor(taxonColor);
 					}
-					gL.drawString(s, horiz+separation, vert+rise/2);
+					gL.drawString(s, (int)horiz+separation, (int)vert+rise/2);//integer nodeloc approximation
 					if (underlined){
 						Rectangle b =namePolys[taxonNumber].getB();
 						gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
@@ -646,14 +644,14 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], horiz+separation, vert, lengthString, rise+descent);
+						setBounds(namePolys[taxonNumber], (int)horiz+separation, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
 							if (bgColor!=null) {
 								gL.setColor(bgColor);
-								gL.fillRect(horiz+separation, vert, lengthString, rise+descent);
+								GraphicsUtil.fillRect(gL,horiz+separation, vert, lengthString, rise+descent);
 								gL.setColor(taxonColor);
 							}
-							gL.drawString(s, horiz+separation, vert + rise);
+							gL.drawString(s, (int)horiz+separation, (int)vert + rise); //integer nodeloc approximation
 							if (underlined){
 								Rectangle b =namePolys[taxonNumber].getB();
 								gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
@@ -665,14 +663,14 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], horiz - separation - lengthString, vert, lengthString, rise+descent);
+						setBounds(namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
 							if (bgColor!=null) {
 								gL.setColor(bgColor);
-								gL.fillRect(horiz - separation - lengthString, vert, lengthString, rise+descent);
+								GraphicsUtil.fillRect(gL,horiz - separation - lengthString, vert, lengthString, rise+descent);
 								gL.setColor(taxonColor);
 							}
-							gL.drawString(s, horiz - separation - lengthString, vert + rise);
+							gL.drawString(s, (int)horiz - separation - lengthString, (int)vert + rise); //integer nodeloc approximation
 							if (underlined){
 								Rectangle b =namePolys[taxonNumber].getB();
 								gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
@@ -686,9 +684,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], horiz, vert+separation, rise+descent, lengthString);
+						setBounds(namePolys[taxonNumber], (int)horiz, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
-							textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, horiz, vert+separation, false);
+							textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz, (int)vert+separation, false); //integer nodeloc approximation
 							if (underlined){
 								Rectangle b =namePolys[taxonNumber].getB();
 								gL.drawLine(b.x+b.width, b.y, b.x+b.width, b.y+b.height);
@@ -700,9 +698,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						if (!nameExposedOnTree(tree, taxonNumber, triangleBase))
 							setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 						else
-						setBounds(namePolys[taxonNumber], horiz, vert-separation-lengthString, rise+descent, lengthString);
+						setBounds(namePolys[taxonNumber], (int)horiz, (int)vert-separation-lengthString, rise+descent, lengthString); //integer nodeloc approximation
 						if (nameIsVisible(treeDisplay, taxonNumber)){
-							textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, horiz, vert-separation);
+							textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz, (int)vert-separation); //integer nodeloc approximation
 							if (underlined){
 								Rectangle b =namePolys[taxonNumber].getB();
 								gL.drawLine(b.x+b.width, b.y, b.x+b.width, b.y+b.height);
@@ -726,7 +724,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-				drawNamesOnTree(tree, d, treeDisplay, partitions, triangleBase);
+				drawNamesOnTree(tree,drawnRoot, d, treeDisplay, partitions, triangleBase);
 
 			String label = null;
 			if (showNodeLabels.getValue())
@@ -759,7 +757,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				/*New code added Feb.15.07 oliver*/ //TODO: delete new code comments
 				//				TODO: Currently only really works for square trees, and an ugly hack at that
 				if (!centerNodeLabels.getValue() || !(MesquiteModule.getShortClassName(treeDrawing.getClass()).toString().equalsIgnoreCase("SquareTreeDrawing"))){
-					StringUtil.highlightString(gL,s, treeDrawing.x[N], treeDrawing.y[N], taxonColor, Color.white);
+					StringUtil.highlightString(gL,s, (int)treeDrawing.x[N], (int)treeDrawing.y[N], taxonColor, Color.white); //integer nodeloc approximation
 					if (MesquiteModule.getShortClassName(treeDrawing.getClass()).toString().equalsIgnoreCase("SquareTreeDrawing"))
 						centerNodeLabelItem.setEnabled(true);
 					else centerNodeLabelItem.setEnabled(false); // TODO: these conditionals don't work right.  Should work now April.03.07 oliver
@@ -768,18 +766,18 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					centerNodeLabelItem.setEnabled(true);
 					int edgeWidth = treeDrawing.getEdgeWidth();
 					int parentN = tree.motherOfNode(N);
-					int centerH, centerV, startH, startV;
+					double centerH, centerV, startH, startV;
 					int nameDrawLength = StringUtil.getStringDrawLength(gL, s);
 					int nameDrawHeight = StringUtil.getTextLineHeight(gL);
 					if (treeDisplay.getOrientation()==TreeDisplay.UP){
-						startV = treeDrawing.y[N] + (int)((treeDrawing.y[parentN] - treeDrawing.y[N])/2) + edgeWidth; 
+						startV = treeDrawing.y[N] + ((treeDrawing.y[parentN] - treeDrawing.y[N])/2) + edgeWidth; 
 						startH = treeDrawing.x[N] + edgeWidth;
-						StringUtil.highlightString(gL, s, startH, startV, taxonColor, Color.white);
+						StringUtil.highlightString(gL, s, (int)startH, (int)startV, taxonColor, Color.white); //integer nodeloc approximation
 					}
 					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){
 						startV = treeDrawing.y[N] - (int)((treeDrawing.y[N] - treeDrawing.y[parentN])/2); 
 						startH = treeDrawing.x[N] + edgeWidth;
-						StringUtil.highlightString(gL, s, startH, startV, taxonColor, Color.white);
+						StringUtil.highlightString(gL, s, (int)startH, (int)startV, taxonColor, Color.white); //integer nodeloc approximation
 					}
 					else if (treeDisplay.getOrientation()==TreeDisplay.RIGHT){
 						centerH = treeDrawing.x[N] - (int)((treeDrawing.x[N] - treeDrawing.x[parentN])/2) - edgeWidth; 
@@ -789,7 +787,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 							startH -= (centerH + (int)nameDrawLength/2) - (treeDrawing.x[N] - edgeWidth);
 						}
 						startV = (int)(treeDrawing.y[N] - 1);
-						StringUtil.highlightString(gL, s, startH, startV, taxonColor, Color.white);
+						StringUtil.highlightString(gL, s, (int)startH, (int)startV, taxonColor, Color.white); //integer nodeloc approximation
 					}
 					else if (treeDisplay.getOrientation()==TreeDisplay.LEFT){
 						centerH = treeDrawing.x[N] + (int)((treeDrawing.x[parentN] - treeDrawing.x[N])/2) + edgeWidth; 
@@ -799,7 +797,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 							startH += (treeDrawing.x[N] + edgeWidth) - (centerH - (int)nameDrawLength/2);
 						}
 						startV = (int)(treeDrawing.y[N] - 1);
-						StringUtil.highlightString(gL, s, startH, startV, taxonColor, Color.white);
+						StringUtil.highlightString(gL, s, (int)startH, (int)startV, taxonColor, Color.white); //integer nodeloc approximation
 					}
 					// TODO: figure out how to check for initialization of startH & startV, then pull the highlightString method out of the four conditionals above and put it here
 					// StringUtil.highlightString(gL, s, startH, startV, taxonColor, Color.white);
@@ -807,7 +805,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				/*end new code added Feb.15.07 oliver*/
 				gL.setColor(taxonColor);
 				if (underlined)
-					gL.drawLine(treeDrawing.x[N], treeDrawing.y[N]+1,treeDrawing.x[N] +  fm.stringWidth(s), treeDrawing.y[N]+1);
+					GraphicsUtil.drawLine(gL,treeDrawing.x[N], treeDrawing.y[N]+1,treeDrawing.x[N] +  fm.stringWidth(s), treeDrawing.y[N]+1);
 			}
 		}
 	}
@@ -896,6 +894,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						currentFont = fontToSet;
 				}
 				Font tempFont = g.getFont();
+				//currentFont = currentFont.deriveFont(Font.BOLD);
 				g.setFont(currentFont);
 				fm=g.getFontMetrics(currentFont);
 				rise= fm.getMaxAscent();
@@ -914,7 +913,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					triangleBase = drawnRoot;
 				else
 					triangleBase = -1;
-				drawNamesOnTree(tree, drawnRoot, treeDisplay, part, triangleBase);
+				drawNamesOnTree(tree, drawnRoot, drawnRoot, treeDisplay, part, triangleBase);
 		
 				g.setFont(tempFont);
 			}

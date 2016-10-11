@@ -118,10 +118,10 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		addItemToSubmenu(null, mLO, "Steps per Branch...", makeCommand("setStepCount", this));
 		addItemToSubmenu(null, mLO, "Optimization Iterations...", makeCommand("setIterations", this));
 		addItemToSubmenu(null, mLO, "Underflow Checking...", makeCommand("setUnderflowCheckFreq", this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		addMenuItem("Show Parameters Explorer", makeCommand("showParamExplorer",this));
 		//addCheckMenuItem(null, "Intermediates to console", makeCommand("toggleIntermediatesToConsole",this), intermediatesToConsole);
-		//		addMenuItem("-", null);
+		//		addMenuSeparator();
 		rootModes = new StringArray(2);  
 		rootModes.setValue(ROOT_IGNOREPRIOR, "Ignore Root State Frequencies");  //the strings passed will be the menu item labels
 		rootModes.setValue(ROOT_USEPRIOR, "Use Root State Frequencies as Prior");

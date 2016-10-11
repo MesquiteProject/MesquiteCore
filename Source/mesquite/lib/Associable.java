@@ -548,61 +548,67 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return s + ">";
 	}
 	public void readAssociated(String assocString, int node, MesquiteInteger pos){
+		readAssociated(assocString,node,pos, (String)null, (String)null);
+		
+	}
+	public void readAssociated(String assocString, int node, MesquiteInteger pos, String whitespace, String punctuation){
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
-		String s=ParseUtil.getToken(assocString, pos);
-		while (!">".equals(s)) {
-			if (StringUtil.blank(s))
+		String key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
+		while (!">".equals(key)) {
+			if (StringUtil.blank(key))
 				return;
-			ParseUtil.getToken(assocString, pos); //eating up equals
+			String eq = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //eating up equals
 			int oldPos = pos.getValue();
-			String value = ParseUtil.getToken(assocString, pos); //finding value
+			String value = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //finding value
+			value=StringUtil.removeFirstCharacterIfMatch(value, '\'');
+			value=StringUtil.removeLastCharacterIfMatch(value, '\'');
 			if (StringUtil.blank(value))
 				return;
 			if (value.equalsIgnoreCase("on")) {
-				NameReference nr = makeAssociatedBits(s);
+				NameReference nr = makeAssociatedBits(key);
 				Bits bb = getWhichAssociatedBits(nr);
 				bb.setBit(node, true);
 			}
 			else if (value.equalsIgnoreCase("off")) {
-				NameReference nr = makeAssociatedBits(s);
+				NameReference nr = makeAssociatedBits(key);
 				Bits bb = getWhichAssociatedBits(nr);
 				bb.setBit(node, false);
 			}
 			else if (value.indexOf("string:") == 0) { //treat as String 
 
-				NameReference nr = makeAssociatedObjects(s);
+				NameReference nr = makeAssociatedObjects(key);
 				ObjectArray bb = getWhichAssociatedObject(nr);
 				bb.setValue(node, value.substring(7, value.length()));
 			}
 			else if (value.indexOf("strings") == 0) { //treat as String[] 
 
-				NameReference nr = makeAssociatedObjects(s);
+				NameReference nr = makeAssociatedObjects(key);
 				ObjectArray bb = getWhichAssociatedObject(nr);		
 				//	bb.setValue(node, value.substring(7, value.length()));
 			}
 			else if (value.indexOf("{") == 0) { //treat as String bounded by {}; added to read BEAST results
 				String stored = "";
-				String name = s;
+				String s="";
 				while (!">".equals(s) && !"}".equals(s)) {
-					s=ParseUtil.getToken(assocString, pos);
+					s=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
 					if ((!">".equals(s) && !"}".equals(s)))
 						stored += s;
 				}
-				NameReference nr = makeAssociatedObjects(name);
+				NameReference nr = makeAssociatedObjects(key);
 				ObjectArray bb = getWhichAssociatedObject(nr);
 				bb.setValue(node, stored);
 			}
 			else if (value.indexOf(".")>=0 && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos)) { //treat as double 
-				NameReference nrEx= NameReference.getNameReference(s);   // fixed in 3.01
+				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01
 				DoubleArray bb = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist
 				if (bb == null) {
 					//Making doubles to be filled
-					NameReference nr = makeAssociatedDoubles(s);
+					NameReference nr = makeAssociatedDoubles(key);
 					bb = getWhichAssociatedDouble(nr);
 
 					//but first check to see if there are longs.  If so, and if doubles hadn't existed before, then transfer
-					NameReference nrExL= NameReference.getNameReference(s);
+					NameReference nrExL= NameReference.getNameReference(key);
 					LongArray longs = getWhichAssociatedLong(nrExL);
 					if (longs != null){
 						//There is an array of longs of the same name.  It's therefore assumed that they should all be upgraded to doubles!
@@ -617,27 +623,27 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			//at this point there are just two alternatives left that are recognized: an undeclared string, and an integer
 			//first check to see if it could be a number
 			else if ("0123456789-".indexOf(value.charAt(0))<0 || !MesquiteLong.interpretableAsLong(assocString, pos, oldPos)) {  //doesn't start as number or starts as number but not interpretable as long
-				NameReference nr = makeAssociatedObjects(s);
+				NameReference nr = makeAssociatedObjects(key);
 				ObjectArray bb = getWhichAssociatedObject(nr);
 				bb.setValue(node, value);
 			}
 			else {  //treat as long, unless (fixed in 3.01) same name exists as DoubleArray in which case put there
-				NameReference nrEx= NameReference.getNameReference(s);   // 
+				NameReference nrEx= NameReference.getNameReference(key);   // 
 				DoubleArray bbd = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist; if so, use as doubles instead!!!!!
 				if (bbd != null){
 					pos.setValue(oldPos);
 					bbd.setValue(node, MesquiteInteger.fromString(assocString, pos));
 				} 
 				else {
-					NameReference nr = makeAssociatedLongs(s);
+					NameReference nr = makeAssociatedLongs(key);
 					LongArray bb = getWhichAssociatedLong(nr);
 					pos.setValue(oldPos);
 					bb.setValue(node, MesquiteInteger.fromString(assocString, pos));
 				}
 			}
-			s=ParseUtil.getToken(assocString, pos);
-			if (",".equals(s)) //eating up "," separating subcommands
-				s=ParseUtil.getToken(assocString, pos);
+			key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
+			if (",".equals(key)) //eating up "," separating subcommands
+				key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
 		}
 	}
 	public void setAssociateds(Associable a){

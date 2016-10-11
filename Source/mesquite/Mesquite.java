@@ -38,11 +38,11 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.1.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.1+.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.1";
+		return "3.1+";
 	}
 
 	/*.................................................................................................................*/
@@ -67,7 +67,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -1438,6 +1438,15 @@ public class Mesquite extends MesquiteTrunk
 			logln("Memory status cannot be reported because checkMemory is not set");
 			return;
 		}
+		Vector wcre,wct, wctf;
+		wcre = MesquiteWindow.classesCreated;
+		wct = MesquiteWindow.countsOfClasses;
+		wctf = MesquiteWindow.countsOfClassesFinalized;
+			logln("Window classes created     " );
+			for (int i=0; i<wcre.size(); i++){
+				logln("    " + wcre.elementAt(i) + "  created: " + wct.elementAt(i) + "  finalized: " + wctf.elementAt(i));
+			}
+		
 		Vector cre, fin, ct, ctd;
 		cre = FileElement.classesCreated;
 		fin = FileElement.classesFinalized;
@@ -1482,6 +1491,7 @@ public class Mesquite extends MesquiteTrunk
 			}
 		}
 
+		logln(" MesquiteMenuBar.totalFinalized " +  MesquiteMenuBar.totalFinalized + "  MesquiteMenuBar.totalCreated " +  MesquiteMenuBar.totalCreated);
 		logln(" MesquiteMenuItem.totalFinalized " +  MesquiteMenuItem.totalFinalized + " MesquiteMenuItem.totalDisposed " + MesquiteMenuItem.totalDisposed + " MesquiteMenuItem.totalCreated " +  MesquiteMenuItem.totalCreated);
 		logln(" MesquiteMenuItemSpec.totalFinalized " +  MesquiteMenuItemSpec.totalFinalized + " MesquiteMenuItemSpec.totalDisposed " + MesquiteMenuItemSpec.totalDisposed + " MesquiteMenuItemSpec.totalCreated " +  MesquiteMenuItemSpec.totalCreated);
 		logln(" MesquiteModule.totalFinalized " +  MesquiteModule.totalFinalized + " EmployerEmployee.totalDisposed " +  EmployerEmployee.totalDisposed + " EmployerEmployee.totalCreated " +  EmployerEmployee.totalCreated);
@@ -1492,6 +1502,7 @@ public class Mesquite extends MesquiteTrunk
 		logln("Associable.totalFinalizedA " + Associable.totalFinalizedA  + " Associable.totalDisposedA " +  Associable.totalDisposedA + " Associable.totalCreatedA " +  Associable.totalCreatedA);
 		logln("CharacterData.totalDisposed " + CharacterData.totalDisposed + " CharacterData.totalCreated " +  CharacterData.totalCreated);
 		logln("TreeVector.totalDisposed " + TreeVector.totalDisposed + " TreeVector.totalCreated " +  TreeVector.totalCreated);
+		logln("SpecsSet.totalDisposed " + SpecsSet.totalDisposed + " SpecsSet.totalCreated " +  SpecsSet.totalCreated);
 		logln("Listened.listenersRemaining " + Listened.listenersRemaining);
 		logln("Listened.listenersReport\n" + Listened.reportListeners());
 		logln("Threads");
@@ -1842,6 +1853,36 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Forces a reset of the menus.", null, commandName, "resetMenus")) {
 			zeroMenuResetSuppression();
+			//Debugg.println do this only once
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
+			resetAllMenuBars();
 			resetAllMenuBars();
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {
@@ -1923,11 +1964,12 @@ public class Mesquite extends MesquiteTrunk
 				logln("MesquiteProject.totalFinalized " +  MesquiteProject.totalFinalized + " totalDisposed " + MesquiteProject.totalDisposed + " totalCreated " +  MesquiteProject.totalCreated);
 				logln("MesquiteFile.totalFinalized " +  MesquiteFile.totalFinalized + " totalDisposed " + MesquiteFile.totalDisposed + " totalCreated " +  MesquiteFile.totalCreated);
 				logln("ProjectRead.totalFinalized " +  ProjectRead.totalFinalized + " totalCreated " +  ProjectRead.totalCreated);
-				logln("FileElement.totalFinalized " +  FileElement.totalFinalized + " totalDisposed " + FileElement.totalDisposed + " totalCreated " +  FileElement.totalCreated);
+				logln("FileElement.totalFinalized " +  FileElement.totalFinalized + " totalDisposed " + FileElement.totalDisposed + " totalCreated " +  FileElement.totalCreated+ " totalTrueFileElementCreated " +  FileElement.totalTrueFileElementCreated);
 				logln("MesquiteFrame.totalFinalized " +  MesquiteFrame.totalFinalized + " totalDisposed " + MesquiteFrame.totalDisposed + " totalCreated " +  MesquiteFrame.totalCreated);
 				logln("MesquiteWindow.totalFinalized " +  MesquiteWindow.totalFinalized + " totalDisposed " + MesquiteWindow.totalDisposed + " numDisposing " +  MesquiteWindow.numDisposing + " totalCreated " +  MesquiteWindow.totalCreated);
 				logln("MesquiteDialogParent.totalFinalized " +  MesquiteDialogParent.totalFinalized + " totalDisposed " + MesquiteDialogParent.totalDisposed + " totalCreated " +  MesquiteDialogParent.totalCreated);
 				logln("ListableVector.totalFinalized " +  ListableVector.totalFinalized + " totalDisposed " + ListableVector.totalDisposed + " totalCreated " +  ListableVector.totalCreated);
+				logln("MesquiteMenuBar.totalFinalized " +  MesquiteMenuBar.totalFinalized +  " totalCreated " +  MesquiteMenuBar.totalCreated);
 				logln("MesquiteMenuItem.totalFinalized " +  MesquiteMenuItem.totalFinalized + " totalDisposed " + MesquiteMenuItem.totalDisposed + " totalCreated " +  MesquiteMenuItem.totalCreated);
 				logln("MesquiteMenuItemSpec.totalFinalized " +  MesquiteMenuItemSpec.totalFinalized + " totalDisposed " + MesquiteMenuItemSpec.totalDisposed + " totalCreated " +  MesquiteMenuItemSpec.totalCreated);
 				logln("NexusBlock.totalFinalized " +  NexusBlock.totalFinalized + " totalDisposed " + NexusBlock.totalDisposed + " totalCreated " +  NexusBlock.totalCreated);
@@ -2429,7 +2471,6 @@ public class Mesquite extends MesquiteTrunk
 				}
 			}
 		}
-		//if passed --version then write text file with stringForVersion, tab, stringForBuild
 		if (outputVersion){
 			Writer stream;
 			try {

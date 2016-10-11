@@ -84,8 +84,8 @@ class LabelStatesDecorator extends TreeDecorator {
 	public   void labelNode(int N,  Tree tree, CharacterHistory statesAtNodes, CharacterDistribution observedStates, Graphics g) {
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				labelNode(d, tree, statesAtNodes, observedStates, g);
-		int nodeX = treeDisplay.getTreeDrawing().x[N];
-		int nodeY = treeDisplay.getTreeDrawing().y[N];
+		int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer node approximation
+		int nodeY = (int)treeDisplay.getTreeDrawing().y[N];  // integer node approximation
 		String label = statesAtNodes.toString(N, "\n"); 
 		if (label != null){
 			int width = StringUtil.getStringDrawLength(g, label);

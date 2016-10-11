@@ -1242,7 +1242,7 @@ public class ManageTaxa extends TaxaManager {
 		block.append(';');
 		block.append(end);
 
-		if (getProject().getNumberTaxas()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa))
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa))
 			block.append("\tTITLE " + StringUtil.tokenize(taxa.getName()) + ";" + end);
 		int numTaxaWrite = taxa.getNumTaxa();
 		if (file.writeOnlySelectedTaxa)

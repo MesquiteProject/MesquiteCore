@@ -388,7 +388,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		editingNotPermitted.setValue(data.isEditInhibited());
 		
 		ownerModule.addCheckMenuItemToSubmenu(null, cmm,"Editing Not Permitted", ownerModule.makeCommand("toggleEditingNotPermitted", this), editingNotPermitted);
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		
 		
 		MesquiteSubmenuSpec mCC = ownerModule.addSubmenu(ownerModule.displayMenu, "Color Matrix Cells", MesquiteModule.makeCommand("colorCells", this), ownerModule.getEmployeeVector());
@@ -492,7 +492,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#SearchData");
-		// ownerModule.addMenuItem("-", null);
+		// ownerModule.addMenuSeparator();
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#NoColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorByState");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorCells");
@@ -557,7 +557,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		mss2t.setList(TaxonUtility.class);
 		MesquiteSubmenuSpec mss3 = ownerModule.addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames", this));
 		mss3.setList(TaxonNameAlterer.class);
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		
 	
 		MesquiteModule noColor = ownerModule.findEmployeeWithName("#NoColor", true);

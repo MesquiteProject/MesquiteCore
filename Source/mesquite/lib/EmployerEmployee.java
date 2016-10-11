@@ -1017,7 +1017,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		}
 		if (showHiringPath)
 			MesquiteMessage.warnProgrammer("(HIRING.3) starting up conditionally " + mb.getName());
-		if (MesquiteTrunk.debugMode){
+		if (MesquiteTrunk.debugMode && MesquiteTrunk.reportUnregisteredNeeds){
 			EmployeeNeed need = findEmployeeNeed(mb.getClass());
 			if (need == null) {
 				MesquiteMessage.println("@@@@@@@@@@@@@@@@@@@@");
@@ -1979,15 +1979,18 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	/* ................................................................................................................. */
 	/** Fires all employees. */
 	public void closeDownAllEmployees(MesquiteModule mb) {
-		if (employees == null)
+	//	Debugg.println("@@@@@@@@@@closedownalleemployees " + this + " EMPLOYEES " + employees);
+		if (mb.employees == null)
 			return;
+	//	Debugg.println("      @@@@@@@" + this + " EMPLOYEES " + employees.size());
 
-		Enumeration e = employees.elements();
+		Enumeration e = mb.employees.elements( );
 		while (e.hasMoreElements()) {
 			Object obj = e.nextElement();
 			MesquiteModule mbe = (MesquiteModule) obj;
 			if (mbe != null) {
 				try {
+					//Debugg.println("@@@@@@@@@@ENding job " + mbe);
 					mbe.endJob();
 				} catch (Throwable t) {
 					module.logln("Error or exception in closing down employee (endJob) " + mbe.getName());

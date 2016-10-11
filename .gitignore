@@ -36,3 +36,7 @@ Mesquite_Folder/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.classpath
+.gitignore
+/.classpath
+/.gitignore

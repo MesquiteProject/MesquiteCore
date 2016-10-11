@@ -120,7 +120,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 	/* rule: first, look for context among ancestor employees. If one found, use as default. If not, look for closest.  If more than one, allow
 	user to choose.  If one, use.  If more than one, allow for user to reattach to other context*/
 	/*.................................................................................................................*/
-  	private TreeContext queryFindContext(Taxa taxa){
+  	private TreeContext queryFindContext(Taxa taxa, String explanationForUser){
   		if (taxa==null)
   			return null;
   		
@@ -163,6 +163,8 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
   					s+="the window " + ((MesquiteModule)context).containerOfModule().getName();
   				else if (context instanceof Listable)
   					s+= context.getName();
+  				if (StringUtil.notEmpty(explanationForUser))
+  					s+="\n "+explanationForUser;
 				alert(s);
   			}
   			return context;
@@ -195,8 +197,10 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 			}
 	  		if (context instanceof Showable)
 	  			((Showable)context).showMe();
-			String s = "The current tree (for " + employer.getName() + ") will be obtained from the window " + ((MesquiteModule)context).containerOfModule().getName();
-			s+= "\n\nIs this OK?";
+	  		String s = "The current tree (for " + employer.getName() + ") will be obtained from the window " + ((MesquiteModule)context).containerOfModule().getName();
+	  		if (StringUtil.notEmpty(explanationForUser))
+	  			s+="\n\n("+explanationForUser+")";
+	  		s+= "\n\nIs this OK?";
 			if (AlertDialog.query(containerOfModule(), "Query", s, "Yes", "No"))
 	  			return context;
 			
@@ -249,8 +253,16 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
    	public void initialize(Taxa taxa){
    		if (taxa==null)
    			return;
-   		context = queryFindContext(taxa);
+   		context = queryFindContext(taxa, null);
    	}
+  	 /** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
+   	happening at inopportune times (e.g., while a long chart calculation is in mid-progress).  This version allows one to supply an explanation to the user*/
+  	 public void initialize(Taxa taxa, String explanationForUser){
+    		if (taxa==null)
+       			return;
+       		context = queryFindContext(taxa, explanationForUser);
+  	 }
+
 	public void broadCastAssignedID(MesquiteModule module, String assignedID){
   		if (contextID !=null && contextID.equals(assignedID))
   			parametersChanged();
@@ -260,10 +272,17 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 	/* rule: first, look for context among ancestor employees. If one found, use as default. If not, look for closest.  If more than one, allow
 	user to choose.  If one, use.  If more than one, allow for user to reattach to other context*/
    	public Tree getTree(Taxa taxa) {
+   		return getTree(taxa, null);
+   	}
+	/*.................................................................................................................*/
+	/* rule: first, look for context among ancestor employees. If one found, use as default. If not, look for closest.  If more than one, allow
+	user to choose.  If one, use.  If more than one, allow for user to reattach to other context*/
+   	public Tree getTree(Taxa taxa, String explanationForUser) {
    		if (taxa==null)
    			return null;
    		if (doomed)
    			return null;
+   		
    		//if context is supplying tree with other Taxa, need to look for other contexts!
   		if (contextID !=null) {
   			/*try to find id'd context (looking through modules for their assignedIDString.
@@ -279,7 +298,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
   				contextID = null;
   			}
   		}
-   		context = queryFindContext(taxa);
+   		context = queryFindContext(taxa, explanationForUser);
  		if (context == null) {
 			if (taxa != oldTaxa || rememberedDefaultTree == null)
 				rememberedDefaultTree = taxa.getDefaultDichotomousTree(rememberedDefaultTree);

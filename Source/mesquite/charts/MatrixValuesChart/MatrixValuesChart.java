@@ -35,14 +35,16 @@ public class MatrixValuesChart extends FileAssistantCH  {
 		EmployeeNeed e = registerEmployeeNeed(NumberForMatrix.class, getName() + " needs methods to calculate the two values for the character matrices.",
 		"You can select this either when the chart starts up, or using the Values submenu of the Chart menu.  (You may request the chart itself by selecting the Character Matrices item under Bar & Line Charts in the Analysis menu)");
 		e.setPriority(1);
-		EmployeeNeed e2 = registerEmployeeNeed(MatrixSourceCoordObed.class, getName() + " needs a source of character matrices.",
+		EmployeeNeed e2 = registerEmployeeNeed(CharMatrixSource.class, getName() + " needs a source of character matrices.",
 		"You can select the character matrices to show either when the chart starts up, or later using the Matrix Source submenu of the Chart menu.  (You may request the chart itself by selecting the Character Matrices item under Bar & Line Charts in the Analysis menu)");
 		EmployeeNeed e3 = registerEmployeeNeed(ItemsCharter.class, getName() + " needs an assistant to draw charts.",
 		"The chart drawing module is arranged automatically");
 	}
 	/*.................................................................................................................*/
 	NumberForMatrix numberTask;
-	MatrixSourceCoordObed matrixSourceTask;
+	CharMatrixSource matrixSourceTask;  
+	
+//	MatrixSourceCoordObed matrixSourceTask;   
 	ItemsCharter chartWindowTask;
 	private Taxa oldTaxa, taxa;
 	ChartWindow cWindow;
@@ -58,7 +60,7 @@ public class MatrixValuesChart extends FileAssistantCH  {
 			return sorry(getName() + " couldn't start because no chart window module was obtained");
 
 		//Matrix source %%%%%%
-		matrixSourceTask = (MatrixSourceCoordObed)hireEmployee(MatrixSourceCoordObed.class, "Source of character matrices (for Character Matrix Values chart)");
+		matrixSourceTask = (CharMatrixSource)hireEmployee(CharMatrixSource.class, "Source of character matrices (for Character Matrix Values chart)");
 		if (matrixSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		MCharactersDistribution item = (MCharactersDistribution)matrixSourceTask.getItem(taxa, 0);
@@ -82,7 +84,7 @@ public class MatrixValuesChart extends FileAssistantCH  {
 		chartWindowTask.setTaxa(taxa);
 		chartWindowTask.setNumberTask(numberTask);
 		chartWindowTask.setItemsSource( matrixSourceTask);
-		cWindow.setChartTitle("Character Values");
+		cWindow.setChartTitle("Character Matrix Values");
 		if (!MesquiteThread.isScripting()){
 			cWindow.setChartVisible();
 			cWindow.setVisible(true);

@@ -15,6 +15,7 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 
@@ -75,6 +76,8 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 	//This is constructor used to make menu from specs
 	public MesquiteMenuItem(MesquiteMenuItemSpec specification) {
 		super();
+		if (specification==null)
+			return;
 		addActionListener(this);
 		this.specification = specification;
 		if (specification.itemName == null) {
@@ -182,6 +185,9 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener{
 			command = null;
 			totalDisposed++;
 		}
+	/*	else if (MesquiteTrunk.debugMode){
+			MesquiteMessage.println("not disconnectable " + getLabel());
+		}*/
 	}
 	Journal j =null;
 

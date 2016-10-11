@@ -44,7 +44,7 @@ public class MarkTaxonInList extends TaxonListAssistant {
 		addMenuItem("Set Name of Mark...", makeCommand("setName", this));
 		addMenuItem("Mark Selected", makeCommand("markSelected", this));
 		addMenuItem("Unmark Selected", makeCommand("unmarkSelected", this));
-		addMenuItem("-", null);
+		addMenuSeparator();
 		addMenuItem("New Mark...", makeCommand("newMark", this));
 		addMenuItem("Select Other Mark...", makeCommand("selectMark", this));
 		addMenuItem("Delete Mark...", makeCommand("deleteMark", this));

@@ -59,7 +59,7 @@ public class WandChar extends DataWindowAssistantI {
 		addCheckMenuItem(null, "Equal", makeCommand("toggleEquals",  this), equals);
 		addCheckMenuItem(null, "Greater than", makeCommand("toggleGT",  this), greaterthan);
 		addCheckMenuItem(null, "Less than", makeCommand("toggleLT",  this), lessthan);
-		addMenuItem("-", null);
+		addMenuSeparator();
 		toggleSameInTaxon = new MesquiteBoolean(defaultSameInTaxon);
 		toggleSameWhole = new MesquiteBoolean(defaultSameWhole);
 		toggleSimilarWhole = new MesquiteBoolean(defaultSimilarWhole);

@@ -42,6 +42,11 @@ public class CharactersBlock extends NexusBlock {
 		return (block.getBlockName().equalsIgnoreCase("TAXA"));
 		
 	}
+	public void dispose(){
+		data = null;
+		super.dispose();
+	}
+	
 	public String getBlockName(){
 		return "CHARACTERS";
 	}

@@ -84,7 +84,7 @@ public class Scattergram extends DrawChart {
 		menuItems= new MesquiteMenuItemSpec[11];
 		MesquiteSubmenuSpec analysis = addSubmenu(null, "Auxiliary Analysis", makeCommand("newAssistant", this), ScattergramAssistantA.class);
 		MesquiteSubmenuSpec mCloseAsst = addSubmenu(null, "Close Auxiliary Analysis");
-		addMenuItem("-", null);
+		addMenuSeparator();
 		mCloseAsst.setList(getEmployeeVector());
 		mCloseAsst.setListableFilter(ScattergramAssistantA.class);
 		mCloseAsst.setCommand(makeCommand("closeAssistant",  this));
@@ -164,7 +164,7 @@ public class Scattergram extends DrawChart {
 			//if (menuItems[9]==null)
 			//menuItems[9] = addMenuItem(findMenuAmongEmployers("Colors"), "Animated moving window", MesquiteModule.makeCommand("animateWindow",  this));
 			if (menuItems[10]==null)
-				menuItems[10] = addMenuItem("-", null);
+				menuItems[10] = addMenuSeparator();
 		}
 		else {
 			if (joinTheDots.getValue()) {

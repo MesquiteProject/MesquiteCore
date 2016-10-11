@@ -237,8 +237,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		boolean pleaseStorePref = false;
 		if (!preferencesSet) {
 			programPath = MesquiteFile.openFileDialog("Choose " + getProgramName()+ ": ", null, null);
-			if (StringUtil.blank(programPath))
+			if (StringUtil.blank(programPath)){
 				return null;
+			}
 			if (!programPath.endsWith(MesquiteFile.fileSeparator))
 				programPath+=MesquiteFile.fileSeparator;
 			pleaseStorePref = true;

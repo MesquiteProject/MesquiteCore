@@ -64,7 +64,7 @@ public class CharIndepDivViewer extends TreeWindowAssistantA    {
 		}
 
 		addMenuItem( "Close Diversification Analysis", makeCommand("close",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 
 		return true;
 	}

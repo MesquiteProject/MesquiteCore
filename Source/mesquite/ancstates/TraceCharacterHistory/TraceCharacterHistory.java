@@ -143,7 +143,7 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		addMenuItem(null, "Export Table of Node Differences...", makeCommand("exportDifferences",  this));
 		MesquiteTrunk.resetMenuItemEnabling();
 		addMenuItem( "Close Trace", makeCommand("closeTrace",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
 		boolean someInits = false;
 		hireAllEmployees(TraceCharacterInit.class);
 		Enumeration enumeration=getEmployeeVector().elements();

@@ -365,7 +365,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		}
 		file.write(endLine);
-		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
 			file.write("\tTITLE  ");
 			file.write( StringUtil.tokenize(data.getName()));
 			file.write(endLine);

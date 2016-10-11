@@ -91,7 +91,7 @@ public class StateConsistencyStrip extends DataColumnNamesAssistant {
 	}
 	public void addRemoveMenuItem() {
 		closeMenuItem= addMenuItem(null,"Remove State Consistency Strip", makeCommand("remove", this));
-		lineMenuItem = addMenuLine();
+		lineMenuItem = addMenuSeparator();
 	}
 		
 	public void setTableAndData(MesquiteTable table, CharacterData data) {

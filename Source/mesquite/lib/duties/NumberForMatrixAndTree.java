@@ -43,6 +43,7 @@ public abstract class NumberForMatrixAndTree extends MesquiteModule implements N
 
 	public abstract  void calculateNumber(Tree tree, MCharactersDistribution matrix, MesquiteNumber result, MesquiteString resultString);
 	/*===== For NumberForItem interface ======*/
+	
  	public boolean returnsMultipleValues(){
   		return false;
   	}

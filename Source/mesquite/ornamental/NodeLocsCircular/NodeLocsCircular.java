@@ -16,6 +16,7 @@ package mesquite.ornamental.NodeLocsCircular;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -34,10 +35,10 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	double fractionCoverage = 0.96;
 	
 	double firsttx = 0.02;
-	int centerx, centery;
+	double centerx, centery;
 	double circleSlice;
 	double radius;
-	Point[] location;
+	Point2D.Double[] location;
 	//DoublePt[] sLoc;
 	double lasttx;
 	Rectangle treeRectangle;
@@ -166,9 +167,8 @@ public class NodeLocsCircular extends NodeLocsCircle {
 		return findTaxa(node);
 	}
 //	{-----------------------------------------------------------------------------*/
-	private void nodePolarToLoc (double polarlength, double angle, Point loc){
-		loc.x = treeCenter.x + (int)Math.round(polarlength * Math.sin(angle));
-		loc.y = treeCenter.y - (int)Math.round(polarlength * Math.cos(angle));
+	private void nodePolarToLoc (double polarlength, double angle, Point2D.Double loc){
+		loc.setLocation(1.0*treeCenter.getX() + polarlength * Math.sin(angle), 1.0*treeCenter.getY() - polarlength * Math.cos(angle));
 	}
 	/*{-----------------------------------------------------------------------------}
 	 private void nodePolarToSingleLoc (double polarlength, double angle, DoublePt loc){
@@ -177,9 +177,9 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	  loc.y = treeCenter.y - polarlength * Math.cos(angle);
 	  }
 	  /*----------------------------------------------------------------------------*/
-	private void nodeLocToPolar (Point loc, Point center, double targetAngle, PolarCoord polar){
-		polar.length = Math.sqrt((loc.x-center.x) *(loc.x-center.x) + (center.y-loc.y)*(center.y-loc.y));
-		polar.angle = Math.asin((loc.x-center.x)/polar.length);
+	private void nodeLocToPolar (Point2D.Double loc, Point2D center, double targetAngle, PolarCoord polar){
+		polar.length = Math.sqrt((loc.getX()-center.getX()) *(loc.getX()-center.getX()) + (center.getY()-loc.getY())*(center.getY()-loc.getY()));
+		polar.angle = Math.asin((loc.getX()-center.getX())/polar.length);
 		if (targetAngle>Math.PI/2.0*3.0)
 			polar.angle = Math.PI*2.0+polar.angle;
 		else if (targetAngle>Math.PI/2.0)
@@ -205,9 +205,9 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	private void calcterminalPosition (int node){
 		double firstangle;
 		massageLoc = false;
-		firstangle = Math.PI + angleBetweenTaxa/2; //TODO: {here need to use stored value}
+//		firstangle = Math.PI + angleBetweenTaxa/2; //TODO: {here need to use stored value}
 		
-			firstangle = angleBetweenTaxa;
+		firstangle = angleBetweenTaxa;
 		angle[node] =firstangle + lasttx; // {angle in radians horizontal from vertical}
 		polarLength[node] =radius;
 		
@@ -219,7 +219,8 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			nodePolarToLoc(polarLength[node], angle[node], location[node]);  //convert back and forth to deal with roundoff
 		}
 		
-		int degrees = (int)(angle[node]/Math.PI/2*360) % 360;
+//		double degrees = (angle[node]/Math.PI/2*360) % 360;
+		double degrees = (angle[node]/Math.PI/2*360);
 		if (degrees < 45)
 			treeDrawing.labelOrientation[node] = 270;
 		else if (degrees < 135)
@@ -301,10 +302,10 @@ public class NodeLocsCircular extends NodeLocsCircle {
 	
 //	{-----------------------------------------------------------------------------}
 	private void adjustForLengths (int root){
-		int tpa;
-		tpa=(int)tree.tallestPathAboveNode(root, 1.0);
-		if (tpa!=0)
-			scaling=(radius-rootHeight)/tpa;
+		double tpaD = tree.tallestPathAboveNode(root, 1.0);
+		
+		if (tpaD>0)
+			scaling=(radius-rootHeight)/tpaD;
 		else // all assigned 0's give arbitrary scaling (not great solution!)
 			scaling=20;
 		adjustNodeLocsWithLengths(root, 0, root);
@@ -327,11 +328,11 @@ public class NodeLocsCircular extends NodeLocsCircle {
 				setDefaultOrientation(treeDisplay);
 			int numNodes =tree.getNumNodeSpaces();
 			if (oldNumTaxa != tree.getNumTaxa() || location == null || location.length != numNodes) {
-				location = new Point[numNodes];
+				location = new Point2D.Double[numNodes];
 				//sLoc = new DoublePt[numNodes];
 				for (int i=0; i<numNodes; i++) {
 					//sLoc[i]= new DoublePt();
-					location[i] = new Point(0,0);
+					location[i] = new Point2D.Double(0.0,0.0);
 				}
 				angle = new double[numNodes];
 				polarLength  = new double[numNodes];
@@ -340,8 +341,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 			else {
 				for (int i=0; i<location.length && location[i]!=null; i++) {
 					if (location[i]!=null){
-						location[i].y=0;
-						location[i].x=0;
+						location[i].setLocation(0, 0);
 					}
 					polarLength[i] = 0;
 					angle[i] = 0;
@@ -370,15 +370,11 @@ public class NodeLocsCircular extends NodeLocsCircle {
 				radius=(treeRectangle.height) * 3 / 8;
 			circleSlice = radius / (mostNodesToTip(drawnRoot) + emptyRootSlices);  //{v4: have it based upon an ellipse}
 			
-			
-			treeCenter.x = /*treeRectangle.x +*/ treeRectangle.width / 2;
-			treeCenter.y = /*treeRectangle.y +*/ treeRectangle.height / 2;
+			treeCenter.setLocation(treeRectangle.width / 2,treeRectangle.height / 2);
 //			centerx = treeCenter.x;
 //			centery = treeCenter.y;
-			location[drawnRoot].y=treeCenter.y;
-			location[drawnRoot].x=treeCenter.x;
-			location[subRoot].y=treeCenter.y;
-			location[subRoot].x=treeCenter.x;
+			location[drawnRoot].setLocation(treeCenter.getX(), treeCenter.getY());
+			location[subRoot].setLocation(treeCenter.getX(), treeCenter.getY());
 			polarLength[subRoot] = 0;
 			angle[subRoot] = 0;
 			terminalTaxaLocs(drawnRoot);
@@ -389,14 +385,13 @@ public class NodeLocsCircular extends NodeLocsCircle {
 				//	drawGrid(g, tree.tallestPathAboveNode(drawnRoot, 1.0), scaling, treeCenter);
 			}
 			for (int i=0; i<numNodes && i<treeDrawing.y.length; i++) {
-				treeDrawing.y[i] = location[i].y;
-				treeDrawing.x[i] = location[i].x;
-				
+				treeDrawing.y[i] = location[i].getY();
+				treeDrawing.x[i] = location[i].getX();
 			}
 		}
 	}
 	
-	public void drawGrid (Graphics g, double totalHeight, double scaling,  Point treeCenter) {
+	public void drawGrid (Graphics g, double totalHeight, double scaling,  Point2D treeCenter) {
 		if (g == null)
 			return;
 		Color c=g.getColor();
@@ -411,7 +406,7 @@ public class NodeLocsCircular extends NodeLocsCircle {
 				g.setColor(Color.cyan);
 			g.setColor(Color.red);
 			thisHeight -= hundredthHeight;
-			g.drawOval(treeCenter.x- (int)(thisHeight*scaling) - rootHeight,treeCenter.y- (int)(thisHeight*scaling) - rootHeight, 2*((int)(thisHeight*scaling) + rootHeight),  2*((int)(thisHeight*scaling) + rootHeight));
+			GraphicsUtil.drawOval(g,treeCenter.getX()- (int)(thisHeight*scaling) - rootHeight,treeCenter.getY()- (int)(thisHeight*scaling) - rootHeight, 2*((int)(thisHeight*scaling) + rootHeight),  2*((int)(thisHeight*scaling) + rootHeight));
 			//if (countTenths % 10 == 0)
 			//	g.drawString(MesquiteDouble.toString(totalScaleHeight - thisHeight), rightEdge + buffer, (int)(base- (thisHeight*scaling)));
 			countTenths ++;

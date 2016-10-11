@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 import mesquite.lib.duties.*;
 import mesquite.trees.lib.TaxonPolygon;
@@ -37,13 +38,13 @@ public abstract class TreeDrawing  {
 	public final static int MINNODEWIDTH = 6;
 	public final static int ACCEPTABLETOUCHWIDTH = 10;
 	public final static boolean SHOWTOUCHPOLYS = false;
-	public int[] x; //x positions of nodes
-	public int[] y; //y positions of nodes
+	public double[] x; //x positions of nodes
+	public double[] y; //y positions of nodes
 	public double[] z; //z positions of nodes (closeness to viewer, smaller numbers closer)
-	public int[] lineBaseX; //base of line on which to draw labels etc.
-	public int[] lineBaseY; 
-	public int[] lineTipX; //tip of line on which to draw labels etc.
-	public int[] lineTipY; 
+	public double[] lineBaseX; //base of line on which to draw labels etc.
+	public double[] lineBaseY; 
+	public double[] lineTipX; //tip of line on which to draw labels etc.
+	public double[] lineTipY; 
 	/**labelOrientation indicates where label is to be drawn w.r.t. node, in degrees. 0 = normal horizontal 
 	writing to right of node, as would be done for a tree with orientation RIGHT.
 	This does not represent simple rotation, i.e. 180 is on left side, but the writing is not upside down.  Thus
@@ -74,14 +75,14 @@ public abstract class TreeDrawing  {
 			return;
 		this.numNodes=numNodes;
 		totalCreated++;
-		x = new int[numNodes];
-		y = new int[numNodes];
+		x = new double[numNodes];
+		y = new double[numNodes];
 		z = new double[numNodes];
 		labelOrientation = new int[numNodes];
-		lineBaseX = new int[numNodes];
-		lineBaseY = new int[numNodes];
-		lineTipX = new int[numNodes];
-		lineTipY = new int[numNodes];
+		lineBaseX = new double[numNodes];
+		lineBaseY = new double[numNodes];
+		lineTipX = new double[numNodes];
+		lineTipY = new double[numNodes];
 		for (int i=0; i<numNodes; i++) {
 			x[i]=0;
 			y[i]=0;
@@ -94,21 +95,27 @@ public abstract class TreeDrawing  {
 		}
 	}
 
+	public double getX(int node){
+		return x[node];
+	}
+	public double getY(int node){
+		return y[node];
+	}
 	public int getDrawnRoot(){
 		return drawnRoot;
 	}
 	public void setDrawnRoot(int node){
 		drawnRoot = node;
 	}
-	public int getBranchCenterX(int node){
+	public double getBranchCenterX(int node){
 		return Math.abs(lineBaseX[node] + lineTipX[node])/2;
 }
-	public int getBranchCenterY(int node){
+	public double getBranchCenterY(int node){
 		return Math.abs(lineBaseY[node] + lineTipY[node])/2;
 }
 	
-	public int getNodeValueTextBaseX(int node, int edgewidth,  int stringwidth, int fontHeight, boolean horizontalText){
-		int baseX = x[node];
+	public double getNodeValueTextBaseX(int node, int edgewidth,  int stringwidth, int fontHeight, boolean horizontalText){
+		double baseX = x[node];
 		if (horizontalText){
 			baseX = baseX - stringwidth/2;
 		}
@@ -117,8 +124,8 @@ public abstract class TreeDrawing  {
 		}
 		return baseX;
 	}
-	public int getNodeValueTextBaseY(int node, int edgewidth, int stringwidth, int fontHeight, boolean horizontalText){
-		int baseY = y[node];
+	public double getNodeValueTextBaseY(int node, int edgewidth, int stringwidth, int fontHeight, boolean horizontalText){
+		double baseY = y[node];
 		if (horizontalText){
 			baseY = baseY - fontHeight;
 		}
@@ -330,36 +337,35 @@ public abstract class TreeDrawing  {
 	public abstract int getEdgeWidth();
 	
 	/** project point x,y onto the line between N's lineBase to lineTip. */
-	public Point projectionOnLine(int N, int x, int y) {
-		Point thePoint= new Point(x, y);
+	public Point2D.Double projectionOnLine(int N, double x, double y) {
+		double newX = x;
+		double newY = y;
 		try {
 			if (lineTipX[N] == lineBaseX[N]) {   //slope infinite; projection uses same y and sets x to be lineBaseX
-				thePoint.x =lineBaseX[N];
+				newX=lineBaseX[N];
 			}
 			else if (lineTipY[N] == lineBaseY[N]) {  //slope zero; projection uses same x and sets y to be lineBaseY
-				thePoint.y =lineBaseY[N];
+				newY =lineBaseY[N];
 			}
 			else {
 				double m = (lineTipY[N]-lineBaseY[N])*1.0/(lineTipX[N] - lineBaseX[N]);
 				//MesquiteModule.mesquiteTrunk.logln(" m " + MesquiteDouble.toString(m));
 				double msquare = m*m;
-				double newY = (msquare)/(msquare+1)*((x-lineTipX[N])/m + (lineTipY[N]/msquare) + (y));
-				double newX = m* (y-newY) + x;
+				newY = (msquare)/(msquare+1)*((x-lineTipX[N])/m + (lineTipY[N]/msquare) + (y));
+				newX = m* (y-newY) + x;
 				//MesquiteModule.mesquiteTrunk.logln(" y " + MesquiteDouble.toString(newY));
 				//MesquiteModule.mesquiteTrunk.logln(" x " + MesquiteDouble.toString(newX));
-				thePoint.y = (int)newY;
-				thePoint.x = (int)newX;
 			}
+			Point2D.Double thePoint= new Point2D.Double(x, y);
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
 		}
 		catch (NullPointerException e) {
 		}
-		return thePoint;
-		
+		return new Point2D.Double(newX, newY);		
 	}
 	
-	/** Choose point on line from lineBase to lineTip that corresponds to the i'th of "total" units along line. */
+	/* Choose point on line from lineBase to lineTip that corresponds to the i'th of "total" units along line. 
 	public Point placeOnLine(int N, int i, int total) {
 		Point thePoint= new Point();
 		try {
@@ -384,6 +390,8 @@ public abstract class TreeDrawing  {
 		}
 		return thePoint;
 	}
+	*/
+	
 	public void setHighlightsOn(boolean on){
 		/*
 		if (on) {

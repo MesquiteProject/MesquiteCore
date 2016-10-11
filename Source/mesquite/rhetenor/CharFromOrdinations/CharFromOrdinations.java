@@ -82,9 +82,9 @@ public class CharFromOrdinations extends CharacterSource {
 		addMenuItem("Item for Ordination...", MesquiteModule.makeCommand("setItem",  this));
 
 		if (numModulesAvailable(OrdinationAssistant.class)>0) {
-			addMenuItem( "-", null);
+			addMenuSeparator();
 			addModuleMenuItems(null, makeCommand("hireAssistant",  this), OrdinationAssistant.class);  //for assistants like Show Char Loadings
-			addMenuItem( "-", null);
+			addMenuSeparator();
 		}
 		return true; 
 	}

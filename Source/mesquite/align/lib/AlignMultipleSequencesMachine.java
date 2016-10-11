@@ -98,7 +98,6 @@ class AlignThread extends Thread {
 	}
 
 	public void run() {
-
 		MesquiteInteger firstRow = new MesquiteInteger();
 		MesquiteInteger lastRow = new MesquiteInteger();
 		MesquiteInteger firstColumn = new MesquiteInteger();
@@ -125,6 +124,5 @@ class AlignThread extends Thread {
 		if (separateThread)
 			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
 		table.repaintAll();
-
 	}
 }

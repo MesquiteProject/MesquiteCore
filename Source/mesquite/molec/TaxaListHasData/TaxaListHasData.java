@@ -36,7 +36,7 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class TaxaListHasData extends TaxonListAssistant  {
-	
+
 	Taxa taxa=null;
 	MesquiteTable table = null;
 	MatrixSourceCoord matrixSourceTask;
@@ -68,6 +68,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
 		//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
+		addMenuSeparator();
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
 		addMenuItem("Delete Stored Annotation", makeCommand("deleteAnnotation", this));
@@ -153,7 +154,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				if (data != null) {
 					copyMenuText += data.getName() + " Data";
 					copyMenuText += " [from " + data.getTaxa().getTaxonName(ic) + "]" ;
-					
+
 				}
 			}
 			MesquiteCommand mcCopy = makeCommand("copyData", this);
@@ -163,10 +164,10 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 			String pasteMenuText = "Paste ";
 			if (StringUtil.notEmpty(localCopyDataClipboard) && localCopyData != null) {
-					pasteMenuText += localCopyData.getName() + " Data";
-					if (StringUtil.notEmpty(localCopyDataTaxon)) {
-						pasteMenuText += " [from " + localCopyDataTaxon + "] " ;
-					}
+				pasteMenuText += localCopyData.getName() + " Data";
+				if (StringUtil.notEmpty(localCopyDataTaxon)) {
+					pasteMenuText += " [from " + localCopyDataTaxon + "] " ;
+				}
 			}
 			MesquiteCommand mcPaste = makeCommand("pasteData", this);  //only if something in clipboard
 			mcPaste.setDefaultArguments(""+ic);
@@ -271,7 +272,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
 				if ((!anySelected || selected(taxa, it, myColumn))){
-					String note = getNote(it);
+					String note = getNote(it, CharacterData.taxonMatrixNotesRef);
 					while (!StringUtil.blank(note) && note.indexOf("(")>=0){
 						int start = note.indexOf("(");
 						int end = note.indexOf(")");
@@ -280,7 +281,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 							firstBit = note.substring(0, start);
 						note = firstBit + note.substring(end+1, note.length());
 					}
-					setNote(it, note);
+					setNote(it, note, CharacterData.taxonMatrixNotesRef);
 
 				}
 			}
@@ -301,7 +302,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
 				if ((!anySelected || selected(taxa, it, myColumn))){
-					String note = getNote(it);
+					String note = getNote(it, CharacterData.taxonMatrixNotesRef);
 					while (!StringUtil.blank(note) && note.indexOf("*")>=0){
 						int start = note.indexOf("*");
 						String firstBit = "";
@@ -309,7 +310,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 							firstBit = note.substring(0, start);
 						note = firstBit + note.substring(start+1, note.length());
 					}
-					setNote(it, note);
+					setNote(it, note, CharacterData.taxonMatrixNotesRef);
 
 				}
 			}
@@ -330,12 +331,12 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
 				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
-					String note = getNote(it);
+					String note = getNote(it, CharacterData.taxonMatrixNotesRef);
 					if (StringUtil.blank(note))
 						note = "(" + sequenceLength(it) + ")";
 					else
 						note = "(" + sequenceLength(it) + ") " + note;
-					setNote(it, note);
+					setNote(it, note, CharacterData.taxonMatrixNotesRef);
 				}
 			}
 			outputInvalid();
@@ -355,12 +356,12 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
 				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
-					String note = getNote(it);
+					String note = getNote(it, CharacterData.taxonMatrixNotesRef);
 					if (StringUtil.blank(note))
 						note = "(" + numSites(it) + ")";
 					else
 						note = "(" + numSites(it) + ") " + note;
-					setNote(it, note);
+					setNote(it, note, CharacterData.taxonMatrixNotesRef);
 				}
 			}
 			outputInvalid();
@@ -380,7 +381,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
 				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
-					setNote(it, null);
+					setNote(it, null, CharacterData.taxonMatrixNotesRef);
 				}
 			}
 			outputInvalid();
@@ -400,22 +401,39 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	public void setString(int row, String s){
 
 		if (StringUtil.blank(s))
-			setNote(row, null);
+			setNote(row, null, CharacterData.taxonMatrixNotesRef);
 		else if (s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No Data"))
 			return;
 		else 
-			setNote(row, s);
+			setNote(row, s, CharacterData.taxonMatrixNotesRef);
 	}
 
+	/*...............................................................................................................*
 	void setNote(int row, String s){
 		if (tInfo == null)
 			return;
 		tInfo.setAssociatedObject(MolecularData.genBankNumberRef, row, s);
 	}
-	String getNote(int row){
+	/*...............................................................................................................*
+	String getNote(int row, NameReference nameRef){
 		if (tInfo == null)
 			return null;
 		Object obj = tInfo.getAssociatedObject(MolecularData.genBankNumberRef, row);
+		if (obj == null || !(obj instanceof String))
+			return null;
+		return (String)obj;
+	}
+	/*...............................................................................................................*/
+	void setNote(int row, String s, NameReference nameRef){
+		if (tInfo == null)
+			return;
+		tInfo.setAssociatedObject(nameRef, row, s);
+	}
+	/*...............................................................................................................*/
+	String getNote(int row, NameReference nameRef){
+		if (tInfo == null)
+			return null;
+		Object obj = tInfo.getAssociatedObject(nameRef, row);
 		if (obj == null || !(obj instanceof String))
 			return null;
 		return (String)obj;
@@ -583,8 +601,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		outputInvalid();
 		parametersChanged();
 	}
-	
-	
+
+
 
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
@@ -599,7 +617,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			iQuit();
 	}
 	/*.................................................................................................................*/
-	
+
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int it, boolean selected){
 		if (observedStates == null){
@@ -618,30 +636,46 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		}
 		if (bits ==null || it <0 || it > bits.getSize())
 			return null;
-		String note = getNote(it);
+		String genBankNote = getNote(it,MolecularData.genBankNumberRef);
+		String publicationNote = getNote(it,CharacterData.publicationCodeNameRef);
 		if (selected){
 			if (bits.isBitOn(it))
 				return ColorDistribution.darkGreen;
 			else
-				return ColorDistribution.darkRed;		}
+				return ColorDistribution.darkRed;		
+		}
 		else if (bits.isBitOn(it)){
-			if (StringUtil.blank(note))
+			if (StringUtil.blank(genBankNote) && StringUtil.blank(publicationNote))
 				return ColorDistribution.veryLightGreen;
-			if ( !(note.equalsIgnoreCase("x")))
-				return ColorDistribution.lightGreenYellowish;
+			if (StringUtil.notEmpty(genBankNote)){
+				if(!("x".equalsIgnoreCase(genBankNote)))
+					return ColorDistribution.lightBlueGray;
+				return ColorDistribution.lightGreenYellow;
+			} else  if (StringUtil.notEmpty(publicationNote)){
+				if ( !("x".equalsIgnoreCase(publicationNote)))
+					return ColorDistribution.veryVeryLightBlue;
+			}
 			return ColorDistribution.lightGreenYellow;
+
 		}
 		else {
-			if (StringUtil.blank(note))
+			if (StringUtil.blank(genBankNote) && StringUtil.blank(publicationNote))
 				return ColorDistribution.brown;
-			if ( !(note.equalsIgnoreCase("x"))) {
+			if ( !("x".equalsIgnoreCase(genBankNote)))
 				return Color.red;
-			}
+			else if ( !("x".equalsIgnoreCase(publicationNote)))
+				return Color.orange;
 			return ColorDistribution.lightRed;
 		}
 	}
 	public String getStringForTaxon(int it){
-		String note = getNote(it);
+		String note = getNote(it,MolecularData.genBankNumberRef);
+		if (note != null)
+			return note;
+		note = getNote(it,CharacterData.publicationCodeNameRef);
+		if (note != null)
+			return note;
+		note = getNote(it,CharacterData.taxonMatrixNotesRef);
 		if (note != null)
 			return note;
 		if (observedStates == null)

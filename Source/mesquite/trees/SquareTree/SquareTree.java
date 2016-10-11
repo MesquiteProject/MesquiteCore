@@ -16,6 +16,8 @@ package mesquite.trees.SquareTree;
 import java.util.*;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -310,9 +312,10 @@ public class SquareTree extends DrawTree {
 
 /* ======================================================================== */
 class SquareTreeDrawing extends TreeDrawing   {
-	public Polygon[] branchPoly;
-	public Polygon[] touchPoly;
-	public Polygon[] fillBranchPoly;
+	public Path2D.Double[] branchPoly;
+	public Path2D.Double[] touchPoly;
+	public Path2D.Double[] fillBranchPoly;
+	private Path2D.Double utilityPolygon;
 
 	public SquareTree ownerModule;
 	public int edgewidth = 6;
@@ -321,7 +324,6 @@ class SquareTreeDrawing extends TreeDrawing   {
 	private int foundBranch;
 	private boolean ready=false;
 	private static final int  inset=1;
-	private Polygon utilityPolygon;
 	NameReference triangleNameRef;
 	int cornerMode;
 	BasicStroke defaultStroke;
@@ -344,31 +346,19 @@ class SquareTreeDrawing extends TreeDrawing   {
 		oldNumTaxa = numTaxa;
 		ready = true;
 		treeDisplay.setOrientation(ownerModule.nodeLocsTask.getDefaultOrientation());
-		utilityPolygon=new Polygon();
-		utilityPolygon.xpoints = new int[16];
-		utilityPolygon.ypoints = new int[16];
-		utilityPolygon.npoints=16;
+		utilityPolygon=new Path2D.Double();
 
 	}
 
 	public void resetNumNodes(int numNodes){
 		super.resetNumNodes(numNodes);
-		branchPoly= new Polygon[numNodes];
-		touchPoly= new Polygon[numNodes];
-		fillBranchPoly= new Polygon[numNodes];
+		branchPoly= new Path2D.Double[numNodes];
+		touchPoly= new Path2D.Double[numNodes];
+		fillBranchPoly= new Path2D.Double[numNodes];
 		for (int i=0; i<numNodes; i++) {
-			branchPoly[i] = new Polygon();
-			branchPoly[i].xpoints = new int[16];
-			branchPoly[i].ypoints = new int[16];
-			branchPoly[i].npoints=16;
-			touchPoly[i] = new Polygon();
-			touchPoly[i].xpoints = new int[16];
-			touchPoly[i].ypoints = new int[16];
-			touchPoly[i].npoints=16;
-			fillBranchPoly[i] = new Polygon();
-			fillBranchPoly[i].xpoints = new int[16];
-			fillBranchPoly[i].ypoints = new int[16];
-			fillBranchPoly[i].npoints=16;
+			branchPoly[i] = new Path2D.Double();
+			touchPoly[i] = new Path2D.Double();
+			fillBranchPoly[i] = new Path2D.Double();
 		}		
 	}
 	private boolean isUP(){
@@ -384,7 +374,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		return treeDisplay.getOrientation()==TreeDisplay.RIGHT;
 	}
 	/*_________________________________________________*/
-	private int length(int node, int mother){
+	private double length(int node, int mother){
 		if (isUP())
 			return y[mother]-y[node];
 		else if (isDOWN())
@@ -395,79 +385,78 @@ class SquareTreeDrawing extends TreeDrawing   {
 			return x[node]-x[mother];
 		return 0;
 	}
-	private int getShortcutOfDaughters(Tree tree, int node){
+	private double getShortcutOfDaughters(Tree tree, int node){
 		if (cornerMode != 1)
 			return 0;
-		int s = MesquiteInteger.unassigned;
+		double s = MesquiteDouble.unassigned;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-			s = MesquiteInteger.minimum(s, length(d, node));  //find shortest descendant
-		return (int)(ownerModule.shortcutDegree*s);
+			s = MesquiteDouble.minimum(s, length(d, node));  //find shortest descendant
+		return (ownerModule.shortcutDegree*s);
 	}
 	private int getOffset(int width) {
 		return (width-getEdgeWidth())/2;
 	}
 	/*_________________________________________________*/
 	//makes polygon clockwise
-	private void UPdefineFillPoly(Polygon poly, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int sliceNumber, int numSlices, int nShortcut, boolean complete) {
+	private void UPdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Nx+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-( (sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
 		//rightedge needs to join to right edge of mother, not left edge of mother
+		poly.reset();
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx+inset, Ny+inset); // root left
-			poly.addPoint(Nx+sliceWidth-inset, Ny+inset);	//root right 
-			poly.addPoint(Nx+sliceWidth-inset, mNy); //subroot right
-			poly.addPoint(Nx+inset, mNy); //subroot left
-			poly.addPoint(Nx+inset, Ny+inset); //return to root left
-			poly.npoints=5;
+			poly.moveTo(Nx+inset, Ny+inset); // root left
+			poly.lineTo(Nx+sliceWidth-inset, Ny+inset);	//root right 
+			poly.lineTo(Nx+sliceWidth-inset, mNy); //subroot right
+			poly.lineTo(Nx+inset, mNy); //subroot left
+			poly.lineTo(Nx+inset, Ny+inset); //return to root left
 		}
 		else if (Nx<mNx) //left leaning (*)
 		{
-			poly.npoints=0;
 			if (numSlices>1)
 				mNy+=inset;
 			//if (numSlices>1)
 			//	mNy-= (sliceNumber-1)*(edgewidth-inset)/numSlices;
-			poly.addPoint(Nx+inset, Ny+inset); // daugher left
-			poly.addPoint(Nx+sliceWidth-inset, Ny+inset);	//daughter right 
-			poly.addPoint(Nx+sliceWidth-inset, mNy+inset - nShortcut); //corner right
+			poly.moveTo(Nx+inset, Ny+inset); // daugher left
+			poly.lineTo(Nx+sliceWidth-inset, Ny+inset);	//daughter right 
+			poly.lineTo(Nx+sliceWidth-inset, mNy+inset - nShortcut); //corner right
 			if (complete){
-				poly.addPoint(mNx+sliceWidth-inset, mNy+inset); //mother up (right edge)
-				poly.addPoint(mNx, mNy+sliceWidth-inset); //mother down (left edge)
-				poly.addPoint(Nx+inset, mNy+sliceWidth-inset -  nShortcut); //corner left
+				poly.lineTo(mNx+sliceWidth-inset, mNy+inset); //mother up (right edge)
+				poly.lineTo(mNx, mNy+sliceWidth-inset); //mother down (left edge)
+				poly.lineTo(Nx+inset, mNy+sliceWidth-inset -  nShortcut); //corner left
 			}
 			else
-				poly.addPoint(Nx+inset, mNy+inset -  nShortcut); //corner left
-			poly.addPoint(Nx+inset, Ny+inset); //return to daughter left 
+				poly.lineTo(Nx+inset, mNy+inset -  nShortcut); //corner left
+			poly.lineTo(Nx+inset, Ny+inset); //return to daughter left 
 			//	poly.npoints=7;
 		}
 		else { //right leaning(*)
-			poly.npoints=0;
 			if (numSlices>1)
 				mNy+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
-			poly.addPoint(Nx+inset, Ny+inset); // daugher left
-			poly.addPoint(Nx+sliceWidth-inset, Ny+inset);//daughter right 
+			poly.moveTo(Nx+inset, Ny+inset); // daugher left
+			poly.lineTo(Nx+sliceWidth-inset, Ny+inset);//daughter right 
 			if (complete){
-				poly.addPoint(Nx+sliceWidth-inset, mNy+sliceWidth-inset -  nShortcut); //corner right
-				poly.addPoint(mNx+sliceWidth-inset, mNy+sliceWidth-inset); //mother down (right edge)
-				poly.addPoint(mNx, mNy+inset); //mother up (left edge)
+				poly.lineTo(Nx+sliceWidth-inset, mNy+sliceWidth-inset -  nShortcut); //corner right
+				poly.lineTo(mNx+sliceWidth-inset, mNy+sliceWidth-inset); //mother down (right edge)
+				poly.lineTo(mNx, mNy+inset); //mother up (left edge)
 			}
 			else {
-				poly.addPoint(Nx+sliceWidth-inset, mNy + inset -  nShortcut); //corner right
+				poly.lineTo(Nx+sliceWidth-inset, mNy + inset -  nShortcut); //corner right
 			}
-			poly.addPoint(Nx+inset, mNy+inset -  nShortcut); //corner left
-			poly.addPoint(Nx+inset, Ny+inset);  //return to daughter left
+			poly.lineTo(Nx+inset, mNy+inset -  nShortcut); //corner left
+			poly.lineTo(Nx+inset, Ny+inset);  //return to daughter left
 			//	poly.npoints=7;
 		}
+		poly.closePath();
+
 	}
 	/*_________________________________________________*/
-	private void UPCalcFillBranchPolys(Tree tree, int node, int nShortcut)
+	private void UPCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcFillBranchPolys(tree, d, dShortcut);
 		}
@@ -475,10 +464,10 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 
 	/*_________________________________________________*/
-	private void UPCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
+	private void UPCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcBranchPolys(tree, d, dShortcut, polys, width);
 		}
@@ -486,74 +475,72 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	//makes polygon counterclockwise
-	private void DOWNdefineFillPoly(Polygon poly, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int sliceNumber, int numSlices, int nShortcut, boolean complete) {
+	private void DOWNdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Nx+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-((sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
+		poly.reset();
+
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx+inset, Ny-inset); //root right
-			poly.addPoint(Nx+sliceWidth-inset, Ny-inset);	//root left
-			poly.addPoint(Nx+sliceWidth-inset, mNy);  //subroot left
-			poly.addPoint(Nx+inset, mNy); //subroot right
-			poly.addPoint(Nx+inset, Ny-inset); //return to root right
-			poly.npoints=4;
+			poly.moveTo(Nx+inset, Ny-inset); //root right
+			poly.lineTo(Nx+sliceWidth-inset, Ny-inset);	//root left
+			poly.lineTo(Nx+sliceWidth-inset, mNy);  //subroot left
+			poly.lineTo(Nx+inset, mNy); //subroot right
+			poly.lineTo(Nx+inset, Ny-inset); //return to root right
 		}
 		else if (Nx>mNx) //left leaning
 		{
-			poly.npoints=0;
 			if (numSlices>1)
 				mNy-= (sliceNumber-1)*(edgewidth-inset)/numSlices;
-			poly.addPoint(Nx+inset, Ny-inset);// daughter right
-			poly.addPoint(Nx+sliceWidth-inset, Ny-inset);//daughter left
+			poly.moveTo(Nx+inset, Ny-inset);// daughter right
+			poly.lineTo(Nx+sliceWidth-inset, Ny-inset);//daughter left
 
 			if (complete){
-				poly.addPoint(Nx+sliceWidth-inset, mNy-sliceWidth+inset + nShortcut);//corner left
-				poly.addPoint(mNx+sliceWidth-inset, mNy-sliceWidth+inset); //mother down * on x
-				poly.addPoint(mNx, mNy-inset);//mother up 
+				poly.lineTo(Nx+sliceWidth-inset, mNy-sliceWidth+inset + nShortcut);//corner left
+				poly.lineTo(mNx+sliceWidth-inset, mNy-sliceWidth+inset); //mother down * on x
+				poly.lineTo(mNx, mNy-inset);//mother up 
 			}
 			else
-				poly.addPoint(Nx+sliceWidth-inset, mNy+inset + nShortcut);//corner left
+				poly.lineTo(Nx+sliceWidth-inset, mNy+inset + nShortcut);//corner left
 
-			poly.addPoint(Nx+inset, mNy-inset + nShortcut);//corner right
+			poly.lineTo(Nx+inset, mNy-inset + nShortcut);//corner right
 
-			poly.addPoint(Nx+inset, Ny-inset); //return to daughter right
+			poly.lineTo(Nx+inset, Ny-inset); //return to daughter right
 		}
 		else {
-			poly.npoints=0;
 			if (numSlices>1)
 				mNy-=inset;
-			poly.addPoint(Nx+inset, Ny-inset); // daughter right
-			poly.addPoint(Nx+sliceWidth-inset, Ny-inset);	//daughter left
-			poly.addPoint(Nx+sliceWidth-inset, mNy-inset + nShortcut);//corner left
+			poly.moveTo(Nx+inset, Ny-inset); // daughter right
+			poly.lineTo(Nx+sliceWidth-inset, Ny-inset);	//daughter left
+			poly.lineTo(Nx+sliceWidth-inset, mNy-inset + nShortcut);//corner left
 			if (complete){
-				poly.addPoint(mNx+sliceWidth-inset, mNy-inset); //mother up * on x
-				poly.addPoint(mNx, mNy-sliceWidth+inset); //mother down 
-				poly.addPoint(Nx+inset, mNy-sliceWidth+inset + nShortcut); //corner right
+				poly.lineTo(mNx+sliceWidth-inset, mNy-inset); //mother up * on x
+				poly.lineTo(mNx, mNy-sliceWidth+inset); //mother down 
+				poly.lineTo(Nx+inset, mNy-sliceWidth+inset + nShortcut); //corner right
 			}
 			else
-				poly.addPoint(Nx+inset, mNy+inset + nShortcut); //corner right
+				poly.lineTo(Nx+inset, mNy+inset + nShortcut); //corner right
 
-			poly.addPoint(Nx+inset, Ny-inset); //return to daugher right
+			poly.lineTo(Nx+inset, Ny-inset); //return to daugher right
 		}
 	}
 	/*_________________________________________________*/
-	private void DOWNCalcFillBranchPolys(Tree tree, int node, int nShortcut)
+	private void DOWNCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcFillBranchPolys(tree, d, dShortcut);
 		}
 		DOWNdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0, nShortcut, true);
 	}
 	/*_________________________________________________*/
-	private void DOWNCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
+	private void DOWNCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcBranchPolys(tree, d, dShortcut, polys, width);
 		}
@@ -561,74 +548,72 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	//makes polygon clockwise
-	private void RIGHTdefineFillPoly(Polygon poly, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int sliceNumber, int numSlices,  int nShortcut, boolean complete) {
+	private void RIGHTdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices,  double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Ny+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-((sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
+		poly.reset();
+
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx-inset, Ny+inset);// root left
-			poly.addPoint(Nx-inset, Ny+sliceWidth-inset);	//root right 
-			poly.addPoint(mNx, Ny+sliceWidth-inset); //subroot right
-			poly.addPoint(mNx, Ny+inset); //subroot left
-			poly.addPoint(Nx-inset, Ny+inset); //return to root left
-			poly.npoints=4;
+			poly.moveTo(Nx-inset, Ny+inset);// root left
+			poly.lineTo(Nx-inset, Ny+sliceWidth-inset);	//root right 
+			poly.lineTo(mNx, Ny+sliceWidth-inset); //subroot right
+			poly.lineTo(mNx, Ny+inset); //subroot left
+			poly.lineTo(Nx-inset, Ny+inset); //return to root left
 		}
 		else if (Ny<mNy) //leans left
 		{
-			poly.npoints=0;
 			//if (numSlices>1)
 			//	mNx+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			if (numSlices>1)
 				mNx-=inset;
-			poly.addPoint(Nx-inset, Ny+inset); // daughter left
-			poly.addPoint(Nx-inset, Ny+sliceWidth-inset);	//daughter right
-			poly.addPoint(mNx-inset + nShortcut, Ny+sliceWidth-inset);//corner right
+			poly.moveTo(Nx-inset, Ny+inset); // daughter left
+			poly.lineTo(Nx-inset, Ny+sliceWidth-inset);	//daughter right
+			poly.lineTo(mNx-inset + nShortcut, Ny+sliceWidth-inset);//corner right
 			if (complete){
-				poly.addPoint(mNx-inset, mNy +sliceWidth-inset); //mother up * on y
-				poly.addPoint(mNx-sliceWidth+inset, mNy); //mother down
-				poly.addPoint(mNx-sliceWidth+inset + nShortcut, Ny+inset); //corner left
+				poly.lineTo(mNx-inset, mNy +sliceWidth-inset); //mother up * on y
+				poly.lineTo(mNx-sliceWidth+inset, mNy); //mother down
+				poly.lineTo(mNx-sliceWidth+inset + nShortcut, Ny+inset); //corner left
 			}
 			else 
 
-				poly.addPoint(mNx+inset + nShortcut, Ny+inset); //corner left
-			poly.addPoint(Nx-inset, Ny+inset); //return to daughter left
+				poly.lineTo(mNx+inset + nShortcut, Ny+inset); //corner left
+			poly.lineTo(Nx-inset, Ny+inset); //return to daughter left
 		}
 		else {
-			poly.npoints=0;
 			if (numSlices>1)
 				mNx-= (sliceNumber-1)*(edgewidth-inset)/numSlices;
-			poly.addPoint(Nx-inset, Ny+inset);// daughter left
-			poly.addPoint(Nx-inset, Ny+sliceWidth-inset);//daughter right
+			poly.moveTo(Nx-inset, Ny+inset);// daughter left
+			poly.lineTo(Nx-inset, Ny+sliceWidth-inset);//daughter right
 			if (complete){
-				poly.addPoint(mNx-sliceWidth+inset + nShortcut, Ny+sliceWidth-inset);//corner right
-				poly.addPoint(mNx-sliceWidth+inset, mNy+sliceWidth-inset);//mother down * on y
-				poly.addPoint(mNx-inset, mNy);//mother up
+				poly.lineTo(mNx-sliceWidth+inset + nShortcut, Ny+sliceWidth-inset);//corner right
+				poly.lineTo(mNx-sliceWidth+inset, mNy+sliceWidth-inset);//mother down * on y
+				poly.lineTo(mNx-inset, mNy);//mother up
 			}
 			else
-				poly.addPoint(mNx+inset + nShortcut, Ny+sliceWidth-inset);//corner right
-			poly.addPoint(mNx-inset + nShortcut, Ny+inset); //corner left
+				poly.lineTo(mNx+inset + nShortcut, Ny+sliceWidth-inset);//corner right
+			poly.lineTo(mNx-inset + nShortcut, Ny+inset); //corner left
 
-			poly.addPoint(Nx-inset, Ny+inset); //return to daughter left
+			poly.lineTo(Nx-inset, Ny+inset); //return to daughter left
 		}
 	}
 	/*_________________________________________________*/
-	private void RIGHTCalcFillBranchPolys(Tree tree, int node, int nShortcut)
+	private void RIGHTCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcFillBranchPolys(tree, d, dShortcut);
 		}
 		RIGHTdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0,  nShortcut, true);
 	}
 	/*_________________________________________________*/
-	private void RIGHTCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
+	private void RIGHTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcBranchPolys(tree, d, dShortcut, polys, width);
 		}
@@ -636,71 +621,70 @@ class SquareTreeDrawing extends TreeDrawing   {
 	}
 	/*_________________________________________________*/
 	/* make polygon counterclockwise*/
-	private void LEFTdefineFillPoly(Polygon poly, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int sliceNumber, int numSlices, int nShortcut, boolean complete) {
+	private void LEFTdefineFillPoly(Path2D.Double poly, boolean isRoot, double Nx, double Ny, double mNx, double mNy, int sliceNumber, int numSlices, double nShortcut, boolean complete) {
 		int sliceWidth=edgewidth;
 		if (numSlices>1) {
 			Ny+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
 			sliceWidth=(edgewidth-inset)-((sliceNumber-1)*(edgewidth-inset)/numSlices);
 		}
+		poly.reset();
+
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx+inset, Ny+inset); // root right
-			poly.addPoint(Nx+inset, Ny+sliceWidth-inset);	//root left
-			poly.addPoint(mNx, Ny+sliceWidth-inset);//subroot left
-			poly.addPoint(mNx, Ny+inset); //subroot right
-			poly.addPoint(Nx+inset, Ny+inset);  //return to root right
-			poly.npoints=5;
+			poly.moveTo(Nx+inset, Ny+inset); // root right
+			poly.lineTo(Nx+inset, Ny+sliceWidth-inset);	//root left
+			poly.lineTo(mNx, Ny+sliceWidth-inset);//subroot left
+			poly.lineTo(mNx, Ny+inset); //subroot right
+			poly.lineTo(Nx+inset, Ny+inset);  //return to root right
 		}
 		else if (Ny>mNy) //left leaning
 		{
-			poly.npoints=0;
 			if (numSlices>1)
 				mNx+=inset;
-			poly.addPoint(Nx+inset, Ny+inset);// daughter right 
-			poly.addPoint(Nx+inset, Ny+sliceWidth-inset);	//daughter left
+			poly.moveTo(Nx+inset, Ny+inset);// daughter right 
+			poly.lineTo(Nx+inset, Ny+sliceWidth-inset);	//daughter left
 			if (complete){
-				poly.addPoint(mNx+sliceWidth -  nShortcut-inset, Ny+sliceWidth-inset);//corner left/
-				poly.addPoint(mNx+sliceWidth-inset, mNy +sliceWidth-inset); //mother down
-				poly.addPoint(mNx+inset, mNy); //mother up
+				poly.lineTo(mNx+sliceWidth -  nShortcut-inset, Ny+sliceWidth-inset);//corner left/
+				poly.lineTo(mNx+sliceWidth-inset, mNy +sliceWidth-inset); //mother down
+				poly.lineTo(mNx+inset, mNy); //mother up
 			}
 			else 
-				poly.addPoint(mNx -  nShortcut-inset, Ny+sliceWidth-inset);//corner left/
-			poly.addPoint(mNx+inset -  nShortcut, Ny+inset); //corner right
-			poly.addPoint(Nx+inset, Ny+inset); //return to daughter right
+				poly.lineTo(mNx -  nShortcut-inset, Ny+sliceWidth-inset);//corner left/
+			poly.lineTo(mNx+inset -  nShortcut, Ny+inset); //corner right
+			poly.lineTo(Nx+inset, Ny+inset); //return to daughter right
 		}
 		else {
-			poly.npoints=0;
 			if (numSlices>1)
 				mNx+= (sliceNumber-1)*(edgewidth-inset)/numSlices;
-			poly.addPoint(Nx+inset, Ny+inset);// daughter right
-			poly.addPoint(Nx+inset, Ny+sliceWidth-inset);//daughter left
-			poly.addPoint(mNx -  nShortcut+inset, Ny+sliceWidth-inset); // corner left
+			poly.moveTo(Nx+inset, Ny+inset);// daughter right
+			poly.lineTo(Nx+inset, Ny+sliceWidth-inset);//daughter left
+			poly.lineTo(mNx -  nShortcut+inset, Ny+sliceWidth-inset); // corner left
 			if (complete){
-				poly.addPoint(mNx+inset, mNy+sliceWidth-inset); //mother up
-				poly.addPoint(mNx+sliceWidth-inset, mNy);  //mother down 
-				poly.addPoint(mNx +sliceWidth-  nShortcut - inset, Ny+inset); //corner right
+				poly.lineTo(mNx+inset, mNy+sliceWidth-inset); //mother up
+				poly.lineTo(mNx+sliceWidth-inset, mNy);  //mother down 
+				poly.lineTo(mNx +sliceWidth-  nShortcut - inset, Ny+inset); //corner right
 			}
 			else
-				poly.addPoint(mNx -  nShortcut - inset, Ny+inset); //corner right
+				poly.lineTo(mNx -  nShortcut - inset, Ny+inset); //corner right
 
-			poly.addPoint(Nx+inset, Ny+inset); //return to daughter right
+			poly.lineTo(Nx+inset, Ny+inset); //return to daughter right
+			poly.closePath();
 		}
 	}
 	/*_________________________________________________*/
-	private void LEFTCalcFillBranchPolys(Tree tree, int node, int nShortcut)
+	private void LEFTCalcFillBranchPolys(Tree tree, int node, double nShortcut)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()) {
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcFillBranchPolys(tree, d, dShortcut);
 		}
 		LEFTdefineFillPoly(fillBranchPoly[node], (node==tree.getRoot()), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], 0, 0,  nShortcut, true);
 	}
 	/*_________________________________________________*/
-	private void LEFTCalcBranchPolys(Tree tree, int node, int nShortcut, Polygon[] polys, int width)
+	private void LEFTCalcBranchPolys(Tree tree, int node, double nShortcut, Path2D.Double[] polys, int width)
 	{
 		if (!tree.getAssociatedBit(triangleNameRef,node) || !treeDisplay.getSimpleTriangle()){
-			int dShortcut = getShortcutOfDaughters(tree, node);
+			double dShortcut = getShortcutOfDaughters(tree, node);
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcBranchPolys(tree, d, dShortcut, polys, width);
 		}
@@ -828,10 +812,10 @@ class SquareTreeDrawing extends TreeDrawing   {
 		if (tree.nodeIsInternal(node)) {
 			int firstDaughter = tree.firstDaughterOfNode(node);
 			if (tree.nodeExists(firstDaughter)) {
-				g.drawLine(x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
-				g.drawLine(x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
-				g.drawLine(x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
-				g.drawLine(x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
+				GraphicsUtil.drawLine(g,x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
+				GraphicsUtil.drawLine(g,x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
+				GraphicsUtil.drawLine(g,x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
+				GraphicsUtil.drawLine(g,x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
 			}
 		}
 
@@ -850,7 +834,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 					if (SHOWTOUCHPOLYS && touchPoly!=null && touchPoly[node]!=null) {  //fordebugging
 						Color prev = g.getColor();
 						g.setColor(ColorDistribution.burlyWood);
-						g.fillPolygon(touchPoly[node]);
+						GraphicsUtil.fill(g,touchPoly[node]);
 						g.setColor(prev);
 					}
 					fillOneBranch(tree, g, branchPoly[node], node, true);
@@ -859,10 +843,10 @@ class SquareTreeDrawing extends TreeDrawing   {
 					for (int i=1; i<=tree.numberOfParentsOfNode(node); i++) {
 						int anc =tree.parentOfNode(node, i);
 						if (anc!= tree.motherOfNode(node)) {
-							g.drawLine(x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
-							g.drawLine(x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
-							g.drawLine(x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
-							g.drawLine(x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
+							GraphicsUtil.drawLine(g,x[node],y[node], x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]);
+							GraphicsUtil.drawLine(g,x[node]+1,y[node], x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]);
+							GraphicsUtil.drawLine(g,x[node],y[node]+1, x[tree.parentOfNode(node, i)],y[tree.parentOfNode(node, i)]+1);
+							GraphicsUtil.drawLine(g,x[node]+1,y[node]+1, x[tree.parentOfNode(node, i)]+1,y[tree.parentOfNode(node, i)]+1);
 						}
 					}
 				}
@@ -870,9 +854,9 @@ class SquareTreeDrawing extends TreeDrawing   {
 					if (treeDisplay.getSimpleTriangle()) {
 						for (int j=0; j<2; j++)
 							for (int i=0; i<2; i++) {
-								g.drawLine(x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
-								g.drawLine(x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
-								g.drawLine(x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
+								GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j);
+								GraphicsUtil.drawLine(g,x[tree.leftmostTerminalOfNode(node)]+i,y[tree.leftmostTerminalOfNode(node)]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
+								GraphicsUtil.drawLine(g,x[node]+i,y[node]+j, x[tree.rightmostTerminalOfNode(node)]+i,y[tree.rightmostTerminalOfNode(node)]+j);
 							}
 					} else {
 						//	drawLeftSideOfClade(tree, g, node);
@@ -903,10 +887,10 @@ class SquareTreeDrawing extends TreeDrawing   {
 			if (width<0)
 				width = 0;
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];
 
 			if (treeDisplay.getOrientation()==TreeDisplay.UP || treeDisplay.getOrientation()==TreeDisplay.DOWN){
 				xN += width/2+start;
@@ -966,7 +950,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		}
 	}
 
-	void fillOneBranch(Tree tree, Graphics g, Polygon poly, int node, boolean total){
+	void fillOneBranch(Tree tree, Graphics g, Path2D.Double poly, int node, boolean total){
 		if (cornerMode == 2){
 			if (!total)
 				drawOneCurvedBranch(tree, g, node, inset, edgewidth-inset*2) ;
@@ -974,9 +958,9 @@ class SquareTreeDrawing extends TreeDrawing   {
 				drawOneCurvedBranch(tree, g, node, 0, edgewidth) ;
 		}
 		else
-			g.fillPolygon(poly);
+			GraphicsUtil.fill(g,poly);
 		/*for (int i = 0 ; i < poly.npoints-1; i++){
-					g.drawLine(poly.xpoints[i], poly.ypoints[i], poly.xpoints[i+1] , poly.ypoints[i+1]);
+					GraphicsUtil.drawLine(g,poly.xpoints[i], poly.ypoints[i], poly.xpoints[i+1] , poly.ypoints[i+1]);
 		}
 		 */
 	}
@@ -1014,53 +998,53 @@ class SquareTreeDrawing extends TreeDrawing   {
 			g.setColor(Color.blue);
 		if (isDOWN() || isUP()){
 			for (int i=0; i<4; i++)
-				g.drawLine(x[node]-2 - i, y[node], x[node]-2 - i, y[tree.motherOfNode(node)]);
+				GraphicsUtil.drawLine(g,x[node]-2 - i, y[node], x[node]-2 - i, y[tree.motherOfNode(node)]);
 		}
 		else {
 			for (int i=0; i<4; i++)
-				g.drawLine(x[node], y[node]-2 - i, x[tree.motherOfNode(node)], y[node]-2 - i);
+				GraphicsUtil.drawLine(g,x[node], y[node]-2 - i, x[tree.motherOfNode(node)], y[node]-2 - i);
 		}
 		g.setColor(tC);
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		Rectangle box;
+		Rectangle2D box;
 		int ew = edgewidth-1;
 		if (isUP()) 
-			box = new Rectangle(x[node], y[node]-ew-3, ew, ew);
+			box = new Rectangle2D.Double(x[node], y[node]-ew-3, ew, ew);
 		else if (isDOWN())
-			box = new Rectangle(x[node], y[node]+1, ew, ew);
+			box = new Rectangle2D.Double(x[node], y[node]+1, ew, ew);
 		else  if (isRIGHT()) 
-			box = new Rectangle(x[node]+1, y[node], ew, ew);
+			box = new Rectangle2D.Double(x[node]+1, y[node], ew, ew);
 		else  if (isLEFT())
-			box = new Rectangle(x[node]-ew-3, y[node], ew, ew);
+			box = new Rectangle2D.Double(x[node]-ew-3, y[node], ew, ew);
 		else 
-			box = new Rectangle(x[node], y[node], ew, ew);
-		g.fillRect(box.x, box.y, box.width, box.height);
+			box = new Rectangle2D.Double(x[node], y[node], ew, ew);
+		GraphicsUtil.fillRect(g,box.getX(), box.getY(), box.getWidth(), box.getHeight());
 		g.setColor(treeDisplay.getBranchColor(node));
-		g.drawRect(box.x, box.y, box.width, box.height);
+		GraphicsUtil.drawRect(g,box.getX(), box.getY(), box.getWidth(), box.getHeight());
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
-		Rectangle box;
+		Rectangle2D box;
 		int numColors = colors.getNumColors();
 		int ew = edgewidth-1;
 		if (isUP()) 
-			box = new Rectangle(x[node], y[node]-ew-3, ew, ew);
+			box = new Rectangle2D.Double(x[node], y[node]-ew-3, ew, ew);
 		else if (isDOWN())
-			box = new Rectangle(x[node], y[node]+1, ew, ew);
+			box = new Rectangle2D.Double(x[node], y[node]+1, ew, ew);
 		else  if (isRIGHT()) 
-			box = new Rectangle(x[node]+1, y[node], ew, ew);
+			box = new Rectangle2D.Double(x[node]+1, y[node], ew, ew);
 		else  if (isLEFT())
-			box = new Rectangle(x[node]-ew-3, y[node], ew, ew);
+			box = new Rectangle2D.Double(x[node]-ew-3, y[node], ew, ew);
 		else 
-			box = new Rectangle(x[node], y[node], ew, ew);
+			box = new Rectangle2D.Double(x[node], y[node], ew, ew);
 		for (int i=0; i<numColors; i++) {
 			g.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-			g.fillRect(box.x + (i*box.width/numColors), box.y, box.width-  (i*box.width/numColors), box.height);
+			GraphicsUtil.fillRect(g,box.getX() + (i*box.getWidth()/numColors), box.getY(), box.getWidth()-  (i*box.getWidth()/numColors), box.getHeight());
 		}
 		g.setColor(treeDisplay.getBranchColor(node));
-		g.drawRect(box.x, box.y, box.width, box.height);
+		GraphicsUtil.drawRect(g,box.getX(), box.getY(), box.getWidth(), box.getHeight());
 	}
 	/*_________________________________________________*/
 	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
@@ -1103,12 +1087,12 @@ class SquareTreeDrawing extends TreeDrawing   {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
 			Color c = g.getColor();
 			int numEvents = colors.size();
-			int nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
+			double nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
 			g.setColor(Color.lightGray);
 			fillBranch(tree, node, g);
 			if (isUP()) {
-				int desc = y[node];
-				int anc = y[tree.motherOfNode(node)];
+				double desc = y[node];
+				double anc = y[tree.motherOfNode(node)];
 				if (cornerMode == 2){
 					anc = (int)(anc -ownerModule.curvature);
 				}
@@ -1128,14 +1112,14 @@ class SquareTreeDrawing extends TreeDrawing   {
 					UPdefineFillPoly(utilityPolygon, (node==tree.getRoot()), x[node], anc- (int)(pos*(anc-desc)), x[tree.motherOfNode(node)], anc, 0, 1, nShortcut, cornerMode == 0);
 					//	if (cornerMode == 0 || i != 0){
 					g.setColor(e.getColor());
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 					//	}
 
 				}
 			}
 			else if (isDOWN()) {
-				int desc = y[node];
-				int anc = y[tree.motherOfNode(node)];
+				double desc = y[node];
+				double anc = y[tree.motherOfNode(node)];
 				if (cornerMode == 2){
 					anc = (int)(anc +ownerModule.curvature);
 				}
@@ -1154,12 +1138,12 @@ class SquareTreeDrawing extends TreeDrawing   {
 					}
 					DOWNdefineFillPoly(utilityPolygon, (node==tree.getRoot()), x[node], anc + (int)(pos*(desc-anc)),  x[tree.motherOfNode(node)], anc, 0, 1, nShortcut, cornerMode == 0);
 					g.setColor(e.getColor());
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 				}
 			}
 			else if (isRIGHT()) {
-				int desc = x[node];
-				int anc = x[tree.motherOfNode(node)];
+				double desc = x[node];
+				double anc = x[tree.motherOfNode(node)];
 				if (cornerMode == 2){
 					anc = (int)(anc + ownerModule.curvature);
 				}
@@ -1178,12 +1162,12 @@ class SquareTreeDrawing extends TreeDrawing   {
 					}
 					RIGHTdefineFillPoly(utilityPolygon, (node==tree.getRoot()),  anc- (int)(pos*(anc-desc)), y[node], anc, y[tree.motherOfNode(node)], 0, 1, nShortcut, cornerMode == 0);
 					g.setColor(e.getColor());
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 				}
 			}
 			else if (isLEFT()){
-				int desc = x[node];
-				int anc = x[tree.motherOfNode(node)];
+				double desc = x[node];
+				double anc = x[tree.motherOfNode(node)];
 				if (cornerMode == 2){
 					anc = (int)(anc - ownerModule.curvature);
 				}
@@ -1203,7 +1187,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 					}
 					LEFTdefineFillPoly(utilityPolygon, (node==tree.getRoot()), anc + (int)(pos*(desc-anc)), y[node], anc, y[tree.motherOfNode(node)], 0, 1, nShortcut, cornerMode == 0);
 					g.setColor(e.getColor());
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 				}
 			}
 			if (c!=null) g.setColor(c);
@@ -1243,7 +1227,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node) && branchIsVisible(node)) {
 			Color c = g.getColor();
 			int numColors = colors.getNumColors();
-			int nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
+			double nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
 			if (cornerMode == 2){
 				int fillWidth = edgewidth-2*inset;
 				for (int i=0; i<numColors; i++) {
@@ -1259,7 +1243,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 				}
 			}
 			else if (isDOWN()) {
@@ -1268,7 +1252,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 				}
 			}
 			else if (isRIGHT()) {
@@ -1277,7 +1261,7 @@ class SquareTreeDrawing extends TreeDrawing   {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 				}
 			}
 			else if (isLEFT()){
@@ -1286,42 +1270,41 @@ class SquareTreeDrawing extends TreeDrawing   {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
-					g.fillPolygon(utilityPolygon);
+					GraphicsUtil.fill(g,utilityPolygon);
 				}
 			}
 			if (c!=null) g.setColor(c);
 		}
 	}
 	/*_________________________________________________*/
-	public Polygon nodePoly(int node) {
-		int offset = (getNodeWidth()-getEdgeWidth())/2;
+	public Path2D.Double nodePoly(int node) {
+		double offset = (getNodeWidth()-getEdgeWidth())/2;
 		int doubleOffset = (getNodeWidth()-getEdgeWidth());
-		int startX = x[node] - offset;
-		int startY= y[node] - offset;
+		double startX = x[node] - offset;
+		double startY= y[node] - offset;
 		if (isRIGHT()){
 			startX -= getNodeWidth()-doubleOffset;
 		} else if (isDOWN())
 			startY -= getNodeWidth()-doubleOffset;
-		Polygon poly = new Polygon();
-		poly.npoints=0;
-		poly.addPoint(startX,startY);
-		poly.addPoint(startX+getNodeWidth(),startY);
-		poly.addPoint(startX+getNodeWidth(),startY+getNodeWidth());
-		poly.addPoint(startX,startY+getNodeWidth());
-		poly.addPoint(startX,startY);
-		poly.npoints=5;
+		Path2D.Double poly = new Path2D.Double();
+		poly.reset();
+		poly.moveTo(startX,startY);
+		poly.lineTo(startX+getNodeWidth(),startY);
+		poly.lineTo(startX+getNodeWidth(),startY+getNodeWidth());
+		poly.lineTo(startX,startY+getNodeWidth());
+		poly.lineTo(startX,startY);
 		return poly;
 	}
 	/*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){
-		Polygon nodeP = nodePoly(node);
+		Path2D.Double nodeP = nodePoly(node);
 		if (nodeP!=null && nodeP.contains(x,y))
 			return true;
 		else
 			return false;
 	}
 	/*_________________________________________________*/
-	private void ScanBranches(Tree tree, Polygon[] polys, int node, int x, int y, MesquiteDouble fraction)
+	private void ScanBranches(Tree tree, Path2D[] polys, int node, int x, int y, MesquiteDouble fraction)
 	{
 		if (foundBranch==0) {
 			if (polys != null && polys[node] != null && polys[node].contains(x, y) || inNode(node,x,y)){

@@ -587,7 +587,7 @@ public class Puppeteer  {
 								MesquiteTrunk.mesquiteTrunk.logln(getEmployeeNotFoundWarning(previousArguments));
 							}
 							else
-								MesquiteTrunk.mesquiteTrunk.alert("A script has failed to execute properly, possibly because it expected certain modules not available in the current configuration of Mesquite.  Details: A command (\"" + previousCommand + "\") did not result in the return of an object as expected.  The script's results may not be as expected.\nMore details are written into Mesquite's log file."); 
+								MesquiteTrunk.mesquiteTrunk.discreetAlert("A script has failed to execute properly, possibly because it expected certain modules not available in the current configuration of Mesquite.  Details: A command (\"" + previousCommand + "\") did not result in the return of an object as expected.  The script's results may not be as expected.\nMore details are written into Mesquite's log file."); 
 						}
 						comRec.setObjectToldNullWarning();
 						comRec.setErrorFound();
@@ -968,7 +968,7 @@ public class Puppeteer  {
 			else if (checker.compare(null, "Queries the user for an integer value", "[Message to be shown to user (as a quoted token)]", commandName, "queryInteger")) {
 				if (fineDebugging) stamp("-sc- (" + level + ")32");
 				String argument = nextTokenCompressAsterisk(parser);
-				int i = MesquiteInteger.queryInteger(ownerModule.containerOfModule(), argument, argument, 0);
+				int i = MesquiteInteger.queryInteger(MesquiteTrunk.mesquiteTrunk.containerOfModule(), argument, argument, 0);
 				if (MesquiteInteger.isCombinable(i))
 					result = new MesquiteInteger(i);
 				else {

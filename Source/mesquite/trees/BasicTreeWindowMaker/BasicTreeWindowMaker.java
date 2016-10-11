@@ -563,7 +563,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 					if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
 						basicTreeWindow.taxa.removeListener((MesquiteTree) basicTreeWindow.originalTree);
 					basicTreeWindow.originalTree = null; // otree
-
+					editMode = false;
 					basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); // if switching between tree blocks, should reset to zero! If storing tree in tree block, shouldn't!
 					basicTreeWindow.contentsChanged();
 				}
@@ -840,177 +840,98 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
  */
 class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListener, AdjustmentListener, XMLPreferencesProcessor {
 	MesquiteTree tree;
-
 	MesquiteTree oldTree = null; // used just to determine if version number of current tree matches; not used otherwise
-
 	MesquiteTree undoTree = null; // listens to taxa directly
-
 	MesquiteTree previousTree = null; // listens to taxa directly
-
 	Tree previousEditedTree; // listens to taxa directly
-
 	Tree originalTree;
-
 	TreeVector recentEditedTrees;
-
 	int maxRecentEditedTrees = 20;
-
 	TreeDisplay treeDisplay;
-
 	Taxa taxa;
-
 	DrawTreeCoordinator treeDrawCoordTask;
-
 	boolean treeEdited = false;
-
 	boolean editedByHand = false;
-
 	// private Rectangle treeRect;
 	// MesquiteScrollbar hScroll, vScroll;
-
 	TreeScrollPane treePane;
-
 	Adjustable hScroll, vScroll;
-
+	
 	int scanLineThickness = 3;
-
 	boolean usingPane = false;
-
 	TreeSource treeSourceTask;
-
 	boolean warningGivenForTreeSource = false;
-
 	static final int scrollWidth = 16;
-
 	static final int initalWindowHeight = 400;
-
 	static final int initalWindowWidth = 520;
-
 	static final int baseMessageWidth = 256;
-
 	int messageWidth = 256;
-
 	int totalTreeFieldWidth = 800;
-
 	int totalTreeFieldHeight = 800;
-
 	TreeWindowPalette palette;
-
 	MessagePanel messagePanel;
-
 	/* New code added Feb.07 oliver */// TODO: delete new code comments
 	ControlStrip controlStrip;
-
 	/* End new code added Feb.07 oliver */
 	boolean canUndo = true;
-
 	MesquiteCommand setTreeNumberCommand;
-
 	TreeTool currentTreeTool;
-
 	MesquiteBoolean ladderizeAfterReroot = new MesquiteBoolean(true);
-
 	MesquiteCMenuItemSpec toggleRerootLadderizeMSpec = null;
-
 	MesquiteCheckMenuItem toggleRerootLadderizeMenuItem = null;
-
 	// boolean initiating = true;
 	// MesquiteBoolean sizeToFit;
 	// MesquiteBoolean useSuggestedSize;
-
 	TreeTool toolMAG;
-
 	TreeTool rerootTool;
-
 	int drawingSizeMode;
-
 	final static int AUTOSIZE = 0;
-
 	final static int SCALETOFIT = 1;
-
 	final static int FIXEDSIZE = 2;
-
 	StringArray sizeModes;
-
 	MesquiteString sizeModeName;
-
 	MesquiteBoolean infoPanelOn;
-
 	MesquiteBoolean floatLegends;
-
 	MesquiteBoolean textVersionDrawOnTree;
-
 	BasicTreeWindowMaker windowModule;
-
 	MesquiteInteger dropHighlightedBranch = new MesquiteInteger(0);
-
 	MesquiteInteger highlightedBranch = null;
-
 	int branchFrom;
-
 	int highlightedTaxon = -1;
-
 	int taxonTouched = -1;
-
 	int xFrom, yFrom, xTo, yTo, fieldTouchX, fieldTouchY, lastFieldDragX, lastFieldDragY;
-
 	static final int CONTINUE_WITH_EDITED = 1;
-
 	static final int CHANGE_TREE_WITH_SOURCE = 0;
-
 	static final int ASK_USER_TREE_CHANGE = 2;
-
 	static int editedTreeMODE = ASK_USER_TREE_CHANGE;
-
 	boolean usingDefaultTree = false;
-
 	private int currentTreeNumber = 0;
-
 	// MesquiteMenuItemSpec sizeItem;
 	static int numWindows = 0;
-
 	private int windowNum = 0;
-
 	MagnifyExtra magnifyExtra;
-
 	// int setPosX = MesquiteInteger.unassigned;
 	// int setPosY = MesquiteInteger.unassigned;
 	long treeVersion = 0;
-
 	MesquiteCommand undoCommand, copyCommand, pasteCommand;
-
 	MesquiteString baseExplanation;
-
 	TreeReference treeReference = new TreeReference();
-
 	// MesquiteString currentTreeFootnote;
 	boolean baseExplanationUsed = false;
-
 	boolean treeAnnotationShown = false;
-
 	MesquiteMenuItemSpec storeTreeMenuItem, storeTreeAsMenuItem, storeTreeAsOtherMenuItem, recoverEditedMenuItem;
-
 	MesquiteMenuItemSpec floatLegendsItem;
-
 	int oldH = 0;
-
 	int oldV = 0;
-
 	boolean showTreeListOnSave = false; // have preference for this?
-
 	Dimension oldPreferred = null;
-
 	TreeInfoPanel treeInfoPanel;
-
 	boolean treeInfoPanelEverShown = false;
-
 	MesquiteSubmenuSpec drawSizeSubmenu;
-
 	/*
 	 * When lockStoredTrees is true (MacClade mode), editing a stored tree causes the tree to be treated as unsaved, and for the new tree to be saved, Store Tree or Replace Stored Tree must be called. When false, editing a stored tree changes the original in storage.
 	 */
 	// boolean lockStoredTrees = false;
-
 	// LockPanel lockPanel;
 
 	public BasicTreeWindow() {
@@ -1131,10 +1052,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		storeTreeAsOtherMenuItem = ownerModule.addMenuItem("Store Tree In Tree Block As...", ownerModule.makeCommand("storeTreeAsOther", this));
 		setStoreTreeAsMenuItems(editMode);
 
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		recoverEditedMenuItem = ownerModule.addMenuItem("Recover Last Edited Tree", ownerModule.makeCommand("recoverLastEditedTree", this));
 		ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 
 		ownerModule.addMenuItem("Choose Tree...", ownerModule.makeCommand("chooseTree", this));
 		MesquiteMenuItemSpec mm = ownerModule.addMenuItem("Next Tree", ownerModule.makeCommand("nextTree", this)); // DOES THIS WORK??
@@ -1142,14 +1063,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mm = ownerModule.addMenuItem("Previous Tree", ownerModule.makeCommand("previousTree", this));
 		mm.setShortcut(KeyEvent.VK_DOWN); // right
 		ownerModule.addMenuItem("Step Through Trees...", ownerModule.makeCommand("stepThroughTrees", this));
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		ownerModule.addSubmenu(null, "Alter/Transform Tree", ownerModule.makeCommand("alterTree", this), TreeAlterer.class);
 		ownerModule.addSubmenu(null, "Alter/Transform Branch Lengths", ownerModule.makeCommand("alterBranchLengths", this), BranchLengthsAlterer.class);
 		ownerModule.addMenuItem("Cut Selected Taxa", ownerModule.makeCommand("cutSelectedTaxa", this));
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		ownerModule.addModuleMenuItems(null, ownerModule.makeCommand("newWindowAssistant", this), TreeWindowAssistantN.class);
 		ownerModule.addModuleMenuItems(null, ownerModule.makeCommand("newAssistant", this), TreeDisplayAssistantD.class);
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 
 		MesquiteSubmenuSpec mBringToFrontAsst = ownerModule.addSubmenu(null, "Bring To Front");
 		mBringToFrontAsst.setList(treeDisplay.getExtras());
@@ -1165,7 +1086,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mCloseAsst.setListableFilter(TreeDisplayAssistantAD.class);
 		mCloseAsst.setCommand(ownerModule.makeCommand("closeDisplayAssistant", this));
 
-		treeDrawCoordTask.addMenuItem("-", null);
+		treeDrawCoordTask.addMenuSeparator();
 
 		drawingSizeMode = AUTOSIZE;
 		if (treeDrawCoordTask.hasPreferredSize())
@@ -1183,7 +1104,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		floatLegendsItem = treeDrawCoordTask.addCheckMenuItem(null, "Float Legends", ownerModule.makeCommand("toggleLegendFloat", this), floatLegends);
 		treeDrawCoordTask.addMenuItem("Legends To Default Positions", ownerModule.makeCommand("legendsToHome", this));
 		treeDrawCoordTask.addCheckMenuItem(null, "Text Extras On Trees", ownerModule.makeCommand("toggleTextOnTree", this), textVersionDrawOnTree);
-		treeDrawCoordTask.addMenuItem("-", null);
+		treeDrawCoordTask.addMenuSeparator();
 
 		undoCommand = MesquiteModule.makeCommand("undo", this);
 		copyCommand = MesquiteModule.makeCommand("copyTree", this);
@@ -1377,8 +1298,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		if (usingPane) {
 			TreeDrawing td = treeDisplay.getTreeDrawing();
-			int x = td.x[treeDisplay.getTree().nodeOfTaxonNumber(i)];
-			int y = td.y[treeDisplay.getTree().nodeOfTaxonNumber(i)];
+			int x = (int)td.x[treeDisplay.getTree().nodeOfTaxonNumber(i)];    //integer node loc approximation
+			int y = (int)td.y[treeDisplay.getTree().nodeOfTaxonNumber(i)];    //integer node loc approximation
 			int w = getTreePaneWidth();
 			int h = getTreePaneHeight();
 			setOrigin(x - w / 2, y - h / 2, true);
@@ -1928,8 +1849,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			// hScroll.setValue(treePane.x);
 			treePane.setHMinMax(0, treeDisplay.getFieldWidth() - treePane.getWidth() - scrollWidth);
 
-			vScroll.setBlockIncrement(treePane.getHeight() / 10);
-			hScroll.setBlockIncrement(treePane.getWidth() / 10);
+			int increment = treePane.getHeight() / 10;
+			if (increment>treeDisplay.getFieldHeight())
+				increment = treeDisplay.getFieldHeight();
+			vScroll.setBlockIncrement(increment);
+			increment = treePane.getWidth() / 10;
+			if (increment>treeDisplay.getFieldWidth())
+				increment = treeDisplay.getFieldWidth();
+			hScroll.setBlockIncrement(increment);
 			vScroll.setUnitIncrement(10);
 			hScroll.setUnitIncrement(10);
 			resetScrolls();
@@ -2050,10 +1977,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		ExtensibleDialog queryDialog = new ExtensibleDialog(this, "Retain Edited Tree?", buttonPressed);
 		queryDialog.addLabel("Retain Edited Tree?");
 		queryDialog
-				.addLargeOrSmallTextLabel("The tree in the window \"" + getTitle() + "\" has been edited but not saved.  " + "Do you want to go to the new tree, or do you want to continue to show the edited tree in the window?\n\nIf you continue to show the edited tree, remember that the tree " + "shown might not come from the source of trees currently used by the window.");
+		.addLargeOrSmallTextLabel("The tree in the window \"" + getTitle() + "\" has been edited but not saved.  " + "Do you want to go to the new tree, or do you want to continue to show the edited tree in the window?\n\nIf you continue to show the edited tree, remember that the tree " + "shown might not come from the source of trees currently used by the window.");
 
 		queryDialog
-				.appendToHelpString("If you choose to go to the new tree, you may be able to recover the edited tree by selecting Recover Last Edited Tree in the Tree menu. " + "\n\nIf you choose to continue showing the edited tree, you can store the edited tree by selecting Store Tree As from the Tree menu." + " To see a tree that belongs to the source of trees used by the window, hit the Enter arrow of the " + "Tree scroll in the upper left of the tree window.");
+		.appendToHelpString("If you choose to go to the new tree, you may be able to recover the edited tree by selecting Recover Last Edited Tree in the Tree menu. " + "\n\nIf you choose to continue showing the edited tree, you can store the edited tree by selecting Store Tree As from the Tree menu." + " To see a tree that belongs to the source of trees used by the window, hit the Enter arrow of the " + "Tree scroll in the upper left of the tree window.");
 		Checkbox dontAsk = queryDialog.addCheckBox("Don't ask again. (To change preference, choose Edited Tree Handling Options from the Tree menu.)", false);
 		queryDialog.completeAndShowDialog("Switch to new tree", "Continue showing edited tree", null, (String) null);
 		if (dontAsk.getState()) {
@@ -2085,6 +2012,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	void resetForTreeSource(boolean setToZero, boolean firstTimeTreeSource, boolean retainEditedRegardless, int notificationCode) {
 		if (disposing)
 			return;
+		windowModule.editMode = false;   //if you get here, you can't be in editMode.  
 		resetTitle();
 		if (firstTimeTreeSource)
 			warningGivenForTreeSource = false;
@@ -2093,7 +2021,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			ownerModule.iQuit();
 			return;
 		}
-
 		if (tree != null) {
 			boolean retainTree = false;
 			if (retainEditedRegardless || MesquiteThread.isScripting() || editedTreeMODE == CONTINUE_WITH_EDITED || notificationCode == MesquiteListener.ITEMS_ADDED || notificationCode == MesquiteListener.PARTS_ADDED || notificationCode == MesquiteListener.PARTS_DELETED || notificationCode == MesquiteListener.PARTS_MOVED)
@@ -2827,8 +2754,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					MesquiteBoolean answer = new MesquiteBoolean(false);
 					MesquiteInteger newWidth = new MesquiteInteger(totalTreeFieldWidth);
 					MesquiteInteger newHeight = new MesquiteInteger(totalTreeFieldHeight);
-					MesquiteInteger
-							.queryTwoIntegers(ownerModule.containerOfModule(), "Size of tree drawing", "Width (Pixels)", "Height (Pixels)", answer, newWidth, newHeight, 10, MesquiteInteger.unassigned, 10, MesquiteInteger.unassigned, "Enter the width and height of the tree drawing.  These values must be at least 10 pixels each.");
+					MesquiteInteger.queryTwoIntegers(ownerModule.containerOfModule(), "Size of tree drawing", "Width (Pixels)", "Height (Pixels)", answer, newWidth, newHeight, 10, MesquiteInteger.unassigned, 10, MesquiteInteger.unassigned, "Enter the width and height of the tree drawing.  These values must be at least 10 pixels each.");
 					if (answer.getValue() && newWidth.getValue() > 10 && newHeight.getValue() > 10) {
 						totalTreeFieldWidth = newWidth.getValue();
 						totalTreeFieldHeight = newHeight.getValue();
@@ -2899,13 +2825,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			MesquiteInteger io = new MesquiteInteger(0);
 			int branchFrom = MesquiteInteger.fromString(arguments, io);
 			int branchTo = MesquiteInteger.fromString(arguments, io);
-			
+
 			if (branchFrom > 0 && branchTo > 0){
 				int fromMother = tree.motherOfNode(branchFrom);  //new in 3. 1: finally, allowing interchange
 				int toMother = tree.motherOfNode(branchTo);
 				if (fromMother == toMother && toMother>0 && (arguments.indexOf("option") >= 0 || !tree.nodeIsPolytomous(fromMother))){
 					if (tree.interchangeBranches(branchFrom, branchTo, false, true))
-					treeEdited(false);
+						treeEdited(false);
 				}
 				else if (tree.moveBranch(branchFrom, branchTo, true))
 					treeEdited(false);
@@ -3084,7 +3010,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int numW = numberWritable();
 		if (numW == 0) {
 			ownerModule
-					.discreetAlert("Step Through Trees summarizes calculations over a series of trees, but you currently have no calculations active that can be summarized.  \"Values\" in the tree info panel, \"Values for Current Tree\", \"Trace Character History\" and some other calculations can be summarized. (Not all calculations have been enabled for summarizing.)");
+			.discreetAlert("Step Through Trees summarizes calculations over a series of trees, but you currently have no calculations active that can be summarized.  \"Values\" in the tree info panel, \"Values for Current Tree\", \"Trace Character History\" and some other calculations can be summarized. (Not all calculations have been enabled for summarizing.)");
 			return;
 		}
 		if (treeSourceTask == null)
@@ -3748,8 +3674,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		GraphicsUtil.drawOval(g, x - spotSize / 2, y - spotSize / 2, spotSize, spotSize);
 		g.setColor(oldColor);
 	}
-
 	/* _________________________________________________ */
+	/* Historical note: this method's name begins with an upper case letter because it descends directly
+	from Pascal source code for MacClade 1 (1986), under the name ScanPick */
 	public boolean ScanTouch(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null || treeDrawCoordTask == null || treeDrawCoordTask.getNamesTask() == null || treeDisplay.getTreeDrawing() == null)
 			return false;
@@ -3822,8 +3749,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		}
 		// return false;
 	}
-
 	/* _________________________________________________ */
+	/* Historical note: this method's name begins with an upper case letter because it descends directly
+	from Pascal source code for MacClade 1 (1986) */
 	public void ScanDrop(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null || treeDisplay.getTreeDrawing() == null)
 			return;
@@ -3920,6 +3848,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* _________________________________________________ */
+	/* Historical note: this method's name begins with an upper case letter because it descends directly
+	from Pascal source code for MacClade 1 (1986) */
 	public void ScanDrag(Graphics g, int x, int y, int modifiers) {
 		if (treeDisplay == null || tree == null)
 			return;
@@ -3970,8 +3900,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	public void findContained(Tree tree, int N, int x, int y, int w, int h, Vector nodes, Vector taxons) {
 		TreeDrawing drawing = treeDisplay.getTreeDrawing();
-		int dX = drawing.x[N];
-		int dY = drawing.y[N];
+		int dX = (int)drawing.x[N];   //integer node loc approximation
+		int dY = (int)drawing.y[N];   //integer node loc approximation
 
 		if (dX >= x && dX <= x + w && dY >= y && dY <= y + h)
 			nodes.addElement(new MesquiteInteger(N));
@@ -4522,10 +4452,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else {
 			if (t != null && t.hasName())
 				treename = t.getName();
-			else
+			else {
 				treename = treeSourceTask.getTreeNameString(taxa, MesquiteTree.toInternal(palette.paletteScroll.getCurrentValue()));
+			}
 		}
 		messagePanel.setMessage(treename);
+		
 		if (treeInfoPanel != null)
 			treeInfoPanel.setTreeAndSourceName(treename, treeSourceTask.getName());
 
@@ -4714,6 +4646,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				taxa.removeListener(oldTree);
 			if (recentEditedTrees != null) {
 				taxa.removeListener(recentEditedTrees);
+				recentEditedTrees.dispose();
 			}
 		}
 
@@ -4752,7 +4685,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 }
 
-/* ======================================================================== */
+/* ======================================================================== *
 class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, MouseWheelListener { // REALTreeScrollPane
 	BasicTreeWindow window;
 
@@ -4772,7 +4705,7 @@ class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, Mouse
 
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		Adjustable hScroll = getHAdjustable();
-		Adjustable vScroll = getHAdjustable();
+		Adjustable vScroll = getVAdjustable();
 
 		window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
 	}
@@ -5160,6 +5093,7 @@ class MessagePanel extends Panel {
 		else
 			ownerModule.magnifyExtra.name = null;
 		if (ownerModule.treeSourceTask != null && !edited) {
+					
 			String s = ownerModule.treeSourceTask.getNameAndParameters();
 			if (!StringUtil.blank(s))
 				treeSourceAddendum = "   [" + s + "]";
@@ -5953,7 +5887,7 @@ class MagnifyExtra extends TreeDisplayExtra {
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 		if (drawnRoot != tree.getRoot()) {
 			TreeDrawing td = treeDisplay.getTreeDrawing();
-			g.drawImage(image, td.x[drawnRoot], td.y[drawnRoot], treeDisplay);
+			g.drawImage(image, (int)td.x[drawnRoot], (int)td.y[drawnRoot], treeDisplay);
 		}
 	}
 
@@ -6024,11 +5958,11 @@ class BirdsEyePanel extends MesquitePanel {
 	}
 
 	private int getTransformedX(int node) {
-		return getBounds().width * treeDrawing.x[node] / (treeWindow.treeDisplay.getFieldWidth());
+		return (int)(getBounds().width * treeDrawing.x[node] / (treeWindow.treeDisplay.getFieldWidth()));    //integer node loc approximation
 	}
 
 	private int getTransformedY(int node) {
-		return getBounds().height * treeDrawing.y[node] / (treeWindow.treeDisplay.getFieldHeight());
+		return (int)(getBounds().height * treeDrawing.y[node] / (treeWindow.treeDisplay.getFieldHeight()));    //integer node loc approximation
 	}
 
 	public void paint(Graphics g) {

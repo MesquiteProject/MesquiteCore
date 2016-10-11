@@ -64,10 +64,27 @@ public class ListableVector extends FileElement implements StringLister, Command
 	//		return "";
 		return "<li>" + getTypeName() + " (" + size() + " units)<ul>" + sH + "</ul>" + super.toHTMLStringDescription() + "</li>";
 	}
-	public void dispose(){
+	boolean wasDisposed = false;
+	public void dispose(boolean disposeElements){
+		
+
+		wasDisposed = true;
+		if (disposeElements){
+			for (int i = 0; i<size(); i++){
+				Listable listable = elementAt(i);
+				if (listable instanceof Disposable)
+					((Disposable)listable).dispose();
+		}
+		}
+		removeAllListeners();
 		removeAllElements(false);
-		totalDisposed++;
+		if ((getClass() == TreeVector.class) || (getClass() == SpecsSetVector.class) || (getClass() == TaxaGroupVector.class))
+			//||  (getClass() == CharactersGroupVector.class) && (getClass() != ModelVector.class))
+			totalDisposed++;
 		super.dispose();
+	}
+	public void dispose(){
+		dispose(false);
 	}
 	public void finalize() throws Throwable {
 		totalFinalized++;
@@ -839,8 +856,8 @@ public class ListableVector extends FileElement implements StringLister, Command
    	 }
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
 	public void changed(Object caller, Object obj, Notification notification){
-		int code = Notification.getCode(notification);
-		if (indexOf(obj)>=0 && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_ADDED && code != MesquiteListener.ANNOTATION_DELETED)
+		int code = Notification.getCode(notification); 
+		if (indexOf(obj)>=0 && code != MesquiteListener.LOCK_CHANGED && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_ADDED && code != MesquiteListener.ANNOTATION_DELETED)
 			notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
 	}
 	/** passes which object was disposed*/

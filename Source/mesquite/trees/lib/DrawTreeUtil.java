@@ -25,284 +25,252 @@ public class DrawTreeUtil {
 		return (width-edgeWidth)/2;
 	}
 	/*_________________________________________________*/
-	public static void UPdefineDiagonalPoly(TreeDrawing treeDrawing, Polygon poly, int width, boolean internalNode, int Nx, int Ny, int mNx, int mNy) {
+	public static void UPdefineDiagonalPoly(TreeDrawing treeDrawing, Path2D poly, int width, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
 			Nx -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNx -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode)  {
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx+width/2, Ny-width/2);//Ny+width/2 for down
-				poly.addPoint(Nx+width, Ny);
-				poly.addPoint(mNx+width, mNy);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=6;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx+width/2, Ny-width/2);//Ny+width/2 for down
+				poly.lineTo(Nx+width, Ny);
+				poly.lineTo(mNx+width, mNy);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 			else {
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx+width, Ny);
-				poly.addPoint(mNx+width, mNy);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=5;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx+width, Ny);
+				poly.lineTo(mNx+width, mNy);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 		}
 	}
 	/*_________________________________________________*/
-	public static void DOWNdefineDiagonalPoly(TreeDrawing treeDrawing, Polygon poly, int width, boolean internalNode, int Nx, int Ny, int mNx, int mNy) {
+	public static void DOWNdefineDiagonalPoly(TreeDrawing treeDrawing, Path2D poly, int width, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null){
 			Nx -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNx -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode) 
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx+width/2, Ny+width/2);
-				poly.addPoint(Nx+width, Ny);
-				poly.addPoint(mNx+width, mNy);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=6;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx+width/2, Ny+width/2);
+				poly.lineTo(Nx+width, Ny);
+				poly.lineTo(mNx+width, mNy);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 			else
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx+width, Ny);
-				poly.addPoint(mNx+width, mNy);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=5;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx+width, Ny);
+				poly.lineTo(mNx+width, mNy);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 		}
 	}
 	/*_________________________________________________*/
-	public static void RIGHTdefineDiagonalPoly(TreeDrawing treeDrawing, Polygon poly,int width, boolean internalNode, int Nx, int Ny, int mNx, int mNy) {
+	public static void RIGHTdefineDiagonalPoly(TreeDrawing treeDrawing, Path2D poly,int width, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
 			Ny -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNy -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode) 
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx+width/2, Ny+width/2);
-				poly.addPoint(Nx, Ny+width);
-				poly.addPoint(mNx, mNy+width);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=6;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx+width/2, Ny+width/2);
+				poly.lineTo(Nx, Ny+width);
+				poly.lineTo(mNx, mNy+width);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 			else
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx, Ny+width);
-				poly.addPoint(mNx, mNy+width);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=5;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx, Ny+width);
+				poly.lineTo(mNx, mNy+width);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 		}
 	}
 	/*_________________________________________________*/
-	public static void LEFTdefineDiagonalPoly(TreeDrawing treeDrawing, Polygon poly, int width, boolean internalNode, int Nx, int Ny, int mNx, int mNy) {
+	public static void LEFTdefineDiagonalPoly(TreeDrawing treeDrawing, Path2D poly, int width, boolean internalNode, double Nx, double Ny, double mNx, double mNy) {
 		if (poly!=null) {
 			Ny -= getOffset(width,treeDrawing.getEdgeWidth());
 			mNy -= getOffset(width,treeDrawing.getEdgeWidth());
+			poly.reset();
 			if (internalNode) 
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx-width/2, Ny+width/2);
-				poly.addPoint(Nx, Ny+width);
-				poly.addPoint(mNx, mNy+width);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=6;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx-width/2, Ny+width/2);
+				poly.lineTo(Nx, Ny+width);
+				poly.lineTo(mNx, mNy+width);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 			else
 			{
-				poly.npoints=0;
-				poly.addPoint(Nx, Ny);
-				poly.addPoint(Nx, Ny+width);
-				poly.addPoint(mNx, mNy+width);
-				poly.addPoint(mNx, mNy);
-				poly.addPoint(Nx, Ny);
-				poly.npoints=5;
+				poly.moveTo(Nx, Ny);
+				poly.lineTo(Nx, Ny+width);
+				poly.lineTo(mNx, mNy+width);
+				poly.lineTo(mNx, mNy);
+				poly.lineTo(Nx, Ny);
 			}
 		}
 	}
 	/*_________________________________________________*/
-	public static void UPdefineSquarePoly(TreeDrawing treeDrawing, Polygon poly, int width, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int nShortcut) {
+	public static void UPdefineSquarePoly(TreeDrawing treeDrawing, Path2D poly, int width, boolean isRoot, double Nx, double Ny, double mNx, double mNy, double nShortcut) {
 		Nx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy -= getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); //root left
-			poly.addPoint(Nx+width, Ny);	 //root right
-			poly.addPoint(Nx+width, mNy); //subroot right
-			poly.addPoint(Nx, mNy); //subroot let
-			poly.addPoint(Nx, Ny); //return to root left
-			poly.npoints=4;
+			poly.moveTo(Nx, Ny); //root left
+			poly.lineTo(Nx+width, Ny);	 //root right
+			poly.lineTo(Nx+width, mNy); //subroot right
+			poly.lineTo(Nx, mNy); //subroot let
+			poly.lineTo(Nx, Ny); //return to root left
 		}
 		else if (Nx<mNx) //left leaning (*)
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); // daughter left
-			poly.addPoint(Nx+width, Ny);	//daughter right 
-			poly.addPoint(Nx+width, mNy -  nShortcut); //corner right
-			poly.addPoint(mNx+width, mNy); //mother up
-			poly.addPoint(mNx, mNy+width); //mother down
-			poly.addPoint(Nx, mNy+width -  nShortcut); //corner left
-			poly.addPoint(Nx, Ny); //return to daughter left
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny); // daughter left
+			poly.lineTo(Nx+width, Ny);	//daughter right 
+			poly.lineTo(Nx+width, mNy -  nShortcut); //corner right
+			poly.lineTo(mNx+width, mNy); //mother up
+			poly.lineTo(mNx, mNy+width); //mother down
+			poly.lineTo(Nx, mNy+width -  nShortcut); //corner left
+			poly.lineTo(Nx, Ny); //return to daughter left
 		}
 		else //right leaning (*)
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny);// daughter left
-			poly.addPoint(Nx+width, Ny);// daughter right
-			poly.addPoint(Nx+width, mNy+width -  nShortcut);// corner right
-			poly.addPoint(mNx+width, mNy+width); //mother down
-			poly.addPoint(mNx, mNy); //mother up
-			poly.addPoint(Nx, mNy -  nShortcut); //corner left
-			poly.addPoint(Nx, Ny); //return to daughter left
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny);// daughter left
+			poly.moveTo(Nx+width, Ny);// daughter right
+			poly.lineTo(Nx+width, mNy+width -  nShortcut);// corner right
+			poly.lineTo(mNx+width, mNy+width); //mother down
+			poly.lineTo(mNx, mNy); //mother up
+			poly.lineTo(Nx, mNy -  nShortcut); //corner left
+			poly.lineTo(Nx, Ny); //return to daughter left
 		}
 	}
 	/*_________________________________________________*/
 	//makes polygon counterclockwise
-	public static void DOWNdefineSquarePoly(TreeDrawing treeDrawing, Polygon poly, int width, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int nShortcut) {
+	public static void DOWNdefineSquarePoly(TreeDrawing treeDrawing, Path2D poly, int width, boolean isRoot, double Nx, double Ny, double mNx, double mNy, double nShortcut) {
 		Nx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy += getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); // root right
-			poly.addPoint(Nx+width, Ny);	//root left
-			poly.addPoint(Nx+width, mNy);//subroot left
-			poly.addPoint(Nx, mNy); //subroot right
-			poly.addPoint(Nx, Ny); //return to root right
-			poly.npoints=4;
+			poly.moveTo(Nx, Ny); // root right
+			poly.lineTo(Nx+width, Ny);	//root left
+			poly.lineTo(Nx+width, mNy);//subroot left
+			poly.lineTo(Nx, mNy); //subroot right
+			poly.lineTo(Nx, Ny); //return to root right
 		}
 		else if (Nx>mNx) //left leaning
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); //daughter right
-			poly.addPoint(Nx+width, Ny);//daughter left
-			poly.addPoint(Nx+width, mNy-width + nShortcut);//corner left
-			poly.addPoint(mNx+width, mNy-width); //mother down * on x
-			poly.addPoint(mNx, mNy); //mother up 
-			poly.addPoint(Nx, mNy + nShortcut); //corner right
-			poly.addPoint(Nx, Ny); //return to daughter right
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny); //daughter right
+			poly.lineTo(Nx+width, Ny);//daughter left
+			poly.lineTo(Nx+width, mNy-width + nShortcut);//corner left
+			poly.lineTo(mNx+width, mNy-width); //mother down * on x
+			poly.lineTo(mNx, mNy); //mother up 
+			poly.lineTo(Nx, mNy + nShortcut); //corner right
+			poly.lineTo(Nx, Ny); //return to daughter right
 		}
 		else //right leaning
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); // daughter right
-			poly.addPoint(Nx+width, Ny);	//daughter left
-			poly.addPoint(Nx+width, mNy + nShortcut);//corner left
-			poly.addPoint(mNx+width, mNy); //mother up * on x
-			poly.addPoint(mNx, mNy-width); //mother down 
-			poly.addPoint(Nx, mNy-width + nShortcut); //corner right
-			poly.addPoint(Nx, Ny); //return to daughter right
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny); // daughter right
+			poly.lineTo(Nx+width, Ny);	//daughter left
+			poly.lineTo(Nx+width, mNy + nShortcut);//corner left
+			poly.lineTo(mNx+width, mNy); //mother up * on x
+			poly.lineTo(mNx, mNy-width); //mother down 
+			poly.lineTo(Nx, mNy-width + nShortcut); //corner right
+			poly.lineTo(Nx, Ny); //return to daughter right
 		}
 	}
 	/*_________________________________________________*/
 	//makes polygon clockwise
-	public static void RIGHTdefineSquarePoly(TreeDrawing treeDrawing, Polygon poly, int width, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int nShortcut) {
+	public static void RIGHTdefineSquarePoly(TreeDrawing treeDrawing, Path2D poly, int width, boolean isRoot, double Nx, double Ny, double mNx, double mNy, double nShortcut) {
 		Ny -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx += getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); // root left
-			poly.addPoint(Nx, Ny+width);	//root right
-			poly.addPoint(mNx, Ny+width);//subroot right
-			poly.addPoint(mNx, Ny); //subroot left
-			poly.addPoint(Nx, Ny); //return to root left
-			poly.npoints=4;
+			poly.moveTo(Nx, Ny); // root left
+			poly.lineTo(Nx, Ny+width);	//root right
+			poly.lineTo(mNx, Ny+width);//subroot right
+			poly.lineTo(mNx, Ny); //subroot left
+			poly.lineTo(Nx, Ny); //return to root left
 		}
 		else if (Ny<mNy) //leans left
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); // daughter left
-			poly.addPoint(Nx, Ny+width);	//daughter right
-			poly.addPoint(mNx + nShortcut, Ny+width);//corner right
-			poly.addPoint(mNx, mNy+width); //mother up * on y
-			poly.addPoint(mNx-width, mNy); //mother down
-			poly.addPoint(mNx-width + nShortcut, Ny); //corner left
-			poly.addPoint(Nx, Ny); //return to daughter left
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny); // daughter left
+			poly.lineTo(Nx, Ny+width);	//daughter right
+			poly.lineTo(mNx + nShortcut, Ny+width);//corner right
+			poly.lineTo(mNx, mNy+width); //mother up * on y
+			poly.lineTo(mNx-width, mNy); //mother down
+			poly.lineTo(mNx-width + nShortcut, Ny); //corner left
+			poly.lineTo(Nx, Ny); //return to daughter left
 		}
 		else
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny);// daughter left
-			poly.addPoint(Nx, Ny+width);//daughter right
-			poly.addPoint(mNx-width + nShortcut, Ny+width);//corner right
-			poly.addPoint(mNx-width, mNy+width); //mother down * on y
-			poly.addPoint(mNx, mNy); //mother up 
-			poly.addPoint(mNx + nShortcut, Ny); //corner left
-			poly.addPoint(Nx, Ny); //return to daughter left
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny);// daughter left
+			poly.lineTo(Nx, Ny+width);//daughter right
+			poly.lineTo(mNx-width + nShortcut, Ny+width);//corner right
+			poly.lineTo(mNx-width, mNy+width); //mother down * on y
+			poly.lineTo(mNx, mNy); //mother up 
+			poly.lineTo(mNx + nShortcut, Ny); //corner left
+			poly.lineTo(Nx, Ny); //return to daughter left
 		}
 
 	}
 	/*_________________________________________________*/
 	//makes polygon counterclockwise
-	public static void LEFTdefineSquarePoly(TreeDrawing treeDrawing,Polygon poly, int width, boolean isRoot, int Nx, int Ny, int mNx, int mNy, int nShortcut) {
+	public static void LEFTdefineSquarePoly(TreeDrawing treeDrawing,Path2D poly, int width, boolean isRoot, double Nx, double Ny, double mNx, double mNy, double nShortcut) {
 		Ny -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNy -= getOffset(width, treeDrawing.getEdgeWidth());
 		mNx -= getOffset(width, treeDrawing.getEdgeWidth());
+		poly.reset();
 		if (isRoot) {
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); // root right
-			poly.addPoint(Nx, Ny+width);	//root left
-			poly.addPoint(mNx, Ny+width);//subroot left
-			poly.addPoint(mNx, Ny); //subroot right
-			poly.addPoint(Nx, Ny); //return to root right
-			poly.npoints=5;
+			poly.moveTo(Nx, Ny); // root right
+			poly.lineTo(Nx, Ny+width);	//root left
+			poly.lineTo(mNx, Ny+width);//subroot left
+			poly.lineTo(mNx, Ny); //subroot right
+			poly.lineTo(Nx, Ny); //return to root right
 		}
 		else if (Ny>mNy) //left leaning
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny); // daughter right
-			poly.addPoint(Nx, Ny+width);	//daughter left
-			poly.addPoint(mNx+width -  nShortcut, Ny+width);//corner left  
-			poly.addPoint(mNx+width, mNy+width); //mother down
-			poly.addPoint(mNx, mNy); //mother up
-			poly.addPoint(mNx -  nShortcut, Ny); //corner right
-			poly.addPoint(Nx, Ny); //return to daughter right
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny); // daughter right
+			poly.lineTo(Nx, Ny+width);	//daughter left
+			poly.lineTo(mNx+width -  nShortcut, Ny+width);//corner left  
+			poly.lineTo(mNx+width, mNy+width); //mother down
+			poly.lineTo(mNx, mNy); //mother up
+			poly.lineTo(mNx -  nShortcut, Ny); //corner right
+			poly.lineTo(Nx, Ny); //return to daughter right
 		}
 		else
 		{
-			poly.npoints=0;
-			poly.addPoint(Nx, Ny);// daughter right
-			poly.addPoint(Nx, Ny+width); //daughter left
-			poly.addPoint(mNx -  nShortcut, Ny+width);//corner left
-			poly.addPoint(mNx, mNy+width); //mother up
-			poly.addPoint(mNx+width, mNy);//mother down
-			poly.addPoint(mNx+width -  nShortcut, Ny); //corner right
-			poly.addPoint(Nx, Ny); //return to daughter right
-			poly.npoints=7;
+			poly.moveTo(Nx, Ny);// daughter right
+			poly.lineTo(Nx, Ny+width); //daughter left
+			poly.lineTo(mNx -  nShortcut, Ny+width);//corner left
+			poly.lineTo(mNx, mNy+width); //mother up
+			poly.lineTo(mNx+width, mNy);//mother down
+			poly.lineTo(mNx+width -  nShortcut, Ny); //corner right
+			poly.lineTo(Nx, Ny); //return to daughter right
 		}
 	}
 
 	/*_________________________________________________*/
-	public static void drawOneCurvedBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+	public static void drawOneCurvedBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Path2D nodePoly, BasicStroke defaultStroke) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];
 			boolean done = false;
 			try{
 				if ( g instanceof Graphics2D) {
@@ -426,6 +394,7 @@ public class DrawTreeUtil {
 						BasicStroke wideStroke = new BasicStroke(width);
 						Graphics2D g2 = (Graphics2D)g;
 						g2.setStroke(wideStroke);
+						g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 						g2.draw(arc);
 						done  = true;
 						g2.setStroke(defaultStroke);
@@ -461,11 +430,11 @@ public class DrawTreeUtil {
 				for (int i=0; i<width; i++) {
 					if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 						if (xnM>xN) {
-							g.drawArc(xN + start, yN - (ynM - yN), (xnM-xN)*2,  (ynM - yN)*2, 180, 90); // left
+							GraphicsUtil.drawArc(g,xN + start, yN - (ynM - yN), (xnM-xN)*2,  (ynM - yN)*2, 180, 90); // left
 							ynM--;
 						}
 						else {
-							g.drawArc(xnM-(xN-xnM) + start, yN - (ynM - yN), (xN-xnM)*2,  (ynM - yN)*2, 0, -90); //right
+							GraphicsUtil.drawArc(g,xnM-(xN-xnM) + start, yN - (ynM - yN), (xN-xnM)*2,  (ynM - yN)*2, 0, -90); //right
 							ynM++; //** start off -
 
 						}
@@ -474,33 +443,33 @@ public class DrawTreeUtil {
 
 					else if (treeDisplay.getOrientation()==TreeDisplay.DOWN){//����
 						if (xnM>xN) {
-							g.drawArc(xN - start,ynM, (xnM-xN)*2,  (yN -ynM)*2, 90, 90); //right
+							GraphicsUtil.drawArc(g,xN - start,ynM, (xnM-xN)*2,  (yN -ynM)*2, 90, 90); //right
 							ynM++;
 						}
 						else {
-							g.drawArc(xnM-(xN-xnM) - start,ynM, (xN-xnM)*2,   (yN -ynM)*2, 0, 90); //left 
+							GraphicsUtil.drawArc(g,xnM-(xN-xnM) - start,ynM, (xN-xnM)*2,   (yN -ynM)*2, 0, 90); //left 
 							ynM--;  //**start off + edgewidth
 						}
 						xN++;
 					}
 					else  if (treeDisplay.getOrientation()==TreeDisplay.RIGHT) {
 						if (ynM>yN) {
-							g.drawArc(xnM, yN + start, (xN-xnM)*2,  (ynM - yN)*2, 90, 90);  //left
+							GraphicsUtil.drawArc(g,xnM, yN + start, (xN-xnM)*2,  (ynM - yN)*2, 90, 90);  //left
 							xnM++;
 						}
 						else {
-							g.drawArc(xnM,ynM - (yN -ynM) + start, (xN-xnM)*2,  (yN -ynM)*2, 180, 90);  //right 
+							GraphicsUtil.drawArc(g,xnM,ynM - (yN -ynM) + start, (xN-xnM)*2,  (yN -ynM)*2, 180, 90);  //right 
 							xnM--;  //start off + edgewidth
 						}
 						yN++;
 					}
 					else  if (treeDisplay.getOrientation()==TreeDisplay.LEFT){ //����
 						if (ynM>yN) {
-							g.drawArc(xN - (xnM-xN), yN - start, (xnM-xN)*2,  (ynM - yN)*2, 0, 90);  //right
+							GraphicsUtil.drawArc(g,xN - (xnM-xN), yN - start, (xnM-xN)*2,  (ynM - yN)*2, 0, 90);  //right
 							xnM--;
 						}
 						else {
-							g.drawArc(xN - (xnM-xN),ynM - (yN -ynM) - start, (xnM-xN)*2,  (yN -ynM)*2, 0, -90);  //left 
+							GraphicsUtil.drawArc(g,xN - (xnM-xN),ynM - (yN -ynM) - start, (xnM-xN)*2,  (yN -ynM)*2, 0, -90);  //left 
 							xnM++;  //start off - edgewidth
 						}
 						yN++;
@@ -512,23 +481,24 @@ public class DrawTreeUtil {
 			if (emphasizeNodes && nodePoly!=null) {
 				Color prev = g.getColor();
 				g.setColor(Color.red);//for testing
-				g.fillPolygon(nodePoly);
+				if (g instanceof Graphics2D)
+					((Graphics2D)g).fill(nodePoly);
 				g.setColor(prev);
 			}
 		}
 	}
 
 	/*_________________________________________________*/
-	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float width, int adj, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+	public static void drawOneSquareLineBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float width, int adj, boolean emphasizeNodes, Path2D nodePoly, BasicStroke defaultStroke) {
 		if (width< 0)
 			width = 0;
 		if (tree.nodeExists(node)) {
 			
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];  // y position of mother of node
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];  // y position of mother of node
 			float halfEdge = edgewidth/2;
 			if ( g instanceof Graphics2D) {
 				BasicStroke wideStroke = new BasicStroke(width);
@@ -536,6 +506,7 @@ public class DrawTreeUtil {
 				Stroke stroke = g2.getStroke();
 				g2.setStroke(wideStroke);
 				Shape line;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 					if (yN!=ynM){
 						line = new Line2D.Double(xN+halfEdge,yN+halfEdge,xN+halfEdge,ynM+halfEdge);
@@ -579,30 +550,31 @@ public class DrawTreeUtil {
 				Color prev = g.getColor();
 				g.setColor(Color.green);//for testing
 				//	g.fillPolygon(nodePoly);
-				g.fillRect(x[node]-1, y[node]-1,2,2);
+				GraphicsUtil.fillRect(g, x[node]-1, y[node]-1,2,2);
 				g.setColor(prev);
 			}
 		}
 	}
 
 	/*_________________________________________________*/
-	public static void fillOneSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float lineWidth, float inset, boolean emphasizeNodes, Polygon nodePoly, BasicStroke defaultStroke) {
+	public static void fillOneSquareLineBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, Graphics g, ColorDistribution colors, int node, float start, float lineWidth, float inset, boolean emphasizeNodes, Path2D nodePoly, BasicStroke defaultStroke) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];  // y position of mother of node
-			float xNHor, xnMHor, yNVert;
-			float ynMVert;
-			float halfLine = lineWidth/2;
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];  // y position of mother of node
+			double xNHor, xnMHor, yNVert;
+			double ynMVert;
+			double halfLine = lineWidth/2;
 			Shape line;
 			if (g instanceof Graphics2D && lineWidth >=0) {
 				BasicStroke wideStroke = new BasicStroke(lineWidth);
 				Graphics2D g2 = (Graphics2D)g;
 				Stroke stroke = g2.getStroke();
 				g2.setStroke(wideStroke);
-				if (treeDisplay.getOrientation()==TreeDisplay.UP) {
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 					xNHor = xN+start+halfLine;
 					if (xN>xnM){ // branch going to right
 						ynMVert = ynM+start+halfLine;
@@ -699,7 +671,7 @@ public class DrawTreeUtil {
 				Color prev = g.getColor();
 				g.setColor(Color.green);//for testing
 				//	g.fillPolygon(nodePoly);
-				g.fillRect(x[node]-1, y[node]-1,2,2);
+				GraphicsUtil.fillRect(g, x[node]-1, y[node]-1,2,2);
 				g.setColor(prev);
 			}
 		}
@@ -707,13 +679,13 @@ public class DrawTreeUtil {
 
 
 	/*_________________________________________________*/
-	public static boolean inSquareLineBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, int taxonSpacing, Tree tree, int node, int h, int v) {
+	public static boolean inSquareLineBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, int taxonSpacing, Tree tree, int node, int h, int v) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];
 			int halfEdgewidth = edgewidth/2;
 			int nearby = 4;
 			int halfTaxonSpacing = taxonSpacing/2 -4;
@@ -778,13 +750,13 @@ public class DrawTreeUtil {
 
 
 	/*_________________________________________________*/
-	public static boolean inBranch(TreeDisplay treeDisplay, int[] x, int[] y, int edgewidth, Tree tree, int node, int h, int v) {
+	public static boolean inBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, int node, int h, int v) {
 		if (tree.nodeExists(node)) {
 			int nM = tree.motherOfNode(node);
-			int xN=x[node];
-			int xnM = x[nM];
-			int yN =y[node];
-			int ynM = y[nM];
+			double xN=x[node];
+			double xnM = x[nM];
+			double yN =y[node];
+			double ynM = y[nM];
 			double centerX, centerY,axisX, axisY;
 			centerX =  centerY =  axisX =   axisY =0;
 

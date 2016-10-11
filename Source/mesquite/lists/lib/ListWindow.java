@@ -111,7 +111,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 
 
 
-		//ownerModule.addMenuItem( "-", null);
+		//ownerModule.addMenuSeparator();
 		if (owner.rowsAddable())
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
 		if (owner.rowsDeletable()) {
@@ -153,6 +153,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	}
 
 	public void keyReleased(KeyEvent e){
+	}
+	public void dispose(){
+		super.dispose();
 	}
 	/*.................................................................................................................*/
 	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface)*/

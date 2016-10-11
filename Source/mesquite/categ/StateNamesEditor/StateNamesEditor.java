@@ -169,7 +169,7 @@ class StateNamesWindow extends TableWindow implements MesquiteListener, AnnotPan
 		constrainMenuItem = ownerModule.addCheckMenuItem(null, "Constrain Column Widths", ownerModule.makeCommand("toggleConstrainChar", this), constrainedCW);
 		ownerModule.addMenuItem(null, "Min. # Columns if Constrained...", ownerModule.makeCommand("toggleConstrainCharNum", this));
 		transposeMenuItem = ownerModule.addCheckMenuItem(null, "Rows Are Characters", ownerModule.makeCommand("rowsAreCharacters", this), rowsAreCharacters);
-		ownerModule.addMenuItem("-", null);
+		ownerModule.addMenuSeparator();
 		MesquiteMenuItemSpec mm = ownerModule.addMenuItem("Find String...", MesquiteModule.makeCommand("findString", this));
 		mm.setShortcut(KeyEvent.VK_3);
 		mm = ownerModule.addMenuItem("Find Again", MesquiteModule.makeCommand("findAgain", this));

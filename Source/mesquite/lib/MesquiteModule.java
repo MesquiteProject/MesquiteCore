@@ -68,12 +68,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "27 June 2016";
+		return "11 October 2016";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "3.10";
+		return "3.10+";
 	}
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
@@ -90,7 +90,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 	765;  
+		return 	786;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -289,6 +289,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** endJob is called as a module is quitting; modules should put their clean up code here.*/
 	public void endJob() {
+		if (menuItemsSpecs != null) {
+			menuItemsSpecs.dispose(true);
+		}
+		menuItemsSpecs = null;
 	}
 	/*.................................................................................................................*/
 	public void finalize() throws Throwable {
@@ -301,6 +305,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	finalize things it needs..  NOTE: if a module wants to quit on its own accord, it should call "iQuit" so that
 	the replacement hiring system can take effect.*/
 	protected void dispose() {
+	//	Debugg.println("########### dispose module " + this);
 		if (assignedMenuSpec !=null)
 			assignedMenuSpec.removeGuestModule(this);
 		if (moduleMenuSpec !=null)
@@ -312,7 +317,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				w.removeAll();
 			}				
 			w.setVisible(false);
-
 		}
 		boolean employerDoomed =  (employer!=null && employer.doomed);
 
@@ -1250,6 +1254,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** If scripting, puts alert in log; otherwise puts up alert dialog.*/
 	public void discreetAlert(boolean beDiscreet, String s) {
+		if (StringUtil.blank(s))
+			return;
 		if (beDiscreet)
 			logln("Note: " + s);
 		else

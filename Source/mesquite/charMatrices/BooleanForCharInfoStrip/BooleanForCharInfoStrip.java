@@ -53,13 +53,19 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	}
 
 	/*.................................................................................................................*/
+	public void setBooleanTask(BooleanForCharacter booleanTask) {
+		this.booleanTask = booleanTask;
+		deleteRemoveMenuItem();
+		addRemoveMenuItem();
+	}
+	/*.................................................................................................................*/
 	public void drawInCell(int ic, Graphics g, int x, int y, int w, int h, boolean selected) {
 		if (data == null || booleanTask==null)
 			return;
 		MesquiteBoolean result = new MesquiteBoolean();
 		MesquiteString resultString = new MesquiteString();
 		booleanTask.calculateBoolean( data,  ic,  result,  resultString);
-
+		
 		if (booleanTask.displayTrueAsDark()==standardDirection.getValue()) {
 			if (result.getValue())
 				g.setColor(Color.gray); 
@@ -188,7 +194,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		if (checker.compare(this.getClass(), "Sets module that calculates a boolean for a character", "[name of module]", commandName, "setValueTask")) {
 			BooleanForCharacter temp= (BooleanForCharacter)replaceEmployee(BooleanForCharacter.class, arguments, "Boolean for a character", booleanTask);
 			if (temp!=null) {
-				booleanTask = temp;
+				setBooleanTask(temp);
 				parametersChanged();
 				return temp;
 			}
@@ -222,6 +228,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	public void setTableAndData(MesquiteTable table, CharacterData data) {
 		deleteRemoveMenuItem();
 		addRemoveMenuItem();
+
 		this.table = table;
 		this.data = data;
 	}

@@ -241,12 +241,12 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 
 		ms2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup",  this));
 
-		mLine2 = addMenuItem("-",null);
+		mLine2 = addMenuSeparator();
 		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
 		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
-		mLine = addMenuItem("-",null);
+		mLine = addMenuSeparator();
 		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
 		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (taxa !=null) {

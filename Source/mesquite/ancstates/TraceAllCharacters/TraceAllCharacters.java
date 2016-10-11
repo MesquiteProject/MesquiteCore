@@ -72,7 +72,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 		addCheckMenuItem(null, "Show Terminal Nodes", makeCommand("toggleShowTerminals", this), showTerminals);
 		addCheckMenuItem(null, "Rows are Characters", makeCommand("toggleByCharacters", this), byCharacters);
 		addMenuItem( "Close Trace All", makeCommand("closeTrace",  this));
-		addMenuItem( "-", null);
+		addMenuSeparator();
  		resetContainingMenuBar();
 		return true;
  	}
@@ -459,7 +459,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	private   void drawNumber(Tree tree, Graphics g, int N) {
 		if (tree.nodeExists(N)) {
 			if (tree.nodeIsInternal(N))
-				StringUtil.highlightString(g, Integer.toString(N), treeDisplay.getTreeDrawing().x[N]+8, treeDisplay.getTreeDrawing().y[N]+8, Color.red, Color.white);
+				StringUtil.highlightString(g, Integer.toString(N), (int)treeDisplay.getTreeDrawing().x[N]+8, (int)treeDisplay.getTreeDrawing().y[N]+8, Color.red, Color.white);    // integer node approximation
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				drawNumber(tree, g, d);
 		}
