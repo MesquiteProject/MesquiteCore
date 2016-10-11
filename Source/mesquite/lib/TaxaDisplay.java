@@ -26,6 +26,7 @@ for shading and decorating the taxa. <P>
 Note that this is parallel to TreeDisplay
 */
 public class TaxaDisplay extends TaxaTreeDisplay  {
+	boolean scaleToFit = false;
 	DrawNamesTaxaDisplay namesTask;
 	/**  The panel in which the taxa are actually drawn.*/
 	private TaxaDrawing taxaDrawing;
@@ -56,6 +57,15 @@ public class TaxaDisplay extends TaxaTreeDisplay  {
 			//repaint();
 //		}
 	}
+   	public void setScaleToFit(boolean scaleToFit){
+   		this.scaleToFit = scaleToFit;
+   	}
+   	
+   	public boolean getScaleToFit(){
+   		return scaleToFit;
+   	}
+   	
+
 	public void redoCalculations(int code){
 		if (taxaDrawing!=null)
 			taxaDrawing.recalculatePositions(taxa); //to force node locs recalc

@@ -72,8 +72,9 @@ public interface MesquiteListener {
 	/** The main object (e.g. data matrix) has been locked or unlocked from editing*/
 	public final static int LOCK_CHANGED=-20;
 
-	/** Param of the tree drawing have been changed in such a way that its size may have changed.*/
+	/** Param of the tree or taxa drawing have been changed in such a way that its size may have changed.*/
 	public final static int TREE_DRAWING_SIZING_CHANGED = 800; 
+	public final static int TAXA_DRAWING_SIZING_CHANGED = 801; 
 
 	
 	
