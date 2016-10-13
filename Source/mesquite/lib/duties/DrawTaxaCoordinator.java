@@ -71,6 +71,9 @@ public abstract class DrawTaxaCoordinator extends MesquiteModule  {
 		return 1.0;
 	}
 
+	public void setRescaleValue() {
+	}
+
    	public boolean isSubstantive(){
    		return false;  
    	}
