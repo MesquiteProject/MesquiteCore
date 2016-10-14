@@ -27,6 +27,7 @@ Note that this is parallel to TreeDisplay
 */
 public class TaxaDisplay extends TaxaTreeDisplay  {
 	boolean scaleToFit = false;
+	double rescaleValue = 1.0;
 	DrawNamesTaxaDisplay namesTask;
 	/**  The panel in which the taxa are actually drawn.*/
 	private TaxaDrawing taxaDrawing;
@@ -63,6 +64,15 @@ public class TaxaDisplay extends TaxaTreeDisplay  {
    	
    	public boolean getScaleToFit(){
    		return scaleToFit;
+   	}
+   	
+   	public double getRescaleValue(){
+   		return rescaleValue;
+   	}
+   	
+
+   	public void setRescaleValue(double rescaleValue){
+   		this.rescaleValue = rescaleValue;
    	}
    	
 
