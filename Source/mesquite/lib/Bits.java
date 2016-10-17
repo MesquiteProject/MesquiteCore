@@ -503,6 +503,16 @@ public class Bits implements Listable{
  		}
  		return -1;  //didn't find any, return signal that none found
  	}
+ 	/** given a bit whichBit, this method returns the first bit ≤ whichBit that has the same value as whichBit*/
+	public int startOfBlock (int whichBit) {
+		boolean isOn = isBitOn(whichBit);
+ 		for (int i=whichBit; i>-1; i--)
+ 			if (isBitOn(i)!=isOn) {
+ 				return i+1;
+ 			}
+ 		return whichBit;
+ 	}
+
  	/*------------------------------------------*/
  	public boolean allBitsOn () {
  		for (int i=0; i<numBits; i++)
@@ -556,6 +566,7 @@ public class Bits implements Listable{
  			}
  		return -1;
  	}
+
 
  	/*------------------------------------------*/
  	public int lastBitOn (int bitInteger) {

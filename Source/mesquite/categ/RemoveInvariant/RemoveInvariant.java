@@ -39,13 +39,16 @@ public class RemoveInvariant extends DataAlterer  implements AltererWholeCharact
    	
 	public boolean removeCharactersThatAreInvariant(CategoricalData cData){
 		boolean removedSome = false;
-		for (int ic = cData.getNumChars()-1; ic>=0; ic--){
+		Bits bits = new Bits(cData.getNumChars());
+		bits.clearAllBits();
+		for (int ic = 0; ic<cData.getNumChars(); ic++){  // first let's record which ones need deletion
 			if (!cData.charIsVariable(ic, false)) {
-				cData.deleteCharacters(ic, 1, false);
-				cData.deleteInLinked(ic, 1, false);
-				removedSome=true;
+				bits.setBit(ic);
 			}
 		}
+
+		removedSome = cData.deleteCharacters(bits, "Removing invariant characters; counting down ", false);
+		cData.deleteInLinked(bits,"Removing invariant characters; counting down ", false);
 		return removedSome;
 	}
 

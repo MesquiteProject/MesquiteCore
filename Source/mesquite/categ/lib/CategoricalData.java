@@ -1131,12 +1131,17 @@ public class CategoricalData extends CharacterData {
 			return ColorDistribution.unassigned;
 	}
 	/*..........................................  CategoricalData  ..................................................*/
-	public boolean charIsVariable( int ic, boolean selectedOnly) {
+	public boolean charIsVariable( int ic, boolean selectedOnly, boolean considerAllVariants) {
 		long intersection = CategoricalState.statesBitsMask;
 		boolean anySel = getTaxa().anySelected();
+		long firstState = CategoricalState.impossible;
 		for (int it=0; it<getNumTaxa(); it++){
 			if (!selectedOnly || !anySel || getTaxa().getSelected(it)){
 				long state = getState(ic, it);
+				if (firstState==CategoricalState.impossible)
+					firstState=state;
+				if (considerAllVariants && state!=firstState)
+					return true;
 				if (CategoricalState.isCombinable(state)){
 					if (CategoricalState.cardinality(state)>1){ //polymorphic or uncertain
 						if (CategoricalState.isUncertain(state)){ //uncertain; ok if overlaps
@@ -1156,6 +1161,11 @@ public class CategoricalData extends CharacterData {
 			}
 		}
 		return false;
+	}
+
+	/*..........................................  CategoricalData  ..................................................*/
+	public boolean charIsVariable( int ic, boolean selectedOnly) {
+		return charIsVariable(ic,selectedOnly,false);
 	}
 
 	/*..........................................  CategoricalData  ..................................................*/
