@@ -85,7 +85,7 @@ public class ListTable extends MesquiteTable {
 			if (after >= getNumRows())
 				after = getNumRows();
 			if (window.getCurrentObject() !=null && window.getCurrentObject() instanceof Associable){
-					
+				
 				Bits b = getRowsSelected();
 				if (b.numBitsOn()==1 && b.firstBitOn() == after){
 					return;
@@ -136,6 +136,12 @@ public class ListTable extends MesquiteTable {
 				*/
 				synchronizeRowSelection(((Associable)window.getCurrentObject()));
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				if (window.owner.resetMenusOnNameChange()){
+					//MesquiteWindow.resetAllTitles();
+					window.owner.getProject().refreshProjectWindow();
+					window.owner.resetAllMenuBars();
+				}
+				// redo project panel if these are vectors of tree blocks or of character matrices  
 		 		repaintAll();
 	 		}
  		}
@@ -220,6 +226,15 @@ public class ListTable extends MesquiteTable {
 			return null;
 		return assistant.getBackgroundColorOfCell(row,selected);
 	}
+	
+	/* ............................................................................................................... */
+	public Color getTextColor(int column, int row, boolean selected){
+		ListAssistant assistant = window.findAssistant(column);
+		if (assistant == null)
+			return null;
+		return assistant.getTextColorOfCell(row,selected);
+	}
+
 	public void drawMatrixCell(Graphics g, int x, int y,  int w, int h, int column, int row, boolean selected){  
 		ListAssistant assistant = window.findAssistant(column);
 		if (assistant!=null) {
@@ -301,9 +316,10 @@ public class ListTable extends MesquiteTable {
 		
 			if (window.getCurrentTool()== window.arrowTool)  {
 				
-				ListAssistant assistant = window.findAssistant(column);
+					ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-						if (!assistant.arrowTouchInRow(row, clickCount>1)){
+						Graphics g = getGraphics();
+						if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
 							if (assistant.isCellEditable(row))
 								super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
 							else
@@ -312,6 +328,7 @@ public class ListTable extends MesquiteTable {
 				}
 				else
 					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+				
 			}
 			else
 				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
@@ -358,6 +375,29 @@ public class ListTable extends MesquiteTable {
 		showAnnotationAndExplanation(row);
 		if (window.getCurrentTool()== window.arrowTool) {
 			if (!window.interceptRowNameTouch(row, regionInCellH, regionInCellV, modifiers)) {
+				if (row >= 0 && MesquiteEvent.commandOrControlKeyDown(modifiers)){
+					Object a = ownerModule.getMainObject();
+					if (a instanceof ListableVector){
+						ListableVector v = (ListableVector)a;
+						if (row < v.size()){
+							Listable rObj = v.elementAt(row);
+							if (rObj instanceof FileElement){
+								FileElement hN = (FileElement)rObj;
+								MesquitePopup popup = new MesquitePopup(this);
+								hN.addToBrowserPopup(popup);
+								popup.showPopup(0, getTopOfRow(row) + getColumnNamesRowHeight() + 20);						
+								return;
+							}
+						}
+							
+					}
+					else if (a instanceof Vector){
+					}
+					else if (a instanceof Taxa){
+					}
+					else if (a instanceof CharacterData){
+					}
+				}
 				if (clickCount>1 && isRowNameEditable(row)){
 					window.setCurrentTool(window.ibeamTool);
 					window.getPalette().setCurrentTool(window.ibeamTool); 

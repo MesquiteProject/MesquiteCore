@@ -59,6 +59,7 @@ public class ShowTreeInList extends TreeListInit  {
 		return temp;
 	}
 	TreeWindowMaker getTreeWindowModule(){
+	
 		mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord treeWindowCoord = (mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord)findNearestModuleWithDuty(mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord.class);
 		MesquiteModule[] treeWindowMakers = treeWindowCoord.getImmediateEmployeesWithDuty(mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker.class);
 		if (treeWindowMakers != null && treeWindowMakers.length>0){

@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -22,7 +22,7 @@ import java.math.*;
 public class TranslationTable {
 	Taxa taxa;
 	String[] labels;
-	
+
 	public TranslationTable (Taxa taxa){
 		if (taxa!=null) {
 			labels = new String[taxa.getNumTaxa()];
@@ -47,7 +47,7 @@ public class TranslationTable {
 			return labels[i];
 		}
 		return null;
-			
+
 	}
 	public String getLabel(int i){
 		if (taxa==null || labels == null)
@@ -58,7 +58,7 @@ public class TranslationTable {
 			return labels[i];
 		}
 		return null;
-			
+
 	}
 	public void setLabel(Taxon taxon, String label, boolean checkDuplicates){
 		if (taxa==null)
@@ -72,12 +72,12 @@ public class TranslationTable {
 		if (checkDuplicates)
 			checkDuplicates();
 	}
-	
+
 	public void taxaModified(int category, int starting, int num){
 		int numTaxa = taxa.getNumTaxa();
 		/*
 		String[] newLabels = new String[numTaxa];
-		
+
 		if (category==MesquiteListener.PARTS_ADDED) {
 			for (int i=0; i<=starting; i++)
 				newLabels[i] = labels[i];
@@ -99,7 +99,7 @@ public class TranslationTable {
 		}
 		labels = newLabels;
 		checkDuplicates();
-		*/
+		 */
 		if (category==MesquiteListener.PARTS_ADDED) {
 			labels = new String[numTaxa];
 		}
@@ -122,8 +122,27 @@ public class TranslationTable {
 			for (int i=0; i<numTaxa && i<labels.length; i++)
 				newLabels[i] = labels[i];
 			labels = newLabels;
-		*/
+			 */
 		}
+	}
+
+	public void cleanUpTable(){  //adds labels where needed then checks for duplicates
+		if (labels == null) //TODO: construct new labels
+			return;
+		int numTaxa = taxa.getNumTaxa();
+		if (numTaxa>labels.length){
+			String[] newLabels = new String[numTaxa];
+			for (int i=0; i<numTaxa && i<labels.length; i++)
+				newLabels[i] = labels[i];
+			labels = newLabels;
+		}
+		for (int i=0; i<labels.length; i++) {
+			if (labels[i] ==null){
+				labels[i] = "n" + i;
+			}
+		}
+		checkDuplicates();
+
 	}
 	public void checkDuplicates(){
 		if (labels == null) //TODO: construct new labels

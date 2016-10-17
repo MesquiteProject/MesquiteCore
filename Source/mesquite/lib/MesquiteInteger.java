@@ -462,6 +462,41 @@ public class MesquiteInteger implements Listable{
 		}
 	}
 
+	/** Returns string version of this value, with leading zeros as needed.  Returns "unassigned" etc. if needed*/
+	public static String toStringDigitsSpecified(int v, int digits) {
+		if (v==unassigned)
+			return "?"; 
+		else if (v==infinite)
+			return "infinite";
+		else if (v==negInfinite)
+			return "neg.infinite";  
+		else if (v==impossible)
+			return "impossible";  
+		else if (v==inapplicable)
+			return "inapplicable"; 
+		else if (v==finite)
+			return "finite"; 
+		else {
+			try {
+				String s = "";
+				boolean negative = (v<0);
+				if (negative)
+					s = Integer.toString(-v);
+				else
+					s = Integer.toString(v);
+				if (s.length()<digits)
+					for (int i=0; i<digits-s.length(); i++)
+						s="0"+s;
+				if (negative) 
+					s="-"+s;
+				return s;
+			}
+			catch (NumberFormatException ne){
+				return "impossible";
+			}
+		}
+	}
+
 	public static boolean isNumber(String s) {
 		if (StringUtil.blank(s))
 			return false;
@@ -585,6 +620,7 @@ public class MesquiteInteger implements Listable{
 	/** Returns integer parsed from given string; warns about NumberFormatException if boolean is true using the
 	message "NumberFormatException in parsing string "<s>". Assumes entire string is what should be parsed. */
 	public static int fromString(String s, boolean warn) {
+		
 		return fromString(s,"NumberFormatException in parsing string \"" + s + "\"",warn, false);
 	}
 	/** Returns integer parsed from given string, starting at string position given.

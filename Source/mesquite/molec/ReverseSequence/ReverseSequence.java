@@ -10,50 +10,73 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.molec.ReverseSequence;
 /*~~  */
 
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ReverseSequence extends DataAltererCon {
-   	
+public class ReverseSequence extends DataAltererCon   implements AltererAlignShift {
+
 	public boolean alterBlockInTaxon(CharacterData data, int icStart, int icEnd, int it) {
 		if (data==null)
 			return false; 
-		
-   		for (int i=0; i <= (icEnd-icStart)/2 && icStart+i< icEnd-i; i++) {
-   			data.tradeStatesBetweenCharacters(icStart+i, icEnd-i, it,true);
-   		}
 
-   		return true;
+		if (data instanceof MolecularData){
+			MolecularData mData = (MolecularData)data;
+			mData.reverse(icStart, icEnd, it, false, true);
+		}
+		else 
+			for (int i=0; i <= (icEnd-icStart)/2 && icStart+i< icEnd-i; i++) {  
+				data.tradeStatesBetweenCharacters(icStart+i, icEnd-i, it,true);
+			}
+
+		return true;
 	}
-	
+
+	public boolean alterBlockOfCharacters(CharacterData data, int icStart, int icEnd) {
+		if (data==null)
+			return false; 
+		if (data instanceof MolecularData){
+			MolecularData mData = (MolecularData)data;
+			mData.reverse(icStart, icEnd, true);
+		}
+		else {
+			for (int it = 0; it< data.getNumTaxa(); it++)
+				for (int i=0; i <= (icEnd-icStart)/2 && icStart+i< icEnd-i; i++) {  
+					data.tradeStatesBetweenCharacters(icStart+i, icEnd-i, it,true);
+				}
+		}
+
+		return true;
+	}
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Reverse Sequence";
-   	 }
+	}
 	/*.................................................................................................................*/
-    	 public boolean isPrerelease() {
+	public boolean isPrerelease() {
 		return false;
-   	 }
+	}
 	/*.................................................................................................................*/
-   	 public boolean showCitation(){
-   	 	return true;
-   	 }
+	public boolean showCitation(){
+		return true;
+	}
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Alters data by reversing sequence of states." ;
-   	 }
-   	 
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Alters data by reversing sequence of states." ;
+	}
+
 }
 
 

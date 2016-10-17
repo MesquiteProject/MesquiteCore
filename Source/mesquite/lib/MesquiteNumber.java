@@ -1250,6 +1250,22 @@ public class MesquiteNumber implements Listable, WithStringDetails{
 			return MesquiteDouble.toStringInRange(doubleValue, range);// + " (double)";
 		else return "";
 	}
+	public String toString(int digits, boolean allowExponentialNotation) {
+		
+		if (isUnassigned())
+			return "?"; //changed from "unassigned" June 02
+		else if (isInfinite())
+			return "infinite";
+		else if (valueClass==INT)
+			return MesquiteInteger.toString(intValue);// + " (int)";
+		else if (valueClass == LONG)
+			return MesquiteLong.toString(longValue);// + " (long)";
+		else if (valueClass == DOUBLE)
+			return MesquiteDouble.toStringDigitsSpecified(doubleValue, digits, allowExponentialNotation);// + " (double)";
+		else return "";
+
+	}
+
 	/*...........................................................*/
 	/** Returns type of number stored here*/
 	public String valueTypeToString() {

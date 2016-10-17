@@ -82,15 +82,18 @@ public class BaseHttpRequestMaker {
 		
 		return executeMethod(client, method, response);
 	}
-	public static boolean sendInfoToServer(NameValuePair[] pairs, String URI, StringBuffer response) {
+	public static boolean sendInfoToServer(NameValuePair[] pairs, String URI, StringBuffer response, int retryCount) {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(URI);
 		method.setQueryString(pairs);
 
-		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
-	    		new DefaultHttpMethodRetryHandler(3, false));
+	//	if (retryCount>0)
+			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(retryCount, false));
 		
 		return executeMethod(client, method, response);
+	}
+	public static boolean sendInfoToServer(NameValuePair[] pairs, String URI, StringBuffer response) {
+		return sendInfoToServer(pairs, URI, response, 3);
 	}
 	protected static boolean executeMethod(HttpClient client, HttpMethod method, StringBuffer response) {
 		boolean success = true;

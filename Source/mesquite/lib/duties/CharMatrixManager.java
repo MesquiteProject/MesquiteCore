@@ -222,7 +222,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 
 				}   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  FUSE
 				else {
-					while (currentCharacter[whichTaxon]<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
+					while (whichTaxon<currentCharacter.length && currentCharacter[whichTaxon]<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
 						int prevPos = parser.getPosition();
 						int ic = currentCharacter[whichTaxon];
 						readTime.start();

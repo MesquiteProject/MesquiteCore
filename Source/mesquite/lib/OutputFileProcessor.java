@@ -13,12 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-public interface OutputFileProcessor {
+public interface OutputFileProcessor extends OutputFilePathModifier {
 	
 	public void processOutputFile(String[] outputFilePaths, int fileNum);
 	
+/** This method processes completed output files */
 	public void processCompletedOutputFiles(String[] outputFilePaths);
 	
-	public String[] modifyOutputPaths(String[] outputFilePaths); 
-
 }

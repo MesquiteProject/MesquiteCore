@@ -379,6 +379,14 @@ public abstract class TreeDrawing  {
 		yValue.deassignAllValues();
 		angle.setToUnassigned();
 	}
+		public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
+		if (tree==null || xValue==null || yValue==null)
+			return;
+		if (!tree.nodeExists(N))
+			return;
+		xValue.deassignAllValues();
+		yValue.deassignAllValues();
+	}
 
 	/*_________________________________________________*/
 	public boolean inNode(int node, int x, int y){

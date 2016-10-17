@@ -16,8 +16,10 @@ package mesquite.align.lib;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
@@ -160,6 +162,8 @@ public abstract class BlockMover extends DataWindowAssistantI {
 		cellBlock = new mesquite.lib.characters.CellBlock((CategoricalData)data, table);
 		currentNumChars = data.getNumChars();
 		currentNumTaxa = data.getNumTaxa();
+		data.addListener(this);
+		inhibitionChanged();
 
 	}
 	/*.................................................................................................................*/
@@ -185,6 +189,23 @@ public abstract class BlockMover extends DataWindowAssistantI {
 	boolean directionRecorded = false;
 	boolean pleaseDefineCellBlock = false;
 
+	/* ................................................................................................................. */
+	void inhibitionChanged(){
+		if (moveTool!=null)
+			moveTool.setEnabled(!data.isEditInhibited());
+	}
+	/* ................................................................................................................. */
+	/** passes which object changed, along with optional integer (e.g. for character) (from MesquiteListener interface) */
+	public void changed(Object caller, Object obj, Notification notification) {
+		int code = Notification.getCode(notification);
+		if (obj instanceof CharacterData && (CharacterData) obj == data) {
+			if (code == MesquiteListener.LOCK_CHANGED) {
+				inhibitionChanged();
+			}
+		}
+		table.setMessage(data.getCellContentsDescription());
+		super.changed(caller, obj, notification);
+	}
 
 	/*.................................................................................................................*/
 	private boolean mouseDragged(String arguments) {
@@ -387,7 +408,7 @@ public abstract class BlockMover extends DataWindowAssistantI {
 				if (!canExpand.getValue())
 					undoReference = new UndoReference(data,this,0,data.getNumChars(), firstRowTouched,firstRowTouched);
 				else
-					undoReference = new UndoReference(data,this);
+					undoReference = new UndoReference(data,this, new int[] {UndoInstructions.CHAR_ADDED_TO_END, UndoInstructions.CHAR_ADDED_TO_START});
 				MesquiteBoolean isTerminalBlock = new MesquiteBoolean(false);
 				MesquiteInteger boundaryOfAvailableSpace = new MesquiteInteger(0);
 				gapsAvailableToRight = data.checkCellMoveDistanceAvailable(data.getNumChars()-cellBlock.getCurrentLastCharInBlock(), cellBlock.getCurrentFirstCharInBlock(), cellBlock.getCurrentLastCharInBlock(), firstRowTouched,firstRowTouched, isTerminalBlock, boundaryOfAvailableSpace, canExpand.getValue());

@@ -49,17 +49,23 @@ public class BLASTSearch extends CategDataSearcher {
 		return searchSelectedTaxa(data,table);
 	}
 	/*.................................................................................................................*/
-   	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+   	public synchronized boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
    		if (data==null)
    			return false;
+   		String firstLine = data.getTaxa().getTaxonName(it);
+   		if (!StringUtil.blank(firstLine))
+   			firstLine ="%3E" + StringUtil.encodeForURL(firstLine) + "%0D%0A";  //to make it a FASTA format
+   		else
+   			firstLine ="%3Etaxon " + it + "%0D%0A";  //to make it a FASTA format
    		StringBuffer searchBuffer = new StringBuffer(data.getNumChars());
-   		String s = data.getTaxa().getTaxonName(it);
-   		if (!StringUtil.blank(s))
-   			searchBuffer.append("%3E" + StringUtil.encodeForURL(s) + "%0D%0A");  //to make it a FASTA format
    		for (int ic = icStart; ic<=icEnd; ic++) {
    			data.statesIntoStringBuffer(ic, it, searchBuffer, false, false, false);
    		}
    		String seq = searchBuffer.toString();
+   		if (MesquiteTrunk.debugMode){
+   			logln("BLAST query sequence ("+ data.getTaxa().getTaxonName(it)+"):");
+   			logln(seq);
+   		}
 		if (!StringUtil.blank(seq) && (seq.length()>2)) {
 			String url = "http://www.ncbi.nlm.nih.gov/blast/Blast.cgi?"+ NCBIUtil.getMesquiteGenBankURLMarker();
 			url += "&DATABASE=nr&FORMAT_TYPE=HTML";
@@ -68,7 +74,19 @@ public class BLASTSearch extends CategDataSearcher {
 			else
 				url += "&PROGRAM=blastn";
 			url += "&CLIENT=web&SERVICE=plain&PAGE=Nucleotides&CMD=Put&QUERY=";
-			MesquiteModule.showWebPage(url + seq, true);
+			try {
+				Thread.sleep(25);  // for some reason doing a bunch of these searches at once fails without this sleep in here.
+			}
+			catch(Exception e) {
+			}
+			MesquiteModule.showWebPage(url + firstLine+ seq, true);
+			try {
+				Thread.sleep(25);  // for some reason doing a bunch of these searches at once fails without this sleep in here.
+			}
+			catch(Exception e) {
+			}
+			if (MesquiteTrunk.debugMode)
+				logln("BLAST URL: " + url + firstLine+ seq);
 			return true;
 		}
 		else 

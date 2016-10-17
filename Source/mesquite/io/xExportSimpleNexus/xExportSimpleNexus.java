@@ -35,6 +35,11 @@ public class xExportSimpleNexus extends FileInterpreterI {
 		return "nex";
 	}
 	/*.................................................................................................................*/
+	/** Returns wether this interpreter uses a flavour of NEXUS.  Used only to determine whether or not to add "nex" as a file extension to imported files (if already NEXUS, doesn't).**/
+	public boolean usesNEXUSflavor(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean canExportEver() {  
 		return true;  //
 	}
@@ -124,6 +129,8 @@ public class xExportSimpleNexus extends FileInterpreterI {
 		}
 		else {
 			boolean usePrevious = args.parameterExists("usePrevious");
+			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options"))
+				usePrevious = true;
 			data = (CategoricalData)getProject().chooseData(containerOfModule(), file, null, CategoricalState.class, "Select data to export");
 			if (data ==null) {
 				showLogWindow(true);

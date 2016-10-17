@@ -58,11 +58,12 @@ public class CharListCodonPos extends CharListAssistant {
 				modelSet.addToFile(data.getFile(), getProject(), findElementManager(CodonPositionsSet.class)); //THIS
 				data.setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
 			}
+			boolean anySelected = table.anyCellSelectedAnyWay();
 			if (modelSet != null) {
 				if (employer!=null && employer instanceof ListModule) {
 					int c = ((ListModule)employer).getMyColumn(this);
 					for (int i=0; i<data.getNumChars(); i++) {
-						if (table.isCellSelectedAnyWay(c, i)) {
+						if (!anySelected || table.isCellSelectedAnyWay(c, i)) {
 							modelSet.setValue(i, num);
 							if (!changed)
 								outputInvalid();
@@ -98,6 +99,7 @@ public class CharListCodonPos extends CharListAssistant {
 				for (int it= 0; it<taxa.getNumTaxa(); it++) {
 					totNumStops += ((DNAData)data).getAminoAcidNumbers(it,ProteinData.TER);					 
 				}
+				
 				logln("Number of stops with first selected as codon position " + i + ": " + totNumStops);
 				if (minStops<0 || totNumStops<minStops) {
 					minStops = totNumStops;

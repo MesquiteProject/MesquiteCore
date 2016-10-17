@@ -24,11 +24,13 @@ public class MesquiteMenuItemSpec implements Listable {
 	public MesquiteCommand command;
 	private MesquiteModule ownerModule;
 	protected String itemName;
+	protected String referentID;
 	protected MesquiteMenuSpec whichMenu;
 	protected String argument = null;
 	protected MesquiteSubmenuSpec submenu;
 	protected Class dutyClass = null;
 	protected Object compatibilityRestriction = null;
+	protected QualificationsTest qualificationsTest = null;
 	protected ListableVector lVector = null;
 	protected Class subclassFilter = null;
 	Class ownerClass = null;
@@ -111,6 +113,12 @@ public class MesquiteMenuItemSpec implements Listable {
 	public void setName(String name){
 		 itemName = name;
 	}
+	public void setReferentID(String name){
+		 referentID = name;
+	}
+	public String getReferentID(){
+		 return referentID;
+	}
 	public void disconnect(){
 		//if (command!=null && command.getOwner()==ownerModule) //MEMORY shouldn't adways set null
 		//	command.setOwner(null);
@@ -133,6 +141,9 @@ public class MesquiteMenuItemSpec implements Listable {
 	}
 	public void setInMenu(MesquiteMenuSpec menu){
 		this.whichMenu = menu;
+	}
+	public MesquiteMenuSpec getMenu(){
+		return whichMenu;
 	}
 	public void setArgument(String argument){
 		this.argument = argument;
@@ -187,6 +198,12 @@ public class MesquiteMenuItemSpec implements Listable {
 	}
 	public void setCompatibilityCheck(Object obj){
 		this.compatibilityRestriction = obj;
+	}
+	public QualificationsTest getQualificationsTest(){
+		return qualificationsTest;
+	}
+	public void setQualificationsTest(QualificationsTest obj){
+		this.qualificationsTest = obj;
 	}
 	public Class getListableFilter(){
 		return subclassFilter;

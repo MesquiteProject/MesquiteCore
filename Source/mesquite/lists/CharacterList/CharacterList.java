@@ -92,7 +92,7 @@ public class CharacterList extends ListModule {
 		setModuleWindow(window);
 		makeMenu("List");
 
-		addMenuItem( "Save selected as set...", makeCommand("saveSelectedRows", this));
+		addMenuItem( "Save Selected as Set...", makeCommand("saveSelectedRows", this));
 		addMenuItem( "-", null);
 		if (!MesquiteThread.isScripting()){
 			CharListAssistant assistant= null;
@@ -155,6 +155,10 @@ public class CharacterList extends ListModule {
 			return new UndoInstructions(UndoInstructions.SINGLECHARACTERNAME, row, new MesquiteString(oldName), new MesquiteString(s),data,window.getTable());
 		else 
 			return new UndoInstructions(UndoInstructions.SINGLECHARACTERNAME, row, new MesquiteString(oldName), new MesquiteString(s),data,null);
+	}
+	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
 	}
 	/*.................................................................................................................*/
 	public boolean rowsMovable(){
@@ -305,6 +309,8 @@ public class CharacterList extends ListModule {
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 	}
 
@@ -416,16 +422,18 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 
 	public void setCurrentObject(Object obj){
 		if (obj instanceof CharacterData) {
-			if (data!=null) {
-				data.removeListener(this);
-				if (data.getTaxa()!=null)
-					data.getTaxa().removeListener(this);
+			if (data == null || data != obj){
+				if (data!=null) {
+					data.removeListener(this);
+					if (data.getTaxa()!=null)
+						data.getTaxa().removeListener(this);
+				}
+				data = (CharacterData)obj;
+				data.addListener(this); //TODO: this needs to be done for taxon lists, etc.
+				data.getTaxa().addListener(this);
 			}
-			data = (CharacterData)obj;
 			getTable().setRowAssociable(data);
 			getTable().setDropDown(-1, -1, true);
-			data.addListener(this); //TODO: this needs to be done for taxon lists, etc.
-			data.getTaxa().addListener(this);
 			resetTitle();
 			if (selectionCoordinator!=null)
 				selectionCoordinator.setTableAndObject(getTable(), data, true);
@@ -486,6 +494,15 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 		else
 			return null;
 	}
+	public String getRowNameForSorting(int row){
+		if (data!=null && row<data.getNumChars()){
+			if (!data.characterHasName(row))
+				return "";
+			return data.getCharacterName(row);
+		}
+		else
+			return null;
+	}
 	/*...............................................................................................................*/
 	public void setRowNameColor(Graphics g, int row){
 		//		g.setColor(Color.black);
@@ -498,6 +515,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){
 		if (data==null || (obj instanceof Taxa &&  (Taxa)obj ==data.getTaxa())||(obj instanceof CharacterData && (CharacterData)obj ==data)) {
+			data = null;
 			if (ownerModule!=null) {
 				ownerModule.iQuit();
 			}

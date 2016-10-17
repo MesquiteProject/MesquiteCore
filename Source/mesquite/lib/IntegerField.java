@@ -86,10 +86,16 @@ public class IntegerField  {
 		return isInteger;
 	}
 	/*.................................................................................................................*/
+	public void setValue (int value) {
+		textField.setText(MesquiteInteger.toString(value));
+	}
+	/*.................................................................................................................*/
 	public int getValue () {
 		String s = textField.getText();
 		if (s != null && s.equals("?"))
 			return MesquiteInteger.unassigned;
+		if (s != null && (s.equalsIgnoreCase("infinite") ||  s.equalsIgnoreCase("infinity")) && !MesquiteInteger.isCombinable(max))
+			return MesquiteInteger.infinite;
 		int value = MesquiteInteger.fromString(s);
 		isInteger=true;
 		if (!MesquiteInteger.isCombinable(value)) {

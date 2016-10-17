@@ -47,6 +47,10 @@ public abstract class DrawTree extends MesquiteModule  {
 		return false;
 	}
 	
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return true;
+	}
    	 /** Returns a TreeDrawing to be used in the given TreeDisplay, with the given inital number of terminal taxa*/
 	public abstract TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa);
 	

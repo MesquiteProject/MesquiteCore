@@ -593,27 +593,47 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				ObjectArray bb = getWhichAssociatedObject(nr);
 				bb.setValue(node, stored);
 			}
-			else if (value.indexOf(".")>=0) { //treat as double 
-				//TODO:  there is a problem here; if some cases use ., others not, should be double; but will be treated as mixed
+			else if (value.indexOf(".")>=0 && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos)) { //treat as double 
+				NameReference nrEx= NameReference.getNameReference(s);   // fixed in 3.01
+				DoubleArray bb = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist
+				if (bb == null) {
+					//Making doubles to be filled
+					NameReference nr = makeAssociatedDoubles(s);
+					bb = getWhichAssociatedDouble(nr);
 
-				NameReference nr = makeAssociatedDoubles(s);
-				DoubleArray bb = getWhichAssociatedDouble(nr);
+					//but first check to see if there are longs.  If so, and if doubles hadn't existed before, then transfer
+					NameReference nrExL= NameReference.getNameReference(s);
+					LongArray longs = getWhichAssociatedLong(nrExL);
+					if (longs != null){
+						//There is an array of longs of the same name.  It's therefore assumed that they should all be upgraded to doubles!
+						longs.copyTo(bb);
+						removeAssociatedLongs(nrExL);   //delete longs as no longer needed
+					}
+
+				}
 				pos.setValue(oldPos);
 				bb.setValue(node, MesquiteDouble.fromString(assocString, pos));
 			}
 			//at this point there are just two alternatives left that are recognized: an undeclared string, and an integer
 			//first check to see if it could be a number
-			else if ("0123456789-".indexOf(value.charAt(0))<0) {  //doesn't start as number; treat as string
+			else if ("0123456789-".indexOf(value.charAt(0))<0 || !MesquiteLong.interpretableAsLong(assocString, pos, oldPos)) {  //doesn't start as number or starts as number but not interpretable as long
 				NameReference nr = makeAssociatedObjects(s);
 				ObjectArray bb = getWhichAssociatedObject(nr);
 				bb.setValue(node, value);
 			}
-			else {  //treat as long 
-				
-				NameReference nr = makeAssociatedLongs(s);
-				LongArray bb = getWhichAssociatedLong(nr);
-				pos.setValue(oldPos);
-				bb.setValue(node, MesquiteInteger.fromString(assocString, pos));
+			else {  //treat as long, unless (fixed in 3.01) same name exists as DoubleArray in which case put there
+				NameReference nrEx= NameReference.getNameReference(s);   // 
+				DoubleArray bbd = getWhichAssociatedDouble(nrEx);       //Finding doubles if they exist; if so, use as doubles instead!!!!!
+				if (bbd != null){
+					pos.setValue(oldPos);
+					bbd.setValue(node, MesquiteInteger.fromString(assocString, pos));
+				} 
+				else {
+					NameReference nr = makeAssociatedLongs(s);
+					LongArray bb = getWhichAssociatedLong(nr);
+					pos.setValue(oldPos);
+					bb.setValue(node, MesquiteInteger.fromString(assocString, pos));
+				}
 			}
 			s=ParseUtil.getToken(assocString, pos);
 			if (",".equals(s)) //eating up "," separating subcommands
@@ -841,47 +861,51 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public boolean addParts(int starting, int num){
 		if (num==0)
 			return false;
-		totalPartsAdded+=num;
-		if (starting<0) starting = -1;
-		if (starting>numParts) starting = numParts;
+		try {
+			totalPartsAdded+=num;
+			if (starting<0) starting = -1;
+			if (starting>numParts) starting = numParts;
+			if (bits!=null) {
+				for (int i=0; i< bits.size(); i++) {
+					Bits b = (Bits)bits.elementAt(i);
+					b.addParts(starting, num);
+				}
+			}
+			if (longs!=null) {
+				for (int i=0; i< longs.size(); i++) {
+					LongArray b = (LongArray)longs.elementAt(i);
+					b.addParts(starting, num, MesquiteLong.unassigned);
+				}
+			}
+			if (doubles!=null)
+				for (int i=0; i< doubles.size(); i++) {
+					DoubleArray b = (DoubleArray)doubles.elementAt(i);
+					b.addParts(starting, num);
+				}
+			if (objects!=null)
+				for (int i=0; i< objects.size(); i++) {
+					ObjectArray b = (ObjectArray)objects.elementAt(i);
+					b.addParts(starting, num); //comments handled here
+				}
+			if (defaultOrder != null){
+				defaultOrder = addToOrder(defaultOrder,starting,num);
+			}
+			if (currentOrder != null){
+				currentOrder = addToOrder(currentOrder,starting,num);
+			}
+			if (previousOrder != null){
+				previousOrder = addToOrder(previousOrder,starting,num);
+			}
+			if (justAdded!=null) {
+				justAdded.addParts(starting, num);
+			}
+			numParts = numParts+num;
+			for (int i=0;i<num; i++)
+				setJustAdded(starting+i+1, true);
+		}
+		catch (Exception e){
+		}
 
-		if (bits!=null) {
-			for (int i=0; i< bits.size(); i++) {
-				Bits b = (Bits)bits.elementAt(i);
-				b.addParts(starting, num);
-			}
-		}
-		if (longs!=null) {
-			for (int i=0; i< longs.size(); i++) {
-				LongArray b = (LongArray)longs.elementAt(i);
-				b.addParts(starting, num, MesquiteLong.unassigned);
-			}
-		}
-		if (doubles!=null)
-			for (int i=0; i< doubles.size(); i++) {
-				DoubleArray b = (DoubleArray)doubles.elementAt(i);
-				b.addParts(starting, num);
-			}
-		if (objects!=null)
-			for (int i=0; i< objects.size(); i++) {
-				ObjectArray b = (ObjectArray)objects.elementAt(i);
-				b.addParts(starting, num); //comments handled here
-			}
-		if (defaultOrder != null){
-			defaultOrder = addToOrder(defaultOrder,starting,num);
-		}
-		if (currentOrder != null){
-			currentOrder = addToOrder(currentOrder,starting,num);
-		}
-		if (previousOrder != null){
-			previousOrder = addToOrder(previousOrder,starting,num);
-		}
-		if (justAdded!=null) {
-			justAdded.addParts(starting, num);
-		}
-		numParts = numParts+num;
-		for (int i=0;i<num; i++)
-			setJustAdded(starting+i+1, true);
 		setDirty(true);
 		return true;
 	}
@@ -1118,6 +1142,12 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		setDirty(true);
 	}
 	/*-----------------------------------------*/
+	/** Sets whether or not the part is selected */
+	public void setSelected(int partStart, int partEnd, boolean select) {
+		for (int i=partStart; i<=partEnd; i++)
+			setSelected(i,select);
+	}
+	/*-----------------------------------------*/
 	/** Returns whether the part is selected */
 	public boolean getSelected(int part) {
 		if (!inBounds(part))
@@ -1276,7 +1306,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public void setAssociatedBit(NameReference nRef, int index, boolean value){
 		setAssociatedBit(nRef, index, value, false);
 	}
-	
+
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */
 	public void setAssociatedBit(NameReference nRef, int index, boolean value, boolean setAsBetween){
@@ -1595,7 +1625,7 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 	public void setAssociatedObject(NameReference nRef, int index, Object value){
 		setAssociatedObject(nRef, index, value, false);
 	}
-	
+
 
 	/*generally not used directly, as setAsBetween is rarely true.  When setAsBetween is true the betweenness is set to true;
 	 * otherwise it is untouched.  Betweenness is used in MesquiteTree, for example, to indicate whether an associated is tied to branches or nodes */

@@ -38,7 +38,6 @@ public class NumForCharMatrixList extends DataSetsListAssistant  {
 		EmployeeNeed e = registerEmployeeNeed(NumberForMatrix.class, getName() + " needs a method to calculate a value for each of the character matrices.",
 		"You can select a value to show in the Number For Character Matrices submenu of the Columns menu of the List of Character Matrices Window. ");
 	}
-	ListableVector datas =null;
 	NumberForMatrix numberTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

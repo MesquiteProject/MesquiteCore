@@ -43,8 +43,11 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	String buttonLabel0;
 	String buttonLabel1;
 	String buttonLabel2;
+	String[] buttonLabels= new String[10];
+
 	MesquiteModule helpURLOwnerModule=null;
 	Button button0, button1, button2;
+	Button[] buttons = new Button[10];
 	Image helpImage;
 	boolean useManualPage = false;
 	public String defaultOKLabel = "OK";
@@ -125,7 +128,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		c.gridwidth=1;
 		c.gridheight=1;
 		c.fill=GridBagConstraints.BOTH;
-		c.anchor=GridBagConstraints.CENTER;
+		c.anchor=GridBagConstraints.WEST;
 		return c;
 	}
 	/*.................................................................................................................*/
@@ -222,6 +225,27 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		samePanelAsLast = false;
 		return lastPanel;
 	}
+	/*.................................................................................................................*
+	public void setAlignmentOfLastPanel (int alignment) {
+		if (lastPanel!=null) {
+			GridBagConstraints constraints = null;
+			if (currentGridBag!=null) {
+				constraints = currentGridBag.getConstraints(lastPanel);
+				if (constraints!=null) {
+					constraints.anchor = alignment;
+					currentGridBag.setConstraints(lastPanel,constraints);
+				}
+			}
+			else {
+				constraints = gridBag.getConstraints(lastPanel);
+				if (constraints!=null) {
+					constraints.anchor = alignment;
+					gridBag.setConstraints(lastPanel,constraints);
+				}
+			}
+		}
+	}
+
 	/*.................................................................................................................*/
 	public Panel addNewDialogPanel () {
 		return addNewDialogPanel(null,null);
@@ -233,6 +257,10 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/*.................................................................................................................*/
 	public Panel addNewDialogPanel (GridBagConstraints c) {
 		return addNewDialogPanel(null, c);
+	}
+	/*.................................................................................................................*/
+	public Panel getLastPanel () {
+		return lastPanel;
 	}
 	/*.................................................................................................................*/
 	public void addToDialog (Component component, Object c) {
@@ -510,6 +538,37 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			}
 			else if (!noButtons)
 				singleButton = null;
+		}
+		if (!MesquiteModule.textEdgeRemembered || checkTextEdge)
+			buttons.add("West", textEdgeCompensationDetector = new TextField(" "));
+		addToDialog(buttons);	
+		setPrimaryButtonConstraints(buttons);	
+		if (singleButton!=null)
+			setDefaultButton(singleButton);	
+	}	/*.................................................................................................................*/
+	public void addPrimaryButtonRow (String[] buttonLabels) {
+		if (buttonLabels==null)
+			return;
+		Panel buttons = new Panel();
+		//		buttons.setSize(dialogWidth, buttonHeight);
+		String singleButton = null;
+		boolean noButtons=true;
+		if (hasHelpURL())
+			noButtons=false;
+		if (!isInWizard() && !StringUtil.blank(getHelpString()))
+			noButtons=false;
+		addHelpButtons(buttons);
+		if (addExtraButtons(buttons))
+			noButtons=false;
+		for (int i=buttonLabels.length-1; i>=0; i--) {
+			if (buttonLabels[i]!=null) {
+				button2=addAButton(buttonLabels[i],buttons);
+				this.buttonLabels[i] = buttonLabels[i];
+				if (noButtons) {
+					singleButton = buttonLabels[i];
+					noButtons = false;
+				}
+			}
 		}
 		if (!MesquiteModule.textEdgeRemembered || checkTextEdge)
 			buttons.add("West", textEdgeCompensationDetector = new TextField(" "));
@@ -1480,6 +1539,41 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return list;
 	}
 	/*.................................................................................................................*/
+	public MesquitePasswordField addPasswordField (String message, String initialString, int fieldLength) {
+		if (message!=null)
+			constraints.fill=GridBagConstraints.NONE;
+		Panel newPanel = addNewDialogPanel();
+		Label fieldLabel = null;
+		if (message!=null) {
+			newPanel.add(fieldLabel = new Label(message));
+		}
+		MesquitePasswordField textField;
+		if (initialString == null)
+			initialString = "";
+		if (fieldLength>=1) {
+			textField =new MesquitePasswordField(initialString,fieldLength);
+		}
+		else {
+			newPanel.setLayout(new GridLayout(1,1));
+			textField =new MesquitePasswordField(initialString);
+			textField.setSize(new Dimension(dialogWidth-sideBuffer*2, textField.getSize().height));
+			newPanel.setSize(textField.getSize());
+		}
+		textField.setBackground(Color.white);
+		textField.setLabel(fieldLabel);
+		newPanel.add(textField);
+		focalComponent = textField;
+		textField.selectAll();
+		try {
+			if (MesquiteTrunk.getJavaVersionAsDouble() >= 1.5)
+				textField.setCaretPosition(0);
+		}
+		catch (Exception e){
+		}
+		constraints.fill=GridBagConstraints.BOTH;
+		return textField;
+	}
+	/*.................................................................................................................*/
 	public SingleLineTextField addTextField (String message, String initialString, int fieldLength, boolean preserveBlanks) {
 		if (message!=null)
 			constraints.fill=GridBagConstraints.NONE;
@@ -1918,9 +2012,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		MesquiteMessage.notifyUser("Values unacceptable.");
 	}
 	/*.................................................................................................................*/
-	/* David: this overridden here because dlog was getting disposed for any button, even if not primary.  Might be 
-	good to store Buttons directly and not just strings; that way to know easily if button hit was button desired */
-	public void mouseReleased(MouseEvent e){
+	public void checkForButtonHit(MouseEvent e){
 		if (e.getComponent() instanceof Button) {
 			if (e.getComponent().getBounds().contains(e.getComponent().getBounds().x+e.getX(),e.getComponent().getBounds().y+e.getY())) {
 				String label = ((Button)e.getComponent()).getLabel();
@@ -1935,9 +2027,19 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				}
 				else 
 					buttonHit(label, (Button)e.getComponent());  //this added 1. 12 because buttons other than primary ones were being ignored
-			}
-
+			} 
 		}
+	}
+	/*.................................................................................................................*/
+	/* David: this overridden here because dlog was getting disposed for any button, even if not primary.  Might be 
+	good to store Buttons directly and not just strings; that way to know easily if button hit was button desired */
+	public void mouseReleased(MouseEvent e){
+		checkForButtonHit(e);
+	}
+	/*.................................................................................................................*/
+	public void mousePressed(MouseEvent e){
+		if (MesquiteTrunk.isMacOSXYosemiteOrLater() && MesquiteTrunk.isJavaVersionLessThan(1.7))  // workaround because of bug in Yosemite Java 1.6
+			checkForButtonHit(e);
 	}
 
 	public void selectButton(String label){ //for use by scripting & console

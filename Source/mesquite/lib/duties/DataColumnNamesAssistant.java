@@ -27,6 +27,7 @@ import mesquite.lib.characters.*;
 public abstract class DataColumnNamesAssistant extends MesquiteModule  {
 	protected mesquite.lib.characters.CharacterData data=null;
 	protected MesquiteTable table=null;
+	protected int columnTouched = MesquiteInteger.unassigned;
 	
    	 public Class getDutyClass() {
    	 	return DataColumnNamesAssistant.class;
@@ -51,6 +52,21 @@ public abstract class DataColumnNamesAssistant extends MesquiteModule  {
 	/** Returns string to be displayed in explanation area on mouseover of cell */
 	public String getStringForExplanation(int ic){
 		return "";
+	}
+
+	/** Sets the columnTouched */
+	public void setColumnTouched(int ic){
+		columnTouched=ic;
+	}
+
+	/** Sets the columnTouched to be unassigned*/
+	public void clearColumnTouched(){
+		columnTouched=MesquiteInteger.unassigned;
+	}
+
+	/** Gets the columnTouched */
+	public int getColumnTouched(){
+		return columnTouched;
 	}
 
 	/** Returns widest string in column; can return by default a long string for safety */

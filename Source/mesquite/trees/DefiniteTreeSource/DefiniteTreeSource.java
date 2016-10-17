@@ -75,7 +75,7 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 	}
 	public String getMyName(Object obj){
 		if (obj == mss)
-			return whatIsMyPurpose();
+			return "Source of Trees " + whatIsMyPurpose();
 		return null;
 	}
 	/** Returns the purpose for which the employee was hired (e.g., "to reconstruct ancestral states" or "for X axis").*/
@@ -103,7 +103,8 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 
 		if (!MesquiteInteger.isCombinable(numItems)) { //not specified; need to set
 			if (queryPlease || (wasDefinite && !assigned)) {
-				numTreesAssigned = defaultNumberOfItems;
+				if (!assigned)
+					numTreesAssigned = defaultNumberOfItems;
 				if (!MesquiteThread.isScripting()) {
 					numTreesAssigned = MesquiteInteger.queryInteger(containerOfModule(), "Number of Trees", "Number of trees  (for " + getEmployer().getName() + ")", numTreesAssigned);
 					if (!MesquiteInteger.isCombinable(numTreesAssigned)) 
@@ -153,7 +154,6 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 				assigned = true;
 			}
 			else {
-				assigned = false;
 				resetTreeSource(taxa, true);
 			}
 			parametersChanged();

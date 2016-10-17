@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -40,7 +40,7 @@ public interface Tree extends Listable {
 	/** Returns false if tree is null, has no nodes, or is locked, or if some taxonNumbers are negative.*/
 	public boolean isLocked();
 	public long getID();
- 	public long getVersionNumber();
+	public long getVersionNumber();
 	public Taxa getTaxa();
 	public int getRoot();
 	public int getSubRoot();
@@ -78,6 +78,10 @@ public interface Tree extends Listable {
 	public  int motherOfNode(int node);
 	/** Returns the node's mother's mother.*/
 	public  int grandmotherOfNode(int node);
+	public  int firstLegalDaughterOfNode(int node, int[] legality);
+	public  int nextLegalSisterOfNode(int node, int[] legality);
+	public  int lastLegalDaughterOfNode(int node, int[] legality);
+	public  int getLegalRoot(int[] legality);
 	/** Returns the number of parents of node.*/
 	public int numberOfParentsOfNode(int node);
 	/** Returns the indexTH parent of node.*/
@@ -179,7 +183,7 @@ public interface Tree extends Listable {
 	public int mrca(int branchA, int branchB); 
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
 	public int mrca(Bits terminals);
-/*New code added Aug.14.07 oliver*/ //TODO: delete new code comments
+	/*New code added Aug.14.07 oliver*/ //TODO: delete new code comments
 	/** Returns most recent common ancestor for an array of nodes.*/
 	public int mrca(int[] nodes);
 	/** Returns most recent common ancestor for an array of nodes; if boolean ignoreMissing = false, it 
@@ -194,7 +198,9 @@ public interface Tree extends Listable {
 	 * that are actually present in the tree; taxons in the taxon array that are not present in the tree 
 	 * are ignored.*/
 	public int mrcaTaxons(int[] taxons, boolean ignoreMissing);
-/*End new code added Aug.14.07 oliver*/
+	/*End new code added Aug.14.07 oliver*/
+	/** Returns most recent common ancestor of selected taxa.*/
+	public int mrcaSelected(); 
 	/** Returns the closest ancestor that has more than one daughter.*/
 	public  int branchingAncestor(int node);
 	/** Returns the closest descendant that has more than one daughter, or is terminal.*/
@@ -292,7 +298,7 @@ public interface Tree extends Listable {
 	public Object getAssociatedObject(NameReference nRef, int index);
 	public boolean hasName();
 	public String writeTree();
-	
+
 	public boolean ancestorHasNameReference(NameReference nameRef, int node);
 	public int ancestorWithNameReference(NameReference nameRef, int node);
 
@@ -300,6 +306,7 @@ public interface Tree extends Listable {
 	To be used for output to user, not internally (as it may lose information).*/
 	public String writeTreeSimpleByNames();
 	public String writeTreeSimpleByNumbers();
+	public String writeTreeByT0Names(boolean includeBranchLengths);
 	public String writeTree(int byWhat);
 	public String writeTree(int byWhat, boolean associatedUseComments);
 	public String writeTreeSimple(int byWhat, boolean includeAssociated, boolean includeBranchLengths, boolean includeNodeLabels, boolean zeroBased, String delimiter);
@@ -310,7 +317,7 @@ public interface Tree extends Listable {
 	public String getNodeLabel(int node);
 	public boolean nodeHasLabel(int node);
 	public void dispose();
-	
+
 	public int getFileIndex();
 	public void setFileIndex(int index);
 }

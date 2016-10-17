@@ -221,6 +221,9 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 			projPanel.refresh();
 
 	}
+	public void setFootnote(String heading, String text){
+		projPanel.setFootnote(heading, text);
+	}
 	public void refresh(FileElement element){
 		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
@@ -261,6 +264,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	ProjectWindow w;
 	Image fileIm;
 	ScrollPanel scroll;
+	NotesPanel notesPanel = null;
 	public ProjectPanel(ProjectWindow w, MesquiteProject proj, BasicFileCoordinator bfc){ 
 		super();
 		this.w = w;
@@ -271,6 +275,10 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		fileIm = 	MesquiteImage.getImage(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileSmall.gif");
 		setSize(94, 500);
 
+	}
+	public void setFootnote(String heading, String text){
+		if (notesPanel != null)
+			notesPanel.setText(heading, text);
 	}
 	public void requestHeightChange(ClosablePanel panel){
 		resetSizes(getBounds().width, getBounds().height);
@@ -545,7 +553,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	//boolean fipOpen = false;
 	//FileIncorporatePanel fip = null;
 	public void refresh(){
+		
 		int sutd = sequenceUpToDate();  //integer passed to diagnose why not up to date, for debugging
+		
 		if (sutd==0){
 			resetSizes();
 			return;
@@ -643,6 +653,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			}
 
 		}
+		addExtraPanel(notesPanel = new NotesPanel(bfc, this, w));
 		resetSizes();
 	}
 	int scrollOffset = 0;
@@ -862,6 +873,30 @@ class ProjectLabelPanel extends ElementPanel {
 	public boolean getBold(){
 		return true;
 	}
+	public String getFootnote(){
+		if (project == null)
+			return null;
+		String text = "Project with home file " + project.getHomeFileName();
+		int numTaxaBlocks = project.getNumberOfFileElements(Taxa.class);
+		int numMatrices = project.getNumberCharMatrices();
+		int numTreeBlocks = project.getNumberOfFileElements(TreeVector.class);
+		if (numTaxaBlocks>0){
+			text += ", with";
+			if (numTaxaBlocks == 1)
+				text += "\n  " + numTaxaBlocks + " taxa block";
+			else if (numTaxaBlocks > 1)
+				text += "\n  " + numTaxaBlocks + " taxa blocks";
+			if (numMatrices==1)
+				text += ";\n  " + numMatrices + " character matrix";
+			else if (numMatrices>1)
+				text += ";\n  " + numMatrices + " character matrices";
+			if (numTreeBlocks==1)
+				text += ";\n  "  + numTreeBlocks + " tree block";
+			else if (numTreeBlocks>1)
+				text += ";\n  "  + numTreeBlocks + " tree blocks";
+		}
+		return text;
+	}
 	protected String getMenuHeading(){
 		if (project.hasName())
 			return "Project: " + project.getName();
@@ -880,7 +915,7 @@ class ProjectLabelPanel extends ElementPanel {
 		addCommand(true, null, "Other Projects:", "Other Projects:", null);
 		for (int i = 0; i< numProjects; i++){
 			MesquiteProject proj = MesquiteTrunk.getProjectList().getProject(i);
-			if (proj != project) {
+			if (proj != project && proj != null) {
 				addCommand(true, null, proj.getHomeFileName(), proj.getHomeFileName(), new MesquiteCommand("allToFront", proj.getCoordinatorModule()));
 				names[k++] = proj.getHomeFileName();
 			}
@@ -888,6 +923,50 @@ class ProjectLabelPanel extends ElementPanel {
 	}
 
 
+}
+/*======================================================================== */
+class NotesPanel extends ProjPanelPanel {
+	StringInABox textBox, headingBox;
+	String text = null;
+	String heading = null;
+	public NotesPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w){
+		super(bfc, container, w, null, bfc);
+		headingBox =  new StringInABox("", new Font("SansSerif", Font.BOLD, MesquiteFrame.resourcesFontSize), getWidth());
+		textBox =  new StringInABox("", new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), getWidth());
+		setText(null, null);
+	}
+	public int getRequestedHeight(int width){
+		return 200;
+	}
+	void setText(String h, String t){
+		text = t;
+		heading = h;
+		headingBox.setString(h);
+		textBox.setString(t);
+		repaint();
+	}
+	protected void resetSizes(int w, int h){
+		if (textBox != null){
+			headingBox.setWidth(w-24);
+			textBox.setWidth(w-24);
+		}
+	}
+	
+	public void paint(Graphics g){
+		if (text != null){
+			g.setColor(Color.lightGray);
+			g.fillRect(8, 12, getWidth()-16, 2);
+			g.setColor(ColorTheme.getExtInterfaceTextMedium());
+			if (heading != null){
+				headingBox.draw(g, 16,16);
+				
+				textBox.draw(g, 16,headingBox.getHeight() + 16);
+			}
+			else
+				textBox.draw(g, 16,16);
+				
+		}
+	}
 }
 
 /*======================================================================== */
@@ -919,6 +998,11 @@ class FilePanel extends ElementPanel {
 	public void resetTitle(){
 		setTitle(mf.getFileName());
 		repaint();
+	}
+	public String getFootnote(){
+		if (mf == null || mf.getDirectoryName() == null)
+			return null;
+		return "Location of file: " + mf.getDirectoryName();
 	}
 	/*.................................................................................................................*/
 	public String getElementTypeName(){ 
@@ -1025,7 +1109,7 @@ class MElementPanel extends ElementPanel {
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Rename Matrix", "Rename Matrix", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Matrix", "Delete Matrix", new MesquiteCommand("deleteMe", element));
-		addCommand(true, null, "Delete Matrix", "Duplicate Matrix", new MesquiteCommand("duplicateMe", element));
+		addCommand(true, null, "Duplicate Matrix", "Duplicate Matrix", new MesquiteCommand("duplicateMe", element));
 		addCommand(true, null, "Export Matrix", "Export Matrix", new MesquiteCommand("exportMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));
@@ -1184,6 +1268,7 @@ class TreesRPanel extends ElementPanel {
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Rename Trees Block", "Rename Trees Block", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Trees Block", "Delete Trees Block", new MesquiteCommand("deleteMe", element));
+		addCommand(true, null, "Duplicate Trees Block", "Duplicate Trees Block", new MesquiteCommand("duplicateMe", element));
 		addCommand(true, null, "Export Trees Block", "Export Trees Block", new MesquiteCommand("exportMe", element));
 		addCommand(true, null, "-", "-", null);
 		addCommand(true, null, "Edit Comment", "Edit Comment", new MesquiteCommand("editComment", element));
@@ -1592,6 +1677,25 @@ class ElementPanel extends ProjPanelPanel {
 		}*/
 		refreshIcon();
 		refresh();
+	}
+	public String getFootnoteHeading(){
+		if (element instanceof FileElement){
+			String an = ((FileElement)element).getAnnotation();
+			if (StringUtil.blank(an))
+				return null;
+			String text = ((FileElement)element).getTypeName();
+			if (element.getName() != null)
+				text += ":  " + element.getName();
+			return text;
+		}
+		return null;
+	}
+	public String getFootnote(){
+		if (element instanceof FileElement){
+			String an = ((FileElement)element).getAnnotation();
+			return an;
+		}
+		return null;
 	}
 	public String getTitle(){
 		String t = super.getTitle() + getTitleAddition();

@@ -94,6 +94,8 @@ public class CharAssocDivViewer extends TreeWindowAssistantA    {
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		iQuit();

@@ -20,7 +20,7 @@ import mesquite.align.lib.*;
  *  
  */
 /* ======================================================================== */
-public class CleanUpMatrix extends CategDataAlterer {
+public class CleanUpMatrix extends CategDataAlterer implements AltererAlignShift {
 	boolean reverseComplementIfNecessary = true;
 	boolean multipleSequenceAlignment = true;
 	int referenceSequence = 1;
@@ -109,10 +109,8 @@ public String preparePreferencesForXML () {
    	}
 	/*.................................................................................................................*/
    	private void processData(DNAData data, Taxa taxa) {
- //  			Debugg.println(" reverseComplementSequencesIfNecessary");
    		if (reverseComplementIfNecessary)
   			MolecularDataUtil.reverseComplementSequencesIfNecessary(data, module, taxa, 0, taxa.getNumTaxa(), referenceSequence, false, false, false);
-//   		Debugg.println(" pairwiseAlignMatrix");
    		if (multipleSequenceAlignment){
    			if (aligner==null)
    				aligner= (CategDataAlterer)hireNamedEmployee(CategDataAlterer.class, "#MultipleAlignService");
@@ -121,7 +119,6 @@ public String preparePreferencesForXML () {
    		} else
    			MolecularDataUtil.pairwiseAlignMatrix(this, data, referenceSequence, false);
    		if (setCodonPositions){
- //  			Debugg.println(" setCodonPositionsToMinimizeStops");
    			MolecularDataUtil.setCodonPositionsToMinimizeStops(data, module, taxa, 0, taxa.getNumTaxa());
    		}
    		// then alter taxon names

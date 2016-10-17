@@ -16,6 +16,7 @@ package mesquite.lists.lib;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -104,6 +105,9 @@ public class DataSpecsListWindow extends ListWindow implements MesquiteListener 
 		}
 		else
 			return null;
+	}
+	public String getRowNameForSorting(int row){
+		return getRowName(row);
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/

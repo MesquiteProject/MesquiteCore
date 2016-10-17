@@ -45,7 +45,7 @@ public abstract class Blaster extends MesquiteModule   {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public abstract boolean initialize();
 
-	public abstract void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse, boolean writeTime);
+	public abstract void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeTime);
 
 	public abstract String getFastaFromIDs(String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults);
 
@@ -79,23 +79,23 @@ public abstract class Blaster extends MesquiteModule   {
 		setBlastx (blastType==BLASTX);
 	}
 
-	public  void basicDNABlastForMatches(int blastOption, String sequenceName, String sequence, int numHits, double eValueCutoff, StringBuffer blastResponse, boolean writeTime){
-		basicDNABlastForMatches(blastOption,  sequenceName,  sequence,  numHits, 300, eValueCutoff,  blastResponse,  writeTime);
+	public  void basicDNABlastForMatches(int blastOption, String sequenceName, String sequence, int numHits, double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeTime){
+		basicDNABlastForMatches(blastOption,  sequenceName,  sequence,  numHits, 300, eValueCutoff, wordSize, blastResponse,  writeTime);
 	}
 
-	public  void basicDNABlastForMatches(int blastOption, String sequenceName, String sequence, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse, boolean writeTime){
+	public  void basicDNABlastForMatches(int blastOption, String sequenceName, String sequence, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeTime){
 		switch (blastOption) {
 		case Blaster.BLAST: 
-			blastForMatches("blastn", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("blastn", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, wordSize,blastResponse, writeTime);
 			break;
 		case Blaster.BLASTX: 
-			blastForMatches("blastx", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("blastx", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, wordSize,blastResponse, writeTime);
 			break;
 		case Blaster.TBLASTX: 
-			blastForMatches("tblastx", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("tblastx", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, wordSize,blastResponse, writeTime);
 			break;
 		default: 
-			blastForMatches("blastn", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, blastResponse, writeTime);
+			blastForMatches("blastn", sequenceName, sequence, true, numHits, maxTime, eValueCutoff, wordSize,blastResponse, writeTime);
 			break;
 		}
 	}

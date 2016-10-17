@@ -187,7 +187,7 @@ public class NCBIUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static String getBlastPutQueryURL(String blastType, boolean isNucleotides, String sequenceName, StringBuffer sequence,  int maxHits,  StringBuffer report){
+	public static String getBlastPutQueryURL(String blastType, boolean isNucleotides, String sequenceName, StringBuffer sequence,  int maxHits,  double eValueCutoff, int wordSize, StringBuffer report){
 		if (sequence==null)
 			return null;
 
@@ -204,6 +204,10 @@ public class NCBIUtil {
 				url+="Nucleotides";
 			else
 				url+="Protein";
+			if (wordSize>0)
+				url += "&WORD_SIZE=" + wordSize;
+			if (eValueCutoff >= 0.0)
+				url += "&EXPECT=" + eValueCutoff;
 			url += "&HITLIST_SIZE="+ maxHits + "&CMD=Put&QUERY=";
 			return url+seq;
 		}
@@ -264,16 +268,34 @@ public class NCBIUtil {
 		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?" + query);
 	}
 	/*.................................................................................................................*/
-	public static URL getFetchSequenceAddress(String uid, boolean isNucleotides)
+	public static URL getFetchSequenceAddress(String uid, String fileFormat, String retMode, boolean isNucleotides)
 	throws MalformedURLException {
+		String format = "fasta";
+		if (!StringUtil.blank(fileFormat))
+			format = fileFormat;
+		String retM = "";
+		if (!StringUtil.blank(retMode))
+			retM = "&retMode="+retMode;
+
 		String query = getMesquiteGenBankURLMarker() + "&db=" ;
 		if (isNucleotides)
 			query += "nucleotide";
 		else
 			query += "protein";
-		query += "&id="+uid+"&rettype=fasta&retmax=1";
+		
+		query += "&id="+uid+"&rettype="+format+retM+"&retmax=1";
 
 		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + query);
+	}
+	/*.................................................................................................................*/
+	public static URL getFetchSequenceAddress(String uid, String fileFormat, boolean isNucleotides)
+	throws MalformedURLException {
+		return getFetchSequenceAddress(uid,fileFormat,null,isNucleotides);
+	}
+	/*.................................................................................................................*/
+	public static URL getFetchSequenceAddress(String uid, boolean isNucleotides)
+	throws MalformedURLException {
+		return getFetchSequenceAddress(uid,"fasta", isNucleotides);
 	}
 	/*.................................................................................................................*/
 	public static URL getESearchAddress(String accessionNumber, boolean nucleotides)
@@ -283,7 +305,7 @@ public class NCBIUtil {
 			query += "nucleotide";
 		else
 			query += "protein";
-		query+= "&term="+accessionNumber;
+		query+= "&retmode=xml&term="+accessionNumber;
 
 		return new URL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?" + query);
 	}
@@ -427,16 +449,20 @@ public class NCBIUtil {
 		return accessions;
 	}
 
-
+/** returns up to 20 GenBank IDs given a list of accession numbers.  Note that the IDs may not be listed in the same order as the accession numbers!!!*/
 	/*.................................................................................................................*/
-	public static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+	public synchronized static String[] getGenBankIDs20(String[] accessionNumbers, int startIndex, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
 		try {
 			String searchString="";
-			for (int i=0; i<accessionNumbers.length;i++) {
-				searchString+=accessionNumbers[i];
-				if (i<accessionNumbers.length-1)
-					searchString+="+OR+";
+			for (int i=0; i<maxGenBankRequest && i+startIndex<accessionNumbers.length;i++) {
+				if (StringUtil.notEmpty(accessionNumbers[i+startIndex])) {
+					searchString+=accessionNumbers[i+startIndex];
+					if (i==maxGenBankRequest-1 || i<accessionNumbers.length-1)
+						searchString+="+OR+";
+				}
 			}
+			if (StringUtil.blank(searchString))
+				return null;
 			if (writeLog && mod!=null)
 				mod.log(".");
 
@@ -467,6 +493,22 @@ public class NCBIUtil {
 			return null;
 		}
 
+	}
+	static int maxGenBankRequest = 20;
+	/*.................................................................................................................*/
+	public synchronized static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
+		if (accessionNumbers==null || accessionNumbers.length==0)
+			return null;
+		if (accessionNumbers.length<=maxGenBankRequest)
+			return getGenBankIDs20(accessionNumbers, 0,nucleotides, mod, writeLog);
+		String[] idList = new String[accessionNumbers.length];
+		for (int i=0;i<idList.length; i+=20) {
+			String[] nextList = getGenBankIDs20(accessionNumbers, i, nucleotides, mod, writeLog);
+			for (int j=0; j<20 && j<nextList.length && i+j<idList.length; j++) {
+				idList[i+j]=nextList[j];
+			}
+		}
+		return idList;
 	}
 	/*.................................................................................................................*/
 	public static String[] getGenBankAccessionFromID(String[] ID, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
@@ -555,6 +597,10 @@ public class NCBIUtil {
 	}
 	/*.................................................................................................................*/
 	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps){
+		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, addNewInternalGaps, "");
+	}
+	/*.................................................................................................................*/
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps, String appendToTaxonName){
 		if (data==null)
 			return;
 		
@@ -566,10 +612,10 @@ public class NCBIUtil {
 			insertAfterTaxon = insertAfterTaxonRequested;
 		if (data instanceof ProteinData) {
 			InterpretFastaProtein importer = new InterpretFastaProtein();
-			importer.readString(data,fastaSequences, insertAfterTaxon);
+			importer.readString(data,fastaSequences, insertAfterTaxon,appendToTaxonName);
 		} else {
 			InterpretFastaDNA importer = new InterpretFastaDNA();
-			importer.readString(data,fastaSequences, insertAfterTaxon);
+			importer.readString(data,fastaSequences, insertAfterTaxon,appendToTaxonName);
 		}
 		data.setCharNumChanging(false);
 		taxa.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));
@@ -649,9 +695,9 @@ public class NCBIUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, StringBuffer report){ 
+	public synchronized static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
 		try {
-			URL queryURL = getFetchSequenceAddress(id, isNucleotides);
+			URL queryURL = getFetchSequenceAddress(id, fileFormat, retMode, isNucleotides);
 			URLConnection connection = queryURL.openConnection();
 			InputStream in = connection.getInputStream();
 
@@ -661,7 +707,7 @@ public class NCBIUtil {
 			while ((c = in.read()) != -1) {
 				fetchBuffer.append((char) c);
 				count++;
-				if (count % 200==0 && writeLog && mod!=null)
+				if (count % 500==0 && writeLog && mod!=null)
 					mod.log(".");
 			}
 			in.close();
@@ -671,6 +717,10 @@ public class NCBIUtil {
 			return null;
 		}
 
+	}
+	/*.................................................................................................................*/
+	public static String fetchGenBankSequence(String id, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, StringBuffer report){ 
+		return fetchGenBankSequence(id,isNucleotides, mod, writeLog,"fasta", null, report);
 	}
 	/*.................................................................................................................*/
 	public static String fetchGenBankSequenceAsFASTA(String id,  boolean isNucleotides, MesquiteModule mod, boolean writeLog, StringBuffer results, StringBuffer report){ 
@@ -697,6 +747,27 @@ public class NCBIUtil {
 			// give warning
 			return null;
 		}
+
+	}
+	/*.................................................................................................................*/
+	public synchronized static String[] fetchGenBankSequenceStrings(String[] idList, boolean isNucleotides,  MesquiteModule mod, boolean writeLog, String fileFormat, String retMode, StringBuffer report){ 
+		String[] sequences = new String[idList.length];
+		for (int i=0; i<idList.length; i++) {
+			if (!StringUtil.blank(idList[i])) {
+
+				if (writeLog && mod!=null){
+					mod.log("Fetching " + idList[i] + " (" + (i+1) + " of " + idList.length+")");
+					mod.log(".");
+				}
+				String seq = fetchGenBankSequence(idList[i], isNucleotides,  mod, writeLog, fileFormat, retMode, report);
+				if (StringUtil.notEmpty(seq))
+					sequences[i]=seq;
+				else if (i==0)
+					return null;
+				mod.logln("");
+			}
+		}
+		return sequences;
 
 	}
 	/*.................................................................................................................*/
@@ -818,9 +889,9 @@ public class NCBIUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, StringBuffer blastResponse){
+	public static void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse){
 		StringBuffer report = new StringBuffer();
-		String searchString = NCBIUtil.getBlastPutQueryURL(blastType, isNucleotides, sequenceName, new StringBuffer(sequence),numHits, report);
+		String searchString = NCBIUtil.getBlastPutQueryURL(blastType, isNucleotides, sequenceName, new StringBuffer(sequence),numHits, eValueCutoff, wordSize, report);
 
 		if (!StringUtil.blank(searchString)) {
 			try {

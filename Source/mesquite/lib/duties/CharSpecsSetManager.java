@@ -15,6 +15,7 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 
@@ -58,6 +59,11 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 		return true;
 	}
 	/*.................................................................................................................*/
+	protected boolean writeLinkWithCharacterMatrixName(MesquiteFile file, CharacterData data){
+		return (file.getProject().getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data));
+	}
+	
+/*.................................................................................................................*/
  	/** A method called immediately after the project has been established.*/
  	public void projectEstablished() {
 		 CharactersManager manager = (CharactersManager)findElementManager(mesquite.lib.characters.CharacterData.class);
@@ -136,7 +142,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(modelSet.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices()>1)
+				if (writeLinkWithCharacterMatrixName(file, data))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s+= "  = "+  sT + ";" + StringUtil.lineEnding();
 			}

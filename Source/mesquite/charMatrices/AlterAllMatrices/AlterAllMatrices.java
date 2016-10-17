@@ -41,7 +41,7 @@ public class AlterAllMatrices extends FileProcessor {
 			if (alterTask == null)
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
-		else {
+		else if (!MesquiteThread.isScripting()) {
 			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Transformer of matrices");
 			if (alterTask == null)
 				return sorry(getName() + " couldn't start because no tranformer module obtained.");
@@ -60,6 +60,11 @@ public class AlterAllMatrices extends FileProcessor {
 	public int getVersionOfFirstRelease(){
 		return 300;  
 	}
+ 	public String getNameForProcessorList() {
+ 		if (alterTask != null)
+ 			return getName() + "(" + alterTask.getName() + ")";
+ 		return getName();
+   	}
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
    	 	return false;
@@ -79,7 +84,7 @@ public class AlterAllMatrices extends FileProcessor {
  		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setDataAlterer")) {
  			DataAlterer temp =  (DataAlterer)replaceEmployee(DataAlterer.class, arguments, "Data alterer", alterTask);
  			if (temp!=null) {
- 				alterTask = temp;
+				alterTask = temp;
  				return alterTask;
  			}
  
@@ -96,15 +101,20 @@ public class AlterAllMatrices extends FileProcessor {
 	/*.................................................................................................................*/
    	/** Called to alter file. */
    	public boolean processFile(MesquiteFile file){
+   		if (alterTask == null)
+   			return false;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
    			return false;
-   		boolean success = true;
+   		boolean success = false;
    		CompatibilityTest test = alterTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
-   			if (test.isCompatible(data.getStateClass(), getProject(), this))
-   				success = success && alterTask.alterData(data, null, null);
+   			if (test.isCompatible(data.getStateClass(), getProject(), this)) {
+   				success = true;
+   				logln("About to alter matrix \"" + data.getName() + "\"");
+   				alterTask.alterData(data, null, null);  // do not measure success based upon whether data were altered.
+   			}
    		}
    			
    		return success;

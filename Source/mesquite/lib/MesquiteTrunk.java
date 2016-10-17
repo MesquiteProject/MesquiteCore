@@ -15,6 +15,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.trunk.ProjectTreeWindow;
@@ -34,6 +35,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean startedAsLibrary = false;
 	//turns on checking of classes in FileElement, NexusBlock and MesquiteCommand (possibly others), to detect memory leaks
 	public static final boolean checkMemory = false;
+	public static boolean attemptingToQuit = false;
 	public static LeakFinder leakFinderObject;
 	public static String tempDirectory ="";
 	public static String[] startupArguments = null;  //ask if flag "-myFlag" is in startupArguments by StringArray.indexOf(MesquiteTrunk.startupArguments, "-myFlag")>=0
@@ -106,7 +108,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static MesquiteMenuSpec fileMenu, editMenu, charactersMenu, treesMenu, analysisMenu, windowsMenu, helpMenu, utilitiesMenu;  
 	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu;
 	/** Commands belonging to special menu items owned by the trunk of Mesquite.  */
-	public MesquiteCommand newFileCommand, openFileCommand, openURLCommand, showLicenseCommand, resetMenusCommand,currentCommandCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
+	public MesquiteCommand newFileCommand, openFileCommand,  openURLCommand, showLicenseCommand, resetMenusCommand,currentCommandCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
 	public MesquiteSubmenuSpec openExternalSMS;
 	/** True if MesquiteModule hiring and firing should be logged.*/
 	public static boolean trackActivity = false;
@@ -117,7 +119,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	protected static boolean defaultHideMesquiteWindow = false;
 	public static boolean substantivePrereleasesExist = false;
 	public static int numPrevLogs = 5;
-	
+
 	public static int  maxNumMatrixUndoTaxa = 1000;
 	public static int  maxNumMatrixUndoChars = 15000;
 
@@ -127,7 +129,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public int lastNotice = 0;  //here for phone home system
 	public int lastNoticeForMyVersion = 0;//here for phone home system
 	public int lastVersionNoticed = 0;//here for phone home system
-	
+
 	public StringBuffer jarFilesLoaded = new StringBuffer();
 
 
@@ -180,6 +182,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Placed here so that MesquiteModules are able to request that the trunk module of Mesquite
 	open a new file */
 	public abstract MesquiteProject newProject(String pathname, int code, boolean actAsScriptingRegardless);
+	
+	
+	/*.................................................................................................................*/
+	public abstract MesquiteProject openOrImportFileHandler(String path, String completeArguments, Class importerSubclass);
 	/*.................................................................................................................*/
 	/** make a blank projects */
 	public static MesquiteProject makeBlankProject(){
@@ -256,51 +262,77 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean isJavaVersionLessThan(double queryVersion){
 		return getJavaVersionAsDouble() < queryVersion;
 	}
+	
+	/*.................................................................................................................*/
+	public static int getOSXVersion() {
+	    String osVersion = System.getProperty("os.version");
+	    String[] fragments = osVersion.split("\\.");
+
+	    // sanity check the "10." part of the version
+	    if (!fragments[0].equals("10")) return -1;
+	    if (fragments.length < 2) return -1;
+
+	    try {
+	        int minorVers = Integer.parseInt(fragments[1]);
+	        return minorVers;
+	    } catch (NumberFormatException e) {
+	    }
+	    return -1;
+	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXPanther(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.3")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3);
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXPanther33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.3")>=0) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3) && mrj.startsWith("3.3");
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXAfterJaguarRunning33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.0")<0 && System.getProperty("os.version").indexOf("10.1")<0 && System.getProperty("os.version").indexOf("10.2")<0) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=3) && mrj.startsWith("3.3");
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforePanther(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.0")>=0 || System.getProperty("os.version").indexOf("10.1")>=0 || System.getProperty("os.version").indexOf("10.2")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforeSnowLeopard(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.0")>=0 || System.getProperty("os.version").indexOf("10.1")>=0 || System.getProperty("os.version").indexOf("10.2")>=0|| System.getProperty("os.version").indexOf("10.3")>=0 || System.getProperty("os.version").indexOf("10.4")>=0 || System.getProperty("os.version").indexOf("10.5")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXLeopard(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.5")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==5);
+	} 	
+	/*.................................................................................................................*/
+	public static boolean isMacOSXYosemite(){
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==10);
+	} 	
+	/*.................................................................................................................*/
+	public static boolean isMacOSXYosemiteOrLater(){
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=10);
+//		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.10")>=0 || System.getProperty("os.version").indexOf("10.11")>=0 || System.getProperty("os.version").indexOf("10.12")>=0|| System.getProperty("os.version").indexOf("10.13")>=0);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXJaguar(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.2")>=0) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==2) && mrj.startsWith("3.3");
 	}
 	public static boolean isLinux(){
 		return System.getProperty("os.name").indexOf("Linux")>=0 || System.getProperty("os.name").indexOf("linux")>=0 || System.getProperty("os.name").indexOf("LINUX")>=0;
@@ -383,20 +415,27 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Updates the  menu items to ensure that they are enabled or disabled as appropriate.  */
 	public final static void resetMenuItemEnabling(){
 		try {
-		Enumeration e = mesquiteTrunk.windowVector.elements();
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			MesquiteWindow mw = (MesquiteWindow)obj;
-			MenuBar mbar = mw.getMenuBar();
-			if (mbar!=null) {
-				int numMenus = mbar.getMenuCount();
-				for (int imenu = 0; imenu<numMenus; imenu++) {
-					Menu menu = mbar.getMenu(imenu);
-					resetEnabling(menu);
+			Enumeration e = mesquiteTrunk.windowVector.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				MesquiteWindow mw = (MesquiteWindow)obj;
+				MenuBar mbar = mw.getMenuBar();
+				if (mbar!=null) {
+					int numMenus = mbar.getMenuCount();
+					for (int imenu = 0; imenu<numMenus; imenu++) {
+						Menu menu = mbar.getMenu(imenu);
+						resetEnabling(menu);
+					}
+				}
+				Vector v = mw.getOwnerModule().embeddedMenusVector;
+				if (v != null){
+					for (int i = 0; i< v.size(); i++){
+						Menu menu = (Menu)v.elementAt(i);
+
+						resetEnabling(menu);
+					}
 				}
 			}
-
-		}
 		}
 		catch (Exception e){
 		}
@@ -438,22 +477,31 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		if (resetCheckSuppressed)
 			return;
 		try {
-		Enumeration e = mesquiteTrunk.windowVector.elements();
-		while (e.hasMoreElements()) {
-			Object obj = e.nextElement();
-			MesquiteWindow mw = (MesquiteWindow)obj;
-			MenuBar mbar = mw.getMenuBar();
-			if (mbar!=null) {
-				int numMenus = mbar.getMenuCount();
-				for (int imenu = 0; imenu<numMenus; imenu++) {
-					Menu menu = mbar.getMenu(imenu);
-					resetChecks(menu);
+			Enumeration e = mesquiteTrunk.windowVector.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				MesquiteWindow mw = (MesquiteWindow)obj;
+				MenuBar mbar = mw.getMenuBar();
+				if (mbar!=null) {
+					int numMenus = mbar.getMenuCount();
+					for (int imenu = 0; imenu<numMenus; imenu++) {
+						Menu menu = mbar.getMenu(imenu);
+						resetChecks(menu);
+					}
 				}
-			}
-			
+				if (mw.getOwnerModule() != null){
+					Vector v = mw.getOwnerModule().embeddedMenusVector;
+					if (v != null){
+						for (int i = 0; i< v.size(); i++){
+							Menu menu = (Menu)v.elementAt(i);
+							resetChecks(menu);
+						}
+					}
+				}
 
-		}
-		resetNeededForCheckMenuItems = false;
+
+			}
+			resetNeededForCheckMenuItems = false;
 		}
 		catch (Exception e){
 		}
@@ -465,7 +513,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 
 	/*.................................................................................................................*/
-	private static void resetChecks(Menu menu) {
+	public static void resetChecks(Menu menu) {
 		int numItems = menu.getItemCount();
 		for (int i = 0; i<numItems; i++) {
 			MenuItem mi = menu.getItem(i);
@@ -477,6 +525,38 @@ public abstract class MesquiteTrunk extends MesquiteModule
 				resetChecks((Menu)mi);
 			else if (mi instanceof MesquiteCheckMenuItem) {
 				((MesquiteCheckMenuItem)mi).resetCheck();
+			}
+		}
+	}
+	/*.................................................................................................................*/
+	private static void resetChecks(Menu menu, MesquiteMenuSpec menuSpec) {
+		int numItems = menu.getItemCount();
+		for (int i = 0; i<numItems; i++) {
+			MenuItem mi = menu.getItem(i);
+			if (mi instanceof MesquiteSubmenu && menuSpec == ((MesquiteSubmenu)mi).getSpecification()) {
+				((MesquiteSubmenu)mi).resetCheck();
+				resetChecks((Menu)mi);
+			}
+			else if (mi instanceof Menu)
+				resetChecks((Menu)mi, menuSpec);
+			else if (mi instanceof MesquiteCheckMenuItem && menu instanceof MesquiteSubmenu && menuSpec == ((MesquiteSubmenu)menu).getSpecification()) {
+				((MesquiteCheckMenuItem)mi).resetCheck();
+			}
+		}
+	}
+	/*.................................................................................................................*/
+	public static void resetChecks(MesquiteMenuSpec menuSpec) {
+		Enumeration e = mesquiteTrunk.windowVector.elements();
+		while (e.hasMoreElements()) {
+			Object obj = e.nextElement();
+			MesquiteWindow mw = (MesquiteWindow)obj;
+			MenuBar mbar = mw.getMenuBar();
+			if (mbar!=null) {
+				int numMenus = mbar.getMenuCount();
+				for (int imenu = 0; imenu<numMenus; imenu++) {
+					Menu menu = mbar.getMenu(imenu);
+					resetChecks(menu, menuSpec);
+				}
 			}
 		}
 	}

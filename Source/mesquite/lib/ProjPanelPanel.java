@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.List;
 
 import mesquite.lib.duties.*;
+import mesquite.minimal.BasicFileCoordinator.ProjectWindow;
 
 /* ======================================================================== */
 /**An interface for a set of trees or a tree source.*/
@@ -36,11 +37,14 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 	protected Vector subPanels = new Vector();
 	protected MesquiteWindow w = null;
 	MesquiteModule owner;
+	ProjectWindow projectWindow;
 
 	public ProjPanelPanel(FileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, String name, MesquiteModule owner){
 		super(container, name);
 		this.owner = owner;
+		
 		this.w = w;
+		projectWindow = (ProjectWindow)w;
 		setOpen(false);
 		setColors(ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceBackground(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
 		
@@ -123,6 +127,27 @@ public void resetTitle(){
 	}
 	public String getNotes(){
 		return null;
+	}
+	public String getFootnote(){
+		return null;
+	}
+	public String getFootnoteHeading(){
+		return null;
+	}
+		
+	public void cursorEnter(){
+		String text = getFootnote();
+		String heading = getFootnoteHeading();
+		
+		hover = true;
+		repaint();
+		projectWindow.setFootnote(heading, text);
+	}
+
+	public void cursorExit(){
+		hover = false;
+		repaint();
+		projectWindow.setFootnote(null,null);
 	}
 	public boolean upToDate(){
 		return true;
@@ -376,6 +401,18 @@ public void resetTitle(){
 			popup.add(mItem);
 		}
 		add(popup);
+	}
+	public void mouseEntered(int modifiers, int x, int y, MesquiteTool tool) {
+		super.mouseEntered(modifiers, x, y, tool);
+		cursorEnter();
+	}
+	public void mouseMoved(int modifiers, int x, int y, MesquiteTool tool) {
+		super.mouseMoved(modifiers, x, y, tool);
+		cursorEnter();
+	}
+	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
+		super.mouseExited(modifiers, x, y, tool);
+		cursorExit();
 	}
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		if (!MesquiteEvent.rightClick(modifiers) && y<= MINHEIGHT) {

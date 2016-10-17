@@ -38,16 +38,18 @@ public class MesquiteFileUtil {
 	public static final int BESIDE_HOME_FILE = 1;
 	public static final int ASK_FOR_LOCATION = 2;
 	/*.................................................................................................................*/
-	public static String createDirectoryForFiles(MesquiteModule module, int location, String name, String suffix) {
+	public static String createDirectoryForFiles(MesquiteModule module, int location, String name, String suffix, boolean createUniqueDatedName) {
 		MesquiteBoolean directoryCreated = new MesquiteBoolean(false);
 		String rootDir = null;
 		if (location == IN_SUPPORT_DIR)
 			rootDir = module.createEmptySupportDirectory(directoryCreated) + MesquiteFile.fileSeparator;  //replace this with current directory of file
 		else if (location == BESIDE_HOME_FILE) {
 			String dir = module.getProject().getHomeFile().getDirectoryName();
-
-			String path = dir + name + "-" + StringUtil.getDateDayOnly() + suffix;
-			path = MesquiteFile.getUniqueNumberedPath(path);
+			String path = dir + name;
+			if (createUniqueDatedName) {
+				path+= "-" + StringUtil.getDateDayOnly() + suffix;
+				path = MesquiteFile.getUniqueNumberedPath(path);
+			}
 			File f = new File(path);
 			boolean b = f.mkdir();
 			directoryCreated.setValue(b);
@@ -63,6 +65,10 @@ public class MesquiteFileUtil {
 				rootDir += MesquiteFile.fileSeparator;
 		}
 		return rootDir;
+	}
+	/*.................................................................................................................*/
+	public static String createDirectoryForFiles(MesquiteModule module, int location, String name, String suffix) {
+		return createDirectoryForFiles( module,  location,  name,  suffix, true);
 	}
 
 

@@ -16,6 +16,7 @@ package mesquite.charMatrices.StoredMatrices;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -166,14 +167,18 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				
 			}
 			data = null;
+			dataName.setReferentID(null);
 			dataName.setValue("No matrix is currently in use");
 			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  
 				return;
 			
-			discreetAlert("A character data matrix in use (for " + getEmployer().getName() + ") has been deleted.  Another matrix will be sought.");  
+			MesquiteModule.showLogWindow(true);
+
+			MesquiteMessage.warnUser("A character data matrix in use (" + whatIsMyPurpose() + ") has been deleted.  Another matrix will be sought.");  
 			if (dataClass!=null) {
 				if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
-					alert("No compatible character matrices were found, and so Stored Matrices cannot be used.");
+					MesquiteModule.showLogWindow(true);
+					MesquiteMessage.warnUser("No compatible character matrices were found " + whatIsMyPurpose() + ", and so Stored Matrices cannot be used.");
 					iQuit(false);
 					return;
 				}
@@ -183,11 +188,13 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				data = getProject().getCharacterMatrixVisible(taxa, 0);
 			else data = null;
 			if (data==null){
-				alert("No character matrices found, and so Stored Matrices cannot be used.");
+				MesquiteModule.showLogWindow(true);
+				MesquiteMessage.warnUser("No character matrices found " + whatIsMyPurpose() + ", and so Stored Matrices cannot be used.");
 				iQuit(false);
 				return;
 			}
 			data.addListener(this);
+			dataName.setReferentID(Long.toString(data.getID()));
 			dataName.setValue(data.getName());
 			
 			parametersChanged();
@@ -253,6 +260,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 		if (proposed != null && proposed.getTaxa() == taxa){ //new matrix being proposed
 			if (proposed == data) 
 				return;
+			dataName.setReferentID(Long.toString(proposed.getID()));
 			dataName.setValue(proposed.getName());
 			if (data !=null)
 				data.removeListener(this);

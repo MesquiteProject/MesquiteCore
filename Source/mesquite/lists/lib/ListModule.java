@@ -16,6 +16,7 @@ package mesquite.lists.lib;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
@@ -52,6 +53,36 @@ public abstract class ListModule extends ManagerAssistant  {
 	public abstract Object getMainObject();
 	public abstract String getItemTypeName();
 	public abstract String getItemTypeNamePlural();
+	
+	public String getTextContentsPreface(){
+		String text = "";
+		text += "Window showing " + getItemTypeNamePlural();
+		Object obj = getMainObject();
+		if (obj != null && obj instanceof Listable){
+			text += " of ";
+			if (obj instanceof FileElement)
+				text += ((FileElement)obj).getTypeName() + " \'";
+			text += ((Listable)obj).getName();
+			if (obj instanceof FileElement)
+				text += "\'";
+		}
+		if (obj instanceof Annotatable){
+			Annotatable an = (Annotatable)obj;
+			String s = an.getAnnotation();
+			if (!StringUtil.blank(s))
+				text += "\n\n----------------\nNotes:\n" + s + "\n---------------\n\n";
+		}
+		return text;
+	}
+	public void fileReadIn(MesquiteFile file){
+		ListWindow window = ((ListWindow)getModuleWindow());
+		if (window != null)
+			window.requestFocus();
+	}
+	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return false;
@@ -63,6 +94,16 @@ public abstract class ListModule extends ManagerAssistant  {
 
 	public boolean resetMenusOnNameChange(){
 		return false;
+	}
+	public Vector getAssistants() {
+		Vector v = new Vector();
+		for (int i=0; i< getNumberOfEmployees(); i++) {
+			Object obj =  getEmployeeVector().elementAt(i);
+			if (obj instanceof ListAssistant) {
+				v.addElement(obj);
+			}
+		}	
+  	 	return v;
 	}
 
 	public void forceRecalculations() {
@@ -118,11 +159,16 @@ public abstract class ListModule extends ManagerAssistant  {
 		return false;
 	}
 	*/
+	public void aboutToDeleteRow(int row){  //called just before superclass deletes rows, in case specific module needs to prepare for deletion
+	}
+	public void aboutToDeleteRows(int first, int last, boolean notify){
+		for (int i=last; i>=first; i--){
+			aboutToDeleteRow(i);
+		}
+	}
 	public boolean deleteRows(int first, int last, boolean notify){
 		boolean touched = false;
 		for (int i=last; i>=first; i--){
-
-		//for (int i=first; i< last; i++){
 			if (deleteRow(i, notify))
 				touched = true;
 		}

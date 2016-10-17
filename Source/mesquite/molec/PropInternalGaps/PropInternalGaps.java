@@ -66,7 +66,7 @@ public class PropInternalGaps extends NumberForCharacter  implements NumForCharT
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
-	private boolean isInternalInapplicable(CharacterData data, int ic, int it){
+	private boolean isInternalInapplicable(CharacterData data, int ic, int it){  //NOTE: there is now a method for this in CategoricalData
 		if (ic == 0 || ic == data.getNumChars()-1)
 			return false;
 		if (ic>data.getNumChars()/2){

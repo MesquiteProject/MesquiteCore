@@ -277,6 +277,15 @@ class ArcTreeDrawing extends TreeDrawing  {
 				edgewidth=2;
 		}
 	}
+	public void getSingletonLocation(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue){
+		if(tree==null || xValue==null || yValue==null)
+			return;
+		if(!tree.nodeExists(N))
+			return;
+		int mother = tree.motherOfNode(N);
+		yValue.setValue(getBranchCenterY(N));
+		xValue.setValue(getBranchCenterX(N));
+	}
 
 	/*_________________________________________________*/
 	/** Draw highlight for branch node with current color of graphics context */

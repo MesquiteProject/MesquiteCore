@@ -49,10 +49,6 @@ public class SequenceInfoEditor extends MatrixInfoPanelAssistantI  {
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
-	/*.................................................................................................................*
-	public  Class getHireSubchoice(){
-		return NumberForTree.class;
-	}
 
 	/*.................................................................................................................*/
 	public MatrixInfoExtraPanel getPanel(ClosablePanelContainer container){

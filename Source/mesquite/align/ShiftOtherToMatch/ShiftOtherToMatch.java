@@ -29,7 +29,7 @@ import mesquite.align.lib.*;
 
 
 /* ======================================================================== */
-public class ShiftOtherToMatch extends CategDataAlterer {
+public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlignShift{
 	CharacterState cs1;
 	CharacterState cs2 ;
 	double matchFraction=0.75;
@@ -126,8 +126,8 @@ public String preparePreferencesForXML () {
 		if (data==null || table==null)
 			return false;
 		MesquiteInteger row = new MesquiteInteger();
-		MesquiteInteger firstColumn = new MesquiteInteger();
-		MesquiteInteger lastColumn = new MesquiteInteger();
+		MesquiteInteger firstColumn = new MesquiteInteger();  // this is the first column selected in the block
+		MesquiteInteger lastColumn = new MesquiteInteger();  // this is the last column selected
 		if (table.onlySingleRowBlockSelected(row,firstColumn, lastColumn)) {
 			if (!queryOptions(row.getValue(), data.getNumTaxa()))
 					return false;
@@ -136,8 +136,8 @@ public String preparePreferencesForXML () {
 
 			cs1 = data.getCharacterState(null, 0, 0); //to serve as persistent container
 			cs2  = data.getCharacterState(null, 0, 0);
-			MesquiteInteger matchStart = new MesquiteInteger();
-			MesquiteInteger matchEnd = new MesquiteInteger();
+			MesquiteInteger matchStart = new MesquiteInteger();  // this will receive from the matcher the start of the match in the candidate sequence
+			MesquiteInteger matchEnd = new MesquiteInteger();   // this will receive the end of the match
 			boolean match=false;
 			int totalAddedToStart = 0;
 			boolean someAdded = false;
@@ -146,7 +146,7 @@ public String preparePreferencesForXML () {
 					match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);
 					if (reverseComplementIfNecessary && !match && data instanceof DNAData) {
 						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, this, data.getTaxa(), it, it, row.getValue(), false, false, false);
-
+						match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);  // added 31 October 2015
 					}
 					if (match) {
 						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);

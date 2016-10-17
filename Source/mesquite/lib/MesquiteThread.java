@@ -69,6 +69,78 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		return getClass().getName() + " = " + super.toString();
 	}
 
+	//=====================
+	/*logger for current thread */
+	Logger logger = null;
+	public void setLogger(Logger logger){
+		this.logger = logger;
+	}
+	public Logger getLogger(){
+		return logger;
+	}
+	public static void setLoggerCurrentThread(Logger logger){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.setLogger(logger);
+		}
+	}
+	public static void loglnToThreadLogger(String s){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.loglnToLogger(s);
+		}
+	}
+	public void loglnToLogger(String s){
+		if (logger != null && !loggingSuspended)
+			logger.logln(s);
+	}
+	public static void logToThreadLogger(String s){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.logToLogger(s);
+		}
+	}
+	public void logToLogger(String s){
+		if (logger != null && !loggingSuspended)
+			logger.log(s);
+	}
+	boolean loggingSuspended;
+	public static void suspendThreadLogging(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.loggingSuspended = true;
+		}
+	}
+	public static void resumeThreadLogging(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.loggingSuspended = false;
+		}
+	}
+	
+	boolean indicatorSuppressed = false;
+	public static boolean pleaseSuppressProgressIndicatorsCurrentThread(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			return mt.indicatorSuppressed;
+		}
+		return false;
+	}
+	//request that explictly made progress indicators be suppressed
+	public static void setHintToSuppressProgressIndicatorCurrentThread(boolean s){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			mt.indicatorSuppressed = s;
+		}
+	}
+	//=====================
 	//suppression level 0: no suppression; 1: lower level notifications suppressed; 2: 
 	public static boolean setListenerSuppressionLevel(int s){
 		Thread t = Thread.currentThread();
@@ -196,6 +268,32 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		return false;
 	}
 	 */
+	/*----------------*/
+	int duringNotification = 0;
+	public static boolean isDuringNotification(){
+		Thread t = Thread.currentThread();
+		if (!(t instanceof MesquiteThread))
+			return false;
+		MesquiteThread mt = (MesquiteThread)t;
+		return mt.duringNotification >0;
+	}
+	public static void incrementDuringNotification(){
+		Thread t = Thread.currentThread();
+		if (!(t instanceof MesquiteThread))
+			return;
+		MesquiteThread mt = (MesquiteThread)t;
+		mt.duringNotification++;
+	}
+	public static void decrementDuringNotification(){
+		Thread t = Thread.currentThread();
+		if (!(t instanceof MesquiteThread))
+			return;
+		MesquiteThread mt = (MesquiteThread)t;
+		mt.duringNotification--;
+		if (mt.duringNotification < 0)
+			mt.duringNotification = 0;
+	}
+	/*----------------*/
 	public static boolean isScripting(){
 		return isScripting(false);
 	}
@@ -291,7 +389,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread c = Thread.currentThread();
 		if (c instanceof MesquiteThread){
 			MesquiteThread mt = (MesquiteThread)c;
-			mt.spontaneousIndicator = !suppress;
+			mt.setSpontaneousIndicator(!suppress);
 		}
 	}
 	//not yet used
@@ -299,7 +397,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		Thread c = Thread.currentThread();
 		if (c instanceof MesquiteThread){
 			MesquiteThread mt = (MesquiteThread)c;
-			return !mt.spontaneousIndicator;
+			return !mt.getSpontaneousIndicator();
 		}
 		return false;
 	}
@@ -364,7 +462,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		}
 	}
 
-	/* Called only for OS X jaguar, whose paint bugs with new window are worked around if resize forced*/
+	/* Used to be called only for OS X jaguar, whose paint bugs with new window are worked around if resize forced, but resurrected for El Capitan*/
 	public static void surveyNewWindows(){
 		try {
 			if (MesquiteModule.mesquiteTrunk.windowVector.size() == 0)
@@ -375,7 +473,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 					MesquiteWindow win = (MesquiteWindow)e.nextElement();
 					if (win.isVisible()){
 						win.tickled++;
-						if (win.tickled==2) {
+						if (win.tickled==1) {
 							Toolkit.getDefaultToolkit().sync();
 							win.setWindowSize(win.getWindowWidth(), win.getWindowHeight());
 						}
@@ -476,6 +574,9 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	}
 	public boolean getSpontaneousIndicator(){
 		return spontaneousIndicator;
+	}
+	public void setSpontaneousIndicator(boolean sp){
+		spontaneousIndicator = sp;
 	}
 	public static boolean setProgressIndicatorCurrentThread(ProgressIndicator progressIndicator){
 		Thread thread = Thread.currentThread();

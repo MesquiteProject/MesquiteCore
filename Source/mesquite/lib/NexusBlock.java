@@ -41,8 +41,7 @@ public abstract class NexusBlock implements Listable, Identifiable {
 	private String defaultCharacters = null;
 
 	long id;
-	public static boolean suppressTITLE = false;
-	public static boolean suppressLINK = false;
+	public static boolean suppressTITLESANDLINKS = false;
 	static {
 		if (MesquiteTrunk.checkMemory) {
 			classesCreated = new Vector();
@@ -81,7 +80,6 @@ public abstract class NexusBlock implements Listable, Identifiable {
 	public static void equalizeOrdering(ListableVector v, ListableVector nexusBlocks){ 
 		// start at back of v
 		// put each one in place in nexus blocks just after last nexusBlock it must be after
-		
 		for (int i = v.size()-1; i>=0; i--){
 			Object e = v.elementAt(i);
 			int blockNum = findCorrespondingBlock(nexusBlocks, (FileElement)e);

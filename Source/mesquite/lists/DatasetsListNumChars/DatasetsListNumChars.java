@@ -31,7 +31,6 @@ public class DatasetsListNumChars extends DataSetsListAssistant implements Mesqu
 	public String getExplanation() {
 		return "Indicates taxa of data matrix." ;
 	}
-	ListableVector datas=null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		/* hire employees here */

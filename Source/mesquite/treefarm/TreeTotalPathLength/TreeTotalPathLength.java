@@ -52,6 +52,8 @@ public class TreeTotalPathLength extends NumberForTree {
     	 	if (result==null)
     	 		return;
     	clearResultAndLastResult(result);
+    	if (tree == null)
+    		return;
 		if (tree.hasBranchLengths())
 			result.setValue(totalPath(tree, tree.getRoot()));
 		else

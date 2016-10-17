@@ -60,7 +60,8 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 		addMenuItem("Trade Taxon Names with Alternatives", makeCommand("trade",  this));
 		addMenuItem("Replace Alternatives by Taxon Names", makeCommand("copyToAlt",  this));
 		addMenuItem("Replace Taxon Names by Alternatives", makeCommand("replaceByAlt",  this));
-		addMenuItem("Replace Alternatives by List in File...", makeCommand("replaceByFileList",  this));
+	//	addMenuItem("Replace Alternatives by List in File...", makeCommand("replaceByFileList",  this));
+		addMenuItem("Replace Alternatives using Translation Table in File...", makeCommand("replaceUsingTranslationTable",  this));
 		addMenuItem("-", null);
 		addMenuItem("Store Alternatives...", makeCommand("storeCurrent",  this));
 		addMenuItem("Replace Stored Alternatives...", makeCommand("replaceWithCurrent",  this));
@@ -71,6 +72,71 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 		
 	}
 	
+	/*.................................................................................................................*/
+	private Object getAlternativesFromTranslationFile (Taxa taxa) {
+
+		MesquiteString directoryName = new MesquiteString("");
+		MesquiteString fileName = new MesquiteString("");
+		String filePath = MesquiteFile.openFileDialog("Choose file containing list of taxa.",  directoryName,  fileName);
+		if (filePath != null) {
+			MesquiteFile file =MesquiteFile.open(true, filePath);
+			if (file!=null && (file.isLocal() && file.existingLength()<=0)) { 
+				alert("Error: File is empty.");
+				return null;
+			}
+
+			if (file.openReading()) {
+				TaxaStringsSet part = (TaxaStringsSet)taxa.getCurrentSpecsSet(TaxaStringsSet.class);
+				if (part == null){
+					part= new TaxaStringsSet("Alternative Naming", taxa.getNumTaxa(), taxa);
+					part.setTypeName("Alternative Names");
+					part.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaStringsSet.class));
+					taxa.setCurrentSpecsSet(part, TaxaStringsSet.class);
+				}
+				if (part != null) {
+					String line="  ";
+					Parser parser = new Parser();
+					parser.addToDefaultPunctuationString(",");
+					int it = 0;
+					StringBuffer notMatched = new StringBuffer(0);
+					StringBuffer matched = new StringBuffer(0);
+					while (line!=null) {
+						line = file.readLine();
+						if (StringUtil.notEmpty(line)){
+							parser.setString(line);
+							String name = parser.getFirstItem(line, "\t");
+							if (StringUtil.notEmpty(name)) {
+								it = taxa.whichTaxonNumber(name, false, false);
+								if (it>=0 && it<taxa.getNumTaxa()) {
+									name = parser.getItem(line, "\t",2);
+									if (StringUtil.notEmpty(name)) {
+										part.setProperty(name, it);
+										matched.append("\t"+name+ "\n");
+								//		taxa.setSelected(it, true);
+									} else
+										notMatched.append("\t"+name+ "\n");
+										
+								} else {
+									notMatched.append("\t"+name+ "\n");
+								}
+							}
+						}
+					}
+					if (notMatched.length()>0){
+						logln("\nNames not matched\n");
+						logln(notMatched.toString());
+					}
+					if (matched.length()>0){
+						logln("\nNames matched\n");
+						logln(matched.toString());
+					}
+					return part;
+				}
+			}
+		}
+		return null;
+
+	}
 	/*.................................................................................................................*/
 	private Object getAlternativesFromFile (int numTaxa) {
 
@@ -156,6 +222,13 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 		else if (checker.compare(this.getClass(), "Replaces the alternatives with those in a list read in from a file", null, commandName, "replaceByFileList")) {
 			if (taxa !=null && !MesquiteThread.isScripting()) {
 					Object obj = getAlternativesFromFile(taxa.getNumTaxa());
+					if (obj!=null)
+						taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???			
+				}
+		}
+		else if (checker.compare(this.getClass(), "Replaces the alternatives with those using a translation table read in from a file", null, commandName, "replaceUsingTranslationTable")) {
+			if (taxa !=null && !MesquiteThread.isScripting()) {
+					Object obj = getAlternativesFromTranslationFile(taxa);
 					if (obj!=null)
 						taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???			
 				}

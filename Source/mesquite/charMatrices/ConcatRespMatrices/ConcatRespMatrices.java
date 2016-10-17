@@ -38,22 +38,22 @@ public class ConcatRespMatrices extends CharMatrixSource {
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		int sad = CharacterSource.storedAsDefault;
-		CharacterSource.storedAsDefault = -1;
+		boolean sad = CharacterSource.storedAsDefault.getValue();
+		CharacterSource.storedAsDefault.setValue(false);
 		if (condition!=null) 
 			dataTask1 = (MatrixSourceCoordObed)hireCompatibleEmployee( MatrixSourceCoordObed.class, condition, "First source of matrices for concatenation");
 		else 
 			dataTask1 = (MatrixSourceCoordObed)hireEmployee( MatrixSourceCoordObed.class, "First source of matrices for concatenation");
-		CharacterSource.storedAsDefault = sad;
+		CharacterSource.storedAsDefault.setValue(sad);
 		if (dataTask1 == null) {
 			return sorry(getName() + " can't be started because no first source of matrices was obtained");
 		}
-		CharacterSource.storedAsDefault = -1;
+		CharacterSource.storedAsDefault.setValue(false);
 		if (condition!=null) 
 			dataTask2 = (MatrixSourceCoordObed)hireCompatibleEmployee( MatrixSourceCoordObed.class, condition, "Second source of matrices for concatenation");
 		else 
 			dataTask2 = (MatrixSourceCoordObed)hireEmployee( MatrixSourceCoordObed.class, "Second source of matrices for concatenation");
-		CharacterSource.storedAsDefault = sad;
+		CharacterSource.storedAsDefault.setValue(sad);
 		if (dataTask2 == null) {
 			return sorry(getName() + " can't be started because no second source of matrices was obtained");
 		}
@@ -126,6 +126,14 @@ public class ConcatRespMatrices extends CharMatrixSource {
 		currentMatrix = im;
 		MCharactersDistribution matrix1 = dataTask1.getMatrix(taxa, im);
 		MCharactersDistribution matrix2 = dataTask2.getMatrix(taxa, im);
+		if (matrix1 == null || matrix2 == null){
+			discreetAlert("Sorry, can't concatenate because one or the other matrix contains no information");
+			return null;
+		}
+		if (matrix1.getStateClass() == null || matrix2.getStateClass() == null){
+			discreetAlert("Sorry, can't concatenate because one or the other matrix is not of a recognized type");
+			return null;
+		}
 		if (!matrix1.getStateClass().isAssignableFrom(matrix2.getStateClass())){
 			discreetAlert("Sorry, can't concatenate because matrices are of different types");
 			return null;

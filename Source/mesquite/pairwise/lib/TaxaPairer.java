@@ -29,5 +29,9 @@ public abstract class TaxaPairer   {
  	public abstract int getCurrentPairingNumber();
  	public abstract void init();
  	/*  */
+ 	protected String warningMessage = "";
+ 	public String getWarningMessage(){
+ 		return warningMessage;
+ 	}
 }
 

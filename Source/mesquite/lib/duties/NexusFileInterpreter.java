@@ -23,7 +23,7 @@ to read different data file formats.  Example module: "Interpret NEXUS files" (c
 see BasicFileCoordinator.*/
 
 /** a subclass for reading nexus files*/
-public abstract class NexusFileInterpreter extends FileInterpreter  {
+public abstract class NexusFileInterpreter extends FileInterpreterI  {  
 	/** returns whether module can read given file.*/
 	public abstract boolean canReadFile(MesquiteFile f);
 	/** writes the given MesquiteFile belonging to the MesquiteProject.*/

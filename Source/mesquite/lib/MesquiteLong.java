@@ -395,6 +395,22 @@ public class MesquiteLong implements Listable {
 		pos.setValue(0);
 		return fromString(s,pos);
 	}
+	/** Returns whether a string can be interpreted as a long. */
+	public static boolean interpretableAsLong(String s,  MesquiteInteger pos) {
+		int oldPos = pos.getValue();
+		boolean interpretable = fromString(s, pos)!= impossible;
+		pos.setValue(oldPos);
+		return interpretable;
+	}	
+	/** Returns whether a string can be interpreted as a long. */
+	public static boolean interpretableAsLong(String s,  MesquiteInteger pos, int posToSet) {
+		int oldPos = pos.getValue();
+		if (posToSet >=0)
+			pos.setValue(posToSet);
+		boolean interpretable = fromString(s, pos)!= impossible;
+		pos.setValue(oldPos);
+		return interpretable;
+	}	
 	/** Presents dialog querying user for an longs, with no check for minimum and maximum */
 	public static long queryLong(MesquiteWindow parent, String title, String message, long current) {
 		MesquiteLong io = new MesquiteLong(current);

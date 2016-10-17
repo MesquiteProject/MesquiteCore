@@ -565,6 +565,11 @@ public class CategoricalState extends CharacterState{
 			return (~(1L<<uncertainBit))&s;
 	}
 	/*..........................................CategoricalState.....................................*/
+	/**sets or clears the uncertainty flag */
+	public void setUncertainty(boolean uncertain) {
+		set = setUncertainty(set, uncertain);
+	}
+	/*..........................................CategoricalState.....................................*/
 	/**return whether uncertainty flag is set in state set s */
 	public static boolean isUncertain(long s) {
 		return (((1L<<uncertainBit)&s)!=0L);

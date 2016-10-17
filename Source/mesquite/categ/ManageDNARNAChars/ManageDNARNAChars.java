@@ -16,6 +16,7 @@ package mesquite.categ.ManageDNARNAChars;
 import java.util.*;
 import java.awt.*;
 import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -64,6 +65,8 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		else
 			proj = getProject();
 		CategoricalData data= null;
+		if (stringPos == null)
+			stringPos = new MesquiteInteger(0);
 
 		//@@@@@@@@@@@@@@@@@@@@
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
@@ -112,7 +115,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		data.interleaved = false;   //reset default in case this is fused
 		//@@@@@@@@@@@@@@@@@@@@
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
-		while (!tok.equals(";")) {
+		while (tok != null && !tok.equals(";")) {
 			if (tok.equalsIgnoreCase("TRANSPOSE")) {
 				alert("Sorry, Transposed matrices of DNA characters can't yet be read");
 				return null;
@@ -250,21 +253,21 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append("BEGIN DATA");
 		else
 			blocks.append("BEGIN CHARACTERS");
+		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
+			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
+		}
 		blocks.append(endLine);
-		if ((file==null || !file.useSimplifiedNexus) && data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || !NexusBlock.suppressTITLE)){
+		if ((getProject().getNumberCharMatrices()>1) && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)){
+//			if (data.getName()!=null &&  (getProject().getNumberCharMatrices()>1 || ((file==null || (!file.useSimplifiedNexus &&  !file.useConservativeNexus)) && !NexusBlock.suppressTITLE))){
 			blocks.append("\tTITLE  ");
 			blocks.append( StringUtil.tokenize(data.getName()));
 			blocks.append(endLine);
 		}
 		//if (data.getTaxa().getName()!=null  && getProject().getNumberTaxas(cB.getFile())>1){ //before 13 Dec 01 had been this
-		if ((file==null || !file.useSimplifiedNexus) && data.getTaxa().getName()!=null  && getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
+		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data.getTaxa())&& getProject().getNumberTaxas()>1){ //��� should have an isUntitled method??
 			blocks.append("\tLINK TAXA = ");
 			blocks.append(StringUtil.tokenize(data.getTaxa().getName()));
 			blocks.append(endLine);
-		}
-		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
-			blocks.append("[!" + data.getAnnotation() + "]");
-			blocks.append(StringUtil.lineEnding());
 		}
 		blocks.append("\tDIMENSIONS ");
 		if (file!=null && file.useSimplifiedNexus && file.useDataBlocks){
@@ -309,7 +312,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		writeNexusMatrix(data, cB, blocks, file, progIndicator);
 
 		blocks.append( StringUtil.lineEnding());
-		if (!file.useSimplifiedNexus){
+		if (!file.useSimplifiedNexus && !file.useConservativeNexus){
 			String idsCommand = null;
 			if (!StringUtil.blank(data.getUniqueID()))
 				idsCommand = "BLOCKID " + data.getUniqueID() + ";" + StringUtil.lineEnding();
@@ -318,7 +321,8 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		}
 		if (cB !=null)
 			blocks.append(cB.getUnrecognizedCommands() + StringUtil.lineEnding());
-		blocks.append("END;" + StringUtil.lineEnding());
+		blocks.append("END");
+		blocks.append(";" + StringUtil.lineEnding());
 		//	MesquiteModule.mesquiteTrunk.mesquiteMessage("DNA matrix composed", 1, 0);
 
 		file.writeLine( blocks.toString());

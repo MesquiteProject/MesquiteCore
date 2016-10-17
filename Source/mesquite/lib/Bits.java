@@ -699,6 +699,18 @@ public class Bits implements Listable{
 		d[second] = temp;
 	}
 	/*...........................................................*/
+	public static void swapCell(boolean[][] d, int first, int second, int k) {
+		if (k<0)
+			return;
+		if (first<0 || d==null || first>=d.length || second<0 || second>=d.length) 
+			return;
+		if (d[first] == null || k>= d[first].length || d[second] == null || k>= d[second].length)
+			return;
+		boolean temp = d[first][k];
+		d[first][k]=d[second][k];
+		d[second][k] = temp;
+	}
+	/*...........................................................*/
 	public static void moveParts(short[] d, int starting, int num, int justAfter) {   //DRM new 7 March 08
 		if (num<=0 || d==null || starting>=d.length || (justAfter>=starting && justAfter<=starting+num-1)) //starting???
 			return;

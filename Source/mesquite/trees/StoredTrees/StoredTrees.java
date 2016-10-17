@@ -77,7 +77,16 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public boolean isPrerelease(){
 		return false;
 	}
-	
+	/*.................................................................................................................*/
+	 /**Returns info to show in info panel etc. for tree block or source of trees.*/
+	public String getTreeSourceInfo(Taxa taxa){
+		if (currentTreeBlock == null)
+			return null;
+		String s = getName();
+		s+="\n" + currentTreeBlock.getAnnotation();
+		return s;
+	}
+
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
@@ -89,6 +98,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			temp.addLine("setTreeBlockInt " + currentListNumber); 
 		else
 			temp.addLine("setTreeBlock " + TreeVector.toExternal(currentListNumber)); 
+		if (currentTreeBlock != null){  // this is done as a second command, so that files are written to be readable by old Mesquite, by having old numbering as back-up
+			temp.addLine("setTreeBlockID " + StringUtil.tokenize(currentTreeBlock.getUniqueID())); 
+		}
 		temp.addLine("toggleUseWeights " + useWeights.toOffOnString());
 		return temp;
 	}
@@ -102,12 +114,35 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					return null;
 				if (lastUsedTreeBlock !=null) 
 					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
 				lastUsedTreeBlock = currentTreeBlock;
 				currentListNumber = whichList;
 				currentTreeBlockID = currentTreeBlock.getID();
 				currentSourceFile = currentTreeBlock.getFile();
+				MesquiteTrunk.resetChecks(listSubmenu);
+				parametersChanged();
+				MesquiteTrunk.checkForResetCheckMenuItems();
+				return currentTreeBlock;
+			}
+		}
+		else if (checker.compare(this.getClass(),  "Sets which block of trees to use", "[block unique ID]", commandName, "setTreeBlockID")) {
+			String uniqueID = parser.getFirstToken(arguments);
+			if (!StringUtil.blank(uniqueID)) {
+				currentTreeBlock = manager.getTreeBlockByUniqueID(uniqueID);
+				if (currentTreeBlock ==null)
+					return null;
+				if (lastUsedTreeBlock !=null) 
+					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
+				blockName.setValue(currentTreeBlock.getName());
+				currentTreeBlock.addListener(this);
+				currentTreeBlockID = currentTreeBlock.getID();
+				currentSourceFile = currentTreeBlock.getFile();
+				lastUsedTreeBlock = currentTreeBlock;
+				currentListNumber = manager.getTreeBlockNumber(preferredTaxa, checker.getFile(), currentTreeBlock);
+				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
 				return currentTreeBlock;
 			}
@@ -120,12 +155,14 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					return null;
 				if (lastUsedTreeBlock !=null) 
 					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
 				currentTreeBlockID = currentTreeBlock.getID();
 				currentSourceFile = currentTreeBlock.getFile();
 				lastUsedTreeBlock = currentTreeBlock;
 				currentListNumber = whichList;
+				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
 				return currentTreeBlock;
 			}
@@ -139,23 +176,28 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				currentTreeBlock = tr;
 				if (lastUsedTreeBlock !=null) 
 					lastUsedTreeBlock.removeListener(this);
+				blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 				blockName.setValue(currentTreeBlock.getName());
 				currentTreeBlock.addListener(this);
 				currentTreeBlockID = currentTreeBlock.getID();
 				currentSourceFile = currentTreeBlock.getFile();
 				lastUsedTreeBlock = currentTreeBlock;
 				currentListNumber = whichList;
+				MesquiteTrunk.resetChecks(listSubmenu);
 				parametersChanged();
 				return currentTreeBlock;
 			}
 		}
 		else if (checker.compare(this.getClass(),  "Returns current tree block", null, commandName, "getTreeBlock")) {
 			if (currentTreeBlock == null)
-				checkTreeBlock(preferredTaxa);
+				checkTreeBlock(preferredTaxa, false);
 			return currentTreeBlock;
 		}
 		else if (checker.compare(this.getClass(),  "Sets to lax mode", null, commandName, "laxMode")) {
 			laxMode = true;
+		}
+		else if (checker.compare(this.getClass(),  "Turns off lax mode", null, commandName, "laxOff")) {
+			laxMode = false;
 		}
 		else if (checker.compare(this.getClass(), "Sets which block of taxa to use", "[block reference, number, or name]", commandName, "setTaxa")) { 
 			Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
@@ -190,7 +232,8 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (preferredTaxa != null){
 			preferredTaxa.removeListener(this);
 		}
-		managerVectorOfTreeBlocks.removeListener(this);
+		if (managerVectorOfTreeBlocks!= null)
+			managerVectorOfTreeBlocks.removeListener(this);
 
 		super.endJob();
 	}
@@ -218,14 +261,17 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 						if (index>0)
 							currentListNumber = index;
 						else if (MesquiteLong.isCombinable(currentTreeBlockID)){
-							discreetAlert( "The current tree block used by Stored Trees (for " + getEmployer().getName() + ") has apparently been deleted.  You might be asked to select another tree block, or this might force use of default trees, and also may yield error messages when rereading the file.");
+							
+						//	discreetAlert( "The current tree block used by Stored Trees (for " + getEmployer().getName() + ") has apparently been deleted.  You might be asked to select another tree block, or this might force use of default trees, and also may yield error messages when rereading the file.");
 							if (currentTreeBlock != null)
 								currentTreeBlock.removeListener(this);
 							currentTreeBlock = null;
 							lastUsedTreeBlock = null;
 							currentListNumber = MesquiteInteger.unassigned;
 							currentTreeBlockID = MesquiteLong.unassigned;
-							parametersChanged(notification);
+							MesquiteTrunk.resetChecks(listSubmenu);
+							checkTreeBlock(preferredTaxa, true);
+							parametersChanged(new Notification(MesquiteListener.BLOCK_DELETED));
 						}
 					}
 				}
@@ -234,8 +280,11 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			}
 			else if (obj instanceof Taxa){
 				boolean respond = (code==MesquiteListener.ITEMS_ADDED || code==MesquiteListener.PARTS_CHANGED || code==MesquiteListener.PARTS_ADDED || code==MesquiteListener.PARTS_DELETED || code==MesquiteListener.PARTS_MOVED);
-				if (respond)
+				if (respond){
+					if (notification != null)
+						notification.setObjectClass(Taxa.class);
 					parametersChanged(notification);
+				}
 			}
 			else {
 				if (obj instanceof TreeVector && ((TreeVector)obj).size()==0 && obj == currentTreeBlock) {
@@ -245,6 +294,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					lastUsedTreeBlock = null;
 					currentListNumber = MesquiteInteger.unassigned;
 					currentTreeBlockID = MesquiteLong.unassigned;
+					MesquiteTrunk.resetChecks(listSubmenu);
 				}
 				parametersChanged(notification);
 			}
@@ -273,10 +323,14 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			currentTreeBlock = null;
 			lastUsedTreeBlock = null;
 			currentListNumber = MesquiteInteger.unassigned;
-			if (preferredTaxa != null && preferredTaxa.isDoomed())
+			MesquiteTrunk.resetChecks(listSubmenu);
+			if (preferredTaxa != null && preferredTaxa.isDoomed()){
 				preferredTaxa = null; //don't say parameters changed since employer asked for those taxa
-			else
+			}
+			else{
+				checkTreeBlock(preferredTaxa, true);
 				parametersChanged(); 
+			}
 		}
 	}
 	/*.................................................................................................................*/
@@ -310,7 +364,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	boolean firstInit = true;
 	/*.................................................................................................................*/
 	public void initialize(Taxa taxa) {
-		checkTreeBlock(taxa);
+		checkTreeBlock(taxa, false);
 	}
 	/*.................................................................................................................*/
 	public void resetMenu(Taxa taxa){
@@ -358,7 +412,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		return -1;
 	}
 	/*.................................................................................................................*/
-	private int checkTreeBlock(Taxa taxa){
+	private int checkTreeBlock(Taxa taxa, boolean becauseOfDeletion){
 		if (taxa == null) {
 			if (!MesquiteThread.isScripting())
 				logln("Taxa null in checkTreeBlock in Stored Trees");
@@ -383,13 +437,24 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				}
 			}
 			else {
+				if (becauseOfDeletion){
+					if (!dearEmployerShouldIHandleThis(new Notification(MesquiteListener.BLOCK_DELETED))){
+						currentListNumber = 0;
+						MesquiteTrunk.resetChecks(listSubmenu);
+						return -1;
+				}
+							
+				}
 				String[] list = new String[nt];
-				for (int i=0; i< nt; i++)
-					list[i]=manager.getTreeBlock(taxa, i).getName();
+				for (int i=0; i< nt; i++){
+					TreeVector tv =manager.getTreeBlock(taxa, i);
+					list[i]=tv.getName();
+				}
 				currentListNumber = ListDialog.queryList(containerOfModule(), "Use which tree block?", "Use which tree block? \n(" + whatIsMyPurpose() + ")",MesquiteString.helpString, list, 0);
 				if (!MesquiteInteger.isCombinable(currentListNumber))
 					currentListNumber = 0;
 			}
+			MesquiteTrunk.resetChecks(listSubmenu);
 		}
 		int code = 0;
 		if (lastUsedTreeBlock == null || lastUsedTreeBlock.getTaxa() == null || !lastUsedTreeBlock.getTaxa().equals(taxa)) {
@@ -402,9 +467,11 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (currentTreeBlock != null)
 			currentTreeBlockID = currentTreeBlock.getID();
 
-		if (blockName != null && currentTreeBlock != null)
+		if (blockName != null && currentTreeBlock != null){
+		blockName.setReferentID(Long.toString(currentTreeBlock.getID()));
 			blockName.setValue(currentTreeBlock.getName());
-
+		}
+		
 		if (lastUsedTreeBlock!=currentTreeBlock) {
 			if (lastUsedTreeBlock !=null) 
 				lastUsedTreeBlock.removeListener(this);
@@ -413,8 +480,18 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		lastUsedTreeBlock = currentTreeBlock;
 		if (currentTreeBlock == null) {
-			if (getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode)
-				logln("Current tree block null in checkTreeBlock in Stored Trees, for taxa " + taxa.getName());
+			currentTreeBlock = manager.getTreeBlock(taxa, 0);
+			if (currentTreeBlock!=null)
+				currentTreeBlock.addListener(this);
+			lastUsedTreeBlock = currentTreeBlock;
+		}
+		if (currentTreeBlock == null) {
+			
+			
+			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode)
+				logln("No current tree block for taxa " + taxa.getName() + "(Module: Stored Trees)");
+			if (!MesquiteThread.isScripting())
+				iQuit();
 			return -1;
 		}
 		currentSourceFile = currentTreeBlock.getFile();
@@ -425,10 +502,24 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		return v == currentTreeBlock;
 	}
 	boolean warned = false;
+ 	public String getNotesAboutTrees(Taxa taxa){
+		int code = checkTreeBlock(taxa, false);
+		if (code <0 || currentTreeBlock == null) {
+			if (laxMode)
+				return "Tree being edited by hand.";
+			else
+				return null;
+		}
+		String s = "Tree block: " + currentTreeBlock.getName();
+		String an = currentTreeBlock.getAnnotation();
+		if (!StringUtil.blank(an))
+			s += "\n\nNotes:\n" + an;
+		return s;
+	}
 	/*.................................................................................................................*/
 	public Tree getCurrentTree(Taxa taxa) {
 		try {
-			int code = checkTreeBlock(taxa);
+			int code = checkTreeBlock(taxa, false);
 			if (code <0) {
 				if (laxMode)
 					return getDefaultTree(taxa);
@@ -518,7 +609,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public boolean itemsHaveWeights(Taxa taxa){
 		if (!useWeights.getValue())
 			return false;
-		int code = checkTreeBlock(taxa);
+		int code = checkTreeBlock(taxa, false);
 		if (currentTreeBlock != null) {
 			for (int itree =0; itree < currentTreeBlock.size(); itree++){
 				Tree tree = currentTreeBlock.getTree(itree);
@@ -564,7 +655,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		setPreferredTaxa(taxa);
 		if (currentTreeBlock == null && laxMode)
 			return 0;
-		int code = checkTreeBlock(taxa);
+		int code = checkTreeBlock(taxa, false);
 		if (currentTreeBlock != null)
 			return currentTreeBlock.size();
 		else
@@ -576,7 +667,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		setPreferredTaxa(taxa);
 		try {
 			Tree tree;
-			int code = checkTreeBlock(taxa);
+			int code = checkTreeBlock(taxa, false);
 			if (currentTreeBlock == null || itree>=currentTreeBlock.size())
 				return "";
 			if (currentTree<currentTreeBlock.size())
@@ -604,14 +695,19 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
  	 /**Returns name to show in windows etc. for tree block or source of trees.*/
  	public String getTreesDescriptiveString(Taxa taxa){
 		setPreferredTaxa(taxa);
+		if (getNumberOfTrees(taxa)==0)
+			return "";
+		String description = "";
 		try {
 			Tree tree;
-			int code = checkTreeBlock(taxa);
+			int code = checkTreeBlock(taxa, false);
 			if (currentTreeBlock != null)
 				return currentTreeBlock.getName();
 		}
 		catch (NullPointerException e) {
 		}
+		if (laxMode && currentTreeBlock == null)
+			return "";
 		return getNameForMenuItem();
  	}
 	/*.................................................................................................................*/

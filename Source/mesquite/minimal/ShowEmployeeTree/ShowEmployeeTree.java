@@ -53,6 +53,8 @@ public class ShowEmployeeTree extends EmployeeTree {
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		iQuit();

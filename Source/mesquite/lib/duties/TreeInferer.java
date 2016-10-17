@@ -13,6 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.duties;
 
+import java.awt.Button;
+import java.awt.Checkbox;
+
 import mesquite.lib.*;
 import mesquite.trees.lib.*;
 
@@ -21,9 +24,12 @@ import mesquite.trees.lib.*;
 /**Supplies trees (compare to OneTreeSource), for instance from a file or simulated.  Most modules
 are subclasses of the subclass TreeSource*/
 
-public abstract class TreeInferer extends TreeBlockFiller  {
+public abstract class TreeInferer extends TreeBlockFiller {
 	Listened listened;
 	TWindowMaker tWindowMaker;
+	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
+
+	 
 	public Class getDutyClass() {
 		return TreeInferer.class;
 	}
@@ -33,12 +39,41 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 	public String[] getDefaultModule() {
 		return null;
 	}
+	
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("autoSaveFile".equalsIgnoreCase(tag))
+			autoSaveFile.setFromTrueFalseString(content);
+		super.processSingleXMLPreference(tag, content);
+	}
+	
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "autoSaveFile", autoSaveFile);  
+	
+		buffer.append(super.preparePreferencesForXML());
+		return buffer.toString();
+	}
+
+	// override to give more information
+	public String getHTMLDescriptionOfStatus(){
+		return getName();
+	}
 	public boolean canGiveIntermediateResults(){
 		return false;
 	}
 	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
 		if (score != null)
 			score.setToUnassigned();
+		return null;
+	}
+	public boolean canStoreLatestTree(){
+		Tree latestTree = getLatestTree(null, null, null);
+		return latestTree!=null;
+	}
+	
+	public String getTreeBlockName(boolean completedRun){
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -80,6 +115,8 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 	protected void newResultsAvailable(TaxaSelectionSet outgroupSet){
 		MesquiteString title = new MesquiteString();
 		Tree tree = getLatestTree(null, null, title);
+		parametersChanged();
+		
 		if (tree instanceof AdjustableTree) {
 			((AdjustableTree)tree).standardize(outgroupSet, false);
 		}
@@ -87,8 +124,24 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 		if (tree != null && tWindowMaker != null){ 
 			tWindowMaker.setTree(tree);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
-			if (title.isBlank() && w != null && w instanceof SimpleTreeWindow)
-				((SimpleTreeWindow)w).setWindowTitle(title.getValue());
+			if (w != null && w instanceof SimpleTreeWindow){
+				SimpleTreeWindow stw = (SimpleTreeWindow)w;
+				if (title.isBlank())
+					stw.setWindowTitle(title.getValue());
+				int taxonSpacing = 14;
+				int numTaxaInTree = tree.numberOfTerminalsInClade(tree.getRoot());
+				int orientation = stw.getOrientation();
+				if (orientation == TreeDisplay.RIGHT || orientation == TreeDisplay.LEFT){
+					stw.setMinimumFieldSize(-1, numTaxaInTree*taxonSpacing);  
+				}
+				else if (orientation == TreeDisplay.UP || orientation == TreeDisplay.DOWN){
+					stw.setMinimumFieldSize(numTaxaInTree*taxonSpacing, -1);  
+				}
+				else 
+					stw.setMinimumFieldSize(-1, -1); 
+				stw.sizeDisplays(false);
+				
+			}
 			String commands = getExtraIntermediateTreeWindowCommands();
 			if (!StringUtil.blank(commands)) {
 				if (w != null){
@@ -121,6 +174,24 @@ public abstract class TreeInferer extends TreeBlockFiller  {
 		
 	}
 	
+	Checkbox autoSaveFileCheckbox =  null;
+
+	public boolean getAutoSave() {
+		if (autoSaveFile!=null && autoSaveFile.getValue())
+			return true;
+		return false;
+	}
+	
+	// given the opportunity to fill in options for user
+	public  void addItemsToDialogPanel(ExtensibleDialog dialog){
+		autoSaveFileCheckbox = dialog.addCheckBox("auto-save file after inference", autoSaveFile.getValue());
+	}
+	public boolean optionsChosen(){
+		if (autoSaveFileCheckbox!=null)
+			autoSaveFile.setValue(autoSaveFileCheckbox.getState());
+		return true;
+	}
+
 
 }
 

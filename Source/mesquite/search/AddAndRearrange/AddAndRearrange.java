@@ -238,7 +238,7 @@ public class AddAndRearrange extends TreeSearcher implements Incrementable {
 				MesquiteTree tree = (MesquiteTree)trees.getTree(swapTree);
 				MesquiteTree sTree = tree.cloneTree();
 				boolean better = true;
-				while (better&& !progIndicator.isAborted() && !rec.isCancelled()) { 
+				while (better&& !progIndicator.isAborted() && !rec.isCancelled()  && !isDoomed()) { 
 					better = false;
 					
 					long swaps = swapTask.numberOfRearrangements(tree);

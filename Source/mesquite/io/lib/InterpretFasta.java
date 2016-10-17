@@ -33,6 +33,11 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		EmployeeNeed e1 = registerEmployeeNeed(StringMatcher.class, "FASTA file import needs a way to determine if the taxon in a ; choose the one that appropriately determines the sequence names from the sample codes.", "This is activated automatically.");
 	}
 	/*.................................................................................................................*/
+	/** returns whether this module is requesting to appear as a primary choice */
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
+	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class};
 		return true;  //make this depend on taxa reader being found?)
@@ -83,7 +88,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
-	public void readString(CharacterData data, String s, int insertAfterTaxon) {
+	public void readString(CharacterData data, String s, int insertAfterTaxon, String appendToTaxonName) {
 		Taxa taxa = data.getTaxa();
 		//int numTaxa = taxa.getNumTaxa();
 		int newTaxon = insertAfterTaxon+1;
@@ -105,7 +110,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			Taxon t = taxa.getTaxon(newTaxon);
 
 			if (t!=null) {
-				t.setName(token);
+				t.setName(token+appendToTaxonName);
 				line = parser.getRemainingUntilChar('>');
 				line=StringUtil.stripWhitespace(line);
 				if (line==null) break;
@@ -140,6 +145,38 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	
 	public int[] getNewTaxaAdded(){
 		return null;
+	}
+
+	/*.................................................................................................................*/
+	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, ProgressIndicator progIndicator, String arguments) {
+		readFileCore(parser, file, data, taxa, 0, progIndicator, arguments, true);
+	}
+	public int queryOptionsDuplicate() {
+		String helpString = "If you choose Don't Add, then any incoming sequence with the same name as an existing sequence will be ignored. ";
+		helpString += "If you choose Replace Data, then the incoming sequence will replace any existing sequence for that taxon.  ";
+		helpString += "If you choose Replace If Empty, Otherwise Add, then the incoming sequence will be put into the existing spot for that taxon ONLY if that taxon has no previous data there; if there is already a sequence there, then the incoming sequence will be added as a new taxon. ";
+		helpString += "If you choose Replace If Empty, Otherwise Ignore, then the incoming sequence will be put into the existing spot for that taxon ONLY if that taxon has no previous data there; if there is already a sequence there, then the incoming sequence with the same name as an existing taxon will be ignored. ";
+		helpString+= "If you choose Add As New Taxa then all incoming sequences will be added as new taxa, even if there already exist taxa in the matrix with identical names.";
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Incoming taxa match existing taxa",buttonPressed);
+		id.addLargeTextLabel("Some of the taxa already in the matrix have the same name as incoming taxa.  Please choose how incoming sequences with the same name as exising taxa will be treated.");
+		if (StringUtil.blank(helpString) && id.isInWizard())
+			helpString = "<h3>" + StringUtil.protectForXML("Incoming taxa match existing taxa") + "</h3>Please choose.";
+		id.appendToHelpString(helpString);
+		
+		
+		
+		RadioButtons radio = id.addRadioButtons(new String[] {"Don't Add", "Replace Data","Replace If Empty, Otherwise Add","Replace If Empty, Otherwise Ignore","Add As New Taxa"},treatmentOfIncomingDuplicates);
+		
+		id.completeAndShowDialog(true);
+		
+		int value = -1;
+		if (buttonPressed.getValue()==0)  {
+			value = radio.getValue();
+			treatmentOfIncomingDuplicates = value;
+		}
+		id.dispose();
+		return value;
 	}
 
 	/*.................................................................................................................*/
@@ -178,112 +215,128 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 				if (!hasQueriedAboutSameNameTaxa && taxonNumber >= 0) {
 					if (!MesquiteThread.isScripting()){
-						String helpString = "If you choose Replace Data, then the incoming sequence will replace any existing sequence for that taxon.  If you choose Replace If Empty, then the incoming sequence will be put into the existing spot for that taxon ONLY if that taxon has no previous data there; if there is already a sequence there, then the incoming sequence will be added as a new taxon. ";
-						helpString+= " If you choose Add As New Taxa then all incoming sequences will be added as new taxa, even if there already exist taxa in the matrix with identical names.";
-						//replaceDataOfTaxonWithSameName = AlertDialog.query(this.containerOfModule(), "Replace Data", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data", "Add As New Taxa", 2);
-						replaceDataOfTaxonWithSameNameInt = AlertDialog.query(this.containerOfModule(), "Incoming taxa match existing taxa", "Some of the taxa already in the matrix have the same name as incoming taxa.  Do you want to replace their data with the incoming data, or add the incoming data as new taxa?", "Replace Data","Replace If Empty", "Add As New Taxa", 3, helpString);
+						replaceDataOfTaxonWithSameNameInt = queryOptionsDuplicate();
 					}
 					hasQueriedAboutSameNameTaxa= true;
 				}
+				if (replaceDataOfTaxonWithSameNameInt==STOPIMPORT){
+					abort=true;
+					break;
+				}
 				boolean replace = false;
+				boolean skipThisSequence = false;
+				
 				if (taxonNumber>=0) {   // a taxon number of the same name exists
-					if (replaceDataOfTaxonWithSameNameInt==REPLACEDATA) 
+					if (replaceDataOfTaxonWithSameNameInt==DONTADD) {
+						skipThisSequence = true;
+
+					}  else if (replaceDataOfTaxonWithSameNameInt==REPLACEDATA) 
 						replace=true;
-					else if (replaceDataOfTaxonWithSameNameInt==REPLACEIFEMPTY && !data.hasDataForTaxon(taxonNumber)) {
+					else if (replaceDataOfTaxonWithSameNameInt==REPLACEIFEMPTYOTHERWISEADD && !data.hasDataForTaxon(taxonNumber)) 
 						replace=true;
+					else if (replaceDataOfTaxonWithSameNameInt==REPLACEIFEMPTYOTHERWISEIGNORE) {
+						if (!data.hasDataForTaxon(taxonNumber))   // empty
+							replace=true;
+						else   // not empty, so need to ignore this incoming sequence
+							skipThisSequence = true;
 					}
 				}
-				
-				if (replace) {
-					CharacterState cs = data.makeCharacterState(); //so as to get the default state
-					int numChars = data.getNumChars();
-					if (taxonNumber<lastTaxonNumber)
-						for (int ic=0; ic<numChars; ic++)
-							data.setState(ic, taxonNumber, cs);
-					added=false;
-				} else {  // adding to end, not replacing an existing one
-					if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
-						taxonNumber = getLastNewTaxonFilled()+1;
-						if (taxonNumber>taxa.getNumTaxa())
-							taxonNumber=taxa.getNumTaxa();
-						setLastNewTaxonFilled(taxonNumber);
-						if (data.hasDataForTaxa(taxonNumber, taxonNumber)) {
-							MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to overwrite existing data, and so failed.");
-							taxonNumber = -1;
-						}
-					}
-					else 
-						taxonNumber = taxa.getNumTaxa();
-					
+				added=false;
 
-					
-					setLastNewTaxonFilled(taxonNumber);
-
-					if (data.getNumTaxa()<=taxonNumber) {
-						int numTaxaAdded = getTotalFilesToImport();  // we may not need all of those, as some of them might be placed in existing taxa.
-						if (numTaxaAdded<1) numTaxaAdded =1;
-						taxa.addTaxa(taxonNumber-1, numTaxaAdded, false);
-						added=true;
-						if (newFile)
-							data.addTaxa(taxonNumber-1, numTaxaAdded);
-						else {
-							taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true);
-						}
-					}
-				}
 				
-				Taxon t = null;
-				
-				if (taxonNumber>=0)
-					t = taxa.getTaxon(taxonNumber);
-				
-				if (t!=null) {
-					recordAsNewlyAddedTaxon(taxa,taxonNumber);
-					
-					checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber to see if it is the biggest yet.
-					t.setName(token);
-					if (progIndicator!=null) {
-						progIndicator.setText("Reading taxon " + taxonNumber+": "+token);
-						CommandRecord.tick("Reading taxon " + taxonNumber+": "+token);
-						progIndicator.setCurrentValue(pos);
-					}
-					if (file!=null)
-						line = file.readLine(">");  // pull in sequence up until next >
-					else
-						line = parser.getRemainingUntilChar('>', true);
-					if (line==null) break;
-					subParser.setString(line); 
-					int ic = 0;
-					progIndicator.setSecondaryMessage("Reading character 1");
-
-					while (subParser.getPosition()<line.length()) {
-						char c=subParser.nextDarkChar();
-						if (c!= '\0') {
-							if (data.getNumChars() <= ic) {
-								int numChars = data.getNumChars();
-								int numToAdd = 1;
-								if (numChars>10000) {
-									numToAdd=1000;
-								} else	if (numChars>5000) {
-									numToAdd=500;
-								} else if (numChars>2000) {
-									numToAdd=100;
-								} else if (numChars>200) {
-									numToAdd=10;
-								} 								
-								data.addCharacters(numChars-1, numToAdd, false);   // add characters
-								data.addInLinked(numChars-1, numToAdd, false);
+				if (true) {
+					if (replace) {
+						CharacterState cs = data.makeCharacterState(); //so as to get the default state
+						int numChars = data.getNumChars();
+						if (taxonNumber<lastTaxonNumber)
+							for (int ic=0; ic<numChars; ic++)
+								data.setState(ic, taxonNumber, cs);
+						added=false;
+					} else if (!skipThisSequence) {  // adding to end, not replacing an existing one
+						if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
+							taxonNumber = getLastNewTaxonFilled()+1;
+							if (taxonNumber>taxa.getNumTaxa())
+								taxonNumber=taxa.getNumTaxa();
+							setLastNewTaxonFilled(taxonNumber);
+							if (data.hasDataForTaxa(taxonNumber, taxonNumber)) {
+								MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to overwrite existing data, and so failed.");
+								taxonNumber = -1;
 							}
-							setFastaState(data,ic, taxonNumber, c);    // setting state to that specified by character c
 						}
-						ic += 1;
-						if (numFilledChars<ic) 
-							numFilledChars=ic;
-						if (ic % 100==0)//== 0 && timer.timeSinceVeryStartInSeconds() % 1.0 <0.001)
-							progIndicator.setSecondaryMessage("Reading character " + ic);
+						else 
+							taxonNumber = taxa.getNumTaxa();
 
+
+
+						setLastNewTaxonFilled(taxonNumber);
+
+						if (data.getNumTaxa()<=taxonNumber) {
+							int numTaxaAdded = getTotalFilesToImport();  // we may not need all of those, as some of them might be placed in existing taxa.
+							if (numTaxaAdded<1) numTaxaAdded =1;
+							taxa.addTaxa(taxonNumber-1, numTaxaAdded, false);
+							added=true;
+							if (newFile)
+								data.addTaxa(taxonNumber-1, numTaxaAdded);
+							else {
+								taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED), CharacterData.class, true);
+							}
+						}
 					}
 
+					Taxon t = null;
+
+					if (taxonNumber>=0)
+						t = taxa.getTaxon(taxonNumber);
+
+					if (t!=null) {
+						recordAsNewlyAddedTaxon(taxa,taxonNumber);
+
+						checkMaximumTaxonFilled(taxonNumber);  // record this taxonNumber to see if it is the biggest yet.
+						t.setName(token);
+						if (progIndicator!=null) {
+							progIndicator.setText("Reading taxon " + taxonNumber+": "+token);
+							CommandRecord.tick("Reading taxon " + taxonNumber+": "+token);
+							progIndicator.setCurrentValue(pos);
+						}
+						if (file!=null)
+							line = file.readLine(">");  // pull in sequence up until next >
+						else
+							line = parser.getRemainingUntilChar('>', true);
+						if (line==null) break;
+						subParser.setString(line); 
+						int ic = 0;
+						progIndicator.setSecondaryMessage("Reading character 1");
+
+						while (subParser.getPosition()<line.length()) {
+							char c=subParser.nextDarkChar();
+							if (c!= '\0') {
+								if (data.getNumChars() <= ic) {
+									int numChars = data.getNumChars();
+									int numToAdd = 1;
+									if (numChars>10000) {
+										numToAdd=1000;
+									} else	if (numChars>5000) {
+										numToAdd=500;
+									} else if (numChars>2000) {
+										numToAdd=100;
+									} else if (numChars>200) {
+										numToAdd=10;
+									} 								
+									data.addCharacters(numChars-1, numToAdd, false);   // add characters
+									data.addInLinked(numChars-1, numToAdd, false);
+								}
+								if (!skipThisSequence)
+									setFastaState(data,ic, taxonNumber, c);    // setting state to that specified by character c
+							}
+							ic += 1;
+							if (numFilledChars<ic) 
+								numFilledChars=ic;
+							if (ic % 100==0)//== 0 && timer.timeSinceVeryStartInSeconds() % 1.0 <0.001)
+								progIndicator.setSecondaryMessage("Reading character " + ic);
+
+						}
+
+					}
 				}
 				if (added) 
 					lastTaxonNumber++;
@@ -305,11 +358,20 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (getOriginalNumTaxa()>0 && getMaximumTaxonFilled()>=getOriginalNumTaxa() && getMaximumTaxonFilled()<taxa.getNumTaxa()-1)    
 					if (!taxa.taxaHaveAnyData(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
 						taxa.deleteTaxa(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-getMaximumTaxonFilled(), true);   // delete a character if needed
+			
+			
 			if (numFilledChars<data.getNumChars())
-				if (data.hasDataForCharacters(numFilledChars+1, data.getNumChars()-1))
-					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra characters, but these contained data, and so were not deleted");
+				if (data.hasDataForCharacters(numFilledChars, data.getNumChars()-1)) {
+					MesquiteMessage.discreetNotifyUser("Warning: InterpretFASTA attempted to delete extra characters, but these contained data, and so were not deleted.");
+					//if (MesquiteTrunk.debugMode) {
+						for (int ic=numFilledChars; ic<data.getNumChars(); ic++)
+							if (data.hasDataForCharacter(ic))
+								logln("has data in character: " + ic);
+
+					//}
+				}
 				else
-					data.deleteCharacters(numFilledChars+1, data.getNumChars()-numFilledChars, true);   // delete a character if needed
+					data.deleteCharacters(numFilledChars, data.getNumChars()-numFilledChars, true);   // delete a character if needed
 
 /*		
 	 		if (charAdded>0) {
@@ -402,7 +464,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export FASTA Options", buttonPressed);
-		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file prepared for GenBank submission.");
+		exportDialog.appendToHelpString("Choose the options for exporting the matrix as FASTA file.");
 		exportDialog.appendToHelpString(" The Taxon Name Suffix, if present, will be appended to each taxon name.");
 		exportDialog.appendToHelpString(" Some systems (e.g., GenBank) require simple taxon names, and these will be used if you check 'simplify taxon names'");
 		SingleLineTextField uniqueSuffixField = exportDialog.addTextField("Taxon Name Suffix", "", 20);
@@ -454,6 +516,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		for (int ic = 0; ic<data.getNumChars(); ic++) {
 			if (!writeOnlySelectedData || (data.getSelected(ic))){
 				if (!data.isUnassigned(ic, it) && !data.isInapplicable(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
+					return true;
+			}
+		}
+		return false;
+	}
+	protected boolean taxonHasMissing(CharacterData data, int it){
+		for (int ic = 0; ic<data.getNumChars(); ic++) {
+			if (!writeOnlySelectedData || (data.getSelected(ic))){
+				if (data.isUnassigned(ic, it) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic)))
 					return true;
 			}
 		}

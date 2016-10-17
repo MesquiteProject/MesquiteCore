@@ -20,6 +20,13 @@ import mesquite.categ.lib.MolecularState;
 import mesquite.lists.lib.*;
 
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.util.*;
 
 import mesquite.lib.*;
@@ -29,30 +36,37 @@ import mesquite.lib.table.*;
 
 /* ======================================================================== */
 public class TaxaListHasData extends TaxonListAssistant  {
+	
+	Taxa taxa=null;
+	MesquiteTable table = null;
+	MatrixSourceCoord matrixSourceTask;
+	//Taxa currentTaxa = null;
+	MCharactersDistribution observedStates =null;
+	CharacterData data = null;
+	Associable tInfo = null;
+	static String localCopyDataClipboard = "";
+	static String localCopyDataTaxon = "";
+	static CharacterData localCopyData = null;
+
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Taxon Has Data";
+		return "Has Data in Matrix";
 	}
 	public String getExplanation() {
 		return "Indicates whether taxon has non-missing non-gap data in a given matrix." ;
 	}
-	Taxa taxa=null;
-	MesquiteTable table = null;
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(MatrixSourceCoord.class, getName() + "  needs a source of characters.",
 				"The source of characters is arranged initially");
 	}
-	MatrixSourceCoord matrixSourceTask;
-	//Taxa currentTaxa = null;
-	MCharactersDistribution observedStates =null;
-	Associable tInfo = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		setSuppressEmployeeAutoRehiring(true);
 		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
-	//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
-	//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
+		//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
+		//	addMenuItem("Delete *", makeCommand("deleteStar", this));  // for Wayne!!!!!!
 		addMenuItem("Delete Data For Selected Taxa", makeCommand("deleteData", this));
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
@@ -76,23 +90,167 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			iQuit();
 	}
 	/*.................................................................................................................*/
+	/** endJob is called as a module is quitting; modules should put their clean up code here.*/
+	public void endJob() {
+		if (data != null)
+			data.removeListener(this);
+	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("getMatrixSource", matrixSourceTask);
 		return temp;
 	}
 
+	void captureCharacterDataFromObservedStates(){
+		if (observedStates ==null){
+			if (data != null)
+				data.removeListener(this);
+			data = null;
+		}
+		else {
+			CharacterData temp = observedStates.getParentData();
+			if (temp != data){
+				if (data != null)
+					data.removeListener(this);
+				if (temp != null)
+					temp.addListenerHighPriority(this);
+				data = temp;
+			}
+		}
+	}
+	public CharacterData getCharacterData(){
+		return data;
+	}
+
+
+	/* ................................................................................................................. */
+
+	public boolean clipBoardHasString() {
+
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = clip.getContents(this);
+		try {
+			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+			if (s != null) {
+				return true;
+			}
+		} catch (Exception e) {
+			MesquiteMessage.printStackTrace(e);
+		}
+		return false;
+	}
+
+
+	/*.................................................................................................................*/
+	public boolean arrowTouchInRow(Graphics g, int ic, int x, int y, boolean doubleClick, int modifiers){
+		if (MesquiteEvent.rightClick(modifiers)) {
+			MesquitePopup popup = new MesquitePopup(table.getMatrixPanel());
+
+			String copyMenuText = "Copy ";
+			if (observedStates != null) {
+				CharacterData data = observedStates.getParentData();
+				if (data != null) {
+					copyMenuText += data.getName() + " Data";
+					copyMenuText += " [from " + data.getTaxa().getTaxonName(ic) + "]" ;
+					
+				}
+			}
+			MesquiteCommand mcCopy = makeCommand("copyData", this);
+			mcCopy.setDefaultArguments(""+ic);
+			MesquiteCheckMenuItem mCopyItem = new MesquiteCheckMenuItem(copyMenuText, this, mcCopy, null, null);
+			popup.add(mCopyItem);
+
+			String pasteMenuText = "Paste ";
+			if (StringUtil.notEmpty(localCopyDataClipboard) && localCopyData != null) {
+					pasteMenuText += localCopyData.getName() + " Data";
+					if (StringUtil.notEmpty(localCopyDataTaxon)) {
+						pasteMenuText += " [from " + localCopyDataTaxon + "] " ;
+					}
+			}
+			MesquiteCommand mcPaste = makeCommand("pasteData", this);  //only if something in clipboard
+			mcPaste.setDefaultArguments(""+ic);
+			MesquiteCheckMenuItem mPasteItem = new MesquiteCheckMenuItem(pasteMenuText, this, mcPaste, null, null);
+			mPasteItem.setEnabled(StringUtil.notEmpty(localCopyDataClipboard));
+			popup.add(mPasteItem);
+
+			MesquiteCommand mcDelete = makeCommand("deleteDataTouched", this);
+			mcDelete.setDefaultArguments(""+ic);
+			MesquiteCheckMenuItem mDeleteItem = new MesquiteCheckMenuItem("Delete Data...", this, mcDelete, null, null);
+			popup.add(mDeleteItem);
+
+			popup.showPopup(x,y+18);
+
+			return true;
+		}
+		return false;
+	}
+
+
 
 	MesquiteInteger pos = new MesquiteInteger();
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
 			return matrixSourceTask;
 		}
-		else if (checker.compare(this.getClass(), "Deletes the data for selected taxa", null, commandName, "deleteData")) {
+		else if (checker.compare(this.getClass(), "Copies the data for selected taxon", null, commandName, "copyData")) {
 			if (observedStates == null)
 				return null;
 			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(it)) {
+				StringBuffer sb = new StringBuffer();
+				data.copyDataFromRowIntoBuffer(it, sb);
+				if (StringUtil.notEmpty(sb.toString())) {
+					localCopyDataClipboard = sb.toString();
+					localCopyData = data;
+					localCopyDataTaxon= data.getTaxa().getTaxonName(it);
+				}
+				else {
+					localCopyDataClipboard = null;
+					localCopyData = null;
+					localCopyDataTaxon = null;
+				}
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Pastes the data for selected taxon", null, commandName, "pasteData")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(it) && StringUtil.notEmpty(localCopyDataClipboard)) {
+				if (localCopyData.getStateClass()==data.getStateClass())
+					data.pasteDataFromStringIntoTaxon(it, localCopyDataClipboard);
+				else
+					MesquiteMessage.discreetNotifyUser("Can't copy data as the source cell is of a different type of data than the destination cell.");
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Deletes the data for selected taxon", null, commandName, "deleteDataTouched")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(it)) {
+				if (!AlertDialog.query(containerOfModule(), "Delete Data?", "Are you sure you want to delete the data for taxon " +data.getTaxa().getTaxonName(it) + " in the matrix \"" + data.getName() + "\"", "No", "Yes")) {
+					zapData(data,it);
+				}
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Deletes the data for selected taxa", null, commandName, "deleteData")) {
+			if (observedStates == null)
+				return null;
+			captureCharacterDataFromObservedStates();
 			if (data == null)
 				return null;
 			if (!AlertDialog.query(containerOfModule(), "Delete Data?", "Are you sure you want to delete the data for these taxa in the matrix \"" + data.getName() + "\"", "No", "Yes"))
@@ -103,8 +261,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			if (observedStates == null || taxa == null)
 				return null;
 			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
+
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if ((!anySelected || taxa.getSelected(it))){
+				if ((!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					while (!StringUtil.blank(note) && note.indexOf("(")>=0){
 						int start = note.indexOf("(");
@@ -126,8 +292,15 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			if (observedStates == null || taxa == null)
 				return null;
 			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if ((!anySelected || taxa.getSelected(it))){
+				if ((!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					while (!StringUtil.blank(note) && note.indexOf("*")>=0){
 						int start = note.indexOf("*");
@@ -147,9 +320,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Prepends to the note the sequence length (including N\'s and ?\'s) for the selected taxa", null, commandName, "prependLength")) {
 			if (observedStates == null || taxa == null)
 				return null;
-			boolean anySelected = taxa.anySelected() || table.anyCellSelected();
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					if (StringUtil.blank(note))
 						note = "(" + sequenceLength(it) + ")";
@@ -165,8 +345,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Prepends to the note the number of non-missing sites (not including N\'s and ?\'s) for the selected taxa", null, commandName, "prependNumSites")) {
 			if (observedStates == null || taxa == null)
 				return null;
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
 					String note = getNote(it);
 					if (StringUtil.blank(note))
 						note = "(" + numSites(it) + ")";
@@ -182,8 +370,16 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		else if (checker.compare(this.getClass(), "Deletes the notes for the selected taxa", null, commandName, "deleteAnnotation")) {
 			if (observedStates == null || taxa == null)
 				return null;
+			boolean anySelected = taxa.anySelected();
+			int myColumn = -1;
+			if (getEmployer() instanceof ListModule){
+
+				myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+				if (table != null)
+					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
+			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!taxa.anySelected() || taxa.getSelected(it))){
+				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
 					setNote(it, null);
 				}
 			}
@@ -252,7 +448,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			tInfo = null;
 			observedStates = matrixSourceTask.getCurrentMatrix(taxa);
 			if (observedStates != null) {
-				CharacterData data = observedStates.getParentData();
+				captureCharacterDataFromObservedStates();
+
 				if (data != null)
 					tInfo = data.getTaxaInfo(true);
 			}
@@ -324,7 +521,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 	public String getExplanationForRow(int ic){
 		if (observedStates != null && observedStates.getParentData() != null){
-			CharacterData data = observedStates.getParentData();
+			captureCharacterDataFromObservedStates();
+
 			Associable tInfo = data.getTaxaInfo(false);
 			if (tInfo == null)
 				return null;
@@ -333,13 +531,27 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		return null;
 	}
 	/*...............................................................................................................*/
-
+	boolean selected(Taxa taxa, int it, int myColumn){
+		if (taxa.getSelected(it)){
+			return true;
+		}
+		if (table != null && myColumn >=0){
+			if (table.isCellSelectedAnyWay(myColumn, it))
+				return true;
+		}
+		return false;
+	}
 
 	void zapData(CharacterData data){
 		Taxa taxa = data.getTaxa();
 		Associable tInfo = data.getTaxaInfo(false);
+		int myColumn = -1;
+		if (getEmployer() instanceof ListModule){
+
+			myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+		}
 		for (int it = 0; it<taxa.getNumTaxa(); it++){
-			if (taxa.getSelected(it)){
+			if (selected(taxa, it, myColumn)){
 				if (tInfo != null)
 					tInfo.deassignAssociated(it);
 				for (int ic=0; ic<data.getNumChars(); ic++)
@@ -351,12 +563,43 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		outputInvalid();
 		parametersChanged();
 	}
+	/*.................................................................................................................*/
+	void zapData(CharacterData data, int it){
+		Taxa taxa = data.getTaxa();
+		if (it<0 || it>=taxa.getNumTaxa())
+			return;
+		Associable tInfo = data.getTaxaInfo(false);
+		int myColumn = -1;
+		if (getEmployer() instanceof ListModule){
+
+			myColumn = ((ListModule)getEmployer()).getMyColumn(this);
+		}
+		if (tInfo != null)
+			tInfo.deassignAssociated(it);
+		for (int ic=0; ic<data.getNumChars(); ic++)
+			data.deassign(ic, it);
+
+		data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+		outputInvalid();
+		parametersChanged();
+	}
+	
+	
 
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		observedStates = null;
 		super.employeeParametersChanged(employee, source, notification);
 	}
+
+	/*.................................................................................................................*/
+	/** passes which object was disposed*/
+	public void disposing(Object obj){
+		if (obj != null && obj  == data)
+			iQuit();
+	}
+	/*.................................................................................................................*/
+	
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int it, boolean selected){
 		if (observedStates == null){
@@ -365,7 +608,8 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 		}
 		if (observedStates.getParentData() != null){
-			CharacterData data = observedStates.getParentData();
+			captureCharacterDataFromObservedStates();
+
 			Associable tInfo = data.getTaxaInfo(false);
 			NameReference genBankColor = NameReference.getNameReference("genbankcolor");
 			Object obj = tInfo.getAssociatedObject(genBankColor,  it);  //not saved to file

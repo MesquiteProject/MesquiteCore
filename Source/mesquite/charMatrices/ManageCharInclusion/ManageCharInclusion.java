@@ -16,6 +16,7 @@ package mesquite.charMatrices.ManageCharInclusion;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -114,7 +115,7 @@ public class ManageCharInclusion extends CharSpecsSetManager {
 				if (isCurrent)
 					s += "* ";
 				s+= StringUtil.tokenize(inclusionSet.getName()) + " ";
-				if (file.getProject().getNumberCharMatrices()>1)
+				if (writeLinkWithCharacterMatrixName(file, data))
 					s+= " (CHARACTERS = " +  StringUtil.tokenize(data.getName()) + ")";
 				s += " = " + sT + ";" + StringUtil.lineEnding();
 				

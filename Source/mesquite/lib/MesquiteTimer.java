@@ -29,6 +29,8 @@ public class MesquiteTimer {
 		veryStart = System.currentTimeMillis();
 	}
 	public void start() {
+		if (timesStarted==0) // set veryStart to first call to start.
+			veryStart = System.currentTimeMillis();
 		timesStarted++;
 		currentBout = System.currentTimeMillis();
 		lastCheckedTime = currentBout;

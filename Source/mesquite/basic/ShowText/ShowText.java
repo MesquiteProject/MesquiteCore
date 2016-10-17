@@ -130,7 +130,9 @@ public class ShowText extends TextDisplayer {
    	
  	/*.................................................................................................................*/
   	public void windowGoAway(MesquiteWindow whichWindow) {
-   		if (goAwayable && whichWindow == getModuleWindow()) {
+		if (whichWindow == null)
+			return;
+  		if (goAwayable && whichWindow == getModuleWindow()) {
     			whichWindow.hide();
     			whichWindow.dispose();
     			iQuit();

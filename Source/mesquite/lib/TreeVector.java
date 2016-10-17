@@ -15,26 +15,40 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.util.*;
+
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 /* ======================================================================== */
 /**A tree block.  Trees are added to it when trees are read from file or stored.  Many methods could be built here, for 
 instance to go through all trees and prune taxa deleted.
 Translation table is stored with each TreeVector.*/
-public class TreeVector extends ListableVector implements Trees, Commandable, CompatibilityChecker, MesquiteListener {
+public class TreeVector extends ListableVector implements Trees, Commandable, Identifiable, CompatibilityChecker, MesquiteListener {
 	Taxa taxa = null;
 	TranslationTable translationTable;
 	public static long totalCreated = 0;
 	public static long totalDisposed = 0;
 	long id;
+	private String uniqueID; // id's of the taxa block
+
 	private boolean writeTreeWeights = false;
 	public TreeVector  (Taxa taxa) {
 		super();
 		setTaxa(taxa);
 		totalCreated++;
 		id = totalCreated;
+		setUniqueID(MesquiteTrunk.getUniqueIDBase() + totalCreated);
 	}
 	public int getNumberOfTrees(){
 		return size();
+	}
+	// setting uniqueID for block
+	public void setUniqueID(String id) {
+		uniqueID = id;
+	}
+
+	// getting uniqueID for block
+	public String getUniqueID() {
+		return uniqueID;
 	}
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "treesSmall.gif";
@@ -254,6 +268,24 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 			}
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Duplicates the tree block", null, commandName, "duplicateMe")) {
+			if (getProject() != null)
+				getProject().incrementProjectWindowSuppression();
+
+			TreeVector trees = new TreeVector(getTaxa());
+			trees.setName(getName() + " (duplicate)");
+			trees.setWriteWeights(getWriteWeights());
+			for (int i=0; i<size(); i++){
+				Tree t = (Tree)elementAt(i);
+				trees.addElement(t.cloneTree(), false);
+				
+			}
+			trees.addToFile(getFile(), getProject(), getManager()); 
+			getManager().elementAdded(trees);
+			if (getProject() != null)
+				getProject().decrementProjectWindowSuppression();
+			return trees;
+		}
 		else if (checker.compare(this.getClass(), "Prepends to all tree names the given string", "[string to prepend]", commandName, "prefixNames")) {
 			String prefix = ParseUtil.getFirstToken(arguments, new MesquiteInteger(0));
 			if (StringUtil.blank(prefix))
@@ -310,7 +342,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 	}
 	/** Set the label of the taxon with given name to be the label passed*/
 	public void setTranslationLabel(String label, String taxonName, boolean checkDuplicates){
-		if (translationTable==null)
+		if (translationTable==null || taxonName == null)
 			return;
 		if (taxa==null)
 			return;
@@ -396,7 +428,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		}
 		checkTranslationTable();
 	}
-	/** returns true if stored translation table matches the passed taxa. */
+	/** returns true if every taxon in stored translation table is found within the passed taxa. */
 	public boolean tableMatchesTaxa(Taxa taxa, Vector table) {
 		if (table==null)
 			return false;
@@ -472,22 +504,43 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Co
 		return s;
 	}
 	/*-----------------------------------------*/
-	long previous = -1;
 	boolean suppressNotifyL = false;
 	Thread threadOfTreeChange;
+	
+	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
+	private boolean notificationFound(Notification notification){
+		if (notification ==null)
+			return false;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return false;
+		if (LongArray.indexOf(lastNotifications, id)>=0)
+			return true;
+		return false;
+	}
+	private void rememberNotification(Notification notification){
+		if (notification ==null)
+			return;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return;
+		for (int i = 0; i< lastNotifications.length-1; i++)
+			lastNotifications[i+1] = lastNotifications[i];
+		lastNotifications[0] = id;
+	}
 	/** For MesquiteListener interface.  Passes which object changed, along with optional integer (e.g. for character)*/
 	public void changed(Object caller, Object obj, Notification notification){
-		if (notification != null && notification.getNotificationNumber() == previous)
+		if (notificationFound(notification))
 			return;
-		if (notification != null)
-			previous = notification.getNotificationNumber();
+		rememberNotification(notification);
 		if (obj == taxa){
-			if (Notification.appearsCosmetic(notification))
+			if (Notification.appearsCosmeticOrSelection(notification))
 				return;
 			int[] parameters = Notification.getParameters(notification);
 
 			if (parameters!=null && parameters.length>=2 && translationTable!=null)
 				translationTable.taxaModified(Notification.getCode(notification), parameters[0], parameters[1]);
+			else translationTable.cleanUpTable();
 			for (int i=0; i<size(); i++) {//modified 19 Nov 01
 				Object o = elementAt(i);
 				if (o !=null && o instanceof MesquiteTree) {

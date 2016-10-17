@@ -47,6 +47,7 @@ public class ManageCharacters extends CharactersManager {
 			NexusBlock.equalizeOrdering(v, getProject().getNexusBlocks());
 		}
 	}
+	MesquiteMenuItemSpec calw = null;
 	/*.................................................................................................................*/
 	ListableVector taxas; //local reference to Project's vector of taxa blocks
 	MesquiteSubmenuSpec  listsSubMenu; //submenu to show list windows for character specssets
@@ -67,6 +68,23 @@ public class ManageCharacters extends CharactersManager {
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice(){
 		return true;
+	}
+	/* ................................................................................................................. */
+	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
+		if (employee instanceof DataWindowMaker){
+			if (calw != null) calw.setEnabled(getNumListWindows()>0);
+			resetAllMenuBars();
+		}
+	}
+	int getNumListWindows(){
+		int count = 0;
+		for (int i = 0; i<getNumberOfEmployees(); i++) {
+			Object e=getEmployeeVector().elementAt(i);
+			if (e instanceof ManagerAssistant)
+				if (((ManagerAssistant)e).getName().equals("Character List"))
+				count++;
+		}
+		return count;
 	}
 	/*.................................................................................................................*/
 	public MesquiteModule showElement(FileElement e){
@@ -135,6 +153,8 @@ public class ManageCharacters extends CharactersManager {
 			if (e instanceof ManagerAssistant)
 				if (((ManagerAssistant)e).showing(data)&& ((ManagerAssistant)e).getName().equals("Character List")) {
 					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					if (calw != null) calw.setEnabled(getNumListWindows()>0);
+					resetAllMenuBars();
 					return ((ManagerAssistant)e);
 				}
 		}
@@ -143,6 +163,8 @@ public class ManageCharacters extends CharactersManager {
 		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Character List"));
 		if (lister!=null) {
 			lister.showListWindow(data);
+			if (calw != null) calw.setEnabled(true);
+			resetAllMenuBars();
 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
 				lister.getModuleWindow().setVisible(true);
 		}
@@ -158,14 +180,19 @@ public class ManageCharacters extends CharactersManager {
 			if (e instanceof ManagerAssistant)
 				if (((ManagerAssistant)e).showing(data)&& ((ManagerAssistant)e).getName().equals("Character List")) {
 					((ManagerAssistant)e).getModuleWindow().setVisible(true);
+					if (calw != null) calw.setEnabled(getNumListWindows()>0);
+					resetAllMenuBars();
 					return ((ManagerAssistant)e);
 				}
 		}
 		ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize("Character List"));
 		if (lister!=null) {
 			lister.showListWindow(data);
-			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
+			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null){
 				lister.getModuleWindow().setVisible(true);
+			}
+				if (calw != null) calw.setEnabled(getNumListWindows()>0);
+				resetAllMenuBars();
 		}
 		return lister;
 	}
@@ -174,9 +201,12 @@ public class ManageCharacters extends CharactersManager {
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "-", null);
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "List of Characters", makeCommand("showCharacters",  this),  (ListableVector)getProject().datas);
+		calw = getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Close All Lists of Characters", makeCommand("closeAllListWindows",  this));
+		calw.setEnabled(false);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "-", null);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "List of Character Matrices", makeCommand("showDatasList",  this));
+		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Delete Character Matrices...", makeCommand("deleteMatrices",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "New Empty Matrix...", makeCommand("newMatrix",  this));
 		getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Make New Matrix from", makeCommand("newFilledMatrix",  this), CharMatrixFiller.class);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "New Linked Matrix...", makeCommand("newLinkedMatrix",  this));
@@ -325,6 +355,8 @@ public class ManageCharacters extends CharactersManager {
 	}
 	/*.................................................................................................................*/
 	public CharMatrixManager findCharacterTypeManager(String dataType) {
+		if (dataType == null)
+			return null;
 		for (int i = 0; i<getNumberOfEmployees() ; i++) {
 			Object e=getEmployeeVector().elementAt(i);
 			if (e instanceof CharMatrixManager) {
@@ -337,6 +369,8 @@ public class ManageCharacters extends CharactersManager {
 	}
 	/*.................................................................................................................*/
 	public CharMatrixManager findCharacterTypeManager(Class dataClass) {
+		if (dataClass == null)
+			return null;
 		for (int i = 0; i<getNumberOfEmployees() ; i++) {
 			Object e=getEmployeeVector().elementAt(i);
 			if (e instanceof CharMatrixManager) {
@@ -432,7 +466,8 @@ public class ManageCharacters extends CharactersManager {
 			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
 			if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("Character List")) {
 				CharacterData data = (CharacterData)e.doCommand("getData", null, CommandChecker.defaultChecker);
-				temp.addLine("showCharacters " + getProject().getCharMatrixReferenceExternal(data), e); //getProject().getMatrixNumber(data), e); 
+				if (data != null)
+					temp.addLine("showCharacters " + getProject().getCharMatrixReferenceExternal(data), e); //getProject().getMatrixNumber(data), e); 
 			}
 		}
 		return temp;
@@ -931,9 +966,27 @@ public class ManageCharacters extends CharactersManager {
 				lister.getModuleWindow().setVisible(true);
 			return lister;
 		}
+		else if (checker.compare(this.getClass(), "Deletes matrices from the project", null, commandName, "deleteMatrices")) {
+			Listable[] chosen = ListDialog.queryListMultiple(containerOfModule(), "Select Matrices to Delete", "Select one or more character matrices to be deleted", (String)null, "Delete", false, getProject().getCharacterMatrices(), (boolean[])null);
+			if (chosen != null){
+				for (int i = chosen.length-1; i>=0; i--) {  
+					((FileElement)chosen[i]).doom();
+				}
+				getProject().incrementProjectWindowSuppression();
+				for (int i = chosen.length-1; i>=0; i--) {  
+					logln("Deleting " + chosen[i].getName());
+					deleteElement((FileElement)chosen[i]);
+				}
+				getProject().decrementProjectWindowSuppression();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Deletes all matrices from the project", null, commandName, "deleteAllMatrices")) {
-			for (int i = getProject().getNumberCharMatrices(); i>=1; i--) {  
-				CharacterData data = getProject().getCharacterMatrix(i);
+			for (int i = getProject().getNumberCharMatrices(); i>=0; i--) {  
+				CharacterData data = getProject().getCharacterMatrixDoomedOrNot(i);
+				data.doom();
+			}
+			for (int i = getProject().getNumberCharMatrices(); i>=0; i--) {  
+				CharacterData data = getProject().getCharacterMatrixDoomedOrNot(i);
 				deleteElement(data);
 			}
 		}
@@ -996,8 +1049,9 @@ public class ManageCharacters extends CharactersManager {
 				return null;
 			}
 			else {
+				// in general, will only show user visible matrices.  However, if arguments starts with #, then assume a direct, non-numbered request that will be obeyed even if not user visible
 				//Check to see if already has lister for this
-				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), true);
+				CharacterData data =  getProject().getCharacterMatrixByReference(checker.getFile(), parser.getFirstToken(arguments), !arguments.startsWith("#"));  
 				if (data != null){
 					return showCharactersList(data);
 				}
@@ -1007,6 +1061,17 @@ public class ManageCharacters extends CharactersManager {
 					return showCharactersList(data);
 				}
 			}
+		}
+		else if (checker.compare(this.getClass(), "Closes all list of characters windows", null, commandName, "closeAllListWindows")) {
+			for (int i = getNumberOfEmployees()-1; i>=0; i--) {
+				Object e=getEmployeeVector().elementAt(i);
+				if (e instanceof ManagerAssistant &&  ((ManagerAssistant)e).getName().equals("Character List")){
+					((ManagerAssistant)e).windowGoAway(((ManagerAssistant)e).getModuleWindow());
+				}
+			}
+			if (calw != null) calw.setEnabled(false);
+			resetAllMenuBars();
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Shows the data editor window for a specified data matrix; if a data window already exists, show it", "[number of matrix to show]", commandName, "showDataWindow")) {
 			//Check to see if already has lister for this
@@ -1161,7 +1226,7 @@ public class ManageCharacters extends CharactersManager {
 				CharacterData data = getProject().getCharacterMatrix(i);
 				if (data.getFile()==file && data.getWritable()){
 					String eL =";" + StringUtil.lineEnding();
-					if (project.getNumberCharMatrices()>1 || project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
+					if ((project.getNumberCharMatrices()>1 && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data)) || (project.getNumberTaxas()>1&& MesquiteFile.okToWriteTitleOfNEXUSBlock(file, data.getTaxa()))) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 						s.append("\tCHARACTERS = " +  StringUtil.tokenize(data.getName(), null, tokSB) +" TAXA = " +  StringUtil.tokenize(data.getTaxa().getName(), null, tokSB) + eL);
 					String textDataSpec = "\tTEXT  ";
 					Associable as = data.getTaxaInfo(false);
@@ -1608,7 +1673,9 @@ public class ManageCharacters extends CharactersManager {
 				 Taxa taxa = nBlock.getDefaultTaxa();
 				 CharacterData data = nBlock.getDefaultCharacters();
 				// IntegerArray translationTable = (IntegerArray)taxa.getAttachment("originalIndicesDupRead");
-				 IntegerArray translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
+				 IntegerArray translationTable = null;
+				 if (taxa != null && file != null)
+					 translationTable = (IntegerArray)taxa.getAttachment("OrigIndex" + file.getFileName());
 				 if (fuse && translationTable == null)
 					 return false;
 				 for (int i=0; i<subcommands[0].length; i++){

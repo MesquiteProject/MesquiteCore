@@ -35,6 +35,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** A vector of the sets of taxa within the project.*/
 	public ListableVector taxas;  
 	/** Vector of data sets (including matrix) within the project. */
+	public ListableVector treeVectors;  
+	/** Vector of tree vectors within the project. */
 	public ListableVector datas;  
 	/** Character models belonging to the project.*/
 	protected ModelVector charModels; 
@@ -85,6 +87,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		taxas.addListener(this);
 		charModels.addListener(this);
 		modelListener = new CentralModelListener();
+		treeVectors = new ListableVector();
 		otherElements = new ListableVector();
 		otherElements.setName("other file elements in project");
 		files = new ListableVector();
@@ -138,6 +141,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** Increments suppression level of menus; if 0 then menus can be reset. */
 	public void incrementProjectWindowSuppression(){
 		refreshSuppression++;
+
 		if (refreshSuppression ==0)
 			refreshSuppression = 1;
 	}
@@ -228,6 +232,31 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 
 	/*.................................................................................................................*/
+	/** returns the number of Tree Vectors */
+	public int getNumberTreeVectors() {
+		return treeVectors.size();
+		/*ListableVector v = new ListableVector();		
+		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
+			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
+			if (!trees.isDoomed())
+				v.addElement(trees, false);
+		}
+		return v;*/
+	}
+	/*.................................................................................................................*/
+	/** returns the Tree Vectors */
+	public ListableVector getTreeVectors() {
+		return treeVectors;
+		/*ListableVector v = new ListableVector();		
+		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
+			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
+			if (!trees.isDoomed())
+				v.addElement(trees, false);
+		}
+		return v;*/
+	}
+
+	/*.................................................................................................................*/
 	public String searchData(String s, MesquiteString commandResult) {
 		if (StringUtil.blank(s))
 			return "<h2>Nothing to search for (searched: \"" + s + "\")</h2>";
@@ -266,6 +295,14 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		if (charModels.size()>0){
 			for (int k = 0; k<charModels.size(); k++){
 				FileElement fe = (FileElement)charModels.elementAt(k);
+				cR = fe.searchData(s, null);
+				if (!StringUtil.blank(cR))
+					list += cR;
+			}
+		}
+		if (treeVectors.size()>0){
+			for (int k = 0; k<treeVectors.size(); k++){
+				FileElement fe = (FileElement)treeVectors.elementAt(k);
 				cR = fe.searchData(s, null);
 				if (!StringUtil.blank(cR))
 					list += cR;
@@ -312,6 +349,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		taxas.dispose();
 		datas.dispose();
 		charModels.dispose();
+		treeVectors.dispose();
 		otherElements.dispose();
 		nexusBlocks.dispose();
 		files = null;
@@ -319,6 +357,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		datas = null;
 		charModels = null;
 		otherElements = null;
+		treeVectors = null;
 		nexusBlocks = null;
 
 		ownerModule = null; // to minimize chance of memory leaks
@@ -514,6 +553,14 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				homeFile.addFileElement(obj);
 			}
 		}
+		enumeration = treeVectors.elements();
+		while (enumeration.hasMoreElements()){
+			FileElement obj = (FileElement)enumeration.nextElement();
+			if (obj.getFile() == file) {
+				obj.setFile(homeFile, false);
+				homeFile.addFileElement(obj);
+			}
+		}
 		enumeration = charModels.elements();
 		while (enumeration.hasMoreElements()){
 			FileElement obj = (FileElement)enumeration.nextElement();
@@ -698,6 +745,11 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				element.addListener(datas);
 			}
 		}
+		else if (element instanceof TreeVector) {
+			if (treeVectors.indexOf(element)<0){
+				treeVectors.addElement(element, true);
+			}
+		}
 		else if (element instanceof CharacterModel) {
 			if (charModels.indexOf(element)<0){
 				charModels.addElement(element, true);
@@ -729,6 +781,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (datas != null) {
 				datas.removeElement(element, true);
 				element.removeListener(datas);
+			}
+			//datas.notifyListenersOfDisposed(element);
+		}
+		else if (element instanceof TreeVector) {
+			if (treeVectors != null) {
+				treeVectors.removeElement(element, true);
+				element.removeListener(treeVectors);
 			}
 			//datas.notifyListenersOfDisposed(element);
 		}
@@ -769,6 +828,16 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 				datas.removeAllElements(notify);
 			}
 		}
+		else if (TreeVector.class.isAssignableFrom(c)){
+
+			if (treeVectors != null){
+				for (int i = 0; i< treeVectors.size(); i++){
+					FileElement element = (FileElement)treeVectors.elementAt(i);
+					element.deleteMe(false);
+				}
+				treeVectors.removeAllElements(notify);
+			}
+		}
 		else if (CharacterModel.class.isAssignableFrom(c)) {
 			if (charModels != null){
 				for (int i = 0; i< charModels.size(); i++){
@@ -788,6 +857,46 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			}
 		}
 	}	
+	/*.................................................................................................................*/
+	public void removeAllFileElements(boolean notify) {
+		if (taxas != null){
+			for (int i = 0; i< taxas.size(); i++){
+				FileElement element = (FileElement)taxas.elementAt(i);
+				element.deleteMe(false);
+			}
+			taxas.removeAllElements(notify);
+		}
+
+		if (datas != null){
+			for (int i = 0; i< datas.size(); i++){
+				FileElement element = (FileElement)datas.elementAt(i);
+				element.deleteMe(false);
+			}
+			datas.removeAllElements(notify);
+		}
+
+		if (treeVectors != null){
+			for (int i = 0; i< treeVectors.size(); i++){
+				FileElement element = (FileElement)treeVectors.elementAt(i);
+				element.deleteMe(false);
+			}
+			treeVectors.removeAllElements(notify);
+		}
+		if (charModels != null){
+			for (int i = 0; i< charModels.size(); i++){
+				FileElement element = (FileElement)charModels.elementAt(i);
+				element.deleteMe(false);
+			}
+			charModels.removeAllElements(notify);
+		}
+
+		if (otherElements != null){
+			for (int i = 0; i< otherElements.size(); i++){
+				FileElement element = (FileElement)otherElements.elementAt(i);
+				element.deleteMe(false);
+			}
+		}
+	}	
 
 	/*.................................................................................................................*/
 	/** Returns the number of FileElements that are subclasses of the given class.  */
@@ -802,6 +911,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			return datas.size();
 		else if (CharacterModel.class.isAssignableFrom(c)) {
 			return charModels.size();
+		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			return treeVectors.size();
 		}
 		else {
 			return otherElements.size(c);
@@ -821,6 +933,11 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			}
 			for (int i=0; i<datas.size(); i++) {
 				FileElement fe = (FileElement)datas.elementAt(i);
+				if (fe.getFile() == f)
+					fe.setDirty(false);
+			}
+			for (int i=0; i<treeVectors.size(); i++) {
+				FileElement fe = (FileElement)treeVectors.elementAt(i);
 				if (fe.getFile() == f)
 					fe.setDirty(false);
 			}
@@ -850,6 +967,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		else if (mesquite.lib.characters.CharacterData.class == c)
 			return datas.getElementArray();
+		else if (TreeVector.class == c)
+			return treeVectors.getElementArray();
 		else if (mesquite.lib.characters.CharacterData.class.isAssignableFrom(c)) {
 			int count =0;
 			for (int i=0; i<datas.size(); i++)
@@ -949,6 +1068,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (i< datas.size())
 				return (FileElement)datas.elementAt(i);
 		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			if (i< treeVectors.size())
+				return (FileElement)treeVectors.elementAt(i);
+		}
 		else if (CharacterModel.class.isAssignableFrom(c)) {
 			if (i< charModels.size())
 				return (FileElement)charModels.elementAt(i);
@@ -967,6 +1090,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		}
 		return null;
 	}
+	
 	/*.................................................................................................................*/
 	/** Returns the index position of the  FileElement among others of its the subclass c.  */
 	public int getFileElementNumber(FileElement f, Class c) {
@@ -975,6 +1099,9 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 
 		if (Taxa.class.isAssignableFrom(c)) {
 			return getTaxaNumber((Taxa)f);
+		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			return getTreeVectorNumber((TreeVector)f);
 		}
 		else if (mesquite.lib.characters.CharacterData.class.isAssignableFrom(c)) {
 			return getMatrixNumber((mesquite.lib.characters.CharacterData)f);
@@ -1178,6 +1305,13 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		if (Taxa.class.isAssignableFrom(c)) {
 			for (int i = 0; i<taxas.size(); i++){
 				FileElement element = (FileElement)taxas.elementAt(i);
+				if (element.getID() == id)
+					return element;
+			}
+		}
+		else if (TreeVector.class.isAssignableFrom(c)) {
+			for (int i = 0; i<treeVectors.size(); i++){
+				FileElement element = (FileElement)treeVectors.elementAt(i);
 				if (element.getID() == id)
 					return element;
 			}
@@ -1531,41 +1665,54 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return taxas.size();
 	}
 
-	public TreeVector storeTree(MesquiteWindow parent, Tree tree, boolean askIfSingleBlock){
+	/*.................................................................................................................*/
+	public int getTreeVectorNumber(FileElement f){
+		if (f == null)
+			return -1;
+		for (int i=0; i<treeVectors.size(); i++) {
+			if (((FileElement)treeVectors.elementAt(i)) == f) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	/*.................................................................................................................*/
+	public TreeVector storeTree(MesquiteWindow parent, TreeVector trees, Tree tree, boolean askIfSingleBlock){
 		if (ownerModule == null || tree == null)
 			return null;
-		TreeVector trees=null;
-		TreesManager manager = (TreesManager)ownerModule.findElementManager(TreeVector.class);
-		if (manager !=null){
-			int numLists = manager.getNumberTreeBlocks(tree.getTaxa());
-			if (numLists==0) {
-				String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", "Trees");
-				MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
-				trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
-			}
-			else if (numLists == 1 && !askIfSingleBlock){
-				trees = manager.getTreeBlock(tree.getTaxa(), 0);
-			}
-			else {
-				Listable[] lists = new Listable[numLists+1];
-				for (int i=0; i<numLists; i++)
-					lists[i] = manager.getTreeBlock(tree.getTaxa(), i);
-				lists[numLists] = new MesquiteString("New Trees Block...", "New Trees Block...");
-				Object obj = ListDialog.queryList(parent, "Where to store tree?", "Choose tree block in which to store tree:",MesquiteString.helpString, lists, 0);
-				if (obj instanceof MesquiteString){
-					ListableVector v = manager.getTreeBlockVector();
-					String suggestedName = v.getUniqueName("Trees");
-					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", suggestedName);
+		if (trees == null){
+			TreesManager manager = (TreesManager)ownerModule.findElementManager(TreeVector.class);
+			if (manager !=null){
+				int numLists = manager.getNumberTreeBlocks(tree.getTaxa());
+				if (numLists==0) {
+					String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", "Trees");
 					MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
 					trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
 				}
-				else
-					trees = (TreeVector)obj;
+				else if (numLists == 1 && !askIfSingleBlock){
+					trees = manager.getTreeBlock(tree.getTaxa(), 0);
+				}
+				else {
+					Listable[] lists = new Listable[numLists+1];
+					for (int i=0; i<numLists; i++)
+						lists[i] = manager.getTreeBlock(tree.getTaxa(), i);
+					lists[numLists] = new MesquiteString("New Trees Block...", "New Trees Block...");
+					Object obj = ListDialog.queryList(parent, "Where to store tree?", "Choose tree block in which to store tree:",MesquiteString.helpString, lists, 0);
+					if (obj instanceof MesquiteString){
+						ListableVector v = manager.getTreeBlockVector();
+						String suggestedName = v.getUniqueName("Trees");
+						String treesListName = MesquiteString.queryString(parent, "New Tree Block" , "Name of new Tree Block: ", suggestedName);
+						MesquiteFile f = ownerModule.getProject().chooseFile("In which file should new tree block be placed?");  
+						trees = manager.makeNewTreeBlock(tree.getTaxa(), treesListName, f);
+					}
+					else
+						trees = (TreeVector)obj;
+				}
 			}
-			if (trees!=null) {
-				trees.addElement(tree, true);
-				return trees;
-			}
+		}
+		if (trees!=null) {
+			trees.addElement(tree, true);
+			return trees;
 		}
 		return null;
 	}
@@ -1603,6 +1750,20 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** returns jth data set in file*/
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(int j) {  //core, chromaseq, collab; can use RAW
 		return getCharacterMatrix(j, false);
+	}
+	public mesquite.lib.characters.CharacterData getCharacterMatrixDoomedOrNot(int j) {  
+		int count=0;
+		mesquite.lib.characters.CharacterData data;
+		for (int i=0; i<datas.size(); i++) {
+			data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+			if (count==j)
+				return data;
+			count++;
+
+		}
+		MesquiteTrunk.mesquiteTrunk.logln("Error: attempt to get data set beyond number (0) [" + j + "] {" + datas.size() + " }"  + getName());
+		MesquiteMessage.printStackTrace("Error: attempt to get data set beyond number (0) [" + j + "] {" + datas.size() + " }"  + getName());
+		return null;
 	}
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(int j, boolean onlyVisible) {  //core, chromaseq, collab; can use RAW
 		int count=0;
@@ -1700,6 +1861,20 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** returns the jth of data sets belonging to a given file*/
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, int j) {  //�����
 		return getCharacterMatrix(f, null, null, j, false);
+	}
+	/*---------===---------===---------===---------===---------===---------===-------------------*/
+	/** returns number of data sets of a given data class (CharacterState subclass is passed) belonging to given taxa.  If permitTaxaMatching is true, 
+	 * considers taxa equal if names coincide*/
+	public int  getNumberCharMatricesDoomedOrNot(MesquiteFile file, Taxa taxa, Object dataClass) {  //MesquiteProject
+		int count=0;
+		if (datas == null)
+			return 0;
+		for (int i=0; i<datas.size(); i++) { 
+			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
+			if ((file == null || data.getFile()==file) && (taxa == null || taxa == data.getTaxa()) && (dataClass==null || compatibleMatrix(dataClass, data)))
+				count++;
+		}
+		return count;
 	}
 	/*---------===---------===---------===---------===---------===---------===-------------------*/
 	/** returns number of data sets of a given data class (CharacterState subclass is passed) belonging to given taxa.  If permitTaxaMatching is true, 

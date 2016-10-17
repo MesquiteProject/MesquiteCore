@@ -216,6 +216,8 @@ public class ExamplesNavigator extends FileAssistantN  {
 	}
 	/*.................................................................................................................*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
+		if (whichWindow == null)
+			return;
 		whichWindow.hide();
 		whichWindow.dispose();
 		iQuit();
@@ -347,6 +349,8 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	}
 	public void windowResized(){
 		if (contents != null){
+			explanation.setSize(getWidth(), getHeight());
+			contents.setSize(getWidth(), getHeight());
 			contents.invalidate();
 			contents.validate();
 		}

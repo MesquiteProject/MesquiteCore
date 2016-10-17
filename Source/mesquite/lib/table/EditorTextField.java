@@ -116,6 +116,8 @@ private int ccc = 0;
 		suppressFocusLost = b;
 	}
 	public void resetLocation(){
+		if (panel == null || panel.getTable() == null || panel.getWindow() == null)
+			return;
 		if (somethingTyped && originalUndoer != null){ 
 			//this is a bit of a kludge, given that it dives into the table to find a CharacterData
 			if (panel.getTable().getColumnAssociable() != null && panel.getTable().getColumnAssociable() instanceof mesquite.lib.characters.CharacterData)

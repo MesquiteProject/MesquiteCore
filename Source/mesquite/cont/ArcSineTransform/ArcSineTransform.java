@@ -16,6 +16,7 @@ package mesquite.cont.ArcSineTransform;
 
 import java.util.*;
 import java.awt.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -23,7 +24,7 @@ import mesquite.cont.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ArcSineTransform extends ContDataAlterer {
+public class ArcSineTransform extends ContDataAlterer  implements AltererContinuousTransformations{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

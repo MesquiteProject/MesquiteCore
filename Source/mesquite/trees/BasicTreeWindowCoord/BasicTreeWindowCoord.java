@@ -27,6 +27,7 @@ public class BasicTreeWindowCoord extends FileInit {
 				"You may request a tree window by selecting the Tree Window item under the Taxa&Trees menu");
 		e.setAsEntryPoint("makeTreeWindow");
 	}
+	MesquiteMenuItemSpec catw = null;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Tree Window Coordinator"; 
@@ -46,6 +47,8 @@ public class BasicTreeWindowCoord extends FileInit {
 		treeWindows = new ListableVector();
 		MesquiteSubmenuSpec mms = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Current Tree Windows", makeCommand("showTreeWindow",  this));
 		mms.setList(treeWindows);
+		catw = getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "Close All Tree Windows", makeCommand("closeAllTreeWindows",  this));
+		catw.setEnabled(false);
 
 		return true;
 	}
@@ -71,6 +74,7 @@ public class BasicTreeWindowCoord extends FileInit {
 				MesquiteWindow w = (MesquiteWindow)treeWindows.elementAt(i);
 				if (w.getOwnerModule() == m || w.getOwnerModule() == null) {
 					treeWindows.removeElement(w, false);
+					if (catw != null) catw.setEnabled(treeWindows.size()>0);
 					resetAllMenuBars();
 					return;
 				}
@@ -101,6 +105,7 @@ public class BasicTreeWindowCoord extends FileInit {
 		if (treeWindowTask !=null){
 			treeWindowTask.doCommand("makeTreeWindow", getProject().getTaxaReferenceInternal(taxa), CommandChecker.defaultChecker);
 			treeWindows.addElement(treeWindowTask.getModuleWindow(), false);
+			if (catw != null) catw.setEnabled(treeWindows.size()>0);
 			resetAllMenuBars();
 			return treeWindowTask;
 		}
@@ -120,6 +125,7 @@ public class BasicTreeWindowCoord extends FileInit {
 			if (rec != null)
 				rec.setScripting(wasScrip);
 			treeWindows.addElement(treeWindowTask.getModuleWindow(), false);
+			if (catw != null) catw.setEnabled(treeWindows.size()>0);
 			TreesManager manager = (TreesManager)findElementManager(TreeVector.class);
 			int whichBlock = manager.getTreeBlockNumber(trees.getTaxa(), trees);
 			TreeSource ts = (TreeSource)treeWindowTask.getTreeSource();
@@ -172,9 +178,20 @@ public class BasicTreeWindowCoord extends FileInit {
 			if (treeWindowTask !=null){
 				treeWindowTask.doCommand("makeTreeWindow", getProject().getTaxaReferenceInternal(taxa), checker);
 				treeWindows.addElement(treeWindowTask.getModuleWindow(), false);
+				if (catw != null) catw.setEnabled(treeWindows.size()>0);
 				resetAllMenuBars();
 				return treeWindowTask;
 			}
+		}
+		else if (checker.compare(this.getClass(), "Closes all tree windows", null, commandName, "closeAllTreeWindows")) {
+			for (int i = treeWindows.size()-1; i>=0; i--){
+				MesquiteWindow win = (MesquiteWindow)treeWindows.elementAt(i);
+				TreeWindowMaker t = (TreeWindowMaker)win.getOwnerModule();
+				t.windowGoAway(win);
+			}
+			if (catw != null) catw.setEnabled(treeWindows.size()>0);
+			resetAllMenuBars();
+
 		}
 		else if (checker.compare(this.getClass(), "Shows an existing tree window", "[number of tree window as employee of coordinator]", commandName, "showTreeWindow")) {
 			pos.setValue(0);

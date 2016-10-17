@@ -18,6 +18,7 @@ import java.util.*;
 import java.lang.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -27,7 +28,7 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class ZapGapsRight extends MolecularDataAlterer {
+public class ZapGapsRight extends MolecularDataAlterer  implements AltererAlignShift {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -52,9 +53,11 @@ public class ZapGapsRight extends MolecularDataAlterer {
 		if (table == null || !table.anythingSelected()){
 			for (int it = 0; it<data.getNumTaxa(); it++)
 				data.collapseGapsInCellBlockRight(it, 0, data.getNumChars()-1, false);
+			found = true;
 		}
 		else while (table.nextSingleRowBlockSelected(row,firstColumn,lastColumn)) {
 				data.collapseGapsInCellBlockRight(row.getValue(), firstColumn.getValue(), lastColumn.getValue(), false);
+				found = true;
 		}
 		data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED));
 		data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
@@ -81,11 +84,11 @@ public class ZapGapsRight extends MolecularDataAlterer {
      	}
  	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Collapse Gaps to Right";
+    			return "Collapse Sequences to Right (Remove all Gaps)";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Collapse Gaps to Right";
+    			return "Collapse Sequences to Right (Remove all Gaps)";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

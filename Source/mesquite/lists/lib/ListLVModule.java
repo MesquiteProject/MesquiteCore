@@ -31,6 +31,10 @@ public abstract class ListLVModule extends ListModule  {
    	 }
 
 	/*.................................................................................................................*/
+	public boolean columnsMovable(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean rowsMovable(){
 		return true;
 	}

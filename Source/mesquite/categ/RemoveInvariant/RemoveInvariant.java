@@ -18,6 +18,7 @@ import java.util.*;
 import java.lang.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -25,7 +26,7 @@ import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class RemoveInvariant extends DataAlterer {
+public class RemoveInvariant extends DataAlterer  implements AltererWholeCharacterAddRemove {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -41,6 +42,7 @@ public class RemoveInvariant extends DataAlterer {
 		for (int ic = cData.getNumChars()-1; ic>=0; ic--){
 			if (!cData.charIsVariable(ic, false)) {
 				cData.deleteCharacters(ic, 1, false);
+				cData.deleteInLinked(ic, 1, false);
 				removedSome=true;
 			}
 		}

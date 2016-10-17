@@ -110,6 +110,20 @@ public class Taxa extends FileElement {
 		+ "\"</h2><ul>" + list + "</ul>";
 	}
 
+	private int inhibitEdit = 0;
+	/*.................................................................................................................*/
+	public void incrementEditInhibition(){
+		inhibitEdit++;
+	}
+	/*.................................................................................................................*/
+	public void decrementEditInhibition(){
+		inhibitEdit--;
+		if (inhibitEdit < 0)
+			inhibitEdit = 0;
+	}
+	public boolean isEditInhibited(){
+		return inhibitEdit>0;
+	}
 	/* ................................................................................................................. */
 	/** gets the explanation (footnote) of this block of taxa */
 	public String getExplanation() {
@@ -710,12 +724,16 @@ public class Taxa extends FileElement {
 		return null;
 	}
 	public void deleteTaxon(Taxon taxon, boolean notify){
+		if (inhibitEdit>0)
+			return;
 		int it = whichTaxonNumber(taxon);
 		if (it>=0)
 			deleteTaxa(it, 1, notify);
 	}
 	/*.................................................................................................................*/
 	public void deleteTaxaWithDuplicateNames (){
+		if (inhibitEdit>0)
+			return;
 		IntegerArray originalIndices = (IntegerArray) getAttachment("originalIndicesDupRead", IntegerArray.class);
 		if (originalIndices != null)
 			for (int i=0; i<getNumTaxa(); i++)
@@ -785,7 +803,9 @@ public class Taxa extends FileElement {
 	 * overriding should be done of the Parts method instead
 	 */
 	public final boolean addTaxa(int first, int num, boolean notify) {
-		UndoReference undoReference = null;
+		if (inhibitEdit>0)
+			return false;
+	UndoReference undoReference = null;
 		if (notify) {
 			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_ADDED, this);
 			resetJustAdded();
@@ -807,6 +827,8 @@ public class Taxa extends FileElement {
 		if (num <= 0)
 			return false;
 		if (!checkThread(false))
+			return false;
+		if (inhibitEdit>0)
 			return false;
 		inFlux = true;
 		if (starting < 0)
@@ -843,6 +865,8 @@ public class Taxa extends FileElement {
 	 * overriding should be done of the Parts method instead
 	 */
 	public final boolean deleteTaxa(int first, int num, boolean notify) {
+		if (inhibitEdit>0)
+			return false;
 		boolean deleted = deleteParts(first, num);
 		if (deleted && notify)
 			notifyListeners(this, new Notification(
@@ -854,6 +878,8 @@ public class Taxa extends FileElement {
 	/* ................................................................................................................. */
 	/** Deletes num taxa beginning at and including "starting" */
 	public boolean deleteParts(int starting, int num) {
+		if (inhibitEdit>0)
+			return false;
 		
 		if (num <= 0 || starting < 0 || starting >= numTaxa)
 			return false;
@@ -891,6 +917,8 @@ public class Taxa extends FileElement {
 		if (first >= taxon.length || second >= taxon.length || first < 0
 				|| second < 0 || first == second)
 			return false;
+		if (inhibitEdit>0)
+			return false;
 		swapParts(first, second);
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_SWAPPED, first, second, 0);  
 		inFlux = true;
@@ -912,8 +940,9 @@ public class Taxa extends FileElement {
 	 * An equivalent to moveParts but with notification added. Final because
 	 * overriding should be done of the Parts method instead
 	 */
-	public final boolean moveTaxa(int first, int num, int justAfter,
-			boolean notify) {
+	public final boolean moveTaxa(int first, int num, int justAfter, boolean notify) {
+		if (inhibitEdit>0)
+			return false;
 		boolean moved = moveParts(first, num, justAfter);
 		if (moved && notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, new int[] { first, num, justAfter }));
@@ -927,6 +956,8 @@ public class Taxa extends FileElement {
 				|| second >= taxon.length)
 			return false;
 		if (!checkThread(false))
+			return false;
+		if (inhibitEdit>0)
 			return false;
 		inFlux = true;
 		Taxon temp = taxon[first];
@@ -946,6 +977,8 @@ public class Taxa extends FileElement {
 		if (isDoomed())
 			return false;
 		if (!checkThread(false))
+			return false;
+		if (inhibitEdit>0)
 			return false;
 		inFlux = true;
 
@@ -1204,9 +1237,7 @@ public class Taxa extends FileElement {
 		}
 		try {
 			int i = Integer.parseInt(s);
-			return "The taxon name \""
-			+ s
-			+ "\" is illegal because it consists only of numbers.  This may cause various problems and should be fixed.";
+			return "The taxon name \""	+ s + "\" is illegal because it consists only of numbers.  This may cause various problems and should be fixed.";
 		} catch (NumberFormatException e) {
 		}
 		crc.reset();
@@ -1220,13 +1251,7 @@ public class Taxa extends FileElement {
 					&&  !otherTaxon.isNameNull() //(i < it || !otherTaxon.isNameDefault()) &&
 					&&  s.equals(otherTaxon.getName())
 				) { 
-				return "The taxon name \""
-				+ s
-				+ "\" for taxon "
-				+ (it + 1)
-				+ " is illegal because another taxon (#"
-				+ (i + 1)
-				+ ") already has it.  This may cause various problems and should be fixed.";
+				return "The taxon name \"" + s + "\" for taxon " + (it + 1) + " is illegal because another taxon (#" + (i + 1) + ") already has it.  This may cause various problems and should be fixed.";
 			}
 		}
 		return null;

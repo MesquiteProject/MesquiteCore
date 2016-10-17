@@ -107,6 +107,18 @@ public class Object2DArray implements Listable {
 		d[second] = temp;
 	}
 	/*...........................................................*/
+	public static void swapCell(Object[][] d, int first, int second, int k) {
+		if (k<0)
+			return;
+		if (first<0 || d==null || first>=d.length || second<0 || second>=d.length) 
+			return;
+		if (d[first] == null || k>= d[first].length || d[second] == null || k>= d[second].length)
+			return;
+		Object temp = d[first][k];
+		d[first][k]=d[second][k];
+		d[second][k] = temp;
+	}
+	/*...........................................................*/
 	public static void moveRows(Object[][] d, int starting, int num, int justAfter) {
 		if (num<=0 || d==null || d.length == 0)
 			return;

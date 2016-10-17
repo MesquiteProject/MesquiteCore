@@ -39,13 +39,11 @@ public class NEXUSDefaults extends DefaultsAssistant {
 		if (prefs!=null && prefs.length>0) {
 			if (prefs[0].equals("suppress")) {
 				suppressTitleLink.setValue(true);
-				NexusBlock.suppressLINK = true;
-				NexusBlock.suppressTITLE = true;
+				NexusBlock.suppressTITLESANDLINKS = true;
 			}
 			else  {
 				suppressTitleLink.setValue(false);
-				NexusBlock.suppressLINK = false;
-				NexusBlock.suppressTITLE = false;
+				NexusBlock.suppressTITLESANDLINKS = false;
 			}
 			if (prefs.length>1){
 				int numBackups = MesquiteInteger.fromString(prefs[1]);
@@ -77,8 +75,7 @@ public class NEXUSDefaults extends DefaultsAssistant {
 			boolean current = suppressTitleLink.getValue();
 			suppressTitleLink.toggleValue(parser.getFirstToken(arguments));
 			if (current!=suppressTitleLink.getValue()) {
-				NexusBlock.suppressTITLE = suppressTitleLink.getValue();
-				NexusBlock.suppressLINK = NexusBlock.suppressTITLE;
+				NexusBlock.suppressTITLESANDLINKS = suppressTitleLink.getValue();
 				storePreferences();
 			}
 			return suppressTitleLink;

@@ -127,6 +127,7 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 		rootModes.setValue(ROOT_USEPRIOR, "Use Root State Frequencies as Prior");
 		rootModeName = new MesquiteString(rootModes.getValue(rootMode));  //this helps the menu keep track of checkmenuitems
 
+		postBean("startJob", false);
 		//	if (showRootModeChoices){
 		/*Treatment of prior at root; currently user interface hidden unless preferences file put in place*/
 		//	MesquiteSubmenuSpec mssr = addSubmenu(null, "Root Reconstruction", makeCommand("setRootMode", this), rootModes); 
@@ -363,9 +364,12 @@ public class BiSSELikelihoodCalculator extends MesquiteModule implements Paramet
 					MesquiteMessage.println("At start, y is " + DoubleArray.toString(yStart));
 				}
 				place = 13;
-				integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());        
-				double[] yEnd = (double[])integrationResults.lastElement();
-				if (yEnd.length == 2*numStates){
+				integrationResults = solver.integrate(x,yStart,h,length,model,integrationResults,intermediatesToConsole.getValue());    
+				
+				double[] yEnd = null;
+				if (integrationResults != null)
+					yEnd = (double[])integrationResults.lastElement();
+				if (yEnd != null && yEnd.length == 2*numStates){
 					place = 14;
 					for(int i=0;i<numStates;i++){
 						probsExt[node][i] = yEnd[i];

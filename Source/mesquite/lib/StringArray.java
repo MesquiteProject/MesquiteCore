@@ -261,6 +261,18 @@ public class StringArray implements StringLister, Listable {
 		d[second] = temp;
 	}
 	/*...........................................................*/
+	public static void swapCell(String[][] d, int first, int second, int k) {
+		if (k<0)
+			return;
+		if (first<0 || d==null || first>=d.length || second<0 || second>=d.length) 
+			return;
+		if (d[first] == null || k>= d[first].length || d[second] == null || k>= d[second].length)
+			return;
+		String temp = d[first][k];
+		d[first][k]=d[second][k];
+		d[second][k] = temp;
+	}
+	/*...........................................................*/
 	public static void swapColumns(String[][] d, int first, int second) {
 		if (first<0 || d==null || first>=d.length || second<0 || second>=d.length) 
 			return;

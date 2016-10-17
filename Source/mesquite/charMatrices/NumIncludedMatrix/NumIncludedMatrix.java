@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.charMatrices.NumIncludedMatrix;
 
 
@@ -35,12 +35,16 @@ public class NumIncludedMatrix extends NumberForMatrix {
 
 		long total = 0;
 		CharacterData parentData = data.getParentData();
-		int numChars = parentData.getNumChars();
+		if (parentData == null){
+			total = data.getNumChars();
+		}
+		else {
+			int numChars = parentData.getNumChars();
 
-		for (int ic=0; ic<numChars; ic++)
-			if (parentData.isCurrentlyIncluded(ic))
-				total++;
-
+			for (int ic=0; ic<numChars; ic++)
+				if (parentData.isCurrentlyIncluded(ic))
+					total++;
+		}
 		result.setValue(total); 
 
 		if (resultString!=null) {

@@ -43,6 +43,8 @@ public class RawNexusBlockEditor extends EditRawNexusBlock {
   	 }
   	
   	 public void windowGoAway(MesquiteWindow whichWindow) {
+ 		if (whichWindow == null)
+			return;
 		if (currentlyEdited!=null) {
   	 		currentlyEdited.setText( ((MesquiteTextWindow)getModuleWindow()).getText());
   	 	}

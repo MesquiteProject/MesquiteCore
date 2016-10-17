@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 
 package mesquite.io.ExportFusedPhylip;
 
@@ -32,12 +32,11 @@ public class ExportFusedPhylip extends InterpretPhylip {
 	}
 	/*.................................................................................................................*/
 	public boolean initializeExport(Taxa taxa) {  
-		if (useTranslationTable) {
-			if (useTranslationTable){
-				taxonNamer = new SimpleTaxonNamer();
-				taxonNamer.initialize(taxa);
-			}
+		if (useTranslationTable){
+			taxonNamer = new SimpleTaxonNamer();
+			taxonNamer.initialize(taxa);
 		}
+
 		return true;  
 	}
 	/*........................../*.................................................................................................................*/

@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
 import java.util.*;
 import java.io.*;
 
-import mesquite.lib.duties.*;
 
 /* TODO: 
  * make a MesquiteExternalProcess that extends Process and stores things like 
@@ -30,9 +28,10 @@ import mesquite.lib.duties.*;
 /* ======================================================================== */
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
+	public static int recoveryDelay = 0;
 
 	/*.................................................................................................................*/
-	public static String protectForShellScript(String s) {
+	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
 		if (MesquiteTrunk.isWindows())
 			return StringUtil.protectForWindows(s);
 		else
@@ -140,38 +139,36 @@ public class ShellScriptUtil  {
 	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
 		Process proc;
 		try {
+			String[] pathArray = null;
 			if (MesquiteTrunk.isMacOSX()){
 				if (visibleTerminal) {
-					proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
-					
+					pathArray = new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath};
 				}
 				else {
 					scriptPath = scriptPath.replaceAll("//", "/");
-					proc = Runtime.getRuntime().exec(scriptPath);
-					//try {proc.waitFor();} catch (InterruptedException e) {}
+					pathArray = new String[] {scriptPath};
 				}
-//				proc = Runtime.getRuntime().exec(new String[] {"open",  "-a","/Applications/Utilities/Terminal.app",  scriptPath} );
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
-				String[] scriptArray = new String[1];
-				scriptArray[0] = scriptPath;
-				proc = Runtime.getRuntime().exec(scriptArray);
+				pathArray = new String[] {scriptPath};
+				//proc = Runtime.getRuntime().exec(pathArray);
 			} else {
 				scriptPath = "\"" + scriptPath + "\"";
-				String[] cmd = {"cmd", "/c", scriptPath};
-				proc = Runtime.getRuntime().exec(cmd);
+				pathArray = new String[] {"cmd", "/c", scriptPath};
 			}
+			proc = Runtime.getRuntime().exec(pathArray);
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;
 		}
-		if (proc != null) {
+		if (proc != null) { /*
 			StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
 			StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), "OUTPUT");
 			errorGobbler.start();
 			outputGobbler.start();
+		 */
 		}
 		return proc;
 	}
@@ -226,7 +223,6 @@ public class ShellScriptUtil  {
 		}
 	}
 
-
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
@@ -272,6 +268,13 @@ public class ShellScriptUtil  {
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
 			return false;
 		}
+		
+		try {  
+			Thread.sleep(recoveryDelay * 1000);
+		}
+		catch (InterruptedException e){
+		}
+		
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
 		return true;
@@ -301,30 +304,5 @@ public class ShellScriptUtil  {
 
 
 
-}
-
-class StreamGobbler extends Thread {
-	InputStream is;
-
-	String type;
-
-	StreamGobbler(InputStream is, String type) {
-		this.is = is;
-		this.type = type;
-	}
-
-	public void run() {
-		try {
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				System.out.println(type + ": " + line);
-
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-	}
 }
 

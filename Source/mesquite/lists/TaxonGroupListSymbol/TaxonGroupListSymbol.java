@@ -16,6 +16,7 @@ package mesquite.lists.TaxonGroupListSymbol;
 import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Label;
@@ -116,8 +117,8 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 							TaxaGroup tg = getTaxonGroup(i);
 							if (tg!=null){
 								MesquiteSymbol symbol = tg.getSymbol();
-								String symbolName = symbol.getName();
 								if (symbol!=null){
+									String symbolName = symbol.getName();
 									if (oldSymbolName!=null && !oldSymbolName.equals(symbolName))
 										variable=true;
 									oldSymbolName=symbolName;
@@ -135,7 +136,8 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 								if (tg!=null){
 									MesquiteSymbol symbol = tg.getSymbol();
 									MesquiteSymbol groupSymbol = newSymbol.cloneMethod();
-									groupSymbol.setSize(symbol.getSize());
+									if (symbol!=null)
+										groupSymbol.setSize(symbol.getSize());
 									tg.setSymbol(groupSymbol);
 									tg.setColor(tg.getColor());
 								}
@@ -209,7 +211,7 @@ public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {
 	}
 
 	/*.................................................................................................................*/
-	public boolean arrowTouchInRow(int ic, boolean doubleClick){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
+	public boolean arrowTouchInRow(Graphics g, int ic,  int x, int y, boolean doubleClick, int modifiers){ //so assistant can do something in response to arrow touch; return true if the event is to stop there, i.e. be intercepted
 		if (ic>=0 && doubleClick) {
 			specifySymbol(ic);
 			return true;

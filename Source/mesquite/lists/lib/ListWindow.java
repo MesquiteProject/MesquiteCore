@@ -16,6 +16,7 @@ package mesquite.lists.lib;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -127,7 +128,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		MesquiteWindow.addKeyListener(this, table);
 		resetTitle();
 	}
-
+	public void requestFocus(){
+		table.requestFocus();
+	}
 	public String getFindLabel(){
 		return "Find String in Table...";
 	}
@@ -202,6 +205,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	}
 	public abstract void setRowName(int row, String name);
 	public abstract String getRowName(int row);
+	public abstract String getRowNameForSorting(int row);
 	public int getSingleNameUndoConstant() {
 		return UndoInstructions.CANTUNDO;
 	}
@@ -420,7 +424,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 					text[i] = table.getMatrixText(column, i);
 				}
 
-			    
 				for (int i=1; i<assoc.getNumberOfParts(); i++) {
 					for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {
 						swapParts(assoc, j, j+1, text);
@@ -444,7 +447,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				String[] text = new String[assoc.getNumberOfParts()];
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
-					text[i] = getRowName(i);
+					text[i] = getRowNameForSorting(i);
 				}
 				for (int i=1; i<assoc.getNumberOfParts(); i++) {
 					for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {
@@ -754,7 +757,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			ownerModule.alert("Columns must be selected before \"Move\" command is given");
 	}
 	void selectedColumnsDropped(int whereToMove, boolean mouseDrop){
-		if (!owner.rowsMovable())
+		if (!owner.columnsMovable())  
 			return;
 		if (mouseDrop){
 			for (int ic = 0; ic<table.getNumColumns(); ic++){
@@ -894,6 +897,22 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						else break;
 						row--;
 					}
+					owner.aboutToDeleteRows(firstInBlockDeleted, lastInBlockDeleted, false);  // now prepare contiguous block for deletion
+				}
+				row--;
+			}
+			row = currentNumRows-1;
+			firstInBlockDeleted = -1;
+			lastInBlockDeleted = -1;
+			while(row>=0) {
+				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
+					lastInBlockDeleted = row;
+					while(row>=0) {  // now let's look for the first non-selected one
+						if (table.isRowSelected(row) && owner.rowDeletable(row))
+							firstInBlockDeleted = row;
+						else break;
+						row--;
+					}
 					owner.deleteRows(firstInBlockDeleted, lastInBlockDeleted, false);  // now delete contiguous block
 					count += lastInBlockDeleted-firstInBlockDeleted+1;
 				}
@@ -993,6 +1012,12 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				table.setSize(windowWidth, windowHeight);
 	//	}
 		MesquiteWindow.uncheckDoomed(this);
+	}
+	/*.................................................................................................................*/
+	public String getTextContents() {
+		String text = owner.getTextContentsPreface();
+		text += "\n\n" + super.getTextContents();
+		return text;
 	}
 	/*.................................................................................................................*/
 	public MesquiteTable getTable() {

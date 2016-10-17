@@ -32,6 +32,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	public int highlightedBranch=0;
 	TreeTool arrowTool;
 	String defaultExplanation;
+	ScrollPane scrollPane;
 	protected Tree tree;
 	protected SimpleTreeWindowMaker ownerModule;
 	public SimpleTreeWindow ( SimpleTreeWindowMaker ownerModule, DrawTreeCoordinator treeDrawCoordTask){
@@ -59,8 +60,10 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Analysis", MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantA.class);
 		mss = ownerModule.addSubmenu(null, "Display", MesquiteModule.makeCommand("newAssistantD",  this), TreeDisplayAssistantD.class);
 		treeDisplay =treeDrawCoordTask.createOneTreeDisplay(taxa, this); //TODO: set tree display when tree is set for first time
+		scrollPane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+		scrollPane.add(treeDisplay);
 		sizeDisplays();
-		addToWindow(treeDisplay);
+		addToWindow(scrollPane);
 		resetTitle();
 	}
 	/*.................................................................................................................*/
@@ -149,6 +152,16 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 				return tda;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Root current tree along branch", "[branch number]", commandName, "rootAlongBranch")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int atBranch= MesquiteInteger.fromString(arguments, io);
+			if (tree instanceof MesquiteTree) {
+				if (atBranch >0 &&  ((MesquiteTree)tree).reroot(atBranch, tree.getRoot(), true)) {
+					((MesquiteTree)tree).standardize(tree.getRoot(), true, true);
+				}
+			}
+
+		}
 		else if (checker.compare(this.getClass(), "Hires new assistant module (TreeDisplayAssistantA)", "[name of module]", commandName, "newAssistantD")) {
 			TreeDisplayAssistantD tda= (TreeDisplayAssistantD)ownerModule.hireNamedEmployee(TreeDisplayAssistantD.class, arguments);
 			if (tda!=null){
@@ -193,18 +206,61 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	int minFieldWidth = -1;
+	int minFieldHeight = -1;
+	public void setMinimumFieldSize(int w, int h){  // if either parameter is negative, then use natural window size
+		minFieldWidth = w;
+		minFieldHeight = h;
+	}
+	
+	public int getOrientation(){
+		if (treeDisplay == null)
+			return -1;
+		return treeDisplay.getOrientation();
+	}
 	/*.................................................................................................................*/
-	public void sizeDisplays(){
+	public void sizeDisplays(boolean resetScrollLocation){
 		if (treeDisplay == null || messagePanel == null)
 			return;
 		totalWidth = getWidth();
 		totalHeight = getHeight() - 16;
-		treeDisplay.setLocation(0,0);
-		treeDisplay.setSize(totalWidth,totalHeight);
-		treeDisplay.setFieldSize(totalWidth,totalHeight);
+		if (resetScrollLocation) 
+			treeDisplay.setLocation(0,0); 
+		else {
+			Point loc = treeDisplay.getLocation();
+			if (loc.x>treeDisplay.getWidth())
+				loc.x=treeDisplay.getWidth();
+			treeDisplay.setLocation(loc);
+		}
+		scrollPane.setSize(totalWidth,totalHeight);
+		if (resetScrollLocation) 
+			scrollPane.setLocation(0,0);
+		else {
+			Point loc = scrollPane.getLocation();
+			if (loc.x>scrollPane.getWidth())
+				loc.x=scrollPane.getWidth();
+			if (loc.y>totalHeight)
+				loc.y=totalHeight;
+			scrollPane.setLocation(loc);
+		}
+		
+		int w = totalWidth;
+		int h = totalHeight;
+		if (w<minFieldWidth)
+			w = minFieldWidth;
+		if (h<minFieldHeight)
+			h = minFieldHeight;
+		
+		treeDisplay.setSize(w,h);
+		treeDisplay.setFieldSize(w, h);
 		messagePanel.setSize(totalWidth, 16);
 		messagePanel.setLocation(0, totalHeight);
 		resetDisplay(treeDisplay);
+	}
+	/*.................................................................................................................*/
+	public void sizeDisplays(){
+		sizeDisplays(true);
 	}
 	void resetDisplay(TreeDisplay treeDisplay){
 		treeDisplay.setVisRect(new Rectangle(0, 0, treeDisplay.getWidth(), treeDisplay.getHeight()));

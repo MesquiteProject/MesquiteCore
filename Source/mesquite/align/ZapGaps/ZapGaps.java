@@ -27,13 +27,12 @@ import mesquite.lib.table.*;
 
 
 /* ======================================================================== */
-public class ZapGaps extends MolecularDataAlterer {
+public class ZapGaps extends MolecularDataAlterer implements AltererAlignShift {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
+	/*.................................................................................................................*
    	public boolean requestPrimaryChoice(){
    		return true;  
    	}
@@ -43,18 +42,19 @@ public class ZapGaps extends MolecularDataAlterer {
    	public boolean alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
 		if (!(cData instanceof MolecularData))
 			return false;
-		boolean found = false;
 		MolecularData data = (MolecularData)cData;
-
+		boolean found = false;
 		MesquiteInteger row= new MesquiteInteger();
 		MesquiteInteger firstColumn= new MesquiteInteger();
 		MesquiteInteger lastColumn= new MesquiteInteger();
-		if (!table.anythingSelected()){
+		if (table == null || !table.anythingSelected()){
 			for (int it = 0; it<data.getNumTaxa(); it++)
 				data.collapseGapsInCellBlock(it, 0, data.getNumChars()-1, false);
+			found = true;
 		}
 		else while (table.nextSingleRowBlockSelected(row,firstColumn,lastColumn)) {
 				data.collapseGapsInCellBlock(row.getValue(), firstColumn.getValue(), lastColumn.getValue(), false);
+				found = true;
 		}
 		data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 		data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));

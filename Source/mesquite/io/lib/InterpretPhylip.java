@@ -24,7 +24,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 
-
+//TODO:   have option to not write empty taxa?
 
 /* ============  a file interpreter for Phylip files ============*/
 
@@ -40,6 +40,10 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 	/*.................................................................................................................*/
 	public boolean initializeExport(Taxa taxa) {  
 		 return true;  
+	}
+	/*.................................................................................................................*/
+	public String preferredDataFileExtension() {  
+		return "phy";
 	}
 	/*.................................................................................................................*/
 	public boolean initializeTreeImport(MesquiteFile file, Taxa taxa) {  
@@ -67,8 +71,12 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 /*.................................................................................................................*/
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 /*.................................................................................................................*/
+	boolean previousInterleaved = false;
 	public boolean getInterleaved(){
-		return AlertDialog.query(module.containerOfModule(), "Interleaved or sequential?", "Is the matrix interleaved or sequential?", "Interleaved", "Sequential");
+		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking about interleave")){
+			previousInterleaved = AlertDialog.query(module.containerOfModule(), "Interleaved or sequential?", "Is the matrix interleaved or sequential?", "Interleaved", "Sequential");
+		}
+		return previousInterleaved;
 	}	
 /*.................................................................................................................*/
 	public abstract void setPhylipState(CharacterData data, int ic, int it, char c);

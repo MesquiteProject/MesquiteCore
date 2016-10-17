@@ -17,13 +17,14 @@ package mesquite.charMatrices.ShuffleStates;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class ShuffleStates extends DataAlterer {
+public class ShuffleStates extends DataAlterer implements AltererRandomizations{
 	RandomBetween randomTaxon;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -37,7 +38,7 @@ public class ShuffleStates extends DataAlterer {
    			boolean did=false;
    			if (data == null)
    				return false;
-   			UndoInstructions undoInstructions = data.getUndoInstructionsAllData();
+   			UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
    	 		if (table==null){
 					for (int i=0; i<data.getNumChars(); i++)
 						shuffleCells(data, i, 0, data.getNumTaxa()-1);

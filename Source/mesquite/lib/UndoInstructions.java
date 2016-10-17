@@ -33,6 +33,7 @@ import mesquite.lib.table.*;
  * */
 
 public class UndoInstructions implements Undoer {
+	// Undo mode: what branch of the undo system is being used; what will be remembered
 	public static final int CANTUNDO = -1;
 	public static final int SINGLEDATACELL = 1;
 	public static final int SINGLETAXONNAME = 2;
@@ -45,10 +46,28 @@ public class UndoInstructions implements Undoer {
 	public static final int PARTS_ADDED = 9;
 	public static final int DATABLOCK = 10;
 
-
-//	ones below here are not yet supported
+	//	Modes below here are not yet supported
 	public static final int TAXA_DELETED = 30;
 	public static final int CHARACTERS_DELETED = 31;
+
+
+	// Clues for the ALLDATACELLS mode as to what might or might not change
+	public static final int NO_CHAR_TAXA_CHANGES = 100;  //currently allowed
+	public static final int CHAR_ADDED_TO_END = 101;  //currently allowed
+	public static final int CHAR_ADDED_TO_START = 109;  //currently allowed
+	public static final int CHAR_ADDED = 102;  //currently allowed
+	public static final int CHAR_REORDERED = 103;
+	public static final int CHAR_DELETED = 104;
+	public static final int TAX_ADDED_TO_END = 105;  //currently allowed
+	public static final int TAX_ADDED = 106; //currently allowed
+	public static final int TAX_REORDERED = 107;
+	public static final int TAX_DELETED = 108;
+	public static final int TAX_ADDED_TO_START = 110;//currently allowed
+	public static final int CHAR_SPECSETS_CHANGED = 111;
+	public static final int TAX_SPECSETS_CHANGED = 112;
+	public static final int[] allowedChanges = new int[]{NO_CHAR_TAXA_CHANGES, CHAR_ADDED_TO_END, CHAR_ADDED_TO_START, CHAR_ADDED, TAX_ADDED_TO_END, TAX_ADDED, TAX_ADDED_TO_START};
+
+
 
 	int changeClass;
 
@@ -70,10 +89,10 @@ public class UndoInstructions implements Undoer {
 	Associable assoc;
 	String[] namesList;
 	int[] order = null;
-	
+
 	String[][] oldStateNames;
 	String[][] oldStateNotes;
-	
+
 	MesquiteCommand undoCommand;
 
 
@@ -144,29 +163,7 @@ public class UndoInstructions implements Undoer {
 			return;
 		this.changeClass = changeClass;
 		this.data = data;
-
-		if (changeClass==ALLDATACELLS) {
-			if (data != null && obj!=null)
-				if (obj instanceof CharacterData) {
-					this.oldData = ((CharacterData)obj).cloneData();
-					this.oldData.setName("Undo Matrix [old]");
-					this.oldData.disconnectListening();
-					if (obj instanceof CategoricalData) {
-						CategoricalData cd = (CategoricalData)obj;
-						for (int ic=0; ic<cd.getNumChars(); ic++){
-							if (cd.hasStateNames() && cd.hasStateNames(ic))
-								for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
-									if (cd.hasStateName(ic,i))
-										((CategoricalData)oldData).setStateName(ic,i,cd.getStateName(ic,i));
-							if (cd.hasStateNotes() && cd.hasStateNotes(ic))
-								for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
-									if (cd.hasStateNote(ic,i))
-										((CategoricalData)oldData).setStateNote(ic,i,cd.getStateNote(ic,i));
-						}
-					}
-				}
-		}
-		else if (changeClass == ALLCHARACTERNAMES) {
+		if (changeClass == ALLCHARACTERNAMES) {
 
 			namesList = null;
 			if (obj instanceof CharacterData) {
@@ -180,6 +177,44 @@ public class UndoInstructions implements Undoer {
 				for (int i = 0; i < namesList.length; i++)
 					namesList[i] = ((String[]) obj)[i];
 			}
+		}
+	}
+
+	/** This is the constructor for whole-matrix changes or changes to lists of character names. */
+	public UndoInstructions(int changeClass, Object obj, CharacterData data, int[] changesThatMightHappen) {
+		if (obj == null)
+			return;
+		this.changeClass = changeClass;
+		this.data = data;
+
+		if (changeClass==ALLDATACELLS) {
+			if (data != null && obj!=null)
+				if (obj instanceof CharacterData) {
+					if (changesThatMightHappen==null)  // no specification as to what might happen; currently, disallow that
+						return;
+					for (int i=0; i<changesThatMightHappen.length; i++) 
+						if (IntegerArray.indexOf(allowedChanges, changesThatMightHappen[i])<0)// one of the possible changes is not allowed; bail
+							return;
+
+					this.oldData = ((CharacterData)obj).cloneData();
+					if (oldData !=  null){
+						this.oldData.setName("Undo Matrix [old]");
+						this.oldData.disconnectListening();
+						if (obj instanceof CategoricalData) {
+							CategoricalData cd = (CategoricalData)obj;
+							for (int ic=0; ic<cd.getNumChars(); ic++){
+								if (cd.hasStateNames() && cd.hasStateNames(ic))
+									for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+										if (cd.hasStateName(ic,i))
+											((CategoricalData)oldData).setStateName(ic,i,cd.getStateName(ic,i));
+								if (cd.hasStateNotes() && cd.hasStateNotes(ic))
+									for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
+										if (cd.hasStateNote(ic,i))
+											((CategoricalData)oldData).setStateNote(ic,i,cd.getStateNote(ic,i));
+							}
+						}
+					}
+				}
 		}
 	}
 
@@ -263,9 +298,9 @@ public class UndoInstructions implements Undoer {
 		if (newState == null)
 			return;
 		if (this.newState.getClass().equals(newState.getClass()))
-				this.newState = newState;
+			this.newState = newState;
 	}
-	
+
 	public void setUndoCommand(MesquiteCommand command) {
 		undoCommand = command;
 	}
@@ -279,7 +314,7 @@ public class UndoInstructions implements Undoer {
 	public void setNewData(CharacterData data) {
 		if (data == null){
 			this.newData = null;
-		return;
+			return;
 		}
 		this.newData = data.cloneData();
 		if (newData == null)
@@ -297,7 +332,7 @@ public class UndoInstructions implements Undoer {
 		if (assoc!=null)
 			assoc.deleteJustAdded();
 	}
-	
+
 	public void dispose() {
 		if (oldData!=null)
 			oldData.dispose();
@@ -306,7 +341,7 @@ public class UndoInstructions implements Undoer {
 		oldData=null;
 		newData=null;
 	}
-	
+
 	public void finalize() {
 		dispose();
 	}
@@ -325,7 +360,7 @@ public class UndoInstructions implements Undoer {
 			}
 			CharacterState csBefore = data.getCharacterState(null, icStart, itStart);
 			if (oldState instanceof MesquiteString){
-				
+
 				CharacterState cs = data.makeCharacterState();
 				String st = ((MesquiteString) oldState).getValue();
 
@@ -343,7 +378,7 @@ public class UndoInstructions implements Undoer {
 			CharacterState csAfter = data.getCharacterState(null, icStart, itStart);
 			notification =new Notification(MesquiteListener.DATA_CHANGED, new int[] { icStart, itStart }) ;
 			subcodes = new int[] {MesquiteListener.SINGLE_CELL};
-			if (csBefore.isInapplicable()==csAfter.isInapplicable())
+			if (csBefore != null && csAfter != null && csBefore.isInapplicable()==csAfter.isInapplicable())
 				subcodes = new int[] {MesquiteListener.SINGLE_CELL, MesquiteListener.CELL_SUBSTITUTION};
 			notification.setSubcodes(subcodes);
 
@@ -383,15 +418,19 @@ public class UndoInstructions implements Undoer {
 				return null;
 			if (textField != null)
 				textField.setText(((MesquiteString) oldState).getValue());
-			
+
 			return new UndoInstructions(changeClass, newState, oldState, textField);
 
 		case ALLDATACELLS:
-			newData = data.cloneData();
+			newData = data.cloneData();   // note that this clones the current (live) matrix, which means if it has lost columns, they aren't recovered.  
 			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();
-			data.copyData(oldData, true);
-			if (oldData instanceof CategoricalData) {
+			if (data.getNumChars()>oldData.getNumChars())  //I added this to help   //we need a setToClone system in CharacterData, which we don't have yet.
+				data.deleteCharacters(oldData.getNumChars(), data.getNumChars()-oldData.getNumChars(), false);
+			else if (data.getNumChars()<oldData.getNumChars())//I added this to help
+				data.addCharacters(data.getNumChars()-1, oldData.getNumChars()-data.getNumChars(), false);
+			data.copyData(oldData, true);  //THIS DOES NOT expand data to be the same size as oldData
+			if (oldData instanceof CategoricalData) {  ////David: This does NOT recover specssets, so codon positions etc. are all out of whack
 				CategoricalData cd = (CategoricalData)oldData;
 				for (int ic=0; ic<cd.getNumChars(); ic++){
 					if (cd.hasStateNames() && cd.hasStateNames(ic))
@@ -468,7 +507,7 @@ public class UndoInstructions implements Undoer {
 			assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 			return null;		
 		}
-		
+
 		return null;
 	}
 

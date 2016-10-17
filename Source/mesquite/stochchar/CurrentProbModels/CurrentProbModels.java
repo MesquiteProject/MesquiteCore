@@ -129,7 +129,7 @@ public class CurrentProbModels extends ProbModelSourceLike {
    			if (lastModel != null && lastModel.getName() != null && !lastModel.getName().equals(modelName.getValue())){
    				modelName.setValue(lastModel.getName());
    			}
-   			if (ids.indexOf(cm.getID())<0)
+   			if (cm != null && ids.indexOf(cm.getID())<0)
    				if (!ids.fillNextUnassigned(cm.getID())){
    					ids.resetSize(ids.getSize()+10);
    					ids.fillNextUnassigned(cm.getID());
@@ -184,7 +184,7 @@ public class CurrentProbModels extends ProbModelSourceLike {
    			if (lastModel != null && lastModel.getName() != null && !lastModel.getName().equals(modelName.getValue())){
    				modelName.setValue(lastModel.getName());
    			}
-   			if (ids.indexOf(cm.getID())<0)
+   			if (cm != null && ids.indexOf(cm.getID())<0)
    				if (!ids.fillNextUnassigned(cm.getID())){
    					ids.resetSize(ids.getSize()+10);
    					ids.fillNextUnassigned(cm.getID());

@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.categ.lib;
 
 
@@ -38,16 +38,16 @@ public class MolecularData extends CategoricalData {
 	x = site marking left boundary of inverted region
 	y = site marking right boundary of inverted region
 	z = not yet used
-	*/
+	 */
 	protected Vector[] inversions;  
 	boolean trackInversions = false;
-	
+
 	public MolecularData(CharMatrixManager manager, int numTaxa, int numChars, Taxa taxa){
 		super(manager, numTaxa, numChars, taxa);
 		saveChangeHistory = false;//turned off for now
 		inventUniqueIDs = false; //turned off for now
 		rememberDefaultOrder = false;
-	//	nullifyBooleanArrays();
+		//	nullifyBooleanArrays();
 	}
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "matrixMolecSmall.gif";
@@ -69,7 +69,7 @@ public class MolecularData extends CategoricalData {
 				fc = "selectCharacter:" + ic+ " " + getID();
 			}
 		}
-		
+
 		if (commandResult != null && numFound == 1)
 			commandResult.setValue(fc);
 		if (StringUtil.blank(list))
@@ -98,7 +98,7 @@ public class MolecularData extends CategoricalData {
 
 	/*..........................................    ..................................................*/
 	public CharacterState makeCharacterState(){
-  		return new MolecularState();
+		return new MolecularState();
 	}
 	public Vector getInversions(int it){
 		if (inversions == null || it >= inversions.length)
@@ -197,21 +197,21 @@ public class MolecularData extends CategoricalData {
 		return super.deleteParts(starting, num);
 	}
 	private int newPosAfterMove(int orig, int starting, int num, int justAfter){
-			if (starting < justAfter){ //moving forward
-				if (orig > starting){
-					if (orig <= starting + num) //will be moved forward
-						orig = orig + (justAfter-starting) - num;
-					else if (orig < justAfter) //in chunk shifted left because of move
-						orig -= num;
-				}
+		if (starting < justAfter){ //moving forward
+			if (orig > starting){
+				if (orig <= starting + num) //will be moved forward
+					orig = orig + (justAfter-starting) - num;
+				else if (orig < justAfter) //in chunk shifted left because of move
+					orig -= num;
 			}
-			else if (orig > justAfter){
-				if (orig < starting + num) //will be moved backward
-					orig = orig + (starting-justAfter);
-				else if (orig < starting)
-					orig+= num;
-			}
-			return orig;
+		}
+		else if (orig > justAfter){
+			if (orig < starting + num) //will be moved backward
+				orig = orig + (starting-justAfter);
+			else if (orig < starting)
+				orig+= num;
+		}
+		return orig;
 	}
 	/*-----------------------------------------------------------*/
 	/**Moves num characters from position "first" to just after position "justAfter"; returns true iff successful.*/
@@ -241,13 +241,13 @@ public class MolecularData extends CategoricalData {
 	protected CharacterState moveOne(int i, int distance, int it, CharacterState cs,  MesquiteBoolean dataChanged){
 		//moving contents of cells; deal with inversions
 		if (inversions != null && it < inversions.length){
-				for (int ip = 0; ip< inversions[it].size(); ip++){
-					Mesquite3DIntPoint p = (Mesquite3DIntPoint)inversions[it].elementAt(ip);
-					if (p.x == i) //this point being moved
-						p.x += distance;
-					if (p.y == i) //sister point being moved
-						p.y += distance;
-				}
+			for (int ip = 0; ip< inversions[it].size(); ip++){
+				Mesquite3DIntPoint p = (Mesquite3DIntPoint)inversions[it].elementAt(ip);
+				if (p.x == i) //this point being moved
+					p.x += distance;
+				if (p.y == i) //sister point being moved
+					p.y += distance;
+			}
 		}
 		return super.moveOne(i, distance, it, cs, dataChanged);
 	}
@@ -294,12 +294,12 @@ public class MolecularData extends CategoricalData {
 		//moving taxa; deal with inversions
 		if (inversions != null && num>0 && starting >=0 && starting <= inversions.length){
 			Vector[] newValues = new Vector [inversions.length];
-			
+
 			if (starting>justAfter){
 				int count =0;
 				for (int i=0; i<=justAfter; i++)
 					newValues[count++]=inversions[i];
-				
+
 				for (int i=starting; i<=starting+num-1; i++)
 					newValues[count++]=inversions[i];
 				for (int i=justAfter+1; i<=starting-1; i++)
@@ -311,7 +311,7 @@ public class MolecularData extends CategoricalData {
 				int count =0;
 				for (int i=0; i<=starting-1; i++)
 					newValues[count++]=inversions[i];
-				
+
 				for (int i=starting+num; i<=justAfter; i++)
 					newValues[count++]=inversions[i];
 				for (int i=starting; i<=starting+num-1; i++)
@@ -325,14 +325,14 @@ public class MolecularData extends CategoricalData {
 		}
 		return super.moveTaxa(starting, num, justAfter);
 	}
-   	/** trades the states of character ic and ic2 in taxon it.  Used for reversing sequences (for example).*/
+	/** trades the states of character ic and ic2 in taxon it.  Used for reversing sequences (for example).*/
 	protected void tradeStatesBetweenCharactersInternal(int ic, int ic2, int it, boolean adjustCellLinked, boolean adjustDirections){
 		//trading states; deal with inversions 
 		super.tradeStatesBetweenCharactersInternal(ic, ic2, it, adjustCellLinked, adjustDirections);
 		if (adjustDirections && trackInversions)
 			MesquiteMessage.warnProgrammer("tradeStatesBetweenCharactersInternal does not yet handle direction tracking!"); //deal with inversions
 	}
-	
+
 	/* .......................................... DNAData .................................................. */
 	public boolean isReversed( int it) {
 		Associable tInfo = getTaxaInfo(false);
@@ -341,7 +341,7 @@ public class MolecularData extends CategoricalData {
 		}
 		return false;
 	}
-	/* .......................................... DNAData .................................................. */
+	/* .......................................... MolecularData .................................................. */
 	public void setReversed( int it, boolean value) {
 		Associable tInfo = getTaxaInfo(false);
 		if (tInfo!=null) {
@@ -349,9 +349,17 @@ public class MolecularData extends CategoricalData {
 		}
 	}
 
-	
-	/*..........................................  CategoricalData  ..................................................*/
-	/**Reverses the data from character icStart to icEnd in taxon it. */
+	/*..........................................  MolecularData  ..................................................*/
+	/**Reverses the associated bits for all characters. */
+	public void reverseAssociated(int icStart, int icEnd){
+		for (int ic=0; ic <= (icEnd-icStart)/2 && icStart+ic< icEnd-ic; ic++)
+			swapAssociated(icStart+ic, icEnd-ic);
+		//	int numChars = getNumChars();
+		//	for (int ic = 0; ic<numChars/2; ic++)
+		//		swapAssociated(ic, numChars-ic-1);
+	}
+	/*..........................................  MolecularData  ..................................................*/
+	/**Reverses the data from character icStart to icEnd in taxon it. */  
 	public void reverse(int icStart, int icEnd, int it, boolean reverseTerminalGaps, boolean adjustCellLinked){
 		//reversing; deal with inversions
 		if (trackInversions){
@@ -372,7 +380,25 @@ public class MolecularData extends CategoricalData {
 		}
 		super.reverse(icStart, icEnd, it, reverseTerminalGaps, adjustCellLinked);
 	}
-	/* ..........................................DNAData................ */
+	/*..........................................  MolecularData  ..................................................*/
+	/**Reverses the data from character icStart to icEnd in taxon it. NOTE: this version reverses character metadata (codon positions, etc.)*/  
+	public void reverse(int icStart, int icEnd, boolean adjustCellLinked){
+		for (int it= 0; it< getNumTaxa(); it++)
+			reverse(icStart, icEnd, it, true, adjustCellLinked);
+		int numChars = icEnd-icStart+1;
+		int halfWay = numChars/2;
+		for (int ic= 0; ic<halfWay; ic++)
+			swapCharacterMetadata(icStart+ic,icEnd-ic);
+		if (adjustCellLinked && linkedDatas.size()>0){
+			for (int i=0; i<linkedDatas.size(); i++){
+				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
+				for (int ic= 0; ic<halfWay; ic++)
+					d.swapCharacterMetadata(icStart+ic,icEnd-ic);
+			}
+		}
+
+	}
+	/* ..........................................MolecularData................ */
 	/** returns the appropriate genetic code models to be assigned as default ones to characters
 	 *  that might be added immediately after character ic */
 	public GenCodeModel getDefaultGenCodeModel(int ic) {
@@ -393,17 +419,17 @@ public class MolecularData extends CategoricalData {
 		return startGenCodeModel;  // here they both exist but differ; should give warning?
 	}
 	/*..........................................    ..................................................*/
-   	/** returns the genetic code model of character ic in taxon it*/
-   	public GenCodeModel getGenCodeModel(int ic){
+	/** returns the genetic code model of character ic in taxon it*/
+	public GenCodeModel getGenCodeModel(int ic){
 		if (genCodeModelSet==null)
 			genCodeModelSet = (GenCodeModelSet)getCurrentSpecsSet(GenCodeModelSet.class);
 		if (genCodeModelSet != null && ic<genCodeModelSet.getNumberOfParts() && ic>=0)
 			return (GenCodeModel)genCodeModelSet.getModel(ic);
 		return null;
-   	}
-   	/*..........................................    ..................................................*/
-   	/** returns the genetic code of character ic in taxon it*/
-   	public GeneticCode getGeneticCode(int ic){
+	}
+	/*..........................................    ..................................................*/
+	/** returns the genetic code of character ic in taxon it*/
+	public GeneticCode getGeneticCode(int ic){
 		if (genCodeModelSet==null)
 			genCodeModelSet = (GenCodeModelSet)getCurrentSpecsSet(GenCodeModelSet.class);
 		if (genCodeModelSet != null && ic<genCodeModelSet.getNumberOfParts() && ic>=0) {
@@ -412,7 +438,7 @@ public class MolecularData extends CategoricalData {
 				return genCodeModel.getGeneticCode();
 		}
 		return null;
-   	}
+	}
 	/* ..........................................  .................................................. *
 	public void assignGeneticCodeToTerminalChars(int whichTermChars){
 		if (whichTermChars<0)
@@ -431,7 +457,7 @@ public class MolecularData extends CategoricalData {
 			if (existingChar>=getNumChars())
 				return;
 		} else existingChar = startChar-1;
-		
+
 		GenCodeModel genCodeModel = getGenCodeModel(existingChar);
 		if (genCodeModel!=null) { // the immediately adjacent character (the previous first character) has an assigned codon position
 				for (int ic=startChar; ic<getNumChars(); ic++) {
@@ -469,7 +495,9 @@ public class MolecularData extends CategoricalData {
 		}
 		return false;
 	}
-	
+
+
+
 	public void collapseGapsInCellBlock(int it, int icStart, int icEnd, boolean notify) {
 		int lastFilled = icStart-1;
 		for (int ic = icStart; ic < getNumChars() && ic<=icEnd; ic++) {
@@ -490,8 +518,8 @@ public class MolecularData extends CategoricalData {
 			}
 		}
 	}
-	
- 	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
+
+	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
 		Taxa taxa = getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
@@ -501,33 +529,33 @@ public class MolecularData extends CategoricalData {
 
 		int counter = 1;
 		if (hasDataForTaxon(it)){
-				counter = 1;
-				outputBuffer.append(">");
-				outputBuffer.append(taxa.getTaxonName(it));
-				outputBuffer.append(StringUtil.lineEnding());
-				for (int ic = 0; ic<numChars; ic++) {
-						int currentSize = outputBuffer.length();
-						boolean wroteMoreThanOneSymbol = false;
-						if (isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && isMultistateOrUncertainty(ic, it)))
-							outputBuffer.append(getUnassignedSymbol());
-						else if (includeGaps || (!isInapplicable(ic,it))) {
-							statesIntoStringBuffer(ic, it, outputBuffer, false);
-							wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
-							counter ++;
-							if ((counter % 50 == 1) && (counter > 1)) {    // modulo
-								outputBuffer.append(StringUtil.lineEnding());
-							}
-						}
-						if (wroteMoreThanOneSymbol) {
-							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-							return null;
-						}
-					
+			counter = 1;
+			outputBuffer.append(">");
+			outputBuffer.append(taxa.getTaxonName(it));
+			outputBuffer.append(StringUtil.lineEnding());
+			for (int ic = 0; ic<numChars; ic++) {
+				int currentSize = outputBuffer.length();
+				boolean wroteMoreThanOneSymbol = false;
+				if (isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && isMultistateOrUncertainty(ic, it)))
+					outputBuffer.append(getUnassignedSymbol());
+				else if (includeGaps || (!isInapplicable(ic,it))) {
+					statesIntoStringBuffer(ic, it, outputBuffer, false);
+					wroteMoreThanOneSymbol = outputBuffer.length()-currentSize>1;
+					counter ++;
+					if ((counter % 50 == 1) && (counter > 1)) {    // modulo
+						outputBuffer.append(StringUtil.lineEnding());
+					}
 				}
-				outputBuffer.append(StringUtil.lineEnding());
+				if (wroteMoreThanOneSymbol) {
+					alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
+					return null;
+				}
+
 			}
+			outputBuffer.append(StringUtil.lineEnding());
+		}
 		return outputBuffer;
- 	}
+	}
 }
 
 

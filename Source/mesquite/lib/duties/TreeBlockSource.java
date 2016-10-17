@@ -68,10 +68,16 @@ public abstract class TreeBlockSource extends MesquiteModule implements ItemsSou
  			for (int i=0; i<numBlocks; i++){
  				s[i]= getTreeBlockNameString(taxa, i);
  			}
- 			return ListDialog.queryList(containerOfModule(), "Choose tree block", "Choose tree block", MesquiteString.helpString, s, 0);
+ 			if (forMessage == null) {
+ 				forMessage = "Choose tree block";
+ 			}
+ 			return ListDialog.queryList(containerOfModule(), "Choose tree block", forMessage, MesquiteString.helpString, s, 0);
  		}
  		else  {
- 			int r = MesquiteInteger.queryInteger(containerOfModule(), "Choose tree block", "Number of tree block to be used", 1);
+ 			if (forMessage == null) {
+ 				forMessage = "Number of tree block to be used";
+ 			}
+ 			int r = MesquiteInteger.queryInteger(containerOfModule(), "Choose tree block", forMessage, 1);
  			if (MesquiteInteger.isCombinable(r))
  				return MesquiteTree.toInternal(r);
  			else
