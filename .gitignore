@@ -40,3 +40,7 @@ Mesquite_Folder/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Build products #
+##################
+Resources/Mesquite*
