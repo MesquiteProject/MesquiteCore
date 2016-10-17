@@ -30,6 +30,7 @@ public class Parser extends StringUtil {
 	static char openCommentBracket = '[';
 	static char closeCommentBracket = ']';
 	public static boolean allowComments = true;
+	boolean convertUnderscoresToBlanks = true;
 	char quoteChar = defaultQuote;
 	boolean lineEndingsDark = false;
 	MesquiteInteger pos;
@@ -97,7 +98,10 @@ public class Parser extends StringUtil {
 		}
 		return fromChar;
 	}
-	
+	public void setConvertUnderscoresToBlanks(boolean convertUnderscoresToBlanks) {
+		this.convertUnderscoresToBlanks = convertUnderscoresToBlanks;
+	}
+
 	char lineCharAt(String line, int pos){
 		if (line == null)
 			return 0;
@@ -666,7 +670,7 @@ public class Parser extends StringUtil {
 			}
 			if (continu) {
 				while ((!whitespace(c, whitespaceString) && !punctuationOrQuote(c, punctuationString, quoteChar)) && c!=0) {
-					if (c=='_')
+					if (c=='_' && convertUnderscoresToBlanks)
 						c = ' ';
 					else if (c=='^'){
 						char nxt = getNextChar();
@@ -972,7 +976,7 @@ public class Parser extends StringUtil {
 			}
 			if (continu) {
 				while ((!whitespace(c, whitespaceString) && !punctuationOrQuote(c, punctuationString, quoteChar)) && c !=0) {
-					if (c=='_')
+					if (c=='_' && convertUnderscoresToBlanks)
 						c = ' ';
 					recordStartOfToken();
 					buffer.append(c);
