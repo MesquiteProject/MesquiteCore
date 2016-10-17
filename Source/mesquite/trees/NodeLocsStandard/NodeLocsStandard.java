@@ -39,12 +39,26 @@ public class NodeLocsStandard extends NodeLocsVH {
 	static final int stretchfactor = 1;
 	static final int  scaling = 2;
 	
+	String scaleTitle;
+	int scaleBorderWidth;
+	String scaleBorderLineStyle;
+	String scaleBorderColor;
+	String scaleFont;
+	int scaleFontSize;
+	String scaleFontFace;
+	Color scaleColor = Color.cyan;
+	Color scaleCounterColor = Color.blue;
+	
+	
 
 //	double namesAngle = MesquiteDouble.unassigned;
 
 	int ROOTSIZE = 20;
 	MesquiteMenuItemSpec fixedScalingMenuItem, showScaleMenuItem, broadScaleMenuItem;
 	MesquiteMenuItemSpec offFixedScalingMenuItem, stretchMenuItem, evenMenuItem;
+	/**MesquiteMenuItemSpec scaleColorMenuItem, scaleBorderWidthMenuItem, scaleBorderColorMenuItem, scaleBorderLineStyleMenuItem;
+	MesquiteMenuItemSpec scaleTitleMenuItem,scaleFontMenuItem,scaleFontFaceMenuItem; */
+
 	NameReference triangleNameRef;
 	MesquiteBoolean center;
 	boolean[] fixedSettings = null;
@@ -273,6 +287,40 @@ public class NodeLocsStandard extends NodeLocsVH {
 			offFixedScalingMenuItem = null;
 			resetContainingMenuBar();
 			parametersChanged();
+		}
+
+		else if (checker.compare(this.getClass(), "Sets scale color", "[scale color]", commandName, "scaleColor")) {
+		        //Debugg.println("*Scale color got" + parser.getFirstToken(arguments));
+			scaleColor = ColorDistribution.getStandardColor(MesquiteInteger.fromString(arguments));
+			scaleCounterColor = Color.BLACK;  //ColorDistribution.getContrasting(scaleColor);
+		}
+		else if (checker.compare(this.getClass(), "Sets scale border width", "[border width in pixels]", commandName, "scaleBorderWidth")) {
+		        //Debugg.println("*Scale border width got" + parser.getFirstToken(arguments));
+			scaleBorderWidth = MesquiteInteger.fromString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets scale border color", "[border color]", commandName, "scaleBorderColor")) {
+		        //Debugg.println("*Scale border color got" + parser.getFirstToken(arguments));
+			scaleBorderColor = parser.getFirstToken(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets scale border style", "[border line style]", commandName, "scaleBorderLineStyle")) {
+	                //Debugg.println("Scale border style got" + parser.getFirstToken(arguments));
+			scaleBorderLineStyle = parser.getFirstToken(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets scale title", "[title string]", commandName, "scaleTitle")) {
+		        //Debugg.println("Scale title got" + parser.getFirstToken(arguments));
+			scaleTitle = arguments;
+		}
+		else if (checker.compare(this.getClass(), "Sets scale font", "[font family]", commandName, "scaleFont")) {
+		        //Debugg.println("*Scale font got" + parser.getFirstToken(arguments));
+			scaleFont = parser.getFirstToken(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets scale font size", "[font size]", commandName, "scaleFontSize")) {
+		        //Debugg.println("*Scale font size got" + parser.getFirstToken(arguments));
+			scaleFontSize = MesquiteInteger.fromString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets scale font face", "[font face]", commandName, "scaleFontFace")) {
+		        //Debugg.println("Scale font face got" + parser.getFirstToken(arguments));
+			scaleFontFace = parser.getFirstToken(arguments);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -1166,7 +1214,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 		boolean rulerOnly = false;
 		int rulerWidth = 8;
 		Color c=g.getColor();
-		g.setColor(Color.cyan);
+		//Debugg.println("Scalecolor is " + scaleColor);
+		g.setColor(scaleColor);
 		int scaleBuffer = 28;
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 		int buffer = 8;
@@ -1185,9 +1234,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				leftEdge = rightEdge - 10;
 			while ( thisHeight>=0) {
 				if (countTenths % 10 == 0)
-					g.setColor(Color.blue);
+					g.setColor(scaleCounterColor);
 				else
-					g.setColor(Color.cyan);
+					g.setColor(scaleColor);
+				//Debugg.println("Scalecolor is " + scaleColor);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
 					g.drawLine(rightEdge-rulerWidth, (int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)));
@@ -1211,9 +1261,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				base += (totalTreeHeight - fixedDepth)*scaling;
 			while ( thisHeight>=0) {
 				if (countTenths % 10 == 0)
-					g.setColor(Color.blue);
+					g.setColor(scaleCounterColor);
 				else
-					g.setColor(Color.cyan);
+					g.setColor(scaleColor);
+				//Debugg.println("Scalecolor is " + scaleColor);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
 					g.drawLine(rightEdge-rulerWidth, (int)(base+ (thisHeight*scaling)), rightEdge,  (int)(base+ (thisHeight*scaling)));
@@ -1238,9 +1289,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 			double base = (totalScaleHeight-totalTreeHeight)*scaling +treeDisplay.getTreeDrawing().x[drawnRoot];
 			while ( thisHeight>=0) {
 				if (countTenths % 10 == 0)
-					g.setColor(Color.blue);
+					g.setColor(scaleCounterColor);
 				else
-					g.setColor(Color.cyan);
+					g.setColor(scaleColor);
+				//Debugg.println("Scalecolor is " + scaleColor);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
 					g.drawLine((int)(base- (thisHeight*scaling)), rightEdge,  (int)(base- (thisHeight*scaling)),  rightEdge-rulerWidth);
@@ -1266,9 +1318,10 @@ public class NodeLocsStandard extends NodeLocsVH {
 				base += (totalTreeHeight - fixedDepth)*scaling;
 			while ( thisHeight>=0) {
 				if (countTenths % 10 == 0)
-					g.setColor(Color.blue);
+					g.setColor(scaleCounterColor);
 				else
-					g.setColor(Color.cyan);
+					g.setColor(scaleColor);
+				//Debugg.println("Scalecolor is " + scaleColor);
 				thisHeight -= hundredthHeight;
 				if (rulerOnly)
 					g.drawLine((int)(base+ (thisHeight*scaling)), rightEdge-rulerWidth,  (int)(base+ (thisHeight*scaling)),  rightEdge);

@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 import mesquite.lib.duties.*;
 import mesquite.trees.lib.TaxonPolygon;
@@ -37,7 +38,13 @@ public abstract class TreeDrawing  {
 	public final static int MINNODEWIDTH = 6;
 	public final static int ACCEPTABLETOUCHWIDTH = 10;
 	public final static boolean SHOWTOUCHPOLYS = false;
-	public int[] x; //x positions of nodes
+    public final static int UP = 0;
+    public final static int DOWN = 1;
+    public final static int RIGHT = 2;
+    public final static int LEFT = 3;
+    public final static int ALLNODES = -1;
+
+    public int[] x; //x positions of nodes
 	public int[] y; //y positions of nodes
 	public double[] z; //z positions of nodes (closeness to viewer, smaller numbers closer)
 	public int[] lineBaseX; //base of line on which to draw labels etc.
@@ -94,6 +101,10 @@ public abstract class TreeDrawing  {
 		}
 	}
 
+    public void setProperty(int node, String property, String value) {
+        MesquiteModule.mesquiteTrunk.logln("setProperty called on "+property+", but this property does not exist in "+this.getClass().toString());
+    }
+
 	public int getDrawnRoot(){
 		return drawnRoot;
 	}
@@ -139,7 +150,136 @@ public abstract class TreeDrawing  {
 	public abstract void fillBranch(Tree tree, int N, Graphics g);
 	
 
-	/*_________________________________________________*/
+    public void rotateFromUp(Polygon poly, Point origin, int to_orientation) {
+        poly.translate(-origin.x,-origin.y);
+        for(int i=0;i<poly.npoints;i++) {
+            int old_x = poly.xpoints[i];
+            int old_y = poly.ypoints[i];
+            if (to_orientation == RIGHT) {
+                poly.xpoints[i] = -old_y;
+                poly.ypoints[i] = old_x;
+            } else if (to_orientation == DOWN) {
+                poly.xpoints[i] = -old_x;
+                poly.ypoints[i] = -old_y;
+            } else if (to_orientation == LEFT) {
+                poly.xpoints[i] = old_y;
+                poly.ypoints[i] = -old_x;
+            }
+        }
+        poly.translate(origin.x,origin.y);
+        poly.invalidate();
+    }
+
+    public void rotatePoly(Polygon poly, Point origin, double angle) {
+        poly.translate(-origin.x,-origin.y);
+        for(int i=0;i<poly.npoints;i++) {
+            double old_x = poly.xpoints[i];
+            double old_y = poly.ypoints[i];
+            double radius = 0;
+            double old_angle = 0;
+            if (old_x == 0) {
+                if (old_y > 0) {
+                    old_angle = Math.PI * 0.5;
+                    radius = old_y;
+                } else if (old_y < 0) {
+                    old_angle = Math.PI * 1.5;
+                    radius = -old_y;
+                }
+            } else if (old_y == 0) {
+                if (old_x >= 0) {
+                    radius = old_x;
+                } else {
+                    radius = -old_x;
+                    old_angle = Math.PI;
+                }
+            } else {
+                double t = old_y/old_x;
+                old_angle = Math.atan(t);
+                radius = Math.sqrt((old_x*old_x)+(old_y*old_y));
+            }
+            double new_angle = angle - old_angle;
+            poly.xpoints[i] = (int)(radius * (Math.cos(new_angle)));
+            poly.ypoints[i] = (int)(radius * (Math.sin(new_angle)));
+        }
+        poly.translate(origin.x,origin.y);
+        poly.invalidate();
+    }
+
+    public void rotateLine2D(Line2D.Double line, Point origin, double angle) {
+
+        Polygon poly = new Polygon();
+        poly.addPoint((int)line.x1,(int)line.y1);
+        poly.addPoint((int)line.x2,(int)line.y2);
+        poly.translate(-origin.x,-origin.y);
+        for(int i=0;i<poly.npoints;i++) {
+            double old_x = poly.xpoints[i];
+            double old_y = poly.ypoints[i];
+            double radius = 0;
+            double old_angle = 0;
+            if (old_x == 0) {
+                if (old_y > 0) {
+                    old_angle = Math.PI * 0.5;
+                    radius = old_y;
+                } else if (old_y < 0) {
+                    old_angle = Math.PI * 1.5;
+                    radius = -old_y;
+                }
+            } else if (old_y == 0) {
+                if (old_x >= 0) {
+                    radius = old_x;
+                } else {
+                    radius = -old_x;
+                    old_angle = Math.PI;
+                }
+            } else {
+                double t = old_y/old_x;
+                old_angle = Math.atan(t);
+                radius = Math.sqrt((old_x*old_x)+(old_y*old_y));
+            }
+            double new_angle = angle - old_angle;
+            poly.xpoints[i] = (int)(radius * (Math.cos(new_angle)));
+            poly.ypoints[i] = (int)(radius * (Math.sin(new_angle)));
+        }
+        poly.translate(origin.x,origin.y);
+        poly.invalidate();
+        line.x1 = poly.xpoints[0];
+        line.x2 = poly.xpoints[1];
+        line.y1 = poly.ypoints[0];
+        line.y2 = poly.ypoints[1];
+    }
+
+
+    public Point pointRotatedFromUp(int to_orientation, Point origin, Point point) {
+        int old_x = point.x-origin.x;
+        int old_y = point.y-origin.y;
+        Point result = new Point(old_x,old_y);
+        if (to_orientation == RIGHT) {
+            result.move(-old_y,old_x);
+        } else if (to_orientation == DOWN) {
+            result.move(-old_x, -old_y);
+        } else if (to_orientation == LEFT) {
+            result.move(old_y, -old_x);
+        }
+        result.translate(origin.x, origin.y);
+        return result;
+    }
+
+    public Point pointRotatedToUp(int from_orientation, Point origin, Point point) {
+        int old_x = point.x-origin.x;
+        int old_y = point.y-origin.y;
+        Point result = new Point(old_x,old_y);
+        if (from_orientation == RIGHT) {
+            result.move(old_y, -old_x);
+        } else if (from_orientation == DOWN) {
+            result.move(-old_x, -old_y);
+        } else if (from_orientation == LEFT) {
+            result.move(-old_y, old_x);
+        }
+        result.translate(origin.x, origin.y);
+        return result;
+    }
+
+    /*_________________________________________________*/
 	/** Does the basic inverting of the color of a branch **/
 	public  void fillBranchInverted (Tree tree, int N, Graphics g) {
 		if (GraphicsUtil.useXORMode(g, true))  {
