@@ -33,6 +33,7 @@ public class SplitFrequencies extends NumbersForNodes {
 	int startingTree = 0;
 	int sampleSize = MesquiteInteger.unassigned;
 	MesquiteBoolean useWeights = new MesquiteBoolean(true);
+	MesquiteBoolean maxContradictory = new MesquiteBoolean(false);
 
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -43,6 +44,7 @@ public class SplitFrequencies extends NumbersForNodes {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 
 		addCheckMenuItem(null, "Consider Tree Weights", makeCommand("toggleUseWeights", this), useWeights);
+		addCheckMenuItem(null, "Show Maximum Frequency of Contradictory Clades", makeCommand("toggleMaxContradictory", this), maxContradictory);
 		treeSourceTask = (TreeSource)hireEmployee(TreeSource.class, "Tree Source");
 		if (treeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees obtained");
@@ -89,6 +91,7 @@ public class SplitFrequencies extends NumbersForNodes {
 		temp.addLine("setTreeSource",treeSourceTask);
 		temp.addLine("resume");
   	 	temp.addLine("toggleUseWeights " + useWeights.toOffOnString());
+  	 	temp.addLine("toggleMaxContradictory " + maxContradictory.toOffOnString());
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -107,8 +110,12 @@ public class SplitFrequencies extends NumbersForNodes {
 		}
 		else if (checker.compare(this.getClass(), "Returns treeSourceTask", null, commandName, "getTreeSource")) 
 			return treeSourceTask;
-		else if (checker.compare(this.getClass(), "Returns treeSourceTask", null, commandName, "toggleUseWeights")) {
+		else if (checker.compare(this.getClass(), "Toggles use of weights", null, commandName, "toggleUseWeights")) {
 	 		useWeights.toggleValue(parser.getFirstToken(arguments));  
+	 		parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Toggles whether or not it shows the frequency of the clade, or the maximum frequency of contradictory clades", null, commandName, "toggleMaxContradictory")) {
+	 		maxContradictory.toggleValue(parser.getFirstToken(arguments));  
 	 		parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Suspends calculations", null, commandName, "suspend")) {
@@ -155,16 +162,23 @@ public class SplitFrequencies extends NumbersForNodes {
 	/*.................................................................................................................*/
 	public void initBipartitionVector(Taxa taxa, BipartitionVector bipartitions){
 		if (bipartitions!=null) {
-			bipartitions.setMode(BipartitionVector.MATCHMODE);
+			if (maxContradictory.getValue())
+				bipartitions.setMode(BipartitionVector.MAJRULEMODE);
+			else
+				bipartitions.setMode(BipartitionVector.MATCHMODE);
 			bipartitions.setTaxa(taxa);
 			bipartitions.zeroFrequencies();
 		}
 	}
 	/*.................................................................................................................*/
-	public   void harvestResults(int node, Tree tree, BipartitionVector bipartitions, NumberArray result) {
+	protected void harvestResults(int node, Tree tree, BipartitionVector bipartitions, NumberArray result) {
 		if (tree.nodeIsInternal(node)){
-			Bipartition bp = Bipartition.getBipartitionFromNode(tree, node);
-			double freq = bipartitions.getDecimalFrequencyOfNode(tree, node, true);
+			//Bipartition bp = Bipartition.getBipartitionFromNode(tree, node);
+			double freq = 0.0;
+			if (maxContradictory.getValue())
+				freq = -bipartitions.getMaximumDecimalFrequencyOfContradictoryNode(tree, node, true);
+			else
+				freq = bipartitions.getDecimalFrequencyOfNode(tree, node, true);
 			result.setValue(node, freq);
 		} else
 			result.setValue(node, 0.0);
@@ -202,7 +216,12 @@ public class SplitFrequencies extends NumbersForNodes {
 			treeSourceTask.initialize(taxa);
 		}
 		Tree otherTree;
-		BipartitionVector bipartitions = BipartitionVector.getBipartitionVector(tree);  //start the bipartition vector with all the bipartitions in the tree;
+		BipartitionVector bipartitions = null;
+//		if (maxContradictory.getValue()) {
+//			bipartitions = new BipartitionVector();
+//		}
+//		else
+			bipartitions = BipartitionVector.getBipartitionVector(tree);  //start the bipartition vector with all the bipartitions in the tree;
 			
 		initBipartitionVector(taxa, bipartitions);
 		bipartitions.setRooted(false);
@@ -242,7 +261,10 @@ public class SplitFrequencies extends NumbersForNodes {
 	public String getNameAndParameters(){
 		if (treeSourceTask ==null)
 			return getName();
-		return getName()+", Tree Source: " +  treeSourceTask.getTreesDescriptiveString(taxa); 
+		String s = getName()+", Tree Source: " +  treeSourceTask.getTreesDescriptiveString(taxa); 
+		if (maxContradictory.getValue())
+			s+="; showing the negative value of the frequency of the contradictory clade with the maximum frequency";
+		return s;
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -253,7 +275,7 @@ public class SplitFrequencies extends NumbersForNodes {
 		return true;
 	}
 	public String getExplanation() {
-		return "Calculates, for each clade in the tree, the frequency of that split among the trees in a specified tree source.";
+		return "Calculates, for each clade in the tree, the frequency of that split among the trees in a specified tree source, or the frequency of the contradictory clade with the highest frequency.";
 	}
 	public String getName() {
 		return "Clade Frequencies in Trees";

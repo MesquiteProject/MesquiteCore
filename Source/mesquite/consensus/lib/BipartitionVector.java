@@ -191,6 +191,25 @@ public class BipartitionVector extends Vector {
 		}
 		return 0.0;
 	}
+	
+	/** Examines all contradictory clades and returnes the frequency value of the most frequent one. */
+	public double getMaximumDecimalFrequencyOfContradictoryNode(Tree tree, int node, boolean rooted){
+		Bits nodeBits = tree.getTerminalTaxaAsBits(node);
+		Bits treeBits = tree.getTerminalTaxaAsBits(tree.getRoot());
+		nodeBits.andBits(treeBits);  // this shouldn't be needed, but just in case...
+
+		double max=0.0;
+		for (int i=0; i<size(); i++){
+			Bipartition bp = ((Bipartition)elementAt(i));
+			Bits bpBits =bp.getBits();
+			bpBits.andBits(treeBits);  //again, this shouldn't be needed, but just in case...
+			if (!compatible(nodeBits, bpBits)) {
+					double freq = getDecimalFrequency(bp);
+					if (freq>max) max=freq;
+			}
+		}
+		return max;
+	}
 
 	public boolean compatible(Bits a, Bits b){
 		bits1.setBits(a);
