@@ -116,13 +116,17 @@ public class GraphicsUtil {
 	public static void fill(Graphics g, Shape shape) {
 		if (!(g instanceof Graphics2D))
 			return;
-		((Graphics2D)g).fill(shape);
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.fill(shape);
 	}
 	/*_________________________________________________*/
 	public static void draw(Graphics g, Shape shape) {
 		if (!(g instanceof Graphics2D))
 			return;
-		((Graphics2D)g).draw(shape);
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(shape);
 	}
 
 	/*_________________________________________________*/

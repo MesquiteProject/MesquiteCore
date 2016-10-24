@@ -619,7 +619,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 			return;
 		MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 		if (w.getTileLocation()==RESOURCES){
-			Debugg.println("windowGoAway");
 			resourcesFullWindow = false;
 			MesquiteWindow ww = frontMostInLocation(MAIN);
 			setAsFrontWindow(ww);
@@ -639,7 +638,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 		if (w.getTileLocation() == RESOURCES){
 			w.setMinimized(!w.isMinimized());
 			resourcesClosedWhenMinimized = w.isMinimized();
-			Debugg.println("toggleMinimize " + resourcesClosedWhenMinimized);
 			resetSizes(true);
 			if (tabs !=null)
 				tabs.repaint();
@@ -693,7 +691,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 					main.remove(w.getOuterContentsArea());
 				}
 				else if (w.getTileLocation() == RESOURCES){
-					Debugg.println("wgtl");
 					resourcesLayout.removeLayoutComponent(w.getOuterContentsArea());	
 					resources.remove(w.getOuterContentsArea());
 				}
@@ -804,7 +801,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 
 	public void showFrontWindow(){
-		//Debugg.println("sfw ");
 		fixFrontness();
 		if (frontWindow != null){
 			showInLayout(frontWindow.getTileLocation(), Integer.toString(frontWindow.getID()));	
@@ -815,7 +811,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	/*.................................................................................................................*/
 	/** Shows the window */
 	public void setVisible(boolean vis) {
-		//Debugg.println("sv ");
 		if (doingShow)
 			return;
 		doingShow = true;

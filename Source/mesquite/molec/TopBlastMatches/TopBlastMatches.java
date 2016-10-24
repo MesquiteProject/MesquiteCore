@@ -34,8 +34,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	StringBuffer results;
 	String[] accessionNumbers;
 	String[] ID;
+	int[] passNumberOfIDs = null;
 	Blaster blasterTask;
-	
+
 	int blastType = Blaster.BLAST;
 
 	boolean importTopMatches = false;
@@ -48,9 +49,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	boolean adjustSequences = false;
 	boolean addInternalGaps = false;
 	boolean appendQueryName = false;
-//	boolean blastx = false;
+	//	boolean blastx = false;
 	int maxTime = 300;
-//	static int upperMaxHits = 30;
+	//	static int upperMaxHits = 30;
 
 	double eValueCutoff = 10.0;
 	int wordSize  = 11;
@@ -109,7 +110,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "addInternalGaps", addInternalGaps);  
 		StringUtil.appendXMLTag(buffer, 2, "appendQueryName", appendQueryName);  
 		StringUtil.appendXMLTag(buffer, 2, "adjustSequences", adjustSequences);  
-//		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
+		//		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
 		StringUtil.appendXMLTag(buffer, 2, "eValueCutoff", eValueCutoff);  
 		StringUtil.appendXMLTag(buffer, 2, "maxHits", maxHits);  
 		StringUtil.appendXMLTag(buffer, 2, "blastType", blastType);  
@@ -119,7 +120,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		preferencesSet = true;
 		return buffer.toString();
 	}
-//	Checkbox blastXCheckBox ;
+	//	Checkbox blastXCheckBox ;
 	Choice blastTypeChoice ;
 	Checkbox saveFileCheckBox ;
 	Checkbox fetchTaxonomyCheckBox;
@@ -145,7 +146,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		int oldBlastType = blastType;
 
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
-//		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
+		//		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
 		IntegerField wordSizeField = dialog.addIntegerField("Word size:",  wordSize,5,0,Integer.MAX_VALUE);
 		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
@@ -156,9 +157,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement in needed and align imported sequences",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
 		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
-		
+
 		IntegerField maxTimeField = dialog.addIntegerField("Maximum time for BLAST response (seconds):",  maxTime,5);
-	//	blastXCheckBox.addItemListener(this);
+		//	blastXCheckBox.addItemListener(this);
 		saveFileCheckBox.addItemListener(this);
 		checkEnabling();
 
@@ -169,7 +170,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			saveResultsToFile = saveFileCheckBox.getState();
 			fetchTaxonomy = fetchTaxonomyCheckBox.getState();
 			eValueCutoff = eValueCutoffField.getValue();
-//			blastx = blastXCheckBox.getState();
+			//			blastx = blastXCheckBox.getState();
 			blastType = blastTypeChoice.getSelectedIndex();
 			if (blastType<0) blastType=oldBlastType;
 			importTopMatches = importCheckBox.getState();
@@ -220,7 +221,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	protected URL getESearchAddress(String s)
-	throws MalformedURLException {
+			throws MalformedURLException {
 		return new URL(s);
 	}
 
@@ -237,7 +238,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	public void saveBLASTReport(String name, String contents) {
 		if (StringUtil.blank(reportDirectoryPath))
 			return;
-		
+
 		String blastReportPath = reportDirectoryPath + name;  // directory into which processed files go
 		blastReportPath = MesquiteFile.getUniqueNumberedPath(blastReportPath);
 		if (!StringUtil.blank(blastReportPath)) {
@@ -248,15 +249,25 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	public void saveResults(StringBuffer results) {
 		if (StringUtil.blank(reportDirectoryPath))
 			return;
-		
+
 		String blastSummaryPath = reportDirectoryPath + "BLAST summary";  // directory into which processed files go
 		if (!StringUtil.blank(blastSummaryPath)) {
 			MesquiteFile.putFileContents(blastSummaryPath, results.toString(), false);
 		}
 	}
+	
+	/** Returns the number of separate processings that are needed after each search.   E.g., LocalBlaster can require multiple
+	 * processings if several local databases are searched.  */
+	public int getNumberOfProcessingPassesPerSearch() {
+		if (blasterTask==null) 
+			return 1;
+		return blasterTask.getNumDatabases();
+	}
+
+
 	/*.................................................................................................................*/
 	/** Processing to be done after each search. Returns true if  */
-	public boolean processAfterEachTaxonSearch(CharacterData data, int it){
+	public boolean processAfterEachTaxonSearch(CharacterData data, int it, int passNumber){
 		logln("\nSearch results: \n"+ results.toString());
 		//		logln("**** IDs: " +StringArray.toString(ID)); 
 		int numTaxaAdded =0;
@@ -269,15 +280,28 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
 			logln("About to import top matches.", true);
 
+			int count = 0;
+			for (int i=0; i<ID.length && i<passNumberOfIDs.length; i++) {  // find out how many of the IDs belong tho this pass number
+				if (passNumberOfIDs[i]==passNumber)
+					count++;
+			}
+			String[] localID = new String[count];
+			count=0;
+			for (int i=0; i<ID.length && i<passNumberOfIDs.length; i++) {  // now fill a local ID array with the ones that belong to this pass
+				if (passNumberOfIDs[i]==passNumber) {
+					localID[count]=ID[i];
+					count++;
+				}
+			}
 			if (blastType==Blaster.BLASTX && data instanceof DNAData) {
 				//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
-				ID = blasterTask.getNucleotideIDsfromProteinIDs(ID);
+				localID = blasterTask.getNucleotideIDsfromProteinIDs(localID);
 				//	logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
 			}
 			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
 
 			StringBuffer blastResponse = new StringBuffer();
-			String newSequencesAsFasta = blasterTask.getFastaFromIDs(ID,  data instanceof DNAData, blastResponse);
+			String newSequencesAsFasta = blasterTask.getFastaFromIDs(localID,  data instanceof DNAData, blastResponse, passNumber);
 
 			String appendToTaxonName = "";
 			if (appendQueryName)
@@ -292,14 +316,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			logln(results.toString());
-			
+
 			numTaxaAdded = data.getNumTaxa()-numTaxaAdded;
-/*			if (lastSearched!=null && lastSearched.isCombinable()) {
+			/*			if (lastSearched!=null && lastSearched.isCombinable()) {
 				if (interleaveResults) { 
 					//lastSearched.add(numTaxaAdded);
 				}
 			}
-			*/
+			 */
 			return data.getNumChars()!=originalNumChars;
 		}
 		return true;
@@ -312,48 +336,74 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		String sequenceName = data.getTaxa().getTaxonName(it);
 		results.append("\n   BLASTing "+ sequenceName+ " (matrix: "+ data.getName() + ")\n");
 		StringBuffer sequence = new StringBuffer(data.getNumChars());
-		for (int ic = icStart; ic<=icEnd; ic++) {
+		for (int ic = icStart; ic<=icEnd; ic++) {  // let's get the querySequence
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);
 		}
-		
-		StringBuffer response = new StringBuffer();
-		//blasterTask.setBlastx(blastx);
+
 		blasterTask.setBlastType(blastType);
-		if (data instanceof ProteinData)
-			blasterTask.blastForMatches("blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,wordSize, response, true);
-		else {	
-			blasterTask.basicDNABlastForMatches(blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, wordSize, response, true);
-		}
+		StringBuffer response = new StringBuffer();
+		int numDatabases = blasterTask.getNumDatabases();
 
-		BLASTResults blastResults = new BLASTResults(maxHits);
-		
-		if (saveResultsToFile)
-			saveBLASTReport(sequenceName+" to " + blasterTask.getDatabaseName(),response.toString());
-		blastResults.processResultsFromBLAST(response.toString(), false, eValueCutoff);
-		blasterTask.postProcessingCleanup(blastResults);
+		//blasterTask.setBlastx(blastx);
+		boolean someHits = false;
+		passNumberOfIDs= new int[0];
+		ID=new String[0];
 
-		if (blastResults.someHits())
-			results.append("   Top hits\n\tAccession [eValue] Definition): \n");
-		else
-			results.append("   No hits returned.\n");
 
-		for (int i=0; i<maxHits; i++) {
-			if (StringUtil.notEmpty(blastResults.getAccession(i))) {
-				results.append("\t"+blastResults.getAccession(i));
-				results.append("\t["+blastResults.geteValue(i)+"]");
-				results.append("\t"+blastResults.getDefinition(i));
-				String tax = "";
-				if (fetchTaxonomy) {
-					tax = NCBIUtil.fetchTaxonomyFromSequenceID(blastResults.getID(i), data instanceof DNAData, true, null);
-					//	tax = NCBIUtil.fetchTaxonomyFromSequenceID(blastResults.getID(i), data instanceof DNAData, true, null);
-					results.append("\t"+tax);
-				}
-				results.append("\n");
+		for (int iDatabase = 0; iDatabase<numDatabases; iDatabase++) {
+
+			String database = blasterTask.getDatabase(iDatabase);
+
+
+			if (data instanceof ProteinData)
+				blasterTask.blastForMatches(database, "blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,wordSize, response, true);
+			else {	
+				blasterTask.basicDNABlastForMatches(database, blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, wordSize, response, true);
 			}
+
+			BLASTResults blastResults = new BLASTResults(maxHits);
+
+			if (saveResultsToFile)
+				saveBLASTReport(sequenceName+" to " + blasterTask.getDatabaseName(),response.toString());
+			blastResults.processResultsFromBLAST(response.toString(), false, eValueCutoff);
+			if (blastResults.someHits())
+				someHits=true;
+			blasterTask.postProcessingCleanup(blastResults);
+			
+
+			if (blastResults.someHits()) {
+				results.append("   Top hits\n\tAccession [eValue] Definition): \n");
+				String[] thisID =  blastResults.getIDs();
+				ID = StringArray.concatenate(ID, thisID);
+				int startThisPass = passNumberOfIDs.length;
+				passNumberOfIDs=IntegerArray.addParts(passNumberOfIDs, thisID.length);
+			//	IntegerArray.zeroUnassigned(passNumberOfIDs);
+				for (int pass=startThisPass; pass<passNumberOfIDs.length; pass++)
+					passNumberOfIDs[pass]=iDatabase;
+			}
+			else
+				results.append("   No hits returned.\n");
+
+			for (int i=0; i<maxHits; i++) {
+				if (StringUtil.notEmpty(blastResults.getAccession(i))) {
+					results.append("\t"+blastResults.getAccession(i));
+					results.append("\t["+blastResults.geteValue(i)+"]");
+					results.append("\t"+blastResults.getDefinition(i));
+					String tax = "";
+					if (fetchTaxonomy) {
+						tax = NCBIUtil.fetchTaxonomyFromSequenceID(blastResults.getID(i), data instanceof DNAData, true, null);
+						//	tax = NCBIUtil.fetchTaxonomyFromSequenceID(blastResults.getID(i), data instanceof DNAData, true, null);
+						results.append("\t"+tax);
+					}
+					results.append("\n");
+				}
+			}
+			results.append("-----------");
+
 		}
-		accessionNumbers = blastResults.getAccessions();
-		ID = blastResults.getIDs();
-		return blastResults.someHits();
+
+		//accessionNumbers = blastResults.getAccessions();
+		return someHits;
 	}
 	/*.................................................................................................................*/
 	/** Called to search on the data in selected cells.  Returns true if data searched*/
@@ -372,13 +422,13 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			logln("\nSearching for top BLAST hits (" + blasterTask.getName() + ")");
 			if (table!=null)
 				table.convertColumnSelectionToRows(true);
-			
-	
+
+
 			boolean searchOK = searchSelectedTaxa(data,table);
 			if (saveResultsToFile)
 				saveResults(results);
 			return searchOK;
-	
+
 		}
 	}
 
