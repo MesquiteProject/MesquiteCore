@@ -263,7 +263,7 @@ public class SplitFrequencies extends NumbersForNodes {
 			return getName();
 		String s = getName()+", Tree Source: " +  treeSourceTask.getTreesDescriptiveString(taxa); 
 		if (maxContradictory.getValue())
-			s+="; showing the negative value of the frequency of the contradictory clade with the maximum frequency";
+			s+="; showing the negative value of the frequency of the contradictory clade that has the maximum frequency";
 		return s;
 	}
 	/*.................................................................................................................*/
