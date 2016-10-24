@@ -166,6 +166,19 @@ public class MesquiteDouble implements Listable {
 	public void subtract(double toSubtract) {
 		value = subtract(value, toSubtract);
 	}
+	/*--------------------------------CONTAINS--------------------------*/
+	/** Returns true iff the double a is contained within the bounds of b1 through b2, inclusive. */
+	public static boolean contains(double a, double b1, double b2) {
+		if (!isCombinable(a) || !isCombinable(b1)||!isCombinable(b2))
+			return false;
+		if (b1<=b2)
+			if (a>=b1 && a<=b2)
+				return true;
+		if (b1>=b2)
+			if (a<=b1 && a>=b2)
+				return true;
+		return false;
+	}
 	/** Adds two doubles.  Considers infinite, unassigned etc. */
 	public static double add(double value1, double value2) {
 		if (value1 == infinite){

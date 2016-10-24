@@ -14,6 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
+
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
@@ -39,74 +41,74 @@ public class CircleSymbol extends FillableMesquiteSymbol  {
 		super.addDialogElements(dialog,includeSize);
 	}
 	/*.................................................................................................................*/
-	public boolean inRect(int symbolX, int symbolY, int x1, int y1, int x2, int y2, int bound){
-		int symSize = size;
+	public boolean inRect(double symbolX, double symbolY, int x1, int y1, int x2, int y2, int bound){
+		double symSize = size;
 		if (size>bound && bound>0)
 			symSize = bound;
-		Rectangle rect = new Rectangle(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
+		Rectangle2D.Double rect = new Rectangle2D.Double(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
 		return rect.intersects(new Rectangle(x1,y1,x2,y2));
 	}
 	/*.................................................................................................................*/
-	public boolean inRect(int symbolX, int symbolY, int x1, int y1, int x2, int y2, int maxWidth, int maxHeight){
-		int symSize = size;
+	public boolean inRect(double symbolX, double symbolY, int x1, int y1, int x2, int y2, int maxWidth, int maxHeight){
+		double symSize = size;
 		if (size>maxWidth && maxWidth>0)
 			symSize = maxWidth;
 		if (size>maxHeight && maxHeight>0)
 			symSize = maxHeight;
-		Rectangle rect = new Rectangle(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
+		Rectangle2D.Double rect = new Rectangle2D.Double(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
 		return rect.intersects(new Rectangle(x1,y1,x2-x1,y2-y1));
 	}
 	/*.................................................................................................................*/
-	public boolean inSymbol(int symbolX, int symbolY, int x, int y, int bound){
-		int symSize = size;
+	public boolean inSymbol(double symbolX, double symbolY, int x, int y, int bound){
+		double symSize = size;
 		if (size>bound && bound>0)
 			symSize = bound;
-		Rectangle rect = new Rectangle(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
+		Rectangle2D.Double rect = new Rectangle2D.Double(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
 		return rect.contains(x,y);
 	}
 	/*.................................................................................................................*/
-	public boolean inSymbol(int symbolX, int symbolY, int x, int y, int maxWidth, int maxHeight){
+	public boolean inSymbol(double symbolX, double symbolY, int x, int y, int maxWidth, int maxHeight){
+		double symSize = (int)(size*rescaleValue);
+		if (size>maxWidth && maxWidth>0)
+			symSize = maxWidth;
+		if (size>maxHeight && maxHeight>0)
+			symSize = maxHeight;
+		Rectangle2D.Double rect = new Rectangle2D.Double(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
+		return rect.contains(x,y);
+	}
+	/*.................................................................................................................*/
+	public void fillSymbol(Graphics g, double x, double y,  int maxWidth, int maxHeight){
 		int symSize = size;
 		if (size>maxWidth && maxWidth>0)
 			symSize = maxWidth;
 		if (size>maxHeight && maxHeight>0)
 			symSize = maxHeight;
-		Rectangle rect = new Rectangle(symbolX-symSize,symbolY-symSize, symSize+symSize,symSize+symSize);
-		return rect.contains(x,y);
+		GraphicsUtil.fillOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
 	}
 	/*.................................................................................................................*/
-	public void fillSymbol(Graphics g, int x, int y,  int maxWidth, int maxHeight){
-		int symSize = size;
-		if (size>maxWidth && maxWidth>0)
-			symSize = maxWidth;
-		if (size>maxHeight && maxHeight>0)
-			symSize = maxHeight;
-		g.fillOval(x-symSize,y-symSize, symSize+symSize,symSize+symSize);
-	}
-	/*.................................................................................................................*/
-	public void drawSymbol(Graphics g, int x, int y,  int maxWidth, int maxHeight, boolean fillBlack){
-		int symSize = size;
+	public void drawSymbol(Graphics g, double x, double y,  int maxWidth, int maxHeight, boolean fillBlack){
+		int symSize = (int)(size*rescaleValue);
 		if (size>maxWidth && maxWidth>0)
 			symSize = maxWidth;
 		if (size>maxHeight && maxHeight>0)
 			symSize = maxHeight;
 		if (fillBlack) {
 			g.setColor(Color.black);
-			g.fillOval(x-symSize,y-symSize, symSize+symSize,symSize+symSize);
+			GraphicsUtil.fillOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
 		}
 		else if (getFill()) {
 			g.setColor(fillColor);
-			g.fillOval(x-symSize,y-symSize, symSize+symSize,symSize+symSize);
+			GraphicsUtil.fillOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
 		}
-		g.setColor(color);
-		g.drawOval(x-symSize,y-symSize, symSize+symSize,symSize+symSize);
+		g.setColor(rimColor);
+		GraphicsUtil.drawOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
 	}
 	/*.................................................................................................................*/
-	public static void drawBlackCircle(Graphics g, int x, int y, int size){
+	public static void drawBlackCircle(Graphics g, double x, double y, int size){
 		int symSize = size;
 		g.setColor(Color.black);
-		g.fillOval(x-symSize,y-symSize, symSize+symSize,symSize+symSize);
-		g.drawOval(x-symSize,y-symSize, symSize+symSize,symSize+symSize);
+		GraphicsUtil.fillOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
+		GraphicsUtil.drawOval(g,x-symSize,y-symSize, symSize+symSize,symSize+symSize);
 	}
 }
 

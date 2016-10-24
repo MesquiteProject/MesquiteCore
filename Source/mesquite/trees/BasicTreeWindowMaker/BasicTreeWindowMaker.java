@@ -856,6 +856,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	// MesquiteScrollbar hScroll, vScroll;
 	TreeScrollPane treePane;
 	Adjustable hScroll, vScroll;
+	
 	int scanLineThickness = 3;
 	boolean usingPane = false;
 	TreeSource treeSourceTask;
@@ -1297,8 +1298,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return;
 		if (usingPane) {
 			TreeDrawing td = treeDisplay.getTreeDrawing();
-			int x = td.x[treeDisplay.getTree().nodeOfTaxonNumber(i)];
-			int y = td.y[treeDisplay.getTree().nodeOfTaxonNumber(i)];
+			int x = (int)td.x[treeDisplay.getTree().nodeOfTaxonNumber(i)];    //integer node loc approximation
+			int y = (int)td.y[treeDisplay.getTree().nodeOfTaxonNumber(i)];    //integer node loc approximation
 			int w = getTreePaneWidth();
 			int h = getTreePaneHeight();
 			setOrigin(x - w / 2, y - h / 2, true);
@@ -1848,8 +1849,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			// hScroll.setValue(treePane.x);
 			treePane.setHMinMax(0, treeDisplay.getFieldWidth() - treePane.getWidth() - scrollWidth);
 
-			vScroll.setBlockIncrement(treePane.getHeight() / 10);
-			hScroll.setBlockIncrement(treePane.getWidth() / 10);
+			int increment = treePane.getHeight() / 10;
+			if (increment>treeDisplay.getFieldHeight())
+				increment = treeDisplay.getFieldHeight();
+			vScroll.setBlockIncrement(increment);
+			increment = treePane.getWidth() / 10;
+			if (increment>treeDisplay.getFieldWidth())
+				increment = treeDisplay.getFieldWidth();
+			hScroll.setBlockIncrement(increment);
 			vScroll.setUnitIncrement(10);
 			hScroll.setUnitIncrement(10);
 			resetScrolls();
@@ -2747,8 +2754,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					MesquiteBoolean answer = new MesquiteBoolean(false);
 					MesquiteInteger newWidth = new MesquiteInteger(totalTreeFieldWidth);
 					MesquiteInteger newHeight = new MesquiteInteger(totalTreeFieldHeight);
-					MesquiteInteger
-					.queryTwoIntegers(ownerModule.containerOfModule(), "Size of tree drawing", "Width (Pixels)", "Height (Pixels)", answer, newWidth, newHeight, 10, MesquiteInteger.unassigned, 10, MesquiteInteger.unassigned, "Enter the width and height of the tree drawing.  These values must be at least 10 pixels each.");
+					MesquiteInteger.queryTwoIntegers(ownerModule.containerOfModule(), "Size of tree drawing", "Width (Pixels)", "Height (Pixels)", answer, newWidth, newHeight, 10, MesquiteInteger.unassigned, 10, MesquiteInteger.unassigned, "Enter the width and height of the tree drawing.  These values must be at least 10 pixels each.");
 					if (answer.getValue() && newWidth.getValue() > 10 && newHeight.getValue() > 10) {
 						totalTreeFieldWidth = newWidth.getValue();
 						totalTreeFieldHeight = newHeight.getValue();
@@ -3894,8 +3900,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	public void findContained(Tree tree, int N, int x, int y, int w, int h, Vector nodes, Vector taxons) {
 		TreeDrawing drawing = treeDisplay.getTreeDrawing();
-		int dX = drawing.x[N];
-		int dY = drawing.y[N];
+		int dX = (int)drawing.x[N];   //integer node loc approximation
+		int dY = (int)drawing.y[N];   //integer node loc approximation
 
 		if (dX >= x && dX <= x + w && dY >= y && dY <= y + h)
 			nodes.addElement(new MesquiteInteger(N));
@@ -4679,7 +4685,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 }
 
-/* ======================================================================== */
+/* ======================================================================== *
 class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, MouseWheelListener { // REALTreeScrollPane
 	BasicTreeWindow window;
 
@@ -4699,7 +4705,7 @@ class REALTreeScrollPane extends ScrollPane implements AdjustmentListener, Mouse
 
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		Adjustable hScroll = getHAdjustable();
-		Adjustable vScroll = getHAdjustable();
+		Adjustable vScroll = getVAdjustable();
 
 		window.setOrigin(hScroll.getValue(), vScroll.getValue(), false);
 	}
@@ -5881,7 +5887,7 @@ class MagnifyExtra extends TreeDisplayExtra {
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 		if (drawnRoot != tree.getRoot()) {
 			TreeDrawing td = treeDisplay.getTreeDrawing();
-			g.drawImage(image, td.x[drawnRoot], td.y[drawnRoot], treeDisplay);
+			g.drawImage(image, (int)td.x[drawnRoot], (int)td.y[drawnRoot], treeDisplay);
 		}
 	}
 
@@ -5952,11 +5958,11 @@ class BirdsEyePanel extends MesquitePanel {
 	}
 
 	private int getTransformedX(int node) {
-		return getBounds().width * treeDrawing.x[node] / (treeWindow.treeDisplay.getFieldWidth());
+		return (int)(getBounds().width * treeDrawing.x[node] / (treeWindow.treeDisplay.getFieldWidth()));    //integer node loc approximation
 	}
 
 	private int getTransformedY(int node) {
-		return getBounds().height * treeDrawing.y[node] / (treeWindow.treeDisplay.getFieldHeight());
+		return (int)(getBounds().height * treeDrawing.y[node] / (treeWindow.treeDisplay.getFieldHeight()));    //integer node loc approximation
 	}
 
 	public void paint(Graphics g) {

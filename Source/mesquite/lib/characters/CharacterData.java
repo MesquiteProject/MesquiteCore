@@ -884,6 +884,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return deleted;
 	}
 	/*-----------------------------------------------------------*/
+	/** Deletes characters that are turned on in a Bits. */
+	public final boolean deleteCharacters(Bits bits, String progressNote, boolean notify){
+		int ic = numChars;
+		boolean deleted = false;
+		while (ic>=0) {
+			int start = bits.startOfBlock(ic);
+			if (bits.isBitOn(ic)){
+				boolean del = deleteParts(start, ic-start+1);
+				if (del)
+					deleted=true;
+			} 
+			if (StringUtil.notEmpty(progressNote)) 
+				CommandRecord.setDetailsOfProgress(progressNote + " " + ic);
+			ic=start-1;
+		}
+		if (deleted && notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
+		return deleted;
+	}
+	/*-----------------------------------------------------------*/
 	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
 	public boolean deleteParts(int starting, int num){
 		if (num<=0)
@@ -995,6 +1015,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				d.deleteParts(starting, num);
 				if (notify)
 					d.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, new int[] {starting, num}));
+			}
+		}
+	}
+	/*-----------------------------------------------------------*/
+	/** Deletes characters flagged in the Bits in linked data matrices. */
+	public final void deleteInLinked(Bits bits, String progressNote,  boolean notify){
+		if (linkedDatas.size()>0){
+			for (int i=0; i<linkedDatas.size(); i++){
+				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
+				d.deleteCharacters(bits, progressNote, notify);
 			}
 		}
 	}

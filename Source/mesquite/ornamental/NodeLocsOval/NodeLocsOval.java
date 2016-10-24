@@ -262,8 +262,8 @@ public class NodeLocsOval extends NodeLocsFree {
 	}
 //{-----------------------------------------------------------------------------}
 	private void squish (int anc, int node, int centerX, int centerY, int root, double xExpansion, double yExpansion){
-		int nodeX = treeDrawing.x[node];
-		int nodeY =treeDrawing.y[node];
+		double nodeX = treeDrawing.x[node];
+		double nodeY =treeDrawing.y[node];
 		
 		treeDrawing.x[node] = centerX + (int)(xExpansion*(nodeX-centerX));
 		treeDrawing.y[node] = centerY + (int)(yExpansion*(nodeY-centerY));

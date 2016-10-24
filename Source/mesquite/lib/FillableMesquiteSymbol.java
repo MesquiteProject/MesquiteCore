@@ -14,6 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 
 import mesquite.lib.duties.*;
 
@@ -75,11 +77,11 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 		return true;
 	}
 	/**gets the Polygon*/
-	public Polygon getPolygon(){
+	public Path2D.Double getPolygon(){
 		return getPolygon(0);
 	}
 	/**gets the Polygon*/
-	public Polygon getPolygon(int maxSize){
+	public Path2D.Double getPolygon(int maxSize){
 		return null;
 	}
 	/**draws shape if non-Polygon*/
@@ -95,37 +97,51 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	}
 
 	/**inSymbols if non-Polygon*/
-	public boolean inSymbol(int symbolX, int symbolY, int x, int y, int maxSize){
+	public boolean inSymbol(double symbolX, double symbolY, int x, int y, int maxSize){
 		return false;
 	}
 	/**inSymbols if non-Polygon*/
-	public boolean inRect(int symbolX, int symbolY, int x1, int y1, int x2, int y2, int bound){
+	public boolean inRect(double symbolX, double symbolY, int x1, int y1, int x2, int y2, int bound){
 		return false;
 	}
 
 	/**draws the Symbol*/
-	public void drawSymbol(Graphics g, int x, int y, int maxWidth, int maxHeight, boolean fillBlack){
+	public void drawSymbol(Graphics g, double x, double y, int maxWidth, int maxHeight, boolean fillBlack){
 		int bound = 0;
 		if (maxWidth > 0)
 			bound = maxWidth;
 		if (maxHeight>0 && maxHeight<maxWidth)
 			bound = maxHeight;
+		//rescaleValue=1.0;
+		//rescaleValue=1.1;
 
 		if (getIsPolygon()) {
-			Polygon poly = getPolygon(bound);
-			if (poly!=null) {
-				poly.translate(x, y);
-				if (fillBlack) {
-					g.setColor(Color.black);
-					g.fillPolygon(poly);
+			Path2D poly = getPolygon(bound);
+			if (poly!=null){
+				Graphics2D g2 = (Graphics2D)g;
+				AffineTransform polyTransform = new AffineTransform();
+				polyTransform.translate(x,y);
+				//polyTransform.translate(x/rescaleValue,y/rescaleValue);
+				//g2.setTransform(polyTransform);
+				//polyTransform.translate(-x/rescaleValue,-y/rescaleValue);
+				polyTransform.scale(rescaleValue, rescaleValue);
+				//Debugg.println("rescale value " + rescaleValue);
+				AffineTransform saveTransform = g2.getTransform();
+				g2.setTransform(polyTransform);
+				if (poly!=null) {
+					if (fillBlack) {
+						g.setColor(Color.black);
+						GraphicsUtil.fill(g,poly);
+					}
+					else if (getFill()) {
+						g.setColor(fillColor);
+						GraphicsUtil.fill(g,poly);
+					}
+					g.setColor(rimColor);
+
+					GraphicsUtil.draw(g,poly);
 				}
-				else if (getFill()) {
-					g.setColor(fillColor);
-					g.fillPolygon(poly);
-				}
-				g.setColor(rimColor);
-				g.drawPolygon(poly);
-				poly.translate(-x, -y);
+				g2.setTransform(saveTransform);
 			}
 		}
 		else
@@ -133,7 +149,7 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	}
 
 	/**fills the Symbol*/
-	public void fillSymbol(Graphics g, int x, int y, int maxWidth, int maxHeight){
+	public void fillSymbol(Graphics g, double x, double y, int maxWidth, int maxHeight){
 		int bound = 0;
 		if (maxWidth > 0)
 			bound = maxWidth;
@@ -141,11 +157,19 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 			bound = maxHeight;
 
 		if (getIsPolygon()) {
-			Polygon poly = getPolygon(bound);
+			Path2D poly = getPolygon(bound);
 			if (poly!=null) {
-				poly.translate(x, y);
-				g.fillPolygon(poly);
-				poly.translate(-x, -y);
+				if (g instanceof Graphics2D) {
+					Graphics2D g2 = (Graphics2D)g;
+					AffineTransform polyTransform = new AffineTransform();
+					polyTransform.translate(x/rescaleValue,y/rescaleValue);
+					polyTransform.scale(rescaleValue, rescaleValue);
+					AffineTransform saveTransform = g2.getTransform();
+					g2.setTransform(polyTransform);
+			    	 GraphicsUtil.fill(g,poly);
+					g2.setTransform(saveTransform);
+		       } else
+		    	   GraphicsUtil.fill(g,poly);
 			}
 		}
 		else
@@ -153,7 +177,7 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 	}
 
 
-	public boolean inSymbol(int symbolX, int symbolY, int x, int y, int maxWidth, int maxHeight){
+	public boolean inSymbol(double symbolX, double symbolY, int x, int y, int maxWidth, int maxHeight){
 		int bound = 0;
 		if (maxWidth > 0)
 			bound = maxWidth;
@@ -161,11 +185,12 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 			bound = maxHeight;
 
 		if (getIsPolygon()) {
-			Polygon poly = getPolygon(bound);
+			Path2D.Double poly = getPolygon(bound);
 			if (poly!=null) {
-				poly.translate(symbolX, symbolY);
+				AffineTransform polyTransform = new AffineTransform();
+				polyTransform.translate(symbolX, symbolY);
+				poly.transform(polyTransform);
 				boolean in = poly.contains(x,y);
-				poly.translate(-symbolX, -symbolY);
 				return in;
 			}
 		}
@@ -175,7 +200,7 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 		return false;
 	}
 
-	public boolean inRect(int symbolX, int symbolY, int x1, int y1, int x2, int y2, int maxWidth, int maxHeight){
+	public boolean inRect(double symbolX, double symbolY, int x1, int y1, int x2, int y2, int maxWidth, int maxHeight){
 		if (x1==x2 && y1==y2)
 			return inSymbol(symbolX, symbolY, x1,y1,maxWidth,maxHeight);
 		int bound = 0;
@@ -185,14 +210,16 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 			bound = maxHeight;
 
 		if (getIsPolygon()) {
-			Polygon poly = getPolygon(bound);
+			Path2D.Double poly = getPolygon(bound);
 			if (poly!=null) {
-				poly.translate(symbolX, symbolY);
+				AffineTransform polyTransform = new AffineTransform();
+				polyTransform.translate(symbolX, symbolY);
+				poly.transform(polyTransform);
 				Rectangle bounds = poly.getBounds();
 				boolean in = bounds.intersects(new Rectangle(x1,y1,x2-x1,y2-y1));
-				poly.translate(-symbolX, -symbolY);
 				return in;
 			}
+
 		}
 		else {
 			return inRect(symbolX, symbolY,x1,y1,x2,y2,bound);

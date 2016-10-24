@@ -41,7 +41,11 @@ public class RotatedRectangle {
 		poly.xpoints = new int[8];
 		poly.ypoints = new int[8];
 	}
-	public void setShape(int x1, int y1, int x2, int y2, int width, boolean extendAbove, int shape){
+	public void setShape(double x1, double y1, double x2, double y2, int width, boolean extendAbove, int shape){  //DAVIDCHECK  temporary
+		setShape((int)x1, (int)y1, (int) x2, (int) y2, width, extendAbove, shape);
+		
+	}
+		public void setShape(int x1, int y1, int x2, int y2, int width, boolean extendAbove, int shape){
 		primaryX1 = x1;
 		primaryY1 = y1;
 		primaryX2 = x2;

@@ -25,6 +25,111 @@ import java.awt.image.*;
 public class GraphicsUtil {
 	public static TexturePaint missingDataTexture = null;
 	/*_________________________________________________*/
+	public static void drawString(Graphics g, String s, double x, double y) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		g2.drawString(s, (float)x, (float)y);
+	}
+	/*_________________________________________________*/
+	public static void drawString(Graphics2D g2, String s, double x, double y) {
+		g2.drawString(s, (float)x, (float)y);
+	}
+	/*_________________________________________________*/
+	public static void drawLine(Graphics2D g2, double fromX, double fromY, double toX, double toY) {
+		Line2D line = new Line2D.Double(fromX, fromY, toX, toY);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(line);
+	}
+	/*_________________________________________________*/
+	public static void drawLine(Graphics g, double fromX, double fromY, double toX, double toY) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		drawLine(g2,fromX, fromY, toX, toY);
+	}
+	/*_________________________________________________*/
+	public static void fillRect(Graphics2D g2, double x, double y, double width, double height) {
+		Rectangle2D rect = new Rectangle2D.Double(x,y,width,height);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.fill(rect);
+	}
+	/*_________________________________________________*/
+	public static void fillRect(Graphics g, double x, double y, double width, double height) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		fillRect(g2,x,y,width,height);
+	}
+	/*_________________________________________________*/
+	public static void drawRect(Graphics2D g2, double x, double y, double width, double height) {
+		Rectangle2D rect = new Rectangle2D.Double(x,y,width,height);
+		g2.draw(rect);
+	}
+	/*_________________________________________________*/
+	public static void drawRect(Graphics g, double x, double y, double width, double height) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		drawRect(g2,x,y,width,height);
+	}
+	/*_________________________________________________*/
+	public static void fillOval(Graphics2D g2, double x, double y, double width, double height) {
+		Ellipse2D oval = new Ellipse2D.Double(x,y,width,height);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.fill(oval);
+	}
+	/*_________________________________________________*/
+	public static void fillOval(Graphics g, double x, double y, double width, double height) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		fillOval(g2,x,y,width,height);
+	}
+	/*_________________________________________________*/
+	public static void fillArc(Graphics2D g2, double x, double y, double width, double height, double startingAngle, double angleExtent) {
+		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.OPEN);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.fill(arc);
+	}
+	/*_________________________________________________*/
+	public static void fillArc(Graphics g, double x, double y, double width, double height, double startingAngle, double angleExtent) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		fillArc(g2,x,y,width,height,startingAngle, angleExtent);
+	}
+	/*_________________________________________________*/
+	public static void drawArc(Graphics2D g2, double x, double y, double width, double height, double startingAngle, double angleExtent) {
+		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.OPEN);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(arc);
+	}
+	/*_________________________________________________*/
+	public static void drawArc(Graphics g, double x, double y, double width, double height, double startingAngle, double angleExtent) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		drawArc(g2,x,y,width,height,startingAngle, angleExtent);
+	}
+	/*_________________________________________________*/
+	public static void fill(Graphics g, Shape shape) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.fill(shape);
+	}
+	/*_________________________________________________*/
+	public static void draw(Graphics g, Shape shape) {
+		if (!(g instanceof Graphics2D))
+			return;
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(shape);
+	}
+
+	/*_________________________________________________*/
 	public static void drawArrow(Graphics2D g2, int fromX, int fromY, int toX, int toY, int thickness) {
 		// based on Vincent Reig's stackoverflow answer http://stackoverflow.com/a/3094933
 		// create an AffineTransform 
@@ -62,10 +167,18 @@ public class GraphicsUtil {
 		g.drawLine(x-size, y, x+size, y);
 		g.setClip(oldClip);
 	}
+	/*_________________________________________________*/
+	public static void drawCross(Graphics g, double x, double y, int size) {
+		Shape oldClip = g.getClip();
+		//g.setClip(x-size, y-size, size*2, size*2);
+		drawLine(g,x, y-size, x, y+size);
+		drawLine(g, x-size, y, x+size, y);
+		//g.setClip(oldClip);
+	}
 
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns how far along the line (x,y) is */
-	public static double fractionAlongLine(int x, int y, int xStart, int yStart, int xEnd, int yEnd, boolean xBias, boolean yBias) {
+	public static double fractionAlongLine(double x, double y, double xStart, double yStart, double xEnd, double yEnd, boolean xBias, boolean yBias) {
 		if (xStart==xEnd)  //it's a vertical line or a single point
 			if (y<=yStart)
 				return 0.0;
@@ -77,7 +190,7 @@ public class GraphicsUtil {
 			else if (x>=xEnd)
 				return 1.0;
 
-		if (!MesquiteInteger.contains(x, xStart, xEnd) && !MesquiteInteger.contains(y, yStart, yEnd)) {   //outside the bounds
+		if (!MesquiteDouble.contains(x, xStart, xEnd) && !MesquiteDouble.contains(y, yStart, yEnd)) {   //outside the bounds
 			if ((yEnd>=yStart && y>yEnd) || (yEnd<yStart && y<yEnd))
 				return 1.0;
 			if ((xEnd>=xStart && x>xEnd) || (xEnd<xStart && x<xEnd))
@@ -86,9 +199,9 @@ public class GraphicsUtil {
 				return 0.0;
 		}
 
-		if (!MesquiteInteger.contains(y, yStart, yEnd)) // we are not in y range, must use x
+		if (!MesquiteDouble.contains(y, yStart, yEnd)) // we are not in y range, must use x
 			return Math.abs(1.0*(x-xStart)/(xEnd-xStart));
-		if (!MesquiteInteger.contains(x, xStart, xEnd)) // we are not in x range, must use y
+		if (!MesquiteDouble.contains(x, xStart, xEnd)) // we are not in x range, must use y
 			return Math.abs(1.0*(y-yStart)/(yEnd-yStart));
 		if (xBias)
 			return Math.abs(1.0*(x-xStart)/(xEnd-xStart));
@@ -118,21 +231,21 @@ public class GraphicsUtil {
 
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns the value of x at the middle of the line */
-	public static int xCenterOfLine(int x1, int y1, int x2, int y2) {
+	public static double xCenterOfLine(double x1, double y1, double x2, double y2) {
 		if (x1==x2)  //it's a vertical line or a single point
 			return x1;
 		return (Math.min(x1, x2) + Math.abs(x1-x2)/2);
 	}
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns the value of y at the middle of the line */
-	public static int yCenterOfLine(int x1, int y1, int x2, int y2) {
+	public static double yCenterOfLine(double x1, double y1, double x2, double y2) {
 		if (y1==y2)  //it's a horizontal line or a single point
 			return y1;
 		return (Math.min(y1, y2) + Math.abs(y1-y2)/2);
 	}
 	/* ............................................................................................................... */
 	/** Given the coordinates of the start and end of a line, returns the angle in radians of the line */
-	public static double angleOfLine(int x1, int y1, int x2, int y2) {
+	public static double angleOfLine(double x1, double y1, double x2, double y2) {
 		if (y1==y2)  //it's a horizontal line or a single point
 			if (x2>=x1)
 				return 0.0;
@@ -150,10 +263,10 @@ public class GraphicsUtil {
 	}
 	/* ............................................................................................................... */
 	/** draws a line starting at x,y, and going in the direction of the angle */
-	public static void drawAngledLine(Graphics g, int x, int y, double angle, int length) {
-		int endX= (int)(Math.cos(angle)*length)+x;
-		int endY =(int)(Math.sin(angle)*length)+y;
-		g.drawLine(x,y,endX, endY);
+	public static void drawAngledLine(Graphics g, double x, double y, double angle, double length) {
+		double endX= (Math.cos(angle)*length)+x;
+		double endY =(Math.sin(angle)*length)+y;
+		GraphicsUtil.drawLine(g,x,y,endX, endY);
 	}
 	/*
 	 * 		Graphics2D g2 = (Graphics2D)g;
@@ -167,28 +280,26 @@ public class GraphicsUtil {
 
 	/* ............................................................................................................... */
 	/** creates a square beginning at x,y and tilted in the direction of the angle. */
-	public static void translateAlongAngle(MesquiteInteger x, MesquiteInteger y, double angle, int length) {
-		int adj= -(int)(Math.cos(angle)*length);
-		int opp =-(int)(Math.sin(angle)*length);
+	public static void translateAlongAngle(MesquiteDouble x, MesquiteDouble y, double angle, int length) {
+		double adj= -(Math.cos(angle)*length);
+		double opp =-(Math.sin(angle)*length);
 		x.add(adj);
 		y.add(opp);  
 	}
 	/* ............................................................................................................... */
 	/** creates a square beginning at x,y and tilted in the direction of the angle. */
-	public static Polygon createAngledSquare(int x, int y, double angle, int length) {
-		int adj= -(int)(Math.cos(angle)*length);
-		int opp =-(int)(Math.sin(angle)*length);
+	public static Path2D.Double createAngledSquare(double x, double y, double angle, int length) {
+		double adj= -(Math.cos(angle)*length);
+		double opp =-(Math.sin(angle)*length);
 		x -=opp/2;
 		y-=adj/2;
 
-		Polygon poly = new Polygon();
-		poly.npoints=0;
-		poly.addPoint(x,y);
-		poly.addPoint(x+opp,y+adj);
-		poly.addPoint(x+opp-adj,y+adj+opp);
-		poly.addPoint(x-adj,y+opp);
-		poly.addPoint(x,y);
-		poly.npoints=5;
+		Path2D.Double poly = new Path2D.Double();
+		poly.moveTo(x,y);
+		poly.lineTo(x+opp,y+adj);
+		poly.lineTo(x+opp-adj,y+adj+opp);
+		poly.lineTo(x-adj,y+opp);
+		poly.lineTo(x,y);
 		return poly;
 
 	}
@@ -396,7 +507,21 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
-	public static void fillOval(Graphics g, int x, int y, int w, int h, boolean threeD){
+	public static void drawOval(Graphics g, double x, double y, int w, int h){
+		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			Ellipse2D oval = new Ellipse2D.Double(x,y,w,h);
+			g2.draw(oval); 
+			g2.setStroke(st);
+		}
+		catch(NullPointerException e){
+			MesquiteMessage.warnProgrammer("npe in draw oval x " + x + " y " + y + " w " + w + " h " + h);
+		}
+	}
+	/* -------------------------------------------------*/
+	public static void fillOval(Graphics g, double x,double y, double w, double h, boolean threeD){
 		try {
 			Graphics2D g2 = (Graphics2D)g;
 			Stroke st = g2.getStroke();
@@ -407,7 +532,7 @@ public class GraphicsUtil {
 				current = ColorDistribution.darker(current, 0.75);
 				while (w>0) {
 					g.setColor(current);
-					g.fillOval(x,y,w,h);
+					fillOval(g,x,y,w,h);
 					x++;
 					y++;
 					w-=4;
@@ -417,7 +542,7 @@ public class GraphicsUtil {
 				if (c!=null) g.setColor(c);
 			}
 			else
-				g2.fillOval(x,y,w,h); 
+				fillOval(g,x,y,w,h); 
 			g2.setStroke(st);
 
 		}
@@ -426,11 +551,11 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
-	public static void fillArc(Graphics g, int x, int y, int w, int h, int startAngle, int arcAngle, boolean threeD){
+	public static void fillArc(Graphics g, double x, double y, double w, double h, int startAngle, int arcAngle, boolean threeD){
 		if (arcAngle < 1)
 			return;
 		if (MesquiteTrunk.isWindows()){ //this is workaround to Windows problem by which goes all black if too close to 0 or 360
-			int spotsize = MesquiteInteger.maximum(w, h);
+			double spotsize = MesquiteDouble.maximum(w, h);
 			if (3.14*spotsize*(360-arcAngle)/360<1){
 				fillOval(g, x, y, w, h, threeD);
 				return;
@@ -445,7 +570,7 @@ public class GraphicsUtil {
 			current = ColorDistribution.darker(current, 0.75);
 			while (w>0) {
 				g.setColor(current);
-				g.fillArc(x,y,w,h, startAngle, arcAngle);
+				fillArc(g,x,y,w,h, startAngle, arcAngle);
 				x++;
 				y++;
 				w-=4;
@@ -455,7 +580,7 @@ public class GraphicsUtil {
 			if (c!=null) g.setColor(c);
 		}
 		else
-			g.fillArc(x,y,w,h, startAngle, arcAngle); 
+			fillArc(g,x,y,w,h, startAngle, arcAngle); 
 	}
 
 }

@@ -44,14 +44,21 @@ public abstract class DataSearcher extends MesquiteModule  {
    	
 	/*.................................................................................................................*/
    	/** Processing to be done after each search.  Returns true iff the number of columns changed in the process).*/
-   	public boolean processAfterEachTaxonSearch(mesquite.lib.characters.CharacterData data, int it){
+   	public boolean processAfterEachTaxonSearch(mesquite.lib.characters.CharacterData data, int it, int passNumber){
    		return false;
    	}
 	/*.................................................................................................................*/
 	/** message if search failed to find anything.  */
 	public void unsuccessfulSearchMessage(){
 	}
-	/*.................................................................................................................*/
+	
+	/** Returns the number of separate processings that are needed after each search.   E.g., LocalBlaster can require multiple
+	 * processings if several local databases are searched.  */
+	public int getNumberOfProcessingPassesPerSearch() {
+		return 1;
+	}
+	
+	
    	/** Called to search data in a table. This is used if the searching procedure can be done on the selected region in one taxon
    	at a time, independent of all other taxa.  If the searching procedure involves dependencies between taxa,
    	then a different method must be built.  */
@@ -61,8 +68,10 @@ public abstract class DataSearcher extends MesquiteModule  {
  			if (canSearchMoreThanOnePiece() || data.getNumTaxa()==1)
  				return false;
 			for (int j=0; j<data.getNumTaxa(); j++) {
-				if (searchOneTaxon(data,j,0,data.getNumChars()))
-					processAfterEachTaxonSearch(data, j); 
+				if (searchOneTaxon(data,j,0,data.getNumChars())) {
+ 					for (int i=0; i<getNumberOfProcessingPassesPerSearch(); i++) 
+ 						processAfterEachTaxonSearch(data, j, i); 
+				}
 				else
 					unsuccessfulSearchMessage();
 			}
@@ -77,7 +86,10 @@ public abstract class DataSearcher extends MesquiteModule  {
  	
  			while (table.nextSingleRowBlockSelected(row, firstColumn, lastColumn)) { 
  				if (searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue())){
- 					boolean resetColumns = processAfterEachTaxonSearch(data, row.getValue());
+ 					boolean resetColumns = false;
+ 					for (int i=0; i<getNumberOfProcessingPassesPerSearch(); i++) 
+ 						if (processAfterEachTaxonSearch(data, row.getValue(), i))
+ 							resetColumns=true;
  					if (resetColumns){  //
  						lastColumn.setValue(data.getNumChars());
  						firstColumn.setValue(0);

@@ -158,7 +158,7 @@ class InfoToolExtra extends TreeDisplayExtra implements Commandable  {
 		 				addToPopup(strEx, branchFound, responseNumber++);
 		 			}
 		 		}
-			popup.showPopup(treeDisplay.getTreeDrawing().x[branchFound], treeDisplay.getTreeDrawing().y[branchFound]);
+			popup.showPopup((int)treeDisplay.getTreeDrawing().x[branchFound], (int)treeDisplay.getTreeDrawing().y[branchFound]);
    			}
  	 	}
     	 	else if (checker.compare(this.getClass(), "Responds to choice of popup menu with information about the branch", "[branchNumber][choice number]", commandName, "respond")) {

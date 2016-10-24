@@ -270,10 +270,10 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 			if (!StringUtil.blank(s)){
 				box.setString(s);
 				box.setColors(Color.black, Color.white);
-				int x, y;
+				double x, y;
 				if (assocTextModule.centred.getValue()){
-					int centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocTextModule.xOffset;
-					int centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocTextModule.yOffset;
+					double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocTextModule.xOffset;
+					double centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocTextModule.yOffset;
 					/*g.setColor(Color.yellow);
 					g.drawLine(treeDisplay.getTreeDrawing().lineBaseX[node], treeDisplay.getTreeDrawing().lineBaseY[node], treeDisplay.getTreeDrawing().lineTipX[node], treeDisplay.getTreeDrawing().lineTipY[node]);
 					/*g.setColor(Color.red);
@@ -296,7 +296,7 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 				if (assocTextModule.horizontal.getValue())
 					box.draw(g,  x, y);
 				else
-					box.draw(g,  x, y, 0, 1500, treeDisplay, false);
+					box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);
 
 			}
 		}

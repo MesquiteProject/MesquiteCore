@@ -225,7 +225,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	/** Draw highlight for branch node */
 	public void drawHighlight(Tree tree, int node, Graphics g, boolean flip){
-		if (MesquiteInteger.isCombinable(x[node]) && MesquiteInteger.isCombinable(y[node])) {
+		if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 			Color tC = g.getColor();
 			if (flip)
 				g.setColor(Color.red);
@@ -233,7 +233,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 				g.setColor(Color.blue);
 			int s = getSpotSize(node);
 			for (int i=1; i<4; i++)
-				g.drawOval( x[node]- s/2 - 2 - i, y[node]- s/2 - 2 - i, s + 3 + i + i, s + 3 + i + i);
+				GraphicsUtil.drawOval(g, x[node]- s/2 - 2 - i, y[node]- s/2 - 2 - i, s + 3 + i + i, s + 3 + i + i);
 
 			g.setColor(tC);
 		}
@@ -253,19 +253,19 @@ class PlotTreeDrawing extends TreeDrawing  {
 				else if (tree.nodeExists(tree.previousSisterOfNode(node)))
 					sisterNode = tree.previousSisterOfNode(node);
 				if (sisterNode !=0) {
-					if (MesquiteInteger.isCombinable(lineTipX[node]) && MesquiteInteger.isCombinable(lineTipY[node]) && MesquiteInteger.isCombinable(lineTipX[sisterNode]) && MesquiteInteger.isCombinable(lineTipY[sisterNode])) {
-						g.drawLine(lineTipX[node]+1, lineTipY[node], lineTipX[sisterNode]+1, lineTipY[sisterNode]);
-						g.drawLine(lineTipX[node], lineTipY[node], lineTipX[sisterNode], lineTipY[sisterNode]);
-						g.drawLine(lineTipX[node], lineTipY[node]+1, lineTipX[sisterNode], lineTipY[sisterNode]+1);
-						g.drawLine(lineTipX[node]+1, lineTipY[node]+1, lineTipX[sisterNode]+1, lineTipY[sisterNode]+1);
+					if (MesquiteDouble.isCombinable(lineTipX[node]) && MesquiteDouble.isCombinable(lineTipY[node]) && MesquiteDouble.isCombinable(lineTipX[sisterNode]) && MesquiteDouble.isCombinable(lineTipY[sisterNode])) {
+						GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineTipX[sisterNode]+1, lineTipY[sisterNode]);
+						GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineTipX[sisterNode], lineTipY[sisterNode]);
+						GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node]+1, lineTipX[sisterNode], lineTipY[sisterNode]+1);
+						GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineTipX[sisterNode]+1, lineTipY[sisterNode]+1);
 					}
 				}
 			}
-			else  if (MesquiteInteger.isCombinable(lineTipX[node]) && MesquiteInteger.isCombinable(lineBaseX[node]) && MesquiteInteger.isCombinable(lineTipY[node]) && MesquiteInteger.isCombinable(lineBaseY[node])) {
-				g.drawLine(lineTipX[node]+1, lineTipY[node], lineBaseX[node]+1, lineBaseY[node]);
-				g.drawLine(lineTipX[node], lineTipY[node], lineBaseX[node], lineBaseY[node]);
-				g.drawLine(lineTipX[node], lineTipY[node]+1, lineBaseX[node], lineBaseY[node]+1);
-				g.drawLine(lineTipX[node]+1, lineTipY[node]+1, lineBaseX[node]+1, lineBaseY[node]+1);
+			else  if (MesquiteDouble.isCombinable(lineTipX[node]) && MesquiteDouble.isCombinable(lineBaseX[node]) && MesquiteDouble.isCombinable(lineTipY[node]) && MesquiteDouble.isCombinable(lineBaseY[node])) {
+				GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineBaseX[node]+1, lineBaseY[node]);
+				GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineBaseX[node], lineBaseY[node]);
+				GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node]+1, lineBaseX[node], lineBaseY[node]+1);
+				GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineBaseX[node]+1, lineBaseY[node]+1);
 			}
 			
 			if (composite!=null)
@@ -346,24 +346,24 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private void drawSpot(Graphics g, int node){
-		if (MesquiteInteger.isCombinable(x[node]) && MesquiteInteger.isCombinable(y[node])) {
+		if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 			int s = getSpotSize(node);
-			g.fillOval( x[node]- s/2, y[node]- s/2, s, s);
+			GraphicsUtil.fillOval(g, x[node]- s/2, y[node]- s/2, s, s);
 		}
 	}
 	/*_________________________________________________*/
 	private void highlightSpot(Graphics g, int node){
-		if (MesquiteInteger.isCombinable(x[node]) && MesquiteInteger.isCombinable(y[node])) {
+		if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 			int s = getSpotSize(node);
 			for (int diam = s + 12; diam> s + 8; diam --)
-				g.drawOval( x[node]- (int)((double)diam/2 + 0.5), y[node]- (int)((double)diam/2 + 0.5), diam, diam);
+				GraphicsUtil.drawOval(g, x[node]- (int)((double)diam/2 + 0.5), y[node]- (int)((double)diam/2 + 0.5), diam, diam);
 		}
 	}
 	/*_________________________________________________*/
 	private void fillSpot(Graphics g, int node){
-		if (MesquiteInteger.isCombinable(x[node]) && MesquiteInteger.isCombinable(y[node])) {
+		if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 			int s = getSpotSize(node);
-			g.fillOval( x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4);
+			GraphicsUtil.fillOval(g, x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4);
 		}
 	}
 	/*_________________________________________________*/
@@ -375,7 +375,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
-			if (MesquiteInteger.isCombinable(x[node]) && MesquiteInteger.isCombinable(y[node])) {
+			if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 				Color c = g.getColor();
 				int numColors = colors.getNumColors();
 				if (numColors==1){
@@ -395,7 +395,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 							g.setColor(color);
 						
 						arcAngle = (int)((colors.getWeight(i)/totalFreq)*360);
-						g.fillArc( x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4, startAngle, arcAngle);
+						GraphicsUtil.fillArc(g, x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4, startAngle, arcAngle);
 						startAngle+=arcAngle;
 					}
 				}

@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.LocalBlaster;
 
 import java.awt.Checkbox;
+import java.awt.TextArea;
 
 import mesquite.lib.*;
 import mesquite.molec.lib.*;
@@ -24,11 +25,13 @@ import mesquite.molec.lib.*;
 public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	boolean preferencesSet = false;
 	String programOptions = "" ;
-	String databases = "nt" ;
+	String databaseString = "nt" ;
 	int numThreads = 1;
 	MesquiteTimer timer = new MesquiteTimer();
 	boolean localBlastDBHasTaxonomyIDs = true;
 	boolean useIDInDefinition = true;
+	String[] databaseArray = null;
+	int numDatabases = 0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		programOptions = "";
@@ -36,21 +39,21 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		loadPreferences();
 		return true;
 	}
-	
+
 	/*
 	 -evalue 0.01
 	 */
-	
+
 	public  int getUpperLimitMaxHits(){
 		return 100;
 	}
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		 if ("programOptions".equalsIgnoreCase(tag))
-				programOptions = StringUtil.cleanXMLEscapeCharacters(content);
-		 else if ("databases".equalsIgnoreCase(tag))
-			 databases = StringUtil.cleanXMLEscapeCharacters(content);
+		if ("programOptions".equalsIgnoreCase(tag))
+			programOptions = StringUtil.cleanXMLEscapeCharacters(content);
+		else if ("databases".equalsIgnoreCase(tag))
+			databaseString = StringUtil.cleanXMLEscapeCharacters(content);
 		else if ("numThreads".equalsIgnoreCase(tag))
 			numThreads = MesquiteInteger.fromString(content);
 		else if ("localBlastDBHasTaxonomyIDs".equalsIgnoreCase(tag))
@@ -64,7 +67,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "programOptions", programOptions);  
-		StringUtil.appendXMLTag(buffer, 2, "databases", databases);  
+		StringUtil.appendXMLTag(buffer, 2, "databases", databaseString);  
 		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
 		StringUtil.appendXMLTag(buffer, 2, "localBlastDBHasTaxonomyIDs", localBlastDBHasTaxonomyIDs);  
 		StringUtil.appendXMLTag(buffer, 2, "useIDInDefinition", useIDInDefinition);  
@@ -80,9 +83,50 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	}
 	/*.................................................................................................................*/
 	public String getDatabaseName () {
-		if (databases==null)
+		if (databaseString==null)
 			return "";
-		return databases;
+		return databaseString;
+	}
+
+	/*.................................................................................................................*/
+	public void processDatabases (String s) {
+		if (s==null)
+			databaseArray=null;
+		else if (s.indexOf(",")<0){
+			databaseArray= new String[1];
+			databaseArray[0] = s;
+			numDatabases=1;
+		} else {
+			Parser parser = new Parser(s);
+			parser.setWhitespaceString(",");
+			parser.setPunctuationString("");
+			String token = "";
+			int count=0;
+			while (!parser.atEnd()) {
+				token = parser.getNextToken();
+				token = StringUtil.stripBoundingWhitespace(token);
+				if (StringUtil.notEmpty(token))
+					count++;
+			}
+			numDatabases=count;
+			if (count==0){
+				databaseArray = null;
+				return;
+			}
+			databaseArray = new String[count];
+			parser.setString(s);
+			parser.setConvertUnderscoresToBlanks(false);
+			count=0;
+			while (!parser.atEnd()) {
+				token = parser.getNextToken();
+				token = StringUtil.stripBoundingWhitespace(token);
+				if (StringUtil.notEmpty(token)) {
+					databaseArray[count]=token;
+					count++;
+				}
+			}
+			Debugg.println("databaseArray " + databaseArray);
+		}
 	}
 
 
@@ -98,34 +142,52 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		sb.append("<br><br>");
 		sb.append("If you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check Use ID in Definition.");
 		dialog.appendToHelpString(sb.toString());
-		
-		
 
-		SingleLineTextField databasesField = dialog.addTextField("Database to search:", databases, 26, true);
+
+		//public TextArea addTextAreaSmallFont (String initialString, int numRows, int numColumns) {
+
+
+		dialog.addLabel("Databases to search (separate by commas):");
+		TextArea databasesField = dialog.addTextAreaSmallFont(databaseString, 5, 50);
 		SingleLineTextField programOptionsField = dialog.addTextField("Additional BLAST options:", programOptions, 26, true);
 		Checkbox useIDInDefinitionBox = dialog.addCheckBox("Use ID in Definition (NCBI-provided databases)", useIDInDefinition);
 		Checkbox localBlastDBHasTaxonomyIDsBox = dialog.addCheckBox("Local BLAST database has NCBI taxonomy IDs", localBlastDBHasTaxonomyIDs);
 		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,20, 1, Integer.MAX_VALUE);
-		
+
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
-			databases = databasesField.getText();
+			databaseString = databasesField.getText();
+			databaseString = StringUtil.removeNewLines(databaseString);
+			processDatabases(databaseString);
 			programOptions = programOptionsField.getText();
 			numThreads = numThreadsField.getValue();
 			localBlastDBHasTaxonomyIDs = localBlastDBHasTaxonomyIDsBox.getState();
 			useIDInDefinition = useIDInDefinitionBox.getState();
-			
+
 			storePreferences();
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
 
+	public int getNumDatabases (){
+		return numDatabases;
+	}
+
+	public String getDatabase (int iDatabase){
+		if (databaseArray==null || databaseArray.length==0)
+			return null;
+		if (iDatabase<0 || iDatabase>= databaseArray.length)
+			return null;
+		return databaseArray[iDatabase];
+	}
+	
+
 	/*.................................................................................................................*/
-	public void blastForMatches(String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime,  double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeCommand) {
-		
+	public void blastForMatches(String database, String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime,  double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeCommand) {
+
 		getProject().incrementProjectWindowSuppression();
-		
+
 		String unique = MesquiteTrunk.getUniqueIDBase();
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 		String fileName = "sequenceToSearch" + MesquiteFile.massageStringToFilePathSafe(unique) + ".fa";   
@@ -143,21 +205,21 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
 		String blastCommand = blastType + "  -query " + fileName;
-		blastCommand+= " -db "+databases;
+		blastCommand+= " -db "+database;
 		blastCommand+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
 
 		if (eValueCutoff>=0.0)
 			blastCommand+= " -evalue "+eValueCutoff;
-		
+
 		if (wordSize>3)
 			blastCommand+= " -word_size "+wordSize;
 		if (numThreads>1)
 			blastCommand+="  -num_threads " + numThreads;
 
-	//	blastCommand+= " -gapopen 5 -gapextend 2 -reward 1 -penalty -3 ";
-		
-		
-		
+		//	blastCommand+= " -gapopen 5 -gapextend 2 -reward 1 -penalty -3 ";
+
+
+
 		blastCommand+=" -out " + outFileName + " -outfmt 5";		
 		blastCommand+=" -max_target_seqs " + numHits; // + " -num_alignments " + numHits;// + " -num_descriptions " + numHits;		
 		blastCommand+=" " + programOptions + StringUtil.lineEnding();
@@ -169,7 +231,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 
 		timer.timeSinceLast();
-		
+
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
 
 		if (success){
@@ -184,9 +246,9 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 			getProject().decrementProjectWindowSuppression();
 		logln("   BLAST completed in " +timer.timeSinceLastInSeconds()+" seconds");
 	}	
-	
+
 	/*.................................................................................................................*/
-	public String getFastaFromIDs(String[] idList, boolean isNucleotides, StringBuffer blastResponse) {
+	public String getFastaFromIDs(String[] idList, boolean isNucleotides, StringBuffer blastResponse, int databaseNumber) {
 		int count = 0;
 		for (int i=0; i<idList.length; i++) 
 			if (StringUtil.notEmpty(idList[i]))
@@ -207,20 +269,20 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 			}
 
 		getProject().incrementProjectWindowSuppression();
-		
+
 		String unique = MesquiteTrunk.getUniqueIDBase();
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
-		
+
 		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootDir + outFileName;
 
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(rootDir));
-		
+
 		String blastCommand = "blastdbcmd  -entry "+queryString + " -outfmt %f";
-		blastCommand+= " -db "+databases;
+		blastCommand+= " -db "+databaseArray[databaseNumber];
 		blastCommand+=" -out " + outFileName;		
 
 		shellScript.append(blastCommand);
@@ -229,7 +291,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
-	
+
 		if (success){
 			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
@@ -244,7 +306,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		getProject().decrementProjectWindowSuppression();
 		return null;
 	}	
-	
+
 	/*.................................................................................................................*/
 	public  String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report){
 		if (blastx)
@@ -259,11 +321,11 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 	/*.................................................................................................................*/
 	public  void postProcessingCleanup(BLASTResults blastResult){
 		if (useIDInDefinition){
-//			blastResult.setIDFromDefinition("|", 2);
+			//			blastResult.setIDFromDefinition("|", 2);
 			blastResult.setIDFromDefinition();
 			blastResult.setAccessionFromDefinition("|", 4);
 		}
-			
+
 	}
 
 	public  String[] getNucleotideIDsfromProteinIDs(String[] ID){

@@ -132,6 +132,15 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		else
 			redoCalculationsWaiting = true;
 	}
+	Rectangle visRect;
+
+	public Rectangle getVisRect(){
+		return visRect;
+	}
+	public void setVisRect(Rectangle r){
+		visRect = r;
+	}
+
 	public void setTaxonNameBuffer(int b) {
 		taxonNameBuffer = b;
 	}
