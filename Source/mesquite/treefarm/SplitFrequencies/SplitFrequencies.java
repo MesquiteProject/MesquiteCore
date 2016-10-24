@@ -33,8 +33,17 @@ public class SplitFrequencies extends NumbersForNodes {
 	int startingTree = 0;
 	int sampleSize = MesquiteInteger.unassigned;
 	MesquiteBoolean useWeights = new MesquiteBoolean(true);
-	MesquiteBoolean maxContradictory = new MesquiteBoolean(false);
-
+	MesquiteSubmenuSpec colorSubmenu;
+	MesquiteInteger colorMode;
+	String[] valueCalculatedNames = new String[]{"Frequency of Clade","Maximum Frequency of Contradictory Clade","Difference between Frequency of Clade and Contradictory Clade"};
+	MesquiteString valueCalculatedName = new MesquiteString("Frequency of Clade");
+	static int calculateCladeFreq = 0;
+	static int calculateMaxContradictory = 1;
+	static int calculateDifference = 2;
+	int valueCalculated = calculateCladeFreq;
+	
+	MesquiteSubmenuSpec valueCalculatedSubmenu=null;
+	
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(TreeSource.class, getName() + " needs a source of trees whose split frequencies will be assessed.",
@@ -43,8 +52,14 @@ public class SplitFrequencies extends NumbersForNodes {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 
+		valueCalculatedSubmenu = addSubmenu(null, "Value Calculated");
+		valueCalculatedSubmenu.setSelected(valueCalculatedName);
+		addItemToSubmenu(null, valueCalculatedSubmenu, valueCalculatedNames[calculateCladeFreq], makeCommand("calculateCladeFreq",  this));
+		addItemToSubmenu(null, valueCalculatedSubmenu, valueCalculatedNames[calculateMaxContradictory], makeCommand("calculateMaxContradictory",  this));
+		addItemToSubmenu(null, valueCalculatedSubmenu, valueCalculatedNames[calculateDifference], makeCommand("calculateDifference",  this));
+		
 		addCheckMenuItem(null, "Consider Tree Weights", makeCommand("toggleUseWeights", this), useWeights);
-		addCheckMenuItem(null, "Show Maximum Frequency of Contradictory Clades", makeCommand("toggleMaxContradictory", this), maxContradictory);
+//		addCheckMenuItem(null, "Show Maximum Frequency of Contradictory Clades", makeCommand("toggleMaxContradictory", this), maxContradictory);
 		treeSourceTask = (TreeSource)hireEmployee(TreeSource.class, "Tree Source");
 		if (treeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees obtained");
@@ -91,7 +106,13 @@ public class SplitFrequencies extends NumbersForNodes {
 		temp.addLine("setTreeSource",treeSourceTask);
 		temp.addLine("resume");
   	 	temp.addLine("toggleUseWeights " + useWeights.toOffOnString());
-  	 	temp.addLine("toggleMaxContradictory " + maxContradictory.toOffOnString());
+	
+   		if (valueCalculated== calculateCladeFreq)
+			temp.addLine("calculateCladeFreq"); 
+		else if (valueCalculated== calculateMaxContradictory)
+			temp.addLine("calculateMaxContradictory"); 
+		else if (valueCalculated== calculateDifference)
+			temp.addLine("calculateDifference"); 
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -114,9 +135,23 @@ public class SplitFrequencies extends NumbersForNodes {
 	 		useWeights.toggleValue(parser.getFirstToken(arguments));  
 	 		parametersChanged();
 		}
-		else if (checker.compare(this.getClass(), "Toggles whether or not it shows the frequency of the clade, or the maximum frequency of contradictory clades", null, commandName, "toggleMaxContradictory")) {
-	 		maxContradictory.toggleValue(parser.getFirstToken(arguments));  
-	 		parametersChanged();
+		else if (checker.compare(this.getClass(), "Sets the value to be calculated to the frequency of a node in the set of trees", null, commandName, "calculateCladeFreq")) {
+			valueCalculated = calculateCladeFreq;
+			valueCalculatedName.setValue(valueCalculatedNames[valueCalculated]);
+			valueCalculatedSubmenu.setSelected(valueCalculatedName);
+			parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets the value to be calculated to the maximum frequency of a contradictory clade in the set of trees", null, commandName, "calculateMaxContradictory")) {
+			valueCalculated = calculateMaxContradictory;
+			valueCalculatedName.setValue(valueCalculatedNames[valueCalculated]);
+			valueCalculatedSubmenu.setSelected(valueCalculatedName);
+			parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets the value to be calculated to the difference between frequency of a node and the maximum frequency of a contradictory clade in the set of trees", null, commandName, "calculateDifference")) {
+			valueCalculated = calculateDifference;
+			valueCalculatedName.setValue(valueCalculatedNames[valueCalculated]);
+			valueCalculatedSubmenu.setSelected(valueCalculatedName);
+			parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Suspends calculations", null, commandName, "suspend")) {
 			suspend = true;
@@ -162,7 +197,7 @@ public class SplitFrequencies extends NumbersForNodes {
 	/*.................................................................................................................*/
 	public void initBipartitionVector(Taxa taxa, BipartitionVector bipartitions){
 		if (bipartitions!=null) {
-			if (maxContradictory.getValue())
+			if (valueCalculated!= calculateCladeFreq)
 				bipartitions.setMode(BipartitionVector.MAJRULEMODE);
 			else
 				bipartitions.setMode(BipartitionVector.MATCHMODE);
@@ -175,8 +210,10 @@ public class SplitFrequencies extends NumbersForNodes {
 		if (tree.nodeIsInternal(node)){
 			//Bipartition bp = Bipartition.getBipartitionFromNode(tree, node);
 			double freq = 0.0;
-			if (maxContradictory.getValue())
+			if (valueCalculated==calculateMaxContradictory)
 				freq = -bipartitions.getMaximumDecimalFrequencyOfContradictoryNode(tree, node, true);
+			else if (valueCalculated==calculateDifference) 
+				freq = bipartitions.getDecimalFrequencyOfNode(tree, node, true) - bipartitions.getMaximumDecimalFrequencyOfContradictoryNode(tree, node, true);
 			else
 				freq = bipartitions.getDecimalFrequencyOfNode(tree, node, true);
 			result.setValue(node, freq);
@@ -261,9 +298,11 @@ public class SplitFrequencies extends NumbersForNodes {
 	public String getNameAndParameters(){
 		if (treeSourceTask ==null)
 			return getName();
-		String s = getName()+", Tree Source: " +  treeSourceTask.getTreesDescriptiveString(taxa); 
-		if (maxContradictory.getValue())
-			s+="; showing the negative value of the frequency of the contradictory clade that has the maximum frequency";
+		String s = getName()+"\nSource of trees examined: " +  treeSourceTask.getTreesDescriptiveString(taxa); 
+		if (valueCalculated==calculateMaxContradictory)
+			s+="\nShowing the negative value of the frequency of the contradictory clade that has the maximum frequency";
+		else if (valueCalculated==calculateDifference)
+			s+="\nShowing the difference between the frequency of a clade and the frequency of the contradictory clade that has the maximum frequency";
 		return s;
 	}
 	/*.................................................................................................................*/
@@ -275,7 +314,7 @@ public class SplitFrequencies extends NumbersForNodes {
 		return true;
 	}
 	public String getExplanation() {
-		return "Calculates, for each clade in the tree, the frequency of that split among the trees in a specified tree source, or the frequency of the contradictory clade with the highest frequency.";
+		return "Calculates, for each clade in the tree, the frequency of that split among the trees in a specified tree source, or the frequency of the contradictory clade with the highest frequency, or the difference.";
 	}
 	public String getName() {
 		return "Clade Frequencies in Trees";
