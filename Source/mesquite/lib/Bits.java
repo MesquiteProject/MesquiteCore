@@ -418,6 +418,32 @@ public class Bits implements Listable{
  		for (int i=0; i< numInts && i< other.numInts; i++) 
  				array[i] = array[i] & other.array[i];
  	}
+ 	/** Examines the two bits to see if all four combinations of paired values occur across the Bits.
+ 	 * Returns true if there is:
+ 	 * 	- at least one position with bits1=on and bits2=on
+ 	 * 	- at least one position with bits1=on and bits2=off
+ 	 * 	- at least one position with bits1=off and bits2=on
+ 	 * 	- at least one position with bits1=off and bits2=off
+ 	 */
+ 	public static boolean compatible (Bits bits1, Bits bits2) {
+ 		boolean onon = false;
+ 		boolean onoff = false;
+ 		boolean offon = false;
+ 		boolean offoff=false;
+ 		for (int i=0; i< bits1.numBits && i< bits2.numBits; i++) {
+ 			if (bits1.isBitOn(i) && bits2.isBitOn(i))
+ 				onon=true;
+ 			if (bits1.isBitOn(i) && !bits2.isBitOn(i))
+ 				onoff=true;
+ 			if (!bits1.isBitOn(i) && bits2.isBitOn(i))
+ 				offon=true;
+ 			if (!bits1.isBitOn(i) && !bits2.isBitOn(i))
+ 				offoff=true;
+ 			if (onon && onoff && offon && offoff)
+ 				return false;
+ 		}
+ 		return true;
+ 	}
 	public boolean equals (Bits other) {
  		int max = MesquiteInteger.maximum(numInts, other.numInts);
  		for (int i=0; i<max; i++) {
@@ -591,7 +617,8 @@ public class Bits implements Listable{
  			if (isBitOn(i))
  				if (!foundOne) {
  					foundOne = true;
- 					single.setValue(i);
+ 					if (single!=null)
+ 						single.setValue(i);
  				}
  				else  // we've already found one, so there is more than one bit on
  					return false;
