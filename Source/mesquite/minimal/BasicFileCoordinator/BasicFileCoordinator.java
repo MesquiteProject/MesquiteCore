@@ -1428,7 +1428,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		Debugg.println(" command " + commandName);
 		if (checker.compare(this.getClass(), "Returns the total number of character data matrices stored in the project", null, commandName, "getNumberOfDataSets")) {
 			return (new MesquiteInteger(getProject().getNumberCharMatrices()));
 		}
