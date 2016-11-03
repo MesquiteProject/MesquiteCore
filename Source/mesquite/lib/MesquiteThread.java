@@ -45,6 +45,8 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	public static int numFilesBeingRead =0;
 	boolean readingThread = false;
 	public boolean resetUIOnMe = true;
+	public static String SEPARATETHREADHELPMESSAGE = "If you use a separate thread, you will then regain control of Mesquite once the process starts."+
+	 " This has the advantage that it will allow you to continue to use Mesquite.  However, it is dangerous, as you can alter aspects of your data that will eventually cause problems for the separate process.";
 	static int numInst = 1;
 	static {
 		threads = new Vector(10);
