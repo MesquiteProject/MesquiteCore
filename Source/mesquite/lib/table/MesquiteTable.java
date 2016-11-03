@@ -2907,7 +2907,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			int lineX = 0;
 			//	if (tb.showRowGrabbers)
 			//		lineX = tb.getRowGrabberWidth();
-			for (int c=firstColumnVisible; (c<column); c++) {
+			for (int c=firstColumnVisible; c<column && c<columnWidths.length; c++) {
 				lineX += columnWidths[c];
 			}
 			return lineX;
