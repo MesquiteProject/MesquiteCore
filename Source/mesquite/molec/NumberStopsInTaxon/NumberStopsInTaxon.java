@@ -99,7 +99,7 @@ public class NumberStopsInTaxon extends NumberForTaxon {
 		if (result !=null)
 			result.setValue(count);
 		if (resultString!=null)
-			resultString.setValue("Number of stop codons in taxon "+ observedStates.getName() + ": " + count);
+			resultString.setValue("Number of stop codons in taxon "+ taxon.getName() + " in matrix " + observedStates.getName() + ": " + count);
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
