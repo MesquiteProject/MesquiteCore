@@ -29,7 +29,7 @@ import mesquite.lib.table.*;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public abstract class ExternalSequenceAligner extends MultipleSequenceAligner implements ActionListener{
+public abstract class ExternalSequenceAligner extends MultipleSequenceAligner implements ActionListener, OutputFileProcessor, ShellScriptWatcher{
 	String programPath;
 	SingleLineTextField programPathField =  null;
 	boolean preferencesSet = false;
@@ -37,6 +37,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	String programOptions = "" ;
 	Random rng;
 	public static int runs = 0;
+	ShellScriptRunner scriptRunner;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		rng = new Random(System.currentTimeMillis());
@@ -54,6 +55,36 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	public abstract String getImportExtension();
 	public abstract String getProteinImportInterpreter () ;
 	public abstract void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data);
+
+	/*.................................................................................................................*/
+	public String getStdErr() {
+		if (scriptRunner!=null)
+			return scriptRunner.getStdErr();
+		return "";
+	}
+	/*.................................................................................................................*/
+	public String getStdOut() {
+		if (scriptRunner!=null)
+			return scriptRunner.getStdOut();
+		return "";
+	}
+
+	public boolean monitorExecution(){
+		 if (scriptRunner!=null)
+			 return scriptRunner.monitorAndCleanUpShell();
+		 return false;
+	}
+
+	public String checkStatus(){
+		return null;
+	}
+	public boolean stopExecution(){
+		if (scriptRunner!=null)
+			scriptRunner.stopExecution();
+		//scriptRunner = null;
+		return false;
+	}
+	
 
 
 	/*.................................................................................................................*/
@@ -292,6 +323,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFileName = "alignedFile" + MesquiteFile.massageStringToFilePathSafe(unique) + getImportExtension();
 		String outFilePath = rootDir + outFileName;
+		String[] outputFilePaths = new String[1];
+		outputFilePaths[0] = outFilePath;
 
 //		MesquiteFile.putFileContents(filePath, fileBuffer.toString(), true);
 
@@ -322,6 +355,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		logln("Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
+
+		scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, true);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
+		success = scriptRunner.executeInShell();
 
 		 success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
 
@@ -430,6 +466,24 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
 		return true;
 	}	
+	
+	public void processOutputFile(String[] outputFilePaths, int fileNum) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void processCompletedOutputFiles(String[] outputFilePaths) {
+		// TODO Auto-generated method stub
+		
+	}
+	public String[] modifyOutputPaths(String[] outputFilePaths) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public boolean continueShellProcess(Process proc) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
 		return true;
