@@ -2858,7 +2858,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}	
 	/* ................................................................................................................. */
-	boolean pasteData(int it, String s) {
+	boolean pasteDataOld(int it, String s) {
 		String[] lines = StringUtil.getLines(s);
 		StringBuffer sb = new StringBuffer(lines[0]);
 		Parser parser = new Parser();
@@ -2872,6 +2872,20 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		return true;
 	}
+	/* ................................................................................................................. */
+	boolean pasteData(int it, String s) {
+		String[] lines = StringUtil.getLines(s);
+		Parser parser = new Parser();
+		MesquiteInteger pos = new MesquiteInteger(0);
+		s = lines[0];
+		String t = StringUtil.getNextTabbedToken(s, pos);
+		for (int i = 0; i < numChars && pos.getValue()<s.length(); i++) {
+			t = StringUtil.getNextTabbedToken(s, pos);
+			pasteCell(parser, i, it, t);
+		}
+		return true;
+	}
+
 
 	/* ................................................................................................................. */
 
@@ -2910,7 +2924,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		sb.append('\t');
 
 		for (int i = 0; i < numChars; i++) {
-			statesIntoStringBuffer(i, row, sb, true);
+			statesIntoStringBuffer(i, row, sb, false);
+			sb.append('\t');
 		}
 		sb.append(StringUtil.lineEnding());
 	}
