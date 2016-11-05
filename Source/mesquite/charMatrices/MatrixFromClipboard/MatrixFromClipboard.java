@@ -118,9 +118,9 @@ public class MatrixFromClipboard extends CharMatrixFiller implements MesquiteLis
 		MesquiteInteger pos2 = new MesquiteInteger(0);
 		if (columnNamesPresent) {
 			if (rowNamesPresent)
-				MesquiteTable.getNextTabbedToken(s, pos); //eat up first tab of corner cell
+				StringUtil.getNextTabbedToken(s, pos); //eat up first tab of corner cell
 			for (int ic = 0; ic<data.getNumChars(); ic++) {
-				String t = MesquiteTable.getNextTabbedToken(s, pos);
+				String t = StringUtil.getNextTabbedToken(s, pos);
 				data.setCharacterName(ic, t);//charactername;
 			}
 		}
@@ -128,14 +128,14 @@ public class MatrixFromClipboard extends CharMatrixFiller implements MesquiteLis
 		for (int it = 0; it<data.getNumTaxa() && token !=null; it++) {
 			int taxonNumber = it;
 			if (rowNamesPresent) {
-				token = MesquiteTable.getNextTabbedToken(s, pos);
+				token = StringUtil.getNextTabbedToken(s, pos);
 				int tn = data.getTaxa().whichTaxonNumber(token);
 				if (tn>=0)
 					taxonNumber = tn;
 				//taxon name; skip
 			}
 			for (int ic = 0; ic<data.getNumChars() && token !=null; ic++) {
-				token = MesquiteTable.getNextTabbedToken(s, pos);
+				token = StringUtil.getNextTabbedToken(s, pos);
 				pos2.setValue(0);
 				state.setValue(token, data);
 				if (!state.isCombinable())
