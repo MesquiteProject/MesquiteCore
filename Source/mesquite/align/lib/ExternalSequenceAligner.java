@@ -356,9 +356,16 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 
-		scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, true);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
+		ProgressIndicator progressIndicator = new ProgressIndicator(getProject(), getProgramName()+" alignment in progress");
+		progressIndicator.start();
+
+		scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, false);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
 		success = scriptRunner.executeInShell();
-		success = scriptRunner.monitorAndCleanUpShell();
+		success = scriptRunner.monitorAndCleanUpShell(progressIndicator);
+		if (progressIndicator.isAborted()){
+			logln("Alignment aborted by user\n");
+		}
+		progressIndicator.goAway();
 
 		if (success){
 			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
