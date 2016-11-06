@@ -294,6 +294,7 @@ public class ShellScriptUtil  {
 		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name);
 	}
 
+
 	/*.................................................................................................................*/
 	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher){
 		String runningFilePath = null;

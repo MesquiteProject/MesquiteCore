@@ -358,8 +358,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, true, getName(), outputFilePaths, this, this, true);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
 		success = scriptRunner.executeInShell();
-
-		 success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName());
+		success = scriptRunner.monitorAndCleanUpShell();
 
 		if (success){
 			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
@@ -369,7 +368,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord scr = new CommandRecord(true);
 			MesquiteThread.setCurrentCommandRecord(scr);
-			String failureText = StringUtil.tokenize("Output file containing aligned sequences");
+			String failureText = StringUtil.tokenize("Output file containing aligned sequences $$$$$$$$$");
 			if (data instanceof DNAData)
 				tempDataFile = (MesquiteFile)coord.doCommand("linkFileExp", failureText +" " + StringUtil.tokenize(outFilePath) + " " + StringUtil.tokenize(getDNAImportInterpreter()) + " suppressImportFileSave ", CommandChecker.defaultChecker); //TODO: never scripting???
 			else
@@ -477,11 +476,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	public String[] modifyOutputPaths(String[] outputFilePaths) {
 		// TODO Auto-generated method stub
-		return null;
+		return outputFilePaths;
 	}
 	public boolean continueShellProcess(Process proc) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/
