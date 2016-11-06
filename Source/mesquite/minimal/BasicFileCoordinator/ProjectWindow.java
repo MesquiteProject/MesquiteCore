@@ -1085,7 +1085,7 @@ class TaxaPanel extends ElementPanel {
 	public int requestSpacer(){
 		return 16;
 	}
-	void chart(){
+	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
 		MesquiteThread.addHint(new MesquiteString("TaxonValuesChart", mID));
 		if (MesquiteDialog.useWizards)
@@ -1204,7 +1204,7 @@ class MElementPanel extends ElementPanel {
 
 	}
 
-	void chart(){
+	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
 		String tID = Long.toString(((CharacterData)element).getTaxa().getID());
 		MesquiteThread.addHint(new MesquiteString("CharacterValuesChart", tID));
@@ -1285,7 +1285,7 @@ class TreesRPanel extends ElementPanel {
 	public String getElementTypeName(){ 
 		return "Trees Block";
 	}
-	void chart(){
+	public void chart(){
 		String mID = Long.toString(((TreeVector)element).getID());
 		String tID = Long.toString(((TreeVector)element).getTaxa().getID());
 		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", tID));
