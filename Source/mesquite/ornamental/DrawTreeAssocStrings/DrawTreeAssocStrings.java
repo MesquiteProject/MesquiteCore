@@ -38,7 +38,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 		horizontal = new MesquiteBoolean(true);
 		centred = new MesquiteBoolean(true);
 		showOnTerminals = new MesquiteBoolean(true);
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Text");
+		MesquiteSubmenuSpec mss = addSubmenu(null, "Node or Branch-Associated Text");
 		addItemToSubmenu(null, mss, "Choose Associated Text To Show...", makeCommand("chooseText",  this));
 		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
 		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
@@ -59,7 +59,7 @@ public class DrawTreeAssocStrings extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Node-Associated Text";
+		return "Node or Branch-Associated Text";
 	}
 
 	/*.................................................................................................................*/
@@ -365,11 +365,11 @@ class NodeAssocTextExtra extends TreeDisplayExtra  {
 		if (popup==null)
 			popup = new MesquitePopup(treeDisplay);
 		popup.removeAll();
-		popup.add(new MesquiteMenuItem("Display Node-Associated Text", null, null));
+		popup.add(new MesquiteMenuItem("Display Node or Branch-Associated Text", null, null));
 		popup.add(new MesquiteMenuItem("-", null, null));
 		int num = tree.getNumberAssociatedObjects();
 		if (num == 0)
-			popup.add(new MesquiteMenuItem("This Tree has no text associated with nodes", null, null));
+			popup.add(new MesquiteMenuItem("This Tree has no text associated with nodes or branches", null, null));
 		else 
 			for (int i = 0; i< num; i++){
 				ObjectArray da = tree.getAssociatedObjects(i);

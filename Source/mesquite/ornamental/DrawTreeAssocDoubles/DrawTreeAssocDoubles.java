@@ -75,7 +75,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Node-Associated Values";
+		return "Node or Branch-Associated Values";
 	}
 
 	/*.................................................................................................................*/
@@ -116,7 +116,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets whether to show the node associated values", "[on or off]", commandName, "setOn")) {  //on always except if scripted off
+		if (checker.compare(this.getClass(), "Sets whether to show the node or branch associated values", "[on or off]", commandName, "setOn")) {  //on always except if scripted off
 			if (StringUtil.blank(arguments))
 				on.setValue(!on.getValue());
 			else
@@ -229,7 +229,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		}
 */		
 		
-		else if (checker.compare(this.getClass(), "Sets whether to show a node associated values", "[on or off]", commandName, "toggleShow")) {
+		else if (checker.compare(this.getClass(), "Sets whether to show a node or branch associated value", "[on or off]", commandName, "toggleShow")) {
 			String name = parser.getFirstToken(arguments);
 			if (isShowing(name)){
 				names.removeElementAt(names.indexOfByName(name), false);
@@ -455,11 +455,11 @@ class NodeAssocValuesExtra extends TreeDisplayExtra  {
 		if (popup==null)
 			popup = new MesquitePopup(treeDisplay);
 		popup.removeAll();
-		popup.add(new MesquiteMenuItem("Display Node-Associated Values", null, null));
+		popup.add(new MesquiteMenuItem("Display Node or Branch-Associated Values", null, null));
 		popup.add(new MesquiteMenuItem("-", null, null));
 		int num = tree.getNumberAssociatedDoubles();
 		if (num == 0)
-			popup.add(new MesquiteMenuItem("This Tree has no values associated with nodes", null, null));
+			popup.add(new MesquiteMenuItem("This Tree has no values associated with nodes or brances", null, null));
 		else 
 			for (int i = 0; i< num; i++){
 				DoubleArray da = tree.getAssociatedDoubles(i);
