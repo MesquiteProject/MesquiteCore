@@ -217,9 +217,9 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	/*.................................................................................................................*/
 	public String getProgramCommand(){
 		if (MesquiteTrunk.isWindows())
-			return "call " + StringUtil.protectForWindows(getProgramPath());
+			return "call " + StringUtil.protectFilePathForWindows(getProgramPath());
 		else
-			return StringUtil.protectForUnix(getProgramPath());
+			return StringUtil.protectFilePathForUnix(getProgramPath());
 	}
 	public boolean programOptionsComeFirst(){
 		return true;  
@@ -231,9 +231,9 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 
 	public void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data) {
 		if (!MesquiteTrunk.isWindows())
-			shellScript.append("  " + StringUtil.protectForUnix(inFilePath) + " > " + StringUtil.protectForUnix(outFilePath));
+			shellScript.append("  " + StringUtil.protectFilePathForUnix(inFilePath) + " > " + StringUtil.protectFilePathForUnix(outFilePath));
 		else
-			shellScript.append(" --out " + StringUtil.protectForUnix(outFilePath) + " " + StringUtil.protectForUnix(inFilePath));  
+			shellScript.append(" --out " + StringUtil.protectFilePathForUnix(outFilePath) + " " + StringUtil.protectFilePathForUnix(inFilePath));  
 	}
 
 
