@@ -322,14 +322,36 @@ public class StringUtil {
 	public static String delete(String line, char old) {
 		if (line==null)
 			return null;
-		return line.replaceAll(String.valueOf(old), "");
+		else if (line.equals(""))
+			return "";
+		else if (line.indexOf(old)<0)
+			return line;
+		else {
+			StringBuffer sb = new StringBuffer("");
+			int len = line.length();
+			for (int i=0; i<len; i++)
+				if (line.charAt(i)!=old)
+					sb.append(line.charAt(i));
+			return sb.toString();
+		}
 	}
 	/*.................................................................................................................*/
 	/** replaces all instance of the old character by the nnew character*/
 	public static String replace(String line, char old, char nnew) {
 		if (line==null)
 			return null;
-		return line.replaceAll(String.valueOf(old), String.valueOf(nnew));
+		else if (line.equals(""))
+			return "";
+		else if (line.indexOf(old)<0)
+			return line;
+		else {
+			StringBuffer sb = new StringBuffer(line);
+			int len = sb.length();
+			for (int i=0; i<len; i++)
+				if (sb.charAt(i)==old)
+					sb.setCharAt(i, nnew);
+			return sb.toString();
+		}
 	}
 	/*.................................................................................................................*/
 	public static int characterCount(String s,char c){
@@ -592,7 +614,8 @@ public class StringUtil {
 	public static String reverse(String s) {
 		if (s==null)
 			return null;
-		return StringUtils.reverse(s);
+		StringBuffer sb = new StringBuffer(s);
+		return sb.reverse().toString();
 	}
 	/*.................................................................................................................*/
 	public static byte[] pascalByteArrayFromString(String s){
@@ -729,7 +752,15 @@ public class StringUtil {
 	public static String deTokenize(String token) {
 		if (token == null)
 			return null;
-		return token.replaceAll("_", " ");
+		if (token.indexOf('_')>=0) {
+			StringBuffer sb = new StringBuffer(token);
+			for (int i=0; i<token.length(); i++)
+				if (sb.charAt(i) == '_')
+					sb.setCharAt(i, ' ');
+			return sb.toString();
+		}
+		else
+			return token;
 	}
 	/*.................................................................................................................*/
 	//TODO: quote should not be punctuation, and should be treated separately!!!!
@@ -940,11 +971,37 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String stripLeadingWhitespace(String token) { //added 22 Dec 01
-		return StringUtils.stripStart(token, null);
+		if (token == null)
+			return "";
+		int firstDark = -1;
+		for (int i=0; i<token.length(); i++) {
+			char c = token.charAt(i);
+			if (defaultWhitespace.indexOf(c)<0){
+				firstDark = i;
+				break;
+			}
+		}
+		if (firstDark == -1)
+			return "";
+		else
+			return token.substring(firstDark, token.length());
 	}
 	/*.................................................................................................................*/
 	public static String stripTrailingWhitespace(String token) {
-		return StringUtils.stripEnd(token, null);
+		if (token == null)
+			return "";
+		int firstDark = -1;
+		for (int i=token.length()-1;  i>=0; i--) {
+			char c = token.charAt(i);
+			if (defaultWhitespace.indexOf(c)<0){
+				firstDark = i;
+				break;
+			}
+		}
+		if (firstDark == -1)
+			return "";
+		else
+			return token.substring(0, firstDark+1);
 	}
 	/*.................................................................................................................*/
 	public static String stripTrailingWhitespaceAndPunctuation(String token) {
@@ -965,7 +1022,8 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String stripBoundingWhitespace(String token) {
-		return token.trim();
+		String s = stripLeadingWhitespace(token);
+		return stripTrailingWhitespace(s);
 	}
 	/*.................................................................................................................*/
 	/** Removes all new line characters from the string. */
