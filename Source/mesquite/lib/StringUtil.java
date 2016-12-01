@@ -13,7 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.awt.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.*;
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -1342,42 +1347,12 @@ public class StringUtil {
 	/** This encodes a string so that it can be used as part of a URL */
 	public static String encodeForURL(String s){
 		if (s==null) return null;
-		StringBuffer buffer = new StringBuffer(s.length()*2);
-		for (int i=0; i<s.length(); i++) {
-			if (Character.isSpaceChar(s.charAt(i))) 
-				buffer.append("%20");
-			else if (s.charAt(i)=='>')
-				buffer.append("%3E");
-			else if (s.charAt(i)=='<')
-				buffer.append("%3C");
-			else if (s.charAt(i)=='"')
-				buffer.append("%22");
-			else if (s.charAt(i)=='#')
-				buffer.append("%23");
-			else if (s.charAt(i)=='%')
-				buffer.append("%25");
-			else if (s.charAt(i)=='{')
-				buffer.append("%7B");
-			else if (s.charAt(i)=='}')
-				buffer.append("%7D");
-			else if (s.charAt(i)=='|')
-				buffer.append("%7C");
-			else if (s.charAt(i)=='\\')
-				buffer.append("%5C");
-			else if (s.charAt(i)=='^')
-				buffer.append("%5E");
-			else if (s.charAt(i)=='~')
-				buffer.append("%7E");
-			else if (s.charAt(i)=='[')
-				buffer.append("%5B");
-			else if (s.charAt(i)==']')
-				buffer.append("%5D");
-			else if (s.charAt(i)=='`')
-				buffer.append("%60");
-			else
-				buffer.append(s.charAt(i));
+		try {
+			return URLEncoder.encode(s, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// this should never happen, as UTF-8 is pretty standard
+			return null;
 		}
-		return buffer.toString();
 	}
 
 	/** this is the old name for this method
@@ -1447,50 +1422,17 @@ public class StringUtil {
 
 	/*.................................................................................................................*/
 	public static String protectForXML(String s) {
-		//TODO: finish this !!
-		if (blank(s))
-			return s;
-		StringBuffer buffer = new StringBuffer(s.length()*2);
-		for (int i=0; i<s.length(); i++) {
-			char c = s.charAt(i);
-			if (c=='&')
-				buffer.append("&amp;");
-			else if (c=='<')
-				buffer.append("&lt;");
-			else if (c=='>')
-				buffer.append("&gt;");
-			else if (c=='\'')
-				buffer.append("&apos;");
-			else if (c=='"')
-				buffer.append("&quot;");
-			else {
-				buffer.append(c);
-				/*
-				String d = accentedCharToEscape(c);
-				if (d == null)
-					buffer.append(c);
-				else
-					buffer.append(d);
-					*/
-			}
-			
-			
+		if ("".equals(s)) {
+			return "";
 		}
-		return buffer.toString();  		 
+		return StringEscapeUtils.escapeXml(s);
 	}
 	/*.................................................................................................................*/
 	public static String cleanXMLEscapeCharacters(String s) {
-		//TODO: finish this !!
-		if (s==null)
+		if ("".equals(s)) {
 			return "";
-		else if (blank(s))
-			return s;
-		String newString = replace(s,"&amp;","&");
-		newString = replace(newString,"&lt;","<");
-		newString = replace(newString,"&gt;",">");
-		newString = replace(newString,"&apos;","'");
-		newString = replace(newString,"&quot;","\"");
-		return newString;
+		}
+		return StringEscapeUtils.unescapeXml(s);
 	}
 
 	/*.................................................................................................................*/
