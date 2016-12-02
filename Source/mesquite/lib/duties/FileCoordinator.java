@@ -95,6 +95,8 @@ public abstract class FileCoordinator extends MesquiteModule {
 
 	/** closes the given file; returns false if cancelled by user. */
 	public abstract boolean closeFile(MesquiteFile file);
+	/** closes the given file; returns false if cancelled by user.  Does so quietly, without interaction*/
+	public abstract boolean closeFile(MesquiteFile fi, boolean quietly);
 
 	/** Saves file. */
 	public abstract void saveFile(MesquiteFile file);

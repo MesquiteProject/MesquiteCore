@@ -959,12 +959,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/*  */
 	public boolean closeFile(MesquiteFile fi){
+		return closeFile(fi, false);
+	}
+	public boolean closeFile(MesquiteFile fi, boolean quietly){
 		if (getProject() ==null)
 			return false;
 		incrementMenuResetSuppression();
 		if (fi!=null) {
 			if (getProject().getHomeFile() == fi) { //should ask for all files
-				if (MesquiteThread.isScripting() || !getProject().isDirty()) {
+				if (quietly || MesquiteThread.isScripting() || !getProject().isDirty()) {
 					waitWriting(null);
 					logln("Closing " + getProject().getName());
 					getProject().isDoomed = true;
@@ -1005,7 +1008,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 			else {
-				if (MesquiteThread.isScripting() || !fi.isDirty()) {
+				if (quietly || MesquiteThread.isScripting() || !fi.isDirty()) {
 					waitWriting(fi);
 					fi.close();
 				}
