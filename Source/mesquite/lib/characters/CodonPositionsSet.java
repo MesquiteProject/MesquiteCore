@@ -91,7 +91,7 @@ public class CodonPositionsSet  extends CharNumSet {
  		return getListOfMatches(targetPos, offset, include, false);
  	}
  	public String getListOfMatches(int targetPos, int offset, boolean[] include, boolean writeCommas){  //offset is number to add to character numbers
-
+ 		//this had been badly broken in 310 (commas written everywhere...
  		int lastWritten = -1;
 		int unassignedPosition=4;
 		String list = "";
@@ -109,8 +109,10 @@ public class CodonPositionsSet  extends CharNumSet {
 						int lastThird = endSequenceByThree(targetPos, getNumberOfParts(), ic, count, include, charNumberOfLastThird);
 						//if so, then go the series of thirds 
 						if (lastThird != count){
-							if (writeSeparator)
-								list += ",";
+							if (writeSeparator) {
+								list += ", ";
+								writeSeparator=false;
+							}
 
 							list += " " + CharacterStates.toExternal(count+offset) + " - " +  CharacterStates.toExternal(lastThird+offset) + "\\3";
 							ic = charNumberOfLastThird.getValue();
@@ -118,8 +120,10 @@ public class CodonPositionsSet  extends CharNumSet {
 						
 						}
 						else { //otherwise write as normal*/
-							if (writeSeparator)
-								list += ",";
+							if (writeSeparator) {
+								list += ", ";
+								writeSeparator=false;
+							}
 							lastWritten = count;
 							list += " " + CharacterStates.toExternal(count+offset);
 							continuing = 1;
@@ -132,13 +136,16 @@ public class CodonPositionsSet  extends CharNumSet {
 				}
 				else if (continuing>0) {   // we are in a contiguous stretch of the same thing
 					if (lastWritten != count-1){  // last one we wrote wasn't the one just before
-						if (writeSeparator)
-							list += ",";
+						if (writeSeparator) {
+							list += ", ";
+							writeSeparator=false;
+						}
 						list += " " + CharacterStates.toExternal(count-1+offset);
 						lastWritten = count-1;
 					}
 					else {
-						writeSeparator=true;
+						if (writeCommas)
+							writeSeparator=true;
 						lastWritten = -1;
 					}
 					continuing = 0;
