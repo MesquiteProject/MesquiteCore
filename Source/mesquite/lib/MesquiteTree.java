@@ -1743,6 +1743,25 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		count++; //count node itself
 		return count;
 	}
+
+    public Vector<Integer> nodesInClade(int node) {
+        Vector<Integer> nodes = new Vector();
+        String[] parsedNodes = nodesInCladeAsString(node,null).split(",");
+        for (String nodeString : parsedNodes) {
+            nodes.add(Integer.parseInt(nodeString));
+        }
+        return nodes;
+    }
+
+    private String nodesInCladeAsString(int node, String nodes) {
+        if (nodes == null) {
+            nodes = String.valueOf(node);
+        }
+        for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+            nodes = nodesInCladeAsString(d, nodes) + "," + d;
+        }
+        return nodes;
+    }
 	/*-----------------------------------------*/
 	/** Returns number of terminal taxa in clade.*/
 	public  int numberOfTerminalsInClade(int node) {
@@ -5583,7 +5602,16 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return label[node];
 	}
 	/*-----------------------------------------*/
-	/** Returns whether the node has a label */
+    public void setStringPropertyOnNode(String propName, String propVal, int node){
+        this.setAssociatedObject(new NameReference(propName),node, propVal);
+    }
+    /*-----------------------------------------*/
+    /** Gets the node label of the node */
+    public String getStringPropertyOnNode(String prop, int node){
+        ObjectArray props = this.getAssociatedObjects(node);
+        return "";
+    }
+    /** Returns whether the node has a label */
 	public boolean nodeHasLabel(int node){
 		return (label!=null && nodeExists(node) && label[node]!=null) || (nodeIsTerminal(node));
 	}

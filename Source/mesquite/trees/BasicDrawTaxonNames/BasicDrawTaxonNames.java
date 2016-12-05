@@ -439,11 +439,16 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			//check all extras to see if they want to add anything
 			boolean underlined = false;
 			Color taxonColor;
-			if (!tree.anySelected() || tree.getSelected(N))
-				taxonColor = fontColor;
-			else
+			if (!tree.anySelected() || tree.getSelected(N)) {
+                long result = tree.getAssociatedLong(NameReference.getNameReference("taxoncolor"), N);
+                if (result == MesquiteLong.unassigned) {
+                    taxonColor = fontColor;
+                } else {
+                    taxonColor = ColorDistribution.getStandardColor((int) result);
+                }
+            } else {
 				taxonColor = fontColorLight;
-
+            }
 			if (partitions!=null && (colorPartition.getValue() || shadePartition.getValue())){
 				TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
 				if (mi!=null) {

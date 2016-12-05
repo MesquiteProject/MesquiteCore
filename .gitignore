@@ -1,4 +1,8 @@
 Mesquite_Folder/
+# Workspace files #
+###################
+*.iml
+
 # Compiled source #
 ###################
 *.com
@@ -36,3 +40,7 @@ Mesquite_Folder/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Build products #
+##################
+Resources/Mesquite*

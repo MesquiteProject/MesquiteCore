@@ -674,7 +674,8 @@ class BasicTreeDisplay extends TreeDisplay  {
 		if (ownerModule == null || ownerModule.isDoomed())
 			return;
 		setShowBranchColors(ownerDrawModule.showBranchColors.getValue());
-		if (MesquiteWindow.checkDoomed(this)) 
+        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (MesquiteWindow.checkDoomed(this))
 			return;
 		setDrawingInProcess(true);
 		int initialPending = repaintsPending;

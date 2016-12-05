@@ -2359,7 +2359,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (checker.compare(this.getClass(), "Returns the tree info panel", null, commandName, "getInfoPanel")) {
 			return treeInfoPanel;
 		}
-		else if (checker.compare(this.getClass(), "Returns analyses at nodes as a table", null, commandName, "getAsTable")) {
+        else if (checker.compare(this.getClass(), "Returns the tree pane size", null, commandName, "getTreePaneSize")) {
+            return new Dimension(getTreePaneWidth(),getTreePaneHeight());
+        }
+        else if (checker.compare(this.getClass(), "Returns analyses at nodes as a table", null, commandName, "getAsTable")) {
 			if (treeDisplay == null)
 				return null;
 			String s = treeDisplay.getTableVersion();

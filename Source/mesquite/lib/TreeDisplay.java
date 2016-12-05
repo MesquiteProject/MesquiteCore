@@ -146,7 +146,17 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		}
 	}
 
-	public Composite setBranchTransparency(Graphics g, int N){
+    public int getBranchWidth(int node){
+        long result = tree.getAssociatedLong(NameReference.getNameReference("width"), node);
+
+        if (result == MesquiteLong.unassigned) {
+            return 0;
+        }
+        return (int) result;
+    }
+
+
+    public Composite setBranchTransparency(Graphics g, int N){
 		if (!showBranchColors)
 			return null;
 		if (tree.anySelected() && !tree.getSelected(N)) {
