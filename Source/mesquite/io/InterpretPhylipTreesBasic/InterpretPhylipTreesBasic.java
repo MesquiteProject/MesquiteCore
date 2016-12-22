@@ -28,12 +28,12 @@ import mesquite.io.lib.*;
 public class InterpretPhylipTreesBasic extends InterpretPhylipTrees {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Phylip (trees)";
+		return "Simple Newick/Phylip Treefile";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Imports and exports Phylip trees." ;
+		return "Imports and exports Newick trees in the simple tree format used by Phylip and other programs." ;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
