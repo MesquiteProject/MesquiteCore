@@ -470,6 +470,14 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 	/*.................................................................................................................*/
 	/* ����� */
+	/** Adds a dividing line to the module's containing menu.
+	 * @deprecated
+	 *     */
+	public  final MesquiteMenuItemSpec addMenuLine(){
+		return addMenuSeparator();
+	}
+	/*.................................................................................................................*/
+	/* ����� */
 	/** Adds a menu item to the module's containing menu.  When selected, the given command will be executed. */
 	public final MesquiteMenuItemSpec addMenuItem(String itemName, MesquiteCommand command){
 		MesquiteMenuItemSpec mmis = MesquiteMenuItemSpec.getMMISpec(null, itemName, module, command);
