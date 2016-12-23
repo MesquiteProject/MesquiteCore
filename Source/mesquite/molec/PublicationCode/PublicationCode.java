@@ -32,7 +32,7 @@ public class PublicationCode extends TaxonListAssistant {
 	MatrixSourceCoord matrixSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, DNAState.class, "Source of DNA matrix (for " + getName() + ")"); 
+		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, DNAState.class, "Source of matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		return true;
@@ -135,7 +135,7 @@ public class PublicationCode extends TaxonListAssistant {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -153,6 +153,6 @@ public class PublicationCode extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Lists the primers used in the reads composing a sequence." ;
+		return "Lists the publication code for a sequence." ;
 	}
 }

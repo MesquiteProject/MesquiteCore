@@ -77,7 +77,7 @@ public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift
    	 }
 	/*.................................................................................................................*/
   	 public boolean isPrerelease() {
-		return true;
+		return false;
    	 }
   	/*.................................................................................................................*/
  	 public boolean requestPrimaryChoice() {
