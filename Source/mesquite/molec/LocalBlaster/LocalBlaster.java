@@ -125,7 +125,6 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 					count++;
 				}
 			}
-			Debugg.println("databaseArray " + databaseArray);
 		}
 	}
 
