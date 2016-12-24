@@ -2194,7 +2194,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		long menusCreated = MesquiteMenuItem.totalCreated;
 		long startMenus = getTotalMenuItems();
 
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<1; i++) {   // Debugg.println:  loop here entirely to test slowdown; remove loop eventually
 			deassignMenus();
 			//	if (menuBar != null)
 			//		menuBar.dispose();
