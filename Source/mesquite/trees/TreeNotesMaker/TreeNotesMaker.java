@@ -30,7 +30,8 @@ public class TreeNotesMaker extends TreeDisplayAssistantD  {
     	 	notes = new Vector();
     	 	setUseMenubar(false);
    		addMenuItem("Close Note", makeCommand("closeNote", this));
-		addSubmenu(null, "Font", makeCommand("setFont", this), MesquiteSubmenu.getFontList());
+		//addSubmenu(null, "Font", makeCommand("setFont", this), MesquiteSubmenu.getFontList());
+		FontUtil.getFontSubmenuSpec(this,this);
 		addSubmenu(null, "Font Size", makeCommand("setFontSize", this), MesquiteSubmenu.getFontSizeList());
     	 	return true;
  	}
@@ -77,14 +78,27 @@ public class TreeNotesMaker extends TreeDisplayAssistantD  {
   	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Sets the font", null, commandName, "setFont")) {
-			Enumeration e = notes.elements();
-			while (e.hasMoreElements()) {
-				Object obj = e.nextElement();
-				if (obj instanceof TreeNotesOperator) {
-					TreeNotesOperator tCO = (TreeNotesOperator)obj;
-		 			tCO.treeNote.doCommand("setFont", arguments, checker);
-		 		}
-			}
+    	 		Enumeration e = notes.elements();
+    	 		while (e.hasMoreElements()) {
+    	 			Object obj = e.nextElement();
+    	 			if (obj instanceof TreeNotesOperator) {
+    	 				TreeNotesOperator tCO = (TreeNotesOperator)obj;
+    	 				tCO.treeNote.doCommand("setFont", arguments, checker);
+    	 			}
+    	 		}
+    	 	}
+    	 	else if (checker.compare(this.getClass(), "Sets the font", null, commandName, FontUtil.setFontOther)) {
+    	 		String t=FontUtil.getFontNameFromDialog(containerOfModule());
+    	 		if (t!=null) {
+    	 			Enumeration e = notes.elements();
+    	 			while (e.hasMoreElements()) {
+    	 				Object obj = e.nextElement();
+    	 				if (obj instanceof TreeNotesOperator) {
+    	 					TreeNotesOperator tCO = (TreeNotesOperator)obj;
+    	 					tCO.treeNote.doCommand("setFont", t, checker);
+    	 				}
+    	 			}
+    	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Sets the font size", null, commandName, "setFontSize")) {
 			Enumeration e = notes.elements();

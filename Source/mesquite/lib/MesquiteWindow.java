@@ -74,7 +74,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	private int setSizeDebugg = 0;
 	private boolean wasDisposed = false;
 	private int menuResets = 0;
-	private static boolean reportMenuResets = false;
+	private static boolean reportMenuResets = true;  //Debugg.println - switch back to false
 	OuterContentArea outerContents;
 	private InterContentArea interContents;
 	private ContentArea[] graphics;
@@ -2093,25 +2093,64 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (!wasVis && vis && graphics != null && graphics[0]!=null && (!MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(Thread.currentThread()) || (!(this instanceof SystemWindow) && !(this instanceof mesquite.trunk.AboutWindow))))
 			graphics[0].requestFocusInWindow();
 	}
+	/*--------------------------------counting  menus----------------------------------*/
+	// These counting menus for Debugging!   Debugg.println
+	private int countMenuItems(MenuItem mi){
+		if (mi ==null)
+			return 0;
+		int count=0;
+		if (mi instanceof Menu) {
+			for (int j = 0; j< ((Menu)mi).getItemCount(); j++) {
+				count+=countMenuItems(((Menu)mi).getItem(j));
+			}
+		} else
+			count = 1;
+		return count;
+	}
+	private int getTotalMenuItems(){
+		int count=0;
+		if (menuBar!=null) {
+			try {
+				for (int i=0; i<menuBar.getMenuCount(); i++){  
+					Menu m = menuBar.getMenu(i);
+					for (int j = 0; j< m.getItemCount(); j++) {
+						count+=countMenuItems(m.getItem(j));
+					}
+				}
+			}
+			catch (Exception e){
+				if (MesquiteTrunk.debugMode)
+					MesquiteMessage.println("exception in counting menus");
+			}
+		}
+		return count;
+	}
 	/*--------------------------------MENU BARS ----------------------------------*/
+	/** This method does basic disconnecting of menu items within one menu **/
 	private final void deassign(Menu m, MenuItem mi){
 		if (mi ==null)
 			return;
-		if (mi instanceof MesquiteMenuItem)
-			((MesquiteMenuItem)mi).disconnect();
-		else if (mi instanceof MesquiteCheckMenuItem)
-			((MesquiteCheckMenuItem)mi).disconnect();
-		else if (mi instanceof MesquiteSubmenu) {
-			((MesquiteSubmenu)mi).disconnect();
-			for (int k=0; k<((MesquiteSubmenu)mi).getItemCount(); k++) {
-				deassign(((MesquiteSubmenu)mi), ((MesquiteSubmenu)mi).getItem(k));
+		if (mi instanceof Menu) {
+			for (int k=0; k<((Menu)mi).getItemCount(); k++) {
+				deassign(((Menu)mi), ((Menu)mi).getItem(k));
 			}
+			if (mi instanceof MesquiteSubmenu) {
+				((MesquiteSubmenu)mi).disconnect();
+			}
+		} else if (mi instanceof MesquiteMenuItem) {
+			((MesquiteMenuItem)mi).disconnect();
+		}
+		else if (mi instanceof MesquiteCheckMenuItem) {
+			((MesquiteCheckMenuItem)mi).disconnect();
 		}
 		else {
-			m.remove(mi);  //if not a Mesquite menu item, safe to remove
+			//m.remove(mi);  this will be removed anyway by the menuBar.disconnect() call.  Removing it now causes some
+									// items to not be deassigned   
 			MesquiteMenuItem.totalDisposed++;
 		}
 	}
+	/** This method does disconnecting of all menu items, as well as removal of all of them (via menuBar.disconnect()).
+	 * This only works on the main menu bar, not on the menus embedded in each window**/
 	public final void deassignMenus(){
 		if (menuBar!=null) {
 			try {
@@ -2143,35 +2182,49 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		
 	}
 	public void resetMenus(boolean generateRegardless){
-	if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
-		//	if (menuBar != null)
-		//		menuBar.dispose();
+		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
+			//	if (menuBar != null)
+			//		menuBar.dispose();
 			menuBar = null;
 			return;
 		}
 
 		resetMenuTime.start();
-		deassignMenus();
-	//	if (menuBar != null)
-	//		menuBar.dispose();
-		
-		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
-		resetMenuTime.end();
-		if (ownerModule==null) {
-			MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@@@null ownerModule in window");
-			return;
-		}
-		else {
-			ownerModule.composeMenuBar(tempMenuBar, this); //could set to menuBar
-		}
-			
-		resetMenuTime.start();
-		menuBar = tempMenuBar;//need to remember this in case anyone wants access to menu bar
-		setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
+		long menusDisposed = MesquiteMenuItem.totalDisposed;
+		long menusCreated = MesquiteMenuItem.totalCreated;
+		long startMenus = getTotalMenuItems();
 
-		menuResets++;
-		if (reportMenuResets)
-			ownerModule.logln(Integer.toString(menuResets) + " menu resets for " + getTitle());
+		for (int i=0; i<10; i++) {
+			deassignMenus();
+			//	if (menuBar != null)
+			//		menuBar.dispose();
+
+			MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
+			resetMenuTime.end();
+			if (ownerModule==null) {
+				MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@@@null ownerModule in window");
+				return;
+			}
+			else {
+				ownerModule.composeMenuBar(tempMenuBar, this); //could set to menuBar
+			}
+			long previousMenusCreated = MesquiteMenuItem.totalCreated - menusCreated;
+
+			resetMenuTime.start();
+			menuBar = tempMenuBar;//need to remember this in case anyone wants access to menu bar
+			setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
+
+			menusCreated= MesquiteMenuItem.totalCreated-menusCreated;
+			menusDisposed= MesquiteMenuItem.totalDisposed-menusDisposed;
+
+			menuResets++;
+			if (reportMenuResets) {
+				//ownerModule.logln(Integer.toString(menuResets) + " menu resets for " + getTitle() + "  " +resetMenuTime.timeSinceLastInSeconds());
+				//Debugg.println("   menusDisposed: " + menusDisposed);
+				//Debugg.println("   menusCreated: " + menusCreated);
+				//Debugg.println("   before menu items: " + getTotalMenuItems()+", after menu items: " + getTotalMenuItems()+"\n");
+			}
+		}
 		resetMenuTime.end();
 	}
 	public void setMenuBar(MenuBar mbar) {
@@ -2351,6 +2404,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*.................................................................................................................*/
 	public void setWindowFont(String fontName) {
+		
 		Font fontToSet = new Font (fontName, currentFont.getStyle(), currentFont.getSize());
 		setWindowFont(fontToSet);
 	}
@@ -2757,7 +2811,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font of the window", "[name of font]", commandName, "setFont")) {
 			String fontName = ParseUtil.getFirstToken(arguments, pos);
-			setWindowFont(fontName);
+			if (fontName.equalsIgnoreCase(FontUtil.otherFontArgument)) {
+				fontName = FontUtil.getFontNameFromDialog(this);
+				if (fontName!=null) 
+					ownerModule.logln("Font chosen: " + fontName);
+			}
+			if (fontName!=null)
+				setWindowFont(fontName);
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font size of the window", "[font size]", commandName, "setFontSize")) {
 			int fontSize = MesquiteInteger.fromString(arguments);
