@@ -2219,7 +2219,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 			menuResets++;
 			if (reportMenuResets) {
-				//ownerModule.logln(Integer.toString(menuResets) + " menu resets for " + getTitle() + "  " +resetMenuTime.timeSinceLastInSeconds());
+				ownerModule.logln("   " + Integer.toString(menuResets) + " menu resets for " + getTitle() + "    " +resetMenuTime.timeSinceLastInSeconds() + " seconds");
 				//Debugg.println("   menusDisposed: " + menusDisposed);
 				//Debugg.println("   menusCreated: " + menusCreated);
 				//Debugg.println("   before menu items: " + getTotalMenuItems()+", after menu items: " + getTotalMenuItems()+"\n");
