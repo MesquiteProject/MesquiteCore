@@ -109,6 +109,7 @@ public class MesquiteSubmenu extends MesquiteMenu implements ActionListener {
 			submenuFont.add(new MesquiteCheckMenuItem(fonts[i],  null, setFontCommand, StringUtil.tokenize(fonts[i]), submenuFont.checkString));
 		submenuFont.addSeparator();
 		submenuFont.add(new MesquiteMenuItem("Other...",  null, setFontCommand,FontUtil.otherFontArgument));
+		Debugg.println(" ======= creating font submenu");
 		return submenuFont;
 	}
 	public static MesquiteSubmenu getFontSizeSubmenu(String title, Menu ownerMenu, MesquiteModule ownerModule, MesquiteCommand setFontSizeCommand) {
