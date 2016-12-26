@@ -76,7 +76,7 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 		Color oldColor = g.getColor();
 		Color highlightColor = Color.black;
 		if (c!=null)
-			highlightColor = ColorDistribution.getContrasting(c);
+			highlightColor = ColorDistribution.getContrastingTextColor(c);
 		if (c!=null){ 
 			g.setColor(c);
 			g.fillRect(x+1, y+1, w-1, h-1);
