@@ -1166,7 +1166,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			}
 			//wMenu.add(whichWindow.infoBarMenuItem);
 			 */
-			wMenu.add(whichWindow.explanationsMenuItem);
+			MesquiteMenuItem explanationsMenuItem = new MesquiteMenuItem(whichWindow.explanationsMenuItemSpec);
+			wMenu.add(explanationsMenuItem);
 			/*if (module.getEmployer()!=null && module.getEmployer().getClonableEmployeeCommand(module)!=null) {
 				wMenu.add(whichWindow.cloneWindowMenuItem);
 			}
@@ -2176,9 +2177,12 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 					newMenu.add(new MesquiteMenuItem("Show File Location", MesquiteModule.mesquiteTrunk, proj.getShowFileOnDiskCommand()));
 				}
 			}
-			newMenu.add(whichWindow.closeWindowMenuItem);
-			if (whichWindow.closeAllMenuItem != null)
-				newMenu.add(whichWindow.closeAllMenuItem);
+			MesquiteMenuItem closeWindowMenuItem = new MesquiteMenuItem(whichWindow.closeWindowMenuItemSpec);
+			closeWindowMenuItem.setShortcut(MesquiteWindow.closeWindowShortcut);	
+			newMenu.add(closeWindowMenuItem);
+			MesquiteMenuItem closeAllMenuItem = new MesquiteMenuItem(whichWindow.closeAllMenuItemSpec);
+			if (closeAllMenuItem != null)
+				newMenu.add(closeAllMenuItem);
 			/*-------------- Save & Save As menu or submenu */
 			newMenu.add("-");		
 			if (proj!=null && !MesquiteTrunk.isApplet()) {

@@ -85,8 +85,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public static final int infoBarHeightAllowance = 22;
 	protected int infoBarHeight = infoBarHeightAllowance;
 	boolean queryMode = false;
-	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem,explanationsMenuItem, snapshotMenuItem, sendScriptMenuItem, closeWindowMenuItem, closeAllMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
-
+	protected MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem, snapshotMenuItem, sendScriptMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
+	protected MesquiteMenuItemSpec closeWindowMenuItemSpec, closeAllMenuItemSpec,explanationsMenuItemSpec;
 	private MesquiteMenuItemSpec ptfMMIS;
 	private MesquiteMenuItemSpec pPDFMMIS;
 	private MesquiteMenuItemSpec popOutWindowMSpec;
@@ -259,8 +259,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		/*	infoBarMenuItem = new MesquiteCheckMenuItem(new MesquiteCMenuItemSpec(null,"Show Information Bar", getOwnerModule(), showInfoBarCommand, null));
 		infoBarMenuItem.set(showInfoBar);
 		infoBarMenuItem.disconnectable = false;*/
-		explanationsMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null,"Menu & Control Explanations", getOwnerModule(), showExplanationsCommand));
-		explanationsMenuItem.disconnectable = false;
+		explanationsMenuItemSpec = new MesquiteMenuItemSpec(null,"Menu & Control Explanations", getOwnerModule(), showExplanationsCommand);  //Debugg.println: check disconnectability
 		cloneWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Clone Window", getOwnerModule(), MesquiteModule.makeCommand("cloneWindow", this)));
 		cloneWindowMenuItem.disconnectable = false;
 		popOutWindowMSpec = new MesquiteMenuItemSpec(null, "Pop Out as Separate Window", getOwnerModule(), popOutWindowCommand);
@@ -275,15 +274,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		sendScriptMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null,"Send Script", getOwnerModule(), sendScriptCommand));
 		sendScriptMenuItem.disconnectable = false;
 		if (getOwnerModule() instanceof FileCoordinator)
-			closeWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close Window", getOwnerModule(), closeWindowCommand));
+			closeWindowMenuItemSpec = new MesquiteMenuItemSpec(null, "Close Window", getOwnerModule(), closeWindowCommand);//Debugg.println: check disconnectability, name changes
 		else
-			closeWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close Tab", getOwnerModule(), closeWindowCommand));
-		closeWindowMenuItem.disconnectable = false;
-		closeWindowMenuItem.setShortcut(closeWindowShortcut);	
+			closeWindowMenuItemSpec = new MesquiteMenuItemSpec(null, "Close Tab", getOwnerModule(), closeWindowCommand);//Debugg.println: check disconnectability, name changes
 		MesquiteProject proj = ownerModule.getProject();
 		if (proj != null)
-			closeAllMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Close All Tabs Of Project", getOwnerModule(), new MesquiteCommand("closeAllWindows", getOwnerModule().getFileCoordinator())));
-
+			closeAllMenuItemSpec = new MesquiteMenuItemSpec(null, "Close All Tabs Of Project", getOwnerModule(), new MesquiteCommand("closeAllWindows", getOwnerModule().getFileCoordinator()));
+		//Debugg.println: check disconnectability, name changes
 
 
 		parentFrame.setWindowLocation(60, 10, false, false); //default window position
@@ -300,15 +297,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (isPoppedOut()) {
 			if (getPopAsTile()) {
 				tileOutWindowMenuItem.setLabel("Return Tile to Main Window");
-				closeWindowMenuItem.setLabel("Close Tab");
+				//Debugg.println closeWindowMenuItem.setLabel("Close Tab");
 			}
 			else {
 				popOutWindowMenuItem.setLabel("Reset within Main Window");
-				closeWindowMenuItem.setLabel("Close Window");
+				//Debugg.println closeWindowMenuItem.setLabel("Close Window");
 			}
 		} 
-		else
-			closeWindowMenuItem.setLabel("Close Tab");
+		//else
+		//Debugg.println closeWindowMenuItem.setLabel("Close Tab");
 
 
 	}
@@ -2181,33 +2178,146 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenus(true);
 
 	}
-	/*
+	
+	boolean sameName(MenuComponent current, MenuComponent target){
+		if (current instanceof Menu && target instanceof Menu){
+			Menu currentMM = (Menu)current;
+			Menu targetMM = (Menu)target;
+			return ((currentMM.getLabel()== null && targetMM.getLabel()==null) || currentMM.getLabel().equals(targetMM.getLabel()));
+		}
+		if (current instanceof MenuItem && target instanceof MenuItem){
+			MenuItem currentMMI = (MenuItem)current;
+			MenuItem targetMMI = (MenuItem)target;
+			return ((currentMMI.getLabel()== null && targetMMI.getLabel()==null) || currentMMI.getLabel().equals(targetMMI.getLabel()));
+		}
+		return true;
+	}
+	boolean sameSpecs(MenuComponent current, MenuComponent target){
+		if (current instanceof MesquiteMenu && target instanceof MesquiteMenu){
+			MesquiteMenu currentMM = (MesquiteMenu)current;
+			MesquiteMenu targetMM = (MesquiteMenu)target;
+			return (currentMM.getSpecification() == targetMM.getSpecification());
+		}
+		if (current instanceof MesquiteMenuItem && target instanceof MesquiteMenuItem){
+			MesquiteMenuItem currentMMI = (MesquiteMenuItem)current;
+			MesquiteMenuItem targetMMI = (MesquiteMenuItem)target;
+			return (currentMMI.getSpecification() == targetMMI.getSpecification());
+		}
+		if (current instanceof MesquiteMenuItem || target instanceof MesquiteMenuItem || current instanceof MesquiteMenu || target instanceof MesquiteMenu)
+			return false;
+		return true;
+	}
+	boolean isSame(MenuComponent current, MenuComponent target){
+		if (!sameName(current, target)) {
+			Debugg.println("not same name " + current.getName() + "  " + target.getName());
+			return false;
+		}
+		if (!sameSpecs(current, target)){
+			Debugg.println("not same specs " + current.getName() + "  " + target.getName());
+			return false;
+		}
+		if (current instanceof Menu && target instanceof Menu){
+			Menu currentM = (Menu)current;
+			Menu targetM = (Menu)target;
+			if (currentM.getItemCount() != targetM.getItemCount()){
+				Debugg.println("not same number of items " + current.getName() + "  " + currentM.getItemCount() + " " + target.getName() + " " + targetM.getItemCount());
+				//Debugg.println("  items current " + listItems(currentM));
+			//	Debugg.println("  items  target " + listItems(targetM));
+				return false;
+			}
+			for (int i= 0; i<currentM.getItemCount() ; i++){
+				MenuComponent currentC = currentM.getItem(i);
+				MenuComponent targetC = targetM.getItem(i);
+				if (!isSame(currentC, targetC))
+					return false;
+			}
+		}
+
+		return true;
+	}
+
 	boolean intendedToBeSameMenu(Menu current, Menu target){
 		if (!current.getLabel().equals(target.getLabel()))
 			return false;
 		if (current instanceof MesquiteMenu && target instanceof MesquiteMenu){
 			MesquiteMenu currentMM = (MesquiteMenu)current;
 			MesquiteMenu targetMM = (MesquiteMenu)target;
-
+			if (currentMM.getSpecification() == targetMM.getSpecification())
+				return true;
 		}
+		return false;
+	}
+	Menu findMenuIntendedToBeSame(Menu lookingFor, MenuBar inMenuBar){
+		for (int i = 0; i<inMenuBar.getMenuCount(); i++)
+			if (intendedToBeSameMenu(lookingFor, inMenuBar.getMenu(i)))
+				return inMenuBar.getMenu(i);
+		return null;
+	}
+	void addMenu(MenuBar mb, Menu menu, int i){
+		int numToSlide = mb.getMenuCount() - i + 1;
+		if (numToSlide<1){
+			mb.add(menu);
+		}
+		else{
+			Menu[] trailing = new Menu[numToSlide];
+			for (int k = 0; k<numToSlide; k++)
+				trailing[k] = mb.getMenu(k + i);
+			for (int k = 0; k<numToSlide; k++)
+				mb.remove(trailing[k]);
+			mb.add(menu);
+			for (int k = 0; k<numToSlide; k++)
+				mb.add(trailing[k]);
+		}
+	}
+	String listItems(Menu c){
+		String x = "";
+		for (int i = 0; i< c.getItemCount(); i++){
+			x += " (" + c.getItem(i).getLabel() + ")";
+		}
+		return x;
+	}
+	String listMenus(MenuBar c){
+		String x = "";
+		for (int i = 0; i< c.getMenuCount(); i++){
+			x += " (" + c.getMenu(i).getLabel()+ ")";
+		}
+		return x;
+	}
+	int sameUntil(MenuBar current, MenuBar target){
+		int it = 0;
+		while (it<target.getMenuCount() && it<current.getMenuCount()){
+			Menu thisTargetMenu = target.getMenu(it);
+			Menu thisCurrentMenu = current.getMenu(it);
+			//Debugg.println("same? " + thisCurrentMenu.getLabel() + " "  + thisTargetMenu.getLabel() + " title " + getTitle());
+			if (!isSame(thisCurrentMenu, thisTargetMenu))
+				return it;
+			it++;
+		}
+		return it;
 	}
 	void mergeMenus(MenuBar current, MenuBar target){
-		int offset = 0;
-		int it = 0;
-		while (it<target.getMenuCount()){
-			if (it<current.getMenuCount()){
-				Menu thisCurrentMenu = current.getMenu(it);
-				Menu thisTargetMenu = target.getMenu(it);
-				if (intendedToBeSameMenu(current, target))
-			}
-			else {  //no more current menus; thus transfer the remaining in target to current
-				Menu nextTargetMenu = target.getMenu(it);
-				target.remove(nextTargetMenu);
-				current.add(nextTargetMenu);
-			}
+
+		int startOfDifference = sameUntil(current, target);
+		//Debugg.println("startOfDifference " + startOfDifference + " getTitle() " + getTitle() + " menu count " + current.getMenuCount());
+		//Debugg.println("   current menus " + listMenus(current));
+		if (startOfDifference == current.getMenuCount() && startOfDifference == target.getMenuCount())
+			return;
+		for (int it= current.getMenuCount()-1; it>=startOfDifference; it--)
+			current.remove(it);
+		Menu[] toTransfer = new Menu[target.getMenuCount()-startOfDifference+1];
+		int k = 0;
+		for (int it = startOfDifference; it<target.getMenuCount(); it++){
+			toTransfer[k++] = target.getMenu(it);
 		}
+		for (int it = 0; it<toTransfer.length; it++){
+			current.add(toTransfer[it]);
+		}
+	//	Debugg.println("AFTER " + listMenus(current));
+	//	Debugg.println("AFTER first " + listItems(current.getMenu(0)));
+
+		
 	}
-	 */
+
 
 	static double totalTime =0;
 
@@ -2228,9 +2338,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		//deassignMenus();
 		for (int i=0; i<1; i++) {   // Debugg.println:  loop here entirely to test slowdown; remove loop eventually
 
-			removeMenuItems(menuBar);
-
-			MesquiteMenuBar tempMenuBar = menuBar; // new MesquiteMenuBar(this); //could delete??
+			//removeMenuItems(menuBar);
+			//Debugg.println("BEFORE " + listMenus(menuBar));
+		//	if (menuBar != null && menuBar.getMenuCount()>0)
+		//		Debugg.println("BEFORE FIRST " + listItems(menuBar.getMenu(0)));
+			MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
 			if (ownerModule==null) {
 				MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@@@null ownerModule in window");
 				return;
@@ -2238,9 +2350,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			else {
 				ownerModule.composeMenuBar(tempMenuBar, this); //could set to menuBar
 			}
+			//if (menuBar != null && menuBar.getMenuCount()>0)
+		//		Debugg.println("BEFORE FIRST AFTER COMP " + listItems(menuBar.getMenu(0)));
+			mergeMenus(menuBar, tempMenuBar);
 
-			menuBar = tempMenuBar;//need to remember this in case anyone wants access to menu bar
-			setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
+			setMenuBar(menuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
 			needMenuBarReset = false;
 			menuResets++;
 			if (reportMenuResets) {
