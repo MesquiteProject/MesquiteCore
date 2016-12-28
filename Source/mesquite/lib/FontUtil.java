@@ -65,18 +65,15 @@ public class FontUtil {
 	
 	/** This method returns the small default font list.  It only contains guaranteed font names.*/
 	public static String[] getSmallFontList(){
-		int numSmallFonts = 2;
+		int numSmallFonts = 6;
 		String[] fonts = new String[numSmallFonts];
-		fonts[0] = "SansSerif";
-		fonts[1] = "Serif";
-
-		/*fonts[0] = "Arial";
+		fonts[0] = "Arial";
 		fonts[1] = "Helvetica";
 		fonts[2] = "Geneva";
-		fonts[3] = "Courier New";
-		fonts[4] = "Andale Mono";
-		fonts[5] = "Times New Roman";
-		 */
+		fonts[3] = "Times New Roman";
+		fonts[4] = "SansSerif";
+		fonts[5] = "Serif";
+
 		return fonts;
 	}
 
