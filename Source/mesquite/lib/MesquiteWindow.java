@@ -74,7 +74,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	private int setSizeDebugg = 0;
 	private boolean wasDisposed = false;
 	private int menuResets = 0;
-	private static boolean reportMenuResets = true;  //Debugg.println - switch back to false
+	private static boolean reportMenuResets = false;  
 	OuterContentArea outerContents;
 	private InterContentArea interContents;
 	private ContentArea[] graphics;
@@ -2093,38 +2093,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (!wasVis && vis && graphics != null && graphics[0]!=null && (!MesquiteTrunk.mesquiteTrunk.isStartupShutdownThread(Thread.currentThread()) || (!(this instanceof SystemWindow) && !(this instanceof mesquite.trunk.AboutWindow))))
 			graphics[0].requestFocusInWindow();
 	}
-	/*--------------------------------counting  menus----------------------------------*/
-	// These counting menus for Debugging!   Debugg.println
-	private int countMenuItems(MenuItem mi){
-		if (mi ==null)
-			return 0;
-		int count=0;
-		if (mi instanceof Menu) {
-			for (int j = 0; j< ((Menu)mi).getItemCount(); j++) {
-				count+=countMenuItems(((Menu)mi).getItem(j));
-			}
-		} else
-			count = 1;
-		return count;
-	}
-	private int getTotalMenuItems(){
-		int count=0;
-		if (menuBar!=null) {
-			try {
-				for (int i=0; i<menuBar.getMenuCount(); i++){  
-					Menu m = menuBar.getMenu(i);
-					for (int j = 0; j< m.getItemCount(); j++) {
-						count+=countMenuItems(m.getItem(j));
-					}
-				}
-			}
-			catch (Exception e){
-				if (MesquiteTrunk.debugMode)
-					MesquiteMessage.println("exception in counting menus");
-			}
-		}
-		return count;
-	}
 	/*--------------------------------MENU BARS ----------------------------------*/
 	/** This method does basic disconnecting of menu items within one menu **/
 	private final void deassign(Menu m, MenuItem mi){
@@ -2193,6 +2161,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	}
 
+
 	public void resetMenus(boolean generateRegardless){
 		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 			//	if (menuBar != null)
@@ -2203,42 +2172,31 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 
 		resetMenuTime.start();
-		long menusDisposed = MesquiteMenuItem.totalDisposed;
-		long menusCreated = MesquiteMenuItem.totalCreated;
-		long startMenus = getTotalMenuItems();
 
-		for (int i=0; i<1; i++) {   // Debugg.println:  loop here entirely to test slowdown; remove loop eventually
-			deassignMenus();
-			//	if (menuBar != null)
-			//		menuBar.dispose();
+		deassignMenus();
+		//	if (menuBar != null)
+		//		menuBar.dispose();
 
-			MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
-			resetMenuTime.end();
-			if (ownerModule==null) {
-				MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@@@null ownerModule in window");
-				return;
-			}
-			else {
-				ownerModule.composeMenuBar(tempMenuBar, this); //could set to menuBar
-			}
-			long previousMenusCreated = MesquiteMenuItem.totalCreated - menusCreated;
-
-			resetMenuTime.start();
-			menuBar = tempMenuBar;//need to remember this in case anyone wants access to menu bar
-			setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
-
-			menusCreated= MesquiteMenuItem.totalCreated-menusCreated;
-			menusDisposed= MesquiteMenuItem.totalDisposed-menusDisposed;
-
-			menuResets++;
-			if (reportMenuResets) {
-				ownerModule.logln("   " + Integer.toString(menuResets) + " menu resets for " + getTitle() + "    " +resetMenuTime.timeSinceLastInSeconds() + " seconds");
-				//Debugg.println("   menusDisposed: " + menusDisposed);
-				//Debugg.println("   menusCreated: " + menusCreated);
-				//Debugg.println("   before menu items: " + getTotalMenuItems()+", after menu items: " + getTotalMenuItems()+"\n");
-			}
+		MesquiteMenuBar tempMenuBar = new MesquiteMenuBar(this); //could delete??
+		if (ownerModule==null) {
+			MesquiteMessage.printStackTrace("@@@@@@@@@@@@@@@@@@null ownerModule in window");
+			return;
 		}
+		else {
+			ownerModule.composeMenuBar(tempMenuBar, this); //could set to menuBar
+		}
+
+		menuBar = tempMenuBar;//need to remember this in case anyone wants access to menu bar
+		setMenuBar(tempMenuBar);  //IF THIS IS THE FIRST TIME, and size is not set afterward, should reset size
+
+		menuResets++;
+		if (reportMenuResets) {
+			double time = resetMenuTime.timeSinceLastInSeconds();
+			ownerModule.logln("   " + Integer.toString(menuResets) + " menu resets for " + getTitle() + "    " +time + " seconds");
+		}
+
 		resetMenuTime.end();
+
 	}
 	public void setMenuBar(MenuBar mbar) {
 		if (parentFrame!=null)
