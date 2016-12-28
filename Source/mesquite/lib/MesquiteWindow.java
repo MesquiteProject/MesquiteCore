@@ -74,7 +74,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	private int setSizeDebugg = 0;
 	private boolean wasDisposed = false;
 	private int menuResets = 0;
-	private static boolean reportMenuResets = false;  
+	private static boolean reportMenuResets = true;  
 	OuterContentArea outerContents;
 	private InterContentArea interContents;
 	private ContentArea[] graphics;
@@ -2208,8 +2208,13 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 	}
 */
+	
+	static double totalTime =0;
+
 	public void resetMenus(boolean generateRegardless){
 		//Debugg.println
+		
+
 		if (false && !generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 			//	if (menuBar != null)
 			//		menuBar.dispose();
@@ -2221,7 +2226,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenuTime.start();
 
 		//deassignMenus();
-		
+		for (int i=0; i<1; i++) {   // Debugg.println:  loop here entirely to test slowdown; remove loop eventually
+
 		removeMenuItems(menuBar);
 
 		MesquiteMenuBar tempMenuBar = menuBar; // new MesquiteMenuBar(this); //could delete??
@@ -2239,10 +2245,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		menuResets++;
 		if (reportMenuResets) {
 			double time = resetMenuTime.timeSinceLastInSeconds();
+			totalTime += time;
 			ownerModule.logln("   " + Integer.toString(menuResets) + " menu resets for " + getTitle() + "    " +time + " seconds");
 		}
-
-		resetMenuTime.end();
+	}
+	resetMenuTime.end();
+	Debugg.println("   Total time: " + totalTime + " seconds");
 
 	}
 	public void setMenuBar(MenuBar mbar) {
