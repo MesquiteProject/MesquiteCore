@@ -306,7 +306,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	finalize things it needs..  NOTE: if a module wants to quit on its own accord, it should call "iQuit" so that
 	the replacement hiring system can take effect.*/
 	protected void dispose() {
-	//	Debugg.println("########### dispose module " + this);
 		if (assignedMenuSpec !=null)
 			assignedMenuSpec.removeGuestModule(this);
 		if (moduleMenuSpec !=null)

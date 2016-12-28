@@ -1853,36 +1853,6 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Forces a reset of the menus.", null, commandName, "resetMenus")) {
 			zeroMenuResetSuppression();
-			//Debugg.println do this only once
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
 			resetAllMenuBars();
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {

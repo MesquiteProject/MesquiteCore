@@ -168,7 +168,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 	public void setMenuBar(MenuBar mbar) {
 		if (getMenuBar() == mbar)
 			return;
-		Debugg.println("setMenuBar ");
 		if (!MesquiteThread.isReadingThread())
 			super.setMenuBar(mbar);
 	}
