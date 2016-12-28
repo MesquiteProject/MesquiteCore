@@ -2158,7 +2158,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			try {
 				for (int i=menuBar.getMenuCount()-1; i>=0; i--){  
 					Menu m = menuBar.getMenu(i);
-					for (int j =  m.getItemCount()-1; j>-0; j--) {
+					for (int j =  m.getItemCount()-1; j>=0; j--) {
 						deassign(m, m.getItem(j));
 						m.getItem(j).removeNotify();
 						m.remove(j);
