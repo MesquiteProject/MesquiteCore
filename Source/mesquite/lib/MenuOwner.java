@@ -687,8 +687,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			return; //minimalMenu windows don't have menu bars in Windows etc.
 		try {
 			composeCount++;
-			if (whichWindow!=null)
-				whichWindow.deassignMenus();
+			//Debugg.println if (whichWindow!=null)
+			//	whichWindow.deassignMenus();
 
 			/* the following needed only if menubar not new (see "couldDelete" in resetMenus of MesquiteWindows 
 		 	if (menuBar!=null) {
@@ -704,9 +704,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				return;
 			}
 			 */
-			else if (menuBar==null)
+			else if (menuBar==null) {
 				MesquiteMessage.warnProgrammer("WARNING: menuBar null in composeMenuBar for " + module.getName());
-
+			}
 			if (module.isDoomed())
 				return;
 			composeFileMenu(menuBar, MesquiteTrunk.fileMenu, whichWindow);
