@@ -180,6 +180,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		}
 		checkInsets(true);
 	}
+	
 	public int getNumWindows(){
 		return windows.size();
 	}

@@ -2131,8 +2131,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		if (mi ==null)
 			return;
 		if (mi instanceof Menu) {
-			for (int k=0; k<((Menu)mi).getItemCount(); k++) {
+			for (int k=((Menu)mi).getItemCount()-1; k<=0; k--) {
 				deassign(((Menu)mi), ((Menu)mi).getItem(k));
+				((Menu)mi).getItem(k).removeNotify();
+				((Menu)mi).remove(k);
 			}
 			if (mi instanceof MesquiteSubmenu) {
 				((MesquiteSubmenu)mi).disconnect();
@@ -2154,13 +2156,18 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public final void deassignMenus(){
 		if (menuBar!=null) {
 			try {
-				for (int i=0; i<menuBar.getMenuCount(); i++){  
+				for (int i=menuBar.getMenuCount()-1; i>=0; i--){  
 					Menu m = menuBar.getMenu(i);
-					for (int j = 0; j< m.getItemCount(); j++) {
+					for (int j =  m.getItemCount()-1; j>-0; j--) {
 						deassign(m, m.getItem(j));
+						m.getItem(j).removeNotify();
+						m.remove(j);
 					}
+					m.removeNotify();
+					menuBar.remove(m);
 				}
 				menuBar.disconnect();
+				menuBar.removeNotify();
 			}
 			catch (Exception e){
 				if (MesquiteTrunk.debugMode)
@@ -2181,10 +2188,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenus(true);
 		
 	}
+
 	public void resetMenus(boolean generateRegardless){
 		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 			//	if (menuBar != null)
 			//		menuBar.dispose();
+			deassignMenus();
 			menuBar = null;
 			return;
 		}

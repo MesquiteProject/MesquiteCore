@@ -210,7 +210,7 @@ public class BasicDataWindowCoord extends FileInit {
 			DataWindowMaker dwm = findEditor(data);
 			if (dwm!=null){
 				if (cadw != null) cadw.setEnabled(true);
-				resetAllMenuBars();
+				//resetAllMenuBars();
 				return dwm;
 			}
 
