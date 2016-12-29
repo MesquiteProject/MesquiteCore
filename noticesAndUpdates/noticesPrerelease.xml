@@ -10,12 +10,6 @@
 			<downloadURL>http://mesquiteproject.wikispaces.com/Installation</downloadURL>
 		</currentReleaseVersion>
 		<notice>
-			<forVersion>311</forVersion>
-			<noticeNumber>17</noticeNumber>
-			<messageType>alert</messageType>
-			<message><![CDATA[Your version of Mesquite is being tested!</message>
-		</notice>		
-		<notice>
 			<forVersion>310</forVersion>
 			<noticeNumber>16</noticeNumber>
 			<messageType>alert</messageType>
