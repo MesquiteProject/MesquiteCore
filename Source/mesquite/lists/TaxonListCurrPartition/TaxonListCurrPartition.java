@@ -328,7 +328,7 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 				else
 					g.setColor(Color.black);
 			} else {  // background is color; choose contrasting color
-				Color contrast = ColorDistribution.getContrasting(backgroundColor);
+				Color contrast = ColorDistribution.getContrastingTextColor(backgroundColor);
 				g.setColor(contrast);
 			}
 			g.drawString(s, x+(w-sw)/2, y+h-(h-sh)/2);
