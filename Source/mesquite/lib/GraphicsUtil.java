@@ -88,7 +88,7 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void fillArc(Graphics2D g2, double x, double y, double width, double height, double startingAngle, double angleExtent) {
-		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.OPEN);
+		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.PIE);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.fill(arc);
 	}
@@ -551,16 +551,16 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
-	public static void fillArc(Graphics g, double x, double y, double w, double h, int startAngle, int arcAngle, boolean threeD){
+	public static void fillArc(Graphics g, double x, double y, double w, double h, double startAngle, double arcAngle, boolean threeD){
 		if (arcAngle < 1)
 			return;
 		if (MesquiteTrunk.isWindows()){ //this is workaround to Windows problem by which goes all black if too close to 0 or 360
 			double spotsize = MesquiteDouble.maximum(w, h);
-			if (3.14*spotsize*(360-arcAngle)/360<1){
+			if (Math.PI*spotsize*(360-arcAngle)/360<1){
 				fillOval(g, x, y, w, h, threeD);
 				return;
 			}
-			if (3.14*spotsize*arcAngle/360<1)
+			if (Math.PI*spotsize*arcAngle/360<1)
 				return;
 		}
 		if (threeD){

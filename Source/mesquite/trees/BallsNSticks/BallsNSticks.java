@@ -676,17 +676,18 @@ class BallsNSticksDrawing extends TreeDrawing  {
 					fillSpot(g,node);
 			}
 			else if (numColors>0) {
-				int startAngle=90;//was 270
+				double startAngle=90;//was 270
 				double totalFreq=0;
 				for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
-				int arcAngle = 0;
+				double arcAngle = 0;
 				for (int i=0; i<numColors; i++) {
 					Color color;
 					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
 
-					arcAngle = (int)((colors.getWeight(i)/totalFreq)*360);
-					GraphicsUtil.fillArc(g, x[node]- spotSize/2 + 2, y[node]- spotSize/2 + 2, spotSize - 4, spotSize - 4, startAngle, arcAngle, ownerModule.cosmic.getValue());
+					arcAngle = ((colors.getWeight(i)/totalFreq)*360.0);
+					//GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4, spotSize - 4, startAngle, arcAngle, ownerModule.cosmic.getValue());
+					GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4.0, spotSize - 4.0, startAngle, arcAngle, ownerModule.cosmic.getValue());
 					startAngle+=arcAngle; 
 				}
 			}
