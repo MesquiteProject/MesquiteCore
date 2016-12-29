@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+		<currentReleaseVersion>
+			<versionString>1.0</versionString>
+			<version>1000</version>
+			<downloadURL>http://mesquiteproject.org/packages/chromaseq/manual/download.html</downloadURL>
+		</currentReleaseVersion>
+		<notice><!--Chromaseq notice of update -->
+			<forBuildNumberEqualOrLess>563</forBuildNumberEqualOrLess> <!-- this refers to Mesquite build, e.g. for compatibility -->
+			<forPackageVersionEqualOrLess>990</forPackageVersionEqualOrLess>
+			<noticeNumber>7</noticeNumber>
+			<messageType>alert</messageType>
+			<identity>Chromaseq</identity>
+			<updateVersion>1000</updateVersion>
+			<packageName>Chromaseq version 1.0</packageName>
+			<message>
+			<![CDATA[<img src="http://mesquiteproject.org/packages/chromaseq/splash.gif"><p>
+			Version 1.0 of Chromaseq is available.  We strongly advise Chromaseq users to update to this version.  However
+			to get it, you first need to update your copy of Mesquite to version 2.75.  Go to http://mesquiteproject.org
+			and get the latest version of Mesquite, and then install the new version of Chromaseq
+			by choosing Check Now for Notices/Installs in the File menu, and enter 
+			http://mesquiteproject.org/packages/chromaseq/install.xml
+			]]>
+			</message>
+		</notice>
+		<notice><!--Chromaseq install -->
+			<forBuildNumberExactly>564</forBuildNumberExactly> <!-- this refers to Mesquite build, e.g. for compatibility -->
+			<forPackageVersionEqualOrLess>989</forPackageVersionEqualOrLess>
+			<noticeNumber>8</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Chromaseq</identity>
+			<updateVersion>1000</updateVersion>
+			<packageName>Chromaseq version 1.0</packageName>
+			<beforeMessage>This update may take a while to download; please wait until a message appears saying it's finished.</beforeMessage>
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/packages/chromaseq/splash.gif"><p>
+			Version 1.0 of Chromaseq is available.  We strongly advise Chromaseq users to update to this version. 
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite</location>
+					<file>chromaseq</file>
+					<url>http://mesquiteproject.org/packages/chromaseq/chromaseq.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>006</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/lib</location>
+					<file>MesquiteModule.class</file>
+					<url>http://mesquiteproject.org/packages/chromaseq/MesquiteModule.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>006</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/lib</location>
+					<file>UndoInstructions.class</file>
+					<url>http://mesquiteproject.org/packages/chromaseq/UndoInstructions.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>006</updateVersion>
+				</install>
+		</notice>
+		<notice><!--Chromaseq install -->
+			<forBuildNumberExactly>565</forBuildNumberExactly> <!-- this refers to Mesquite build, e.g. for compatibility -->
+			<forPackageVersionEqualOrLess>989</forPackageVersionEqualOrLess>
+			<noticeNumber>8</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Chromaseq</identity>
+			<updateVersion>1000</updateVersion>
+			<packageName>Chromaseq version 1.0</packageName>
+			<beforeMessage>This update may take a while to download; please wait until a message appears saying it's finished.</beforeMessage>
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/packages/chromaseq/splash.gif"><p>
+			Version 1.0 of Chromaseq is available.  We strongly advise Chromaseq users to update to this version. 
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite</location>
+					<file>chromaseq</file>
+					<url>http://mesquiteproject.org/packages/chromaseq/chromaseq.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>006</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/lib</location>
+					<file>MesquiteModule.class</file>
+					<url>http://mesquiteproject.org/packages/chromaseq/MesquiteModule.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>006</updateVersion>
+				</install>
+				<install>
+					<location>mesquite/lib</location>
+					<file>UndoInstructions.class</file>
+					<url>http://mesquiteproject.org/packages/chromaseq/UndoInstructions.class</url>
+					<treatment>asis</treatment>
+					<updateVersion>006</updateVersion>
+				</install>
+		</notice>
+		<notice><!--Chromaseq install -->
+			<forBuildNumberEqualOrGreater>566</forBuildNumberEqualOrGreater> <!-- this refers to Mesquite build, e.g. for compatibility -->
+			<forPackageVersionEqualOrLess>990</forPackageVersionEqualOrLess>
+			<noticeNumber>9</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Chromaseq</identity>
+			<updateVersion>1000</updateVersion>
+			<packageName>Chromaseq version 1.0</packageName>
+			<beforeMessage>This update may take a while to download; please wait until a message appears saying it's finished.</beforeMessage>
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/packages/chromaseq/splash.gif"><p>
+			Version 1.0 of Chromaseq is available.  We strongly advise Chromaseq users to update to this version. 
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite</location>
+					<file>chromaseq</file>
+					<url>http://mesquiteproject.org/packages/chromaseq/chromaseq.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>006</updateVersion>
+				</install>
+		</notice>
+		
+	</MessagesFromHome>
+</mesquite>
+
+
