@@ -149,6 +149,7 @@ public class CharSelCoordinator extends CharSelectCoordinator {
 		if (obj instanceof CharacterData && (CharacterData) obj == data) {
 			if (code == AssociableWithSpecs.SPECSSET_CHANGED) {
 				resetMenus();   
+				resetContainingMenuBar();
 				parametersChanged();
 			}
 		}

@@ -37,6 +37,16 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 	int associatedNumberToUseAsLabel = -1;
 
 	/*.................................................................................................................*/
+	public boolean loadModule(){
+		return false;
+	}
+	public boolean isSubstantive(){
+		return true;
+	}
+	public boolean isPrerelease(){
+		return true;
+	}
+	/*.................................................................................................................*/
 	public boolean queryOptions(Tree tree){
 		ListableVector names = new ListableVector();
 		ListableVector v = new ListableVector();
@@ -145,15 +155,6 @@ public class CopyNewickForOpenTree extends TreeUtility implements ItemListener {
 			}
 		}
 
-	}
-	/*.................................................................................................................*/
-
-
-	public boolean isSubstantive(){
-		return true;
-	}
-	public boolean isPrerelease(){
-		return true;
 	}
 	/*.................................................................................................................*/
 	public String getName() {

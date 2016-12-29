@@ -223,7 +223,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 	/*.................................................................................................................*/
 	/** This requests that the Windows menu of ALL menu bars be recomposed.*/
-	public static final void resetAllWindowsMenus(){ //Debugg.println this will need reworking now that menu bars don't always exist
+	public static final void resetAllWindowsMenus(){ 
 		if (menuSuppression==0) {
 			resetWindowsMenuPending = false;
 			Enumeration e = MesquiteModule.mesquiteTrunk.windowVector.elements();
@@ -255,7 +255,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			if (MesquiteTrunk.debugMode)
 				timer.start();
 				
-			//Debugg.printStackTrace("resetAllMenuBars ");
 			MesquiteTrunk.suppressResetCheckMenuItems();
 			resetAllMenuPending = false;
 
@@ -470,6 +469,14 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 	/*.................................................................................................................*/
 	/* ����� */
+	/** Adds a dividing line to the module's containing menu.
+	 * @deprecated
+	 *     */
+	public  final MesquiteMenuItemSpec addMenuLine(){
+		return addMenuSeparator();
+	}
+	/*.................................................................................................................*/
+	/* ����� */
 	/** Adds a menu item to the module's containing menu.  When selected, the given command will be executed. */
 	public final MesquiteMenuItemSpec addMenuItem(String itemName, MesquiteCommand command){
 		MesquiteMenuItemSpec mmis = MesquiteMenuItemSpec.getMMISpec(null, itemName, module, command);
@@ -679,14 +686,6 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			return; //minimalMenu windows don't have menu bars in Windows etc.
 		try {
 			composeCount++;
-			if (whichWindow!=null)
-				whichWindow.deassignMenus();
-
-			/* the following needed only if menubar not new (see "couldDelete" in resetMenus of MesquiteWindows 
-		 	if (menuBar!=null) {
-		 		for (int i=menuBar.getMenuCount()-1; i>=0; i--)  
-		 			menuBar.remove(i);
-		 	}
 			/**/
 			if (MesquiteTrunk.fileMenu==null)
 				MesquiteMessage.warnProgrammer("WARNING: file menu null in composeMenuBar for " + module.getName());
@@ -696,9 +695,9 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 				return;
 			}
 			 */
-			else if (menuBar==null)
+			else if (menuBar==null) {
 				MesquiteMessage.warnProgrammer("WARNING: menuBar null in composeMenuBar for " + module.getName());
-
+			}
 			if (module.isDoomed())
 				return;
 			composeFileMenu(menuBar, MesquiteTrunk.fileMenu, whichWindow);
@@ -860,6 +859,7 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 	}
 
 	public void resetEmbeddedMenus(MesquiteWindow whichWindow){
+
 		if ((window != null && window.getShowInfoBar()) && (MesquiteTrunk.isMacOSX() || (whichWindow == null || !whichWindow.isLoneWindow()))) // && MesquiteTrunk.isMacOSX())   //these menus belong in the window, as long as an info bar is shown
 			embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
 		else
@@ -1157,7 +1157,8 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 			}
 			//wMenu.add(whichWindow.infoBarMenuItem);
 			 */
-			wMenu.add(whichWindow.explanationsMenuItem);
+			MesquiteMenuItem explanationsMenuItem = new MesquiteMenuItem(whichWindow.explanationsMenuItemSpec);
+			wMenu.add(explanationsMenuItem);
 			/*if (module.getEmployer()!=null && module.getEmployer().getClonableEmployeeCommand(module)!=null) {
 				wMenu.add(whichWindow.cloneWindowMenuItem);
 			}
@@ -2167,7 +2168,10 @@ public abstract class MenuOwner implements Doomable { //EMBEDDED: extends Applet
 					newMenu.add(new MesquiteMenuItem("Show File Location", MesquiteModule.mesquiteTrunk, proj.getShowFileOnDiskCommand()));
 				}
 			}
+			whichWindow.closeWindowMenuItem = new MesquiteMenuItem(whichWindow.closeWindowMenuItemSpec);
+			whichWindow.closeWindowMenuItem.setShortcut(MesquiteWindow.closeWindowShortcut);	
 			newMenu.add(whichWindow.closeWindowMenuItem);
+			whichWindow.closeAllMenuItem = new MesquiteMenuItem(whichWindow.closeAllMenuItemSpec);
 			if (whichWindow.closeAllMenuItem != null)
 				newMenu.add(whichWindow.closeAllMenuItem);
 			/*-------------- Save & Save As menu or submenu */

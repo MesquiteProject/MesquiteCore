@@ -125,7 +125,6 @@ public abstract class FillableMesquiteSymbol extends MesquiteSymbol {
 				//g2.setTransform(polyTransform);
 				//polyTransform.translate(-x/rescaleValue,-y/rescaleValue);
 				polyTransform.scale(rescaleValue, rescaleValue);
-				//Debugg.println("rescale value " + rescaleValue);
 				AffineTransform saveTransform = g2.getTransform();
 				g2.setTransform(polyTransform);
 				if (poly!=null) {

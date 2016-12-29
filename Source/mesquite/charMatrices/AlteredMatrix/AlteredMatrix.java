@@ -173,7 +173,7 @@ public class AlteredMatrix extends SourceModifiedMatrix {  //So that Altered Mat
    	}
 	/*.................................................................................................................*/
    	public boolean isPrerelease(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
    	public boolean isSubstantive(){

@@ -1979,10 +1979,8 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	/* ................................................................................................................. */
 	/** Fires all employees. */
 	public void closeDownAllEmployees(MesquiteModule mb) {
-	//	Debugg.println("@@@@@@@@@@closedownalleemployees " + this + " EMPLOYEES " + employees);
 		if (mb.employees == null)
 			return;
-	//	Debugg.println("      @@@@@@@" + this + " EMPLOYEES " + employees.size());
 
 		Enumeration e = mb.employees.elements( );
 		while (e.hasMoreElements()) {
@@ -1990,7 +1988,6 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			MesquiteModule mbe = (MesquiteModule) obj;
 			if (mbe != null) {
 				try {
-					//Debugg.println("@@@@@@@@@@ENding job " + mbe);
 					mbe.endJob();
 				} catch (Throwable t) {
 					module.logln("Error or exception in closing down employee (endJob) " + mbe.getName());

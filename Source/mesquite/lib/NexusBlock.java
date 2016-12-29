@@ -224,7 +224,6 @@ public abstract class NexusBlock implements Listable, Identifiable, Disposable {
 	}
 	boolean disposedAlready = false;
 	public void dispose() {
-		//Debugg.println("disposing " + getClass());
 		if (disposedAlready)
 			return;
 		manager = null;

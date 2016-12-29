@@ -92,8 +92,7 @@ public class MesquitePanel extends MousePanel  {
 			popup = new MesquitePopup(this);
 		MesquiteSubmenu submenuFont=MesquiteSubmenu.getFontSubmenu("Font", popup, null, setFontCommand);
 		/*
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		String[] fonts = ge.getAvailableFontFamilyNames();
+		String[] fonts = StringUtil.getFontList();
 
 		for (int i=0; i<fonts.length; i++)
 			submenuFont.add(new MesquiteMenuItem(fonts[i],  null, setFontCommand, fonts[i]));

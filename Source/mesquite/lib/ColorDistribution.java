@@ -272,13 +272,35 @@ public class ColorDistribution {
 		else
 			return light;
 	}
-	public static Color getContrasting(Color c){
-		if (c==null){
+	private static boolean lightColor(Color c) {
+		int highBreak=155;
+		int lowBreak = 100;
+		if (c.getRed()>highBreak || c.getGreen() > highBreak || c.getGreen() > highBreak)  // all are high values
+			return true;
+		if (c.getRed()>lowBreak && c.getGreen() > lowBreak && c.getGreen() > lowBreak && c.getRed()<highBreak && c.getGreen() < highBreak && c.getGreen() < highBreak)  // grey
+			return true;
+		return false;
+	}
+	private static boolean darkColor(Color c) {
+		int highBreak=155;
+		int lowBreak = 100;
+		if (c.getRed()<lowBreak && c.getGreen() < lowBreak && c.getGreen() < lowBreak)
+			return true;
+		return false;
+	}
+	public static Color getContrastingTextColor(Color backgroundColor){
+		if (backgroundColor==null){
 			return Color.black;
 		}
-		int red = (255-c.getRed());
-		int green = (255-c.getGreen());
-		int blue = (255-c.getBlue());
+		int highBreak=155;
+		int lowBreak = 100;
+		if (lightColor(backgroundColor))
+			return Color.black;
+		if (darkColor(backgroundColor))
+			return Color.white;
+		int red = (255-backgroundColor.getRed());
+		int green = (255-backgroundColor.getGreen());
+		int blue = (255-backgroundColor.getBlue());
 		return new Color(red,green,blue);
 	}
 	public static int getStandardColorNumber(String name){

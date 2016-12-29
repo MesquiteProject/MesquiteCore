@@ -104,8 +104,9 @@ public class Defaults extends MesquiteInit  {
 		mTheme.setSelected(themeName);
 
 		
-		MesquiteSubmenuSpec sm = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.defaultsSubmenu, "Default Font", makeCommand("setDefaultFont",  this), MesquiteSubmenu.getFontList());
+		MesquiteSubmenuSpec sm = FontUtil.getFontSubmenuSpec(MesquiteTrunk.defaultsSubmenu, "Default Font", MesquiteTrunk.mesquiteTrunk,this);
 		sm.setFilterable(false);
+		
 		sm = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.defaultsSubmenu,"Default Font Size", makeCommand("setDefaultFontSize",  this), MesquiteSubmenu.getFontSizeList());		
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "-", null);
@@ -356,13 +357,26 @@ public class Defaults extends MesquiteInit  {
 	/*.................................................................................................................*/
 	/** Respond to commands sent to the window. */
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(getClass(), "Sets the default font of windows", "[name of font]", commandName, "setDefaultFont")) {
+		if (checker.compare(getClass(), "Sets the default font of windows", "[name of font]", commandName, "setFont")) {
 			if (MesquiteWindow.defaultFont==null)
 				return null;
 			Font fontToSet = new Font (parser.getFirstToken(arguments), MesquiteWindow.defaultFont.getStyle(), MesquiteWindow.defaultFont.getSize());
 			if (fontToSet!= null) {
 				MesquiteWindow.defaultFont = fontToSet;
 				storePreferences();
+			}
+		}
+		else if (checker.compare(getClass(), "Sets the default font of windows", "[name of font]", commandName, FontUtil.setFontOther)) {
+			if (MesquiteWindow.defaultFont==null)
+				return null;
+			String fontName = FontUtil.getFontNameFromDialog(containerOfModule());
+			if (fontName!=null) {
+				logln("Set default font to " + fontName);
+				Font fontToSet = new Font (fontName, MesquiteWindow.defaultFont.getStyle(), MesquiteWindow.defaultFont.getSize());
+				if (fontToSet!= null) {
+					MesquiteWindow.defaultFont = fontToSet;
+					storePreferences();
+				}
 			}
 		}
 		else if (checker.compare(getClass(), "Sets the default font size of windows", "[font size]", commandName, "setDefaultFontSize")) {

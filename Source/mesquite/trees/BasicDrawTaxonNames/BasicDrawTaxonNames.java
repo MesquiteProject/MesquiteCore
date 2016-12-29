@@ -74,10 +74,10 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		fontSizeName = new MesquiteString(Integer.toString(MesquiteWindow.defaultFont.getSize()));
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Names");
 		addItemToSubmenu(null, namesMenu, "Taxon Name Angle...", makeCommand("namesAngle", this));
-		MesquiteSubmenuSpec msf = addSubmenu(null, "Font", makeCommand("setFont", this), MesquiteSubmenu.getFontList());
-		msf.setList(MesquiteSubmenu.getFontList());
-		msf.setDocumentItems(false);
+		
+		MesquiteSubmenuSpec msf = FontUtil.getFontSubmenuSpec(this,this);
 		msf.setSelected(fontName);
+		
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Font Size", makeCommand("setFontSize", this), MesquiteSubmenu.getFontSizeList());
 		mss.setList(MesquiteSubmenu.getFontSizeList());
 		mss.setDocumentItems(false);
@@ -274,6 +274,25 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					fontName.setValue(t);
 					currentFont = fontToSet;
 					parametersChanged();
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the font used for the taxon names", "[name of font]", commandName, FontUtil.setFontOther)) {
+			String t=FontUtil.getFontNameFromDialog(containerOfModule());
+			if (t!=null) {
+				logln("Font chosen: " + t);
+				if (currentFont==null){
+					myFont = t;
+					fontName.setValue(t);
+				}
+				else {
+					Font fontToSet = new Font (t, currentFont.getStyle(), currentFont.getSize());
+					if (fontToSet!= null) {
+						myFont = t;
+						fontName.setValue(t);
+						currentFont = fontToSet;
+						parametersChanged();
+					}
 				}
 			}
 		}
