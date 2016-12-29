@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<mesquite>
+	<MessagesFromHome>
+		<version>1</version>
+
+		<notice><!-- Notice of Opal & Opalescent install -->
+			<forVersion>260</forVersion>
+			<forBuildNumberAtLeast>486</forBuildNumberAtLeast>
+			<noticeNumber>1</noticeNumber>
+			<messageType>update</messageType>
+			<identity>Opal</identity>
+			<updateVersion>002</updateVersion>
+			<packageName>Opal v. 2.1</packageName>
+			<explanation>
+			<![CDATA[<img src="http://mesquiteproject.org/packages/opalescent/install/opalSplash.jpg"> <img src="http://mesquiteproject.org/packages/opalescent/install/opalescentSplash.jpg"><p>
+			Opal does multiple sequence alignment.  This download will install Opal as well as Opalescent, a package of Mesquite modules to access Opal's functions.  For more information about the features of Opal available
+		in Mesquite, see the <a href = "http://mesquiteproject.org/packages/opalescent/">Opalescent web page</a>.
+			<p>In downloading you are agreeing to Opal's terms of use, as follows:<p>
+			Opal is free for noncommercial use, and comes with neither warranty nor guarantee.<p>
+Opal cannot be redistributed in any form. If you wish to use Opal for commercial purpose, you must first obtain the permission from all authors.<p>
+All noteworthy uses of Opal should cite the related paper (see <a href = "http://opal.cs.arizona.edu">Opal website</a> for details)
+			]]>
+			</explanation>
+				<install>
+					<location>mesquite</location>
+					<file>opal</file>
+					<url>http://mesquiteproject.org/packages/opalescent/install/opalMesquite.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>002</updateVersion>
+				</install>
+				<install>
+					<location>mesquite</location>
+					<file>opalescent</file>
+					<url>http://mesquiteproject.org/packages/opalescent/install/opalescent.zip</url>
+					<treatment>unzip</treatment>
+					<updateVersion>002</updateVersion>
+				</install>
+		</notice>
+		
+		
+	</MessagesFromHome>
+</mesquite>
