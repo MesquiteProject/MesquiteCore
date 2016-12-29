@@ -65,7 +65,6 @@ public class MesquiteMenuBar extends MenuBar {
 			menu.removeAll();
 	}
 	public void disconnect() {
-	//	Debugg.println("@@@@@@@@@@@@@ disconnect menu bar");
 		ownerWindow = null;
 		for (int i=0; i<getMenuCount(); i++){
 			Menu menu = getMenu(i);
@@ -76,25 +75,7 @@ public class MesquiteMenuBar extends MenuBar {
 			remove(menu);
 		}
 		
-	//	removeAll();
-	/*
-		for (int i=0; i<getMenuCount(); i++){
-			Menu menu = getMenu(i);
-			if (menu instanceof MesquiteMenu)
-				((MesquiteMenu)menu).recycle = true; //setting recycle flag so can be recycled
-			for (int j=0; j<menu.getItemCount(); j++) {
-				MenuItem item = menu.getItem(i);
-				if (item instanceof MesquiteMenu)
-					((MesquiteMenu)item).recycle = true; //setting recycle flag so can be recycled
-			}
-		}
-		for (int i=getMenuCount()-1; i>=0; i--){
-			Menu menu = getMenu(i);
-			menu.removeAll();
-			remove(menu);
-		}
-	//	removeAll();
-	*/
+	
 	}
 }
 

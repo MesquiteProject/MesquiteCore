@@ -69,9 +69,6 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			if (classesLinked.indexOf(ownerObject.getClass())<0) {
 				classesLinked.addElement(ownerObject.getClass());
 				countsOfClasses.addElement(new MesquiteInteger(1));
-				if (ownerObject.getClass() == MesquiteCheckMenuItem.class){
-					Debugg.printStackTrace();
-				}
 			}
 			else {
 				MesquiteInteger c = (MesquiteInteger)countsOfClasses.elementAt(classesLinked.indexOf(ownerObject.getClass()));

@@ -38,24 +38,25 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.1+.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.11+.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.1+";
+		return "3.11+";
 	}
+
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 310;
+		return 311;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.10;
+		return 3.11;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "June 2016"; //"April 2007";
+		return "December 2016"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
@@ -1853,36 +1854,6 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Forces a reset of the menus.", null, commandName, "resetMenus")) {
 			zeroMenuResetSuppression();
-			//Debugg.println do this only once
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
 			resetAllMenuBars();
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {
