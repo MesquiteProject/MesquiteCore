@@ -2105,7 +2105,7 @@ x axis can represent different things (items, values, values by category) it is 
 	}
 	/* ----------------------------------*/
 
-	public void drawChart(Graphics g, MesquiteChart chart){ //g is from paint from ChartField
+	public synchronized void drawChart(Graphics g, MesquiteChart chart){ //g is from paint from ChartField
 		if (chart==null || chart.getXArray()==null || chart.getYArray()==null )
 			return;
 		if (chart.getNumPoints()==0){
@@ -2137,7 +2137,7 @@ x axis can represent different things (items, values, values by category) it is 
 
 		valueX.setValue(0);
 		valueY.setValue(0);
-		int zeroX = xToPixel(0, chart);
+//		int zeroX = xToPixel(0, chart);
 		int zeroY = yToPixel(0, chart);
 
 		/*
@@ -2181,10 +2181,17 @@ x axis can represent different things (items, values, values by category) it is 
 						int yPixel = yToPixel(sum, chart);
 						if (getSuspendDrawing())
 							return;
-						if (xPixel < 0 || xPixel > chart.getField().getBounds().width)
+						if (xPixel < 0 || xPixel > chart.getField().getBounds().width) {
 							problem += "[xPixel " + xPixel + " w " + chart.getField().getBounds().width + " i " + i + "] " ;
-						if (yPixel < 0 || yPixel > chart.getField().getBounds().height)
+							if (xPixel<0) xPixel = 0;
+							if (xPixel>chart.getField().getBounds().width) xPixel = chart.getField().getBounds().width;
+							
+						}
+						if (yPixel < 0 || yPixel > chart.getField().getBounds().height) {
 							problem += "[yPixel " + yPixel + " h " + chart.getField().getBounds().height + " i " + i + "] " ;
+							if (yPixel<0) yPixel = 0;
+							if (yPixel>chart.getField().getBounds().height) yPixel = chart.getField().getBounds().height;
+					}
 						int selY = yPixel;
 
 						boolean dimmed = false;
@@ -2232,6 +2239,7 @@ x axis can represent different things (items, values, values by category) it is 
 							lastX = xPixel+markerWidth/2;
 							lastY = yPixel;
 						}
+
 
 					}
 

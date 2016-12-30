@@ -166,11 +166,13 @@ public abstract class Charter  {
 		yValue.findWithinBounds(minY, maxY, chart.getFieldHeight()-y, chart.getFieldHeight());
 	}
 	/* ----------------------------------*/
-	public int yToPixel(double y, MesquiteChart chart){
+	public synchronized int yToPixel(double y, MesquiteChart chart){
 		tempNum.setValue(y);
 		int fieldHeight =chart.getFieldHeight();
 		int margin =chart.getMargin();
-		return fieldHeight-margin-tempNum.setWithinBounds(minY, maxY, fieldHeight- 2*margin) - chart.getYPixelBase();
+		int value = fieldHeight-margin-tempNum.setWithinBounds(minY, maxY, fieldHeight- 2*margin) - chart.getYPixelBase();
+		return value;
+
 	}
 	/* ----------------------------------*/
 	public void pixelToX(int x,  MesquiteChart chart, MesquiteNumber xValue){
@@ -183,11 +185,12 @@ public abstract class Charter  {
 		//xValue.findWithinBounds(minX, maxX, x, chart.getFieldWidth());
 	}
 	/* ----------------------------------*/
-	public int xToPixel(double x,  MesquiteChart chart){
+	public synchronized int xToPixel(double x,  MesquiteChart chart){
 		tempNum.setValue(x);
 		int fieldWidth =chart.getFieldWidth();
 		int margin =chart.getMargin();
-		return   margin+tempNum.setWithinBounds(minX, maxX, fieldWidth - 2*margin-markerWidth) - chart.getXPixelBase();
+		int value =   margin+tempNum.setWithinBounds(minX, maxX, fieldWidth - 2*margin-markerWidth) - chart.getXPixelBase();
+		return value;
 	}
 	
 	/* ----------------------------------*/
