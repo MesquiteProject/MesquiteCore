@@ -144,7 +144,7 @@ public class ReshuffleCharacter extends CharacterSource {
    	 }
    	 
 	private int chooseCharacter(MCharactersDistribution matrix){
-		if (matrix == null || matrix.getParentData()!=null) {
+		if (matrix != null && matrix.getParentData()!=null) {
 	 		CharacterData data = matrix.getParentData();
 			String[] charNames = new String[data.getNumChars()];
 			for (int i=0; i<data.getNumChars(); i++)
