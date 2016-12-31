@@ -103,8 +103,6 @@ public class Mesquite extends MesquiteTrunk
 	private Vector splashURLInfo = new Vector(3);
 	private ListableVector splashNames = new ListableVector(3);
 	public static AboutWindow about;
-	private String supportFilesPath;
-	private File supportFilesDirectory;
 	private int numUses =0;
 	String configFile = "all";
 	HPanel browser;
@@ -171,7 +169,6 @@ public class Mesquite extends MesquiteTrunk
 
 
 		String sep = MesquiteFile.fileSeparator;
-		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 
 		//finding mesquite directory
 		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
@@ -241,9 +238,17 @@ public class Mesquite extends MesquiteTrunk
 		/* EMBEDDED delete these if embedded */
 		userDirectory = new File(System.getProperty("user.home")+sep);  //used to be user.dir, but caused permission problems in linux
 
+		String supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 		supportFilesDirectory = new File(supportFilesPath);
 		if (!supportFilesDirectory.exists()){
-			supportFilesDirectory.mkdir();
+			String supportFilesPathALT = System.getProperty("user.home") + sep + ".Mesquite_Support_Files";
+			File supportFilesDirectoryALT = new File(supportFilesPathALT);
+			if (supportFilesDirectoryALT.exists()){
+				supportFilesPath = supportFilesPathALT;
+				supportFilesDirectory = supportFilesDirectoryALT;
+			}
+			else
+				supportFilesDirectory.mkdir();
 		}
 		boolean supportFilesWritable = MesquiteFile.canWrite(supportFilesPath);
 		boolean writabilityWarned = false;
@@ -1796,7 +1801,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Redirects log saving to the given filename", "[filename]", commandName, "redirectLog")) {
 			String name = parser.getFirstToken(arguments);
 			if (StringUtil.blank(name))
-				name = MesquiteString.queryString(containerOfModule(), "Redirect Log", "Indicate name of log file to which subsequent log output is to be directored.  It will be saved in the directory " + supportFilesPath, MesquiteTrunk.logFileName);
+				name = MesquiteString.queryString(containerOfModule(), "Redirect Log", "Indicate name of log file to which subsequent log output is to be directored.  It will be saved in the directory " + supportFilesDirectory, MesquiteTrunk.logFileName);
 			if (StringUtil.blank(name))
 				return null;
 			logln("Log redirected to \"" + name + "\"");
@@ -1806,14 +1811,14 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Changes the current log file's name", "[filename]", commandName, "renameLog")) {
 			String name = parser.getFirstToken(arguments);
 			if (StringUtil.blank(name))
-				name = MesquiteString.queryString(containerOfModule(), "Rename Log", "Indicate new name of log file.  It will be saved in the directory " + supportFilesPath, MesquiteTrunk.logFileName);
+				name = MesquiteString.queryString(containerOfModule(), "Rename Log", "Indicate new name of log file.  It will be saved in the directory " + supportFilesDirectory, MesquiteTrunk.logFileName);
 			if (StringUtil.blank(name))
 				return null;
 			MesquiteFile.closeLog();
 			logln("Log renamed to \"" + name + "\"");
-			String currentPath = supportFilesPath  + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName;
+			String currentPath = supportFilesDirectory  + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName;
 			MesquiteTrunk.logFileName = name;
-			MesquiteFile.rename(currentPath, supportFilesPath + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName);
+			MesquiteFile.rename(currentPath, supportFilesDirectory + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName);
 
 
 		}

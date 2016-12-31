@@ -76,14 +76,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return "3.11+";
 	}
 	/*.................................................................................................................*/
-	/*.................................................................................................................*/
-	//As of 3.0 this becomes fixed, not changing with version)
-	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
-	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
-	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
-	//See Mesquite.java for notices.xml URLs
-	//See Installer for updates.xml URLs
-	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
 	public final static String getBuildLetter() {
 		//see comment under getBuildNumber
@@ -149,6 +141,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return " (build " + getBuildLetter() + getBuildNumber() + ")";
 	}
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	//As of 3.0 this becomes fixed, not changing with version)
+	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
+	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
+	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+	//See Mesquite.java for notices.xml URLs
+	//See Installer for updates.xml URLs
+	/*.................................................................................................................*/
 
 
 	LeakFinder leakFinder = MesquiteTrunk.leakFinderObject;
@@ -163,6 +163,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 
 	/** The user's directory.*/
 	public static File userDirectory=null;  
+	/** The Mesquite_Support_Files directory.*/
+	public static File supportFilesDirectory=null;  
 	/** The window, created by mesquiteTrunk, that displays the log.*/
 	public static LogWindow logWindow;
 	/** true if name of MesquiteModule is to be shown in alerts*/
@@ -1159,7 +1161,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			report += "\n\nEMERGENCY CANCELLED";
 
 		report += "\n\n\n";
-		report += logWindow.getText();
+		String q = logWindow.getText();
+		q = StringUtil.replace(q,  "\n", "©");
+		q = StringUtil.replace(q,  "\r", "©");
+		report += q;
 		report += "\n\n\n";
 		reportProblemToHome(report);
 		MesquiteTrunk.errorReportedToHome = true;
@@ -1232,10 +1237,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String report = "build " + MesquiteTrunk.mesquiteTrunk.getBuildNumber() + "\n";
 		report += "java:" + System.getProperty("java.version") +"; vm:" + System.getProperty("java.vendor") + "; os:" + System.getProperty("os.name") + "; osversion:" + System.getProperty("os.version") + "; arch:" + System.getProperty("os.arch") + "\n";
 		if (!StringUtil.blank(email))
-			report += "EMAIL\t" + email +  "\n\n";
+			report += "EMAIL\t" + email +  "\n";
 		else
-			report += "EMAIL NOT GIVEN\n\n";
-
+			report += "EMAIL NOT GIVEN\n";
+		report += "@$$$";
+		s = StringUtil.replace(s,  "\n", "$$");
+		s = StringUtil.replace(s,  "\r", "$$");
 		report += s + "\n";
 		StringBuffer response = new StringBuffer();
 		if (BaseHttpRequestMaker.postToServer(report, errorReportURL, response)){

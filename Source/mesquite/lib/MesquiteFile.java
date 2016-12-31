@@ -3161,7 +3161,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (!MesquiteTrunk.isApplet() && s!=null) {
 			try {
 				if (logStream==null) {
-					logPath = MesquiteModule.userDirectory + fileSeparator + "Mesquite_Support_Files" + fileSeparator + MesquiteTrunk.logFileName; //TODO: should have user settable in future
+					logPath = MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName; //TODO: should have user settable in future
 					logStream = new PrintWriter(new FileOutputStream(logPath, appendToLog));
 					appendToLog = true;  //subsequent calls append
 				}
@@ -3206,7 +3206,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (logStream!=null) {
 			logStream.close();
 			logStream = null;
-			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.userDirectory + fileSeparator + "Mesquite_Support_Files" + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
 			catch (Throwable t){}
 		}
 	}
