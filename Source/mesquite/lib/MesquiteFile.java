@@ -2636,6 +2636,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			//MesquiteMessage.printStackTrace();
 			return null;
 		}
+		catch( Exception e ) {
+			if (warnIfProblem)
+				MesquiteMessage.warnProgrammer("Other Exception found (6) : " + relativePath + "   " + e.getMessage());
+			//MesquiteMessage.printStackTrace();
+			return null;
+		}
 	}
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
