@@ -1160,12 +1160,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (MainThread.emergencyCancelled)
 			report += "\n\nEMERGENCY CANCELLED";
 
-		report += "\n\n\n";
+		report += "\n";
 		String q = logWindow.getText();
 		q = StringUtil.replace(q,  "\n", "©");
 		q = StringUtil.replace(q,  "\r", "©");
 		report += q;
-		report += "\n\n\n";
+		report += "\n";
 		reportProblemToHome(report);
 		MesquiteTrunk.errorReportedToHome = true;
 	}
