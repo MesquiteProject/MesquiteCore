@@ -31,7 +31,7 @@ public class TopologyCongruent extends BooleanForTree {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		constraintTreeSource = (OneTreeSource)hireEmployee(OneTreeSource.class, "One Tree Source");
 		if(constraintTreeSource==null){
-			return sorry(getName() + " couldn't start because no constraint tree was obtained.");
+			return sorry(getName() + " couldn't start because no comparison tree was obtained.");
 		}
 		loadPreferences();
 		MesquiteMenuItemSpec exactMatchItem = addCheckMenuItem( null, "Topologies must be exactly equal", makeCommand("exactMatch",  this), exactMatch);
@@ -128,12 +128,12 @@ public class TopologyCongruent extends BooleanForTree {
 	}
 	/*..............................................................................*/
 	public String getName() {
-		return "Tree Congruent with Constraint Tree Topology";
+		return "Tree Congruent with Specified Tree Topology";
 	}
 	/*..............................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation(){
-		return "Determines if tree matches topology of a given constraint tree.  This module does not handle backbone constraints; all trees must have the same taxa present.  For backbone constraint trees, where the constraint tree need not contain all taxa, use the 'Tree Congruent with Backbone Constraint Tree Topology' module.";
+		return "Determines if tree matches topology of a specified tree.  All trees must have the same taxa present.";
 	}
 	/*........................................................*/
 	public int getVersionOfFirstRelease(){
