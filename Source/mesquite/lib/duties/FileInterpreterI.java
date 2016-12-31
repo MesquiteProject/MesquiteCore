@@ -36,7 +36,7 @@ public abstract class FileInterpreterI extends FileInterpreter  {
 	public void getImportOptions(boolean fuse){
 	}
   	 public String[] getDefaultModule() {
-    	 	return new String[] {"#InterpretFastaDNA", "#InterpretFastaProtein", "#InterpretNEXUS"};
+    	 	return new String[] {"#InterpretFastaDNA", "#InterpretFastaProtein", "#InterpretNEXUS", "#InterpretPhylipTreesBasic"};
     	 }
 	
 }

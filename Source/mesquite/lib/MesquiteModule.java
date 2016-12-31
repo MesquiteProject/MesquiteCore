@@ -79,6 +79,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	//As of 3.0 this becomes fixed, not changing with version)
 	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
+	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
+	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
+	//See Mesquite.java for notices.xml URLs
+	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
 	public final static String getBuildLetter() {
@@ -1205,7 +1209,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (numPairs>=4)
 			pairs[3] = new NameValuePair("notes", StringUtil.tokenize(notes));
 
-		if (BaseHttpRequestMaker.sendInfoToServer(pairs, "http://mesquiteproject.org/pyMesquiteBeans", null, 0)){  // changed to not retry
+		if (BaseHttpRequestMaker.sendInfoToServer(pairs, beansReportURL, null, 0)){  // changed to not retry
 			if (notifyUser) 
 				MesquiteMessage.println("Bean sent to Mesquite server.");
 		}

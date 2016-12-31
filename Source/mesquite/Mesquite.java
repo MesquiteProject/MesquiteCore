@@ -58,6 +58,7 @@ public class Mesquite extends MesquiteTrunk
 	public String getDateReleased() {
 		return "December 2016"; //"April 2007";
 	}
+	
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
@@ -66,6 +67,8 @@ public class Mesquite extends MesquiteTrunk
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 	}
+	//See MesquiteModule for version reporter and error reporter URLs
+	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return true;

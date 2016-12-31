@@ -30,13 +30,6 @@ public class Defaults extends MesquiteInit  {
 	public String getName() {
 		return "Defaults";
 	}
-	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
-	public String  getHomePhoneNumber(){ 
-		String pre = "";
-		if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
-			pre = "_PRERELEASE";
-		return "http://mesquiteproject.org/mesquite/contact/mesquiteStartup?buildNumber=" + getBuildNumber()+pre;
-	}
 	public String getExplanation() {
 		return "Supervises some Mesquite-wide defaults";
 	}

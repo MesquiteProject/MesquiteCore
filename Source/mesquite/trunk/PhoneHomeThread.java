@@ -43,7 +43,10 @@ public class PhoneHomeThread extends Thread {
 		try {
 			if (!MesquiteTrunk.suppressVersionReporting){
 				StringBuffer response = new StringBuffer();
-				BaseHttpRequestMaker.contactServer(Integer.toString(MesquiteTrunk.getBuildNumber()), "http://mesquiteproject.org/pyMesquiteStartup", response);
+				String buildNum = Integer.toString(MesquiteTrunk.getBuildNumber());
+				if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
+					buildNum = "PreRelease-" + buildNum;
+				BaseHttpRequestMaker.contactServer(buildNum, MesquiteModule.versionReportURL, response);
 				String r = response.toString();
 			//if mq3rs is included in response, then this is real response
 				if (!StringUtil.blank(r) && r.indexOf("mq3rs")>=0){
@@ -76,6 +79,7 @@ public class PhoneHomeThread extends Thread {
 					else
 						phoneHomeRecord = (PhoneHomeRecord)phoneRecords.elementAt(rec);
 					String notice = PhoneHomeUtil.retrieveMessagesFromHome(mmi, phoneHomeRecord, logBuffer);
+					
 					phoneHomeRecord.setCurrentValues(mmi);
 					if (!StringUtil.blank(notice)) {
 						if (mmi.getModuleClass() == mesquite.Mesquite.class)

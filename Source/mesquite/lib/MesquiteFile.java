@@ -2727,9 +2727,13 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 		}
 		catch( IOException e ) {
-			if (warnIfProblem)
-				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "\n   " + e.getMessage());
-			//MesquiteMessage.printStackTrace();  
+			if (warnIfProblem) {
+				MesquiteMessage.warnProgrammer("IO Exception getting URL contents (6a) : " + path + "\n   " + e.getMessage());
+				if (MesquiteTrunk.debugMode){
+					MesquiteMessage.warnProgrammer("  " + e);
+					e.printStackTrace();
+				}
+			}
 			return null;
 		}
 		return s.toString();
