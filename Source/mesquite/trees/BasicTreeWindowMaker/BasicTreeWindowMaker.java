@@ -218,8 +218,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	boolean handlingQuitTreeSource = false;
 
 	void disconnectFromTreeBlock(boolean fireCurrentTask) {
+		if (basicTreeWindow == null)
+			return;
 		handlingQuitTreeSource = true;
-
+		
 		String d = basicTreeWindow.getTreeDescription();
 		String n = "Tree recovered from: " + basicTreeWindow.getTreeNameAndDetails();
 		if (fireCurrentTask)

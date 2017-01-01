@@ -1133,7 +1133,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				MesquiteMessage.notifyUser("File \"" + fi.getName() + "\" cannot be written because it was accessed as a URL");
 		}
 		MainThread.decrementSuppressWaitWindow();
-		getProject().decrementProjectWindowSuppression();
+		if (getProject() != null)
+			getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	/*  */

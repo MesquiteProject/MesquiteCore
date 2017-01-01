@@ -4031,11 +4031,15 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		int svp = StringUtil.getStringVertPosition(g, y, h, null);
 		int xgnso = x + getNameStartOffset();
 
-		if (getShowRowNames())
+		if (getShowRowNames()){
+			String t = taxa.getTaxon(row).getName();
+			if (t == null)
+				t = "";
 			if (!StringUtil.blank(s))
-				g.drawString("*" + taxa.getTaxon(row).getName(), xgnso, svp);
+				g.drawString("*" + t, xgnso, svp);
 			else
-				g.drawString(taxa.getTaxon(row).getName(), xgnso, svp);
+				g.drawString(t, xgnso, svp);
+		}
 
 		g.setColor(oldColor);
 
