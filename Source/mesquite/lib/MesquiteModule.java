@@ -1152,9 +1152,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Reports crash or error to Mesquite server*/
 	public void reportCrashToHome(Throwable e, String s) {
 		StackTraceElement[] stack = e.getStackTrace();
-		String report = MesquiteException.lastLocMessage() + "\n";
-		report += e + "\n";
-		report += s + "\n";
+		String report = "£message:" + MesquiteException.lastLocMessage() + "\n";
+		report += "£exception:" +e + "\n";
+		report += "£string:" + s + "\n£stacktrace:";
 		for (int i= 0; i< stack.length; i++)
 			report += stack[i] + "\n";
 		if (MainThread.emergencyCancelled)
@@ -1164,8 +1164,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String q = logWindow.getText();
 		q = StringUtil.replace(q,  "\n", "©");
 		q = StringUtil.replace(q,  "\r", "©");
-		report += q;
-		report += "\n";
+		report += "£log:" + q;
+		report += "£end\n";
 		reportProblemToHome(report);
 		MesquiteTrunk.errorReportedToHome = true;
 	}
@@ -1183,7 +1183,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else {
 			boolean q = AlertDialog.query(containerOfModule(), "Error", s + "\n\nPlease send a report of this error to the Mesquite server, to help us understand how often this happens.  None of your data will be sent." + addendum, "OK, Send Report",  "Close without sending");
 			if (q){
-				reportProblemToHome(s + "\n\n" + details + "\n\n@@@@@@@@@@@@@@@\n\n" + logWindow.getText());
+				reportProblemToHome("£reportableAlert:" + s + "\n\n" + details + "\n\n£log:" + logWindow.getText());
 				MesquiteTrunk.errorReportedToHome = true;
 			}
 		}
@@ -1234,16 +1234,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				"In order to fix this bug, we may need to contact you for more details.  " + 
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
 				"(If you want a response urgently, please send an email directly to info@mesquiteproject.org.)", "");
-		String report = "build " + MesquiteTrunk.mesquiteTrunk.getBuildNumber() + "\n";
-		report += "java:" + System.getProperty("java.version") +"; vm:" + System.getProperty("java.vendor") + "; os:" + System.getProperty("os.name") + "; osversion:" + System.getProperty("os.version") + "; arch:" + System.getProperty("os.arch") + "\n";
+		
+		String report = "$build " + MesquiteTrunk.mesquiteTrunk.getBuildNumber() + "\t";
+		report += "$system java:" + System.getProperty("java.version") +"\tvm:" + System.getProperty("java.vendor") + "; os:" + System.getProperty("os.name") + "; osversion:" + System.getProperty("os.version") + "; arch:" + System.getProperty("os.arch") + "\t";
 		if (!StringUtil.blank(email))
-			report += "EMAIL\t" + email +  "\n";
+			report += "$EMAIL\t" + email +  "\t";
 		else
-			report += "EMAIL NOT GIVEN\n";
-		report += "@$$$";
-		s = StringUtil.replace(s,  "\n", "$$");
-		s = StringUtil.replace(s,  "\r", "$$");
-		report += s + "\n";
+			report += "$EMAIL NOT GIVEN\t";
+		s = StringUtil.replace(s,  "\n", "¢");
+		s = StringUtil.replace(s,  "\r", "¢");
+		report += "$report\t" + s + "$end";
+		
 		StringBuffer response = new StringBuffer();
 		if (BaseHttpRequestMaker.postToServer(report, errorReportURL, response)){
 			String r = response.toString();

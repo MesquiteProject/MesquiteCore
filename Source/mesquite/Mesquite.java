@@ -704,6 +704,7 @@ public class Mesquite extends MesquiteTrunk
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
 		if (MesquiteTrunk.debugMode)
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
+		
 	} 
 
 	/*.................................................................................................................*/
@@ -2559,6 +2560,8 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("main constructor 6");
 		if (about !=null && mesquiteTrunk.getProjectList()!=null && mesquiteTrunk.getProjectList().getNumProjects()>0 && defaultHideMesquiteWindow)
 			about.hide();
+		
+		
 	}
 
 	/*.................................................................................................................*

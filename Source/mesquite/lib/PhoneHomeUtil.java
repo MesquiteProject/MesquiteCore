@@ -462,8 +462,12 @@ public class PhoneHomeUtil {
 		String noticesFromHome = null;
 		try{
 			noticesFromHome = MesquiteFile.getURLContentsAsString(url, -1, false);
+			if (MesquiteTrunk.debugMode)
+				MesquiteMessage.warnProgrammer("Phone home to " + url + " successful ");
 
 		} catch (Exception e) {
+			if (MesquiteTrunk.debugMode)
+				MesquiteMessage.warnProgrammer("Phone home to " + url + " UNSUCCESSFUL " + e.getCause());
 			return null;
 		}
 		if (StringUtil.blank(noticesFromHome))

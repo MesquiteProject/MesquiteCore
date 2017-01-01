@@ -40,6 +40,7 @@ public class PhoneHomeThread extends Thread {
 	/*.................................................................................................................*/
 	public void checkForMessagesFromAllHomes(){
 		//MesquiteTrunk.incrementMenuResetSuppression();
+
 		try {
 			if (!MesquiteTrunk.suppressVersionReporting){
 				StringBuffer response = new StringBuffer();
@@ -59,6 +60,8 @@ public class PhoneHomeThread extends Thread {
 			}
 		}
 		catch (Throwable t){
+			if (MesquiteTrunk.debugMode)
+				Debugg.printStackTrace("PROBLEM PHONING HOME to report version\n" + t.getCause());
 		}
 		ListableVector phoneRecords = new ListableVector();
 		StringBuffer notices = new StringBuffer();
