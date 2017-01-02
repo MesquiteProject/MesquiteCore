@@ -1355,6 +1355,47 @@ public class StringUtil {
 		}
 	}
 
+	/** This encodes a string so that it can be used as part of a URL for the Oracle AppBuilder */
+	public static String encodeForAppBuilderURL(String s){
+		if (s==null) return null;
+		StringBuffer buffer = new StringBuffer(s.length()*2);
+		for (int i=0; i<s.length(); i++) {
+			if (Character.isSpaceChar(s.charAt(i))) 
+				buffer.append("%20");
+			else if (s.charAt(i)=='>')
+				buffer.append("%3E");
+			else if (s.charAt(i)=='<')
+				buffer.append("%3C");
+			else if (s.charAt(i)=='"')
+				buffer.append("%22");
+			else if (s.charAt(i)=='#')
+				buffer.append("%23");
+			else if (s.charAt(i)=='%')
+				buffer.append("%25");
+			else if (s.charAt(i)=='{')
+				buffer.append("%7B");
+			else if (s.charAt(i)=='}')
+				buffer.append("%7D");
+			else if (s.charAt(i)=='|')
+				buffer.append("%7C");
+			else if (s.charAt(i)=='\\')
+				buffer.append("%5C");
+			else if (s.charAt(i)=='^')
+				buffer.append("%5E");
+			else if (s.charAt(i)=='~')
+				buffer.append("%7E");
+			else if (s.charAt(i)=='[')
+				buffer.append("%5B");
+			else if (s.charAt(i)==']')
+				buffer.append("%5D");
+			else if (s.charAt(i)=='`')
+				buffer.append("%60");
+			else
+				buffer.append(s.charAt(i));
+		}
+		return buffer.toString();
+	}
+
 	/** this is the old name for this method
 	 * @deprecated  */
 	public static String protectForWindows(String s) { 

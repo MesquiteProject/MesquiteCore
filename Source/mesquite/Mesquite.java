@@ -185,7 +185,7 @@ public class Mesquite extends MesquiteTrunk
 
 			try {
 				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForURL(loc);
+					loc = StringUtil.encodeForAppBuilderURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
@@ -202,7 +202,7 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("@ " + loc);
 			try {
 				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForURL(loc);
+					loc = StringUtil.encodeForAppBuilderURL(loc);
 				URI uri = new URI(loc);
 				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
 			} catch (URISyntaxException e) {
